@@ -38,7 +38,7 @@ const securityHeaders = [
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com data:",
             "img-src 'self' data: blob: https:",
-            "connect-src 'self' http://localhost:8000 ws://localhost:8000 https://*.supabase.co wss://*.supabase.co https://api.openai.com",
+            "connect-src 'self' http://localhost:8000 ws://localhost:8000 https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.deepseek.com",
             "frame-ancestors 'none'",
             "base-uri 'self'",
             "form-action 'self'",

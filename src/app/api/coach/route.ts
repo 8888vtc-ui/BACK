@@ -124,10 +124,33 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             language: body.language,
         };
 
-        const apiKey = process.env.OPENAI_API_KEY || process.env.LLM_API_KEY || '';
-        const rawBaseUrl = process.env.OPENAI_BASE_URL || process.env.LLM_BASE_URL || 'https://api.openai.com/v1';
+        const apiKey =
+            process.env.DEEPSEEK_API_KEY ||
+            process.env.OPENAI_API_KEY ||
+            process.env.LLM_API_KEY ||
+            '';
+
+        const isDeepSeek =
+            Boolean(process.env.DEEPSEEK_API_KEY) ||
+            Boolean(process.env.OPENAI_BASE_URL?.includes('deepseek.com')) ||
+            Boolean(process.env.DEEPSEEK_BASE_URL?.includes('deepseek.com')) ||
+            Boolean(process.env.COACH_MODEL === 'deepseek-chat') ||
+            Boolean(process.env.OPENAI_MODEL === 'deepseek-chat');
+
+        const rawBaseUrl =
+            process.env.DEEPSEEK_BASE_URL ||
+            process.env.OPENAI_BASE_URL ||
+            process.env.LLM_BASE_URL ||
+            (isDeepSeek ? 'https://api.deepseek.com' : 'https://api.openai.com/v1');
+
         const baseUrl = rawBaseUrl.replace(/\/+$/, '');
-        const model = process.env.OPENAI_MODEL || process.env.LLM_MODEL || 'gpt-4o-mini';
+
+        const model =
+            process.env.DEEPSEEK_MODEL ||
+            process.env.COACH_MODEL ||
+            process.env.OPENAI_MODEL ||
+            process.env.LLM_MODEL ||
+            (isDeepSeek || baseUrl.includes('deepseek.com') ? 'deepseek-chat' : 'gpt-4o-mini');
 
         const encoder = new TextEncoder();
 
@@ -148,8 +171,22 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             });
         }
 
-        // 2. Appel au LLM OpenAI-compatible avec streaming
+        // 2. Appel au LLM OpenAI-compatible (DeepSeek / OpenAI) avec streaming
         const userPrompt = buildCoachUserPrompt(params);
+
+        const requestPayload: Record<string, any> = {
+            model,
+            messages: [
+                { role: 'system', content: getCoachSystemPrompt(params.language) },
+                { role: 'user', content: userPrompt },
+            ],
+            temperature: 0.2,
+            stream: true,
+        };
+
+        if (isDeepSeek || baseUrl.includes('deepseek.com') || model.startsWith('gpt-4')) {
+            requestPayload.response_format = { type: 'json_object' };
+        }
 
         let llmResponse: Response;
         try {
@@ -159,15 +196,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${apiKey}`,
                 },
-                body: JSON.stringify({
-                    model,
-                    messages: [
-                        { role: 'system', content: getCoachSystemPrompt(params.language) },
-                        { role: 'user', content: userPrompt },
-                    ],
-                    temperature: 0.2,
-                    stream: true,
-                }),
+                body: JSON.stringify(requestPayload),
             });
         } catch (fetchErr) {
             console.warn('[Coach API] Erreur réseau lors de l\'appel LLM, repli heuristique :', fetchErr);
