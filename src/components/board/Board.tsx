@@ -16,7 +16,7 @@
  *     `onCheckerDoubleClick`, `onSelectDie`, `onDeselect`.
  */
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
     BoardState,
     Player,
@@ -25,6 +25,7 @@ import {
     pipCount,
     borneOffCount,
 } from '../../engine/backgammonEngine';
+import { useCheckerDrag } from './useCheckerDrag';
 
 // ---------------------------------------------------------------------------
 // Constantes de layout & données statiques
@@ -495,6 +496,15 @@ export default function Board({
         return Array.from(new Set([...left, ...right]));
     }, [selectedPoint, selectedDie, leftDieTargets, rightDieTargets]);
 
+    // --- Drag-and-drop (pointer events) : glisser un pion vers une destination ---
+    const {
+        onPointerDown: handlePointerDown,
+        onPointerMove: handlePointerMove,
+        onPointerUp: handlePointerUp,
+        onPointerCancel: handlePointerCancel,
+        didDragRef,
+    } = useCheckerDrag({ board, isX, leftDieTargets, rightDieTargets, onPlayMove });
+
     // Handlers stabilisés — délégation pure aux handlers du consommateur,
     // sans logique de sélection interne (le modèle Snowie/TMG est géré par le parent).
     const handlePointClick = useCallback(
@@ -520,7 +530,7 @@ export default function Board({
             }
             onDeselect?.();
         },
-        [board, isX, ghostDestinations, onDestinationClick, onCheckerClick, onDeselect],
+        [board, isX, ghostDestinations, onDestinationClick, onCheckerClick, onDeselect, didDragRef],
     );
 
     const handlePointRightClick = useCallback(
@@ -549,73 +559,6 @@ export default function Board({
             }
         },
         [ghostDestinations, onDestinationClick, onDeselect],
-    );
-
-    // --- Drag-and-drop (pointer events) : glisser un pion vers une destination ---
-    const [dragState, setDragState] = useState<{
-        fromPoint: number;
-        startX: number;
-        startY: number;
-        hasDragged: boolean;
-    } | null>(null);
-    const didDragRef = useRef(false);
-
-    const handlePointerDown = useCallback(
-        (e: React.PointerEvent) => {
-            if (e.button !== 0) return;
-            const target = (e.target as HTMLElement).closest('[data-point]');
-            if (!target) return;
-            const fromPoint = Number(target.getAttribute('data-point'));
-            const count = board[fromPoint];
-            const hasPlayerChecker = isX ? count > 0 : count < 0;
-            if (!hasPlayerChecker) return;
-
-            setDragState({
-                fromPoint,
-                startX: e.clientX,
-                startY: e.clientY,
-                hasDragged: false,
-            });
-            didDragRef.current = false;
-        },
-        [board, isX],
-    );
-
-    const handlePointerMove = useCallback(
-        (e: React.PointerEvent) => {
-            if (!dragState) return;
-            const dist = Math.hypot(e.clientX - dragState.startX, e.clientY - dragState.startY);
-            if (dist > 12 && !dragState.hasDragged) {
-                setDragState((prev) => (prev ? { ...prev, hasDragged: true } : null));
-                didDragRef.current = true;
-            }
-        },
-        [dragState],
-    );
-
-    const handlePointerUp = useCallback(
-        (e: React.PointerEvent) => {
-            if (!dragState) return;
-            const { fromPoint, hasDragged } = dragState;
-            setDragState(null);
-
-            if (!hasDragged) return;
-
-            // Hit-testing : trouve la flèche sous le curseur.
-            const el = document.elementFromPoint(e.clientX, e.clientY);
-            const target = el?.closest('[data-point]');
-            if (!target) return;
-            const toPoint = Number(target.getAttribute('data-point'));
-
-            const validDestinations = new Set([
-                ...(leftDieTargets.get(fromPoint) ?? []),
-                ...(rightDieTargets.get(fromPoint) ?? []),
-            ]);
-            if (validDestinations.has(toPoint)) {
-                onPlayMove?.(fromPoint, toPoint);
-            }
-        },
-        [dragState, leftDieTargets, rightDieTargets, onPlayMove],
     );
 
     const renderPoint = (point: number, isTopRow: boolean) => {
@@ -689,7 +632,7 @@ export default function Board({
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            onPointerCancel={() => setDragState(null)}
+            onPointerCancel={handlePointerCancel}
         >
             {/* Cadre noyer */}
             <div className="rounded-3xl p-3 sm:p-5 shadow-2xl bg-gradient-to-b from-[#4a2a16] via-[#3a2010] to-[#2b170c]">
