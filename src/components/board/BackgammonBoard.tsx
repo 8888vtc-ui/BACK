@@ -611,14 +611,15 @@ const Checker = React.memo(function Checker({
                 filter="url(#bgCheckerBlur)"
                 pointerEvents="none"
             />
-            {/* Corps du pion : dégradé radial */}
+            {/* Corps du pion : dégradé radial premium */}
             <circle
                 cx={cx}
                 cy={cy}
                 r={CHECKER_R}
-                fill={isX ? 'url(#bgGradX3D)' : 'url(#bgGradO3D)'}
+                fill={isX ? 'url(#whiteChecker)' : 'url(#blackChecker)'}
                 stroke={isX ? '#94a3b8' : '#000000'}
                 strokeWidth={1}
+                filter="url(#shadow3D)"
             />
             {/* Bevel : anneau dégradé donnant l'épaisseur du bord */}
             <circle
@@ -628,6 +629,16 @@ const Checker = React.memo(function Checker({
                 fill="none"
                 stroke={isX ? 'url(#bgBevelX)' : 'url(#bgBevelO)'}
                 strokeWidth={CHECKER_R * 0.28}
+                pointerEvents="none"
+            />
+            {/* Creux central (finger-dish) : second cercle concentrique */}
+            <circle
+                cx={cx}
+                cy={cy}
+                r={CHECKER_R * 0.65}
+                fill="none"
+                stroke={isX ? 'rgba(120, 100, 70, 0.35)' : 'rgba(0, 0, 0, 0.55)'}
+                strokeWidth={CHECKER_R * 0.12}
                 pointerEvents="none"
             />
             {/* Reflet spéculaire en haut-gauche */}
@@ -809,6 +820,35 @@ const BoardSvgDefs = React.memo(function BoardSvgDefs() {
                 <stop offset="55%" stopColor="#701722" />
                 <stop offset="100%" stopColor="#4d0f18" />
             </linearGradient>
+            {/* NOUVEAUX DÉGRADÉS PREMIUM (IDs exacts demandés) */}
+            <radialGradient id="feltGradient" cx="50%" cy="50%" r="70%">
+                <stop offset="0%" stopColor="#145337" />
+                <stop offset="65%" stopColor="#0b3824" />
+                <stop offset="100%" stopColor="#051c12" />
+            </radialGradient>
+            <linearGradient id="pointLight" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#f5ebd6" />
+                <stop offset="100%" stopColor="#d5c3a1" />
+            </linearGradient>
+            <linearGradient id="pointDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#881320" />
+                <stop offset="100%" stopColor="#4c0810" />
+            </linearGradient>
+            <radialGradient id="whiteChecker" cx="35%" cy="30%" r="65%">
+                <stop offset="0%" stopColor="#ffffff" />
+                <stop offset="45%" stopColor="#f3e8d2" />
+                <stop offset="85%" stopColor="#c8b48e" />
+                <stop offset="100%" stopColor="#8f7a54" />
+            </radialGradient>
+            <radialGradient id="blackChecker" cx="35%" cy="30%" r="65%">
+                <stop offset="0%" stopColor="#63636e" />
+                <stop offset="40%" stopColor="#27272c" />
+                <stop offset="85%" stopColor="#121215" />
+                <stop offset="100%" stopColor="#050507" />
+            </radialGradient>
+            <filter id="shadow3D" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#000000" floodOpacity="0.65" />
+            </filter>
             <style>
                 {`
                     @keyframes diceShakeAnim {
@@ -1595,26 +1635,9 @@ function BackgammonBoardComponent({
         return null;
     }
 
-    // --- 9. FANTÔMES DU COACH (RÉSERVÉS STRICTEMENT AU PANNEAU COACH) ---
+    // --- 9. FANTÔMES DU COACH (SUPPRIMÉS : plus de cercles rouges/verts polluants) ---
     function renderCoachGhosts() {
-        if (!coachHighlight) return null;
-        const render = (moves: Move[], color: string, keyPrefix: string) => {
-            const positions = computeCoachGhostPositions(displayBoard, moves, player);
-            return positions.map((pos, i) => {
-                if (!pos) return null;
-                return (
-                    <g key={`${keyPrefix}${i}`} pointerEvents="none" data-testid={`${keyPrefix}-${i}`}>
-                        <circle cx={pos.cx} cy={pos.cy} r={CHECKER_R} fill={color} opacity={0.5} stroke="#ffffff" strokeWidth={1.5} />
-                    </g>
-                );
-            });
-        };
-        return (
-            <>
-                {render(coachHighlight.played, T.impact, 'cg-played')}
-                {render(coachHighlight.optimal, T.ghost, 'cg-optimal')}
-            </>
-        );
+        return null;
     }
 
     // --- 9bis. FLÈCHES VECTORIELLES DU COUP OPTIMAL (OptimalMoveArrows) ---
@@ -1996,13 +2019,13 @@ function BackgammonBoardComponent({
                         filter="url(#bgWoodTexture)"
                     />
 
-                    {/* Surface de jeu feutre texturé (couleur par thème + grain) */}
+                    {/* Surface de jeu feutre texturé (dégradé émeraude premium + grain) */}
                     <rect
                         x={PLAY_X0}
                         y={PLAY_Y0}
                         width={PTS_W}
                         height={PLAY_H}
-                        fill={T.surface}
+                        fill="url(#feltGradient)"
                         filter="url(#bgFeltTexture)"
                         onClick={onDeselect}
                         data-testid="board-surface-background"
@@ -2030,7 +2053,7 @@ function BackgammonBoardComponent({
                     {/* Flèches (Triangles ivoire et bordeaux) */}
                     {Array.from({ length: 24 }, (_, i) => i + 1).map((p) => {
                         const isEven = p % 2 === 0;
-                        const fill = isEven ? 'url(#bgPointA)' : 'url(#bgPointB)';
+                        const fill = isEven ? 'url(#pointLight)' : 'url(#pointDark)';
                         const strokeColor = isEven ? '#c9b98f' : '#4a0d16';
                         const count = displayBoard[p];
                         const hasPlayerCheckers = isX ? count > 0 : count < 0;

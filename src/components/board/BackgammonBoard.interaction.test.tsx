@@ -509,7 +509,7 @@ describe('BackgammonBoard Component - Points Lumineux de Destination (Aperçu & 
         expect(screen.getByTestId('destination-target-20')).toBeDefined();
     });
 
-    it('affiche les fantômes du coach pour le coup joué et le coup optimal', () => {
+    it('ne dessine plus de cercles fantômes rouges/verts (supprimés)', () => {
         const state = createBoardState({ turn: 'X' });
         const coachHighlight: CoachHighlight = {
             played: [{ from: 8, to: 4 }],
@@ -531,13 +531,12 @@ describe('BackgammonBoard Component - Points Lumineux de Destination (Aperçu & 
             />,
         );
 
-        // Fantôme coup joué
-        const playedGhost = screen.getByTestId('cg-played-0');
-        expect(playedGhost).toBeDefined();
+        // Les cercles fantômes rouges/verts sont supprimés.
+        expect(screen.queryByTestId('cg-played-0')).toBeNull();
+        expect(screen.queryByTestId('cg-optimal-0')).toBeNull();
 
-        // Fantôme coup optimal
-        const optimalGhost = screen.getByTestId('cg-optimal-0');
-        expect(optimalGhost).toBeDefined();
+        // Les flèches vectorielles du coup optimal sont affichées à la place.
+        expect(screen.getByTestId('optimal-move-arrows')).toBeDefined();
     });
 
     it('affiche les points lumineux de destination lors du survol (hover) sans sélection préalable', () => {
@@ -705,8 +704,8 @@ describe('BackgammonBoard Component - États Complémentaires (Skeleton, Thème 
             />,
         );
 
-        // Surface de jeu en vert tournoi (#14532d)
+        // Surface de jeu en dégradé feutre émeraude (feltGradient)
         const surface = screen.getByTestId('board-surface-background');
-        expect(surface.getAttribute('fill')).toBe('#14532d');
+        expect(surface.getAttribute('fill')).toBe('url(#feltGradient)');
     });
 });

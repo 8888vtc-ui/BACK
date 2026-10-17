@@ -65,6 +65,31 @@ export function formatMoveSequenceNotation(moves: Move[], player: Player): strin
 }
 
 /**
+ * Formate un déplacement unique en numérotation ABSOLUE (1-24, la même que le
+ * plateau), indépendamment du joueur au trait. Utile pour afficher les coups de
+ * l'adversaire dans le log avec la même numérotation que le plateau visuel.
+ */
+export function formatSingleMoveAbsolute(move: Move, player: Player): string {
+    const fromStr =
+        move.from === X_BAR || move.from === O_BAR
+            ? 'bar'
+            : String(move.from);
+    const toStr =
+        move.to === X_OFF || move.to === O_OFF
+            ? 'off'
+            : String(move.to);
+    return `${fromStr}/${toStr}`;
+}
+
+/**
+ * Formate une séquence complète de coups en numérotation absolue (1-24).
+ */
+export function formatMoveSequenceNotationAbsolute(moves: Move[], player: Player): string {
+    if (moves.length === 0) return 'Pass';
+    return moves.map((m) => formatSingleMoveAbsolute(m, player)).join(' ');
+}
+
+/**
  * Formate une séquence complète de coups en marquant les frappes (hits) d'un
  * astérisque `*`, conformément à la notation standard de Backgammon.
  *

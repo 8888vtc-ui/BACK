@@ -8,7 +8,7 @@ import {
     X_BAR,
     O_BAR,
 } from '../../engine/backgammonEngine';
-import BackgammonBoard from '../board/BackgammonBoard';
+import Board from '../board/Board';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import {
     getAllBlunders,
@@ -148,8 +148,8 @@ export default function BlunderDrillView({
                     ? currentBoard[X_BAR] > 0
                     : currentBoard[point] > 0
                 : point === O_BAR
-                ? currentBoard[O_BAR] < 0
-                : currentBoard[point] < 0;
+                    ? currentBoard[O_BAR] < 0
+                    : currentBoard[point] < 0;
 
             if (!hasChecker) return;
 
@@ -457,7 +457,7 @@ export default function BlunderDrillView({
 
                     {/* Plateau de Backgammon interactif */}
                     <div className="w-full flex justify-center overflow-x-auto">
-                        <BackgammonBoard
+                        <Board
                             state={boardState}
                             leftDieTargets={leftDieTargets}
                             rightDieTargets={rightDieTargets}
@@ -483,11 +483,10 @@ export default function BlunderDrillView({
                     {/* Bandeau de Validation / Rétroaction */}
                     {validationResult && (
                         <div
-                            className={`w-full rounded-2xl border p-4 shadow-xl transition-all duration-300 animate-in fade-in ${
-                                validationResult.isCorrect
-                                    ? 'border-emerald-500/60 bg-gradient-to-r from-emerald-950/90 to-slate-900 text-emerald-100'
-                                    : 'border-rose-500/60 bg-gradient-to-r from-rose-950/90 to-slate-900 text-rose-100'
-                            }`}
+                            className={`w-full rounded-2xl border p-4 shadow-xl transition-all duration-300 animate-in fade-in ${validationResult.isCorrect
+                                ? 'border-emerald-500/60 bg-gradient-to-r from-emerald-950/90 to-slate-900 text-emerald-100'
+                                : 'border-rose-500/60 bg-gradient-to-r from-rose-950/90 to-slate-900 text-rose-100'
+                                }`}
                             data-testid="drill-feedback-banner"
                         >
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

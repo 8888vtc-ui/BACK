@@ -8,7 +8,8 @@ import {
     X_BAR,
     O_BAR,
 } from '../../engine/backgammonEngine';
-import BackgammonBoard, { CoachHighlight } from '../board/BackgammonBoard';
+import Board from '../board/Board';
+import type { CoachHighlight } from '../board/BackgammonBoard';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import {
     getDailyPuzzle,
@@ -115,8 +116,8 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                         ? currentBoard[X_BAR] > 0
                         : currentBoard[point] > 0
                     : point === O_BAR
-                    ? currentBoard[O_BAR] < 0
-                    : currentBoard[point] < 0;
+                        ? currentBoard[O_BAR] < 0
+                        : currentBoard[point] < 0;
 
             if (!hasChecker) return;
 
@@ -288,15 +289,14 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                     <div className="flex items-center gap-2.5">
                         <h2 className="text-base sm:text-lg font-bold text-white">{puzzle.title}</h2>
                         <span
-                            className={`rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider ${
-                                difficultyColors[puzzle.difficulty]
-                            }`}
+                            className={`rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider ${difficultyColors[puzzle.difficulty]
+                                }`}
                         >
                             {puzzle.difficulty === 'beginner'
                                 ? 'Débutant'
                                 : puzzle.difficulty === 'intermediate'
-                                ? 'Intermédiaire'
-                                : 'Expert'}
+                                    ? 'Intermédiaire'
+                                    : 'Expert'}
                         </span>
                         <span className="rounded-full bg-slate-800 border border-slate-700/80 px-2.5 py-0.5 text-[10px] text-slate-300">
                             {categoryLabels[puzzle.category] || puzzle.category}
@@ -341,7 +341,7 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
 
             {/* 3. Plateau Interactif de Backgammon */}
             <div className="relative rounded-3xl border border-slate-800 bg-slate-950 p-2 sm:p-4 shadow-2xl">
-                <BackgammonBoard
+                <Board
                     state={boardState}
                     leftDieTargets={leftDieTargets}
                     rightDieTargets={rightDieTargets}
@@ -349,7 +349,7 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                     selectedDie={selectedDie}
                     usedDice={usedDice}
                     onCheckerClick={handleCheckerClick}
-                    onCheckerRightClick={() => {}}
+                    onCheckerRightClick={() => { }}
                     onDestinationClick={handleDestinationClick}
                     theme={theme}
                 />
@@ -362,11 +362,10 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                         type="button"
                         onClick={handleReset}
                         disabled={playedMoves.length === 0}
-                        className={`rounded-xl border border-slate-700 px-3.5 py-2 text-xs font-semibold transition ${
-                            playedMoves.length > 0
-                                ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white'
-                                : 'bg-slate-800/40 text-slate-500 opacity-50 cursor-not-allowed'
-                        }`}
+                        className={`rounded-xl border border-slate-700 px-3.5 py-2 text-xs font-semibold transition ${playedMoves.length > 0
+                            ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white'
+                            : 'bg-slate-800/40 text-slate-500 opacity-50 cursor-not-allowed'
+                            }`}
                         data-testid="puzzle-reset-button"
                     >
                         🔄 Réinitialiser
@@ -430,11 +429,10 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
             {/* 5. Panneau de Verdict Moteur (Feedback Immédiat) */}
             {validationResult && (
                 <div
-                    className={`rounded-3xl border p-5 shadow-2xl animate-fade-in space-y-3 ${
-                        validationResult.isCorrect
-                            ? 'border-emerald-500/60 bg-emerald-950/30 text-emerald-100'
-                            : 'border-rose-500/60 bg-rose-950/30 text-rose-100'
-                    }`}
+                    className={`rounded-3xl border p-5 shadow-2xl animate-fade-in space-y-3 ${validationResult.isCorrect
+                        ? 'border-emerald-500/60 bg-emerald-950/30 text-emerald-100'
+                        : 'border-rose-500/60 bg-rose-950/30 text-rose-100'
+                        }`}
                     data-testid="puzzle-verdict-card"
                 >
                     <div className="flex items-center justify-between gap-3">
@@ -446,8 +444,8 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                                 {validationResult.verdict === 'optimal'
                                     ? 'Coup Parfait & Optimal !'
                                     : validationResult.verdict === 'acceptable'
-                                    ? 'Bonne Alternative (Acceptable)'
-                                    : 'Inexactitude ou Blunder'}
+                                        ? 'Bonne Alternative (Acceptable)'
+                                        : 'Inexactitude ou Blunder'}
                             </span>
                         </div>
                         <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-700">
@@ -492,11 +490,10 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                                 key={p.id}
                                 type="button"
                                 onClick={() => setSelectedPuzzleId(p.id)}
-                                className={`flex flex-col text-left rounded-2xl border p-3.5 transition-all ${
-                                    isCurrent
-                                        ? 'border-amber-500 bg-amber-500/15 ring-1 ring-amber-500/60 shadow-lg'
-                                        : 'border-slate-800 bg-slate-800/40 hover:border-slate-700 hover:bg-slate-800'
-                                }`}
+                                className={`flex flex-col text-left rounded-2xl border p-3.5 transition-all ${isCurrent
+                                    ? 'border-amber-500 bg-amber-500/15 ring-1 ring-amber-500/60 shadow-lg'
+                                    : 'border-slate-800 bg-slate-800/40 hover:border-slate-700 hover:bg-slate-800'
+                                    }`}
                                 data-testid={`puzzle-card-${p.id}`}
                             >
                                 <div className="flex items-center justify-between gap-2 mb-1">
@@ -511,9 +508,8 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                                 </div>
                                 <div className="flex items-center gap-2 text-[10px]">
                                     <span
-                                        className={`rounded px-1.5 py-0.5 font-semibold ${
-                                            difficultyColors[p.difficulty]
-                                        }`}
+                                        className={`rounded px-1.5 py-0.5 font-semibold ${difficultyColors[p.difficulty]
+                                            }`}
                                     >
                                         {p.difficulty}
                                     </span>

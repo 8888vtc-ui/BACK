@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import BackgammonBoard, { CoachHighlight } from '../components/board/BackgammonBoard';
+import Board from '../components/board/Board';
+import type { CoachHighlight } from '../components/board/BackgammonBoard';
 import CoachPanel from '../components/coach/CoachPanel';
 import ErrorBoundary from '../components/common/ErrorBoundary';
 import MatchHud from '../components/hud/MatchHud';
@@ -68,6 +69,7 @@ import {
     analyzeBoardMoves,
     formatMoveSequenceNotation,
     formatMoveSequenceNotationWithHits,
+    formatMoveSequenceNotationAbsolute,
 } from '../lib/engine/evaluator';
 import { normalizeMoveNotation } from '../features/drills/blunderDrillEngine';
 
@@ -297,7 +299,7 @@ export default function Home() {
         if (!isMultiplayerActive && game.lastOpponentDice) {
             const notation =
                 game.lastOpponentMoves && game.lastOpponentMoves.length > 0
-                    ? formatMoveSequenceNotation(game.lastOpponentMoves, 'O')
+                    ? formatMoveSequenceNotationAbsolute(game.lastOpponentMoves, 'O')
                     : t('game.noMovePossible');
             toast.info(
                 `L’ordinateur (O) a joué les dés [${game.lastOpponentDice[0]}, ${game.lastOpponentDice[1]}] : ${notation}`,
@@ -319,7 +321,7 @@ export default function Home() {
                     move_number: moveCountRef.current,
                     player: 'O',
                     dice: [game.lastOpponentDice[0], game.lastOpponentDice[1]],
-                    move_notation: formatMoveSequenceNotation(game.lastOpponentMoves, 'O'),
+                    move_notation: formatMoveSequenceNotationAbsolute(game.lastOpponentMoves, 'O'),
                     board_before: game.state.board,
                     board_after: game.state.board,
                     played_at: new Date().toISOString(),
@@ -1133,12 +1135,12 @@ export default function Home() {
                         {optimalStreak > 0 && (
                             <span
                                 className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold transition-all ${optimalStreak >= 15
-                                        ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-lg shadow-amber-500/40 animate-pulse'
-                                        : optimalStreak >= 10
-                                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-amber-500/30'
-                                            : optimalStreak >= 5
-                                                ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40'
-                                                : 'bg-slate-800/60 text-slate-300 ring-1 ring-slate-700/50'
+                                    ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-lg shadow-amber-500/40 animate-pulse'
+                                    : optimalStreak >= 10
+                                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-amber-500/30'
+                                        : optimalStreak >= 5
+                                            ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40'
+                                            : 'bg-slate-800/60 text-slate-300 ring-1 ring-slate-700/50'
                                     }`}
                                 data-testid="optimal-streak-badge"
                             >
@@ -1375,7 +1377,7 @@ export default function Home() {
                                 </span>
                                 <span className="font-mono text-amber-200 font-bold">
                                     {game.lastOpponentDice ? `[${game.lastOpponentDice[0]}-${game.lastOpponentDice[1]}] ` : ''}
-                                    {formatMoveSequenceNotation(game.lastOpponentMoves, 'O')}
+                                    {formatMoveSequenceNotationAbsolute(game.lastOpponentMoves, 'O')}
                                 </span>
                             </div>
                         )}
@@ -1428,7 +1430,7 @@ export default function Home() {
                         className="relative h-full max-h-full w-full max-w-full flex items-center justify-center"
                     >
                         <ErrorBoundary name="Plateau de jeu">
-                            <BackgammonBoard
+                            <Board
                                 state={game.state}
                                 leftDieTargets={game.leftDieTargets}
                                 rightDieTargets={game.rightDieTargets}
