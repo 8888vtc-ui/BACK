@@ -38,6 +38,9 @@ import {
     deriveBoardData,
 } from './boardTypes';
 
+/** Fonction no-op stable (évite de recréer une fonction anonyme à chaque rendu). */
+const noop = () => undefined;
+
 export interface BoardProps {
     /** État complet du plateau (BoardState du moteur). */
     state: BoardState;
@@ -113,16 +116,16 @@ export default function Board({
     // Données dérivées du plateau (mémoïsées).
     const { pipCounts, off, bar } = useMemo(() => deriveBoardData(board), [board]);
 
-    // Destinations légales agrégées pour la source active.
+    // Destinations légales agrégées pour la source active (Set pour lookup O(1)).
     const ghostDestinations = useMemo(() => {
-        if (selectedPoint === null) return [];
+        if (selectedPoint === null) return new Set<number>();
         if (selectedDie !== null) {
             const targets = selectedDie === 0 ? leftDieTargets : rightDieTargets;
-            return targets.get(selectedPoint) ?? [];
+            return new Set(targets.get(selectedPoint) ?? []);
         }
         const left = leftDieTargets.get(selectedPoint) ?? [];
         const right = rightDieTargets.get(selectedPoint) ?? [];
-        return Array.from(new Set([...left, ...right]));
+        return new Set([...left, ...right]);
     }, [selectedPoint, selectedDie, leftDieTargets, rightDieTargets]);
 
     // Drag-and-drop (pointer events).
@@ -148,7 +151,7 @@ export default function Board({
             const hasPlayerChecker = isX ? count > 0 : count < 0;
 
             // Clic sur une destination légale (flèche vide ou adverse) : jouer.
-            if (ghostDestinations.includes(pointNumber) && !hasPlayerChecker) {
+            if (ghostDestinations.has(pointNumber) && !hasPlayerChecker) {
                 onDestinationClick(pointNumber);
                 return;
             }
@@ -181,7 +184,7 @@ export default function Board({
 
     const handleOffClick = useCallback(
         (offPoint: number) => {
-            if (ghostDestinations.includes(offPoint)) {
+            if (ghostDestinations.has(offPoint)) {
                 onDestinationClick(offPoint);
             } else {
                 onDeselect?.();
@@ -193,7 +196,7 @@ export default function Board({
     const renderPoint = (point: number, isTopRow: boolean) => {
         const color = getPointColor(board, point);
         const count = getPointCount(board, point);
-        const isTarget = ghostDestinations.includes(point);
+        const isTarget = ghostDestinations.has(point);
         const isBlotTarget =
             isTarget && count === 1 && (isX ? board[point] < 0 : board[point] > 0);
 
@@ -231,7 +234,7 @@ export default function Board({
             key={`off-${offPoint}`}
             offPoint={offPoint}
             count={count}
-            isTarget={ghostDestinations.includes(offPoint)}
+            isTarget={ghostDestinations.has(offPoint)}
             onClick={handleOffClick}
         />
     );
@@ -320,7 +323,7 @@ export default function Board({
                                 dice={state.dice}
                                 usedDice={usedDice}
                                 selectedDie={selectedDie}
-                                onSelectDie={onSelectDie ?? (() => undefined)}
+                                onSelectDie={onSelectDie ?? noop}
                                 onDoubleClickDie={onDieDoubleClick}
                             />
                         )}

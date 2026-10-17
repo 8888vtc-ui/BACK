@@ -6,6 +6,7 @@
  * Affiche le pip count de chaque joueur (O et X) en bas du plateau.
  *
  * Composant isolé : pour le retirer, supprimer ce fichier et son usage dans `Board`.
+ * Mémoïsé (`React.memo`).
  */
 
 import React from 'react';
@@ -15,7 +16,7 @@ export interface PipCountBadgesProps {
     pipCounts: { X: number; O: number };
 }
 
-export const PipCountBadges: React.FC<PipCountBadgesProps> = ({ pipCounts }) => (
+const PipCountBadgesComponent: React.FC<PipCountBadgesProps> = ({ pipCounts }) => (
     <div className="flex items-center justify-between px-2 pt-3 text-xs font-semibold text-slate-300">
         <span className="px-2 py-1 rounded bg-slate-900/70 border border-slate-700">
             O : {pipCounts.O}
@@ -25,5 +26,8 @@ export const PipCountBadges: React.FC<PipCountBadgesProps> = ({ pipCounts }) => 
         </span>
     </div>
 );
+
+/** Badges mémoïsés : ne re-rend que si ses props changent. */
+export const PipCountBadges = React.memo(PipCountBadgesComponent);
 
 export default PipCountBadges;

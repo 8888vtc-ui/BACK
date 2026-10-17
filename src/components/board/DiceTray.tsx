@@ -7,6 +7,7 @@
  * ou normal. Gère le clic (sélection) et le double-clic (auto-move).
  *
  * Composant isolé : pour le retirer, supprimer ce fichier et son usage dans `Board`.
+ * Mémoïsé (`React.memo`).
  */
 
 import React from 'react';
@@ -24,7 +25,7 @@ export interface DiceTrayProps {
     onDoubleClickDie?: (die: 0 | 1) => void;
 }
 
-export const DiceTray: React.FC<DiceTrayProps> = ({
+const DiceTrayComponent: React.FC<DiceTrayProps> = ({
     dice,
     usedDice,
     selectedDie,
@@ -51,10 +52,10 @@ export const DiceTray: React.FC<DiceTrayProps> = ({
                         onDoubleClickDie?.(die);
                     }}
                     className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-extrabold shadow-md border-2 transition ${used
-                            ? 'bg-slate-700 text-slate-500 border-slate-600 opacity-60'
-                            : active
-                                ? 'bg-white text-slate-900 border-sky-400 ring-2 ring-sky-400'
-                                : 'bg-white text-slate-900 border-slate-300 hover:border-sky-300'
+                        ? 'bg-slate-700 text-slate-500 border-slate-600 opacity-60'
+                        : active
+                            ? 'bg-white text-slate-900 border-sky-400 ring-2 ring-sky-400'
+                            : 'bg-white text-slate-900 border-slate-300 hover:border-sky-300'
                         }`}
                 >
                     {value}
@@ -63,5 +64,8 @@ export const DiceTray: React.FC<DiceTrayProps> = ({
         })}
     </div>
 );
+
+/** Dés mémoïsés : ne re-rend que si ses props changent. */
+export const DiceTray = React.memo(DiceTrayComponent);
 
 export default DiceTray;

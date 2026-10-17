@@ -6,6 +6,7 @@
  * Affiche la valeur du videau (ou « 64 » pour la valeur initiale 1).
  *
  * Composant isolé : pour le retirer, supprimer ce fichier et son usage dans `Board`.
+ * Mémoïsé (`React.memo`).
  */
 
 import React from 'react';
@@ -15,7 +16,7 @@ export interface CubeDisplayProps {
     cubeValue: number;
 }
 
-export const CubeDisplay: React.FC<CubeDisplayProps> = ({ cubeValue }) => (
+const CubeDisplayComponent: React.FC<CubeDisplayProps> = ({ cubeValue }) => (
     <div className="flex flex-col items-center gap-1">
         <span className="text-[10px] uppercase tracking-wider text-slate-400">Videau</span>
         <div className="w-11 h-11 rounded-md bg-[#fdfaf2] text-slate-900 flex items-center justify-center text-lg font-extrabold shadow-lg border border-slate-700">
@@ -23,5 +24,8 @@ export const CubeDisplay: React.FC<CubeDisplayProps> = ({ cubeValue }) => (
         </div>
     </div>
 );
+
+/** Videau mémoïsé : ne re-rend que si ses props changent. */
+export const CubeDisplay = React.memo(CubeDisplayComponent);
 
 export default CubeDisplay;

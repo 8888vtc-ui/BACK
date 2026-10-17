@@ -7,6 +7,7 @@
  * à 5 avec badge. Reçoit ses handlers en props.
  *
  * Composant isolé : pour le retirer, supprimer ce fichier et son usage dans `Board`.
+ * Mémoïsé (`React.memo`).
  */
 
 import React from 'react';
@@ -28,7 +29,7 @@ export interface BarSectionProps {
     onRightClick: (barPoint: number) => void;
 }
 
-export const BarSection: React.FC<BarSectionProps> = ({
+const BarSectionComponent: React.FC<BarSectionProps> = ({
     barPoint,
     color,
     count,
@@ -63,5 +64,8 @@ export const BarSection: React.FC<BarSectionProps> = ({
         </div>
     );
 };
+
+/** Barre mémoïsée : ne re-rend que si ses props changent. */
+export const BarSection = React.memo(BarSectionComponent);
 
 export default BarSection;

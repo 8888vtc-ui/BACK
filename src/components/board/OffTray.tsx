@@ -7,6 +7,7 @@
  * (bordure émeraude) lorsque le bear-off est une destination légale.
  *
  * Composant isolé : pour le retirer, supprimer ce fichier et son usage dans `Board`.
+ * Mémoïsé (`React.memo`).
  */
 
 import React from 'react';
@@ -22,11 +23,11 @@ export interface OffTrayProps {
     onClick: (offPoint: number) => void;
 }
 
-export const OffTray: React.FC<OffTrayProps> = ({ offPoint, count, isTarget, onClick }) => (
+const OffTrayComponent: React.FC<OffTrayProps> = ({ offPoint, count, isTarget, onClick }) => (
     <div
         className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed px-3 py-2 min-h-[64px] ${isTarget
-                ? 'border-emerald-400 bg-emerald-400/10 cursor-pointer'
-                : 'border-slate-700 bg-slate-900/40'
+            ? 'border-emerald-400 bg-emerald-400/10 cursor-pointer'
+            : 'border-slate-700 bg-slate-900/40'
             }`}
         onClick={(e) => {
             e.stopPropagation();
@@ -37,5 +38,8 @@ export const OffTray: React.FC<OffTrayProps> = ({ offPoint, count, isTarget, onC
         <span className="text-2xl font-extrabold text-slate-200">{count}</span>
     </div>
 );
+
+/** Sabot mémoïsé : ne re-rend que si ses props changent. */
+export const OffTray = React.memo(OffTrayComponent);
 
 export default OffTray;
