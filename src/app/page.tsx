@@ -262,7 +262,7 @@ export default function Home() {
         if (!isMultiplayerActive && game.lastOpponentDice) {
             const notation =
                 game.lastOpponentMoves && game.lastOpponentMoves.length > 0
-                    ? game.lastOpponentMoves.map((m) => `${m.from}/${m.to === 25 ? 'off' : m.to}`).join(' ')
+                    ? formatMoveSequenceNotation(game.lastOpponentMoves, 'O')
                     : t('game.noMovePossible');
             toast.info(
                 `L’ordinateur (O) a joué les dés [${game.lastOpponentDice[0]}, ${game.lastOpponentDice[1]}] : ${notation}`,
@@ -284,7 +284,7 @@ export default function Home() {
                     move_number: moveCountRef.current,
                     player: 'O',
                     dice: [game.lastOpponentDice[0], game.lastOpponentDice[1]],
-                    move_notation: game.lastOpponentMoves.map((m) => `${m.from}/${m.to}`).join(' '),
+                    move_notation: formatMoveSequenceNotation(game.lastOpponentMoves, 'O'),
                     board_before: game.state.board,
                     board_after: game.state.board,
                     played_at: new Date().toISOString(),
@@ -1138,7 +1138,7 @@ export default function Home() {
                                 </span>
                                 <span className="font-mono text-amber-200 font-bold">
                                     {game.lastOpponentDice ? `[${game.lastOpponentDice[0]}-${game.lastOpponentDice[1]}] ` : ''}
-                                    {game.lastOpponentMoves.map((m) => `${m.from === 25 ? 'Bar' : m.from}/${m.to === 25 ? 'off' : m.to}`).join(' ')}
+                                    {formatMoveSequenceNotation(game.lastOpponentMoves, 'O')}
                                 </span>
                             </div>
                         )}
@@ -1292,7 +1292,7 @@ export default function Home() {
                                         <div className="flex items-center gap-2">
                                             <span className="text-amber-400 font-serif text-sm">✦</span>
                                             <span className="font-serif font-black uppercase tracking-wider text-[11px] text-amber-200">
-                                                Snowie 4 Pro & TMG
+                                                MOTEUR D'ANALYSE PRO • ÉDITION PRESTIGE
                                             </span>
                                         </div>
                                         <p className="text-[10px] text-amber-300/80 leading-snug">

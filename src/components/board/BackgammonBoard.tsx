@@ -2193,7 +2193,7 @@ function BackgammonBoardComponent({
                                             ? activeAnim.endPos.cy - activeAnim.startPos.cy
                                             : 0
                                         }px)`,
-                                    transition: 'transform 300ms cubic-bezier(0.25, 1, 0.5, 1)',
+                                    transition: 'transform 500ms cubic-bezier(0.22, 1, 0.36, 1)',
                                 }}
                             >
                                 <Checker
@@ -2216,7 +2216,7 @@ function BackgammonBoardComponent({
                                                 ? activeAnim.hitEndPos.cy - activeAnim.hitStartPos.cy
                                                 : 0
                                             }px)`,
-                                        transition: 'transform 300ms cubic-bezier(0.25, 1, 0.5, 1)',
+                                        transition: 'transform 500ms cubic-bezier(0.22, 1, 0.36, 1)',
                                     }}
                                 >
                                     <Checker

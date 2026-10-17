@@ -75,11 +75,10 @@ function MiniDie({ value, used, label }: { value: number; used: boolean; label: 
     return (
         <div className="flex flex-col items-center gap-0.5">
             <div
-                className={`relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border transition-all duration-200 ${
-                    used
-                        ? 'border-slate-700 bg-slate-800/60 opacity-40 shadow-inner'
-                        : 'border-slate-300/40 bg-gradient-to-br from-white via-slate-100 to-slate-300 text-slate-900 shadow-md shadow-black/40 ring-1 ring-white/30'
-                }`}
+                className={`relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border transition-all duration-200 ${used
+                    ? 'border-slate-700 bg-slate-800/60 opacity-40 shadow-inner'
+                    : 'border-slate-300/40 bg-gradient-to-br from-white via-slate-100 to-slate-300 text-slate-900 shadow-md shadow-black/40 ring-1 ring-white/30'
+                    }`}
                 title={`${label} : ${value} ${used ? '(déjà utilisé)' : '(disponible)'}`}
             >
                 <svg viewBox="0 0 100 100" className="h-5 w-5 sm:h-6 sm:w-6">
@@ -153,10 +152,10 @@ export default function MatchHud({
 
     const cubeOwnerLabel =
         cubeOwner === null
-            ? 'Centré'
+            ? `Centré (x${cubeValue})`
             : cubeOwner === 'X'
-            ? 'Joueur X'
-            : 'Joueur O';
+                ? `Joueur X (x${cubeValue})`
+                : `Joueur O (x${cubeValue})`;
 
     const canDouble = !crawford && (cubeOwner === null || cubeOwner === turn);
 
@@ -257,11 +256,10 @@ export default function MatchHud({
 
                     {/* Carte Joueur X */}
                     <div
-                        className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all ${
-                            isXTurn
-                                ? 'bg-slate-800 ring-2 ring-blue-400 shadow-md shadow-blue-500/20'
-                                : 'bg-slate-800/40 ring-1 ring-slate-700/60 opacity-85'
-                        }`}
+                        className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all ${isXTurn
+                            ? 'bg-slate-800 ring-2 ring-blue-400 shadow-md shadow-blue-500/20'
+                            : 'bg-slate-800/40 ring-1 ring-slate-700/60 opacity-85'
+                            }`}
                         title={`Joueur X (Blanc) - Score : ${scoreX}${isXTurn ? ' - Au tour' : ''}`}
                     >
                         <span className="h-3.5 w-3.5 rounded-full bg-slate-100 shadow-sm ring-1 ring-slate-400 shrink-0" />
@@ -278,11 +276,10 @@ export default function MatchHud({
 
                     {/* Carte Joueur O */}
                     <div
-                        className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all ${
-                            isOTurn
-                                ? 'bg-slate-800 ring-2 ring-blue-400 shadow-md shadow-blue-500/20'
-                                : 'bg-slate-800/40 ring-1 ring-slate-700/60 opacity-85'
-                        }`}
+                        className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all ${isOTurn
+                            ? 'bg-slate-800 ring-2 ring-blue-400 shadow-md shadow-blue-500/20'
+                            : 'bg-slate-800/40 ring-1 ring-slate-700/60 opacity-85'
+                            }`}
                         title={`Joueur O (Noir) - Score : ${scoreO}${isOTurn ? ' - Au tour' : ''}`}
                     >
                         <span className="h-3.5 w-3.5 rounded-full bg-slate-900 ring-1 ring-slate-600 shadow-inner shrink-0" />
@@ -373,14 +370,13 @@ export default function MatchHud({
                                     crawford
                                         ? 'Règle de Crawford : le videau est interdit pour cette manche'
                                         : !canDouble
-                                        ? 'Vous ne possédez pas le videau'
-                                        : `Doubler à ${cubeValue * 2}`
+                                            ? 'Vous ne possédez pas le videau'
+                                            : `Doubler à ${cubeValue * 2}`
                                 }
-                                className={`rounded-lg px-2 py-1 text-xs font-bold transition ml-1 ${
-                                    canDouble
-                                        ? 'border border-amber-500/40 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 active:scale-95'
-                                        : 'border border-slate-700 bg-slate-800/50 text-slate-500 cursor-not-allowed opacity-60'
-                                }`}
+                                className={`rounded-lg px-2 py-1 text-xs font-bold transition ml-1 ${canDouble
+                                    ? 'border border-amber-500/40 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 active:scale-95'
+                                    : 'border border-slate-700 bg-slate-800/50 text-slate-500 cursor-not-allowed opacity-60'
+                                    }`}
                             >
                                 x2
                             </button>
@@ -396,11 +392,10 @@ export default function MatchHud({
                         aria-expanded={isNavExpanded}
                         data-testid="hud-modes-toggle-btn"
                         title={isNavExpanded ? 'Replier la barre de navigation' : 'Déplier Multijoueur, Drills, Puzzles, Progression, Coach, Ouvertures'}
-                        className={`flex items-center gap-1 rounded-xl border px-2 sm:px-2.5 py-1.5 text-xs font-semibold transition shadow-sm ${
-                            isNavExpanded
-                                ? 'border-indigo-500/80 bg-indigo-950/60 text-indigo-200 ring-1 ring-indigo-500/40'
-                                : 'border-slate-700/80 bg-slate-800/80 text-slate-300 hover:border-slate-600 hover:text-white'
-                        }`}
+                        className={`flex items-center gap-1 rounded-xl border px-2 sm:px-2.5 py-1.5 text-xs font-semibold transition shadow-sm ${isNavExpanded
+                            ? 'border-indigo-500/80 bg-indigo-950/60 text-indigo-200 ring-1 ring-indigo-500/40'
+                            : 'border-slate-700/80 bg-slate-800/80 text-slate-300 hover:border-slate-600 hover:text-white'
+                            }`}
                     >
                         <span>🧭</span>
                         <span className="hidden sm:inline">Activités</span>
@@ -428,11 +423,10 @@ export default function MatchHud({
                             aria-controls="hud-settings-menu"
                             data-testid="hud-settings-toggle-btn"
                             title="Paramètres : Partager, Thème, Son, Langue, IA & Back-End, Connexion"
-                            className={`flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border text-sm transition shadow-sm ${
-                                isSettingsOpen
-                                    ? 'border-amber-500 bg-amber-500/20 text-amber-200 ring-1 ring-amber-500/40'
-                                    : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600 hover:bg-slate-700/80 hover:text-white'
-                            }`}
+                            className={`flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border text-sm transition shadow-sm ${isSettingsOpen
+                                ? 'border-amber-500 bg-amber-500/20 text-amber-200 ring-1 ring-amber-500/40'
+                                : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600 hover:bg-slate-700/80 hover:text-white'
+                                }`}
                         >
                             <span className="text-base leading-none">⚙️</span>
                         </button>
@@ -444,9 +438,8 @@ export default function MatchHud({
                             aria-modal="true"
                             aria-label="Paramètres et options du jeu"
                             data-testid="hud-settings-menu"
-                            className={`absolute right-0 top-full mt-2 z-50 w-72 sm:w-80 rounded-2xl p-3.5 shadow-2xl backdrop-blur-xl flex flex-col gap-3 transition-all ${hudClasses.menu} ${
-                                isSettingsOpen ? 'block' : 'hidden'
-                            }`}
+                            className={`absolute right-0 top-full mt-2 z-50 w-72 sm:w-80 rounded-2xl p-3.5 shadow-2xl backdrop-blur-xl flex flex-col gap-3 transition-all ${hudClasses.menu} ${isSettingsOpen ? 'block' : 'hidden'
+                                }`}
                         >
                             {/* En-tête de la boîte à outils */}
                             <div className="flex items-center justify-between pb-2 border-b border-slate-800">
@@ -488,20 +481,18 @@ export default function MatchHud({
                                         type="button"
                                         onClick={onThemeToggle}
                                         aria-label={`Thème actuel : ${theme}. Cliquer pour changer de style visuel.`}
-                                        title={`Thème actuel : ${
-                                            theme === 'snowie_classic'
-                                                ? 'Snowie & TrueMoneyGames (Émeraude & Acajou)'
-                                                : theme === 'tournament'
+                                        title={`Thème actuel : ${theme === 'snowie_classic'
+                                            ? 'Édition Prestige (Émeraude & Acajou)'
+                                            : theme === 'tournament'
                                                 ? 'Tournament (Bois & Vert)'
                                                 : 'Midnight (Nuit & Bleu)'
-                                        } - Cliquer pour changer.`}
-                                        className={`flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-2 text-xs font-semibold transition-all shadow-sm ${
-                                            theme === 'snowie_classic'
-                                                ? 'border-amber-600/70 bg-gradient-to-r from-stone-900 via-amber-950/60 to-emerald-950/70 text-amber-200'
-                                                : theme === 'tournament'
+                                            } - Cliquer pour changer.`}
+                                        className={`flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-2 text-xs font-semibold transition-all shadow-sm ${theme === 'snowie_classic'
+                                            ? 'border-amber-600/70 bg-gradient-to-r from-stone-900 via-amber-950/60 to-emerald-950/70 text-amber-200'
+                                            : theme === 'tournament'
                                                 ? 'border-amber-700/60 bg-gradient-to-r from-amber-950/70 to-emerald-950/70 text-amber-200'
                                                 : 'border-blue-700/60 bg-gradient-to-r from-slate-900 to-blue-950/70 text-blue-200'
-                                        }`}
+                                            }`}
                                     >
                                         {theme === 'snowie_classic' ? (
                                             <>
@@ -527,11 +518,10 @@ export default function MatchHud({
                                         onClick={() => setIsMuted(soundEngine.toggleMute())}
                                         aria-label={isMuted ? 'Activer le son' : 'Couper le son'}
                                         title={isMuted ? 'Activer les sons de jeu' : 'Couper les sons de jeu'}
-                                        className={`flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-2 text-xs font-semibold transition shadow-sm ${
-                                            isMuted
-                                                ? 'border-stone-700/60 bg-stone-900/60 text-stone-400 hover:text-white'
-                                                : 'border-amber-700/60 bg-gradient-to-r from-amber-950/60 to-emerald-950/60 text-amber-200 hover:border-amber-400'
-                                        }`}
+                                        className={`flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-2 text-xs font-semibold transition shadow-sm ${isMuted
+                                            ? 'border-stone-700/60 bg-stone-900/60 text-stone-400 hover:text-white'
+                                            : 'border-amber-700/60 bg-gradient-to-r from-amber-950/60 to-emerald-950/60 text-amber-200 hover:border-amber-400'
+                                            }`}
                                         data-testid="audio-toggle-btn"
                                     >
                                         <span>{isMuted ? '🔇' : '🔊'}</span>
@@ -610,9 +600,8 @@ export default function MatchHud({
                                         <button
                                             type="button"
                                             onClick={onToggleLoadingBoard}
-                                            className={`rounded-lg px-2 py-1 text-xs font-medium transition ${
-                                                isLoadingBoard ? 'bg-amber-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'
-                                            }`}
+                                            className={`rounded-lg px-2 py-1 text-xs font-medium transition ${isLoadingBoard ? 'bg-amber-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'
+                                                }`}
                                         >
                                             Skeleton
                                         </button>
@@ -636,9 +625,8 @@ export default function MatchHud({
             {/* BARRE SECONDAIRE REPLIABLE (Multijoueur, Drills, Puzzles, Progression, Coach, Ouvertures) */}
             <div
                 data-testid="hud-secondary-nav"
-                className={`transition-all duration-200 ${
-                    isNavExpanded ? 'flex' : 'hidden'
-                } flex-wrap items-center justify-between gap-1.5 sm:gap-2 pt-2 border-t border-slate-800/80`}
+                className={`transition-all duration-200 ${isNavExpanded ? 'flex' : 'hidden'
+                    } flex-wrap items-center justify-between gap-1.5 sm:gap-2 pt-2 border-t border-slate-800/80`}
             >
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     {onOpenMultiplayer && (
@@ -647,11 +635,10 @@ export default function MatchHud({
                             onClick={onOpenMultiplayer}
                             data-testid="multiplayer-hud-trigger"
                             title="Lancer le Matchmaking Multijoueur Elo en ligne"
-                            className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition shadow-sm ${
-                                isMultiplayerActive
-                                    ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40 animate-pulse'
-                                    : 'border-amber-500/50 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 hover:border-amber-400 hover:bg-amber-500/30'
-                            }`}
+                            className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition shadow-sm ${isMultiplayerActive
+                                ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40 animate-pulse'
+                                : 'border-amber-500/50 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 hover:border-amber-400 hover:bg-amber-500/30'
+                                }`}
                         >
                             <span>⚡</span>
                             <span>{isMultiplayerActive ? 'En Direct' : 'Multijoueur'}</span>
