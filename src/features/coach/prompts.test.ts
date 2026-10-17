@@ -122,6 +122,9 @@ describe('Coach Prompts & Instructions', () => {
             expect(res.explanation).toContain('13/7');
             expect(res.explanation).toContain('8/4 6/4');
             expect(res.keyConcept).toBe('Minimisation des tirs');
+            expect(res.conceptId).toBe('duplication');
+            expect(res.whyFailed).toBeTruthy();
+            expect(res.whyOptimal).toBeTruthy();
             expect(res.advice).toBeTruthy();
         });
     });

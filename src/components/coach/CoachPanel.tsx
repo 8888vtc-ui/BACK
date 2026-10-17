@@ -24,6 +24,7 @@ export interface CoachPanelProps {
     explanation?: string | null;
     onExplain?: () => void;
     onDismiss: () => void;
+    onOpenKnowledgeConcept?: (conceptId: string) => void;
     isLoading?: boolean;
     features?: any;
     matchContext?: MatchContext | Partial<BuildMatchContextParams>;
@@ -51,6 +52,9 @@ interface ParsedExplanation {
     explanation?: string;
     keyConcept?: string;
     advice?: string;
+    whyFailed?: string;
+    whyOptimal?: string;
+    conceptId?: string;
     rawText: string;
 }
 
@@ -79,6 +83,9 @@ function parseStreamedExplanation(text: string): ParsedExplanation {
                 explanation: parsed.explanation,
                 keyConcept: parsed.keyConcept,
                 advice: parsed.advice,
+                whyFailed: parsed.whyFailed,
+                whyOptimal: parsed.whyOptimal,
+                conceptId: parsed.conceptId,
                 rawText: parsed.explanation || text,
             };
         }
@@ -93,18 +100,27 @@ function parseStreamedExplanation(text: string): ParsedExplanation {
     const explanationMatch = text.match(/"explanation":\s*"((?:[^"\\]|\\.)*)/);
     const conceptMatch = text.match(/"keyConcept":\s*"((?:[^"\\]|\\.)*)/);
     const adviceMatch = text.match(/"advice":\s*"((?:[^"\\]|\\.)*)/);
+    const whyFailedMatch = text.match(/"whyFailed":\s*"((?:[^"\\]|\\.)*)/);
+    const whyOptimalMatch = text.match(/"whyOptimal":\s*"((?:[^"\\]|\\.)*)/);
+    const conceptIdMatch = text.match(/"conceptId":\s*"([a-z0-9-]+)"/);
 
     const extractedSummary = unescapeJson(summaryMatch?.[1]);
     const extractedExplanation = unescapeJson(explanationMatch?.[1]);
     const extractedConcept = unescapeJson(conceptMatch?.[1]);
     const extractedAdvice = unescapeJson(adviceMatch?.[1]);
+    const extractedWhyFailed = unescapeJson(whyFailedMatch?.[1]);
+    const extractedWhyOptimal = unescapeJson(whyOptimalMatch?.[1]);
+    const extractedConceptId = conceptIdMatch?.[1];
 
-    if (extractedExplanation || extractedSummary) {
+    if (extractedExplanation || extractedSummary || extractedWhyFailed) {
         return {
             summary: extractedSummary,
             explanation: extractedExplanation,
             keyConcept: extractedConcept,
             advice: extractedAdvice,
+            whyFailed: extractedWhyFailed,
+            whyOptimal: extractedWhyOptimal,
+            conceptId: extractedConceptId,
             rawText: extractedExplanation || text,
         };
     }
@@ -173,6 +189,7 @@ export default function CoachPanel({
     explanation,
     onExplain,
     onDismiss,
+    onOpenKnowledgeConcept,
     isLoading = false,
     features,
     matchContext: rawMatchContext,
@@ -562,6 +579,9 @@ export default function CoachPanel({
                 explanation: ruleBased.explanation,
                 keyConcept: ruleBased.keyConcept,
                 advice: ruleBased.advice,
+                whyFailed: ruleBased.whyFailed,
+                whyOptimal: ruleBased.whyOptimal,
+                conceptId: ruleBased.conceptId,
                 rawText: ruleBased.explanation,
             };
 
@@ -743,25 +763,65 @@ export default function CoachPanel({
                             </p>
                         )}
 
-                        {/* Corps de l'explication */}
-                        <div className="text-sm leading-relaxed whitespace-pre-line text-slate-300">
-                            {parsed.explanation || parsed.rawText}
-                            {isStreaming && (
-                                <span className="inline-block ml-1 animate-pulse font-mono text-blue-400 font-bold">
-                                    ▋
-                                </span>
-                            )}
-                        </div>
+                        {/* Format synthétique concis & percutant (Pourquoi l'erreur vs Pourquoi l'optimal) */}
+                        {parsed.whyFailed || parsed.whyOptimal ? (
+                            <div className="space-y-2 text-sm">
+                                {parsed.whyFailed && (
+                                    <div className="flex items-start gap-2 rounded-lg bg-red-950/30 border border-red-900/40 p-2.5 text-red-200">
+                                        <span className="text-red-400 font-bold shrink-0 text-xs mt-0.5">❌</span>
+                                        <div>
+                                            <strong className="text-red-300 block text-[11px] uppercase tracking-wide">
+                                                {locale === 'en' ? 'What went wrong' : 'Ce qui ne va pas'}
+                                            </strong>
+                                            <span className="text-xs text-red-200 leading-relaxed">{parsed.whyFailed}</span>
+                                        </div>
+                                    </div>
+                                )}
+                                {parsed.whyOptimal && (
+                                    <div className="flex items-start gap-2 rounded-lg bg-emerald-950/30 border border-emerald-900/40 p-2.5 text-emerald-200">
+                                        <span className="text-emerald-400 font-bold shrink-0 text-xs mt-0.5">✅</span>
+                                        <div>
+                                            <strong className="text-emerald-300 block text-[11px] uppercase tracking-wide">
+                                                {locale === 'en' ? 'Optimal alternative' : 'Meilleure option'}
+                                            </strong>
+                                            <span className="text-xs text-emerald-200 leading-relaxed">{parsed.whyOptimal}</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            /* Corps de l'explication classique */
+                            <div className="text-sm leading-relaxed whitespace-pre-line text-slate-300">
+                                {parsed.explanation || parsed.rawText}
+                                {isStreaming && (
+                                    <span className="inline-block ml-1 animate-pulse font-mono text-blue-400 font-bold">
+                                        ▋
+                                    </span>
+                                )}
+                            </div>
+                        )}
 
-                        {/* Badge concept clé */}
-                        {parsed.keyConcept && (
-                            <div className="pt-1">
+                        {/* Badge concept clé & Lien direct vers la Base de Connaissances */}
+                        <div className="flex flex-wrap items-center gap-2 pt-1">
+                            {parsed.keyConcept && (
                                 <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-900/60 px-3 py-1 text-xs font-semibold text-blue-300 border border-blue-700/50">
                                     <span className="h-1.5 w-1.5 rounded-full bg-blue-400"></span>
                                     {t('coach.keyConcept')} : {parsed.keyConcept}
                                 </span>
-                            </div>
-                        )}
+                            )}
+                            {onOpenKnowledgeConcept && (
+                                <button
+                                    type="button"
+                                    onClick={() => onOpenKnowledgeConcept(parsed.conceptId || 'fundamentals')}
+                                    data-testid="coach-open-kb-btn"
+                                    className="inline-flex items-center gap-1.5 rounded-full bg-indigo-600/30 hover:bg-indigo-600/60 px-3 py-1 text-xs font-bold text-indigo-300 hover:text-white border border-indigo-500/50 transition active:scale-95 shadow-sm"
+                                >
+                                    <span>📖</span>
+                                    <span>{locale === 'en' ? 'Read Theory Sheet' : 'Consulter la Fiche Théorique'}</span>
+                                    <span>↗</span>
+                                </button>
+                            )}
+                        </div>
 
                         {/* Conseil pédagogique */}
                         {parsed.advice && (

@@ -31,6 +31,9 @@ export interface CoachStructuredResponse {
     explanation: string;
     keyConcept: string;
     advice: string;
+    whyFailed?: string;
+    whyOptimal?: string;
+    conceptId?: string;
 }
 
 /**
@@ -67,57 +70,42 @@ Utilise les termes officiels avec pédagogie :
 - Blot (pion vulnérable isolé), Shot (menace de frappe).
 - Pip count (retard ou avance de course).
 
-### FORMAT DE RÉPONSE OBLIGATOIRE (JSON STRICT) :
+### FORMAT DE RÉPONSE OBLIGATOIRE (JSON STRICT) - SIMPLE & CONCIS :
 Ta réponse DOIT impérativement être un objet JSON valide, sans aucun texte ou balise markdown avant ou après.
+Sois direct, percutant et synthétique (PAS DE LONGS PARAGRAPHES).
 Schéma JSON :
 {
   "verdict": "douteux" | "blunder" | "howler",
-  "summary": "Une phrase d'accroche résumant l'erreur commise.",
-  "explanation": "2 à 3 paragraphes explicatifs détaillés : (1) Pourquoi le coup joué est fautif avec les chiffres d'exposition/shots/pips, (2) Pourquoi le meilleur coup est supérieur, (3) Le plan stratégique à moyen terme.",
-  "keyConcept": "Le concept clé en 3 à 6 mots (ex: 'Sécurité de course vs dispersion', 'Contrôle du Golden Point', 'Prime contre Ancre')",
-  "advice": "Une maxime ou règle générale actionnable et facile à retenir pour les prochaines parties."
+  "summary": "1 phrase d'accroche très courte résumant l'erreur (max 15 mots).",
+  "whyFailed": "1 ou 2 phrases percutantes sur ce qui ne va pas (chiffre de tirs concédés, pips gaspillés, ancre brisée).",
+  "whyOptimal": "1 ou 2 phrases percutantes sur ce que le meilleur coup accomplit.",
+  "conceptId": "golden-point" | "bar-point" | "advanced-anchor" | "duplication" | "pure-play" | "tempo-hit" | "running-game" | "holding-game" | "prime-vs-prime" | "blitz-attack" | "back-game" | "take-point" | "woolsey-law" | "market-loss" | "trice-epc" | "kazaross-8912" | "kazaross-xg-met" | "crawford-rule" | "dmp-strategy" | "opening-philosophy" | "mochy-golden-rules",
+  "keyConcept": "Nom du concept en 3 à 5 mots (ex: 'Contrôle du Golden Point', 'Minimisation des tirs')",
+  "advice": "1 maxime ou règle d'or mnémotechnique (1 phrase courte).",
+  "explanation": "Synthèse concise de 2 phrases combinant whyFailed et whyOptimal."
 }`;
 
-export const BACKGAMMON_COACH_SYSTEM_PROMPT_EN = `You are an International Grandmaster of Backgammon and an elite pedagogical coach: benevolent, clear, and rigorous.
-Your objective is to explain to the player why their move is an error and how to think correctly about the position to improve.
+export const BACKGAMMON_COACH_SYSTEM_PROMPT_EN = `You are an International Grandmaster of Backgammon and an elite pedagogical coach: benevolent, concise, and rigorous.
+Your objective is to give the player a punchy, actionable explanation of why their move is an error, with a link to deep theory.
 
 ### STRICT ANTI-HALLUCINATION RULES:
 1. You must NEVER invent checkers, points, or board features not present in the provided data.
-2. Rely STRICTLY on the provided concepts and metrics:
-   - Exact equity loss (equityLoss).
-   - Played move vs optimal move.
-   - Pip count difference (who leads the race and by how many pips).
-   - Number of blots and opponent direct/indirect shots (shots out of 36).
-   - Board structure (Home Board, Golden Point point 5, Bar Point point 7, prime length, advanced anchors).
-   - Match context (matchLength, scores, doubling cube, Crawford rule).
+2. Rely STRICTLY on the provided concepts and metrics (equity loss, pips, shots out of 36, board structure, match context).
 3. If a fact is not present in the received data, DO NOT ASSUME IT.
 
-### MATCH CONTEXT & DOUBLING CUBE:
-- Money play (matchLength = 0): equities represent average point value, gammon risks always carry standard weight.
-- Match play (matchLength > 0):
-  - If both players are 1 point away from victory (DMP - Double Match Point): gammons do not matter at all, only pure win probability counts!
-  - If Crawford rule is active (crawford = true): the cube is frozen for this game, no doubling allowed.
-  - If the player is significantly ahead in score: prioritize safety and minimize gammon risks.
-  - If the player is behind: play aggressively and dynamically.
-
-### TECHNICAL BACKGAMMON VOCABULARY:
-Use official terminology pedagogically:
-- Home Board, Outer Board.
-- Point 5 (Golden Point), Point 7 (Bar Point).
-- Advanced anchor (anchors on 20, 21 or 22 for X / 3, 4 or 5 for O).
-- Prime (wall of consecutive made points), Blitz (direct attacking inside home board).
-- Blot (vulnerable isolated checker), Shot (threat of being hit).
-- Pip count (race lead or deficit).
-
-### MANDATORY RESPONSE FORMAT (STRICT JSON):
-Your response MUST strictly be a valid JSON object, without any surrounding markdown or code blocks.
+### MANDATORY RESPONSE FORMAT (STRICT JSON) - PUNCHY & CONCISE:
+Your response MUST strictly be a valid JSON object, without surrounding markdown.
+Keep it crisp and direct (NO LONG WALLS OF TEXT).
 JSON Schema:
 {
   "verdict": "doubtful" | "blunder" | "howler",
-  "summary": "A punchy one-sentence summary of the error committed.",
-  "explanation": "2 to 3 detailed paragraphs: (1) Why the played move is flawed with exact exposure/shots/pip figures, (2) Why the optimal move is superior, (3) Medium-term strategic game plan.",
-  "keyConcept": "Key concept in 3 to 6 words (e.g., 'Race Safety vs Dispersion', 'Golden Point Control', 'Prime vs Anchor')",
-  "advice": "An actionable, memorable general maxim to remember for future games."
+  "summary": "1 punchy hook sentence summarizing the mistake (max 15 words).",
+  "whyFailed": "1-2 short sentences on what failed (shots conceded, pips wasted, broken structure).",
+  "whyOptimal": "1-2 short sentences on what the best move accomplishes.",
+  "conceptId": "golden-point" | "bar-point" | "advanced-anchor" | "duplication" | "pure-play" | "tempo-hit" | "running-game" | "holding-game" | "prime-vs-prime" | "blitz-attack" | "back-game" | "take-point" | "woolsey-law" | "market-loss" | "trice-epc" | "kazaross-8912" | "kazaross-xg-met" | "crawford-rule" | "dmp-strategy" | "opening-philosophy" | "mochy-golden-rules",
+  "keyConcept": "Concept name in 3 to 5 words (e.g. 'Golden Point Control', 'Shot Minimization')",
+  "advice": "1 memorable rule of thumb or maxim (1 short sentence).",
+  "explanation": "Concise 2-sentence synthesis combining whyFailed and whyOptimal."
 }`;
 
 export function getCoachSystemPrompt(language: 'fr' | 'en' = 'fr'): string {
@@ -310,66 +298,99 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
     let advice = isEn
         ? 'Always assess the number of opponent shots conceded before dispersing your checkers.'
         : 'Évaluez toujours le nombre de tirs concédés avant de disperser vos pions.';
+    let whyFailed = '';
+    let whyOptimal = '';
+    let conceptId = 'pure-play';
 
     if (userShots > bestShots && userBlots.length > 0) {
         summary = isEn
             ? `The move concedes ${userShots} direct shots compared to only ${bestShots} for the best move.`
             : `Le coup concède ${userShots} tirs directs contre seulement ${bestShots} pour le meilleur coup.`;
-        explanation = isEn
-            ? `By playing ${playedMove}, you leave a vulnerable blot giving your opponent ${userShots} rolls out of 36 to hit you. The optimal move ${optimalMove} reduces this exposure to ${bestShots} shots while strengthening your structure.`
-            : `En jouant ${playedMove}, vous laissez un blot vulnérable qui offre à votre adversaire ${userShots} chances sur 36 de vous frapper. Le coup optimal ${optimalMove} réduit cette exposition à ${bestShots} tirs tout en consolidant votre structure.`;
+        whyFailed = isEn
+            ? `By playing ${playedMove}, you leave a vulnerable blot giving the opponent ${userShots} rolls out of 36 to hit.`
+            : `En jouant ${playedMove}, vous laissez un blot vulnérable offrant à l'adversaire ${userShots} chances sur 36 de frapper.`;
+        whyOptimal = isEn
+            ? `The optimal move ${optimalMove} reduces this exposure to ${bestShots} shots while securing structure.`
+            : `Le coup optimal ${optimalMove} réduit cette exposition à ${bestShots} tirs tout en consolidant votre structure.`;
+        explanation = `${whyFailed} ${whyOptimal}`;
         keyConcept = isEn ? 'Shot Minimization' : 'Minimisation des tirs';
         advice = isEn
             ? 'When your opponent has a strong home board, every blot left is a major gammon risk.'
             : 'Quand votre adversaire a un jan intérieur solide, chaque blot concédé est un risque majeur de gammon.';
+        conceptId = 'duplication';
     } else if (isLeadingRace && contactStatus === 'contact' && Math.abs(diff.diff) >= 8) {
         summary = isEn
             ? `You lead the race by ${Math.abs(diff.diff)} pips: breaking contact safely is the absolute priority.`
             : `Vous menez la course de ${Math.abs(diff.diff)} pips : la priorité absolue est de rompre le contact sans risque.`;
-        explanation = isEn
-            ? `With a ${Math.abs(diff.diff)} pip lead in the pip count, the winning strategy is to simplify the position and bring your checkers home safely. Playing ${playedMove} unnecessarily complicates the game while ${optimalMove} ensures a clean transition into the bear-off race.`
-            : `Avec une avance de ${Math.abs(diff.diff)} pips au pip count, la stratégie gagnante consiste à simplifier la position et ramener vos pions en sécurité. Jouer ${playedMove} complique inutilement le jeu alors que ${optimalMove} assure une transition propre vers la course.`;
+        whyFailed = isEn
+            ? `Playing ${playedMove} unnecessarily complicates the game while holding a ${Math.abs(diff.diff)} pip lead.`
+            : `Jouer ${playedMove} complique inutilement le jeu alors que vous menez de ${Math.abs(diff.diff)} pips.`;
+        whyOptimal = isEn
+            ? `The move ${optimalMove} cleanly breaks contact to steer straight towards the bear-off race.`
+            : `Le coup ${optimalMove} rompt proprement le contact pour filer droit vers la course de sortie.`;
+        explanation = `${whyFailed} ${whyOptimal}`;
         keyConcept = isEn ? 'Racing Lead Rule' : 'Règle de course en avance';
         advice = isEn
             ? 'When ahead in the race, avoid contact and do not look for confrontation.'
             : 'En avance à la course, fuyez le contact et ne cherchez pas la confrontation.';
+        conceptId = 'running-game';
     } else if (board.longestPrime >= 4) {
         summary = isEn
             ? `A prime of ${board.longestPrime} consecutive points offers a decisive strategic lock.`
             : `Une prime de ${board.longestPrime} portes consécutives offre un verrouillage stratégique décisif.`;
-        explanation = isEn
-            ? `Building and maintaining a prime of ${board.longestPrime} points paralyzes the opponent's rear checkers. Playing ${optimalMove} solidifies this wall, while ${playedMove} weakens your containment.`
-            : `La construction et le maintien d'une prime de ${board.longestPrime} portes consécutives paralyse les pions arrière de l'adversaire. Le coup ${optimalMove} consolide ce barrage, tandis que ${playedMove} affaiblit votre mur défensif.`;
+        whyFailed = isEn
+            ? `Playing ${playedMove} weakens or dismantles your ${board.longestPrime}-point prime barricade.`
+            : `Jouer ${playedMove} affaiblit ou disloque votre mur de prime de ${board.longestPrime} portes.`;
+        whyOptimal = isEn
+            ? `Playing ${optimalMove} preserves or extends the prime to completely paralyze opponent escape.`
+            : `Le coup ${optimalMove} consolide ou prolonge la prime pour paralyser totalement l'évasion adverse.`;
+        explanation = `${whyFailed} ${whyOptimal}`;
         keyConcept = isEn ? 'Prime Construction' : 'Construction de Prime';
         advice = isEn
             ? 'Against trapped opponent checkers, extending your prime always trumps racing.'
             : 'Face à des pions adverses piégés, étendre votre prime prime toujours sur la course.';
+        conceptId = 'prime-vs-prime';
     } else if (board.goldenPoint) {
         summary = isEn
             ? `Control of the 5-point (Golden Point) is paramount.`
             : `Le contrôle du Point 5 (Golden Point) est capital.`;
-        explanation = isEn
-            ? `The 5-point is the master key of the board. The move ${optimalMove} leverages this stronghold to block opponent escapes and secure your home board.`
-            : `Le Point 5 est la porte maîtresse du plateau. Le coup ${optimalMove} capitalise sur ce point fort pour verrouiller l'échappée adverse et sécuriser votre jan intérieur.`;
+        whyFailed = isEn
+            ? `Playing ${playedMove} fails to capitalize on or secure the master 5-point.`
+            : `Jouer ${playedMove} manque l'occasion de verrouiller ou d'exploiter le point 5 maître.`;
+        whyOptimal = isEn
+            ? `The move ${optimalMove} establishes firm dominance on the 5-point foundation.`
+            : `Le coup ${optimalMove} verrouille la domination sur le point 5 clé de voûte.`;
+        explanation = `${whyFailed} ${whyOptimal}`;
         keyConcept = isEn ? 'Golden Point Control' : 'Contrôle du Golden Point';
         advice = isEn
             ? 'The 5-point is the cornerstone of both offense and defense.'
             : 'Le Point 5 est la clé de voûte de toute attaque et de toute défense.';
+        conceptId = 'golden-point';
     } else if (board.advancedAnchor) {
         summary = isEn
             ? `The advanced anchor guarantees safety and restricts your opponent.`
             : `L'ancre avancée assure votre sécurité et bride l'adversaire.`;
-        explanation = isEn
-            ? `Holding an advanced anchor provides a safe landing spot and prevents your opponent from closing out their board. Playing ${optimalMove} preserves this crucial strategic connectivity.`
-            : `Disposer d'une ancre avancée garantit un point d'atterrissage sûr et empêche l'adversaire de fermer son jan. Jouer ${optimalMove} maintient cette connectivité stratégique.`;
+        whyFailed = isEn
+            ? `Playing ${playedMove} gives up or neglects the advanced anchor without overwhelming compensation.`
+            : `Jouer ${playedMove} délaisse l'ancre avancée sans compensation majeure immédiate.`;
+        whyOptimal = isEn
+            ? `Playing ${optimalMove} maintains strong anchor connectivity and outfield control.`
+            : `Jouer ${optimalMove} maintient l'ancre avancée et le contrôle du jan adverse.`;
+        explanation = `${whyFailed} ${whyOptimal}`;
         keyConcept = isEn ? 'Advanced Anchor' : 'Ancre avancée';
         advice = isEn
             ? 'Never dismantle an advanced anchor without overwhelming immediate compensation.'
             : 'Ne démontez jamais une ancre avancée sans une compensation immédiate écrasante.';
+        conceptId = 'advanced-anchor';
     } else {
-        explanation = isEn
-            ? `The played move ${playedMove} loses valuable mobility pips compared to ${optimalMove}. In this position, the balance between checker connectivity and safety clearly favors the engine recommendation.`
-            : `Le coup joué ${playedMove} cède de précieux pips de mobilité par rapport à ${optimalMove}. Dans cette position, l'équilibre entre connectivité des pions et sécurité penche nettement en faveur du coup recommandé par le moteur.`;
+        whyFailed = isEn
+            ? `The move ${playedMove} loses valuable mobility pips and structural harmony.`
+            : `Le coup joué ${playedMove} cède de précieux pips de mobilité et déséquilibre votre structure.`;
+        whyOptimal = isEn
+            ? `The optimal move ${optimalMove} achieves superior checker connectivity.`
+            : `Le coup optimal ${optimalMove} maximise la connectivité et l'efficacité des pions.`;
+        explanation = `${whyFailed} ${whyOptimal}`;
+        conceptId = 'pure-play';
     }
 
     // Complément contextuel selon la situation du match
@@ -377,16 +398,16 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         const ctx = buildMatchContext(matchContext);
         if (ctx.isDMP) {
             explanation += isEn
-                ? `\n\n🎯 DMP Context: You are 1 point away from victory. Gammons do not count (gammon price = 0.00). Only pure game victory decides the match.`
-                : `\n\n🎯 Contexte DMP : Vous êtes à 1 point de la victoire. Les gammons ne comptent pas (prix du gammon = 0.00). Seule la victoire pure de la manche décide du match.`;
+                ? `\n\n🎯 DMP Context: 1 point to win, gammons do not count.`
+                : `\n\n🎯 Contexte DMP : À 1 point de la victoire, les gammons ne comptent pas.`;
         } else if (ctx.crawford) {
             explanation += isEn
-                ? `\n\n🛡️ Crawford Rule: The doubling cube is frozen for this game. Play without fear of an opponent redouble.`
-                : `\n\n🛡️ Règle de Crawford : Le videau est gelé pour cette partie. Jouez sans craindre une relance de videau adverse.`;
+                ? `\n\n🛡️ Crawford Rule: Doubling cube is frozen.`
+                : `\n\n🛡️ Règle de Crawford : Videau gelé pour cette manche.`;
         } else if (ctx.gammonPrice && ctx.gammonPrice.X > 0.6) {
             explanation += isEn
-                ? `\n\n⚠️ Match Context: Gammon price is very high (${(ctx.gammonPrice.X * 100).toFixed(0)}%). Extreme caution against being gammoned is required.`
-                : `\n\n⚠️ Contexte de match : Le prix du gammon est très élevé (${(ctx.gammonPrice.X * 100).toFixed(0)}%). La prudence absolue contre le gammon est requise.`;
+                ? `\n\n⚠️ Match Context: High gammon price (${(ctx.gammonPrice.X * 100).toFixed(0)}%). Extreme safety required.`
+                : `\n\n⚠️ Contexte de match : Prix du gammon très élevé (${(ctx.gammonPrice.X * 100).toFixed(0)}%). Prudence maximale.`;
         }
     }
 
@@ -396,5 +417,8 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         explanation,
         keyConcept,
         advice,
+        whyFailed,
+        whyOptimal,
+        conceptId,
     };
 }

@@ -404,7 +404,8 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
         expect(s3.boardState.turn).toBe('X');
         expect(s3.boardState.dice).toBeNull();
         expect(s3.phase).toBe('WAITING_FOR_ROLL');
-        expect(s3.opponentHighlight).toBeNull();
+        // L'historique visuel du dernier coup est conservé jusqu'au prochain lancer du joueur
+        expect(s3.opponentHighlight).not.toBeNull();
         expect(s3.opponentStatusMessage).toBeNull();
         expect(s3.lastOpponentDice).toEqual([4, 2]);
         expect(s3.lastOpponentMoves).toHaveLength(2);
@@ -450,7 +451,8 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
             expect(result.current.isHumanTurn).toBe(true);
             expect(result.current.lastOpponentMoves).not.toBeNull();
             expect(result.current.lastOpponentMoves!.length).toBeGreaterThan(0);
-            expect(result.current.opponentHighlight).toBeNull();
+            // L'historique visuel du dernier coup est conservé jusqu'au prochain lancer
+            expect(result.current.opponentHighlight).not.toBeNull();
             expect(result.current.opponentStatusMessage).toBeNull();
         } finally {
             vi.useRealTimers();
@@ -534,7 +536,8 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
             expect(result.current.isHumanTurn).toBe(true);
             expect(result.current.lastOpponentMoves).toHaveLength(4);
             expect(result.current.lastOpponentDice).toEqual([3, 3]);
-            expect(result.current.opponentHighlight).toBeNull();
+            // L'historique visuel du dernier coup est conservé jusqu'au prochain lancer
+            expect(result.current.opponentHighlight).not.toBeNull();
             expect(result.current.opponentStatusMessage).toBeNull();
         } finally {
             vi.useRealTimers();

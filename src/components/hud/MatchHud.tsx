@@ -53,8 +53,14 @@ export interface MatchHudProps {
     onOpenOpeningBook?: () => void;
     /** Ouverture de la modale d'exportation/importation/partage (XGID, SGF) */
     onOpenExportImport?: () => void;
+    /** Ouverture de l'Encyclopédie & Base de Connaissances */
+    onOpenKnowledgeBase?: () => void;
     /** Déclenchement manuel de l'analyse ou conseil du Coach */
     onTriggerCoach?: () => void;
+    /** Annule le dernier sous-mouvement du tour courant */
+    onUndo?: () => void;
+    /** Indique si un sous-mouvement peut être annulé */
+    canUndo?: boolean;
 }
 
 /**
@@ -137,7 +143,10 @@ export default function MatchHud({
     isMultiplayerActive = false,
     onOpenOpeningBook,
     onOpenExportImport,
+    onOpenKnowledgeBase,
     onTriggerCoach,
+    onUndo,
+    canUndo = false,
 }: MatchHudProps) {
     const [isBackendModalOpen, setIsBackendModalOpen] = useState(false);
     const [isMuted, setIsMuted] = useState(() => soundEngine.isMute());
@@ -339,6 +348,26 @@ export default function MatchHud({
                             <svg className="h-4 w-4 transition group-hover:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
+                        </button>
+                    )}
+
+                    {onUndo && (
+                        <button
+                            type="button"
+                            onClick={onUndo}
+                            disabled={!canUndo}
+                            data-testid="hud-undo-btn"
+                            title="Annuler le dernier sous-mouvement"
+                            aria-label="Annuler le dernier coup"
+                            className={`flex h-8 sm:h-9 items-center justify-center gap-1 rounded-xl border px-2 text-xs font-bold transition active:scale-95 shrink-0 ${canUndo
+                                ? 'border-amber-500/40 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25'
+                                : 'border-slate-700 bg-slate-800/50 text-slate-500 cursor-not-allowed opacity-50'
+                                }`}
+                        >
+                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                            </svg>
+                            Annuler
                         </button>
                     )}
                 </div>
@@ -697,6 +726,19 @@ export default function MatchHud({
                         >
                             <span>📖</span>
                             <span>Ouvertures</span>
+                        </button>
+                    )}
+
+                    {onOpenKnowledgeBase && (
+                        <button
+                            type="button"
+                            onClick={onOpenKnowledgeBase}
+                            title="Consulter l'Encyclopédie & Base de Connaissances Théorique"
+                            className="flex items-center gap-1.5 rounded-xl border border-blue-600/60 bg-blue-950/40 px-2.5 py-1.5 text-xs font-semibold text-blue-300 hover:bg-blue-900/60 hover:text-white transition shadow-sm"
+                            data-testid="knowledge-base-hud-btn"
+                        >
+                            <span>📚</span>
+                            <span>Théorie</span>
                         </button>
                     )}
                 </div>

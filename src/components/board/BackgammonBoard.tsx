@@ -573,7 +573,7 @@ const Checker = React.memo(function Checker({
             onMouseLeave={onMouseLeave}
             className={
                 onClick || onPointerDown
-                    ? 'cursor-grab active:cursor-grabbing hover:scale-[1.03] transition-transform duration-200'
+                    ? 'cursor-pointer'
                     : undefined
             }
             data-testid={dataTestId}
@@ -769,6 +769,15 @@ const BoardSvgDefs = React.memo(function BoardSvgDefs() {
                 <stop offset="0%" stopColor="#94a3b8" stopOpacity="0.55" />
                 <stop offset="50%" stopColor="#1e293b" stopOpacity="0.25" />
                 <stop offset="100%" stopColor="#000000" stopOpacity="0.8" />
+            </linearGradient>
+            {/* Dégradés de flèches (profondeur : clair à la base, sombre à la pointe) */}
+            <linearGradient id="bgPointA" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#fdfaf0" />
+                <stop offset="100%" stopColor="#e8dfc8" />
+            </linearGradient>
+            <linearGradient id="bgPointB" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#9a2433" />
+                <stop offset="100%" stopColor="#6d1622" />
             </linearGradient>
             <style>
                 {`
@@ -1160,7 +1169,7 @@ function BackgammonBoardComponent({
         (e: React.PointerEvent) => {
             if (!dragState) return;
             const dist = Math.hypot(e.clientX - dragState.startX, e.clientY - dragState.startY);
-            const hasDragged = dragState.hasDragged || dist > 6;
+            const hasDragged = dragState.hasDragged || dist > 12;
             const coords = getSvgCoords(e.clientX, e.clientY);
             const hoveredPt = getPointAtCoordinates(coords.x, coords.y);
             const isHoverLegal = hoveredPt !== null && dragState.validDestinations.includes(hoveredPt);
@@ -1938,7 +1947,8 @@ function BackgammonBoardComponent({
                     {/* Flèches (Triangles ivoire et bordeaux) */}
                     {Array.from({ length: 24 }, (_, i) => i + 1).map((p) => {
                         const isEven = p % 2 === 0;
-                        const fill = isEven ? T.pointA : T.pointB;
+                        const fill = isEven ? 'url(#bgPointA)' : 'url(#bgPointB)';
+                        const strokeColor = isEven ? '#c9b98f' : '#4a0d16';
                         const count = displayBoard[p];
                         const hasPlayerCheckers = isX ? count > 0 : count < 0;
                         const isTarget = ghostDestinations.includes(p);
@@ -1950,6 +1960,9 @@ function BackgammonBoardComponent({
                                 key={`pt-${p}`}
                                 points={trianglePoints(p)}
                                 fill={fill}
+                                stroke={strokeColor}
+                                strokeWidth={1.5}
+                                strokeLinejoin="round"
                                 role="button"
                                 tabIndex={currentFocusPoint === p ? 0 : -1}
                                 aria-label={ariaLabel}

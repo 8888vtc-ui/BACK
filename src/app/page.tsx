@@ -60,6 +60,7 @@ import type { OpeningEntry } from '../features/openings';
 import { OpeningAssistantBanner } from '../components/openings/OpeningAssistantBanner';
 import { OpeningBookModal } from '../components/openings/OpeningBookModal';
 import ExportImportModal from '../components/export/ExportImportModal';
+import KnowledgeBaseModal from '../components/knowledge/KnowledgeBaseModal';
 import { parseFromXGID } from '../features/export';
 import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
@@ -90,7 +91,14 @@ export default function Home() {
     const [isOpeningDismissed, setIsOpeningDismissed] = useState(false);
     const [isOpeningHighlightActive, setIsOpeningHighlightActive] = useState(true);
     const [isExportImportModalOpen, setIsExportImportModalOpen] = useState(false);
+    const [isKnowledgeModalOpen, setIsKnowledgeModalOpen] = useState(false);
+    const [selectedKnowledgeConceptId, setSelectedKnowledgeConceptId] = useState<string | undefined>(undefined);
     const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+
+    const handleOpenKnowledgeConcept = useCallback((conceptId: string) => {
+        setSelectedKnowledgeConceptId(conceptId);
+        setIsKnowledgeModalOpen(true);
+    }, []);
 
     useEffect(() => {
         if (coach) {
@@ -109,7 +117,8 @@ export default function Home() {
     const game = useBackgammonGame({
         matchLength: 7,
         autoOpponent: true,
-        opponentDelayMs: 700,
+        opponentDelayMs: 600,
+        stepDelayMs: 900,
         locale,
         onGameOver: (result) => {
             const title =
@@ -482,11 +491,35 @@ export default function Home() {
 
         if (allDests.length === 0) return;
 
-        // Double-clic sur un pion : joue immédiatement vers la destination par défaut (la plus sûre)
+        // Double-clic : tente le coup "somme des deux dés" en une action (si le point intermédiaire est libre)
+        const dice = game.dice;
+        if (dice && dice[0] !== dice[1]) {
+            const isX = game.state.turn === 'X';
+            const sum = dice[0] + dice[1];
+            const sumDest = isX ? point - sum : point + sum;
+            const midDest = isX ? point - dice[0] : point + dice[0];
+
+            // Vérifie que la destination somme est légale et que le point intermédiaire est libre
+            const sumIsLegal = allDests.includes(sumDest) || leftDests.includes(sumDest) || rightDests.includes(sumDest);
+            const midVal = game.state.board[midDest] ?? 0;
+            const midIsFree =
+                midDest >= 1 &&
+                midDest <= 24 &&
+                (isX ? midVal >= -1 : midVal <= 1); // pas bloqué par 2+ pions adverses
+
+            if (sumIsLegal && midIsFree) {
+                // Joue la somme en deux sous-mouvements rapides (dé 1 puis dé 2)
+                handlePlayMove(point, midDest, 0);
+                handlePlayMove(midDest, sumDest, 1);
+                return;
+            }
+        }
+
+        // Repli : joue immédiatement vers la destination par défaut (la plus sûre)
         const safestDest = getSafestDestination(point, allDests, game.state.board, game.state.turn);
         const die: 0 | 1 = leftDests.includes(safestDest) ? 0 : 1;
         handlePlayMove(point, safestDest, die);
-    }, [game.leftDieTargets, game.rightDieTargets, game.state.board, game.state.turn, handlePlayMove]);
+    }, [game.leftDieTargets, game.rightDieTargets, game.state.board, game.state.turn, game.dice, handlePlayMove]);
 
     const handleCheckerRightClick = useCallback((point: number) => {
         impactLight();
@@ -975,7 +1008,13 @@ export default function Home() {
                             setIsOpeningBookModalOpen(true);
                         }}
                         onOpenExportImport={() => setIsExportImportModalOpen(true)}
+                        onOpenKnowledgeBase={() => {
+                            setSelectedKnowledgeConceptId(undefined);
+                            setIsKnowledgeModalOpen(true);
+                        }}
                         onTriggerCoach={handleTriggerCoach}
+                        onUndo={game.undoMove}
+                        canUndo={game.canUndo}
                     />
                 </div>
 
@@ -1246,6 +1285,7 @@ export default function Home() {
                                 explanation={coach?.explanation ?? null}
                                 features={coach?.features}
                                 onDismiss={dismissCoach}
+                                onOpenKnowledgeConcept={handleOpenKnowledgeConcept}
                                 isLoading={isAnalyzing}
                                 matchContext={{
                                     scoreX: game.state.scoreX,
@@ -1340,6 +1380,7 @@ export default function Home() {
                                     dismissCoach();
                                     setIsMobileDrawerOpen(false);
                                 }}
+                                onOpenKnowledgeConcept={handleOpenKnowledgeConcept}
                                 isLoading={isAnalyzing}
                                 matchContext={{
                                     scoreX: game.state.scoreX,
@@ -1473,6 +1514,14 @@ export default function Home() {
                     });
                     toast.success('Position ou match importé avec succès !', 'Import réussi');
                 }}
+                theme={theme}
+            />
+
+            {/* 11. Modal Base de Connaissances & Encyclopédie Théorique */}
+            <KnowledgeBaseModal
+                isOpen={isKnowledgeModalOpen}
+                onClose={() => setIsKnowledgeModalOpen(false)}
+                initialConceptId={selectedKnowledgeConceptId}
                 theme={theme}
             />
         </main>

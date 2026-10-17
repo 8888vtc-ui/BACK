@@ -286,6 +286,8 @@ export interface BackgammonGameState {
     lastOpponentMoves: Move[] | null;
     opponentHighlight: { from: number; to: number } | null;
     opponentStatusMessage: string | null;
+    /** Historique des sous-mouvements du tour courant (pour Undo). */
+    moveHistory: { board: number[]; usedDice: boolean[] }[];
 }
 
 export type GameAction =
@@ -301,32 +303,33 @@ export type GameAction =
     | { type: 'PLAY_OPPONENT'; dice?: [number, number] }
     | { type: 'OPPONENT_START_TURN'; dice: [number, number]; statusMessage: string }
     | {
-          type: 'OPPONENT_APPLY_STEP';
-          board: number[];
-          move: Move;
-          usedDiceIndex: number;
-          statusMessage: string;
-      }
+        type: 'OPPONENT_APPLY_STEP';
+        board: number[];
+        move: Move;
+        usedDiceIndex: number;
+        statusMessage: string;
+    }
     | {
-          type: 'OPPONENT_FINISH_TURN';
-          finalBoard: number[];
-          dice: [number, number];
-          moves: Move[];
-          gameResult?: GameResult | null;
-      }
+        type: 'OPPONENT_FINISH_TURN';
+        finalBoard: number[];
+        dice: [number, number];
+        moves: Move[];
+        gameResult?: GameResult | null;
+    }
+    | { type: 'UNDO_MOVE' }
     | { type: 'SET_DIFFICULTY'; difficulty: AIDifficulty }
     | { type: 'START_NEW_GAME' }
     | { type: 'RESET_MATCH' }
     | {
-          type: 'APPLY_REMOTE_STATE';
-          board: number[];
-          dice?: [number, number] | null;
-          turn?: Player;
-          usedDice?: boolean[];
-          phase?: GamePhase;
-          cubeValue?: number;
-          cubeOwner?: Player | null;
-      };
+        type: 'APPLY_REMOTE_STATE';
+        board: number[];
+        dice?: [number, number] | null;
+        turn?: Player;
+        usedDice?: boolean[];
+        phase?: GamePhase;
+        cubeValue?: number;
+        cubeOwner?: Player | null;
+    };
 
 export function createInitialGameState(
     matchLength = 7,
@@ -361,6 +364,7 @@ export function createInitialGameState(
         lastOpponentMoves: null,
         opponentHighlight: null,
         opponentStatusMessage: null,
+        moveHistory: [],
     };
 }
 
@@ -410,6 +414,8 @@ export function backgammonGameReducer(
                 phase: 'PLAYING_MOVES',
                 usedDice: initialUsedDice,
                 selected: null,
+                // Efface l'historique visuel du dernier coup de l'IA au lancer du joueur
+                opponentHighlight: null,
             };
         }
 
@@ -528,6 +534,12 @@ export function backgammonGameReducer(
             const move: Move = { from, to: dest };
             const newBoard = applyMove(state.boardState.board, move, state.boardState.turn);
 
+            // Enregistre un snapshot pour permettre l'Undo du sous-mouvement
+            const moveHistory = [
+                ...state.moveHistory,
+                { board: state.boardState.board, usedDice: [...state.usedDice] },
+            ];
+
             let newUsed: boolean[];
             if (isDouble) {
                 newUsed = [...state.usedDice];
@@ -559,6 +571,7 @@ export function backgammonGameReducer(
                     usedDice: newUsed,
                     selected: null,
                     gameResult: win,
+                    moveHistory: [],
                 };
             }
 
@@ -584,6 +597,7 @@ export function backgammonGameReducer(
                     phase: nextPhase,
                     usedDice: [false, false],
                     selected: null,
+                    moveHistory: [],
                 };
             }
 
@@ -592,6 +606,7 @@ export function backgammonGameReducer(
                 boardState: stateAfterMove,
                 usedDice: newUsed,
                 selected: null,
+                moveHistory,
             };
         }
 
@@ -822,8 +837,26 @@ export function backgammonGameReducer(
                 selected: null,
                 lastOpponentDice: action.dice,
                 lastOpponentMoves: action.moves,
-                opponentHighlight: null,
+                // Conserve le dernier coup joué (historique visuel) jusqu'au prochain lancer du joueur
+                opponentHighlight: state.opponentHighlight,
                 opponentStatusMessage: null,
+            };
+        }
+
+        case 'UNDO_MOVE': {
+            if (state.phase !== 'PLAYING_MOVES' || state.moveHistory.length === 0) {
+                return state;
+            }
+            const last = state.moveHistory[state.moveHistory.length - 1];
+            return {
+                ...state,
+                boardState: {
+                    ...state.boardState,
+                    board: last.board,
+                },
+                usedDice: [...last.usedDice],
+                selected: null,
+                moveHistory: state.moveHistory.slice(0, -1),
             };
         }
 
@@ -879,6 +912,7 @@ export function backgammonGameReducer(
                 lastOpponentMoves: null,
                 opponentHighlight: null,
                 opponentStatusMessage: null,
+                moveHistory: [],
             };
         }
 
@@ -897,6 +931,7 @@ export function backgammonGameReducer(
                 lastOpponentMoves: null,
                 opponentHighlight: null,
                 opponentStatusMessage: null,
+                moveHistory: [],
             };
         }
 
@@ -950,7 +985,7 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         initialDifficulty = 'intermediate',
         autoOpponent = true,
         opponentDelayMs = 600,
-        stepDelayMs = 750,
+        stepDelayMs = 900,
         forcedOpponentDice,
         playerColor = 'X',
         onGameOver,
@@ -1330,6 +1365,8 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         lastOpponentMoves: state.lastOpponentMoves,
         opponentHighlight: state.opponentHighlight,
         opponentStatusMessage: state.opponentStatusMessage,
+        canUndo: state.moveHistory.length > 0 && phase === 'PLAYING_MOVES',
+        undoMove: () => dispatch({ type: 'UNDO_MOVE' }),
         rollDice,
         selectChecker,
         deselect,
