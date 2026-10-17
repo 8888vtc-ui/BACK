@@ -1,0 +1,147 @@
+name: CD - Deployment (Frontend & Backend)
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: 'Target to deploy (all, frontend, backend)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - frontend
+          - backend
+
+concurrency:
+  group: cd-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # ===========================================================================
+  # 1. Deploy Frontend (Vercel and/or Netlify)
+  # ===========================================================================
+  deploy-frontend:
+    name: Deploy Frontend (Vercel / Netlify)
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy_target == 'all' || inputs.deploy_target == 'frontend' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Deploy to Vercel if VERCEL_TOKEN is configured in repository secrets
+      - name: Deploy to Vercel (Production)
+        if: ${{ env.HAS_VERCEL == 'true' }}
+        env:
+          HAS_VERCEL: ${{ secrets.VERCEL_TOKEN != '' }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          echo "Deploying Next.js application to Vercel..."
+          npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          npx vercel build --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+          echo "Vercel production deployment completed successfully."
+
+      # Deploy to Netlify if NETLIFY_AUTH_TOKEN is configured in repository secrets
+      - name: Deploy to Netlify (Production)
+        if: ${{ env.HAS_NETLIFY == 'true' }}
+        env:
+          HAS_NETLIFY: ${{ secrets.NETLIFY_AUTH_TOKEN != '' }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          echo "Building Next.js application for Netlify..."
+          npm run build
+          echo "Deploying to Netlify Production..."
+          npx netlify-cli deploy --prod --dir=.next --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+          echo "Netlify production deployment completed successfully."
+
+      # Informative report if neither provider secret is configured yet
+      - name: Report Deployment Status
+        if: ${{ secrets.VERCEL_TOKEN == '' && secrets.NETLIFY_AUTH_TOKEN == '' }}
+        run: |
+          echo "::warning title=Frontend Deployment Secret Notice::Neither VERCEL_TOKEN nor NETLIFY_AUTH_TOKEN is set in GitHub Secrets. Skipping remote cloud push."
+          echo "### Frontend Deployment Guidance" >> $GITHUB_STEP_SUMMARY
+          echo "To enable automated frontend deployment, configure one of the following secret pairs in **Settings > Secrets and variables > Actions**:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Vercel**: \`VERCEL_TOKEN\`, \`VERCEL_ORG_ID\`, \`VERCEL_PROJECT_ID\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Netlify**: \`NETLIFY_AUTH_TOKEN\`, \`NETLIFY_SITE_ID\`" >> $GITHUB_STEP_SUMMARY
+
+  # ===========================================================================
+  # 2. Deploy Backend (Docker Image build & push to GHCR)
+  # ===========================================================================
+  deploy-backend-docker:
+    name: Build & Deploy Backend (GHCR Docker)
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy_target == 'all' || inputs.deploy_target == 'backend' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Lowercase repository name for Docker registry
+        id: repo_name
+        run: |
+          echo "lowercase=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ steps.repo_name.outputs.lowercase }}/backend-engine
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=sha-,format=short
+            type=semver,pattern={{version}}
+            type=ref,event=branch
+
+      - name: Build and push backend Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend-engine
+          file: ./backend-engine/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Output deployment summary
+        run: |
+          echo "### Backend Docker Image Published" >> $GITHUB_STEP_SUMMARY
+          echo "The GNU Backgammon backend engine image was successfully published to GHCR:" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ghcr.io/${{ steps.repo_name.outputs.lowercase }}/backend-engine:latest" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "Run locally or deploy via Docker Compose:" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "docker run -d --name backgammon-backend -p 8000:8000 ghcr.io/${{ steps.repo_name.outputs.lowercase }}/backend-engine:latest" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,86 @@
+# =============================================================================
+# Fastlane Fastfile for Backgammon Pro
+# Lanes de compilation, signature et déploiement App Store & Play Store
+# =============================================================================
+
+default_platform(:android)
+
+# -----------------------------------------------------------------------------
+# Plateforme Android (Google Play Store)
+# -----------------------------------------------------------------------------
+platform :android do
+  desc "Compiler un Android App Bundle (AAB) signé pour la release"
+  lane :build_release do
+    gradle(
+      project_dir: "android",
+      task: "bundleRelease",
+      properties: {
+        "android.injected.signing.store.file" => ENV["KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+        "android.injected.signing.key.password" => ENV["KEY_PASSWORD"]
+      }
+    )
+  end
+
+  desc "Publier l'Android App Bundle sur le canal de test interne Google Play"
+  lane :deploy_internal do
+    build_release
+    upload_to_play_store(
+      track: "internal",
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Publier l'application et les métadonnées sur le canal Production Google Play"
+  lane :deploy_production do
+    build_release
+    upload_to_play_store(
+      track: "production",
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      metadata_path: "store-assets/metadata"
+    )
+  end
+end
+
+# -----------------------------------------------------------------------------
+# Plateforme iOS (Apple App Store / TestFlight)
+# -----------------------------------------------------------------------------
+platform :ios do
+  desc "Compiler et archiver l'application iOS (.ipa)"
+  lane :build_release do
+    build_app(
+      project: "ios/App/App.xcodeproj",
+      scheme: "App",
+      export_method: "app-store",
+      export_options: "ios/App/exportOptions-appstore.plist",
+      output_directory: "build/ios",
+      output_name: "BackgammonPro.ipa",
+      clean: true
+    )
+  end
+
+  desc "Déployer la version iOS sur Apple TestFlight pour les bêta-testeurs"
+  lane :deploy_testflight do
+    build_release
+    upload_to_testflight(
+      ipa: "build/ios/BackgammonPro.ipa",
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Soumettre l'application pour revue sur l'App Store"
+  lane :deploy_app_store do
+    build_release
+    upload_to_app_store(
+      ipa: "build/ios/BackgammonPro.ipa",
+      metadata_path: "store-assets/metadata",
+      screenshots_path: "store-assets/screenshots/ios",
+      force: true,
+      submit_for_review: false
+    )
+  end
+end

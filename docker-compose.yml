@@ -1,0 +1,48 @@
+services:
+  # ---------------------------------------------------------------------------
+  # Backend Engine (Python 3.12 FastAPI + GNU Backgammon CLI)
+  # ---------------------------------------------------------------------------
+  backend-engine:
+    build:
+      context: ./backend-engine
+      dockerfile: Dockerfile
+    container_name: backgammon-backend-engine
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PORT=8000
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - backgammon-network
+
+  # ---------------------------------------------------------------------------
+  # Frontend Web App (Next.js 15 + React 19 + Tailwind CSS)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backgammon-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend-engine:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+    networks:
+      - backgammon-network
+
+networks:
+  backgammon-network:
+    driver: bridge

@@ -1,0 +1,12 @@
+# =============================================================================
+# Fastlane Appfile for Backgammon Pro (iOS & Android)
+# =============================================================================
+
+# Identifiant de l'application
+app_identifier("com.backgammon.coach")
+package_name("com.backgammon.coach")
+
+# Compte Apple Developer
+apple_id(ENV["APPLE_ID"] || "dev@backgammon-pro.app")
+team_id(ENV["APPLE_TEAM_ID"] || "XXXXXXXXXX")
+itc_team_id(ENV["ITC_TEAM_ID"] || "XXXXXXXXXX")

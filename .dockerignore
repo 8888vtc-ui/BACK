@@ -1,0 +1,29 @@
+# Git & CI/CD
+.git
+.github
+.gitignore
+
+# Dependencies & Build artifacts
+node_modules
+.next
+out
+build
+dist
+*.tsbuildinfo
+
+# Mobile platforms (Capacitor)
+android
+ios
+
+# Test outputs & caches
+test-results
+playwright-report
+.pytest_cache
+backend-engine/.pytest_cache
+
+# Local environment variables
+.env*.local
+.env
+
+# Backend files (has its own Docker context)
+backend-engine

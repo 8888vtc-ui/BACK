@@ -1,0 +1,1 @@
+"""Microservice d'analyse Backgammon adossé au moteur GNU Backgammon (gnubg)."""

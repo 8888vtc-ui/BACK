@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1220"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <radialGradient id="dieGrad" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="70%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </radialGradient>
+    <radialGradient id="checkerX" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </radialGradient>
+    <radialGradient id="checkerO" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="55%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Fond arrondi PWA -->
+  <rect width="512" height="512" rx="108" fill="url(#bgGrad)"/>
+  <rect x="16" y="16" width="480" height="480" rx="94" fill="none" stroke="#1e293b" stroke-width="4"/>
+
+  <!-- Triangles Backgammon en fond stylisé -->
+  <polygon points="120,440 180,440 150,260" fill="#23405e" opacity="0.4"/>
+  <polygon points="180,440 240,440 210,260" fill="#3b4a63" opacity="0.4"/>
+  <polygon points="272,440 332,440 302,260" fill="#23405e" opacity="0.4"/>
+  <polygon points="332,440 392,440 362,260" fill="#3b4a63" opacity="0.4"/>
+
+  <!-- Pions superposés -->
+  <g filter="url(#shadow)">
+    <!-- Pion Noir (O) -->
+    <circle cx="210" cy="310" r="62" fill="url(#checkerO)" stroke="#475569" stroke-width="3"/>
+    <circle cx="210" cy="310" r="42" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="8,6"/>
+    
+    <!-- Pion Blanc (X) -->
+    <circle cx="302" cy="310" r="62" fill="url(#checkerX)" stroke="#0f172a" stroke-width="3"/>
+    <circle cx="302" cy="310" r="42" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8,6"/>
+  </g>
+
+  <!-- Deux Dés 3D Tournament -->
+  <!-- Dé gauche (Valeur 5) -->
+  <g filter="url(#shadow)" transform="rotate(-10 190 170)">
+    <rect x="135" y="115" width="110" height="110" rx="22" fill="url(#dieGrad)" stroke="#0f172a" stroke-width="4"/>
+    <!-- Points du 5 -->
+    <circle cx="160" cy="140" r="9" fill="#0f172a"/>
+    <circle cx="220" cy="140" r="9" fill="#0f172a"/>
+    <circle cx="190" cy="170" r="9" fill="#0f172a"/>
+    <circle cx="160" cy="200" r="9" fill="#0f172a"/>
+    <circle cx="220" cy="200" r="9" fill="#0f172a"/>
+  </g>
+
+  <!-- Dé droit (Valeur 6) -->
+  <g filter="url(#shadow)" transform="rotate(12 320 160)">
+    <rect x="265" y="105" width="110" height="110" rx="22" fill="url(#dieGrad)" stroke="#0f172a" stroke-width="4"/>
+    <!-- Points du 6 -->
+    <circle cx="290" cy="130" r="9" fill="#0f172a"/>
+    <circle cx="350" cy="130" r="9" fill="#0f172a"/>
+    <circle cx="290" cy="160" r="9" fill="#0f172a"/>
+    <circle cx="350" cy="160" r="9" fill="#0f172a"/>
+    <circle cx="290" cy="190" r="9" fill="#0f172a"/>
+    <circle cx="350" cy="190" r="9" fill="#0f172a"/>
+  </g>
+
+  <!-- Badge Émeraude "PRO" -->
+  <g filter="url(#shadow)">
+    <rect x="186" y="405" width="140" height="38" rx="19" fill="#059669" stroke="#34d399" stroke-width="2"/>
+    <text x="256" y="429" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="900" fill="#ffffff" letter-spacing="2">COACH</text>
+  </g>
+</svg>

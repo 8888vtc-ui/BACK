@@ -1,0 +1,41 @@
+🎲 BACKGAMMON PRO — TOURNAMENT STANDARD & GRANDMASTER AI COACH
+
+Experience the ultimate Backgammon (Tavla, Shesh Besh, Tavli, Nard) application crafted for competitive players, strategic minds, and enthusiasts looking to elevate their game!
+
+Powered by a high-performance hybrid architecture that couples ultra-fast WebAssembly execution with the world-renowned GNU Backgammon neural network (2-ply+), Backgammon Pro delivers tournament-level precision and deep analysis right in your pocket.
+
+🔥 KEY HIGHLIGHTS & FEATURES:
+
+1. WORLD-CLASS NEURAL ENGINE (GNU BACKGAMMON)
+• Challenge state-of-the-art AI across 4 balanced difficulty levels: Beginner, Intermediate, Advanced, and Grandmaster.
+• Real-time evaluation: exact equity computations, equity loss metrics, and comprehensive winning/gammon/backgammon probability splits.
+
+2. INTERACTIVE GRANDMASTER COACH & LIVE STREAMING
+• Instant blunder and error detection on every single checker and cube move.
+• Dynamic pedagogical explanations: learn WHY a specific move is superior (prime construction, blitz dynamics, advanced anchors, checker safety).
+• Deep Rollout feature: simulate thousands of games to resolve complex tournament dilemmas.
+
+3. PROFESSIONAL DOUBLING CUBE DECISIONS
+• Doubling cube decisions fully adhering to official WBGF tournament match rules.
+• Live take points, drop points, cash points, and "too good to double" detection.
+• Comprehensive support for Crawford and Post-Crawford match play.
+
+4. CERTIFIED OPENING BOOK DATABASE
+• Complete reference database covering all 15 opening dice rolls and their optimal replies according to modern championship theory.
+• Immediate tactical advice right from the first roll.
+
+5. BLUNDER DRILLS & DAILY PUZZLES
+• Sharpen your instincts with curated blunder drill banks targeting critical match scenarios.
+• Solve daily puzzles, boost your ELO rating, and track your Performance Rating (PR) progression over time.
+
+6. REAL-TIME SYNCHRONIZED MULTIPLAYER
+• Challenge players worldwide in seamless, synchronized online matches.
+• Official tournament clock with Fischer increment.
+• Global ELO leaderboards and permanent match history storage.
+
+7. TOURNAMENT BOARD & ELEGANT MOBILE ERGONOMICS
+• Responsive touch controls with immersive haptic feedback.
+• 4 premium board aesthetics: Classic Tournament Wood, Luxury Leather & Wood, Cyber Neon, and Minimalist Slate.
+• 100% offline capability: play, drill, and analyze anywhere without an internet connection, with smooth cloud synchronization upon reconnection.
+
+Download Backgammon Pro today and master the subtleties of history’s most revered strategic board game!

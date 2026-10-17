@@ -1,0 +1,7 @@
+Bienvenue sur Backgammon Pro v1.0.0 !
+• Moteur hybride ultra-rapide WASM + GNU Backgammon neural.
+• Coach Grand-Maître interactif avec explication en streaming.
+• Gestion complète du videau et de la règle de Crawford.
+• Drills de blunders, puzzles quotidiens et opening book certifié.
+• Multijoueur en temps réel avec horloge de tournoi et ELO.
+• Mode hors-ligne complet avec synchronisation automatique.

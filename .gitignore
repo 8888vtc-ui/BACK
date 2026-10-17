@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+.netlify/
+playwright-report/
+test-results/
+*.tsbuildinfo
+*.log
+.env*.local
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+screenshot_*.png

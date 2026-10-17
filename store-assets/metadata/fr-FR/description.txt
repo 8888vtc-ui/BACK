@@ -1,0 +1,41 @@
+🎲 BACKGAMMON PRO — LE STANDARD DES TOURNOIS & COACH GRAND-MAÎTRE IA
+
+Plongez dans l'expérience ultime de Backgammon (Tavla, Shesh Besh, Tavli) conçue pour les compétiteurs exigeants et les passionnés désireux d'élever leur niveau de jeu !
+
+Propulsé par une architecture hybride combinant un moteur WebAssembly ultra-rapide et l'intelligence artificielle neurale GNU Backgammon (2-ply+), Backgammon Pro vous offre une précision d'analyse digne des plus grands tournois internationaux.
+
+🔥 FONCTIONNALITÉS MAJEURES :
+
+1. MOTEUR NEURAL GRAND-MAÎTRE (GNU BACKGAMMON)
+• Affrontez une IA de classe mondiale avec 4 niveaux de difficulté : Débutant, Intermédiaire, Avancé et Grand-Maître.
+• Analyse en temps réel : calcul des équités, pertes d'équités (equity loss) et probabilités exactes de gain, gammon et backgammon.
+
+2. COACH GRAND-MAÎTRE INTERACTIF & STREAMING EN DIRECT
+• Détection immédiate des blunders (erreurs majeures) et des imprécisions.
+• Explications pédagogiques dynamiques : découvrez POURQUOI un coup est supérieur à un autre (construction de prime, blitz, ancres avancées, sécurité de pion).
+• Mode Rollout Profond : simulez des milliers de parties pour trancher les positions complexes.
+
+3. GESTION EXPERTE DU VIDEAU (DOUBLING CUBE)
+• Décisions de videau conformes aux règles de match officielles de la WBGF.
+• Calculs de points d'abandon (drop point), de prise (take) et détection des situations trop fortes pour doubler (too good to double).
+• Prise en charge intégrale de la Règle de Crawford.
+
+4. BIBLIOTHÈQUE D'OUVERTURES CERTIFIÉE
+• Répertoire complet des 15 jets d'ouverture et de leurs répliques optimales selon la théorie moderne.
+• Conseils tactiques immédiats dès le premier tour.
+
+5. DRILLS DE BLUNDERS & PUZZLES QUOTIDIENS
+• Entraînez-vous sur une banque de positions critiques et corrigez vos points faibles.
+• Puzzles quotidiens avec attribution d'ELO et suivi de votre Performance Rating (PR).
+
+6. MULTIJOUEUR EN LIGNE EN TEMPS RÉEL
+• Défiez des joueurs du monde entier dans des parties synchronisées.
+• Horloge de tournoi officielle avec incrément Fischer.
+• Classement mondial ELO et historique complet de vos parties.
+
+7. DESIGN TOURNAMENT & ERGONOMIE MOBILE SOIGNÉE
+• Plateau tactile haute précision avec retours haptiques immersifs.
+• 4 thèmes de plateau : Tournoi Classique, Luxe Cuir & Bois, Cyber Néon et Minimaliste Slate.
+• Mode hors-ligne complet : jouez et progressez n'importe où, avec synchronisation transparente dès le retour du réseau.
+
+Téléchargez Backgammon Pro dès aujourd'hui et maîtrisez l'art du plus ancien et fascinant jeu de stratégie au monde !

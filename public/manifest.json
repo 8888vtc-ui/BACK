@@ -1,0 +1,44 @@
+{
+  "name": "Backgammon Tournament & Grand-Maître Coach",
+  "short_name": "Backgammon",
+  "description": "Plateau de Backgammon Tournament Grade avec analyse IA en temps réel, mode offline et suivi de progression.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0b1220",
+  "theme_color": "#0f172a",
+  "lang": "fr",
+  "categories": ["games", "strategy", "education"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jouer une partie",
+      "short_name": "Jouer",
+      "description": "Lancer une nouvelle manche de Backgammon",
+      "url": "/",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tableau de Progression",
+      "short_name": "Progression",
+      "description": "Consulter vos statistiques et votre Error Rate",
+      "url": "/progression",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    }
+  ]
+}

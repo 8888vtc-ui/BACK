@@ -1,0 +1,7 @@
+Welcome to Backgammon Pro v1.0.0!
+• Ultra-fast hybrid WASM + GNU Backgammon neural engine.
+• Interactive Grandmaster AI coach with live streaming analysis.
+• Professional doubling cube rules & Crawford match play.
+• Curated blunder drill banks, daily puzzles, and certified opening book.
+• Real-time multiplayer with Fischer tournament clocks and ELO ratings.
+• Full offline play with seamless cloud syncing upon reconnection.

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Backgammon Pro &amp; Coach</string>
+    <string name="title_activity_main">Backgammon Pro &amp; Coach</string>
+    <string name="package_name">com.backgammon.coach</string>
+    <string name="custom_url_scheme">com.backgammon.coach</string>
+</resources>

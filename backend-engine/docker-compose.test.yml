@@ -1,0 +1,9 @@
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gnubg-backend-integration-tests
+    command: ["pytest", "-v", "--tb=short"]
+    environment:
+      - PYTHONUNBUFFERED=1

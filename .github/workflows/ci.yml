@@ -1,0 +1,186 @@
+name: CI - Quality, Tests & Builds
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ===========================================================================
+  # 1. Frontend Lint & Typecheck
+  # ===========================================================================
+  frontend-lint-typecheck:
+    name: Frontend Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript typecheck
+        run: npm run typecheck
+
+  # ===========================================================================
+  # 2. Frontend Unit & Integration Tests (Vitest)
+  # ===========================================================================
+  frontend-tests:
+    name: Frontend Tests (Vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Vitest test suite
+        run: npm test -- --run
+
+  # ===========================================================================
+  # 3. Backend Tests (Pytest)
+  # ===========================================================================
+  backend-tests:
+    name: Backend Tests (Pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: backend-engine/requirements.txt
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend-engine/requirements.txt
+
+      - name: Run Pytest test suite
+        run: pytest backend-engine/tests -v
+
+  # ===========================================================================
+  # 4. Backend Docker Image Build & Containerized Tests
+  # ===========================================================================
+  backend-docker-build:
+    name: Backend Docker Build & Container Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend-engine
+          file: ./backend-engine/Dockerfile
+          push: false
+          load: true
+          tags: backgammon-backend-engine:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run tests inside GNU Backgammon container
+        run: |
+          docker run --rm backgammon-backend-engine:test pytest -v tests/test_parsers.py tests/test_api.py
+
+  # ===========================================================================
+  # 5. Frontend Production Build
+  # ===========================================================================
+  frontend-build:
+    name: Frontend Production Build (Next.js)
+    needs: [frontend-lint-typecheck, frontend-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js application
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_ENV: production
+
+  # ===========================================================================
+  # 6. End-to-End Tests (Playwright)
+  # ===========================================================================
+  e2e-playwright:
+    name: E2E Tests (Playwright)
+    needs: [frontend-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js application for server
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Install Playwright Chromium browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright desktop tests
+        run: npm run test:e2e:desktop
+
+      - name: Upload Playwright test report if failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

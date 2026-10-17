@@ -1,0 +1,3 @@
+privacy_url=https://backgammon-pro.app/privacy
+support_url=https://backgammon-pro.app/support
+marketing_url=https://backgammon-pro.app
