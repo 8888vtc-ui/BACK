@@ -46,22 +46,22 @@ const SAMPLE_PARAMS: CoachPromptParams = {
 
 describe('Coach Prompts & Instructions', () => {
     describe('BACKGAMMON_COACH_SYSTEM_PROMPT', () => {
-        it('définit le rôle de Grand-Maître pédagogue', () => {
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Grand-Maître International de Backgammon');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('pédagogue');
+        it('définit le rôle de Grand-Maître charismatique et direct', () => {
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Grand-Maître de Backgammon');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('charismatique');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('punchline');
         });
 
         it('impose une règle anti-hallucination stricte', () => {
             expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('RÈGLES ANTI-HALLUCINATION STRICTES');
             expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('JAMAIS inventer');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('STRICTEMENT sur les concepts et métriques');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('STRICTEMENT sur les métriques');
         });
 
-        it('spécifie la gestion du contexte de match et du videau', () => {
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('CONTEXTE DU MATCH & VIDEAU');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('DMP');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('crawford');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('matchLength');
+        it('impose une contrainte de longueur stricte (2 phrases, 30 mots)', () => {
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('CONTRAINTE DE LONGUEUR ABSOLUE');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('2 phrases courtes');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('30 mots');
         });
 
         it('exige un format de réponse JSON strict avec schéma défini', () => {
@@ -72,11 +72,9 @@ describe('Coach Prompts & Instructions', () => {
             expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('"advice"');
         });
 
-        it('intègre le vocabulaire technique officiel', () => {
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Golden Point');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Bar Point');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Jan intérieur');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Prime');
+        it('intègre la structure punchline (erreur + règle d\'or)', () => {
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('erreur tactique immédiate');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('règle d\'or');
         });
     });
 

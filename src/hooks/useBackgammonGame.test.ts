@@ -391,7 +391,7 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
             statusMessage: 'Coup 1/2 : Noir déplace 1 → 5',
         });
         expect(s2.usedDice[0]).toBe(true);
-        expect(s2.opponentHighlight).toEqual({ from: 1, to: 5 });
+        expect(s2.opponentHighlight).toEqual([{ from: 1, to: 5 }]);
         expect(s2.opponentStatusMessage).toBe('Coup 1/2 : Noir déplace 1 → 5');
 
         // 3. Fin du tour de l'IA : passe la main au joueur X et nettoie la surbrillance

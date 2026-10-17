@@ -284,7 +284,7 @@ export interface BackgammonGameState {
     difficulty: AIDifficulty;
     lastOpponentDice: [number, number] | null;
     lastOpponentMoves: Move[] | null;
-    opponentHighlight: { from: number; to: number } | null;
+    opponentHighlight: { from: number; to: number }[] | null;
     opponentStatusMessage: string | null;
     /** Historique des sous-mouvements du tour courant (pour Undo). */
     moveHistory: { board: number[]; usedDice: boolean[] }[];
@@ -797,7 +797,10 @@ export function backgammonGameReducer(
                     board: action.board,
                 },
                 usedDice: newUsed,
-                opponentHighlight: { from: action.move.from, to: action.move.to },
+                opponentHighlight: [
+                    ...(state.opponentHighlight ?? []),
+                    { from: action.move.from, to: action.move.to },
+                ],
                 opponentStatusMessage: action.statusMessage,
             };
         }

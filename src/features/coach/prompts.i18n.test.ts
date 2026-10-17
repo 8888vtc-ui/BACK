@@ -51,14 +51,14 @@ describe('Coach Prompts & Explanations i18n (FR/EN)', () => {
         it('retourne le prompt système français par défaut ou avec "fr"', () => {
             const promptFr = getCoachSystemPrompt('fr');
             expect(promptFr).toBe(BACKGAMMON_COACH_SYSTEM_PROMPT);
-            expect(promptFr).toContain('Grand-Maître International de Backgammon');
+            expect(promptFr).toContain('Grand-Maître de Backgammon');
             expect(promptFr).toContain('FORMAT DE RÉPONSE OBLIGATOIRE (JSON STRICT)');
         });
 
         it('retourne le prompt système anglais avec "en"', () => {
             const promptEn = getCoachSystemPrompt('en');
             expect(promptEn).toBe(BACKGAMMON_COACH_SYSTEM_PROMPT_EN);
-            expect(promptEn).toContain('International Grandmaster of Backgammon');
+            expect(promptEn).toContain('Backgammon Grandmaster');
             expect(promptEn).toContain('MANDATORY RESPONSE FORMAT (STRICT JSON)');
         });
     });

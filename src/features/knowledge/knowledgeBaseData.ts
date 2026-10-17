@@ -1323,6 +1323,248 @@ export const KNOWLEDGE_BASE_CONCEPTS: TheoryConcept[] = [
             },
         ],
     },
+    // -------------------------------------------------------------------------
+    // 8. CONCEPTS STRATÉGIQUES DE FRANÇOIS TARDIEU (TRIPLE CHAMPION D'EUROPE)
+    // -------------------------------------------------------------------------
+    {
+        id: 'tardieu-strategic-concepts',
+        slug: 'tardieu-strategic-concepts',
+        category: 'fundamentals',
+        title: {
+            fr: 'Concepts Stratégiques de François Tardieu',
+            en: 'Strategic Concepts by François Tardieu',
+        },
+        author: 'François Tardieu (Triple Champion d’Europe)',
+        difficulty: 'master',
+        tags: ['Tardieu', 'Grand-Maître', 'Ancre Avancée', 'Timing', 'Prime vs Blitz', 'Livre'],
+        summary: {
+            fr: 'Les analyses approfondies de François Tardieu sur la structure des ancres, la gestion du pion unique en arrière (one man back) et la dynamique prime contre blitz.',
+            en: 'François Tardieu’s profound analyses on anchor structures, managing the lone back checker (one man back), and priming vs blitz dynamics.',
+        },
+        keyTakeaway: {
+            fr: 'Ne dispersez jamais un pion sans objectif précis : chaque ancre ou slot doit soit préparer une prime, soit étouffer la mobilité adverse.',
+            en: 'Never expose a checker without a distinct plan: every anchor or slot must either build a prime or suffocate opponent mobility.',
+        },
+        explanation: {
+            fr: [
+                'Issu du célèbre document de travail qui a circulé pendant plus de 20 ans parmi l’élite du backgammon avant d’être édité par Stéphane Chenevière, cet ouvrage propose une méthodologie rigoureuse de prise de décision.',
+                'Tardieu insiste sur la valeur inestimable des ancres hautes (points 20 et 21) pour briser l’agressivité adverse et sur la patience dans le timing d’une prime.',
+                'Face à une menace de blitz, il formule la règle impérative : "Contester l’ancre immédiatement ou fuir sans attendre l’encerclement".',
+            ],
+            en: [
+                'Originating from the legendary manuscript passed between top grandmasters for 20 years before its formal publication edited by Stéphane Chenevière, this treatise offers a disciplined framework for decision making.',
+                'Tardieu underscores the paramount value of high anchors (20 and 21 points) in neutralizing opponent momentum and maintaining prime timing.',
+                'When facing a blitz threat, he establishes the rule: "Contest the anchor immediately or flee before encirclement".',
+            ],
+        },
+        practicalExamples: [
+            {
+                positionDesc: {
+                    fr: 'Adversaire menaçant un blitz avec 2 portes intérieures et un pion en l’air.',
+                    en: 'Opponent threatening a blitz with 2 home points and a checker in the air.',
+                },
+                bestPlay: 'Avancer sur le point 20 adverse ou consolider une ancre',
+                reasoning: {
+                    fr: 'Selon Tardieu, l’ancre haute est le seul vaccin absolu contre le blitz.',
+                    en: 'According to Tardieu, the high anchor is the sole absolute vaccine against the blitz.',
+                },
+            },
+        ],
+        goldenRule: {
+            fr: 'Un blitz sans ancre de repli est un suicide positionnel : construisez vos fondations arrières avant de lancer une attaque tous azimuts.',
+            en: 'A blitz without a fallback anchor is positional suicide: secure your rear foundation before launching an all-out attack.',
+        },
+        sources: [
+            {
+                title: 'Backgammon: Strategic Concepts',
+                author: 'François Tardieu (Édité par Stéphane Chenevière)',
+                type: 'book',
+                url: 'https://shop.backgammongalaxy.com/products/backgammon-strategic-concepts-by-francois-tardieu-softcover',
+                details: 'Ouvrage culte de référence internationale, disponible chez Backgammon Galaxy et Roadkill Books.',
+            },
+        ],
+    },
+    // -------------------------------------------------------------------------
+    // 9. LES 21 PROVERBES D'OUVERTURE DE MICHI (MICHIHITO KAGEYAMA)
+    // -------------------------------------------------------------------------
+    {
+        id: 'michy-proverbs-opening',
+        slug: 'michy-proverbs-opening',
+        category: 'openings',
+        title: {
+            fr: 'Les 21 Proverbes d’Ouverture de Michy',
+            en: 'Michy’s 21 Opening Proverbs',
+        },
+        author: 'Michihito Kageyama (Michy, #2 Mondial)',
+        difficulty: 'intermediate',
+        tags: ['Michy', 'Opening Concepts', 'Proverbes', 'Break the mountain', 'Double Tiger', 'Livre'],
+        summary: {
+            fr: 'Les règles mnémotechniques et proverbes de Michihito Kageyama pour maîtriser la phase d’ouverture sans mémoriser des milliers de variantes.',
+            en: 'Michihito Kageyama’s acclaimed proverbs and heuristics to master opening play without brute-force rote memorization.',
+        },
+        keyTakeaway: {
+            fr: 'Appliquez les proverbes phares : "Break the Mountain" (dégager le point 6 surchargé), "Make the 5-point" et "Double Tiger" (frapper deux pions d’un coup dans son jan).',
+            en: 'Apply the flagship proverbs: "Break the Mountain" (strip the overloaded 6-point), "Make the 5-point", and "Double Tiger" (hit two blots simultaneously inside your home board).',
+        },
+        explanation: {
+            fr: [
+                'Dans son best-seller "Opening Concepts", Michihito Kageyama et Roland Herrera codifient le jeu d’ouverture avec 21 proverbes d’une clarté redoutable.',
+                '"Break the mountain" : avec 5 pions sur le point 6 en début de partie, il est vital d’utiliser les petits dés (1, 2, 3) pour faire descendre ces pions vers les points 5 ou 4 plutôt que de laisser cette "montagne" inutile.',
+                '"Double Tiger" : lorsque vous pouvez frapper 2 pions adverses dans votre propre jan intérieur en laissant deux blots, l’attaque "Double Tigre" est presque toujours supérieure au jeu passif.',
+            ],
+            en: [
+                'In his best-seller "Opening Concepts", Michihito Kageyama and Roland Herrera codify early game play into 21 strikingly effective proverbs.',
+                '"Break the mountain": with 5 checkers stranded on the 6-point, use small rolls (1, 2, 3) to dismantle the "mountain" toward points 5 or 4 rather than letting them rot.',
+                '"Double Tiger": whenever you can hit two opponent blots in your own home board while leaving two return blots, the "Double Tiger" play almost always supersedes passive alternatives.',
+            ],
+        },
+        practicalExamples: [
+            {
+                positionDesc: {
+                    fr: 'Lancer 2-1 après un split adverse laissant un pion exposé sur votre point 5 et 4.',
+                    en: '2-1 roll after an opponent split leaving blots on your 5 and 4 points.',
+                },
+                bestPlay: 'Frapper les 2 pions (Double Tiger)',
+                reasoning: {
+                    fr: 'Envoie 2 pions adverses à la barre et paralyse l’initiative adverse, même au prix d’un blot temporaire.',
+                    en: 'Sends 2 checkers to the bar and obliterates opponent initiative despite temporary return shots.',
+                },
+            },
+        ],
+        goldenRule: {
+            fr: 'Face à un choix difficile en ouverture : ne construisez pas passivement en retrait si vous pouvez frapper en jan ("Double Tiger").',
+            en: 'When facing an opening dilemma: never build passively if you can strike in your home board ("Double Tiger").',
+        },
+        sources: [
+            {
+                title: 'Opening Concepts (Backgammon Odyssey Series)',
+                author: 'Michihito Kageyama & Roland Herrera',
+                type: 'book',
+                url: 'https://bgmichy.com/authors',
+                details: 'Best-seller mondial disponible sur bgmichy.com et chez Backgammon Galaxy.',
+            },
+        ],
+    },
+    // -------------------------------------------------------------------------
+    // 10. TECHNIQUE DE FIN DE PARTIE DE MICHI (AMOEBA & TRAP PLAY)
+    // -------------------------------------------------------------------------
+    {
+        id: 'michy-endgame-technique',
+        slug: 'michy-endgame-technique',
+        category: 'race-bearoff',
+        title: {
+            fr: 'Technique de Fin de Partie de Michy (Amoeba & Trap Play)',
+            en: 'Michy’s Endgame Technique (Amoeba & Trap Play)',
+        },
+        author: 'Michihito Kageyama (Michy, #2 Mondial)',
+        difficulty: 'advanced',
+        tags: ['Michy', 'Endgame Technique', 'Amoeba Play', 'Trap Play', 'Bearoff', 'Livre'],
+        summary: {
+            fr: 'Les techniques de pointe de fin de partie avec contact : l’Amoeba Play, le Trap Play et la gestion du Phantom Point.',
+            en: 'Advanced contact endgame techniques: Amoeba Play, the Trap Play, and navigating the Phantom Point.',
+        },
+        keyTakeaway: {
+            fr: 'En fin de partie avec contact, façonnez vos pions comme une amibe souple ("Amoeba Play") pour ne jamais laisser de tirs directs lors de la rentrée adverse.',
+            en: 'In contact endgames, morph your checkers like an amoeba to avoid leaving direct shots when the opponent enters.',
+        },
+        explanation: {
+            fr: [
+                'Dans "Endgame Technique" (Volume 2 de la série Backgammon Odyssey), Michy démontre que la plupart des erreurs de fin de partie surviennent avant la sortie effective des pions.',
+                'L’"Amoeba Play" consiste à étaler ses pions harmonieusement (2 pions par flèche sur les points 6, 5, 4, 3) pour absorber n’importe quel lancer de dés sans être forcé de laisser un tir direct.',
+                'Le "Trap Play" force l’adversaire reclus sur une ancre à craquer son timing avant vous.',
+            ],
+            en: [
+                'In "Endgame Technique" (Vol. 2 of Backgammon Odyssey), Michy demonstrates that most endgame blunders occur well before the actual checker clearance.',
+                'The "Amoeba Play" spreads checkers smoothly (2 per point across 6, 5, 4, 3) to absorb any dice roll without being forced to break and yield a direct shot.',
+                'The "Trap Play" compels an anchored opponent to crack their timing first.',
+            ],
+        },
+        practicalExamples: [
+            {
+                positionDesc: {
+                    fr: 'Bear-off sous contact avec adversaire sur le point 1 adverse (ancre as).',
+                    en: 'Bear-off under contact with opponent sitting on the 1-point (ace-point anchor).',
+                },
+                bestPlay: 'Distribuer en Amoeba (piles de 2 pions équilibrées)',
+                reasoning: {
+                    fr: 'Empêche tout dé dévastateur (comme 6-5 ou 6-1) de créer un blot fatal.',
+                    en: 'Prevents devastating rolls like 6-5 or 6-1 from forcing fatal inner board blots.',
+                },
+            },
+        ],
+        goldenRule: {
+            fr: 'Ne sortez pas vos pions précipitamment si cela crée un blot intérieur : la sécurité prime sur la vitesse de bear-off sous contact.',
+            en: 'Do not bear off prematurely if it exposes an inner blot: safety outranks bear-off speed while contact remains.',
+        },
+        sources: [
+            {
+                title: 'Endgame Technique (Backgammon Odyssey Series 2)',
+                author: 'Michihito Kageyama & Roland Herrera',
+                type: 'book',
+                url: 'https://bgmichy.com/authors',
+                details: 'Guide de référence sur les fins de partie avec contact, disponible sur bgmichy.com.',
+            },
+        ],
+    },
+    // -------------------------------------------------------------------------
+    // 11. BACKGAMMON MASTERCLASS (MOCHY & MARC OLSEN)
+    // -------------------------------------------------------------------------
+    {
+        id: 'mochy-masterclass',
+        slug: 'mochy-masterclass',
+        category: 'rules-of-thumb',
+        title: {
+            fr: 'Backgammon Masterclass (Mochy & Marc Olsen)',
+            en: 'Backgammon Masterclass (Mochy & Marc Olsen)',
+        },
+        author: 'Masayuki Mochizuki & Marc Olsen',
+        difficulty: 'master',
+        tags: ['Mochy', 'Marc Olsen', 'Masterclass', 'PR', 'XG Rollouts', 'Livre'],
+        summary: {
+            fr: 'La synthèse des conférences et séminaires d’élite de Mochy et Marc Olsen sur la pureté du jeu et l’analyse d’équité assistée par IA.',
+            en: 'Synthesis of elite masterclasses by Mochy and Marc Olsen on game purity, equity distribution, and AI rollout dissection.',
+        },
+        keyTakeaway: {
+            fr: 'Chaque décision doit minimiser le Performance Rating (PR) en maximisant la duplication des lancers clés adverses.',
+            en: 'Every move must drive your Performance Rating (PR) toward 0 by maximizing duplication of opponent key rolls.',
+        },
+        explanation: {
+            fr: [
+                'Publié en 2023, "Backgammon Masterclass" regroupe les enseignements de séminaires donnés par Mochy et Olsen aux quatre coins du monde.',
+                'Le livre détaille comment les grands maîtres calculent l’équité dynamique, comment exploiter les asymétries de position, et comment utiliser la "pureté" tactique pour étouffer le jeu adverse.',
+            ],
+            en: [
+                'Published in 2023, "Backgammon Masterclass" brings together seminars presented worldwide by Mochy and Olsen.',
+                'The book details how grandmasters calculate dynamic equity, exploit positional asymmetries, and leverage "pure play" to stifle opponent counterplay.',
+            ],
+        },
+        practicalExamples: [
+            {
+                positionDesc: {
+                    fr: 'Choix entre frapper un pion ou construire une porte fermée.',
+                    en: 'Choice between hitting a loose blot or closing a solid home point.',
+                },
+                bestPlay: 'Calculer la duplication des dés adverses',
+                reasoning: {
+                    fr: 'Si l’adversaire a besoin du même dé (ex: 4) pour entrer et pour frapper ailleurs, la frappe est doublement efficace.',
+                    en: 'If the opponent requires the same number (e.g. 4) to enter and to strike elsewhere, hitting is doubly potent.',
+                },
+            },
+        ],
+        goldenRule: {
+            fr: 'Dupliquez les bons dés adverses : forcez l’adversaire à avoir besoin du même chiffre pour frapper et pour entrer.',
+            en: 'Duplicate opponent good numbers: force them to need the exact same die to enter and to hit.',
+        },
+        sources: [
+            {
+                title: 'Backgammon Masterclass',
+                author: 'Masayuki Mochizuki & Marc Olsen',
+                type: 'book',
+                url: 'https://shop.backgammongalaxy.com/products/backgammon-masterclass-by-mochy-olsen',
+                details: 'Disponible chez Backgammon Galaxy.',
+            },
+        ],
+    },
 ];
 
 /**

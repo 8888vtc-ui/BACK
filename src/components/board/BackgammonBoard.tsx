@@ -65,8 +65,9 @@ export interface BackgammonBoardProps {
     onSelectDie?: (die: 0 | 1) => void;
     onDieDoubleClick?: (die: 0 | 1) => void;
     onDeselect?: () => void;
+    onUndo?: () => void;
     coachHighlight?: CoachHighlight | null;
-    opponentHighlight?: { from: number; to: number } | null;
+    opponentHighlight?: { from: number; to: number }[] | null;
     theme?: ThemeName;
     isLoading?: boolean;
 }
@@ -548,6 +549,7 @@ const Checker = React.memo(function Checker({
     onMouseLeave,
     dataTestId,
     isDragging,
+    isShaking,
 }: {
     cx: number;
     cy: number;
@@ -561,7 +563,20 @@ const Checker = React.memo(function Checker({
     onMouseLeave?: () => void;
     dataTestId?: string;
     isDragging?: boolean;
+    isShaking?: boolean;
 }) {
+    const [isHovered, setIsHovered] = useState(false);
+    const interactive = Boolean(onClick || onPointerDown);
+
+    const handleMouseEnter = () => {
+        if (interactive) setIsHovered(true);
+        onMouseEnter?.();
+    };
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+        onMouseLeave?.();
+    };
+
     return (
         <g
             opacity={opacity}
@@ -569,15 +584,22 @@ const Checker = React.memo(function Checker({
             onDoubleClick={onDoubleClick}
             onContextMenu={onContextMenu}
             onPointerDown={onPointerDown}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             className={
-                onClick || onPointerDown
+                interactive
                     ? 'cursor-pointer'
                     : undefined
             }
             data-testid={dataTestId}
-            style={{ touchAction: 'none' }}
+            style={{
+                touchAction: 'none',
+                transform: isHovered ? `scale(1.08)` : undefined,
+                transformOrigin: `${cx}px ${cy}px`,
+                transformBox: 'fill-box',
+                transition: 'transform 180ms ease-out',
+                animation: isShaking ? 'checkerShake 0.4s ease-in-out' : undefined,
+            }}
         >
             {/* Ombre portée douce (séparée du corps pour un rendu net) */}
             <circle
@@ -585,7 +607,7 @@ const Checker = React.memo(function Checker({
                 cy={cy + 2.5}
                 r={CHECKER_R}
                 fill="#000000"
-                opacity={0.28}
+                opacity={isHovered ? 0.45 : 0.28}
                 filter="url(#bgCheckerBlur)"
                 pointerEvents="none"
             />
@@ -745,20 +767,26 @@ const BoardSvgDefs = React.memo(function BoardSvgDefs() {
                 <stop offset="50%" stopColor="#3a2010" />
                 <stop offset="100%" stopColor="#2b170c" />
             </linearGradient>
+            {/* Dégradé radial de profondeur (neutre : blanc au centre, noir aux bords) */}
+            <radialGradient id="bgFeltGrad" cx="50%" cy="45%" r="75%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.10" />
+                <stop offset="55%" stopColor="#000000" stopOpacity="0" />
+                <stop offset="100%" stopColor="#000000" stopOpacity="0.45" />
+            </radialGradient>
             <filter id="bgCheckerShadow" x="-25%" y="-25%" width="150%" height="150%">
                 <feDropShadow dx="0" dy="3.5" stdDeviation="3" floodColor="#000000" floodOpacity="0.45" />
             </filter>
             <radialGradient id="bgGradX3D" cx="35%" cy="28%" r="75%">
-                <stop offset="0%" stopColor="#ffffff" />
-                <stop offset="35%" stopColor="#f1f5f9" />
-                <stop offset="70%" stopColor="#dbe3ec" />
-                <stop offset="100%" stopColor="#aeb9c7" />
+                <stop offset="0%" stopColor="#fffdf7" />
+                <stop offset="30%" stopColor="#f7f1e3" />
+                <stop offset="65%" stopColor="#e6dcc4" />
+                <stop offset="100%" stopColor="#b8a98a" />
             </radialGradient>
             <radialGradient id="bgGradO3D" cx="35%" cy="28%" r="75%">
-                <stop offset="0%" stopColor="#5b6b82" />
-                <stop offset="40%" stopColor="#263449" />
-                <stop offset="75%" stopColor="#111a2b" />
-                <stop offset="100%" stopColor="#05080f" />
+                <stop offset="0%" stopColor="#6b7d99" />
+                <stop offset="35%" stopColor="#2c3a55" />
+                <stop offset="70%" stopColor="#141d30" />
+                <stop offset="100%" stopColor="#04060d" />
             </radialGradient>
             <linearGradient id="bgBevelX" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
@@ -772,12 +800,14 @@ const BoardSvgDefs = React.memo(function BoardSvgDefs() {
             </linearGradient>
             {/* Dégradés de flèches (profondeur : clair à la base, sombre à la pointe) */}
             <linearGradient id="bgPointA" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#fdfaf0" />
-                <stop offset="100%" stopColor="#e8dfc8" />
+                <stop offset="0%" stopColor="#fbf6ea" />
+                <stop offset="55%" stopColor="#efe6d0" />
+                <stop offset="100%" stopColor="#d9cba8" />
             </linearGradient>
             <linearGradient id="bgPointB" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#9a2433" />
-                <stop offset="100%" stopColor="#6d1622" />
+                <stop offset="0%" stopColor="#8f1f30" />
+                <stop offset="55%" stopColor="#701722" />
+                <stop offset="100%" stopColor="#4d0f18" />
             </linearGradient>
             <style>
                 {`
@@ -802,6 +832,14 @@ const BoardSvgDefs = React.memo(function BoardSvgDefs() {
                         animation: diceSettleAnim 0.18s ease-out forwards;
                         transform-origin: center;
                     }
+                    @keyframes checkerShake {
+                        0% { transform: translate(0, 0); }
+                        20% { transform: translate(-4px, 0); }
+                        40% { transform: translate(4px, 0); }
+                        60% { transform: translate(-3px, 0); }
+                        80% { transform: translate(3px, 0); }
+                        100% { transform: translate(0, 0); }
+                    }
                 `}
             </style>
         </defs>
@@ -820,6 +858,7 @@ interface PointStackProps {
     onMouseLeave?: () => void;
     badgeBg: string;
     badgeText: string;
+    isShaking?: boolean;
 }
 
 function PointStackComponent({
@@ -834,6 +873,7 @@ function PointStackComponent({
     onMouseLeave,
     badgeBg,
     badgeText,
+    isShaking,
 }: PointStackProps) {
     if (count === 0) return null;
     const ownerIsX = count > 0;
@@ -857,6 +897,7 @@ function PointStackComponent({
                 onContextMenu={interactive ? onContextMenu : undefined}
                 onMouseEnter={interactive ? onMouseEnter : undefined}
                 onMouseLeave={interactive ? onMouseLeave : undefined}
+                isShaking={isShaking}
             />,
         );
     }
@@ -894,7 +935,8 @@ function arePointStackPropsEqual(prev: PointStackProps, next: PointStackProps): 
         prev.onClick === next.onClick &&
         prev.onPointerDown === next.onPointerDown &&
         prev.onDoubleClick === next.onDoubleClick &&
-        prev.onContextMenu === next.onContextMenu
+        prev.onContextMenu === next.onContextMenu &&
+        prev.isShaking === next.isShaking
     );
 }
 
@@ -927,6 +969,7 @@ function BackgammonBoardComponent({
     onSelectDie,
     onDieDoubleClick,
     onDeselect,
+    onUndo,
     coachHighlight = null,
     opponentHighlight = null,
     theme = 'snowie_classic',
@@ -934,6 +977,8 @@ function BackgammonBoardComponent({
 }: BackgammonBoardProps) {
     const T = THEMES[theme];
     const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
+    const [shakePoint, setShakePoint] = useState<number | null>(null);
+    const [hoveredDie, setHoveredDie] = useState<0 | 1 | null>(null);
 
     const player = state.turn;
     const isX = player === 'X';
@@ -985,13 +1030,14 @@ function BackgammonBoardComponent({
             setAnimPhase('moving');
         }, 20);
 
-        // Fin de l'animation après 300 ms : pose nette et passage au coup suivant
+        // Fin de l'animation synchronisée avec la transition CSS (500 ms) :
+        // pose nette et passage au coup suivant sans troncature.
         const endTimer = setTimeout(() => {
             setActiveAnim(null);
             setTimeout(() => {
                 processNextInQueue();
             }, 30);
-        }, 320);
+        }, 520);
 
         return () => {
             clearTimeout(frameTimer);
@@ -1273,9 +1319,18 @@ function BackgammonBoardComponent({
                 return;
             }
             lastCheckerClickRef.current = { point: p, time: now };
+
+            // Retour visuel en cas de clic sur un pion non-déplaçable :
+            // brève animation de tremblement (shake) sur la flèche concernée.
+            const isMovable = leftDieTargets.has(p) || rightDieTargets.has(p);
+            if (!isMovable) {
+                setShakePoint(p);
+                window.setTimeout(() => setShakePoint((cur) => (cur === p ? null : cur)), 450);
+            }
+
             onCheckerClick(p);
         },
-        [onCheckerClick, onCheckerDoubleClick],
+        [onCheckerClick, onCheckerDoubleClick, leftDieTargets, rightDieTargets],
     );
 
     const handleCheckerNativeDblClick = useCallback(
@@ -1457,6 +1512,13 @@ function BackgammonBoardComponent({
                     handled = true;
                     break;
                 }
+                case 'Backspace':
+                case 'z':
+                case 'Z': {
+                    onUndo?.();
+                    handled = true;
+                    break;
+                }
             }
 
             if (handled) {
@@ -1464,7 +1526,7 @@ function BackgammonBoardComponent({
                 e.stopPropagation();
             }
         },
-        [keyboardFocusedPoint, defaultRovingPoint, handlePointAction, onDeselect, onSelectDie],
+        [keyboardFocusedPoint, defaultRovingPoint, handlePointAction, onDeselect, onSelectDie, onUndo],
     );
 
     // Handlers stables par point (0 à 25) pour React.memo(Checker)
@@ -1495,74 +1557,42 @@ function BackgammonBoardComponent({
     );
     const pointMouseLeaveHandler = useCallback(() => setHoveredPoint(null), []);
 
-    // --- 7. DISCIPLINE DE SURBRILLANCE : UN SEUL HALO DISCRET COULEUR DU JOUEUR ---
+    // --- 7. POINTS LUMINEUX DE DESTINATION (8px à la pointe des flèches) ---
     function renderDestinationTargets() {
         return ghostDestinations.map((to) => {
             if (to < 1 || to > 24) return null;
             const { x, top } = pointLayout(to);
+            const apexX = x + POINT_W / 2;
+            const apexY = top ? TOP_APEX : BOT_APEX;
 
             return (
-                <g key={`dest-target-group-${to}`} className="cursor-pointer" onClick={() => onDestinationClick(to)}>
-                    <polygon
-                        points={trianglePoints(to)}
-                        fill="#22c55e"
-                        fillOpacity={0.25}
+                <g
+                    key={`dest-target-group-${to}`}
+                    className="cursor-pointer"
+                    onClick={() => onDestinationClick(to)}
+                    pointerEvents="all"
+                    data-testid={`destination-target-${to}`}
+                >
+                    {/* Halo lumineux doux */}
+                    <circle cx={apexX} cy={apexY} r={9} fill="#22c55e" opacity={0.25} pointerEvents="none" />
+                    {/* Point lumineux central (8px) */}
+                    <circle
+                        cx={apexX}
+                        cy={apexY}
+                        r={4}
+                        fill="#a7f3d0"
                         stroke="#22c55e"
-                        strokeWidth={2.5}
-                        strokeDasharray="6,3"
-                        data-testid={`destination-target-${to}`}
-                    />
-                    <rect
-                        x={x}
-                        y={top ? TOP_BASE : BOT_BASE - POINT_H}
-                        width={POINT_W}
-                        height={POINT_H}
-                        fill="transparent"
-                        pointerEvents="all"
+                        strokeWidth={1.5}
+                        pointerEvents="none"
                     />
                 </g>
             );
         });
     }
 
-    // --- 8. PIONS FANTÔMES DISCRETS ---
+    // --- 8. PIONS FANTÔMES (désactivés : remplacés par les points lumineux) ---
     function renderGhosts() {
-        return ghostDestinations.map((to) => {
-            if (to < 1 || to > 24) return null;
-            const idx = ghostLandingIndex(displayBoard, to, player);
-            const visible = Math.min(idx + 1, MAX_VISIBLE);
-            const ghostK = Math.min(idx, visible - 1);
-            const { cx, cy } = checkerCenter(to, ghostK, visible);
-            const hit = isHit(displayBoard, to, player);
-            return (
-                <g
-                    key={`ghost${to}`}
-                    onClick={() => onDestinationClick(to)}
-                    className="cursor-pointer"
-                    pointerEvents="all"
-                    data-testid={`ghost-checker-${to}`}
-                >
-                    <Checker cx={cx} cy={cy} isX={isX} opacity={0.38} dataTestId={`ghost-checker-circle-${to}`} />
-                    {hit && (
-                        <text
-                            x={cx + CHECKER_R * 0.6}
-                            y={cy - CHECKER_R * 0.6}
-                            textAnchor="middle"
-                            dominantBaseline="central"
-                            fontSize={CHECKER_R * 0.85}
-                            fontWeight={800}
-                            fill={T.impact}
-                            stroke="#ffffff"
-                            strokeWidth={2}
-                            paintOrder="stroke"
-                            data-testid={`ghost-hit-indicator-${to}`}
-                        >
-                            ✱
-                        </text>
-                    )}
-                </g>
-            );
-        });
+        return null;
     }
 
     // --- 9. FANTÔMES DU COACH (RÉSERVÉS STRICTEMENT AU PANNEAU COACH) ---
@@ -1587,30 +1617,74 @@ function BackgammonBoardComponent({
         );
     }
 
-    function renderOpponentHighlight() {
-        if (!opponentHighlight) return null;
-        const { from, to } = opponentHighlight;
-        const fromPos = getCheckerCoordinates(displayBoard, from, !isX ? 'X' : 'O', false);
-        const toPos = getCheckerCoordinates(displayBoard, to, !isX ? 'X' : 'O', true);
+    // --- 9bis. FLÈCHES VECTORIELLES DU COUP OPTIMAL (OptimalMoveArrows) ---
+    function renderOptimalMoveArrows() {
+        if (!coachHighlight || !coachHighlight.optimal || coachHighlight.optimal.length === 0) return null;
 
-        const midX = (fromPos.cx + toPos.cx) / 2;
-        const midY = (fromPos.cy + toPos.cy) / 2 + (fromPos.cy > VB_H / 2 ? -40 : 40);
-        const pathD = `M ${fromPos.cx} ${fromPos.cy} Q ${midX} ${midY} ${toPos.cx} ${toPos.cy}`;
+        const arrows: React.ReactNode[] = [];
+        let simBoard = displayBoard.slice();
+
+        coachHighlight.optimal.forEach((m, i) => {
+            if (m.to < 1 || m.to > 24) {
+                simBoard = applyMove(simBoard, m, player);
+                return;
+            }
+            const fromPos = getCheckerCoordinates(simBoard, m.from, player, false);
+            const toPos = getCheckerCoordinates(simBoard, m.to, player, true);
+
+            // Courbe de Bézier : point de contrôle décalé verticalement pour une flèche courbe.
+            const midX = (fromPos.cx + toPos.cx) / 2;
+            const midY = (fromPos.cy + toPos.cy) / 2 + (fromPos.cy > VB_H / 2 ? -60 : 60);
+            const pathD = `M ${fromPos.cx} ${fromPos.cy} Q ${midX} ${midY} ${toPos.cx} ${toPos.cy}`;
+
+            arrows.push(
+                <g key={`optimal-arrow-${i}`} pointerEvents="none" data-testid={`optimal-arrow-${i}`}>
+                    <path d={pathD} fill="none" stroke="#34d399" strokeWidth={4} strokeLinecap="round" opacity={0.9} />
+                    <path d={pathD} fill="none" stroke="#a7f3d0" strokeWidth={1.5} strokeLinecap="round" opacity={0.6} />
+                    {/* Pointe de flèche */}
+                    <circle cx={toPos.cx} cy={toPos.cy} r={6} fill="#34d399" opacity={0.9} />
+                </g>,
+            );
+
+            simBoard = applyMove(simBoard, m, player);
+        });
+
+        return <g data-testid="optimal-move-arrows">{arrows}</g>;
+    }
+
+    function renderOpponentHighlight() {
+        if (!opponentHighlight || opponentHighlight.length === 0) return null;
+
+        const elements: React.ReactNode[] = [];
+        opponentHighlight.forEach(({ from, to }, idx) => {
+            const fromPos = getCheckerCoordinates(displayBoard, from, !isX ? 'X' : 'O', false);
+            const toPos = getCheckerCoordinates(displayBoard, to, !isX ? 'X' : 'O', true);
+
+            const midX = (fromPos.cx + toPos.cx) / 2;
+            const midY = (fromPos.cy + toPos.cy) / 2 + (fromPos.cy > VB_H / 2 ? -40 : 40);
+            const pathD = `M ${fromPos.cx} ${fromPos.cy} Q ${midX} ${midY} ${toPos.cx} ${toPos.cy}`;
+
+            elements.push(
+                <g key={`opp-highlight-${idx}`} pointerEvents="none">
+                    <circle
+                        cx={fromPos.cx}
+                        cy={fromPos.cy}
+                        r={CHECKER_R + 6}
+                        fill="none"
+                        stroke="#f59e0b"
+                        strokeWidth={3}
+                        strokeDasharray="6,3"
+                        className="animate-pulse"
+                    />
+                    <path d={pathD} fill="none" stroke="#fbbf24" strokeWidth={3.5} strokeDasharray="8,4" opacity={0.85} />
+                    <circle cx={toPos.cx} cy={toPos.cy} r={CHECKER_R + 6} fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" strokeWidth={2.5} />
+                </g>,
+            );
+        });
 
         return (
             <g pointerEvents="none" data-testid="opponent-move-highlight">
-                <circle
-                    cx={fromPos.cx}
-                    cy={fromPos.cy}
-                    r={CHECKER_R + 6}
-                    fill="none"
-                    stroke="#f59e0b"
-                    strokeWidth={3}
-                    strokeDasharray="6,3"
-                    className="animate-pulse"
-                />
-                <path d={pathD} fill="none" stroke="#fbbf24" strokeWidth={3.5} strokeDasharray="8,4" opacity={0.85} />
-                <circle cx={toPos.cx} cy={toPos.cy} r={CHECKER_R + 6} fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" strokeWidth={2.5} />
+                {elements}
             </g>
         );
     }
@@ -1933,6 +2007,15 @@ function BackgammonBoardComponent({
                         onClick={onDeselect}
                         data-testid="board-surface-background"
                     />
+                    {/* Overlay radial de profondeur (centre éclairé, bords assombris) */}
+                    <rect
+                        x={PLAY_X0}
+                        y={PLAY_Y0}
+                        width={PTS_W}
+                        height={PLAY_H}
+                        fill="url(#bgFeltGrad)"
+                        pointerEvents="none"
+                    />
                     <rect
                         x={PLAY_X0}
                         y={RIVER_Y0}
@@ -2173,6 +2256,7 @@ function BackgammonBoardComponent({
                             onContextMenu={pointRightClickHandlers[p]}
                             onMouseEnter={pointMouseEnterHandlers[p]}
                             onMouseLeave={pointMouseLeaveHandler}
+                            isShaking={shakePoint === p}
                         />
                     ))}
 
@@ -2206,7 +2290,7 @@ function BackgammonBoardComponent({
                                             ? activeAnim.endPos.cy - activeAnim.startPos.cy
                                             : 0
                                         }px)`,
-                                    transition: 'transform 500ms cubic-bezier(0.22, 1, 0.36, 1)',
+                                    transition: 'transform 500ms cubic-bezier(0.25, 1, 0.5, 1)',
                                 }}
                             >
                                 <Checker
@@ -2229,7 +2313,7 @@ function BackgammonBoardComponent({
                                                 ? activeAnim.hitEndPos.cy - activeAnim.hitStartPos.cy
                                                 : 0
                                             }px)`,
-                                        transition: 'transform 500ms cubic-bezier(0.22, 1, 0.36, 1)',
+                                        transition: 'transform 500ms cubic-bezier(0.25, 1, 0.5, 1)',
                                     }}
                                 >
                                     <Checker
@@ -2258,6 +2342,9 @@ function BackgammonBoardComponent({
 
                     {/* Fantômes Coach */}
                     {renderCoachGhosts()}
+
+                    {/* Flèches vectorielles du coup optimal */}
+                    {renderOptimalMoveArrows()}
 
                     {/* Coup de l'adversaire */}
                     {renderOpponentHighlight()}
@@ -2350,8 +2437,16 @@ function BackgammonBoardComponent({
                             <g
                                 onClick={(!isDouble ? !usedDice[0] : remainingMoves > 0) ? () => handleDieClickWrapped(0) : undefined}
                                 onDoubleClick={(!isDouble ? !usedDice[0] : remainingMoves > 0) ? () => handleDieNativeDblClick(0) : undefined}
+                                onMouseEnter={(!isDouble ? !usedDice[0] : remainingMoves > 0) ? () => setHoveredDie(0) : undefined}
+                                onMouseLeave={() => setHoveredDie((cur) => (cur === 0 ? null : cur))}
                                 className={(!isDouble ? !usedDice[0] : remainingMoves > 0) ? 'cursor-pointer' : undefined}
                                 data-testid="board-die-0"
+                                style={{
+                                    transform: hoveredDie === 0 ? 'scale(1.1)' : undefined,
+                                    transformOrigin: `${diceCenterX - DIE * 0.62}px ${diceY}px`,
+                                    transformBox: 'fill-box',
+                                    transition: 'transform 150ms ease-out',
+                                }}
                             >
                                 {activeDie === 0 && (!isDouble ? !usedDice[0] : remainingMoves > 0) && (
                                     <rect
@@ -2377,8 +2472,16 @@ function BackgammonBoardComponent({
                             <g
                                 onClick={(!isDouble ? !usedDice[1] : remainingMoves > 0) ? () => handleDieClickWrapped(1) : undefined}
                                 onDoubleClick={(!isDouble ? !usedDice[1] : remainingMoves > 0) ? () => handleDieNativeDblClick(1) : undefined}
+                                onMouseEnter={(!isDouble ? !usedDice[1] : remainingMoves > 0) ? () => setHoveredDie(1) : undefined}
+                                onMouseLeave={() => setHoveredDie((cur) => (cur === 1 ? null : cur))}
                                 className={(!isDouble ? !usedDice[1] : remainingMoves > 0) ? 'cursor-pointer' : undefined}
                                 data-testid="board-die-1"
+                                style={{
+                                    transform: hoveredDie === 1 ? 'scale(1.1)' : undefined,
+                                    transformOrigin: `${diceCenterX + DIE * 0.62}px ${diceY}px`,
+                                    transformBox: 'fill-box',
+                                    transition: 'transform 150ms ease-out',
+                                }}
                             >
                                 {activeDie === 1 && (!isDouble ? !usedDice[1] : remainingMoves > 0) && (
                                     <rect
@@ -2417,6 +2520,22 @@ function BackgammonBoardComponent({
                         <text x={TRAY_X0 + TRAY_W / 2} y={VB_H - 22} textAnchor="middle" dominantBaseline="central" fontSize={13} fontWeight={700} fill={T.badgeText}>
                             X : {pips.X} <tspan fill={colorForDiff(diffX)}>({fmtDiff(diffX)})</tspan>
                         </text>
+
+                        {/* Jauge visuelle de course (Pip Count Bar) : proportion X vs O */}
+                        {(() => {
+                            const total = pips.X + pips.O;
+                            if (total <= 0) return null;
+                            const xRatio = pips.X / total;
+                            const barW = TRAY_W - 12;
+                            const xW = barW * xRatio;
+                            return (
+                                <g data-testid="pip-count-bar">
+                                    <rect x={TRAY_X0 + 6} y={VB_H - 46} width={barW} height={6} rx={3} fill="#1e293b" stroke="#334155" strokeWidth={1} />
+                                    <rect x={TRAY_X0 + 6} y={VB_H - 46} width={xW} height={6} rx={3} fill="#e2e8f0" />
+                                    <rect x={TRAY_X0 + 6 + xW} y={VB_H - 46} width={barW - xW} height={6} rx={3} fill="#0f172a" />
+                                </g>
+                            );
+                        })()}
                     </g>
                 </svg>
             </div>
@@ -2459,11 +2578,13 @@ export function areBoardPropsEqual(prev: BackgammonBoardProps, next: BackgammonB
     if (prev.selectedDie !== next.selectedDie) return false;
 
     if (prev.coachHighlight !== next.coachHighlight) return false;
-    if (
-        prev.opponentHighlight?.from !== next.opponentHighlight?.from ||
-        prev.opponentHighlight?.to !== next.opponentHighlight?.to
-    ) {
-        return false;
+    const prevOpp = prev.opponentHighlight;
+    const nextOpp = next.opponentHighlight;
+    if (prevOpp !== nextOpp) {
+        if (!prevOpp || !nextOpp || prevOpp.length !== nextOpp.length) return false;
+        for (let i = 0; i < prevOpp.length; i++) {
+            if (prevOpp[i].from !== nextOpp[i].from || prevOpp[i].to !== nextOpp[i].to) return false;
+        }
     }
 
     const prevUsed = prev.usedDice;

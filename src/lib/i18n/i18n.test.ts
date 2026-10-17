@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { fr } from './translations/fr';
 import { en } from './translations/en';
-import { resolveTranslation, getTranslation } from './I18nContext';
+import { resolveTranslation, getTranslation, detectLocale } from './I18nContext';
 
 function getAllKeys(obj: Record<string, any>, prefix = ''): string[] {
     let keys: string[] = [];
@@ -68,5 +68,54 @@ describe('i18n Dictionary Parity & Interpolation', () => {
     it('retourne la clé brute si introuvable dans tous les dictionnaires', () => {
         const missing = getTranslation('fr', 'unknown.nonexistent.key');
         expect(missing).toBe('unknown.nonexistent.key');
+    });
+});
+
+describe('detectLocale — détection automatique de la langue', () => {
+    let storage: Record<string, string>;
+
+    beforeEach(() => {
+        storage = {};
+        const localStorageMock = {
+            getItem: (k: string) => storage[k] ?? null,
+            setItem: (k: string, v: string) => { storage[k] = v; },
+            clear: () => { storage = {}; },
+        };
+        vi.stubGlobal('window', { localStorage: localStorageMock });
+        vi.stubGlobal('navigator', { language: 'en-US', languages: ['en-US'] });
+        vi.stubGlobal('Intl', { DateTimeFormat: () => ({ resolvedOptions: () => ({ timeZone: 'UTC' }) }) });
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('priorise le choix manuel sauvegardé dans localStorage', () => {
+        storage['bg_locale'] = 'en';
+        expect(detectLocale()).toBe('en');
+        storage['bg_locale'] = 'fr';
+        expect(detectLocale()).toBe('fr');
+    });
+
+    it('détecte le français via navigator.language', () => {
+        vi.stubGlobal('navigator', { language: 'fr-FR', languages: ['fr-FR'] });
+        expect(detectLocale()).toBe('fr');
+    });
+
+    it('détecte l\'anglais via navigator.language', () => {
+        vi.stubGlobal('navigator', { language: 'en-US', languages: ['en-US'] });
+        expect(detectLocale()).toBe('en');
+    });
+
+    it('détecte le français via le fuseau horaire (Europe/Paris)', () => {
+        vi.stubGlobal('navigator', { language: 'de-DE', languages: ['de-DE'] });
+        vi.stubGlobal('Intl', { DateTimeFormat: () => ({ resolvedOptions: () => ({ timeZone: 'Europe/Paris' }) }) });
+        expect(detectLocale()).toBe('fr');
+    });
+
+    it('retourne "en" par défaut pour le reste du monde', () => {
+        vi.stubGlobal('navigator', { language: 'ja-JP', languages: ['ja-JP'] });
+        vi.stubGlobal('Intl', { DateTimeFormat: () => ({ resolvedOptions: () => ({ timeZone: 'Asia/Tokyo' }) }) });
+        expect(detectLocale()).toBe('en');
     });
 });

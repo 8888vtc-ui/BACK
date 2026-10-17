@@ -354,6 +354,33 @@ export function OpeningBookModal({
                             </div>
                         </div>
 
+                        {/* Encart Proverbe du Maître & Livre Recommandé */}
+                        {selectedOpening.masterQuote && (
+                            <div className="rounded-xl border border-indigo-500/40 bg-gradient-to-r from-indigo-950/50 via-slate-900 to-purple-950/30 p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-inner" data-testid="opening-master-quote">
+                                <div className="space-y-1">
+                                    <div className="text-[10px] font-black uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+                                        <span>📚</span>
+                                        <span>Enseignement du Maître — {selectedOpening.masterQuote.author}</span>
+                                    </div>
+                                    <div className="text-xs font-semibold text-indigo-100 italic leading-snug">
+                                        {selectedOpening.masterQuote.proverb}
+                                    </div>
+                                    <div className="text-[11px] text-slate-400">
+                                        Extrait de : <strong className="text-slate-200">{selectedOpening.masterQuote.book}</strong>
+                                    </div>
+                                </div>
+                                <a
+                                    href={selectedOpening.masterQuote.buyUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="shrink-0 rounded-lg bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-xs font-bold text-white transition shadow active:scale-95 flex items-center gap-1"
+                                >
+                                    <span>Découvrir le livre</span>
+                                    <span>↗</span>
+                                </a>
+                            </div>
+                        )}
+
                         {/* Tableau comparatif des alternatives & blunders */}
                         <div className="space-y-2">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">

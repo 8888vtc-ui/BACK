@@ -177,9 +177,9 @@ describe('Modèle d’interaction Snowie / TrueMoneyGames (TMG)', () => {
                 />,
             );
 
-            // Second clic sur la destination fantôme choisie (19)
-            const ghost19 = screen.getByTestId('ghost-checker-19');
-            fireEvent.click(ghost19);
+            // Second clic sur le point lumineux de destination choisi (19)
+            const target19 = screen.getByTestId('destination-target-19');
+            fireEvent.click(target19);
             expect(onDestinationClick).toHaveBeenCalledWith(19);
             expect(onPlayMove).toHaveBeenCalledWith(24, 19);
         });
@@ -363,12 +363,12 @@ describe('Modèle d’interaction Snowie / TrueMoneyGames (TMG)', () => {
             );
 
             // N'affiche QUE les destinations de 24 (19 et 22)
-            expect(screen.queryByTestId('ghost-checker-19')).not.toBeNull();
-            expect(screen.queryByTestId('ghost-checker-22')).not.toBeNull();
+            expect(screen.queryByTestId('destination-target-19')).not.toBeNull();
+            expect(screen.queryByTestId('destination-target-22')).not.toBeNull();
 
             // N'affiche AUCUNE destination de 13 (8 et 11)
-            expect(screen.queryByTestId('ghost-checker-8')).toBeNull();
-            expect(screen.queryByTestId('ghost-checker-11')).toBeNull();
+            expect(screen.queryByTestId('destination-target-8')).toBeNull();
+            expect(screen.queryByTestId('destination-target-11')).toBeNull();
         });
 
         it('clic et double-clic sur un dé du plateau déclenchent onSelectDie et onDieDoubleClick', () => {

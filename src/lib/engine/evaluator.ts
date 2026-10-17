@@ -41,8 +41,8 @@ export function formatSingleMove(move: Move, player: Player): string {
                 ? 'bar'
                 : String(move.from)
             : move.from === O_BAR
-              ? 'bar'
-              : String(25 - move.from);
+                ? 'bar'
+                : String(25 - move.from);
 
     const toStr =
         player === 'X'
@@ -50,8 +50,8 @@ export function formatSingleMove(move: Move, player: Player): string {
                 ? 'off'
                 : String(move.to)
             : move.to === O_OFF
-              ? 'off'
-              : String(25 - move.to);
+                ? 'off'
+                : String(25 - move.to);
 
     return `${fromStr}/${toStr}`;
 }
@@ -62,6 +62,40 @@ export function formatSingleMove(move: Move, player: Player): string {
 export function formatMoveSequenceNotation(moves: Move[], player: Player): string {
     if (moves.length === 0) return 'Pass';
     return moves.map((m) => formatSingleMove(m, player)).join(' ');
+}
+
+/**
+ * Formate une séquence complète de coups en marquant les frappes (hits) d'un
+ * astérisque `*`, conformément à la notation standard de Backgammon.
+ *
+ * Une frappe survient quand la destination `to` contient exactement un pion
+ * adverse (blot). Le plateau `board` est celui AVANT l'application de la
+ * séquence ; il est mis à jour au fil des coups pour détecter les frappes
+ * successives (ex: "13/7* 7/5").
+ *
+ * @param moves   Séquence de coups à formater.
+ * @param player  Joueur au trait (perspective de la notation).
+ * @param board   Plateau initial (26 entiers) avant la séquence.
+ */
+export function formatMoveSequenceNotationWithHits(
+    moves: Move[],
+    player: Player,
+    board: number[],
+): string {
+    if (moves.length === 0) return 'Pass';
+    let currentBoard = board.slice();
+    const tokens: string[] = [];
+    for (const m of moves) {
+        const token = formatSingleMove(m, player);
+        // Détection de frappe : la destination contient un blot adverse.
+        const isHit =
+            m.to !== X_OFF &&
+            m.to !== O_OFF &&
+            (player === 'X' ? currentBoard[m.to] === -1 : currentBoard[m.to] === 1);
+        tokens.push(isHit ? `${token}*` : token);
+        currentBoard = applyMove(currentBoard, m, player);
+    }
+    return tokens.join(' ');
 }
 
 /**

@@ -369,7 +369,11 @@ export function generateLegalMoves(state: BoardState, dice: [number, number]): M
     const maxDice = Math.max(...all.map((s) => s.moves.length));
     let filtered = all.filter((s) => s.moves.length === maxDice);
 
-    if (maxDice === 1 && d1 !== d2) {
+    // Règle du plus fort dé : uniquement quand un seul dé est jouable ET que le
+    // joueur n'est PAS sur la barre. Depuis la barre, le joueur peut entrer avec
+    // n'importe quel dé jouable (aucune règle du plus fort dé ne s'applique).
+    const onBar = player === 'X' ? state.board[X_BAR] > 0 : state.board[O_BAR] < 0;
+    if (maxDice === 1 && d1 !== d2 && !onBar) {
         const used = new Set(filtered.map((s) => moveDistance(s.moves[0], player)));
         if (used.size === 2) {
             const higher = Math.max(d1, d2);
@@ -380,7 +384,12 @@ export function generateLegalMoves(state: BoardState, dice: [number, number]): M
     const seen = new Set<string>();
     const result: MoveSequence[] = [];
     for (const s of filtered) {
-        const key = boardKey(s.board);
+        // Depuis la barre, deux entrées différentes (ex: bar/24 vs bar/20) peuvent
+        // mener au même plateau final. On inclut donc le premier coup dans la clé
+        // de déduplication pour préserver le choix d'entrée du joueur.
+        const key = onBar && s.moves.length > 0
+            ? `${s.moves[0].from}:${s.moves[0].to}|${boardKey(s.board)}`
+            : boardKey(s.board);
         if (!seen.has(key)) {
             seen.add(key);
             result.push(s);
@@ -475,7 +484,11 @@ export function computeLegalTargets(
         const d1Moves = generateSingleMoves(state.board, player, d1);
         const d2Moves = generateSingleMoves(state.board, player, d2);
 
-        if (d1Moves.length > 0 && d2Moves.length > 0) {
+        // Depuis la barre, le joueur peut entrer avec n'importe quel dé jouable :
+        // aucune règle du plus fort dé ne s'applique.
+        const onBar = player === 'X' ? state.board[X_BAR] > 0 : state.board[O_BAR] < 0;
+
+        if (d1Moves.length > 0 && d2Moves.length > 0 && !onBar) {
             // Deux dés individuellement jouables mais un seul possible : règle du plus fort
             const higher = Math.max(d1, d2);
             const moves = d1 === higher ? d1Moves : d2Moves;
@@ -723,4 +736,4 @@ export function detectBoardMove(
     }
 
     return null;
-}
+}

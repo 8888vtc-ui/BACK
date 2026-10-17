@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import CoachPanel from './CoachPanel';
+import CoachPanel, { computePerformanceRating, getPRBadge } from './CoachPanel';
 
 describe('CoachPanel Component', () => {
     const originalFetch = globalThis.fetch;
@@ -21,7 +21,7 @@ describe('CoachPanel Component', () => {
                 equityLoss={null}
                 playedMove={null}
                 optimalMove={null}
-                onDismiss={() => {}}
+                onDismiss={() => { }}
             />,
         );
         expect(html).toBe('');
@@ -34,7 +34,7 @@ describe('CoachPanel Component', () => {
                 equityLoss={-0.125}
                 playedMove="24/20 13/11"
                 optimalMove="8/4 6/4"
-                onDismiss={() => {}}
+                onDismiss={() => { }}
                 isLoading={true}
             />,
         );
@@ -49,7 +49,7 @@ describe('CoachPanel Component', () => {
                 equityLoss={-0.125}
                 playedMove="24/20 13/11"
                 optimalMove="8/4 6/4"
-                onDismiss={() => {}}
+                onDismiss={() => { }}
             />,
         );
 
@@ -68,7 +68,7 @@ describe('CoachPanel Component', () => {
                 equityLoss={-0.035}
                 playedMove="13/9"
                 optimalMove="8/4"
-                onDismiss={() => {}}
+                onDismiss={() => { }}
             />,
         );
 
@@ -85,7 +85,7 @@ describe('CoachPanel Component', () => {
                 playedMove="24/20 13/11"
                 optimalMove="8/4 6/4"
                 explanation="Le coup joué concède trop de tirs directs."
-                onDismiss={() => {}}
+                onDismiss={() => { }}
             />,
         );
 
@@ -123,7 +123,7 @@ describe('CoachPanel Component', () => {
             playedMove: '24/20 13/11',
             optimalMove: '8/4 6/4',
             onExplain: onExplainMock,
-            onDismiss: () => {},
+            onDismiss: () => { },
             apiUrl: '/api/coach',
         };
 
@@ -138,7 +138,7 @@ describe('CoachPanel Component', () => {
                 equityLoss={-0.125}
                 playedMove="24/20"
                 optimalMove="8/4"
-                onDismiss={() => {}}
+                onDismiss={() => { }}
                 matchContext={{
                     matchLength: 7,
                     scoreX: 6,
@@ -167,7 +167,7 @@ describe('CoachPanel Component', () => {
                 equityLoss={-0.125}
                 playedMove="24/20"
                 optimalMove="8/4"
-                onDismiss={() => {}}
+                onDismiss={() => { }}
                 matchContext={{
                     matchLength: 7,
                     scoreX: 6,
@@ -187,7 +187,7 @@ describe('CoachPanel Component', () => {
                 equityLoss={-0.125}
                 playedMove="24/20"
                 optimalMove="8/4"
-                onDismiss={() => {}}
+                onDismiss={() => { }}
                 triggerMode="manual"
             />,
         );
@@ -205,7 +205,7 @@ describe('CoachPanel Component', () => {
                 equityLoss={-0.125}
                 playedMove="24/20"
                 optimalMove="8/4"
-                onDismiss={() => {}}
+                onDismiss={() => { }}
                 triggerMode="auto"
                 autoThreshold="blunder"
             />,
@@ -222,7 +222,7 @@ describe('CoachPanel Component', () => {
                 equityLoss={-0.125}
                 playedMove="24/20"
                 optimalMove="8/4"
-                onDismiss={() => {}}
+                onDismiss={() => { }}
                 isOffline={true}
             />,
         );
@@ -246,13 +246,48 @@ describe('CoachPanel Component', () => {
                 playedMove="24/20 13/11"
                 optimalMove="8/4 6/4"
                 features={features}
-                onDismiss={() => {}}
+                onDismiss={() => { }}
                 isOffline={true}
             />,
         );
 
         expect(html).toContain('Coach en Temps Réel');
         expect(html).toContain('Mode dégradé offline');
+    });
+
+    it('affiche la carte PERFORMANCE (PR) quand matchStats est fourni', () => {
+        const html = renderToStaticMarkup(
+            <CoachPanel
+                verdict="blunder"
+                equityLoss={-0.125}
+                playedMove="24/20 13/11"
+                optimalMove="8/4 6/4"
+                matchStats={{ decisionsCount: 10, totalEquityLoss: 0.42, blundersCount: 3 }}
+                onDismiss={() => { }}
+            />,
+        );
+
+        expect(html).toContain('PR');
+        expect(html).toContain('21.00');
+        expect(html).toContain('Débutant');
+        expect(html).toContain('Précision');
+        expect(html).toContain('Blunders');
+    });
+});
+
+describe('computePerformanceRating & getPRBadge', () => {
+    it('calcule le PR avec la formule (totalEquityLoss / decisionsCount) * 500', () => {
+        expect(computePerformanceRating({ decisionsCount: 10, totalEquityLoss: 0.42, blundersCount: 0 })).toBeCloseTo(21.0, 1);
+        expect(computePerformanceRating({ decisionsCount: 0, totalEquityLoss: 0, blundersCount: 0 })).toBe(0);
+        expect(computePerformanceRating({ decisionsCount: 20, totalEquityLoss: 0.2, blundersCount: 0 })).toBeCloseTo(5.0, 1);
+    });
+
+    it('détermine le badge de niveau selon les seuils', () => {
+        expect(getPRBadge(2.5)).toBe('Grandmaster');
+        expect(getPRBadge(4.2)).toBe('Master');
+        expect(getPRBadge(6.0)).toBe('Expert');
+        expect(getPRBadge(10.0)).toBe('Intermédiaire');
+        expect(getPRBadge(15.0)).toBe('Débutant');
     });
 });
 

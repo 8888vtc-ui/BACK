@@ -64,7 +64,12 @@ import KnowledgeBaseModal from '../components/knowledge/KnowledgeBaseModal';
 import { parseFromXGID } from '../features/export';
 import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
-import { analyzeBoardMoves, formatMoveSequenceNotation } from '../lib/engine/evaluator';
+import {
+    analyzeBoardMoves,
+    formatMoveSequenceNotation,
+    formatMoveSequenceNotationWithHits,
+} from '../lib/engine/evaluator';
+import { normalizeMoveNotation } from '../features/drills/blunderDrillEngine';
 
 interface CoachState {
     verdict: 'doubtful' | 'blunder';
@@ -74,6 +79,20 @@ interface CoachState {
     explanation: string | null;
     features?: StrategicFeatures;
     positionKey?: string;
+    /** Top des coups évalués par le moteur (notation, équité, perte). */
+    candidateMoves?: { rank: number; notation: string; equity: number; equityLoss: number }[];
+    /** Plateau avant le coup (pour le bouton "Reprendre l'erreur"). */
+    boardBefore?: number[];
+}
+
+/** Statistiques cumulées de la session pour le calcul du PR (Performance Rating). */
+export interface MatchStats {
+    /** Nombre de décisions (coups) prises par le joueur. */
+    decisionsCount: number;
+    /** Somme des pertes d'équité (valeur absolue cumulée). */
+    totalEquityLoss: number;
+    /** Nombre de blunders (perte d'équité >= 0.08). */
+    blundersCount: number;
 }
 
 export default function Home() {
@@ -81,6 +100,13 @@ export default function Home() {
     const { theme, toggleTheme } = useBoardTheme();
     const [coach, setCoach] = useState<CoachState | null>(null);
     const [coachHighlight, setCoachHighlight] = useState<CoachHighlight | null>(null);
+    const [matchStats, setMatchStats] = useState<MatchStats>({
+        decisionsCount: 0,
+        totalEquityLoss: 0,
+        blundersCount: 0,
+    });
+    const [optimalStreak, setOptimalStreak] = useState(0);
+    const [brilliantMove, setBrilliantMove] = useState(false);
     const [isBoardLoading, setIsBoardLoading] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [isMatchmakingModalOpen, setIsMatchmakingModalOpen] = useState(false);
@@ -341,6 +367,55 @@ export default function Home() {
         }
     }, [game.applyRemoteState]);
 
+    // Raccourcis clavier de compétition (Speed-Play) : Espace, Tab, D.
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore si le focus est dans un champ de saisie.
+            const target = e.target as HTMLElement | null;
+            if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+                return;
+            }
+
+            switch (e.key) {
+                case ' ': {
+                    // Espace : lance les dés si en attente de lancer.
+                    if (game.phase === 'WAITING_FOR_ROLL' && game.state.turn === 'X') {
+                        e.preventDefault();
+                        impactMedium();
+                        soundEngine.playDiceRoll();
+                        game.rollDice();
+                    }
+                    break;
+                }
+                case 'Tab': {
+                    // Tab : inverse l'ordre des deux dés (feedback visuel de rotation).
+                    if (game.dice && game.state.turn === 'X') {
+                        e.preventDefault();
+                        impactLight();
+                        setPreferredDie((prev) => ((1 - prev) as 0 | 1));
+                    }
+                    break;
+                }
+                case 'd':
+                case 'D': {
+                    // D : propose le videau (double) si disponible avant le lancer.
+                    if (game.canDouble) {
+                        e.preventDefault();
+                        impactHeavy();
+                        soundEngine.playCubeOffer();
+                        game.offerDouble();
+                    }
+                    break;
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [game.phase, game.state.turn, game.dice, game.canDouble, game.rollDice, game.offerDouble]);
+
     const activeDie: 0 | 1 =
         game.selected?.die ??
         (game.usedDice[preferredDie] ? ((1 - preferredDie) as 0 | 1) : preferredDie);
@@ -478,10 +553,19 @@ export default function Home() {
             return;
         }
 
-        // Plusieurs destinations existent (ex: coup possible avec dé gauche ET coup possible avec dé droit) :
-        // Sélectionne le pion et n'affiche QUE ses destinations ("auto-move intelligent")
-        game.selectChecker(point);
-    }, [game.selected?.point, game.deselect, game.leftDieTargets, game.rightDieTargets, game.selectChecker, handlePlayMove]);
+        // Smart Click : clic gauche = premier dé disponible (dé gauche en priorité).
+        // Applique immédiatement le déplacement vers la destination la plus sûre.
+        if (leftDests.length > 0) {
+            const safest = getSafestDestination(point, leftDests, game.state.board, game.state.turn);
+            handlePlayMove(point, safest, 0);
+            return;
+        }
+        if (rightDests.length > 0) {
+            const safest = getSafestDestination(point, rightDests, game.state.board, game.state.turn);
+            handlePlayMove(point, safest, 1);
+            return;
+        }
+    }, [game.selected?.point, game.deselect, game.leftDieTargets, game.rightDieTargets, game.state.board, game.state.turn, handlePlayMove]);
 
     const handleCheckerDoubleClick = useCallback((point: number) => {
         impactMedium();
@@ -508,9 +592,12 @@ export default function Home() {
                 (isX ? midVal >= -1 : midVal <= 1); // pas bloqué par 2+ pions adverses
 
             if (sumIsLegal && midIsFree) {
-                // Joue la somme en deux sous-mouvements rapides (dé 1 puis dé 2)
+                // Joue la somme en deux sous-mouvements, avec un délai de 200ms
+                // entre les deux pour visualiser un éventuel Hit intermédiaire.
                 handlePlayMove(point, midDest, 0);
-                handlePlayMove(midDest, sumDest, 1);
+                window.setTimeout(() => {
+                    handlePlayMove(midDest, sumDest, 1);
+                }, 200);
                 return;
             }
         }
@@ -526,25 +613,21 @@ export default function Home() {
         const rightDests = game.rightDieTargets.get(point) ?? [];
         const leftDests = game.leftDieTargets.get(point) ?? [];
 
-        // Modèle Snowie/TMG : clic droit = dé droit
-        if (rightDests.length === 1) {
-            handlePlayMove(point, rightDests[0], 1);
+        // Smart Click : clic droit = second dé disponible (dé droit en priorité).
+        // Applique immédiatement le déplacement vers la destination la plus sûre.
+        if (rightDests.length > 0) {
+            const safest = getSafestDestination(point, rightDests, game.state.board, game.state.turn);
+            handlePlayMove(point, safest, 1);
             return;
         }
 
-        // Si le dé droit n'est pas jouable sur ce pion mais le dé gauche est unique
-        if (rightDests.length === 0 && leftDests.length === 1) {
-            handlePlayMove(point, leftDests[0], 0);
+        // Repli : si le dé droit n'est pas jouable, joue le dé gauche.
+        if (leftDests.length > 0) {
+            const safest = getSafestDestination(point, leftDests, game.state.board, game.state.turn);
+            handlePlayMove(point, safest, 0);
             return;
         }
-
-        // Plusieurs destinations pour le dé droit : sélectionne le pion et affiche ses destinations pour le dé droit
-        if (rightDests.length > 1) {
-            setPreferredDie(1);
-            game.selectChecker(point, 1);
-            return;
-        }
-    }, [game.rightDieTargets, game.leftDieTargets, game.selectChecker, handlePlayMove]);
+    }, [game.rightDieTargets, game.leftDieTargets, game.state.board, game.state.turn, handlePlayMove]);
 
     // Enregistrement du début de tour pour X
     useEffect(() => {
@@ -554,6 +637,43 @@ export default function Home() {
             currentTurnMovesRef.current = [];
         }
     }, [game.dice, game.state.turn]);
+
+    // Auto-play du coup forcé unique : si le joueur n'a qu'un seul coup légal
+    // sur tout le plateau, il est joué automatiquement après 600ms.
+    useEffect(() => {
+        if (game.phase !== 'PLAYING_MOVES' || game.state.turn !== 'X') return;
+        if (!game.dice) return;
+
+        // Compte le nombre total de coups légaux (source -> destinations).
+        let totalMoves = 0;
+        let singleFrom: number | null = null;
+        let singleTo: number | null = null;
+        let singleDie: 0 | 1 | null = null;
+
+        for (const [from, dests] of game.leftDieTargets) {
+            for (const to of dests) {
+                totalMoves++;
+                singleFrom = from;
+                singleTo = to;
+                singleDie = 0;
+            }
+        }
+        for (const [from, dests] of game.rightDieTargets) {
+            for (const to of dests) {
+                totalMoves++;
+                singleFrom = from;
+                singleTo = to;
+                singleDie = 1;
+            }
+        }
+
+        if (totalMoves === 1 && singleFrom !== null && singleTo !== null && singleDie !== null) {
+            const timer = window.setTimeout(() => {
+                handlePlayMove(singleFrom!, singleTo!, singleDie!);
+            }, 600);
+            return () => window.clearTimeout(timer);
+        }
+    }, [game.phase, game.state.turn, game.dice, game.leftDieTargets, game.rightDieTargets, handlePlayMove]);
 
     // Enregistrement du tour de X quand il bascule vers O et détection automatique d'erreur par le Coach
     useEffect(() => {
@@ -581,21 +701,57 @@ export default function Home() {
                 };
                 const analysis = analyzeBoardMoves(evalState, dice, { ply: 2 });
                 if (analysis.bestMove) {
-                    const playedNotation = formatMoveSequenceNotation(playedMoves, 'X');
+                    // Retranscription fidèle du coup joué, frappes marquées d'un astérisque.
+                    const playedNotation = formatMoveSequenceNotationWithHits(playedMoves, 'X', boardBefore);
+                    const normalizedPlayed = normalizeMoveNotation(playedNotation);
                     const matchedAnalysis = analysis.moves.find(
-                        (m) => m.notation.replace(/\s+/g, '') === playedNotation.replace(/\s+/g, ''),
+                        (m) => normalizeMoveNotation(m.notation) === normalizedPlayed,
                     );
                     const equityLoss = matchedAnalysis ? matchedAnalysis.equityLoss : -0.15;
+
+                    // Cumul des statistiques de session (PR en direct).
+                    // Seuls les coups NON FORCÉS (>= 2 coups légaux) comptent dans le PR.
+                    const isUnforced = analysis.moves.length > 1;
+                    if (isUnforced) {
+                        setMatchStats((prev) => ({
+                            decisionsCount: prev.decisionsCount + 1,
+                            totalEquityLoss: prev.totalEquityLoss + Math.abs(equityLoss),
+                            blundersCount: prev.blundersCount + (equityLoss <= -0.08 ? 1 : 0),
+                        }));
+
+                        // Boucle de dopamine : Streak de coups parfaits & Coup de Maître.
+                        if (equityLoss >= -0.025) {
+                            // Coup parfait : incrémente la série.
+                            setOptimalStreak((prev) => prev + 1);
+                        } else if (equityLoss <= -0.08) {
+                            // Blunder : la série retombe à 0.
+                            setOptimalStreak(0);
+                        }
+
+                        // Détection du "Coup de Maître" : coup #1 (perte 0) ET écart avec #2 > 0.060.
+                        const secondBest = analysis.moves[1];
+                        const isBrilliant =
+                            Math.abs(equityLoss) < 0.0001 &&
+                            secondBest !== undefined &&
+                            Math.abs(secondBest.equityLoss) > 0.060;
+                        setBrilliantMove(isBrilliant);
+                    }
 
                     // Si perte d'équité significative (erreur >= -0.06), déclenchement automatique du Coach
                     if (equityLoss <= -0.06) {
                         const isBlunder = equityLoss <= -0.12;
+                        if (isBlunder) {
+                            soundEngine.playBlunderAlert();
+                        }
 
-                        // Calcul des états terminaux pour extraire les concepts stratégiques
-                        let playedEndState: BoardState = evalState;
-                        let bPlayed = [...evalState.board];
-                        for (const m of playedMoves) bPlayed = applyMove(bPlayed, m, 'X');
-                        playedEndState = { ...evalState, board: bPlayed };
+                        // Calcul des états terminaux pour extraire les concepts stratégiques.
+                        // IMPORTANT : on utilise le plateau RÉEL après le coup (game.state.board)
+                        // plutôt que de reconstruire depuis playedMoves, afin d'éviter toute
+                        // désynchronisation entre la retranscription et l'état affiché.
+                        const playedEndState: BoardState = {
+                            ...evalState,
+                            board: [...game.state.board],
+                        };
 
                         let bestEndState: BoardState = evalState;
                         if (analysis.bestMove.moves) {
@@ -614,6 +770,13 @@ export default function Home() {
                             explanation: null,
                             features,
                             positionKey: boardBefore.join(','),
+                            candidateMoves: analysis.moves.slice(0, 3).map((m) => ({
+                                rank: m.rank,
+                                notation: m.notation,
+                                equity: m.equity,
+                                equityLoss: m.equityLoss,
+                            })),
+                            boardBefore: [...boardBefore],
                         });
                         setCoachHighlight({
                             played: playedMoves,
@@ -674,6 +837,13 @@ export default function Home() {
         setCoachHighlight(null);
         setIsAnalyzing(false);
     }, []);
+
+    // "Reprendre l'erreur" : annule le dernier sous-mouvement pour rejouer le coup.
+    const handleReplayMove = useCallback(() => {
+        game.undoMove();
+        setCoach(null);
+        setCoachHighlight(null);
+    }, [game.undoMove]);
 
     const handleTriggerCoach = useCallback(async () => {
         setIsAnalyzing(true);
@@ -957,6 +1127,34 @@ export default function Home() {
 
             {/* 1. HUD FIXE EN HAUT */}
             <header className="w-full max-w-7xl mx-auto shrink-0 z-30 flex flex-col gap-1.5 px-1 pt-0.5 pb-1">
+                {/* Bandeau Dopamine : Streak & Coup de Maître */}
+                {(optimalStreak > 0 || brilliantMove) && (
+                    <div className="flex items-center justify-center gap-2 flex-wrap">
+                        {optimalStreak > 0 && (
+                            <span
+                                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold transition-all ${optimalStreak >= 15
+                                        ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-lg shadow-amber-500/40 animate-pulse'
+                                        : optimalStreak >= 10
+                                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-amber-500/30'
+                                            : optimalStreak >= 5
+                                                ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40'
+                                                : 'bg-slate-800/60 text-slate-300 ring-1 ring-slate-700/50'
+                                    }`}
+                                data-testid="optimal-streak-badge"
+                            >
+                                🔥 {optimalStreak} coup{optimalStreak > 1 ? 's' : ''} parfait{optimalStreak > 1 ? 's' : ''} d'affilée
+                            </span>
+                        )}
+                        {brilliantMove && (
+                            <span
+                                className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-400 to-amber-400 px-3 py-1 text-xs font-black text-slate-950 shadow-lg shadow-cyan-500/40 animate-pulse"
+                                data-testid="brilliant-move-badge"
+                            >
+                                ✨ COUP DE MAÎTRE !
+                            </span>
+                        )}
+                    </div>
+                )}
                 <div id="match-hud" className="w-full">
                     <MatchHud
                         matchLength={game.state.matchLength}
@@ -980,7 +1178,7 @@ export default function Home() {
                                 return;
                             }
                             impactHeavy();
-                            soundEngine.playDoublingCube();
+                            soundEngine.playCubeOffer();
                             game.offerDouble();
                             if (isMultiplayerActive) {
                                 multiplayer.broadcastDoubleOffered(game.state.cubeValue * 2);
@@ -1091,21 +1289,21 @@ export default function Home() {
                         doublingOfferedBy={game.doublingOfferedBy}
                         currentTurn={game.state.turn}
                         onOfferDouble={() => {
-                            soundEngine.playDoublingCube();
+                            soundEngine.playCubeOffer();
                             game.offerDouble();
                             if (isMultiplayerActive) {
                                 multiplayer.broadcastDoubleOffered(game.state.cubeValue * 2);
                             }
                         }}
                         onTakeDouble={() => {
-                            soundEngine.playDoublingCube();
+                            soundEngine.playCubeOffer();
                             game.takeDouble();
                             if (isMultiplayerActive) {
                                 multiplayer.broadcastDoubleAccepted(game.state.cubeValue);
                             }
                         }}
                         onPassDouble={() => {
-                            soundEngine.playDoublingCube();
+                            soundEngine.playCubeOffer();
                             game.passDouble();
                             if (isMultiplayerActive && multiplayer.matchInfo) {
                                 const winner = multiplayer.matchInfo.localRole === 'X' ? 'O' : 'X';
@@ -1245,6 +1443,7 @@ export default function Home() {
                                 onSelectDie={handleSelectDie}
                                 onDieDoubleClick={handleDieDoubleClick}
                                 onDeselect={handleDeselect}
+                                onUndo={game.undoMove}
                                 coachHighlight={activeCoachHighlight}
                                 opponentHighlight={game.opponentHighlight}
                                 theme={theme}
@@ -1275,7 +1474,7 @@ export default function Home() {
                         )}
                     </div>
 
-                    <div className="p-3 overflow-y-auto flex-1 space-y-3">
+                    <div className="p-2 overflow-hidden flex-1 space-y-2">
                         <ErrorBoundary name="Analyse du Coach">
                             <CoachPanel
                                 verdict={coach?.verdict ?? null}
@@ -1284,6 +1483,10 @@ export default function Home() {
                                 optimalMove={coach?.optimalMove ?? null}
                                 explanation={coach?.explanation ?? null}
                                 features={coach?.features}
+                                matchStats={matchStats}
+                                topMoves={coach?.candidateMoves}
+                                boardBefore={coach?.boardBefore}
+                                onReplayMove={handleReplayMove}
                                 onDismiss={dismissCoach}
                                 onOpenKnowledgeConcept={handleOpenKnowledgeConcept}
                                 isLoading={isAnalyzing}
@@ -1376,6 +1579,10 @@ export default function Home() {
                                 optimalMove={coach?.optimalMove ?? null}
                                 explanation={coach?.explanation ?? null}
                                 features={coach?.features}
+                                matchStats={matchStats}
+                                topMoves={coach?.candidateMoves}
+                                boardBefore={coach?.boardBefore}
+                                onReplayMove={handleReplayMove}
                                 onDismiss={() => {
                                     dismissCoach();
                                     setIsMobileDrawerOpen(false);

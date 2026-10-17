@@ -85,9 +85,9 @@ describe('Animations Tournament Grade & Zéro Téléportation', () => {
         });
         expect(screen.getByTestId('animating-checker-layer')).toBeTruthy();
 
-        // Fin de l'animation à 350 ms -> le pion se pose et le calque animé disparaît
+        // Fin de l'animation à 520 ms -> le pion se pose et le calque animé disparaît
         act(() => {
-            vi.advanceTimersByTime(350);
+            vi.advanceTimersByTime(550);
         });
         expect(screen.queryByTestId('animating-checker-layer')).not.toBeTruthy();
     });
@@ -148,7 +148,7 @@ describe('Animations Tournament Grade & Zéro Téléportation', () => {
         expect(soundEngine.playHit).toHaveBeenCalled();
 
         act(() => {
-            vi.advanceTimersByTime(350);
+            vi.advanceTimersByTime(550);
         });
         expect(screen.queryByTestId('hit-flying-checker')).not.toBeTruthy();
     });

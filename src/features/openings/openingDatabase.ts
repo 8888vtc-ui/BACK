@@ -25,6 +25,12 @@ export const OPENING_BOOK: OpeningEntry[] = [
         explanation:
             'Le 3-1 est le meilleur jet d’ouverture du jeu. Construire le point 5 crée une porte maîtresse essentielle pour l’attaque (blocage du jan intérieur) et la défense (empêche l’adversaire d’y poser une ancre avancée).',
         keyRule: 'Ne jouez JAMAIS autre chose que 8/5 6/5 sur 3-1 d’ouverture.',
+        masterQuote: {
+            author: 'François Tardieu & Michy',
+            book: 'Strategic Concepts & Opening Concepts',
+            proverb: '« Le Point 5 est la reine des portes : ne réfléchissez pas, construisez-le instantanément. »',
+            buyUrl: 'https://shop.backgammongalaxy.com/products/backgammon-strategic-concepts-by-francois-tardieu-softcover',
+        },
         alternatives: [
             {
                 notation: '24/21 13/12',
@@ -57,6 +63,12 @@ export const OPENING_BOOK: OpeningEntry[] = [
         explanation:
             'Deuxième meilleur jet d’ouverture. Faire le point 4 étend le jan intérieur et prépare un solide blitz ou prime contre les pions arrière de l’adversaire.',
         keyRule: 'Faites la porte 4 immédiatement avec 8/4 6/4.',
+        masterQuote: {
+            author: 'François Tardieu',
+            book: 'Backgammon: Strategic Concepts',
+            proverb: '« La porte 4 forme l’enclume de votre jan intérieur face au marteau de votre jan extérieur. »',
+            buyUrl: 'https://shop.backgammongalaxy.com/products/backgammon-strategic-concepts-by-francois-tardieu-softcover',
+        },
         alternatives: [
             {
                 notation: '24/20 13/11',
@@ -83,6 +95,12 @@ export const OPENING_BOOK: OpeningEntry[] = [
         explanation:
             'Construire la porte bar (point 7) bloque les sorties 6 de l’adversaire depuis son fond de court (point 24). C’est le premier jalon pour bâtir une prime de 6 portes consécutives.',
         keyRule: 'Le point 7 verrouille le champ et paralyse l’échappée adverse.',
+        masterQuote: {
+            author: 'François Tardieu & Paul Magriel',
+            book: 'Backgammon: Strategic Concepts',
+            proverb: '« Le bar-point paralyse le dé 6 adverse et lance le compte à rebours de la prime. »',
+            buyUrl: 'https://shop.backgammongalaxy.com/products/backgammon-strategic-concepts-by-francois-tardieu-softcover',
+        },
         alternatives: [
             {
                 notation: '24/18 13/12',
@@ -106,6 +124,12 @@ export const OPENING_BOOK: OpeningEntry[] = [
         explanation:
             'Coup légendaire surnommé "Lover’s Leap". Échappe un pion arriéré depuis le point 24 jusqu’au point médian 13 en toute sécurité, prenant une nette avance à la course (+11 pips).',
         keyRule: 'Fuyez le fond du court en toute sécurité vers le point 13.',
+        masterQuote: {
+            author: 'Masayuki Mochizuki (Mochy)',
+            book: 'Backgammon Masterclass',
+            proverb: '« Si un pion arrière peut s’envoler directement en sécurité, courez sans hésitation : la course gagne les matchs. »',
+            buyUrl: 'https://shop.backgammongalaxy.com/products/backgammon-masterclass-by-mochy-olsen',
+        },
         alternatives: [
             {
                 notation: '24/18 13/8',

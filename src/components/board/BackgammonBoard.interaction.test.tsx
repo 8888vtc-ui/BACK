@@ -429,8 +429,8 @@ describe('BackgammonBoard Component - Rendu Overstacking + Badge', () => {
     });
 });
 
-describe('BackgammonBoard Component - Ghost Checkers (Aperçu, Frappes & Coach)', () => {
-    it('affiche le pion fantôme d anticipation à la destination légale', () => {
+describe('BackgammonBoard Component - Points Lumineux de Destination (Aperçu & Coach)', () => {
+    it('affiche le point lumineux de destination à la pointe de la flèche légale', () => {
         const state = createBoardState({ turn: 'X' });
         const leftDieTargets = new Map([[24, [19]]]);
         const onDestinationClick = vi.fn();
@@ -449,16 +449,16 @@ describe('BackgammonBoard Component - Ghost Checkers (Aperçu, Frappes & Coach)'
             />,
         );
 
-        // Présence du pion fantôme sur le point 19
-        const ghost19 = screen.getByTestId('ghost-checker-19');
-        expect(ghost19).toBeDefined();
+        // Présence du point lumineux sur le point 19
+        const target19 = screen.getByTestId('destination-target-19');
+        expect(target19).toBeDefined();
 
-        // Le fantôme est cliquable pour exécuter le déplacement
-        fireEvent.click(ghost19);
+        // Le point est cliquable pour exécuter le déplacement
+        fireEvent.click(target19);
         expect(onDestinationClick).toHaveBeenCalledWith(19);
     });
 
-    it('affiche l indicateur visuel de frappe (*) quand la destination contient un blot adverse', () => {
+    it('affiche le point lumineux de destination même quand la destination contient un blot adverse', () => {
         // Point 20 contient 1 seul pion O (-1), donc un blot vulnérable
         const board = new Array<number>(26).fill(0);
         board[24] = 2;
@@ -480,16 +480,11 @@ describe('BackgammonBoard Component - Ghost Checkers (Aperçu, Frappes & Coach)'
             />,
         );
 
-        // Le fantôme est rendu
-        expect(screen.getByTestId('ghost-checker-20')).toBeDefined();
-
-        // L'indicateur d'impact ✱ est présent
-        const hitIndicator = screen.getByTestId('ghost-hit-indicator-20');
-        expect(hitIndicator).toBeDefined();
-        expect(hitIndicator.textContent).toBe('✱');
+        // Le point lumineux est rendu sur la destination
+        expect(screen.getByTestId('destination-target-20')).toBeDefined();
     });
 
-    it('n affiche pas d indicateur de frappe si la destination est vide ou contient des pions alliés', () => {
+    it('affiche le point lumineux de destination quand la destination est vide', () => {
         // Point 20 est vide
         const board = new Array<number>(26).fill(0);
         board[24] = 2;
@@ -511,8 +506,7 @@ describe('BackgammonBoard Component - Ghost Checkers (Aperçu, Frappes & Coach)'
             />,
         );
 
-        expect(screen.getByTestId('ghost-checker-20')).toBeDefined();
-        expect(screen.queryByTestId('ghost-hit-indicator-20')).toBeNull();
+        expect(screen.getByTestId('destination-target-20')).toBeDefined();
     });
 
     it('affiche les fantômes du coach pour le coup joué et le coup optimal', () => {
@@ -546,7 +540,7 @@ describe('BackgammonBoard Component - Ghost Checkers (Aperçu, Frappes & Coach)'
         expect(optimalGhost).toBeDefined();
     });
 
-    it('affiche les fantômes d anticipation lors du survol (hover) sans sélection préalable', () => {
+    it('affiche les points lumineux de destination lors du survol (hover) sans sélection préalable', () => {
         const state = createBoardState({ turn: 'X' });
         const leftDieTargets = new Map([[24, [19]]]);
 
@@ -564,22 +558,22 @@ describe('BackgammonBoard Component - Ghost Checkers (Aperçu, Frappes & Coach)'
             />,
         );
 
-        // Avant survol : pas de fantôme
-        expect(screen.queryByTestId('ghost-checker-19')).toBeNull();
+        // Avant survol : pas de point lumineux
+        expect(screen.queryByTestId('destination-target-19')).toBeNull();
 
         // Survol du pion sur le point 24
         const checker24 = screen.getByTestId('checker-p24-0');
         fireEvent.mouseEnter(checker24);
 
-        // Le fantôme apparaît à la destination
-        expect(screen.getByTestId('ghost-checker-19')).toBeDefined();
+        // Le point lumineux apparaît à la destination
+        expect(screen.getByTestId('destination-target-19')).toBeDefined();
 
         // Fin de survol
         fireEvent.mouseLeave(checker24);
-        expect(screen.queryByTestId('ghost-checker-19')).toBeNull();
+        expect(screen.queryByTestId('destination-target-19')).toBeNull();
     });
 
-    it('affiche plusieurs pions fantômes quand une flèche offre plusieurs destinations légales', () => {
+    it('affiche plusieurs points lumineux quand une flèche offre plusieurs destinations légales', () => {
         const state = createBoardState({ turn: 'X' });
         // Deux destinations possibles avec le dé actif : 20 et 19
         const leftDieTargets = new Map([[24, [20, 19]]]);
@@ -598,8 +592,8 @@ describe('BackgammonBoard Component - Ghost Checkers (Aperçu, Frappes & Coach)'
             />,
         );
 
-        expect(screen.getByTestId('ghost-checker-20')).toBeDefined();
-        expect(screen.getByTestId('ghost-checker-19')).toBeDefined();
+        expect(screen.getByTestId('destination-target-20')).toBeDefined();
+        expect(screen.getByTestId('destination-target-19')).toBeDefined();
     });
 });
 

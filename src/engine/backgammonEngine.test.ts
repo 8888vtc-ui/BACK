@@ -312,4 +312,45 @@ describe('evaluateMoveSafety & getSafestDestination (Modèle Snowie/TMG)', () =>
         const safest = getSafestDestination(from, dests, board, 'X');
         expect(safest).toBe(18);
     });
-});
+});
+
+describe('Entrée depuis la barre — règle du plus fort dé', () => {
+    it('permet d\'entrer avec le dé 1 (→24) quand l\'entrée du dé 5 (→20) est bloquée', () => {
+        // X a un pion sur la barre, O a 2 pions sur 20 (bloqué), 24 est libre.
+        const board = makeBoard({}, { 20: 2 }, 1, 0);
+        const state = makeState(board, 'X');
+
+        const moves = generateLegalMoves(state, [1, 5]);
+
+        // Le premier coup doit être l'entrée sur 24 (dé 1), jamais sur 20 (bloqué).
+        expect(moves.length).toBeGreaterThan(0);
+        for (const seq of moves) {
+            expect(seq.moves[0]).toEqual({ from: X_BAR, to: 24 });
+        }
+    });
+
+    it('propose les deux entrées (bar/24 et bar/20) quand les deux sont libres (pas de règle du plus fort depuis la barre)', () => {
+        // X sur la barre, 24 et 20 libres : les deux entrées sont possibles.
+        const board = makeBoard({}, {}, 1, 0);
+        const state = makeState(board, 'X');
+
+        const moves = generateLegalMoves(state, [1, 5]);
+
+        // Les deux entrées (bar/24 et bar/20) doivent être proposées comme premier coup.
+        const firstTos = moves.map((s) => s.moves[0].to).sort((a, b) => a - b);
+        expect(firstTos).toEqual([20, 24]);
+    });
+
+    it('permet d\'entrer avec le dé 5 (→20) quand l\'entrée du dé 1 (→24) est bloquée', () => {
+        // X sur la barre, O a 2 pions sur 24 (bloqué), 20 est libre.
+        const board = makeBoard({}, { 24: 2 }, 1, 0);
+        const state = makeState(board, 'X');
+
+        const moves = generateLegalMoves(state, [1, 5]);
+
+        expect(moves.length).toBeGreaterThan(0);
+        for (const seq of moves) {
+            expect(seq.moves[0]).toEqual({ from: X_BAR, to: 20 });
+        }
+    });
+});

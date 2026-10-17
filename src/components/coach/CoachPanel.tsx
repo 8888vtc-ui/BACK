@@ -16,6 +16,19 @@ import { persistCoachExplanation } from '../../lib/offline/persistenceService';
 import { recordBlunder } from '../../features/drills/blunderBank';
 import { STRATEGIC_CONCEPTS_CATALOG, categorizeExplanation } from '../../lib/stats/statsAggregator';
 
+export interface MatchStats {
+    decisionsCount: number;
+    totalEquityLoss: number;
+    blundersCount: number;
+}
+
+export interface CandidateMove {
+    rank: number;
+    notation: string;
+    equity: number;
+    equityLoss: number;
+}
+
 export interface CoachPanelProps {
     verdict: 'doubtful' | 'blunder' | null;
     equityLoss: number | null;
@@ -27,6 +40,10 @@ export interface CoachPanelProps {
     onOpenKnowledgeConcept?: (conceptId: string) => void;
     isLoading?: boolean;
     features?: any;
+    matchStats?: MatchStats;
+    topMoves?: CandidateMove[];
+    boardBefore?: number[];
+    onReplayMove?: () => void;
     matchContext?: MatchContext | Partial<BuildMatchContextParams>;
     playerLevel?: 'beginner' | 'intermediate' | 'expert';
     apiUrl?: string;
@@ -66,6 +83,94 @@ function formatGammonPrice(val?: number): string {
 function formatPercent(val?: number): string {
     if (val === undefined || isNaN(val)) return '25.0%';
     return `${(val * 100).toFixed(1)}%`;
+}
+
+/**
+ * Calcule le Performance Rating (PR) à partir des statistiques cumulées.
+ * PR = (totalEquityLoss / decisionsCount) * 500.
+ */
+export function computePerformanceRating(stats: MatchStats): number {
+    if (stats.decisionsCount === 0) return 0;
+    return (stats.totalEquityLoss / stats.decisionsCount) * 500;
+}
+
+/**
+ * Détermine le badge de niveau à partir du PR.
+ * Grandmaster (< 3.0), Master (< 5.0), Expert (< 7.5), Intermédiaire (< 12.0), Débutant (>= 12.0).
+ */
+export function getPRBadge(pr: number): string {
+    if (pr < 3.0) return 'Grandmaster';
+    if (pr < 5.0) return 'Master';
+    if (pr < 7.5) return 'Expert';
+    if (pr < 12.0) return 'Intermédiaire';
+    return 'Débutant';
+}
+
+/**
+ * Classe Tailwind de couleur du PR selon le niveau.
+ * Émeraude (< 3.0), Vert (< 5.0), Bleu (< 7.5), Jaune (< 12.0), Rouge (>= 12.0).
+ */
+export function getPRColor(pr: number): string {
+    if (pr < 3.0) return 'text-emerald-400';
+    if (pr < 5.0) return 'text-green-400';
+    if (pr < 7.5) return 'text-blue-400';
+    if (pr < 12.0) return 'text-yellow-400';
+    return 'text-red-400';
+}
+
+export interface MasterBookPromo {
+    author: string;
+    bookTitle: string;
+    conceptSnippet: string;
+    conceptId: string;
+    buyUrl: string;
+    publisher: string;
+}
+
+export function getMasterBookRecommendation(conceptId?: string, keyConcept?: string): MasterBookPromo {
+    const text = `${conceptId || ''} ${keyConcept || ''}`.toLowerCase();
+
+    if (text.includes('course') || text.includes('race') || text.includes('bearoff') || text.includes('endgame') || text.includes('fin')) {
+        return {
+            author: 'Michihito Kageyama (Michy)',
+            bookTitle: 'Endgame Technique (Backgammon Odyssey Vol. 2)',
+            conceptSnippet: '« Façonnez vos pions comme une amibe ("Amoeba Play") pour ne jamais concéder de tir direct sous contact. »',
+            conceptId: 'michy-endgame-technique',
+            buyUrl: 'https://bgmichy.com/authors',
+            publisher: 'bgmichy.com',
+        };
+    }
+
+    if (text.includes('opening') || text.includes('ouverture') || text.includes('tiger') || text.includes('mountain') || text.includes('split')) {
+        return {
+            author: 'Michihito Kageyama & Roland Herrera',
+            bookTitle: 'Opening Concepts (Backgammon Odyssey Vol. 1)',
+            conceptSnippet: '« Mémorisez les 21 proverbes d’or pour maîtriser les 15 lancers d’ouverture sans hésitation. »',
+            conceptId: 'michy-proverbs-opening',
+            buyUrl: 'https://bgmichy.com/authors',
+            publisher: 'bgmichy.com',
+        };
+    }
+
+    if (text.includes('cube') || text.includes('videau') || text.includes('met') || text.includes('pr') || text.includes('duplication')) {
+        return {
+            author: 'Masayuki Mochizuki (Mochy) & Marc Olsen',
+            bookTitle: 'Backgammon Masterclass (2023)',
+            conceptSnippet: '« Les secrets de pureté et de calcul d’équité dynamique expliqués par le numéro 1 mondial. »',
+            conceptId: 'mochy-masterclass',
+            buyUrl: 'https://shop.backgammongalaxy.com/products/backgammon-masterclass-by-mochy-olsen',
+            publisher: 'Backgammon Galaxy',
+        };
+    }
+
+    return {
+        author: 'François Tardieu (Triple Champion d’Europe)',
+        bookTitle: 'Backgammon: Strategic Concepts',
+        conceptSnippet: '« Ne dispersez aucun blot sans ancre de repli : la structure des ancres est la fondation absolue de toute stratégie. »',
+        conceptId: 'tardieu-strategic-concepts',
+        buyUrl: 'https://shop.backgammongalaxy.com/products/backgammon-strategic-concepts-by-francois-tardieu-softcover',
+        publisher: 'Backgammon Galaxy & Roadkill Books',
+    };
 }
 
 /**
@@ -192,6 +297,7 @@ export default function CoachPanel({
     onOpenKnowledgeConcept,
     isLoading = false,
     features,
+    matchStats,
     matchContext: rawMatchContext,
     playerLevel = 'intermediate',
     apiUrl = '/api/coach',
@@ -207,6 +313,9 @@ export default function CoachPanel({
     board,
     xgid,
     candidateMoves,
+    topMoves,
+    boardBefore,
+    onReplayMove,
     showRollout = true,
     onRolloutCompleted,
 }: CoachPanelProps) {
@@ -327,7 +436,7 @@ export default function CoachPanel({
         if (typeof window !== 'undefined' && window.localStorage) {
             try {
                 window.localStorage.setItem('bg_coach_trigger_mode', mode);
-            } catch {}
+            } catch { }
         }
         if (onTriggerModeChange) {
             onTriggerModeChange(mode);
@@ -339,7 +448,7 @@ export default function CoachPanel({
         if (typeof window !== 'undefined' && window.localStorage) {
             try {
                 window.localStorage.setItem('bg_coach_auto_threshold', threshold);
-            } catch {}
+            } catch { }
         }
         if (onAutoThresholdChange) {
             onAutoThresholdChange(threshold);
@@ -351,7 +460,7 @@ export default function CoachPanel({
         if (typeof window !== 'undefined' && window.localStorage) {
             try {
                 window.localStorage.setItem('bg_coach_offline_mode', offline ? 'true' : 'false');
-            } catch {}
+            } catch { }
         }
         if (onOfflineToggle) {
             onOfflineToggle(offline);
@@ -363,6 +472,13 @@ export default function CoachPanel({
     const accent = isBlunder
         ? 'border-red-500/80 bg-slate-900/90 text-red-400 shadow-lg shadow-red-950/20'
         : 'border-amber-500/80 bg-slate-900/90 text-amber-400 shadow-lg shadow-amber-950/20';
+
+    // Performance Rating (PR) en direct, calculé depuis les statistiques cumulées.
+    const performanceRating = useMemo(
+        () => computePerformanceRating(matchStats ?? { decisionsCount: 0, totalEquityLoss: 0, blundersCount: 0 }),
+        [matchStats],
+    );
+    const prBadge = getPRBadge(performanceRating);
 
     async function executeExplain(autoTriggered = false) {
         if (onExplain) {
@@ -435,7 +551,7 @@ export default function CoachPanel({
                     advice: parsedResult.advice || null,
                     source: 'rule-based',
                     created_at: new Date().toISOString(),
-                }).catch(() => {});
+                }).catch(() => { });
 
                 recordBlunderToBankIfApplicable({
                     isBlunder,
@@ -545,7 +661,7 @@ export default function CoachPanel({
                     advice: parsedFinal.advice || null,
                     source: 'llm',
                     created_at: new Date().toISOString(),
-                }).catch(() => {});
+                }).catch(() => { });
 
                 recordBlunderToBankIfApplicable({
                     isBlunder,
@@ -608,7 +724,7 @@ export default function CoachPanel({
                     advice: parsedFallback.advice || null,
                     source: 'rule-based',
                     created_at: new Date().toISOString(),
-                }).catch(() => {});
+                }).catch(() => { });
 
                 recordBlunderToBankIfApplicable({
                     isBlunder,
@@ -703,6 +819,34 @@ export default function CoachPanel({
                 </button>
             </div>
 
+            {/* 0. Carte PERFORMANCE (PR) en direct — 3 colonnes */}
+            {matchStats && matchStats.decisionsCount > 0 && (
+                <div
+                    className="mt-3 grid grid-cols-3 gap-2 rounded-xl border border-indigo-500/40 bg-gradient-to-r from-indigo-950/60 via-slate-900 to-purple-950/50 p-3 shadow-lg"
+                    data-testid="coach-performance-card"
+                >
+                    <div>
+                        <span className="text-[10px] font-bold tracking-wider text-indigo-300 uppercase block">PR</span>
+                        <span className={`font-mono text-xl font-black ${getPRColor(performanceRating)}`}>
+                            {performanceRating.toFixed(2)}
+                        </span>
+                        <span className="block text-[10px] font-semibold text-slate-400">{prBadge}</span>
+                    </div>
+                    <div>
+                        <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">Précision</span>
+                        <span className="font-mono text-xl font-black text-white">
+                            {Math.max(0, 100 - performanceRating * 2).toFixed(1)}%
+                        </span>
+                    </div>
+                    <div>
+                        <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">Blunders</span>
+                        <span className={`font-mono text-xl font-black ${matchStats.blundersCount > 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                            {matchStats.blundersCount}
+                        </span>
+                    </div>
+                </div>
+            )}
+
             {/* 1. Diagnostic Verdict & Perte d'équité EN GRAND */}
             <div className="mt-3 flex items-center justify-between gap-3 rounded-xl bg-slate-950/80 border border-slate-800 p-3.5 shadow-inner">
                 <div>
@@ -719,17 +863,48 @@ export default function CoachPanel({
                 )}
             </div>
 
-            {/* 2. Comparatif Coup Joué vs Coup Optimal */}
-            <div className="mt-3 grid grid-cols-2 gap-3 rounded-xl bg-slate-950/60 border border-slate-800/80 p-3 text-sm">
-                <div>
-                    <p className="text-xs font-semibold text-red-400/80 uppercase tracking-wider">{t('coach.playedMove')}</p>
-                    <p className="mt-1 font-mono text-lg font-bold text-red-400">{playedMove}</p>
+            {/* 1bis. Bouton "Reprendre l'erreur" (Mode Entraînement) */}
+            {isBlunder && onReplayMove && (
+                <button
+                    type="button"
+                    onClick={onReplayMove}
+                    className="mt-2 w-full rounded-lg border border-red-500/40 bg-red-950/40 px-3 py-2 text-xs font-bold text-red-300 hover:bg-red-900/50 transition"
+                    data-testid="coach-replay-move-btn"
+                >
+                    ⏪ Reprendre l'erreur
+                </button>
+            )}
+
+            {/* 2. Tableau compact du Top 3 des coups (Move Ranking) */}
+            {topMoves && topMoves.length > 0 && (
+                <div className="mt-3 rounded-xl bg-slate-950/60 border border-slate-800/80 p-2 text-sm" data-testid="coach-top-moves">
+                    <p className="px-1 pb-1 text-[10px] font-bold tracking-wider text-slate-400 uppercase">Top 3 des coups</p>
+                    <div className="space-y-1">
+                        {topMoves.map((m) => {
+                            const isPlayed = m.notation === playedMove;
+                            const isOptimal = m.rank === 1;
+                            return (
+                                <div
+                                    key={m.rank}
+                                    className={`flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 ${isPlayed
+                                        ? 'border border-blue-500/60 bg-blue-950/40'
+                                        : 'border border-transparent'
+                                        }`}
+                                >
+                                    <span className="font-mono text-xs font-bold text-slate-400">#{m.rank}</span>
+                                    <span className="flex-1 font-mono text-xs font-bold text-white truncate">{m.notation}</span>
+                                    <span className="font-mono text-xs text-emerald-400">{m.equity >= 0 ? '+' : ''}{m.equity.toFixed(3)}</span>
+                                    {isOptimal ? (
+                                        <span className="rounded bg-emerald-900/60 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300">Optimal</span>
+                                    ) : (
+                                        <span className="font-mono text-xs text-red-400">{m.equityLoss.toFixed(3)}</span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
-                <div>
-                    <p className="text-xs font-semibold text-emerald-400/80 uppercase tracking-wider">{t('coach.optimalMove')}</p>
-                    <p className="mt-1 font-mono text-lg font-bold text-emerald-400">{optimalMove}</p>
-                </div>
-            </div>
+            )}
 
             {/* 3. Zone d'explication pédagogique ou bouton d'action */}
             <div className="mt-3">
@@ -791,7 +966,7 @@ export default function CoachPanel({
                             </div>
                         ) : (
                             /* Corps de l'explication classique */
-                            <div className="text-sm leading-relaxed whitespace-pre-line text-slate-300">
+                            <div className="text-sm leading-relaxed whitespace-pre-line text-slate-300 line-clamp-3 overflow-hidden">
                                 {parsed.explanation || parsed.rawText}
                                 {isStreaming && (
                                     <span className="inline-block ml-1 animate-pulse font-mono text-blue-400 font-bold">
@@ -829,6 +1004,62 @@ export default function CoachPanel({
                                 💡 <span className="font-semibold text-amber-100">{t('coach.advice')} :</span> {parsed.advice}
                             </div>
                         )}
+
+                        {/* Enseignement du Maître & Recommandation de Livre Officiel */}
+                        {(() => {
+                            const bookPromo = getMasterBookRecommendation(parsed.conceptId, parsed.keyConcept);
+                            return (
+                                <div className="rounded-xl border border-indigo-500/40 bg-gradient-to-br from-indigo-950/60 via-slate-900 to-purple-950/50 p-3 shadow-lg space-y-2" data-testid="coach-master-book-card">
+                                    <div className="flex items-start justify-between gap-2 border-b border-indigo-900/50 pb-2">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-base">📚</span>
+                                            <div>
+                                                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400 block">
+                                                    {locale === 'en' ? 'Master Recommendation & Essential Reading' : 'Pour progresser sur cette erreur : Livre Recommandé'}
+                                                </span>
+                                                <h4 className="text-xs font-bold text-white flex flex-wrap items-center gap-1">
+                                                    <span>{bookPromo.bookTitle}</span>
+                                                    <span className="text-[11px] font-normal text-indigo-300">— {bookPromo.author}</span>
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-[9px] font-bold text-indigo-300 border border-indigo-500/30 shrink-0">
+                                            Officiel
+                                        </span>
+                                    </div>
+
+                                    <p className="text-[11px] italic text-indigo-200/90 leading-relaxed">
+                                        {bookPromo.conceptSnippet}
+                                    </p>
+
+                                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-indigo-900/40 text-xs">
+                                        {onOpenKnowledgeConcept && (
+                                            <button
+                                                type="button"
+                                                onClick={() => onOpenKnowledgeConcept(bookPromo.conceptId)}
+                                                className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-300 hover:text-white transition"
+                                            >
+                                                <span>📖</span>
+                                                <span>{locale === 'en' ? 'Open Theory Sheet' : 'Lire la Fiche Théorique'}</span>
+                                                <span>➔</span>
+                                            </button>
+                                        )}
+
+                                        <a
+                                            href={bookPromo.buyUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-2.5 py-1 text-[11px] font-black text-slate-950 shadow transition active:scale-95"
+                                            title={`Découvrir sur ${bookPromo.publisher}`}
+                                        >
+                                            <span>🛒</span>
+                                            <span>{locale === 'en' ? `Get on ${bookPromo.publisher}` : `Commander sur ${bookPromo.publisher}`}</span>
+                                            <span className="text-xs">↗</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </div>
                 ) : (
                     <div>
@@ -878,11 +1109,10 @@ export default function CoachPanel({
                             type="button"
                             onClick={() => updateTriggerMode('auto')}
                             data-testid="coach-mode-auto-btn"
-                            className={`rounded-md px-2.5 py-1 font-semibold transition ${
-                                effectiveTriggerMode === 'auto'
-                                    ? 'bg-blue-600 text-white shadow-sm'
-                                    : 'text-slate-400 hover:text-slate-200'
-                            }`}
+                            className={`rounded-md px-2.5 py-1 font-semibold transition ${effectiveTriggerMode === 'auto'
+                                ? 'bg-blue-600 text-white shadow-sm'
+                                : 'text-slate-400 hover:text-slate-200'
+                                }`}
                         >
                             {t('coach.modeAuto')}
                         </button>
@@ -890,11 +1120,10 @@ export default function CoachPanel({
                             type="button"
                             onClick={() => updateTriggerMode('manual')}
                             data-testid="coach-mode-manual-btn"
-                            className={`rounded-md px-2.5 py-1 font-semibold transition ${
-                                effectiveTriggerMode === 'manual'
-                                    ? 'bg-blue-600 text-white shadow-sm'
-                                    : 'text-slate-400 hover:text-slate-200'
-                            }`}
+                            className={`rounded-md px-2.5 py-1 font-semibold transition ${effectiveTriggerMode === 'manual'
+                                ? 'bg-blue-600 text-white shadow-sm'
+                                : 'text-slate-400 hover:text-slate-200'
+                                }`}
                         >
                             {t('coach.modeManual')}
                         </button>
@@ -923,11 +1152,10 @@ export default function CoachPanel({
                         type="button"
                         onClick={() => updateIsOffline(!effectiveIsOffline)}
                         data-testid="coach-offline-toggle"
-                        className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium border transition ${
-                            effectiveIsOffline
-                                ? 'bg-amber-950/80 text-amber-300 border-amber-700/80 shadow-sm shadow-amber-950/40'
-                                : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200'
-                        }`}
+                        className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium border transition ${effectiveIsOffline
+                            ? 'bg-amber-950/80 text-amber-300 border-amber-700/80 shadow-sm shadow-amber-950/40'
+                            : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200'
+                            }`}
                         title="Bascule entre l'analyse approfondie IA en ligne et le mode dégradé règle-basé instantané"
                     >
                         <span>{effectiveIsOffline ? '📴' : '🌐'}</span>

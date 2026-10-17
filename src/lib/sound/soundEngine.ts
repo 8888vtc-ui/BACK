@@ -36,7 +36,7 @@ class BackgammonSoundEngine {
             }
         }
         if (this.ctx && this.ctx.state === 'suspended') {
-            this.ctx.resume().catch(() => {});
+            this.ctx.resume().catch(() => { });
         }
         return this.ctx;
     }
@@ -169,6 +169,40 @@ class BackgammonSoundEngine {
     }
 
     /**
+     * Pose d'un pion (clac mat résine/acajou sur bois) :
+     * impulsion très courte (45ms), oscillateur triangle 320Hz -> 90Hz,
+     * filtre passe-bande autour de 800Hz.
+     */
+    public playCheckerClack(): void {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.045);
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(800, now);
+        filter.Q.setValueAtTime(1.2, now);
+
+        gain.gain.setValueAtTime(0.3 * this.volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.05);
+    }
+
+    /**
      * Frappe d'un blot adverse : choc sec sur le bois puis résonance de la barre centrale.
      */
     public playCheckerHit(): void {
@@ -243,6 +277,66 @@ class BackgammonSoundEngine {
 
         osc.start(now);
         osc.stop(now + 0.15);
+    }
+
+    /**
+     * Proposition du Videau : accord ascendant doux et solennel à deux notes
+     * (440Hz puis 660Hz, onde sine, enveloppe douce de 200ms).
+     */
+    public playCubeOffer(): void {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const notes = [440, 660];
+
+        notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const t = now + idx * 0.12;
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, t);
+
+            gain.gain.setValueAtTime(0.001, t);
+            gain.gain.linearRampToValueAtTime(0.22 * this.volume, t + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(t);
+            osc.stop(t + 0.22);
+        });
+    }
+
+    /**
+     * Alerte de Blunder (erreur grave détectée par le Coach) :
+     * note grave discrète et feutrée (160Hz -> 120Hz, onde sine, 220ms, volume faible).
+     */
+    public playBlunderAlert(): void {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.22);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.12 * this.volume, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.24);
     }
 
     /**

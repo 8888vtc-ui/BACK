@@ -75,14 +75,68 @@ export interface I18nProviderProps {
     initialLocale?: Locale;
 }
 
+/**
+ * Fuseaux horaires francophones (fallback lieu) pour la détection automatique.
+ */
+const FRENCH_TIMEZONES = new Set([
+    'Europe/Paris',
+    'Europe/Brussels',
+    'Europe/Monaco',
+    'Europe/Luxembourg',
+    'Europe/Zurich',
+    'America/Montreal',
+    'Africa/Abidjan',
+    'Africa/Dakar',
+    'Africa/Tunis',
+    'Africa/Algiers',
+    'Africa/Casablanca',
+    'Indian/Reunion',
+    'Pacific/Tahiti',
+]);
+
+/**
+ * Détecte la langue initiale selon l'ordre de priorité :
+ * 1. Choix manuel sauvegardé (localStorage 'bg_locale').
+ * 2. Langue du navigateur (navigator.language / navigator.languages[0]).
+ * 3. Fuseau horaire (Intl.DateTimeFormat().resolvedOptions().timeZone).
+ * 4. Défaut : 'en' (Anglais international).
+ */
+export function detectLocale(): Locale {
+    if (typeof window === 'undefined') return 'en';
+
+    // 1. Choix manuel sauvegardé.
+    try {
+        const saved = window.localStorage.getItem('bg_locale');
+        if (saved === 'fr' || saved === 'en') return saved;
+    } catch {
+        // localStorage indisponible
+    }
+
+    // 2. Langue du navigateur.
+    try {
+        const navLang = navigator.language || (navigator.languages && navigator.languages[0]) || '';
+        if (navLang.toLowerCase().startsWith('fr')) return 'fr';
+        if (navLang.toLowerCase().startsWith('en')) return 'en';
+    } catch {
+        // navigator indisponible
+    }
+
+    // 3. Fuseau horaire (fallback lieu).
+    try {
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (timeZone && FRENCH_TIMEZONES.has(timeZone)) return 'fr';
+    } catch {
+        // Intl indisponible
+    }
+
+    // 4. Défaut : Anglais international.
+    return 'en';
+}
+
 export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
     const [locale, setLocaleState] = useState<Locale>(() => {
         if (initialLocale) return initialLocale;
-        if (typeof window !== 'undefined' && window.localStorage) {
-            const saved = window.localStorage.getItem('bg_locale');
-            if (saved === 'fr' || saved === 'en') return saved;
-        }
-        return 'fr';
+        return detectLocale();
     });
 
     const setLocale = (newLocale: Locale) => {
@@ -91,7 +145,7 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
             try {
                 window.localStorage?.setItem('bg_locale', newLocale);
                 document.documentElement.lang = newLocale;
-            } catch {}
+            } catch { }
         }
     };
 
@@ -129,7 +183,7 @@ export function useI18n(): I18nContextValue {
     if (!ctx) {
         return {
             locale: 'fr',
-            setLocale: () => {},
+            setLocale: () => { },
             t: (keyPath: string, params?: Record<string, string | number>) =>
                 getTranslation('fr', keyPath, params),
         };

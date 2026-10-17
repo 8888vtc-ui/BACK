@@ -47,7 +47,7 @@ describe('Performance & React.memo BackgammonBoard', () => {
                 ...mockState,
                 board: updatedBoard,
             },
-            opponentHighlight: { from: 24, to: 18 },
+            opponentHighlight: [{ from: 24, to: 18 }],
         };
 
         expect(areBoardPropsEqual(props1, props2)).toBe(false);
@@ -74,7 +74,7 @@ describe('Performance & React.memo BackgammonBoard', () => {
                         ...mockState,
                         board: nextBoard,
                     }}
-                    opponentHighlight={{ from: 24, to: 24 - (i % 6) }}
+                    opponentHighlight={[{ from: 24, to: 24 - (i % 6) }]}
                 />,
             );
             const t1 = performance.now();

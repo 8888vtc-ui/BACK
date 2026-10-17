@@ -51,4 +51,11 @@ export interface OpeningEntry {
     explanation: string;
     /** Principe stratégique fondamental à retenir */
     keyRule: string;
+    /** Enseignement ou proverbe du Maître (Michy, Tardieu, Mochy) */
+    masterQuote?: {
+        author: string;
+        book: string;
+        proverb: string;
+        buyUrl: string;
+    };
 }
