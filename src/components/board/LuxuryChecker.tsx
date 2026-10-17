@@ -9,6 +9,9 @@
  *
  * Composant isolé : ne dépend que de ses props, aucune logique métier.
  * Pour le retirer, supprimer ce fichier et ses usages dans `BoardPoint` / `BarSection`.
+ *
+ * Mémoïsé (`React.memo`) : un pion ne re-rend que si ses props changent, ce qui
+ * évite de re-rendre jusqu'à 30 pions à chaque interaction du plateau.
  */
 
 import React from 'react';
@@ -25,7 +28,7 @@ export interface CheckerProps {
     isTopChecker?: boolean;
 }
 
-export const LuxuryChecker: React.FC<CheckerProps> = ({
+const LuxuryCheckerComponent: React.FC<CheckerProps> = ({
     color,
     countBadge,
     isPlayable = false,
@@ -36,8 +39,8 @@ export const LuxuryChecker: React.FC<CheckerProps> = ({
     return (
         <div
             className={`relative w-[42px] h-[42px] xl:w-[46px] xl:h-[46px] rounded-full flex items-center justify-center select-none transition-all duration-300 ease-out ${isPlayable && isTopChecker
-                    ? 'cursor-pointer hover:-translate-y-1 hover:scale-105 hover:ring-2 hover:ring-amber-400/90'
-                    : ''
+                ? 'cursor-pointer hover:-translate-y-1 hover:scale-105 hover:ring-2 hover:ring-amber-400/90'
+                : ''
                 }`}
             style={{
                 // Corps externe bombé en résine nacrée.
@@ -65,8 +68,8 @@ export const LuxuryChecker: React.FC<CheckerProps> = ({
                 {countBadge !== undefined && countBadge > 5 && (
                     <span
                         className={`text-xs font-extrabold px-1.5 py-0.5 rounded-full shadow-md ${isWhite
-                                ? 'bg-amber-900 text-amber-100 border border-amber-300/40'
-                                : 'bg-amber-400 text-slate-950'
+                            ? 'bg-amber-900 text-amber-100 border border-amber-300/40'
+                            : 'bg-amber-400 text-slate-950'
                             }`}
                     >
                         {countBadge}
@@ -76,5 +79,8 @@ export const LuxuryChecker: React.FC<CheckerProps> = ({
         </div>
     );
 };
+
+/** Pion mémoïsé : ne re-rend que si ses props changent. */
+export const LuxuryChecker = React.memo(LuxuryCheckerComponent);
 
 export default LuxuryChecker;

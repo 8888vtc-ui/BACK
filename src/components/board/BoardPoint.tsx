@@ -8,6 +8,9 @@
  * discret de destination au survol (remplace les gros cercles fantômes).
  *
  * Composant isolé : reçoit ses handlers en props, aucune logique métier.
+ *
+ * Mémoïsé (`React.memo`) : une flèche ne re-rend que si ses props changent,
+ * évitant de re-rendre les 24 flèches à chaque interaction.
  */
 
 import React from 'react';
@@ -37,7 +40,7 @@ export interface BoardPointProps {
     onRightClickPoint?: (pointNumber: number, e: React.MouseEvent) => void;
 }
 
-export const BoardPoint: React.FC<BoardPointProps> = ({
+const BoardPointComponent: React.FC<BoardPointProps> = ({
     pointNumber,
     isTopRow,
     checkerColor,
@@ -139,5 +142,8 @@ export const BoardPoint: React.FC<BoardPointProps> = ({
         </div>
     );
 };
+
+/** Flèche mémoïsée : ne re-rend que si ses props changent. */
+export const BoardPoint = React.memo(BoardPointComponent);
 
 export default BoardPoint;
