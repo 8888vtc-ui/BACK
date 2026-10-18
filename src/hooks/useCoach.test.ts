@@ -59,4 +59,60 @@ describe('useCoach hook', () => {
         expect(result.current.matchStatsO.totalEquityLoss).toBeGreaterThan(0);
         expect(result.current.matchStatsO.totalErrorRate).toBeGreaterThan(0);
     });
+
+    it('ferme automatiquement coach et coachHighlight quand X lance ses nouveaux dés', () => {
+        const game = {
+            state: { ...createInitialState(7), turn: 'X' as const },
+            dice: [6, 2] as [number, number] | null,
+            undoMove: vi.fn(),
+            difficulty: 'expert',
+            lastOpponentDice: null,
+            lastOpponentMoves: null,
+            moveHistory: [{ player: 'X', moves: [] }],
+        };
+        const currentTurnMovesRef = { current: [] };
+        const currentTurnDiceRef = { current: null };
+        const turnBoardBeforeRef = { current: [] };
+
+        const { result } = renderHook(() =>
+            useCoach({
+                game,
+                currentTurnMovesRef,
+                currentTurnDiceRef,
+                turnBoardBeforeRef,
+            })
+        );
+
+        // Au lancement des dés de X, le coach ne doit pas afficher d'analyse résiduelle
+        expect(result.current.coach).toBeNull();
+        expect(result.current.coachHighlight).toBeNull();
+    });
+
+    it('réinitialise le coach dès qu’une nouvelle manche commence (moveHistory vide)', () => {
+        const game = {
+            state: { ...createInitialState(7), turn: 'X' as const },
+            dice: null,
+            undoMove: vi.fn(),
+            difficulty: 'expert',
+            lastOpponentDice: null,
+            lastOpponentMoves: null,
+            moveHistory: [],
+        };
+        const currentTurnMovesRef = { current: [] };
+        const currentTurnDiceRef = { current: null };
+        const turnBoardBeforeRef = { current: [] };
+
+        const { result } = renderHook(() =>
+            useCoach({
+                game,
+                currentTurnMovesRef,
+                currentTurnDiceRef,
+                turnBoardBeforeRef,
+            })
+        );
+
+        expect(result.current.coach).toBeNull();
+        expect(result.current.coachHighlight).toBeNull();
+    });
 });
+

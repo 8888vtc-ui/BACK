@@ -39,6 +39,7 @@ import {
 } from '../engine/aiHeuristics';
 import { evaluateBoard, shouldOfferDouble, shouldTakeDouble } from '../lib/engine/evaluator';
 import { initXgWeb, isXgWebReady, getXgWebBestMove } from '../lib/engine/xgWebClient';
+import { findOpeningBookSequenceForOpponent, isInitialBoardPosition } from '../features/openings';
 
 export {
     evaluateWin,
@@ -518,9 +519,12 @@ export function backgammonGameReducer(
             }
 
             let best: MoveSequence | null = null;
-            if (state.difficulty === 'grandmaster' && isXgWebReady()) {
+            if (state.difficulty !== 'beginner' && isInitialBoardPosition(state.boardState.board)) {
+                best = findOpeningBookSequenceForOpponent(state.boardState.board, rolledDice, legalSeqs);
+            }
+            if (!best && state.difficulty === 'grandmaster' && isXgWebReady()) {
                 best = getXgWebBestMove(state.boardState.board, 'O', rolledDice, legalSeqs, 3);
-            } else if (state.difficulty === 'expert' && isXgWebReady()) {
+            } else if (!best && state.difficulty === 'expert' && isXgWebReady()) {
                 best = getXgWebBestMove(state.boardState.board, 'O', rolledDice, legalSeqs, 2);
             }
             if (!best) {
@@ -1010,9 +1014,12 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         }
 
         let best: MoveSequence | null = null;
-        if (difficulty === 'grandmaster' && isXgWebReady()) {
+        if (difficulty !== 'beginner' && isInitialBoardPosition(currentBoardState.board)) {
+            best = findOpeningBookSequenceForOpponent(currentBoardState.board, rolledDice, legalSeqs);
+        }
+        if (!best && difficulty === 'grandmaster' && isXgWebReady()) {
             best = getXgWebBestMove(currentBoardState.board, 'O', rolledDice, legalSeqs, 3);
-        } else if (difficulty === 'expert' && isXgWebReady()) {
+        } else if (!best && difficulty === 'expert' && isXgWebReady()) {
             best = getXgWebBestMove(currentBoardState.board, 'O', rolledDice, legalSeqs, 2);
         }
         if (!best) {

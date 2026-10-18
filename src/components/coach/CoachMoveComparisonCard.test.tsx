@@ -84,6 +84,6 @@ describe('CoachMoveComparisonCard', () => {
                 optimalMove="24/20 13/9"
             />
         );
-        expect(html).toContain('Analyse de votre décision — Joueur Blanc (X)');
+        expect(html).toContain('Analyse de votre coup précédent — Joueur Blanc (X)');
     });
 });

@@ -543,6 +543,30 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
             vi.useRealTimers();
         }
     });
+
+    it('joue le coup du livre d’ouverture certifié pour O sur [3, 2] (1/4 12/14)', () => {
+        const { result } = renderHook(() =>
+            useBackgammonGame({
+                autoOpponent: false,
+                initialDifficulty: 'expert',
+            })
+        );
+
+        // Déclenche le tour de l'ordinateur en position initiale avec [3, 2]
+        act(() => {
+            result.current.playOpponentTurn([3, 2]);
+        });
+
+        // Les pions déplacés doivent correspondre au livre d'or (split 1/4 et descente 12/14)
+        const board = result.current.state.board;
+        expect(board[1]).toBe(-1); // 1 pion reste sur 1 (l'autre a été au point 4)
+        expect(board[4]).toBe(-1); // 1 pion sur 4
+        expect(board[12]).toBe(-4); // 4 pions sur 12 (un a été au point 14)
+        expect(board[14]).toBe(-1); // 1 pion constructeur sur 14
+
+        // Vérifie qu'il n'a PAS fait l'erreur 12/14 14/17
+        expect(board[17]).toBe(-3); // Le point 17 ne doit pas avoir reçu le pion de 14
+    });
 });
 
 

@@ -66,6 +66,7 @@ export interface UseCoachDeps {
         difficulty?: any;
         lastOpponentDice?: [number, number] | null;
         lastOpponentMoves?: { from: number; to: number }[] | null;
+        moveHistory?: any[];
     };
     /** Refs du tour courant (pour l'analyse automatique). */
     currentTurnMovesRef: React.MutableRefObject<{ from: number; to: number }[]>;
@@ -114,6 +115,24 @@ export function useCoach({
     const [optimalStreak, setOptimalStreak] = useState(0);
     const [brilliantMove, setBrilliantMove] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+    // 1. Réinitialise l'analyse du coach dès qu'une nouvelle manche/partie commence
+    useEffect(() => {
+        if (game.moveHistory && game.moveHistory.length === 0 && currentTurnMovesRef.current.length === 0) {
+            setCoach(null);
+            setCoachHighlight(null);
+            lastOpponentEvalRef.current = null;
+        }
+    }, [game.moveHistory, currentTurnMovesRef]);
+
+    // 2. Dès que le joueur X lance ses dés pour entamer un nouveau coup,
+    // on ferme l'analyse du coup précédent pour ne pas encombrer le champ de jeu.
+    useEffect(() => {
+        if (game.state.turn === 'X' && game.dice !== null) {
+            setCoach(null);
+            setCoachHighlight(null);
+        }
+    }, [game.state.turn, game.dice]);
 
     // Analyse automatique quand le tour de X bascule vers O.
     useEffect(() => {

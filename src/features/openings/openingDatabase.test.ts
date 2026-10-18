@@ -5,8 +5,9 @@ import {
     getOpening,
     isInitialBoardPosition,
     isOpeningSituation,
+    findOpeningBookSequenceForOpponent,
 } from './openingDatabase';
-import { createInitialState } from '../../engine/backgammonEngine';
+import { createInitialState, generateLegalMoves } from '../../engine/backgammonEngine';
 
 const INITIAL_BOARD = createInitialState().board;
 
@@ -121,6 +122,55 @@ describe('Opening Database', () => {
             const modified = [...INITIAL_BOARD];
             modified[6] = 4;
             expect(isOpeningSituation(modified, [4, 2], 3)).toBe(false);
+        });
+    });
+
+    describe('findOpeningBookSequenceForOpponent', () => {
+        it('trouve le coup d’ouverture certifié pour O sur 3-2 (1/4 12/14)', () => {
+            const state = { ...createInitialState(), turn: 'O' as const };
+            const dice: [number, number] = [3, 2];
+            const legalSeqs = generateLegalMoves(state, dice);
+
+            const bookSeq = findOpeningBookSequenceForOpponent(state.board, dice, legalSeqs);
+            expect(bookSeq).not.toBeNull();
+            // Le coup optimal 3-2 pour O splitte 1/4 (24/21) et descend 12/14 (13/11)
+            expect(bookSeq!.board[1]).toBe(-1); // Un pion reste sur 1
+            expect(bookSeq!.board[4]).toBe(-1); // Un pion sur 4
+            expect(bookSeq!.board[12]).toBe(-4); // Quatre pions sur 12
+            expect(bookSeq!.board[14]).toBe(-1); // Un pion constructeur sur 14
+        });
+
+        it('trouve le coup d’ouverture certifié pour O sur 3-1 (17/20 19/20 - Golden Point)', () => {
+            const state = { ...createInitialState(), turn: 'O' as const };
+            const dice: [number, number] = [3, 1];
+            const legalSeqs = generateLegalMoves(state, dice);
+
+            const bookSeq = findOpeningBookSequenceForOpponent(state.board, dice, legalSeqs);
+            expect(bookSeq).not.toBeNull();
+            // Porte 5 (point 20 pour O) verrouillée
+            expect(bookSeq!.board[20]).toBe(-2);
+        });
+
+        it('trouve le coup d’ouverture certifié pour O sur 6-5 (1/12 - Lover’s Leap)', () => {
+            const state = { ...createInitialState(), turn: 'O' as const };
+            const dice: [number, number] = [6, 5];
+            const legalSeqs = generateLegalMoves(state, dice);
+
+            const bookSeq = findOpeningBookSequenceForOpponent(state.board, dice, legalSeqs);
+            expect(bookSeq).not.toBeNull();
+            // Échappée directe du fond vers le point médian
+            expect(bookSeq!.board[1]).toBe(-1);
+            expect(bookSeq!.board[12]).toBe(-6);
+        });
+
+        it('retourne null si le plateau n’est pas en position initiale', () => {
+            const modified = [...INITIAL_BOARD];
+            modified[6] = 4;
+            const state = { ...createInitialState(), board: modified, turn: 'O' as const };
+            const dice: [number, number] = [3, 2];
+            const legalSeqs = generateLegalMoves(state, dice);
+
+            expect(findOpeningBookSequenceForOpponent(modified, dice, legalSeqs)).toBeNull();
         });
     });
 });

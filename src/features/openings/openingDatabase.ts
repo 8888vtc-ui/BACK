@@ -6,6 +6,7 @@
  */
 
 import type { OpeningEntry } from './types';
+import { applyMove, type MoveSequence, type Move } from '../../engine/backgammonEngine';
 
 export const OPENING_BOOK: OpeningEntry[] = [
     {
@@ -497,3 +498,32 @@ export function isOpeningSituation(
     if (turnCount <= 1) return true;
     return isInitialBoardPosition(board);
 }
+
+/**
+ * Trouve la séquence légale correspondant au coup d'ouverture optimal pour l'adversaire (O).
+ * Convertit les coordonnées du livre (du point de vue de X) vers celles de O (25 - point).
+ */
+export function findOpeningBookSequenceForOpponent(
+    board: number[],
+    dice: [number, number],
+    legalSeqs: MoveSequence[],
+): MoveSequence | null {
+    if (!isInitialBoardPosition(board) || legalSeqs.length === 0) return null;
+    const opening = getOpening(dice[0], dice[1]);
+    if (!opening || opening.bestMoves.length === 0) return null;
+
+    let targetBoard = board.slice();
+    for (const m of opening.bestMoves) {
+        const oMove: Move = {
+            from: 25 - m.from,
+            to: 25 - m.to,
+        };
+        targetBoard = applyMove(targetBoard, oMove, 'O');
+    }
+
+    const match = legalSeqs.find((seq) =>
+        seq.board.every((val, idx) => val === targetBoard[idx])
+    );
+    return match ?? null;
+}
+
