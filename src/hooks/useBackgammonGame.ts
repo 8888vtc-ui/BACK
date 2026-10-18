@@ -1218,6 +1218,7 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         matchWinner,
         isCrawfordNext,
         crawfordAlreadyPlayed: state.crawfordAlreadyPlayed,
+        autoOpponent: state.autoOpponent,
         difficulty: state.difficulty,
         lastOpponentDice: state.lastOpponentDice,
         lastOpponentMoves: state.lastOpponentMoves,

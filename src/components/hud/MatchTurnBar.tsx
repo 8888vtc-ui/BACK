@@ -81,7 +81,13 @@ const MatchTurnBarComponent: React.FC<MatchTurnBarProps> = ({
             <div className="flex-1 w-full sm:w-auto">
                 {/* Roll-off (dé de démarrage) : affiché au début du match, avant le premier lancer */}
                 {!rollOffDone && !isMultiplayerActive && phase === 'WAITING_FOR_ROLL' && (
-                    <div className="rounded-xl border border-violet-500/40 bg-violet-950/60 px-3.5 py-1.5 shadow-md backdrop-blur-sm animate-in fade-in">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 rounded-xl border border-amber-500/40 bg-gradient-to-r from-stone-900/95 via-slate-900/95 to-amber-950/40 px-3.5 py-1.5 shadow-md backdrop-blur-md animate-in fade-in">
+                        <div className="flex items-center gap-2">
+                            <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
+                            <span className="text-xs font-semibold text-amber-200">
+                                Tirage au sort d'ouverture — Déterminer qui commence la partie
+                            </span>
+                        </div>
                         <RollOffDice
                             xDie={rollOff.xDie}
                             oDie={rollOff.oDie}
@@ -123,6 +129,17 @@ const MatchTurnBarComponent: React.FC<MatchTurnBarProps> = ({
                         </div>
                     </div>
                 )}
+
+                {/* En cours de jeu : déplacement des pions */}
+                {rollOffDone && !isMultiplayerActive && phase === 'PLAYING_MOVES' && (
+                    <div className="hidden sm:flex items-center justify-between rounded-xl border border-blue-500/30 bg-slate-900/70 px-3 py-1.5 shadow-sm text-xs">
+                        <div className="flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
+                            <span className="text-slate-200 font-medium">À vous de jouer — Cliquez ou glissez vos pions pour jouer vos dés.</span>
+                        </div>
+                    </div>
+                )}
+
 
                 {/* Statut IA en cours de réflexion */}
                 {!isMultiplayerActive && phase === 'OPPONENT_THINKING' && (

@@ -16,7 +16,11 @@ import { performRollOff } from '../components/board/rollOff';
 import type { Player } from '../engine/backgammonEngine';
 import { toast } from '../components/toast/ToastContext';
 
-export function useRollOff() {
+export interface UseRollOffOptions {
+    onSuccess?: (winner: Player, dice: [number, number]) => void;
+}
+
+export function useRollOff(options?: UseRollOffOptions) {
     const [rollOff, setRollOff] = useState<{
         xDie: number | null;
         oDie: number | null;
@@ -29,11 +33,18 @@ export function useRollOff() {
         setRollOff({ xDie: result.xDie, oDie: result.oDie, winner: result.winner });
         if (result.winner) {
             setRollOffDone(true);
+            options?.onSuccess?.(result.winner, [result.xDie, result.oDie]);
             toast.info(`Le joueur ${result.winner} commence (X: ${result.xDie}, O: ${result.oDie}).`, 'Dé de démarrage');
         } else {
             toast.info(`Égalité (${result.xDie} - ${result.oDie}) — relancez les dés.`, 'Dé de démarrage');
         }
+    }, [options]);
+
+    const resetRollOff = useCallback(() => {
+        setRollOff({ xDie: null, oDie: null, winner: null });
+        setRollOffDone(false);
     }, []);
 
-    return { rollOff, rollOffDone, handleRollOff };
+    return { rollOff, rollOffDone, handleRollOff, resetRollOff };
 }
+

@@ -63,6 +63,8 @@ export interface MatchHeaderProps {
     isOpeningHighlightActive: boolean;
     onToggleOpeningHighlight: () => void;
     onChangeDifficulty: (difficulty: AIDifficulty) => void;
+    /** Nombre de tours de jeu déjà terminés */
+    turnsCount?: number;
 }
 
 const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
@@ -89,9 +91,21 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
     isOpeningHighlightActive,
     onToggleOpeningHighlight,
     onChangeDifficulty,
+    turnsCount,
 }) => {
+    const canDoubleAllowed =
+        (rollOffDone || isMultiplayerActive) &&
+        (turnsCount === undefined || turnsCount > 0) &&
+        game.canDouble;
+
+    const isMyTurnToRoll =
+        (rollOffDone || isMultiplayerActive) &&
+        game.phase === 'WAITING_FOR_ROLL' &&
+        (!isMultiplayerActive ? game.isHumanTurn : multiplayer.isMyTurn) &&
+        !game.dice;
+
     const handleDouble = useCallback(() => {
-        if (!game.canDouble) {
+        if (!canDoubleAllowed) {
             if (game.state.crawford) toast.warning('Le videau est interdit pendant la manche de Crawford.');
             else toast.warning('Vous ne possédez pas le videau ou ce n’est pas le moment de doubler.');
             return;
@@ -100,7 +114,8 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
         soundEngine.playCubeOffer();
         game.offerDouble();
         if (isMultiplayerActive) multiplayer.broadcastDoubleOffered(game.state.cubeValue * 2);
-    }, [game, isMultiplayerActive, multiplayer]);
+    }, [canDoubleAllowed, game, isMultiplayerActive, multiplayer]);
+
 
     const handleRoll = useCallback(() => {
         impactMedium();
@@ -172,6 +187,7 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                         onTriggerCoach={onTriggerCoach}
                         onUndo={game.undoMove}
                         canUndo={game.canUndo}
+                        canDouble={canDoubleAllowed}
                     />
                 </div>
 
@@ -219,7 +235,7 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                         phase={game.phase}
                         cubeValue={game.state.cubeValue}
                         cubeOwner={game.state.cubeOwner}
-                        canDouble={game.canDouble}
+                        canDouble={canDoubleAllowed}
                         crawford={game.state.crawford}
                         doublingOfferedBy={game.doublingOfferedBy}
                         currentTurn={game.state.turn}
@@ -247,8 +263,8 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                     rollOff={rollOff}
                     onRollOff={onRollOff}
                     phase={game.phase}
-                    isMyTurnToRoll={game.phase === 'WAITING_FOR_ROLL' && (!isMultiplayerActive ? game.isHumanTurn : multiplayer.isMyTurn) && !game.dice}
-                    canDouble={game.canDouble}
+                    isMyTurnToRoll={isMyTurnToRoll}
+                    canDouble={canDoubleAllowed}
                     cubeValue={game.state.cubeValue}
                     onOfferDouble={handleDouble}
                     onRollDice={handleRoll}
@@ -258,6 +274,7 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                     difficulty={game.difficulty}
                     onChangeDifficulty={onChangeDifficulty}
                 />
+
 
                 {/* Bannière Opening Book */}
                 {openingEntry && (

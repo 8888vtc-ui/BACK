@@ -17,9 +17,11 @@
 import React from 'react';
 import type { ThemeName, CoachHighlight } from './boardThemes';
 import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
+import type { RawGameTurn } from '../../features/rating';
 import Board from './Board';
 import CoachSidebar from '../coach/CoachSidebar';
 import ErrorBoundary from '../common/ErrorBoundary';
+
 
 export interface GameBoardAreaProps {
     theme: ThemeName;
@@ -43,6 +45,8 @@ export interface GameBoardAreaProps {
     onTriggerCoach: () => void;
     matchStats?: any;
     gameId: string;
+    /** Historique des tours joués pour la feuille de match */
+    turnsHistory?: RawGameTurn[];
 }
 
 const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
@@ -67,6 +71,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     onTriggerCoach,
     matchStats,
     gameId,
+    turnsHistory,
 }) => {
     return (
         <div className="w-full h-full min-h-0 flex-1 overflow-hidden relative flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-3 max-w-[1920px] mx-auto px-1 sm:px-2 pb-1">
@@ -123,10 +128,12 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                 gameId={gameId}
                 dice={game.dice}
                 board={game.state.board}
+                turnsHistory={turnsHistory}
             />
         </div>
     );
 };
+
 
 export const GameBoardArea = React.memo(GameBoardAreaComponent);
 export default GameBoardArea;

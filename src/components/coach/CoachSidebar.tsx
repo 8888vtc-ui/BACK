@@ -17,7 +17,9 @@
 import React from 'react';
 import type { ThemeName } from '../board/boardThemes';
 import CoachPanel from './CoachPanel';
+import MatchScoreSheet from './MatchScoreSheet';
 import ErrorBoundary from '../common/ErrorBoundary';
+import type { RawGameTurn } from '../../features/rating';
 
 export interface CoachSidebarProps {
     /** Données d'analyse du coach ou null */
@@ -46,6 +48,8 @@ export interface CoachSidebarProps {
     dice?: [number, number] | null;
     /** Plateau actuel */
     board?: number[];
+    /** Historique des tours de jeu joués */
+    turnsHistory?: RawGameTurn[];
 }
 
 const CoachSidebarComponent: React.FC<CoachSidebarProps> = ({
@@ -62,7 +66,9 @@ const CoachSidebarComponent: React.FC<CoachSidebarProps> = ({
     gameId,
     dice,
     board,
+    turnsHistory = [],
 }) => {
+
     return (
         <aside
             id="coach-panel"
@@ -111,6 +117,13 @@ const CoachSidebarComponent: React.FC<CoachSidebarProps> = ({
 
                 {!coach && !isAnalyzing && (
                     <div className="flex flex-col gap-3 py-1 text-xs text-slate-300">
+                        {/* Feuille de match officielle en direct */}
+                        <MatchScoreSheet
+                            turnsHistory={turnsHistory}
+                            board={board}
+                            matchStats={matchStats}
+                        />
+
                         <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-3.5 space-y-2">
                             <div className="flex items-center justify-between text-slate-400">
                                 <span className="font-semibold text-indigo-300">Veille Stratégique Active</span>
@@ -130,6 +143,7 @@ const CoachSidebarComponent: React.FC<CoachSidebarProps> = ({
                                 <span>Demander conseil au Coach</span>
                             </button>
                         </div>
+
 
                         {theme === 'snowie_classic' && (
                             <div

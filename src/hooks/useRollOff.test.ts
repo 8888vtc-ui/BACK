@@ -18,4 +18,22 @@ describe('useRollOff hook', () => {
         expect(result.current.rollOff.xDie).toBeGreaterThanOrEqual(1);
         expect(result.current.rollOff.oDie).toBeGreaterThanOrEqual(1);
     });
+
+    it('resets roll off state when resetRollOff is called', () => {
+        const { result } = renderHook(() => useRollOff());
+
+        act(() => {
+            result.current.handleRollOff();
+        });
+
+        act(() => {
+            result.current.resetRollOff();
+        });
+
+        expect(result.current.rollOffDone).toBe(false);
+        expect(result.current.rollOff.xDie).toBeNull();
+        expect(result.current.rollOff.oDie).toBeNull();
+        expect(result.current.rollOff.winner).toBeNull();
+    });
 });
+

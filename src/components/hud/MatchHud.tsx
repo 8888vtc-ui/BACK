@@ -61,6 +61,8 @@ export interface MatchHudProps {
     onUndo?: () => void;
     /** Indique si un sous-mouvement peut être annulé */
     canUndo?: boolean;
+    /** Indique si l'action de doubler est autorisée */
+    canDouble?: boolean;
 }
 
 /**
@@ -71,32 +73,14 @@ export interface MatchHudProps {
  * - Barre secondaire repliable : Multijoueur, Drills, Puzzles, Progression, Coach, Ouvertures.
  */
 export default function MatchHud({
-    matchLength,
-    scoreX,
-    scoreO,
-    turn,
-    crawford = false,
-    dice,
-    usedDice,
-    cubeValue,
-    cubeOwner,
-    theme,
-    onThemeToggle,
-    onDoubleCube,
-    onRollDice,
-    onResetGame,
-    isLoadingBoard,
-    onToggleLoadingBoard,
-    onSimulateNetworkError,
-    onOpenMultiplayer,
-    isMultiplayerActive = false,
-    onOpenOpeningBook,
-    onOpenExportImport,
-    onOpenKnowledgeBase,
-    onTriggerCoach,
-    onUndo,
-    canUndo = false,
+    matchLength, scoreX, scoreO, turn, crawford = false, dice, usedDice,
+    cubeValue, cubeOwner, theme, onThemeToggle, onDoubleCube, onRollDice,
+    onResetGame, isLoadingBoard, onToggleLoadingBoard, onSimulateNetworkError,
+    onOpenMultiplayer, isMultiplayerActive = false, onOpenOpeningBook,
+    onOpenExportImport, onOpenKnowledgeBase, onTriggerCoach, onUndo, canUndo = false,
+    canDouble: propCanDouble,
 }: MatchHudProps) {
+
     const [isBackendModalOpen, setIsBackendModalOpen] = useState(false);
     const [isMuted, setIsMuted] = useState(() => soundEngine.isMute());
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -111,7 +95,10 @@ export default function MatchHud({
                 ? `Joueur X (x${cubeValue})`
                 : `Joueur O (x${cubeValue})`;
 
-    const canDouble = !crawford && (cubeOwner === null || cubeOwner === turn);
+    const canDouble = propCanDouble !== undefined
+        ? propCanDouble
+        : !crawford && (cubeOwner === null || cubeOwner === turn);
+
 
     // Fermeture du menu réglages ⚙️ sur clic extérieur ou Escape
     useEffect(() => {

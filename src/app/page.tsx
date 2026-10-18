@@ -30,6 +30,7 @@ import { useGamePersistence } from '../hooks/useGamePersistence';
 import { useGameModals } from '../hooks/useGameModals';
 import { useOpeningAssistant } from '../hooks/useOpeningAssistant';
 import { useRollOff } from '../hooks/useRollOff';
+import type { Player } from '../engine/backgammonEngine';
 import type { RealtimeBroadcastAction } from '../features/multiplayer/types';
 import { toast } from '../components/toast/ToastContext';
 import { notificationSuccess } from '../lib/capacitor/haptics';
@@ -42,7 +43,6 @@ export default function Home() {
     const { theme, toggleTheme } = useBoardTheme();
     const [isBoardLoading] = useState(false);
     const modals = useGameModals();
-    const { rollOff, rollOffDone, handleRollOff } = useRollOff();
 
     // Initialisation du moteur de jeu
     const game = useBackgammonGame({
@@ -67,6 +67,33 @@ export default function Home() {
             handleGameOverAnalysis(result);
         },
     });
+
+    // Tirage au sort initial (Roll-off) connecté au moteur de jeu
+    const handleRollOffSuccess = useCallback((winner: Player, dice: [number, number]) => {
+        if (winner === 'X') {
+            game.applyRemoteState({
+                board: game.state.board,
+                dice,
+                turn: 'X',
+                usedDice: [false, false],
+                phase: 'PLAYING_MOVES',
+            });
+            toast.success(`Vous commencez la manche avec les dés [${dice[0]}, ${dice[1]}] !`, 'Tirage au sort');
+            soundEngine.playDiceRoll();
+        } else {
+            game.applyRemoteState({
+                board: game.state.board,
+                dice,
+                turn: 'O',
+                usedDice: [false, false],
+                phase: game.autoOpponent ? 'OPPONENT_THINKING' : 'PLAYING_MOVES',
+            });
+            toast.info(`L'ordinateur commence la manche avec les dés [${dice[1]}, ${dice[0]}].`, 'Tirage au sort');
+            soundEngine.playDiceRoll();
+        }
+    }, [game]);
+
+    const { rollOff, rollOffDone, handleRollOff } = useRollOff({ onSuccess: handleRollOffSuccess });
 
     // Écouteur des actions distantes multijoueur
     const handleRemoteAction = useCallback((action: RealtimeBroadcastAction) => {
@@ -94,61 +121,32 @@ export default function Home() {
 
     // Persistance locale et analyse de fin de partie
     const {
-        gameIdRef,
-        turnsHistoryRef,
-        currentTurnMovesRef,
-        turnBoardBeforeRef,
-        currentTurnDiceRef,
-        latestGameAnalysis,
-        handleGameOverAnalysis,
-        resetGameHistory,
+        gameIdRef, turnsHistoryRef, currentTurnMovesRef, turnBoardBeforeRef,
+        currentTurnDiceRef, latestGameAnalysis, handleGameOverAnalysis, resetGameHistory,
     } = useGamePersistence({ game, isMultiplayerActive, t });
 
     // Coach IA en temps réel
     const {
-        coach,
-        coachHighlight,
-        matchStats,
-        optimalStreak,
-        brilliantMove,
-        isAnalyzing,
-        dismissCoach,
-        replayMove: handleReplayMove,
-        triggerCoach: handleTriggerCoach,
+        coach, coachHighlight, matchStats, optimalStreak, brilliantMove,
+        isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: handleTriggerCoach,
     } = useCoach({
-        game,
-        currentTurnMovesRef,
-        currentTurnDiceRef,
-        turnBoardBeforeRef,
+        game, currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
         onCoachTriggered: modals.openMobileDrawer,
     });
 
     // Interaction pions et dés
     const {
-        activeDie,
-        handlePlayMove,
-        handleSelectDie,
-        handleDieDoubleClick,
-        handleCheckerClick,
-        handleCheckerDoubleClick,
-        handleCheckerRightClick,
-        handleDestinationClick,
-        handleDeselect,
+        activeDie, handlePlayMove, handleSelectDie, handleDieDoubleClick,
+        handleCheckerClick, handleCheckerDoubleClick, handleCheckerRightClick,
+        handleDestinationClick, handleDeselect,
     } = useCheckerInteractions({ game, isMultiplayerActive, multiplayer, currentTurnMovesRef });
 
     // Assistant de coup d'ouverture certifié
     const {
-        openingEntry,
-        isOpeningDismissed,
-        dismissOpening,
-        isOpeningHighlightActive,
-        toggleOpeningHighlight,
-        handleApplyOpeningMove,
+        openingEntry, isOpeningDismissed, dismissOpening,
+        isOpeningHighlightActive, toggleOpeningHighlight, handleApplyOpeningMove,
     } = useOpeningAssistant({
-        game,
-        isMultiplayerActive,
-        multiplayer,
-        currentTurnMovesRef,
+        game, isMultiplayerActive, multiplayer, currentTurnMovesRef,
         historyLength: turnsHistoryRef.current.length,
     });
 
@@ -159,7 +157,8 @@ export default function Home() {
             modals.closeMatchmaking();
             toast.success(`Match contre ${multiplayer.opponentProfile?.displayName} en ${multiplayer.matchInfo.matchLength} pts.`, 'Partie Multijoueur');
         }
-    }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, modals]);
+    }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, modals, game]);
+
 
     const activeCoachHighlight = useMemo(() => {
         if (openingEntry && isOpeningHighlightActive) return { optimal: openingEntry.bestMoves, played: [] };
@@ -215,13 +214,10 @@ export default function Home() {
                 onToggleOpeningHighlight={toggleOpeningHighlight}
                 onChangeDifficulty={(diff) => {
                     game.setDifficulty(diff);
-                    const names: Record<AIDifficulty, string> = {
-                        beginner: 'Novice (0-ply bruité)',
-                        expert: 'Maître (XG-Web 2-ply)',
-                        grandmaster: 'Tardieu (XG-Web 3-ply XG++++)',
-                    };
+                    const names: Record<AIDifficulty, string> = { beginner: 'Novice (0-ply)', expert: 'Maître (2-ply)', grandmaster: 'Tardieu (3-ply)' };
                     toast.info(`Niveau de l’adversaire : ${names[diff]}`, 'Difficulté IA');
                 }}
+                turnsCount={turnsHistoryRef.current.length}
             />
 
             {/* 2. Plateau et Panneau Coach latéral */}
@@ -247,7 +243,9 @@ export default function Home() {
                 onTriggerCoach={handleTriggerCoach}
                 matchStats={matchStats}
                 gameId={gameIdRef.current}
+                turnsHistory={turnsHistoryRef.current}
             />
+
 
             {/* 3. Tiroir mobile du Coach */}
             <CoachMobileDrawer
