@@ -58,4 +58,23 @@ describe('HudScoreboard Component', () => {
         expect(html).toContain('3/4');
         expect(html).toContain('Annuler');
     });
+
+    it('affiche les badges PR pour le Joueur Blanc et l’IA Noire', () => {
+        const html = renderToStaticMarkup(
+            <HudScoreboard
+                matchLength={7}
+                scoreX={2}
+                scoreO={1}
+                turn="X"
+                dice={null}
+                usedDice={[false, false]}
+                prX={4.2}
+                prO={2.1}
+            />,
+        );
+        expect(html).toContain('PR 4.2');
+        expect(html).toContain('PR 2.1');
+        expect(html).toContain('data-testid="hud-pr-x"');
+        expect(html).toContain('data-testid="hud-pr-o"');
+    });
 });

@@ -28,6 +28,8 @@ export interface UseOpeningAssistantOptions {
     };
     currentTurnMovesRef: React.MutableRefObject<{ from: number; to: number }[]>;
     historyLength: number;
+    /** Activation manuelle des conseils IA en direct (par défaut désactivé pour éviter les spoilers) */
+    isLiveAdviceEnabled?: boolean;
 }
 
 export function useOpeningAssistant({
@@ -36,18 +38,37 @@ export function useOpeningAssistant({
     multiplayer,
     currentTurnMovesRef,
     historyLength,
+    isLiveAdviceEnabled: initialLiveAdvice,
 }: UseOpeningAssistantOptions) {
+    const [isLiveAdviceEnabled, setIsLiveAdviceEnabled] = useState<boolean>(() => {
+        if (initialLiveAdvice !== undefined) return initialLiveAdvice;
+        if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+            const stored = window.localStorage.getItem('bg_live_advice');
+            if (stored !== null) return stored === 'true';
+        }
+        return false;
+    });
     const [isOpeningDismissed, setIsOpeningDismissed] = useState(false);
     const [isOpeningHighlightActive, setIsOpeningHighlightActive] = useState(true);
 
+    const toggleLiveAdvice = useCallback(() => {
+        setIsLiveAdviceEnabled((prev) => {
+            const next = !prev;
+            if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+                window.localStorage.setItem('bg_live_advice', String(next));
+            }
+            return next;
+        });
+    }, []);
+
     const openingEntry = useMemo<OpeningEntry | null>(() => {
-        if (isOpeningDismissed || !game.dice || game.state.turn !== 'X' || game.phase !== 'PLAYING_MOVES') return null;
+        if (!isLiveAdviceEnabled || isOpeningDismissed || !game.dice || game.state.turn !== 'X' || game.phase !== 'PLAYING_MOVES') return null;
         if (game.usedDice[0] || game.usedDice[1]) return null;
         if (isOpeningSituation(game.state.board, game.dice, historyLength)) {
             return getOpening(game.dice[0], game.dice[1]);
         }
         return null;
-    }, [game.dice, game.state.turn, game.phase, game.usedDice, game.state.board, isOpeningDismissed, historyLength]);
+    }, [isLiveAdviceEnabled, game.dice, game.state.turn, game.phase, game.usedDice, game.state.board, isOpeningDismissed, historyLength]);
 
     useEffect(() => {
         if (game.phase === 'WAITING_FOR_ROLL' && !game.dice) {
@@ -80,6 +101,8 @@ export function useOpeningAssistant({
     const toggleOpeningHighlight = useCallback(() => setIsOpeningHighlightActive((prev) => !prev), []);
 
     return {
+        isLiveAdviceEnabled,
+        toggleLiveAdvice,
         openingEntry,
         isOpeningDismissed,
         dismissOpening,

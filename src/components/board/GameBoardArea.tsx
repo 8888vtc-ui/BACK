@@ -44,6 +44,7 @@ export interface GameBoardAreaProps {
     onOpenKnowledgeConcept?: (conceptId: string) => void;
     onTriggerCoach: () => void;
     matchStats?: any;
+    matchStatsO?: any;
     gameId: string;
     /** Historique des tours joués pour la feuille de match */
     turnsHistory?: RawGameTurn[];
@@ -70,6 +71,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     onOpenKnowledgeConcept,
     onTriggerCoach,
     matchStats,
+    matchStatsO,
     gameId,
     turnsHistory,
 }) => {
@@ -116,6 +118,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                 onTriggerCoach={onTriggerCoach}
                 theme={theme}
                 matchStats={matchStats}
+                matchStatsO={matchStatsO}
                 matchContext={{
                     scoreX: game.state.scoreX,
                     scoreO: game.state.scoreO,

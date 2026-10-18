@@ -50,6 +50,8 @@ interface BoardPointProps {
     isTargetDestination?: boolean;
     isBlotTarget?: boolean;
     isSelected?: boolean;
+    isOpponentFrom?: boolean;
+    isOpponentTo?: boolean;
     ariaLabel?: string;
     onClickPoint: (pointNumber: number, e: React.MouseEvent) => void;
     onDoubleClickPoint?: (pointNumber: number) => void;
@@ -64,6 +66,8 @@ const BoardPoint: React.FC<BoardPointProps> = ({
     isTargetDestination = false,
     isBlotTarget = false,
     isSelected = false,
+    isOpponentFrom = false,
+    isOpponentTo = false,
     ariaLabel,
     onClickPoint,
     onDoubleClickPoint,
@@ -79,8 +83,15 @@ const BoardPoint: React.FC<BoardPointProps> = ({
             role="button"
             aria-label={ariaLabel}
             tabIndex={0}
-            className={`relative flex-1 h-full flex flex-col items-center select-none group ${isSelected ? 'ring-2 ring-amber-400/80 rounded-lg' : ''
-                }`}
+            className={`relative flex-1 h-full flex flex-col items-center select-none group transition-all duration-300 ${
+                isSelected
+                    ? 'ring-2 ring-amber-400/80 rounded-lg'
+                    : isOpponentTo
+                    ? 'ring-2 ring-indigo-400/90 bg-indigo-950/40 shadow-[0_0_16px_rgba(129,140,248,0.45)] rounded-lg'
+                    : isOpponentFrom
+                    ? 'ring-2 ring-indigo-500/50 bg-indigo-950/20 rounded-lg'
+                    : ''
+            }`}
             onClick={(e) => onClickPoint(pointNumber, e)}
             onDoubleClick={() => onDoubleClickPoint?.(pointNumber)}
             onContextMenu={(e) => {
@@ -157,6 +168,26 @@ const BoardPoint: React.FC<BoardPointProps> = ({
                     data-testid={`ghost-checker-${pointNumber}`}
                     className={`absolute z-20 w-3.5 h-3.5 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399] ring-2 ring-white animate-pulse pointer-events-none ${isTopRow ? 'bottom-[18%]' : 'top-[18%]'
                         }`}
+                />
+            )}
+
+            {isOpponentTo && (
+                <div
+                    data-testid={`opp-to-indicator-${pointNumber}`}
+                    className={`absolute z-20 w-4 h-4 rounded-full bg-indigo-400 shadow-[0_0_12px_#818cf8] ring-2 ring-white animate-pulse pointer-events-none flex items-center justify-center text-[10px] font-bold text-slate-900 ${
+                        isTopRow ? 'bottom-[18%]' : 'top-[18%]'
+                    }`}
+                >
+                    ▼
+                </div>
+            )}
+
+            {isOpponentFrom && (
+                <div
+                    data-testid={`opp-from-indicator-${pointNumber}`}
+                    className={`absolute z-20 w-2.5 h-2.5 rounded-full bg-indigo-500/80 ring-2 ring-indigo-300 shadow-[0_0_8px_rgba(99,102,241,0.6)] pointer-events-none ${
+                        isTopRow ? 'top-[18%]' : 'bottom-[18%]'
+                    }`}
                 />
             )}
         </div>
@@ -311,6 +342,8 @@ export default function Board({
         const isTarget = ghostDestinations.has(point);
         const isBlotTarget =
             isTarget && count === 1 && (isX ? board[point] < 0 : board[point] > 0);
+        const isOpponentFrom = opponentHighlight?.some((h) => h.from === point) ?? false;
+        const isOpponentTo = opponentHighlight?.some((h) => h.to === point) ?? false;
         const ariaLabel = getPointAriaLabel(
             point,
             board,
@@ -329,6 +362,8 @@ export default function Board({
                 isTargetDestination={isTarget}
                 isBlotTarget={isBlotTarget}
                 isSelected={selectedPoint === point}
+                isOpponentFrom={isOpponentFrom}
+                isOpponentTo={isOpponentTo}
                 ariaLabel={ariaLabel}
                 onClickPoint={handlePointClick}
                 onDoubleClickPoint={onCheckerDoubleClick}
@@ -373,13 +408,17 @@ export default function Board({
 
     const renderOffTray = (offPoint: number, count: number) => {
         const isTarget = ghostDestinations.has(offPoint);
+        const isOpponentToOff = opponentHighlight?.some((h) => h.to === offPoint) ?? false;
         return (
             <div
                 key={`off-${offPoint}`}
-                className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed px-3 py-2 min-h-[64px] ${isTarget
-                    ? 'border-emerald-400 bg-emerald-400/10 cursor-pointer'
-                    : 'border-slate-700 bg-slate-900/40'
-                    }`}
+                className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed px-3 py-2 min-h-[64px] transition-colors ${
+                    isTarget
+                        ? 'border-emerald-400 bg-emerald-400/10 cursor-pointer'
+                        : isOpponentToOff
+                        ? 'border-indigo-400 bg-indigo-950/40 ring-2 ring-indigo-400/80 shadow-[0_0_15px_rgba(99,102,241,0.5)]'
+                        : 'border-slate-700 bg-slate-900/40'
+                }`}
                 onClick={(e) => {
                     e.stopPropagation();
                     handleOffClick(offPoint);
@@ -409,11 +448,12 @@ export default function Board({
         >
             {/* Cadre noyer */}
             <div className="relative w-full h-full rounded-3xl p-3 sm:p-5 shadow-2xl bg-gradient-to-b from-[#4a2a16] via-[#3a2010] to-[#2b170c] flex flex-col">
-                {/* Flèches SVG de trajectoire du Coach (Optimal vs Joué) */}
-                {coachHighlight && (
+                {/* Flèches SVG de trajectoire : Coach (Optimal vs Joué) ou Déplacements IA adverse */}
+                {(coachHighlight || (opponentHighlight && opponentHighlight.length > 0)) && (
                     <CoachArrows
-                        played={coachHighlight.played}
-                        optimal={coachHighlight.optimal}
+                        played={coachHighlight?.played}
+                        optimal={coachHighlight?.optimal}
+                        opponent={opponentHighlight ?? undefined}
                     />
                 )}
 

@@ -138,4 +138,36 @@ describe('GameBoardArea Component', () => {
         const bottomZoneHtml = html.split('data-testid="bar-zone-bottom"')[1].split('</div>')[0];
         expect(bottomZoneHtml).toContain('data-testid="doubling-cube"');
     });
+
+    it('affiche les indicateurs visuels de départ et d arrivée pour les déplacements adverses', () => {
+        const game = {
+            ...dummyGame,
+            opponentHighlight: [{ from: 19, to: 22 }],
+        };
+        const html = renderToStaticMarkup(
+            <GameBoardArea
+                theme="midnight"
+                game={game}
+                activeDie={0}
+                isBoardLoading={false}
+                activeCoachHighlight={null}
+                onCheckerClick={vi.fn()}
+                onCheckerDoubleClick={vi.fn()}
+                onCheckerRightClick={vi.fn()}
+                onDestinationClick={vi.fn()}
+                onPlayMove={vi.fn()}
+                onSelectDie={vi.fn()}
+                onDieDoubleClick={vi.fn()}
+                onDeselect={vi.fn()}
+                coach={null}
+                isAnalyzing={false}
+                onDismissCoach={vi.fn()}
+                onTriggerCoach={vi.fn()}
+                gameId="game_123"
+            />
+        );
+
+        expect(html).toContain('data-testid="opp-from-indicator-19"');
+        expect(html).toContain('data-testid="opp-to-indicator-22"');
+    });
 });

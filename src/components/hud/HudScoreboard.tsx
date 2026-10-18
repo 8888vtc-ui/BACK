@@ -38,6 +38,10 @@ export interface HudScoreboardProps {
     onUndo?: () => void;
     /** Indique si l'action Undo est disponible */
     canUndo?: boolean;
+    /** Performance Rating (PR) Joueur X */
+    prX?: number | null;
+    /** Performance Rating (PR) Joueur O */
+    prO?: number | null;
 }
 
 function MiniDie({ value, used, label }: { value: number; used: boolean; label: string }) {
@@ -67,6 +71,8 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     onRollDice,
     onUndo,
     canUndo = false,
+    prX,
+    prO,
 }) => {
     const isXTurn = turn === 'X';
     const isOTurn = turn === 'O';
@@ -94,11 +100,22 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                             ? 'bg-slate-800 ring-2 ring-blue-400 shadow-md shadow-blue-500/20'
                             : 'bg-slate-800/40 ring-1 ring-slate-700/60 opacity-85'
                     }`}
-                    title={`Joueur X (Blanc) - Score : ${scoreX}${isXTurn ? ' - Au tour' : ''}`}
+                    title={`Joueur X (Blanc) - Score : ${scoreX}${isXTurn ? ' - Au tour' : ''}${prX !== undefined && prX !== null ? ` - PR: ${prX.toFixed(1)}` : ''}`}
                 >
                     <span className="h-3.5 w-3.5 rounded-full bg-slate-100 shadow-sm ring-1 ring-slate-400 shrink-0" />
                     <div className="flex flex-col leading-none">
-                        <span className="text-xs font-bold text-slate-100">X (Blanc)</span>
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-100">X (Blanc)</span>
+                            {prX !== undefined && (
+                                <span
+                                    data-testid="hud-pr-x"
+                                    title="Performance Rating (PR) Blanc — Taux d'erreur normalisé"
+                                    className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-slate-900/90 border border-emerald-600/60 text-emerald-300"
+                                >
+                                    PR {prX !== null ? prX.toFixed(1) : '--'}
+                                </span>
+                            )}
+                        </div>
                         {isXTurn && (
                             <span className="text-[9px] font-semibold text-blue-400">Au tour</span>
                         )}
@@ -115,11 +132,22 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                             ? 'bg-slate-800 ring-2 ring-blue-400 shadow-md shadow-blue-500/20'
                             : 'bg-slate-800/40 ring-1 ring-slate-700/60 opacity-85'
                     }`}
-                    title={`Joueur O (Noir) - Score : ${scoreO}${isOTurn ? ' - Au tour' : ''}`}
+                    title={`Joueur O (Noir) - Score : ${scoreO}${isOTurn ? ' - Au tour' : ''}${prO !== undefined && prO !== null ? ` - PR: ${prO.toFixed(1)}` : ''}`}
                 >
                     <span className="h-3.5 w-3.5 rounded-full bg-slate-900 ring-1 ring-slate-600 shadow-inner shrink-0" />
                     <div className="flex flex-col leading-none">
-                        <span className="text-xs font-bold text-slate-200">O (Noir)</span>
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-200">O (Noir)</span>
+                            {prO !== undefined && (
+                                <span
+                                    data-testid="hud-pr-o"
+                                    title="Performance Rating (PR) IA Noire — Taux d'erreur normalisé"
+                                    className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-slate-900/90 border border-indigo-600/60 text-indigo-300"
+                                >
+                                    PR {prO !== null ? prO.toFixed(1) : '--'}
+                                </span>
+                            )}
+                        </div>
                         {isOTurn && (
                             <span className="text-[9px] font-semibold text-blue-400">Au tour</span>
                         )}

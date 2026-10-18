@@ -28,6 +28,7 @@ describe('useOpeningAssistant hook', () => {
                 multiplayer,
                 currentTurnMovesRef,
                 historyLength: 0,
+                isLiveAdviceEnabled: true,
             })
         );
 
@@ -44,5 +45,36 @@ describe('useOpeningAssistant hook', () => {
         });
         expect(result.current.isOpeningDismissed).toBe(true);
         expect(result.current.openingEntry).toBeNull();
+    });
+
+    it('does not display opening entry when live advice is disabled, until toggled', () => {
+        const game = createMockGame();
+        const currentTurnMovesRef = { current: [] };
+        const multiplayer = {
+            broadcastMovePlayed: vi.fn(),
+            broadcastTurnFinished: vi.fn(),
+        };
+
+        const { result } = renderHook(() =>
+            useOpeningAssistant({
+                game,
+                isMultiplayerActive: false,
+                multiplayer,
+                currentTurnMovesRef,
+                historyLength: 0,
+                isLiveAdviceEnabled: false,
+            })
+        );
+
+        // Pas d'intrusion / spoiler quand live advice est désactivé
+        expect(result.current.isLiveAdviceEnabled).toBe(false);
+        expect(result.current.openingEntry).toBeNull();
+
+        // Activation manuelle par le joueur
+        act(() => {
+            result.current.toggleLiveAdvice();
+        });
+        expect(result.current.isLiveAdviceEnabled).toBe(true);
+        expect(result.current.openingEntry).not.toBeNull();
     });
 });

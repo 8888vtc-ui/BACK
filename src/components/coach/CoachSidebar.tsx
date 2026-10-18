@@ -36,8 +36,10 @@ export interface CoachSidebarProps {
     onTriggerCoach: () => void;
     /** Thème visuel actif */
     theme: ThemeName;
-    /** Statistiques de match cumulées (PR) */
+    /** Statistiques de match cumulées (PR Joueur X) */
     matchStats?: any;
+    /** Statistiques de match cumulées (PR Adversaire O) */
+    matchStatsO?: any;
     /** Contexte de match pour calcul MET */
     matchContext?: any;
     /** Clé déterministe de position */
@@ -61,6 +63,7 @@ const CoachSidebarComponent: React.FC<CoachSidebarProps> = ({
     onTriggerCoach,
     theme,
     matchStats,
+    matchStatsO,
     matchContext,
     positionKey,
     gameId,
@@ -125,6 +128,7 @@ const CoachSidebarComponent: React.FC<CoachSidebarProps> = ({
                             turnsHistory={turnsHistory}
                             board={board}
                             matchStats={matchStats}
+                            matchStatsO={matchStatsO}
                         />
 
                         <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-3.5 space-y-2">

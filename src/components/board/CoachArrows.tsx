@@ -18,9 +18,11 @@ import { pointLayout, VB_W, VB_H, TOP_APEX, BOT_APEX, POINT_W } from './boardGeo
 
 export interface CoachArrowsProps {
     /** Coups joués (rouge). */
-    played: Move[];
+    played?: Move[];
     /** Coups optimaux (vert). */
-    optimal: Move[];
+    optimal?: Move[];
+    /** Coups de l'adversaire IA (indigo/cyan). */
+    opponent?: { from: number; to: number }[];
 }
 
 /** Coordonnées d'une flèche (départ → arrivée) dans le viewBox SVG. */
@@ -53,7 +55,11 @@ export function computeArrowCoords(from: number, to: number): ArrowCoords {
     return { x1: fromX, y1: fromY, x2: toX, y2: toY };
 }
 
-const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({ played, optimal }) => {
+const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
+    played = [],
+    optimal = [],
+    opponent = [],
+}) => {
     const playedArrows = useMemo(
         () => played.map((m) => computeArrowCoords(m.from, m.to)),
         [played],
@@ -61,6 +67,10 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({ played, optimal }) =
     const optimalArrows = useMemo(
         () => optimal.map((m) => computeArrowCoords(m.from, m.to)),
         [optimal],
+    );
+    const opponentArrows = useMemo(
+        () => opponent.map((m) => computeArrowCoords(m.from, m.to)),
+        [opponent],
     );
 
     return (
@@ -90,7 +100,34 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({ played, optimal }) =
                 >
                     <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
                 </marker>
+                <marker
+                    id="arrowhead-opponent"
+                    markerWidth="10"
+                    markerHeight="7"
+                    refX="9"
+                    refY="3.5"
+                    orient="auto"
+                >
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#818cf8" />
+                </marker>
             </defs>
+
+            {/* Coups adversaire IA (indigo fluide avec point d'origine) */}
+            {opponentArrows.map((a, i) => (
+                <g key={`opp-${i}`} className="transition-opacity duration-300">
+                    <line
+                        x1={a.x1}
+                        y1={a.y1}
+                        x2={a.x2}
+                        y2={a.y2}
+                        stroke="#818cf8"
+                        strokeWidth="4"
+                        markerEnd="url(#arrowhead-opponent)"
+                        opacity="0.9"
+                    />
+                    <circle cx={a.x1} cy={a.y1} r="5" fill="#818cf8" opacity="0.9" />
+                </g>
+            ))}
 
             {/* Coups joués (rouge) */}
             {playedArrows.map((a, i) => (

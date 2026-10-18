@@ -63,8 +63,16 @@ export interface MatchHeaderProps {
     isOpeningHighlightActive: boolean;
     onToggleOpeningHighlight: () => void;
     onChangeDifficulty: (difficulty: AIDifficulty) => void;
+    /** Activation des conseils IA en direct */
+    isLiveAdviceEnabled?: boolean;
+    /** Bascule de l'aide en live */
+    onToggleLiveAdvice?: () => void;
     /** Nombre de tours de jeu déjà terminés */
     turnsCount?: number;
+    /** Performance Rating (PR) Joueur Blanc */
+    prX?: number | null;
+    /** Performance Rating (PR) IA Noire */
+    prO?: number | null;
 }
 
 const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
@@ -91,7 +99,11 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
     isOpeningHighlightActive,
     onToggleOpeningHighlight,
     onChangeDifficulty,
+    isLiveAdviceEnabled,
+    onToggleLiveAdvice,
     turnsCount,
+    prX,
+    prO,
 }) => {
     const canDoubleAllowed =
         (rollOffDone || isMultiplayerActive) &&
@@ -188,6 +200,8 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                         onUndo={game.undoMove}
                         canUndo={game.canUndo}
                         canDouble={canDoubleAllowed}
+                        prX={prX}
+                        prO={prO}
                     />
                 </div>
 
@@ -273,6 +287,8 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                     lastOpponentMoves={game.lastOpponentMoves}
                     difficulty={game.difficulty}
                     onChangeDifficulty={onChangeDifficulty}
+                    isLiveAdviceEnabled={isLiveAdviceEnabled}
+                    onToggleLiveAdvice={onToggleLiveAdvice}
                 />
 
 

@@ -74,4 +74,16 @@ describe('CoachMoveComparisonCard', () => {
         );
         expect(html).toContain('Rejouer le bon coup');
     });
+
+    it('affiche l attribution explicite au Joueur Blanc (X)', () => {
+        const html = renderToStaticMarkup(
+            <CoachMoveComparisonCard
+                verdict="blunder"
+                equityLoss={-0.12}
+                playedMove="13/8 13/9"
+                optimalMove="24/20 13/9"
+            />
+        );
+        expect(html).toContain('Analyse de votre décision — Joueur Blanc (X)');
+    });
 });

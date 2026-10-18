@@ -57,6 +57,10 @@ export interface MatchTurnBarProps {
     difficulty: AIDifficulty;
     /** Changement de niveau de difficulté IA */
     onChangeDifficulty: (difficulty: AIDifficulty) => void;
+    /** Activation des conseils IA en direct */
+    isLiveAdviceEnabled?: boolean;
+    /** Bascule de l'assistance live */
+    onToggleLiveAdvice?: () => void;
 }
 
 const MatchTurnBarComponent: React.FC<MatchTurnBarProps> = ({
@@ -75,6 +79,8 @@ const MatchTurnBarComponent: React.FC<MatchTurnBarProps> = ({
     lastOpponentMoves,
     difficulty,
     onChangeDifficulty,
+    isLiveAdviceEnabled = false,
+    onToggleLiveAdvice,
 }) => {
     return (
         <div className="flex w-full flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
@@ -174,8 +180,31 @@ const MatchTurnBarComponent: React.FC<MatchTurnBarProps> = ({
                 )}
             </div>
 
-            {/* Sélecteur de niveau d'IA ou Badge Multijoueur */}
-            <div className="flex items-center justify-end shrink-0">
+            {/* Sélecteur de niveau d'IA & Bascule IA en direct */}
+            <div className="flex items-center justify-end gap-2 shrink-0">
+                {!isMultiplayerActive && onToggleLiveAdvice && (
+                    <button
+                        type="button"
+                        onClick={onToggleLiveAdvice}
+                        data-testid="toggle-live-advice-btn"
+                        title={
+                            isLiveAdviceEnabled
+                                ? "Conseils IA en direct ACTIVÉS — Cliquez pour désactiver et jouer en autonomie (sans spoiler)"
+                                : "Conseils IA en direct DÉSACTIVÉS — Cliquez pour activer l'aide et les recommandations live"
+                        }
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition shadow-sm border ${
+                            isLiveAdviceEnabled
+                                ? 'bg-emerald-950/70 border-emerald-500/70 text-emerald-300 ring-1 ring-emerald-500/30'
+                                : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700/80'
+                        }`}
+                    >
+                        <span>💡</span>
+                        <span className="hidden sm:inline">IA en live :</span>
+                        <span className={`font-bold ${isLiveAdviceEnabled ? 'text-emerald-300' : 'text-slate-400'}`}>
+                            {isLiveAdviceEnabled ? 'ON' : 'OFF'}
+                        </span>
+                    </button>
+                )}
                 {!isMultiplayerActive ? (
                     <DifficultySelector
                         difficulty={difficulty}

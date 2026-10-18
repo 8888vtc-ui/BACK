@@ -127,12 +127,15 @@ export default function Home() {
 
     // Coach IA en temps réel
     const {
-        coach, coachHighlight, matchStats, optimalStreak, brilliantMove,
+        coach, coachHighlight, matchStats, matchStatsX, matchStatsO, optimalStreak, brilliantMove,
         isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: handleTriggerCoach,
     } = useCoach({
         game, currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
         onCoachTriggered: modals.openMobileDrawer,
     });
+
+    const prX = matchStatsX.decisionsCount > 0 ? (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500 : null;
+    const prO = matchStatsO.decisionsCount > 0 ? (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500 : null;
 
     // Interaction pions et dés
     const {
@@ -145,6 +148,7 @@ export default function Home() {
     const {
         openingEntry, isOpeningDismissed, dismissOpening,
         isOpeningHighlightActive, toggleOpeningHighlight, handleApplyOpeningMove,
+        isLiveAdviceEnabled, toggleLiveAdvice,
     } = useOpeningAssistant({
         game, isMultiplayerActive, multiplayer, currentTurnMovesRef,
         historyLength: turnsHistoryRef.current.length,
@@ -212,12 +216,24 @@ export default function Home() {
                 onDismissOpening={dismissOpening}
                 isOpeningHighlightActive={isOpeningHighlightActive}
                 onToggleOpeningHighlight={toggleOpeningHighlight}
+                isLiveAdviceEnabled={isLiveAdviceEnabled}
+                onToggleLiveAdvice={() => {
+                    toggleLiveAdvice();
+                    const next = !isLiveAdviceEnabled;
+                    if (next) {
+                        toast.info("Conseils IA en direct ACTIVÉS — L'IA affiche les coups Book recommandés.", 'IA en direct');
+                    } else {
+                        toast.info('Conseils IA en direct DÉSACTIVÉS — Jouez en toute autonomie sans spoiler.', 'IA en direct');
+                    }
+                }}
                 onChangeDifficulty={(diff) => {
                     game.setDifficulty(diff);
                     const names: Record<AIDifficulty, string> = { beginner: 'Novice (0-ply)', expert: 'Maître (2-ply)', grandmaster: 'Tardieu (3-ply)' };
                     toast.info(`Niveau de l’adversaire : ${names[diff]}`, 'Difficulté IA');
                 }}
                 turnsCount={turnsHistoryRef.current.length}
+                prX={prX}
+                prO={prO}
             />
 
             {/* 2. Plateau et Panneau Coach latéral */}
@@ -242,6 +258,7 @@ export default function Home() {
                 onOpenKnowledgeConcept={modals.openKnowledgeBase}
                 onTriggerCoach={handleTriggerCoach}
                 matchStats={matchStats}
+                matchStatsO={matchStatsO}
                 gameId={gameIdRef.current}
                 turnsHistory={turnsHistoryRef.current}
             />
@@ -255,6 +272,7 @@ export default function Home() {
                 coach={coach}
                 isAnalyzing={isAnalyzing}
                 matchStats={matchStats}
+                matchStatsO={matchStatsO}
                 onReplayMove={handleReplayMove}
                 onDismiss={dismissCoach}
                 onOpenKnowledgeConcept={modals.openKnowledgeBase}

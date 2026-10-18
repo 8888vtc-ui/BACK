@@ -29,8 +29,10 @@ export interface CoachMobileDrawerProps {
     coach: any;
     /** Analyse en cours */
     isAnalyzing: boolean;
-    /** Statistiques de match cumulées (PR) */
+    /** Statistiques de match cumulées (PR Joueur X) */
     matchStats?: any;
+    /** Statistiques de match cumulées (PR Adversaire O) */
+    matchStatsO?: any;
     /** Handler pour rejouer l'erreur */
     onReplayMove?: () => void;
     /** Handler pour fermer l'analyse */
@@ -56,6 +58,7 @@ const CoachMobileDrawerComponent: React.FC<CoachMobileDrawerProps> = ({
     coach,
     isAnalyzing,
     matchStats,
+    matchStatsO,
     onReplayMove,
     onDismiss,
     onOpenKnowledgeConcept,

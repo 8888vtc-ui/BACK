@@ -13,7 +13,7 @@
  * que l'orchestration (appels + mise à jour d'état).
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import {
     BoardState,
     Move,
@@ -53,6 +53,7 @@ export interface MatchStats {
     decisionsCount: number;
     totalEquityLoss: number;
     blundersCount: number;
+    totalErrorRate?: number;
 }
 
 /** Dépendances injectées par le composant parent (`page.tsx`). */
@@ -62,6 +63,9 @@ export interface UseCoachDeps {
         state: BoardState;
         dice: [number, number] | null;
         undoMove: () => void;
+        difficulty?: any;
+        lastOpponentDice?: [number, number] | null;
+        lastOpponentMoves?: { from: number; to: number }[] | null;
     };
     /** Refs du tour courant (pour l'analyse automatique). */
     currentTurnMovesRef: React.MutableRefObject<{ from: number; to: number }[]>;
@@ -75,6 +79,8 @@ export interface UseCoachResult {
     coach: CoachState | null;
     coachHighlight: CoachHighlight | null;
     matchStats: MatchStats;
+    matchStatsX: MatchStats;
+    matchStatsO: MatchStats;
     optimalStreak: number;
     brilliantMove: boolean;
     isAnalyzing: boolean;
@@ -96,7 +102,15 @@ export function useCoach({
         decisionsCount: 0,
         totalEquityLoss: 0,
         blundersCount: 0,
+        totalErrorRate: 0,
     });
+    const [matchStatsO, setMatchStatsO] = useState<MatchStats>({
+        decisionsCount: 0,
+        totalEquityLoss: 0,
+        blundersCount: 0,
+        totalErrorRate: 0,
+    });
+    const lastOpponentEvalRef = useRef<string | null>(null);
     const [optimalStreak, setOptimalStreak] = useState(0);
     const [brilliantMove, setBrilliantMove] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -134,11 +148,16 @@ export function useCoach({
                         //   0.020-0.080 => DOUTEUX (n'incrémente pas BLUNDERS)
                         //   >= 0.080 => BLUNDER (incrémente BLUNDERS de +1)
                         const isBlunder = Math.abs(equityLoss) >= 0.08;
-                        setMatchStats((prev) => ({
-                            decisionsCount: prev.decisionsCount + 1,
-                            totalEquityLoss: prev.totalEquityLoss + cappedLoss,
-                            blundersCount: prev.blundersCount + (isBlunder ? 1 : 0),
-                        }));
+                        setMatchStats((prev) => {
+                            const nextDecisions = prev.decisionsCount + 1;
+                            const nextLoss = prev.totalEquityLoss + cappedLoss;
+                            return {
+                                decisionsCount: nextDecisions,
+                                totalEquityLoss: nextLoss,
+                                blundersCount: prev.blundersCount + (isBlunder ? 1 : 0),
+                                totalErrorRate: nextDecisions > 0 ? (nextLoss / nextDecisions) * 500 : 0,
+                            };
+                        });
 
                         if (Math.abs(equityLoss) < 0.02) {
                             setOptimalStreak((prev) => prev + 1);
@@ -209,6 +228,39 @@ export function useCoach({
             currentTurnMovesRef.current = [];
         }
     }, [game.state.turn, game.state, currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef, onCoachTriggered]);
+
+    // Évaluation automatique du coup de l'IA adverse (pour affichage de son PR et Error Rate)
+    useEffect(() => {
+        if (
+            game.state.turn === 'X' &&
+            game.lastOpponentMoves &&
+            game.lastOpponentMoves.length > 0 &&
+            game.lastOpponentDice
+        ) {
+            const moveKey = `${game.lastOpponentDice.join('-')}:${game.lastOpponentMoves.map((m) => `${m.from}/${m.to}`).join(' ')}`;
+            if (lastOpponentEvalRef.current === moveKey) return;
+            lastOpponentEvalRef.current = moveKey;
+
+            // Estimation du niveau d'équité perdu selon le niveau IA
+            let oppLoss = 0.005; // 3-ply Grandmaster
+            if (game.difficulty === 'beginner') {
+                oppLoss = 0.055; // 0-ply Novice
+            } else if (game.difficulty === 'expert') {
+                oppLoss = 0.015; // 2-ply Maître
+            }
+            const isBlunder = oppLoss >= 0.08;
+            setMatchStatsO((prev) => {
+                const nextDecisions = prev.decisionsCount + 1;
+                const nextLoss = prev.totalEquityLoss + oppLoss;
+                return {
+                    decisionsCount: nextDecisions,
+                    totalEquityLoss: nextLoss,
+                    blundersCount: prev.blundersCount + (isBlunder ? 1 : 0),
+                    totalErrorRate: nextDecisions > 0 ? (nextLoss / nextDecisions) * 500 : 0,
+                };
+            });
+        }
+    }, [game.state.turn, game.lastOpponentMoves, game.lastOpponentDice, game.difficulty]);
 
     const dismissCoach = useCallback(() => {
         setCoach(null);
@@ -378,6 +430,8 @@ export function useCoach({
         coach,
         coachHighlight,
         matchStats,
+        matchStatsX: matchStats,
+        matchStatsO,
         optimalStreak,
         brilliantMove,
         isAnalyzing,

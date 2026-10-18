@@ -24,14 +24,17 @@ export interface MatchScoreSheetProps {
     turnsHistory: RawGameTurn[];
     /** Plateau de jeu actuel */
     board?: number[];
-    /** Statistiques de match (PR) */
+    /** Statistiques de match (PR Joueur X) */
     matchStats?: any;
+    /** Statistiques de match (PR Adversaire O) */
+    matchStatsO?: any;
 }
 
 const MatchScoreSheetComponent: React.FC<MatchScoreSheetProps> = ({
     turnsHistory,
     board,
     matchStats,
+    matchStatsO,
 }) => {
     const pips = useMemo(() => {
         if (!board) return { X: 167, O: 167 };
@@ -39,8 +42,16 @@ const MatchScoreSheetComponent: React.FC<MatchScoreSheetProps> = ({
     }, [board]);
 
     const pipDiff = pips.X - pips.O;
-    const prValue = matchStats?.totalErrorRate !== undefined && matchStats.totalErrorRate !== null
+    const prValueX = matchStats?.totalErrorRate !== undefined && matchStats.totalErrorRate !== null
         ? Number(matchStats.totalErrorRate).toFixed(1)
+        : matchStats?.decisionsCount > 0
+        ? ((matchStats.totalEquityLoss / matchStats.decisionsCount) * 500).toFixed(1)
+        : null;
+
+    const prValueO = matchStatsO?.totalErrorRate !== undefined && matchStatsO.totalErrorRate !== null
+        ? Number(matchStatsO.totalErrorRate).toFixed(1)
+        : matchStatsO?.decisionsCount > 0
+        ? ((matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500).toFixed(1)
         : null;
 
     return (
@@ -48,7 +59,7 @@ const MatchScoreSheetComponent: React.FC<MatchScoreSheetProps> = ({
             data-testid="match-score-sheet"
             className="flex flex-col flex-1 min-h-[160px] rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 shadow-md space-y-2.5"
         >
-            {/* 1. En-tête Feuille de match & PR */}
+            {/* 1. En-tête Feuille de match & PR comparatif */}
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                 <div className="flex items-center gap-1.5">
                     <span className="text-amber-400 font-serif text-xs">📋</span>
@@ -56,15 +67,22 @@ const MatchScoreSheetComponent: React.FC<MatchScoreSheetProps> = ({
                         Feuille de Match en Direct
                     </span>
                 </div>
-                {prValue ? (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 font-mono font-bold">
-                        PR: {prValue}
+                <div className="flex items-center gap-1.5">
+                    <span
+                        data-testid="scoresheet-pr-x"
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 font-mono font-bold"
+                        title="Performance Rating Joueur Blanc (X)"
+                    >
+                        PR X: {prValueX ?? '--'}
                     </span>
-                ) : (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-400 font-mono">
-                        Tour {turnsHistory.length + 1}
+                    <span
+                        data-testid="scoresheet-pr-o"
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950/80 border border-indigo-600/60 text-indigo-300 font-mono font-bold"
+                        title="Performance Rating IA Noire (O)"
+                    >
+                        PR IA: {prValueO ?? '--'}
                     </span>
-                )}
+                </div>
             </div>
 
             {/* 2. Jauge comparative de Pip Count */}

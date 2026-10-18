@@ -54,4 +54,19 @@ describe('MatchTurnBar Component', () => {
 
         expect(html).toContain('Match Multijoueur Classé');
     });
+
+    it('renders toggle-live-advice-btn when onToggleLiveAdvice is provided', () => {
+        const onToggle = vi.fn();
+        const html = renderToStaticMarkup(
+            <MatchTurnBar
+                {...defaultProps}
+                isLiveAdviceEnabled={true}
+                onToggleLiveAdvice={onToggle}
+            />
+        );
+
+        expect(html).toContain('data-testid="toggle-live-advice-btn"');
+        expect(html).toContain('IA en live :');
+        expect(html).toContain('ON');
+    });
 });

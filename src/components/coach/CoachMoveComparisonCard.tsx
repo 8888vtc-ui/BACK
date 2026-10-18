@@ -66,6 +66,17 @@ export function CoachMoveComparisonCard({
             }`}
             data-testid="coach-move-comparison-card"
         >
+            {/* 0. Attribution explicite du joueur analysé */}
+            <div className="flex items-center justify-between text-xs font-semibold px-2.5 py-1 rounded-lg bg-sky-950/60 border border-sky-800/60 text-sky-200">
+                <span className="flex items-center gap-1.5">
+                    <span className="h-3 w-3 rounded-full bg-slate-100 ring-1 ring-slate-400 shrink-0" />
+                    <span>{isEn ? 'Your Move Analysis — White (X)' : 'Analyse de votre décision — Joueur Blanc (X)'}</span>
+                </span>
+                <span className="text-[10px] text-sky-300/80 font-mono">
+                    {playedMove ? `Coup : ${playedMove}` : ''}
+                </span>
+            </div>
+
             {/* 1. En-tête de diagnostic : Titre clair + explication accessible */}
             <div className="flex flex-col gap-1 border-b border-slate-800/80 pb-3">
                 <div className="flex items-center justify-between gap-2">

@@ -63,6 +63,10 @@ export interface MatchHudProps {
     canUndo?: boolean;
     /** Indique si l'action de doubler est autorisée */
     canDouble?: boolean;
+    /** PR Joueur Blanc */
+    prX?: number | null;
+    /** PR IA Noire */
+    prO?: number | null;
 }
 
 /**
@@ -78,7 +82,7 @@ export default function MatchHud({
     onResetGame, isLoadingBoard, onToggleLoadingBoard, onSimulateNetworkError,
     onOpenMultiplayer, isMultiplayerActive = false, onOpenOpeningBook,
     onOpenExportImport, onOpenKnowledgeBase, onTriggerCoach, onUndo, canUndo = false,
-    canDouble: propCanDouble,
+    canDouble: propCanDouble, prX, prO,
 }: MatchHudProps) {
 
     const [isBackendModalOpen, setIsBackendModalOpen] = useState(false);
@@ -151,6 +155,8 @@ export default function MatchHud({
                     onRollDice={onRollDice}
                     onUndo={onUndo}
                     canUndo={canUndo}
+                    prX={prX}
+                    prO={prO}
                 />
 
                 {/* 3. Videau, Dépliage Navigation & Menu Paramètres ⚙️ */}
