@@ -132,10 +132,13 @@ Module **100 % pur**, sans dépendance React/Node/navigateur :
 - Machine à états de partie, videau, bear-off, gammons/backgammons.
 - Sérialisation XGID, pip count, borne-off count.
 
-### 5.2 Moteur GNUBG — `src/workers/gnubg.worker.ts` + `backend-engine/`
-
-- **Client** : Web Worker charge le WASM + poids NN, expose une API JSON (`evaluate`, `analyzeMoves`, `analyzeCube`, `bestMove`).
-- **Serveur** : `backend-engine/` (FastAPI) exécute GNUBG pour les rollouts profonds, avec pool de workers (`gnubg_pool.py`).
+### 5.2 Moteur XG-Web & GNUBG — `src/workers/xgEngine.worker.ts` + `/xg-web-core`
+- **Moteur Hybride XG-Web (WASM SIMD 2-Ply)** :
+  - **Option A (Client TypeScript)** : Table exacte 1-sided bear-off (54 264 états, PR 0.00 en bear-off) dans `src/lib/engine/bearoffTable.ts` + Keith Count officiel (`keithCount.ts`).
+  - **Grand-Maître 2-Ply (`/xg-web-core`)** : Core Rust pur compilé en WASM SIMD (`xg_web_core.wasm`, 63 Ko) + 3 micro-réseaux quantifiés int8 (121 Ko) + table MET Kazaross-XG2.
+  - **Worker Dédié** : `src/workers/xgEngine.worker.ts` pour exécution 2-ply non-bloquante (< 60 ms/coup).
+- **Client Fallback** : `src/workers/gnubg.worker.ts` exposant l'API d'évaluation tri-phase instantanée.
+- **Serveur Optionnel** : `backend-engine/` (FastAPI) pour rollouts profonds externes.
 
 ### 5.3 Classificateur d'erreurs — `src/features/coach/moveClassifier.ts`
 

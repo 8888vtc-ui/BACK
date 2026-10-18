@@ -116,24 +116,28 @@ export default function BackendEngineModal({ isOpen, onClose, theme }: BackendEn
 
                     <div className="rounded-xl border border-amber-900/40 bg-stone-900/40 p-3.5 space-y-2">
                         <h3 className="font-bold text-amber-300 flex items-center gap-1.5 text-sm">
-                            <span>🧠</span> Comment fonctionne l’évaluation tri-phase ?
+                            <span>⚡</span> Moteur Hybride XG-Web (WASM SIMD 2-Ply + Option A)
                         </h3>
-                        <ul className="list-disc pl-5 space-y-1 text-stone-400">
+                        <ul className="list-disc pl-5 space-y-1.5 text-stone-400">
                             <li>
-                                <strong className="text-stone-200">Régime RACE / Bear-Off</strong> : formule de course de Thorp
-                                (Effective Pip Count + wastage), portes et blots neutralisés car l’adversaire ne peut plus frapper.
+                                <strong className="text-stone-200">XG-Web Core WASM SIMD (63 Ko)</strong> : moteur de recherche 2-ply
+                                Expectiminimax avec élagage alpha dynamique, écrit en Rust pur, exécutant 21 tirages de dés adverses en &lt; 150 ms.
                             </li>
                             <li>
-                                <strong className="text-stone-200">Régime CONTACT</strong> : 16 caractéristiques stratégiques réelles
-                                (probabilité de frappe sur 36 combinaisons, force de prime, ancre défensive, contrôle des flèches clés).
+                                <strong className="text-stone-200">Table exacte 1-sided Bear-Off (54 264 états, 108 Ko)</strong> :
+                                indexation combinatoire parfaite (stars and bars), espérance mathématique exacte du nombre de jets pour un PR 0.00 en fin de partie.
                             </li>
                             <li>
-                                <strong className="text-stone-200">Régime CRASHED</strong> : positions écrasées (jan intérieur surchargé
-                                ou ≤ 6 pions sur le plateau), évaluées avec les règles de contact.
+                                <strong className="text-stone-200">Keith Count officiel (Tom Keith 1993)</strong> :
+                                calcul exact du gaspillage de pips (ace-point, flèches 2/3, trous 4/5/6) et Point of Last Take (PLT) pour le videau.
                             </li>
                             <li>
-                                <strong className="text-stone-200">Règles WBF exactes</strong> : doubles (4 coups), réentrée prioritaire
-                                depuis la barre, bear-off exact et par dépassement.
+                                <strong className="text-stone-200">Table de Match Kazaross-XG2 (25 points)</strong> :
+                                table d’équité de référence eXtreme Gammon 2 avec formules de Janowski pour le jeu de tournoi.
+                            </li>
+                            <li>
+                                <strong className="text-stone-200">Poids quantifiés int8 (121 Ko)</strong> :
+                                3 micro-réseaux spécialisés (Contact, Crashed, Race) totalisant &lt; 185 Ko, sans aucun serveur ni abonnement.
                             </li>
                         </ul>
                     </div>

@@ -13,7 +13,7 @@ import MultiplayerLobbyModal from '../components/multiplayer/MultiplayerLobbyMod
 import MultiplayerBanner from '../components/multiplayer/MultiplayerBanner';
 import MultiplayerResultModal from '../components/multiplayer/MultiplayerResultModal';
 import { useBoardTheme } from '../hooks/useBoardTheme';
-import { useBackgammonGame } from '../hooks/useBackgammonGame';
+import { useBackgammonGame, type AIDifficulty } from '../hooks/useBackgammonGame';
 import { useCoach } from '../hooks/useCoach';
 import { useMultiplayerGame } from '../hooks/useMultiplayerGame';
 import type { RealtimeBroadcastAction } from '../features/multiplayer/types';
@@ -1133,10 +1133,11 @@ export default function Home() {
                                 difficulty={game.difficulty}
                                 onChange={(diff) => {
                                     game.setDifficulty(diff);
-                                    const names = {
+                                    const names: Record<AIDifficulty, string> = {
                                         beginner: 'Débutant (0-ply bruité)',
                                         intermediate: 'Intermédiaire (1-ply)',
                                         expert: 'Expert (2-ply tri-phase)',
+                                        grandmaster: 'Grand-Maître (XG-Web 2-ply SIMD)',
                                     };
                                     toast.info(`Niveau de l’adversaire : ${names[diff]}`, 'Difficulté IA');
                                 }}

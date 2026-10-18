@@ -82,7 +82,8 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor.
 ### `src/workers/` — Web Workers
 | Fichier | Rôle |
 |---|---|
-| `gnubg.worker.ts` | Exécute GNUBG WASM hors thread principal |
+| `xgEngine.worker.ts` | Exécute le moteur Grand-Maître XG-Web 2-Ply WASM SIMD |
+| `gnubg.worker.ts` | Exécute l'évaluateur tri-phase fallback hors thread principal |
 
 ---
 

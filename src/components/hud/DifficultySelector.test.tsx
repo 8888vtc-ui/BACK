@@ -15,6 +15,8 @@ describe('DifficultySelector', () => {
         expect(html).toContain('1-ply');
         expect(html).toContain('Expert');
         expect(html).toContain('2-ply');
+        expect(html).toContain('Grand-Maître');
+        expect(html).toContain('WASM 2-Ply');
     });
 
     it('met en surbrillance le niveau actif avec aria-checked="true"', () => {

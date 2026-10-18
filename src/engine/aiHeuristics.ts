@@ -30,7 +30,7 @@ export interface GameResult {
     pointsWon: number;
 }
 
-export type AIDifficulty = 'beginner' | 'intermediate' | 'expert';
+export type AIDifficulty = 'beginner' | 'intermediate' | 'expert' | 'grandmaster';
 
 /**
  * Évalue si le plateau actuel correspond à une fin de partie (tous les 15 pions sortis).
@@ -266,7 +266,7 @@ export function selectBestOpponentSequence(
         let score = 0;
         if (difficulty === 'beginner') {
             score = scoreBoard0PlyNoisy(seq.board, player, randomFn);
-        } else if (difficulty === 'expert') {
+        } else if (difficulty === 'expert' || difficulty === 'grandmaster') {
             score = scoreBoard2PlyForOpponent(seq.board, player);
         } else {
             score = scoreBoard1Ply(seq.board, player);

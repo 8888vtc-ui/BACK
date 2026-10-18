@@ -45,6 +45,15 @@ const LEVELS: Array<{
             tooltip: '2-ply tri-phase : anticipation profonde des répliques et contre-attaques adverses.',
             activeClass: 'border-rose-500/80 bg-rose-950/60 text-rose-200 shadow-rose-500/20',
         },
+        {
+            id: 'grandmaster',
+            name: 'Grand-Maître',
+            ply: 'WASM 2-Ply',
+            badge: 'XG-Web',
+            icon: '👑',
+            tooltip: 'XG-Web Core : moteur haute performance Rust/WASM SIMD 2-ply avec table Kazaross-XG2.',
+            activeClass: 'border-amber-500/80 bg-amber-950/60 text-amber-200 shadow-amber-500/20',
+        },
     ];
 
 export default function DifficultySelector({

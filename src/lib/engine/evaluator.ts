@@ -29,6 +29,8 @@ import {
     CubeDecisionResult,
     BestMoveResult,
 } from './types';
+import { bearoffExpectedRolls } from './bearoffTable';
+import { computeKeithCount, evaluateKeithCube } from './keithCount';
 
 /**
  * Formate un déplacement unique en notation standard de Backgammon (ex: "24/20", "bar/20", "6/off").
@@ -223,58 +225,47 @@ export function classifyPosition(board: number[]): PositionRegime {
 }
 
 /**
- * Calcule l'Effective Pip Count (EPC) d'un joueur : raw pips + pénalités de
- * gaspillage (wastage) selon la méthode de Thorp / Keith Count.
+ * Extrait les pions du jan intérieur si TOUS les pions du joueur y sont (ou sortis).
+ * Retourne les 6 compteurs [flèche 1..6], ou null si le joueur a des pions extérieurs/barre.
  */
-function computeEPC(board: number[], player: Player): number {
-    const pips = pipCount(board);
-    const rawPips = pips[player];
-    const off = borneOffCount(board, player);
-
-    let wastage = 0;
-
-    // Pénalités de gaspillage sur les flèches basses du jan intérieur.
-    for (let p = 1; p <= 6; p++) {
-        const v = board[p];
-        const count = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
-        if (count > 2) {
-            if (p === 1) wastage += 2 * (count - 2);
-            else if (p === 2 || p === 3) wastage += 1 * (count - 2);
+function getBearoffCounts(board: number[], player: Player): number[] | null {
+    if (player === 'X') {
+        if (board[X_BAR] > 0) return null;
+        for (let pt = 7; pt <= 24; pt++) {
+            if (board[pt] > 0) return null;
         }
-    }
-
-    // Pénalité par flèche vide (gap) dans le jan intérieur (4, 5, 6) s'il reste
-    // des pions sur des flèches plus hautes.
-    for (let p = 4; p <= 6; p++) {
-        const v = board[p];
-        const count = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
-        if (count === 0) {
-            // Vérifie s'il reste des pions sur des flèches plus hautes (7..24).
-            let hasHigher = false;
-            for (let q = 7; q <= 24; q++) {
-                const vq = board[q];
-                const cq = player === 'X' ? Math.max(0, vq) : Math.max(0, -vq);
-                if (cq > 0) {
-                    hasHigher = true;
-                    break;
-                }
-            }
-            if (hasHigher) wastage += 1;
+        return [
+            Math.max(0, board[1]),
+            Math.max(0, board[2]),
+            Math.max(0, board[3]),
+            Math.max(0, board[4]),
+            Math.max(0, board[5]),
+            Math.max(0, board[6]),
+        ];
+    } else {
+        if (board[O_BAR] < 0) return null;
+        for (let pt = 1; pt <= 18; pt++) {
+            if (board[pt] < 0) return null;
         }
+        return [
+            Math.max(0, -board[24]),
+            Math.max(0, -board[23]),
+            Math.max(0, -board[22]),
+            Math.max(0, -board[21]),
+            Math.max(0, -board[20]),
+            Math.max(0, -board[19]),
+        ];
     }
-
-    // Valorisation massive de chaque pion sorti.
-    const remaining = 15 - off;
-    wastage += 1.5 * remaining;
-
-    return rawPips + wastage;
 }
 
 /**
- * Évaluateur spécialisé COURSE & BEAR-OFF (zéro bêtise).
+ * Évaluateur spécialisé COURSE & BEAR-OFF (exactitude mathématique).
  *
- * Dans ce régime, les portes et blots valent STRICTEMENT ZÉRO (l'adversaire ne
- * peut plus frapper). Utilise la formule de Thorp sur les EPC.
+ * Utilise :
+ * 1. La table exacte 1-sided Bear-off (54 264 états) quand les deux joueurs
+ *    sont en phase de bear-off pur.
+ * 2. Le Keith Count officiel (Tom Keith, 1993) avec pénalités de gaspillage
+ *    en course pure générale.
  */
 function evaluateRace(
     state: BoardState,
@@ -284,15 +275,40 @@ function evaluateRace(
     const offPlayer = borneOffCount(state.board, player);
     const offOpponent = borneOffCount(state.board, opponent);
 
-    const epcPlayer = computeEPC(state.board, player);
-    const epcOpponent = computeEPC(state.board, opponent);
+    const bearoffPlayer = getBearoffCounts(state.board, player);
+    const bearoffOpponent = getBearoffCounts(state.board, opponent);
 
-    // Avantage du trait : on soustrait 4 pips au joueur au trait.
-    const ep = epcPlayer - 4;
-    const eo = epcOpponent;
+    let winProb: number;
 
-    const z = (eo - ep) / (Math.sqrt(ep + eo) * 1.65);
-    const winProb = clamp(1 / (1 + Math.exp(-1.7 * z)), 0.001, 0.999);
+    if (offPlayer >= 15) {
+        winProb = 1.0;
+    } else if (offOpponent >= 15) {
+        winProb = 0.0;
+    } else if (bearoffPlayer !== null && bearoffOpponent !== null) {
+        // Phase Bear-Off exacte via la table des 54 264 états précalculés
+        const expP = bearoffExpectedRolls(bearoffPlayer);
+        const expO = bearoffExpectedRolls(bearoffOpponent);
+        if (expP <= 0) {
+            winProb = 1.0;
+        } else if (expO <= 0) {
+            winProb = 0.0;
+        } else {
+            // Le joueur au trait joue en premier (+0.5 jet d'avance moyen)
+            const diffRolls = expO - expP + 0.5;
+            const sigma = Math.sqrt(Math.max(1, expP + expO)) * 0.45;
+            const z = diffRolls / sigma;
+            winProb = clamp(1 / (1 + Math.exp(-2.2 * z)), 0.0001, 0.9999);
+        }
+    } else {
+        // Course pure générale : Keith Count officiel avec pénalités
+        const keithP = computeKeithCount(state.board, player).total;
+        const keithO = computeKeithCount(state.board, opponent).total;
+        const ep = keithP - Math.floor(keithP / 7);
+        const eo = keithO;
+        const z = (eo - ep) / (Math.sqrt(ep + eo) * 1.65);
+        winProb = clamp(1 / (1 + Math.exp(-1.7 * z)), 0.001, 0.999);
+    }
+
     const loseProb = 1 - winProb;
 
     // Gammon en course : impossible si l'adversaire a déjà sorti un pion.
@@ -774,12 +790,20 @@ export function analyzeBoardCube(
     // Règle de Crawford : le videau est gelé.
     if (state.crawford) {
         optimalAction = 'No double (Crawford rule)';
-    } else if (cubelessEquity < DOUBLE_THRESHOLD) {
-        optimalAction = 'No double, take';
-    } else if (cubelessEquity >= DOUBLE_THRESHOLD && cubelessEquity < 0.79) {
-        optimalAction = 'Double, take';
     } else {
-        optimalAction = 'Double, pass';
+        const regime = classifyPosition(state.board);
+        if (regime === 'RACE') {
+            // En course pure, la formule de Tom Keith donne la décision exacte de videau.
+            const isRedouble = state.cubeOwner === state.turn;
+            const keithDecision = evaluateKeithCube(state.board, state.turn, isRedouble);
+            optimalAction = keithDecision.action;
+        } else if (cubelessEquity < DOUBLE_THRESHOLD) {
+            optimalAction = 'No double, take';
+        } else if (cubelessEquity >= DOUBLE_THRESHOLD && cubelessEquity < 0.79) {
+            optimalAction = 'Double, take';
+        } else {
+            optimalAction = 'Double, pass';
+        }
     }
 
     return {
