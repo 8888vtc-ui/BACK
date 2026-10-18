@@ -118,9 +118,26 @@ export function useCheckerInteractions({
             game.deselect();
             return;
         }
-        const result = findClickDestination(point, game.leftDieTargets.get(point) ?? [], game.rightDieTargets.get(point) ?? [], game.state.board, game.state.turn, false);
-        if (result) handlePlayMove(point, result.dest, result.die);
-    }, [game.selected?.point, game.deselect, game.leftDieTargets, game.rightDieTargets, game.state.board, game.state.turn, handlePlayMove]);
+
+        const leftDests = game.leftDieTargets.get(point) ?? [];
+        const rightDests = game.rightDieTargets.get(point) ?? [];
+        const allDests = Array.from(new Set([...leftDests, ...rightDests]));
+
+        if (allDests.length === 0) return;
+
+        // Si ce pion n'a qu'UNE SEULE destination possible (aucun choix ambigu), on le déplace directement
+        if (allDests.length === 1) {
+            const dest = allDests[0];
+            const die = leftDests.includes(dest) ? 0 : 1;
+            handlePlayMove(point, dest, die);
+            return;
+        }
+
+        // Si le pion a plusieurs destinations possibles (ex. avec dé 1 vers 5 ou dé 3 vers 3),
+        // on ne devine pas arbitrairement à la place du joueur ! On sélectionne le pion
+        // et on affiche les cibles pour que le joueur clique sa destination exacte.
+        game.selectChecker(point);
+    }, [game.selected?.point, game.deselect, game.leftDieTargets, game.rightDieTargets, game.selectChecker, handlePlayMove]);
 
     const handleCheckerDoubleClick = useCallback((point: number) => {
         impactMedium();

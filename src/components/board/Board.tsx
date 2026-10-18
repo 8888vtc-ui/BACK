@@ -301,7 +301,9 @@ export default function Board({
             const count = board[pointNumber];
             const hasPlayerChecker = isX ? count > 0 : count < 0;
 
-            if (ghostDestinations.has(pointNumber) && !hasPlayerChecker) {
+            // Si cette case est une destination légale du pion sélectionné (point fantôme),
+            // on déplace le pion ici — y compris pour construire ou renforcer une porte existante !
+            if (ghostDestinations.has(pointNumber)) {
                 onDestinationClick(pointNumber);
                 return;
             }
