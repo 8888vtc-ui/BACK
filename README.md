@@ -7,6 +7,16 @@ Application web et mobile hybride (Next.js 15, React 19, Tailwind CSS, Capacitor
 
 ---
 
+## 📚 Documentation
+
+| Document | Rôle |
+|---|---|
+| [`PROJECT_MAP.md`](PROJECT_MAP.md) | **Carte d'orientation** — comprendre le projet en 1 minute, ajouter une fonction en 2 minutes. **Lire en premier.** |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Architecture détaillée (modules, flux, décisions). |
+| [`SCALABILITY.md`](SCALABILITY.md) | Charte de scalabilité impérative (règles non négociables). |
+
+---
+
 ## 🚀 Démarrage Rapide
 
 ### Développement Local

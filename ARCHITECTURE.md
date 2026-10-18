@@ -3,6 +3,14 @@
 > Application web de Backgammon avec coach IA temps réel, portée sur mobile via Capacitor.
 > **Statut : document reflétant la structure réelle du code (audit 2026-10).**
 
+> 📚 **Carte d'orientation** : [`PROJECT_MAP.md`](PROJECT_MAP.md) permet de comprendre
+> le projet en 1 minute et d'ajouter une fonction en 2 minutes. **Lire en premier.**
+
+> ⚠️ **Charte de scalabilité obligatoire** : toute nouvelle création de code DOIT
+> respecter les règles impératives définies dans [`SCALABILITY.md`](SCALABILITY.md)
+> (taille max des fichiers, isolation des composants, mémoïsation, tests, interdiction
+> des monolithes). Aucune fonctionnalité ne peut être ajoutée sans s'y conformer.
+
 ---
 
 ## 1. Vision et objectifs
@@ -238,18 +246,20 @@ GNUBG est sous GPLv2/v3. Le WASM est une œuvre dérivée : isoler le moteur dan
 
 ## 9. Dette technique connue (audit 2026-10)
 
+> Ces fichiers hérités violent la charte de scalabilité ([`SCALABILITY.md`](SCALABILITY.md)).
+> **Règle : aucun nouveau code ne doit s'y ajouter** — toute modification passe par
+> l'extraction d'un module conforme.
+
 | Point | Gravité | Statut |
 |---|---|---|
-| `BackgammonBoard.tsx` (~2468 lignes) monolithique | Élevée | À découper |
-| `page.tsx` (~1607 lignes) concentre toute la logique | Élevée | À découper |
+| `BackgammonBoard.tsx` (~2468 lignes) monolithique | Élevée | Legacy, à découper |
+| `page.tsx` (~1738 lignes) concentre toute la logique | Élevée | À découper |
 | `useBackgammonGame.ts` (~1389 lignes) | Élevée | À découper |
-| `Board.tsx` orphelin (non importé) | Moyenne | À brancher ou supprimer |
 | `knowledgeBaseData.ts` (~1587 lignes de données) | Faible | À externaliser en JSON |
 
 ---
 
 ## 10. Décisions ouvertes
 
-1. **Sort de `Board.tsx`** : brancher en remplacement de `BackgammonBoard.tsx`, ou supprimer.
-2. **Fournisseur LLM par défaut en production** et modèle de coût.
-3. **Hébergement** : Vercel/Netlify vs conteneur auto-hébergé (impacte les timeouts des rollouts).
+1. **Fournisseur LLM par défaut en production** et modèle de coût.
+2. **Hébergement** : Vercel/Netlify vs conteneur auto-hébergé (impacte les timeouts des rollouts).

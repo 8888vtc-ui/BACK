@@ -14,6 +14,7 @@ import MultiplayerBanner from '../components/multiplayer/MultiplayerBanner';
 import MultiplayerResultModal from '../components/multiplayer/MultiplayerResultModal';
 import { useBoardTheme } from '../hooks/useBoardTheme';
 import { useBackgammonGame } from '../hooks/useBackgammonGame';
+import { useCoach } from '../hooks/useCoach';
 import { useMultiplayerGame } from '../hooks/useMultiplayerGame';
 import type { RealtimeBroadcastAction } from '../features/multiplayer/types';
 import { toast } from '../components/toast/ToastContext';
@@ -100,17 +101,7 @@ export interface MatchStats {
 export default function Home() {
     const { t, locale } = useI18n();
     const { theme, toggleTheme } = useBoardTheme();
-    const [coach, setCoach] = useState<CoachState | null>(null);
-    const [coachHighlight, setCoachHighlight] = useState<CoachHighlight | null>(null);
-    const [matchStats, setMatchStats] = useState<MatchStats>({
-        decisionsCount: 0,
-        totalEquityLoss: 0,
-        blundersCount: 0,
-    });
-    const [optimalStreak, setOptimalStreak] = useState(0);
-    const [brilliantMove, setBrilliantMove] = useState(false);
     const [isBoardLoading, setIsBoardLoading] = useState(false);
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [isMatchmakingModalOpen, setIsMatchmakingModalOpen] = useState(false);
     const [latestGameAnalysis, setLatestGameAnalysis] = useState<CompleteGameAnalysis | null>(null);
     const [isGameReviewModalOpen, setIsGameReviewModalOpen] = useState(false);
@@ -127,12 +118,6 @@ export default function Home() {
         setSelectedKnowledgeConceptId(conceptId);
         setIsKnowledgeModalOpen(true);
     }, []);
-
-    useEffect(() => {
-        if (coach) {
-            setIsMobileDrawerOpen(true);
-        }
-    }, [coach]);
 
     const gameIdRef = useRef<string>('');
     const moveCountRef = useRef<number>(0);
@@ -211,6 +196,25 @@ export default function Home() {
                 console.warn('[Page] Échec analyse fin de partie :', e);
             }
         },
+    });
+
+    // Logique Coach IA (analyse temps réel, statistiques, streak) — extraite dans useCoach.
+    const {
+        coach,
+        coachHighlight,
+        matchStats,
+        optimalStreak,
+        brilliantMove,
+        isAnalyzing,
+        dismissCoach,
+        replayMove: handleReplayMove,
+        triggerCoach: handleTriggerCoach,
+    } = useCoach({
+        game,
+        currentTurnMovesRef,
+        currentTurnDiceRef,
+        turnBoardBeforeRef,
+        onCoachTriggered: () => setIsMobileDrawerOpen(true),
     });
 
     // Écouteur des actions distantes de l'adversaire en multijoueur
@@ -677,126 +681,18 @@ export default function Home() {
         }
     }, [game.phase, game.state.turn, game.dice, game.leftDieTargets, game.rightDieTargets, handlePlayMove]);
 
-    // Enregistrement du tour de X quand il bascule vers O et détection automatique d'erreur par le Coach
+    // Enregistrement du tour de X dans l'historique (pour l'analyse post-partie).
+    // L'analyse coach temps réel est gérée par le hook `useCoach`.
     useEffect(() => {
         if (game.state.turn === 'O' && currentTurnMovesRef.current.length > 0 && currentTurnDiceRef.current) {
-            const dice = currentTurnDiceRef.current;
-            const playedMoves = [...currentTurnMovesRef.current];
-            const boardBefore = turnBoardBeforeRef.current.length > 0 ? turnBoardBeforeRef.current : game.state.board;
-
             turnsHistoryRef.current.push({
                 turnNumber: turnsHistoryRef.current.length + 1,
                 player: 'X',
-                dice,
-                boardBefore,
+                dice: currentTurnDiceRef.current,
+                boardBefore: turnBoardBeforeRef.current.length > 0 ? turnBoardBeforeRef.current : game.state.board,
                 boardAfter: [...game.state.board],
-                moves: playedMoves,
+                moves: [...currentTurnMovesRef.current],
             });
-
-            // Analyse temps réel du coup joué par le joueur par rapport au coup optimal Expectimax
-            try {
-                const evalState: BoardState = {
-                    ...game.state,
-                    board: boardBefore,
-                    turn: 'X' as const,
-                    dice,
-                };
-                const analysis = analyzeBoardMoves(evalState, dice, { ply: 2 });
-                if (analysis.bestMove) {
-                    // Retranscription fidèle du coup joué, frappes marquées d'un astérisque.
-                    const playedNotation = formatMoveSequenceNotationWithHits(playedMoves, 'X', boardBefore);
-                    const normalizedPlayed = normalizeMoveNotation(playedNotation);
-                    const matchedAnalysis = analysis.moves.find(
-                        (m) => normalizeMoveNotation(m.notation) === normalizedPlayed,
-                    );
-                    const equityLoss = matchedAnalysis ? matchedAnalysis.equityLoss : -0.15;
-
-                    // Cumul des statistiques de session (PR en direct).
-                    // Seuls les coups NON FORCÉS (>= 2 coups légaux) comptent dans le PR.
-                    const isUnforced = analysis.moves.length > 1;
-                    if (isUnforced) {
-                        setMatchStats((prev) => ({
-                            decisionsCount: prev.decisionsCount + 1,
-                            totalEquityLoss: prev.totalEquityLoss + Math.abs(equityLoss),
-                            blundersCount: prev.blundersCount + (equityLoss <= -0.08 ? 1 : 0),
-                        }));
-
-                        // Boucle de dopamine : Streak de coups parfaits & Coup de Maître.
-                        if (equityLoss >= -0.025) {
-                            // Coup parfait : incrémente la série.
-                            setOptimalStreak((prev) => prev + 1);
-                        } else if (equityLoss <= -0.08) {
-                            // Blunder : la série retombe à 0.
-                            setOptimalStreak(0);
-                        }
-
-                        // Détection du "Coup de Maître" : coup #1 (perte 0) ET écart avec #2 > 0.060.
-                        const secondBest = analysis.moves[1];
-                        const isBrilliant =
-                            Math.abs(equityLoss) < 0.0001 &&
-                            secondBest !== undefined &&
-                            Math.abs(secondBest.equityLoss) > 0.060;
-                        setBrilliantMove(isBrilliant);
-                    }
-
-                    // Si perte d'équité significative (erreur >= -0.06), déclenchement automatique du Coach
-                    if (equityLoss <= -0.06) {
-                        const isBlunder = equityLoss <= -0.12;
-                        if (isBlunder) {
-                            soundEngine.playBlunderAlert();
-                        }
-
-                        // Calcul des états terminaux pour extraire les concepts stratégiques.
-                        // IMPORTANT : on utilise le plateau RÉEL après le coup (game.state.board)
-                        // plutôt que de reconstruire depuis playedMoves, afin d'éviter toute
-                        // désynchronisation entre la retranscription et l'état affiché.
-                        const playedEndState: BoardState = {
-                            ...evalState,
-                            board: [...game.state.board],
-                        };
-
-                        let bestEndState: BoardState = evalState;
-                        if (analysis.bestMove.moves) {
-                            let bBest = [...evalState.board];
-                            for (const m of analysis.bestMove.moves) bBest = applyMove(bBest, m, 'X');
-                            bestEndState = { ...evalState, board: bBest };
-                        }
-
-                        const features = extractStrategicFeatures(evalState, playedEndState, bestEndState);
-
-                        setCoach({
-                            verdict: isBlunder ? 'blunder' : 'doubtful',
-                            equityLoss,
-                            playedMove: playedNotation,
-                            optimalMove: analysis.bestMove.notation,
-                            explanation: null,
-                            features,
-                            positionKey: boardBefore.join(','),
-                            candidateMoves: analysis.moves.slice(0, 3).map((m) => ({
-                                rank: m.rank,
-                                notation: m.notation,
-                                equity: m.equity,
-                                equityLoss: m.equityLoss,
-                            })),
-                            boardBefore: [...boardBefore],
-                        });
-                        setCoachHighlight({
-                            played: playedMoves,
-                            optimal: analysis.bestMove.moves ?? [],
-                        });
-
-                        // Ouvre automatiquement le panneau latéral ou le tiroir mobile dès le franchissement de seuil
-                        setIsMobileDrawerOpen(true);
-                    } else {
-                        // Coup propre : supprime immédiatement les états périmés d'un tour antérieur
-                        setCoach(null);
-                        setCoachHighlight(null);
-                    }
-                }
-            } catch (err) {
-                console.warn('[Coach] Erreur évaluation tour X :', err);
-            }
-
             currentTurnMovesRef.current = [];
         }
     }, [game.state.turn, game.state]);
@@ -834,181 +730,8 @@ export default function Home() {
         }
     }, [game.selected, game.deselect]);
 
-    const dismissCoach = useCallback(() => {
-        setCoach(null);
-        setCoachHighlight(null);
-        setIsAnalyzing(false);
-    }, []);
-
-    // "Reprendre l'erreur" : annule le dernier sous-mouvement pour rejouer le coup.
-    const handleReplayMove = useCallback(() => {
-        game.undoMove();
-        setCoach(null);
-        setCoachHighlight(null);
-    }, [game.undoMove]);
-
-    const handleTriggerCoach = useCallback(async () => {
-        setIsAnalyzing(true);
-        setIsMobileDrawerOpen(true);
-
-        // Détermine les dés à évaluer : les dés actuels ou simulation 3-1 sur le plateau actuel
-        const evalDice: [number, number] = game.dice ?? [3, 1];
-        const stateToEval: BoardState = {
-            ...game.state,
-            dice: evalDice,
-            turn: 'X' as const,
-        };
-
-        try {
-            // 1. Timeout strict de 8s sur analysisService / worker
-            const timeoutPromise = new Promise<never>((_, reject) =>
-                setTimeout(() => reject(new Error('Timeout analyse coach (8s)')), 8000),
-            );
-
-            const analysisPromise = (async () => {
-                // Tentative via analysisService (WASM ou Backend)
-                const res = await evaluatePosition(stateToEval, { ply: 2, timeoutMs: 8000 });
-                if (res && res.moves && res.moves.length > 0) {
-                    const best = res.moves[0];
-                    const alt = res.moves.length > 1 ? res.moves[1] : best;
-                    return { best, alt, moves: res.moves };
-                }
-                // Repli in-process analyzeBoardMoves
-                const localRes = analyzeBoardMoves(stateToEval, evalDice, { ply: 2, maxMoves: 5 });
-                if (localRes && localRes.bestMove) {
-                    const best = localRes.bestMove;
-                    const alt = localRes.moves.length > 1 ? localRes.moves[1] : best;
-                    return { best, alt, moves: localRes.moves };
-                }
-                throw new Error('Aucun coup légal détecté');
-            })();
-
-            const analysis = await Promise.race([analysisPromise, timeoutPromise]);
-            const best = analysis.best;
-            const alt = analysis.alt;
-            const loss = alt.equityLoss !== 0 ? alt.equityLoss : -0.08;
-            const isBlunder = Math.abs(loss) >= 0.1;
-
-            const bestMoves: Move[] =
-                'moves' in best && Array.isArray((best as any).moves) ? (best as any).moves : [];
-            const altMoves: Move[] =
-                'moves' in alt && Array.isArray((alt as any).moves) ? (alt as any).moves : [];
-
-            // Calcul des plateaux de fin pour extraire les concepts stratégiques
-            let bestEndState: BoardState = stateToEval;
-            let altEndState: BoardState = stateToEval;
-            if (bestMoves.length > 0) {
-                let b = [...stateToEval.board];
-                for (const m of bestMoves) b = applyMove(b, m, 'X');
-                bestEndState = { ...stateToEval, board: b };
-            }
-            if (altMoves.length > 0) {
-                let b = [...stateToEval.board];
-                for (const m of altMoves) b = applyMove(b, m, 'X');
-                altEndState = { ...stateToEval, board: b };
-            }
-
-            const matchCtx = buildMatchContext({
-                matchLength: game.state.matchLength,
-                scoreX: game.state.scoreX,
-                scoreO: game.state.scoreO,
-                cubeValue: game.state.cubeValue,
-                cubeOwner: game.state.cubeOwner,
-                crawford: game.state.crawford,
-            });
-
-            const features = extractStrategicFeatures(stateToEval, altEndState, bestEndState);
-            const ruleBased = generateRuleBasedExplanation({
-                verdict: isBlunder ? 'blunder' : 'douteux',
-                equityLoss: loss,
-                playedMove: alt.notation,
-                optimalMove: best.notation,
-                features,
-                matchContext: matchCtx,
-                language: 'fr',
-            });
-
-            setCoach({
-                verdict: isBlunder ? 'blunder' : 'doubtful',
-                equityLoss: loss,
-                playedMove: alt.notation,
-                optimalMove: best.notation,
-                explanation: ruleBased.explanation,
-                features,
-                positionKey: game.state.board.join(','),
-            });
-
-            setCoachHighlight({
-                played: altMoves,
-                optimal: bestMoves,
-            });
-
-            toast.info(
-                `Analyse calculée pour dés [${evalDice[0]}-${evalDice[1]}] : Meilleur coup ${best.notation}`,
-                'Coach Grand-Maître',
-            );
-        } catch (err) {
-            console.warn('[Coach] Moteur ou worker indisponible (timeout 8s), repli sur featureExtractor :', err);
-
-            // 2. Bascule de secours instantanée sur l'explication règle-basée depuis featureExtractor
-            const pips = pipCount(game.state.board);
-            const structure = analyzeBoardStructure(game.state.board, 'X');
-            const userBlots = analyzeBlots(game.state.board, 'X');
-
-            const fallbackFeatures: StrategicFeatures = {
-                player: 'X',
-                pipCountDiff: {
-                    player: pips.X,
-                    opponent: pips.O,
-                    leader: pips.X < pips.O ? 'X' : pips.X > pips.O ? 'O' : 'tie',
-                    diff: pips.X - pips.O,
-                },
-                blotsAndShots: {
-                    user: userBlots,
-                    best: userBlots.length > 0 ? userBlots.slice(0, 1) : [],
-                },
-                boardStructure: structure,
-                contactStatus: pips.X > 0 && pips.O > 0 ? 'contact' : 'pureRace',
-            };
-
-            const fallbackMatchCtx = buildMatchContext({
-                matchLength: game.state.matchLength,
-                scoreX: game.state.scoreX,
-                scoreO: game.state.scoreO,
-                cubeValue: game.state.cubeValue,
-                cubeOwner: game.state.cubeOwner,
-                crawford: game.state.crawford,
-            });
-
-            const fallbackRuleBased = generateRuleBasedExplanation({
-                verdict: 'douteux',
-                equityLoss: -0.06,
-                playedMove: 'Position actuelle',
-                optimalMove: 'Consolidation structurelle',
-                features: fallbackFeatures,
-                matchContext: fallbackMatchCtx,
-                language: 'fr',
-            });
-
-            setCoach({
-                verdict: 'doubtful',
-                equityLoss: -0.06,
-                playedMove: 'Position actuelle',
-                optimalMove: 'Consolidation structurelle',
-                explanation: fallbackRuleBased.explanation,
-                features: fallbackFeatures,
-                positionKey: game.state.board.join(','),
-            });
-
-            toast.info(
-                fallbackRuleBased.summary || 'Conseil stratégique généré via le moteur de règles.',
-                'Coach Grand-Maître',
-            );
-        } finally {
-            // 3. Reset garanti dans un finally : jamais de isAnalyzing bloqué !
-            setIsAnalyzing(false);
-        }
-    }, [game.dice, game.state]);
+    // Les fonctions coach (dismissCoach, handleReplayMove, handleTriggerCoach) sont
+    // désormais fournies par le hook `useCoach`.
 
     function simulateNetworkError() {
         toast.networkError(
