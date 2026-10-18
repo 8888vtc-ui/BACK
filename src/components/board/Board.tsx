@@ -454,16 +454,45 @@ export default function Board({
                             {TOP_ROW.slice(0, 6).map((p) => renderPoint(p, true))}
                         </div>
 
-                        {/* Barre centrale (unique, row-span-2) : pions frappés + videau au centre */}
-                        <div className="row-span-2 w-16 sm:w-20 flex flex-col justify-between bg-[#221108] rounded-lg mx-1 border-x-2 border-[#d4af37]/60">
-                            {renderBarSection(O_BAR, 'black', bar.O)}
-                            {/* Videau dynamique : déplacement vers le possesseur + halo si doublable */}
-                            <DoublingCube
-                                cubeValue={state.cubeValue}
-                                cubeOwner={state.cubeOwner}
-                                canDouble={canDouble}
-                            />
-                            {renderBarSection(X_BAR, 'white', bar.X)}
+                        {/* Barre centrale (unique, row-span-2) : pions frappés + videau positionné selon son propriétaire */}
+                        <div
+                            className="row-span-2 w-16 sm:w-20 flex flex-col justify-between items-center bg-[#221108] rounded-lg mx-1 border-x-2 border-[#d4af37]/60 py-2"
+                            data-testid="central-bar-container"
+                        >
+                            {/* Zone Haut (Côté Joueur O / Noir) */}
+                            <div className="flex flex-col items-center gap-1.5 w-full min-h-[48px]" data-testid="bar-zone-top">
+                                {renderBarSection(O_BAR, 'black', bar.O)}
+                                {state.cubeOwner === 'O' && (
+                                    <DoublingCube
+                                        cubeValue={state.cubeValue}
+                                        cubeOwner={state.cubeOwner}
+                                        canDouble={canDouble}
+                                    />
+                                )}
+                            </div>
+
+                            {/* Zone Centre (Neutre au milieu : avant le premier double) */}
+                            <div className="flex items-center justify-center min-h-[48px]" data-testid="bar-zone-middle">
+                                {state.cubeOwner === null && (
+                                    <DoublingCube
+                                        cubeValue={state.cubeValue}
+                                        cubeOwner={state.cubeOwner}
+                                        canDouble={canDouble}
+                                    />
+                                )}
+                            </div>
+
+                            {/* Zone Bas (Côté Joueur X / Blanc) */}
+                            <div className="flex flex-col items-center gap-1.5 w-full min-h-[48px]" data-testid="bar-zone-bottom">
+                                {state.cubeOwner === 'X' && (
+                                    <DoublingCube
+                                        cubeValue={state.cubeValue}
+                                        cubeOwner={state.cubeOwner}
+                                        canDouble={canDouble}
+                                    />
+                                )}
+                                {renderBarSection(X_BAR, 'white', bar.X)}
+                            </div>
                         </div>
 
                         {/* Rangée 1 — droite (19..24) + sabot O */}

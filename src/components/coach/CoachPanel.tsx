@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import CoachPanelSkeleton from './CoachPanelSkeleton';
 import DeepRolloutSection from './DeepRolloutSection';
+import CoachMoveComparisonCard from './CoachMoveComparisonCard';
 import { useI18n } from '../../lib/i18n';
 import {
     MatchContext,
@@ -35,6 +36,9 @@ export interface CoachPanelProps {
     playedMove: string | null;
     optimalMove: string | null;
     explanation?: string | null;
+    whyFailed?: string | null;
+    whyOptimal?: string | null;
+    summary?: string | null;
     onExplain?: () => void;
     onDismiss: () => void;
     onOpenKnowledgeConcept?: (conceptId: string) => void;
@@ -292,6 +296,9 @@ export default function CoachPanel({
     playedMove,
     optimalMove,
     explanation,
+    whyFailed: propWhyFailed,
+    whyOptimal: propWhyOptimal,
+    summary: propSummary,
     onExplain,
     onDismiss,
     onOpenKnowledgeConcept,
@@ -847,33 +854,20 @@ export default function CoachPanel({
                 </div>
             )}
 
-            {/* 1. Diagnostic Verdict & Perte d'équité EN GRAND */}
-            <div className="mt-3 flex items-center justify-between gap-3 rounded-xl bg-slate-950/80 border border-slate-800 p-3.5 shadow-inner">
-                <div>
-                    <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">Verdict</span>
-                    <span className={`font-black uppercase tracking-wider text-2xl ${isBlunder ? 'text-red-400' : 'text-amber-400'}`}>
-                        {label}
-                    </span>
-                </div>
-                {equityLoss !== null && (
-                    <div className="text-right">
-                        <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">{t('coach.equityLoss')}</span>
-                        <strong className="font-mono text-2xl font-black text-white">{equityLoss.toFixed(3)}</strong>
-                    </div>
-                )}
+            {/* 1. Carte comparative visuelle des coups (Coup joué vs Coup optimal recommandé) */}
+            <div className="mt-3">
+                <CoachMoveComparisonCard
+                    verdict={verdict}
+                    equityLoss={equityLoss}
+                    playedMove={playedMove}
+                    optimalMove={optimalMove}
+                    whyFailed={propWhyFailed || parsed.whyFailed}
+                    whyOptimal={propWhyOptimal || parsed.whyOptimal}
+                    summary={propSummary || parsed.summary}
+                    onReplayMove={onReplayMove}
+                    locale={locale}
+                />
             </div>
-
-            {/* 1bis. Bouton "Reprendre l'erreur" (Mode Entraînement) */}
-            {isBlunder && onReplayMove && (
-                <button
-                    type="button"
-                    onClick={onReplayMove}
-                    className="mt-2 w-full rounded-lg border border-red-500/40 bg-red-950/40 px-3 py-2 text-xs font-bold text-red-300 hover:bg-red-900/50 transition"
-                    data-testid="coach-replay-move-btn"
-                >
-                    ⏪ Reprendre l'erreur
-                </button>
-            )}
 
             {/* 2. Tableau compact du Top 3 des coups (Move Ranking) */}
             {topMoves && topMoves.length > 0 && (
@@ -965,8 +959,8 @@ export default function CoachPanel({
                                 )}
                             </div>
                         ) : (
-                            /* Corps de l'explication classique */
-                            <div className="text-sm leading-relaxed whitespace-pre-line text-slate-300 line-clamp-3 overflow-hidden">
+                            /* Corps de l'explication classique sans tronquage agressif */
+                            <div className="text-sm leading-relaxed whitespace-pre-line text-slate-300">
                                 {parsed.explanation || parsed.rawText}
                                 {isStreaming && (
                                     <span className="inline-block ml-1 animate-pulse font-mono text-blue-400 font-bold">
@@ -1004,62 +998,6 @@ export default function CoachPanel({
                                 💡 <span className="font-semibold text-amber-100">{t('coach.advice')} :</span> {parsed.advice}
                             </div>
                         )}
-
-                        {/* Enseignement du Maître & Recommandation de Livre Officiel */}
-                        {(() => {
-                            const bookPromo = getMasterBookRecommendation(parsed.conceptId, parsed.keyConcept);
-                            return (
-                                <div className="rounded-xl border border-indigo-500/40 bg-gradient-to-br from-indigo-950/60 via-slate-900 to-purple-950/50 p-3 shadow-lg space-y-2" data-testid="coach-master-book-card">
-                                    <div className="flex items-start justify-between gap-2 border-b border-indigo-900/50 pb-2">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-base">📚</span>
-                                            <div>
-                                                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400 block">
-                                                    {locale === 'en' ? 'Master Recommendation & Essential Reading' : 'Pour progresser sur cette erreur : Livre Recommandé'}
-                                                </span>
-                                                <h4 className="text-xs font-bold text-white flex flex-wrap items-center gap-1">
-                                                    <span>{bookPromo.bookTitle}</span>
-                                                    <span className="text-[11px] font-normal text-indigo-300">— {bookPromo.author}</span>
-                                                </h4>
-                                            </div>
-                                        </div>
-                                        <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-[9px] font-bold text-indigo-300 border border-indigo-500/30 shrink-0">
-                                            Officiel
-                                        </span>
-                                    </div>
-
-                                    <p className="text-[11px] italic text-indigo-200/90 leading-relaxed">
-                                        {bookPromo.conceptSnippet}
-                                    </p>
-
-                                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-indigo-900/40 text-xs">
-                                        {onOpenKnowledgeConcept && (
-                                            <button
-                                                type="button"
-                                                onClick={() => onOpenKnowledgeConcept(bookPromo.conceptId)}
-                                                className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-300 hover:text-white transition"
-                                            >
-                                                <span>📖</span>
-                                                <span>{locale === 'en' ? 'Open Theory Sheet' : 'Lire la Fiche Théorique'}</span>
-                                                <span>➔</span>
-                                            </button>
-                                        )}
-
-                                        <a
-                                            href={bookPromo.buyUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-2.5 py-1 text-[11px] font-black text-slate-950 shadow transition active:scale-95"
-                                            title={`Découvrir sur ${bookPromo.publisher}`}
-                                        >
-                                            <span>🛒</span>
-                                            <span>{locale === 'en' ? `Get on ${bookPromo.publisher}` : `Commander sur ${bookPromo.publisher}`}</span>
-                                            <span className="text-xs">↗</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            );
-                        })()}
                     </div>
                 ) : (
                     <div>

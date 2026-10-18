@@ -14,7 +14,7 @@
 
 import React, { useMemo } from 'react';
 import type { Move } from '../../engine/backgammonEngine';
-import { pointLayout, VB_W, VB_H, PLAY_Y0, PLAY_Y1, POINT_W } from './boardGeometry';
+import { pointLayout, VB_W, VB_H, TOP_APEX, BOT_APEX, POINT_W } from './boardGeometry';
 
 export interface CoachArrowsProps {
     /** Coups joués (rouge). */
@@ -46,9 +46,9 @@ export function computeArrowCoords(from: number, to: number): ArrowCoords {
     const fromX = fromLayout.x + POINT_W / 2;
     const toX = toLayout.x + POINT_W / 2;
 
-    // Position verticale : haut (top) ou bas (bottom).
-    const fromY = fromLayout.top ? PLAY_Y0 + 20 : PLAY_Y1 - 20;
-    const toY = toLayout.top ? PLAY_Y0 + 20 : PLAY_Y1 - 20;
+    // Position verticale : sur les triangles vers la rivière, bien dégagée des numéros de bordure.
+    const fromY = fromLayout.top ? TOP_APEX - 40 : BOT_APEX + 40;
+    const toY = toLayout.top ? TOP_APEX - 40 : BOT_APEX + 40;
 
     return { x1: fromX, y1: fromY, x2: toX, y2: toY };
 }

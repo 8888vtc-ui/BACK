@@ -40,6 +40,9 @@ export interface CoachState {
     playedMove: string;
     optimalMove: string;
     explanation: string | null;
+    whyFailed?: string;
+    whyOptimal?: string;
+    summary?: string;
     features?: StrategicFeatures;
     positionKey?: string;
     candidateMoves?: { rank: number; notation: string; equity: number; equityLoss: number }[];
@@ -301,6 +304,9 @@ export function useCoach({
                 playedMove: alt.notation,
                 optimalMove: best.notation,
                 explanation: ruleBased.explanation,
+                whyFailed: ruleBased.whyFailed,
+                whyOptimal: ruleBased.whyOptimal,
+                summary: ruleBased.summary,
                 features,
                 positionKey: game.state.board.join(','),
             });
@@ -357,6 +363,9 @@ export function useCoach({
                 playedMove: 'Position actuelle',
                 optimalMove: 'Consolidation structurelle',
                 explanation: fallbackRuleBased.explanation,
+                whyFailed: fallbackRuleBased.whyFailed,
+                whyOptimal: fallbackRuleBased.whyOptimal,
+                summary: fallbackRuleBased.summary,
                 features: fallbackFeatures,
                 positionKey: game.state.board.join(','),
             });
