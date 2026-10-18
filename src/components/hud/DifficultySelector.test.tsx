@@ -4,19 +4,17 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import DifficultySelector from './DifficultySelector';
 
 describe('DifficultySelector', () => {
-    it('affiche les 3 niveaux d’IA (Débutant 0-ply, Intermédiaire 1-ply, Expert 2-ply)', () => {
+    it('affiche les 3 niveaux d’IA (Novice 0-ply, Maître WASM 2-ply, Tardieu 3-ply)', () => {
         const html = renderToStaticMarkup(
-            <DifficultySelector difficulty="intermediate" onChange={vi.fn()} />,
+            <DifficultySelector difficulty="expert" onChange={vi.fn()} />,
         );
 
-        expect(html).toContain('Débutant');
+        expect(html).toContain('Novice');
         expect(html).toContain('0-ply');
-        expect(html).toContain('Intermédiaire');
-        expect(html).toContain('1-ply');
-        expect(html).toContain('Expert');
-        expect(html).toContain('2-ply');
-        expect(html).toContain('Grand-Maître');
+        expect(html).toContain('Maître');
         expect(html).toContain('WASM 2-Ply');
+        expect(html).toContain('Tardieu');
+        expect(html).toContain('3-Ply Sélectif');
     });
 
     it('met en surbrillance le niveau actif avec aria-checked="true"', () => {
@@ -35,7 +33,7 @@ describe('DifficultySelector', () => {
 
     it('gère l’état désactivé', () => {
         const html = renderToStaticMarkup(
-            <DifficultySelector difficulty="intermediate" onChange={vi.fn()} disabled={true} />,
+            <DifficultySelector difficulty="expert" onChange={vi.fn()} disabled={true} />,
         );
 
         expect(html).toContain('disabled=""');

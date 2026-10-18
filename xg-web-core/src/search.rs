@@ -122,4 +122,114 @@ impl<'a> SearchEngine<'a> {
         scored_2ply.sort_by(|a, b| b.equity.partial_cmp(&a.equity).unwrap_or(std::cmp::Ordering::Equal));
         scored_2ply
     }
+
+    /// Recherche 3-ply sélective XG++++ (Expectiminimax avec approfondissement sur coups critiques).
+    ///
+    /// Algorithme :
+    /// 1. Exécute d'abord le 2-ply pour trier tous les candidats.
+    /// 2. Si l'écart entre le 1er et le 2e coup est net (> 0.040), le 2-ply suffit (décision évidente).
+    /// 3. Si l'écart est serré (<= 0.040), approfondit la recherche à 3-ply sur les meilleurs candidats :
+    ///    - Pour chaque réplique adverse forte, calcule l'espérance de la contre-riposte de notre joueur.
+    /// 4. Re-trie les coups avec la précision chirurgicale 3-ply.
+    pub fn search_3ply_selective(&self, board: &Board, d1: u8, d2: u8, player: i8) -> Vec<ScoredMove> {
+        let mut candidates_2ply = self.search_2ply(board, d1, d2, player);
+        if candidates_2ply.len() <= 1 {
+            return candidates_2ply;
+        }
+
+        let best_equity = candidates_2ply[0].equity;
+        let second_equity = candidates_2ply[1].equity;
+
+        // Seuil d'approfondissement XG++++ : si l'écart est supérieur à 0.040, le coup #1 est
+        // déjà indéniablement supérieur, le 2-ply suffit.
+        if (best_equity - second_equity) > 0.040 {
+            return candidates_2ply;
+        }
+
+        let opp = -player;
+
+        // Échantillon représentatif de 7 lancers pour l'évaluation de la contre-réplique (ply 3)
+        const SAMPLE_PLY3_ROLLS: [(u8, u8, f32); 7] = [
+            (3, 1, 2.0 / 12.0),
+            (4, 2, 2.0 / 12.0),
+            (5, 3, 2.0 / 12.0),
+            (6, 1, 2.0 / 12.0),
+            (6, 5, 2.0 / 12.0),
+            (3, 3, 1.0 / 12.0),
+            (5, 5, 1.0 / 12.0),
+        ];
+
+        // On approfondit sur les 2 ou 3 candidats les plus serrés (à moins de 0.040 du 1er)
+        for cand in candidates_2ply.iter_mut().take(3) {
+            if (best_equity - cand.equity) > 0.040 {
+                continue;
+            }
+
+            let mut expected_3ply = 0.0f32;
+
+            for &(opp_d1, opp_d2, weight) in DISTINCT_ROLLS.iter() {
+                let opp_moves = generate_moves(&cand.board, opp_d1, opp_d2, opp);
+                if opp_moves.is_empty() {
+                    let ev = self.engine.evaluate(&cand.board, player);
+                    expected_3ply += weight * ev.cubeless_equity;
+                    continue;
+                }
+
+                // Pour chaque coup adverse, on évalue les meilleures répliques
+                let mut best_opp_reply_equity = f32::NEG_INFINITY;
+
+                // Tri rapide des répliques adverses à 0-ply
+                let mut opp_scored: Vec<(Board, f32)> = opp_moves
+                    .into_iter()
+                    .map(|seq| {
+                        let ev = self.engine.evaluate(&seq.resulting_board, opp);
+                        (seq.resulting_board, ev.cubeless_equity)
+                    })
+                    .collect();
+                opp_scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+
+                // On explore en profondeur les 2 meilleures répliques de l'adversaire
+                for (opp_board, opp_0ply_eq) in opp_scored.into_iter().take(2) {
+                    if opp_0ply_eq >= 0.99 {
+                        if opp_0ply_eq > best_opp_reply_equity {
+                            best_opp_reply_equity = opp_0ply_eq;
+                        }
+                        continue;
+                    }
+
+                    // Notre contre-réplique (ply 3)
+                    let mut our_expected = 0.0f32;
+                    for &(our_d1, our_d2, our_weight) in SAMPLE_PLY3_ROLLS.iter() {
+                        let our_moves = generate_moves(&opp_board, our_d1, our_d2, player);
+                        let mut our_best = f32::NEG_INFINITY;
+                        for our_seq in &our_moves {
+                            let ev = self.engine.evaluate(&our_seq.resulting_board, player);
+                            if ev.cubeless_equity > our_best {
+                                our_best = ev.cubeless_equity;
+                            }
+                        }
+                        if our_best.is_finite() {
+                            our_expected += our_weight * our_best;
+                        } else {
+                            let ev = self.engine.evaluate(&opp_board, player);
+                            our_expected += our_weight * ev.cubeless_equity;
+                        }
+                    }
+
+                    let opp_equity_considering_our_reply = -our_expected;
+                    if opp_equity_considering_our_reply > best_opp_reply_equity {
+                        best_opp_reply_equity = opp_equity_considering_our_reply;
+                    }
+                }
+
+                expected_3ply += weight * (-best_opp_reply_equity);
+            }
+
+            cand.equity = expected_3ply;
+            cand.probs.cubeless_equity = expected_3ply;
+        }
+
+        candidates_2ply.sort_by(|a, b| b.equity.partial_cmp(&a.equity).unwrap_or(std::cmp::Ordering::Equal));
+        candidates_2ply
+    }
 }

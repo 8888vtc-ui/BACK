@@ -20,6 +20,7 @@
  */
 
 import { BoardState, Player, pipCount, X_BAR, O_BAR } from '../../engine/backgammonEngine';
+import { countShotsExact } from '../../lib/engine/shotCounter';
 
 export type ContactStatus = 'contact' | 'pureRace';
 
@@ -102,11 +103,6 @@ function barPointOf(player: Player): number {
 // Helpers de lecture du plateau
 // ---------------------------------------------------------------------------
 
-function hasChecker(board: number[], point: number, player: Player): boolean {
-    const v = board[point];
-    return player === 'X' ? v > 0 : v < 0;
-}
-
 function isMadePoint(board: number[], point: number, player: Player): boolean {
     const v = board[point];
     return player === 'X' ? v >= 2 : v <= -2;
@@ -117,103 +113,18 @@ function isBlot(board: number[], point: number, player: Player): boolean {
     return player === 'X' ? v === 1 : v === -1;
 }
 
-/** La flèche est bloquée pour `opponent` (l'autre joueur y a 2+ pions). */
-function isBlockedFor(board: number[], point: number, opponent: Player): boolean {
-    const v = board[point];
-    return opponent === 'X' ? v <= -2 : v >= 2;
-}
-
-/** Distance (positive) d'un pion adverse en `from` jusqu'au blot, ou null s'il ne peut pas l'atteindre. */
-function distanceToBlot(from: number, blot: number, opponent: Player): number | null {
-    if (opponent === 'X') return from > blot ? from - blot : null;
-    return from < blot ? blot - from : null;
-}
-
 // ---------------------------------------------------------------------------
 // Comptage des tirs (shots)
 // ---------------------------------------------------------------------------
 
-function isLegalLanding(board: number[], point: number, opponent: Player): boolean {
-    if (point < 1 || point > 24) return false;
-    return !isBlockedFor(board, point, opponent);
-}
-
-/** Nombre de pions de `opponent` sur la barre. */
-function barCount(board: number[], opponent: Player): number {
-    return opponent === 'X' ? Math.max(0, board[X_BAR]) : Math.max(0, -board[O_BAR]);
-}
-
-/**
- * Point d'entrée d'un pion adverse depuis la barre, pour un dé donné.
- * X entre sur 25 - die (flèches 19..24), O entre sur die (flèches 1..6).
- */
-function barEntryPoint(opponent: Player, die: number): number {
-    return opponent === 'X' ? 25 - die : die;
-}
-
-function canHitDirect(board: number[], blot: number, opponent: Player, die: number): boolean {
-    // 1. Pions adverses sur la barre : entrent sur le jan intérieur adverse et
-    //    peuvent frapper un blot situé sur leur point d'entrée.
-    if (barCount(board, opponent) > 0) {
-        const entry = barEntryPoint(opponent, die);
-        if (entry === blot && isLegalLanding(board, entry, opponent)) {
-            return true;
-        }
-    }
-    // 2. Pions adverses sur le plateau : tir direct à distance `die`.
-    for (let q = 1; q <= 24; q++) {
-        if (hasChecker(board, q, opponent) && distanceToBlot(q, blot, opponent) === die) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function canHitIndirect(
-    board: number[],
-    blot: number,
-    opponent: Player,
-    d1: number,
-    d2: number,
-): boolean {
-    const total = d1 + d2;
-    // 1. Pions adverses sur la barre : un pion sur la barre ne peut pas faire
-    //    de tir indirect (il doit d'abord entrer avec un seul dé).
-    // 2. Pions adverses sur le plateau : tir indirect à distance `total`.
-    for (let q = 1; q <= 24; q++) {
-        if (!hasChecker(board, q, opponent)) continue;
-        if (distanceToBlot(q, blot, opponent) !== total) continue;
-        const mid1 = opponent === 'X' ? q - d1 : q + d1;
-        const mid2 = opponent === 'X' ? q - d2 : q + d2;
-        if (isLegalLanding(board, mid1, opponent) || isLegalLanding(board, mid2, opponent)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/** Compte, sur les 36 combinaisons de dés, les tirs directs et indirects sur un blot. */
-function countShots(board: number[], blot: number, player: Player): { direct: number; indirect: number } {
-    const opponent = other(player);
-    let direct = 0;
-    let indirect = 0;
-    for (let d1 = 1; d1 <= 6; d1++) {
-        for (let d2 = 1; d2 <= 6; d2++) {
-            if (canHitDirect(board, blot, opponent, d1) || canHitDirect(board, blot, opponent, d2)) {
-                direct++;
-            } else if (canHitIndirect(board, blot, opponent, d1, d2)) {
-                indirect++;
-            }
-        }
-    }
-    return { direct, indirect };
-}
-
 export function analyzeBlots(board: number[], player: Player): BlotAnalysis[] {
+    const opponent = other(player);
     const result: BlotAnalysis[] = [];
     for (let p = 1; p <= 24; p++) {
         if (!isBlot(board, p, player)) continue;
-        const { direct, indirect } = countShots(board, p, player);
+        // Comptage exact des 36 lancers (directs + indirects + pions sur la barre),
+        // factorisé dans le module partagé `shotCounter`.
+        const { direct, indirect } = countShotsExact(board, p, opponent);
         result.push({ point: p, directShots: direct, indirectShots: indirect, totalShots: direct + indirect });
     }
     return result;

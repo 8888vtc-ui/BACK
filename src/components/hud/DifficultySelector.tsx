@@ -20,7 +20,7 @@ const LEVELS: Array<{
 }> = [
         {
             id: 'beginner',
-            name: 'Débutant',
+            name: 'Novice',
             ply: '0-ply',
             badge: 'Bruité',
             icon: '🟢',
@@ -28,30 +28,21 @@ const LEVELS: Array<{
             activeClass: 'border-emerald-500/80 bg-emerald-950/60 text-emerald-200 shadow-emerald-500/20',
         },
         {
-            id: 'intermediate',
-            name: 'Intermédiaire',
-            ply: '1-ply',
-            badge: 'Standard',
-            icon: '🟡',
-            tooltip: '1-ply déterministe : analyse tactique immédiate sans bruit.',
-            activeClass: 'border-blue-500/80 bg-blue-950/60 text-blue-200 shadow-blue-500/20',
-        },
-        {
             id: 'expert',
-            name: 'Expert',
-            ply: '2-ply',
-            badge: 'Tri-Phase',
+            name: 'Maître',
+            ply: 'WASM 2-Ply',
+            badge: 'XG-Web',
             icon: '🔴',
-            tooltip: '2-ply tri-phase : anticipation profonde des répliques et contre-attaques adverses.',
+            tooltip: 'XG-Web 2-Ply : réseau neuronal distillé sur les ouvertures, primes et blitz.',
             activeClass: 'border-rose-500/80 bg-rose-950/60 text-rose-200 shadow-rose-500/20',
         },
         {
             id: 'grandmaster',
-            name: 'Grand-Maître',
-            ply: 'WASM 2-Ply',
-            badge: 'XG-Web',
-            icon: '👑',
-            tooltip: 'XG-Web Core : moteur haute performance Rust/WASM SIMD 2-ply avec table Kazaross-XG2.',
+            name: 'Tardieu',
+            ply: '3-Ply Sélectif',
+            badge: 'XG++++',
+            icon: '🏆',
+            tooltip: 'François Tardieu — Triple Champion d\'Europe, la légende. 3-ply sélectif : la profondeur ultime.',
             activeClass: 'border-amber-500/80 bg-amber-950/60 text-amber-200 shadow-amber-500/20',
         },
     ];
@@ -83,8 +74,8 @@ export default function DifficultySelector({
                         onClick={() => onChange(level.id)}
                         title={level.tooltip}
                         className={`group relative flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all duration-200 ${isActive
-                                ? `${level.activeClass} shadow-md ring-1 ring-white/10`
-                                : 'border-transparent text-slate-400 hover:border-slate-700 hover:bg-slate-800/60 hover:text-slate-200'
+                            ? `${level.activeClass} shadow-md ring-1 ring-white/10`
+                            : 'border-transparent text-slate-400 hover:border-slate-700 hover:bg-slate-800/60 hover:text-slate-200'
                             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-95'}`}
                     >
                         <span className="text-xs">{level.icon}</span>

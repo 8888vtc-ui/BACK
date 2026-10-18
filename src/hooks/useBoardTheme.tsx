@@ -39,7 +39,12 @@ export interface ThemeHudClasses {
  * Valide si une valeur correspond à un nom de thème supporté.
  */
 export function isValidTheme(val: unknown): val is ThemeName {
-    return val === 'snowie_classic' || val === 'tournament' || val === 'midnight';
+    return (
+        val === 'snowie_classic' ||
+        val === 'tournament' ||
+        val === 'midnight' ||
+        val === 'galaxy_void'
+    );
 }
 
 /**
@@ -76,6 +81,7 @@ export function saveTheme(theme: ThemeName): void {
 export function getNextTheme(current: ThemeName): ThemeName {
     if (current === 'snowie_classic') return 'tournament';
     if (current === 'tournament') return 'midnight';
+    if (current === 'midnight') return 'galaxy_void';
     return 'snowie_classic';
 }
 

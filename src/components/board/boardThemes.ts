@@ -8,7 +8,7 @@
 
 import type { Move } from '../../engine/backgammonEngine';
 
-export type ThemeName = 'snowie_classic' | 'tournament' | 'midnight';
+export type ThemeName = 'snowie_classic' | 'tournament' | 'midnight' | 'galaxy_void';
 
 /** Surbrillance du coach : coups joués vs coups optimaux. */
 export interface CoachHighlight {
@@ -105,5 +105,27 @@ export const THEMES: Record<ThemeName, Theme> = {
         cubeText: '#0f172a',
         ghost: '#22c55e',
         impact: '#ef4444',
+    },
+    galaxy_void: {
+        frame: '#05060a',
+        frameInner: '#0a0c14',
+        surface: '#070810',
+        surfaceInner: '#05060a',
+        pointA: '#2a2f45',
+        pointB: '#1b1f33',
+        river: '#05060a',
+        bar: '#0a0c14',
+        barLine: '#2a2f45',
+        tray: '#05060a',
+        trayInner: '#020308',
+        traySliceX: '#e5e7eb',
+        traySliceO: '#3f3f46',
+        numberText: '#9ca3af',
+        badgeBg: '#0a0c14',
+        badgeText: '#e5e7eb',
+        cubeFace: '#8b5cf6',
+        cubeText: '#0f172a',
+        ghost: '#34d399',
+        impact: '#f43f5e',
     },
 };

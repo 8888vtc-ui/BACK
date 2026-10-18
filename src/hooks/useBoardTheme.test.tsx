@@ -84,10 +84,11 @@ describe('useBoardTheme helpers & persistence', () => {
         expect(store[THEME_STORAGE_KEY]).toBe('midnight');
     });
 
-    it('calcule la bascule correcte entre snowie_classic, tournament et midnight avec getNextTheme', () => {
+    it('calcule la bascule correcte entre snowie_classic, tournament, midnight et galaxy_void avec getNextTheme', () => {
         expect(getNextTheme('snowie_classic')).toBe('tournament');
         expect(getNextTheme('tournament')).toBe('midnight');
-        expect(getNextTheme('midnight')).toBe('snowie_classic');
+        expect(getNextTheme('midnight')).toBe('galaxy_void');
+        expect(getNextTheme('galaxy_void')).toBe('snowie_classic');
     });
 
     it('génère des classes de modales distinctes et adaptées pour chaque thème', () => {

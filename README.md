@@ -49,7 +49,7 @@ docker compose up --build -d
 
 ### 1. Tests Unitaires & Composants (Vitest)
 
-552 tests unitaires et d'intégration couvrant le moteur de règles, l'IA heuristique, le videau, la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
+619 tests unitaires et d'intégration couvrant le moteur de règles, l'IA heuristique, le videau, la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
 
 ```bash
 npm test
@@ -114,7 +114,7 @@ Le système intègre une solution complète de surveillance et de monitoring en 
 
 Le projet intègre une chaîne d'intégration et de déploiement continu automatisée avec **GitHub Actions** :
 
-- **Pipeline CI (`.github/workflows/ci.yml`)** : Exécute ESLint, TypeScript Typecheck, Vitest (552 tests), Pytest (30 tests), build de l'image Docker gnubg et Playwright E2E.
+- **Pipeline CI (`.github/workflows/ci.yml`)** : Exécute ESLint, TypeScript Typecheck, Vitest (619 tests), Pytest (30 tests), build de l'image Docker gnubg et Playwright E2E.
 - **Pipeline CD (`.github/workflows/deploy.yml`)** : Déploie automatiquement le frontend sur **Vercel** ou **Netlify**, et compile/publie l'image conteneurisée du backend d'analyse sur **GitHub Container Registry (GHCR)**.
 - **Configurations dédiées** :
   - [`vercel.json`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/vercel.json) : Configuration Next.js & en-têtes de sécurité

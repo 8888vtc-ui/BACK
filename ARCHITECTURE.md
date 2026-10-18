@@ -266,3 +266,12 @@ GNUBG est sous GPLv2/v3. Le WASM est une œuvre dérivée : isoler le moteur dan
 
 1. **Fournisseur LLM par défaut en production** et modèle de coût.
 2. **Hébergement** : Vercel/Netlify vs conteneur auto-hébergé (impacte les timeouts des rollouts).
+
+---
+
+## 11. Innovations Propriétaires : L'ERH (Error Rate Humain)
+
+Le projet intègre un modèle d'évaluation de rupture par rapport au standard mathématique historique (PR d'eXtreme Gammon) : **l'ERH (Error Rate Humain)**.
+- Spécification complète : [`plans/erh-error-rate-humain.md`](plans/erh-error-rate-humain.md).
+- Principe : Profilage en temps réel de l'adversaire (frilosité au videau, panique en backgame, passivité, pression du chrono) pour évaluer la capacité du joueur à exploiter psychologiquement les faiblesses humaines au lieu de réciter froidement un jeu GTO.
+- Déploiement : Réservé aux modes multijoueurs (PvP) et au diagnostic avancé du Coach IA.

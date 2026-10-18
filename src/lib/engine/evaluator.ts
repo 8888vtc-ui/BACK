@@ -31,6 +31,7 @@ import {
 } from './types';
 import { bearoffExpectedRolls } from './bearoffTable';
 import { computeKeithCount, evaluateKeithCube } from './keithCount';
+import { countShotsExact } from './shotCounter';
 
 /**
  * Formate un déplacement unique en notation standard de Backgammon (ex: "24/20", "bar/20", "6/off").
@@ -346,8 +347,9 @@ function evaluateRace(
 }
 
 /**
- * Compte le nombre de pions adverses (ou sur la barre) capables de frapper un
- * blot situé sur la flèche `point`, pondéré par la force du jan intérieur adverse.
+ * Compte le nombre de lancers (sur 36) qui frappent un blot situé sur la
+ * flèche `point`, via le comptage EXACT des tirs (directs + indirects, pions
+ * sur la barre inclus), pondéré par la force du jan intérieur adverse.
  */
 function countShotsOnBlot(
     board: number[],
@@ -355,37 +357,14 @@ function countShotsOnBlot(
     player: Player,
     opponent: Player,
 ): number {
-    let shots = 0;
     const opponentHomeStrength = opponentHomeBoardStrength(board, opponent);
 
-    // Pions adverses sur la barre : peuvent entrer sur n'importe quelle flèche
-    // libre du jan intérieur adverse (distance 1..6 depuis la barre).
-    const oppBar = opponent === 'X' ? board[X_BAR] : -board[O_BAR];
-    if (oppBar > 0) {
-        // Entrée depuis la barre : cible = flèche d'entrée dans le jan adverse.
-        // Pour X (blanc), entre sur 1..6 ; pour O (noir), entre sur 19..24.
-        const entryPoint = opponent === 'X' ? point : 25 - point;
-        if (entryPoint >= 1 && entryPoint <= 6) {
-            shots += oppBar;
-        }
-    }
+    // Comptage exact des 36 lancers (directs + indirects + pions sur la barre).
+    const { total } = countShotsExact(board, point, opponent);
 
-    // Pions adverses sur le plateau : distance 1..6 = tir direct, 7..12 = indirect.
-    for (let p = 1; p <= 24; p++) {
-        const v = board[p];
-        const isOpp = opponent === 'X' ? v > 0 : v < 0;
-        if (!isOpp) continue;
-
-        const dist = opponent === 'X' ? p - point : point - p;
-        if (dist >= 1 && dist <= 6) {
-            shots += 1; // tir direct
-        } else if (dist >= 7 && dist <= 12) {
-            shots += 0.5; // tir indirect (pondéré)
-        }
-    }
-
-    // Pondération par la force du jan intérieur adverse.
-    return shots * (1 + opponentHomeStrength * 0.15);
+    // Pondération par la force du jan intérieur adverse (caractéristique
+    // stratégique légitime : un jan fermé rend la frappe plus coûteuse).
+    return total * (1 + opponentHomeStrength * 0.15);
 }
 
 /**
@@ -427,15 +406,33 @@ function trappedCheckersBehindPrime(board: number[], player: Player): number {
     const prime = longestPrime(board, player);
     if (prime < 2) return 0;
 
+    // Trouve la flèche la plus avancée de la prime du joueur (le « front »).
+    // Pour X (avance 24 -> 1), le front est la flèche la plus basse de la prime.
+    // Pour O (avance 1 -> 24), le front est la flèche la plus haute de la prime.
+    let primeFront = -1;
+    for (let p = 1; p <= 24; p++) {
+        const v = board[p];
+        const count = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
+        if (count >= 2) {
+            if (player === 'X') {
+                // X : front = flèche la plus basse (la plus avancée).
+                if (primeFront === -1 || p < primeFront) primeFront = p;
+            } else {
+                // O : front = flèche la plus haute (la plus avancée).
+                if (primeFront === -1 || p > primeFront) primeFront = p;
+            }
+        }
+    }
+    if (primeFront === -1) return 0;
+
     let trapped = 0;
     const opponent = player === 'X' ? 'O' : 'X';
     for (let p = 1; p <= 24; p++) {
         const v = board[p];
         const isOpp = opponent === 'X' ? v > 0 : v < 0;
         if (!isOpp) continue;
-        // Un pion adverse est « derrière » la prime s'il est plus reculé que la
-        // flèche la plus avancée de la prime.
-        const primeFront = player === 'X' ? 1 : 24;
+        // Un pion adverse est « derrière » la prime s'il est plus reculé que le
+        // front de la prime (pour X : flèche > front ; pour O : flèche < front).
         const behind = player === 'X' ? p > primeFront : p < primeFront;
         if (behind) trapped += Math.abs(v);
     }
@@ -504,16 +501,29 @@ function evaluateContact(
     z += anchorValue(board, player);
     z -= anchorValue(board, opponent);
 
-    // 5. Contrôle des flèches clés (builder & key points).
+    // 5. Contrôle des flèches clés (builder & key points), SYMÉTRIQUE X/O.
+    // Les points clés d'un joueur sont dans son jan intérieur : flèches 1-7
+    // pour X, flèches 18-24 pour O (miroir). Le poids dépend de la position
+    // relative dans le jan (flèche 1 de X = flèche 24 de O, etc.).
     let keyPointsPlayer = 0;
     let keyPointsOpponent = 0;
-    for (let p = 1; p <= 7; p++) {
+    for (let p = 1; p <= 24; p++) {
         const v = board[p];
-        const w = KEY_POINT_WEIGHTS[p] ?? 1.0;
-        const countPlayer = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
-        const countOpponent = opponent === 'X' ? Math.max(0, v) : Math.max(0, -v);
-        if (countPlayer >= 2) keyPointsPlayer += w;
-        if (countOpponent >= 2) keyPointsOpponent += w;
+        const countX = Math.max(0, v); // pions X sur la flèche p
+        const countO = Math.max(0, -v); // pions O sur la flèche p
+
+        // Poids du point clé pour X (flèches 1..7) et pour O (flèches 18..24).
+        const wX = p >= 1 && p <= 7 ? (KEY_POINT_WEIGHTS[p] ?? 1.0) : 0;
+        const wO = p >= 18 && p <= 24 ? (KEY_POINT_WEIGHTS[25 - p] ?? 1.0) : 0;
+
+        if (countX >= 2) {
+            if (player === 'X') keyPointsPlayer += wX;
+            else keyPointsOpponent += wX;
+        }
+        if (countO >= 2) {
+            if (player === 'O') keyPointsPlayer += wO;
+            else keyPointsOpponent += wO;
+        }
     }
     z += 0.12 * (keyPointsPlayer - keyPointsOpponent);
 

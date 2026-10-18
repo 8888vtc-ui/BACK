@@ -275,9 +275,9 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
         expect(s1.boardState.board).not.toEqual(s0.boardState.board);
     });
 
-    it('SET_DIFFICULTY met à jour le niveau d’adversaire (débutant, intermédiaire, expert)', () => {
-        const s0 = createInitialGameState(7, 0, 0, 'X', true, 'intermediate');
-        expect(s0.difficulty).toBe('intermediate');
+    it('SET_DIFFICULTY met à jour le niveau d’adversaire (débutant, expert, grandmaster)', () => {
+        const s0 = createInitialGameState(7, 0, 0, 'X', true, 'grandmaster');
+        expect(s0.difficulty).toBe('grandmaster');
 
         const sBeginner = backgammonGameReducer(s0, { type: 'SET_DIFFICULTY', difficulty: 'beginner' });
         expect(sBeginner.difficulty).toBe('beginner');
@@ -286,15 +286,15 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
         expect(sExpert.difficulty).toBe('expert');
     });
 
-    it('selectBestOpponentSequence supporte débutant (bruité), intermédiaire (1-ply) et expert (2-ply)', () => {
+    it('selectBestOpponentSequence supporte débutant (bruité), expert (2-ply) et grandmaster', () => {
         const state = createInitialState(7);
         state.turn = 'O';
         const legalSeqs = generateLegalMoves(state, [3, 1]);
         expect(legalSeqs.length).toBeGreaterThan(0);
 
-        // 1-ply intermédiaire déterministe
-        const move1Ply = selectBestOpponentSequence(legalSeqs, 'O', 'intermediate');
-        expect(move1Ply).not.toBeNull();
+        // grandmaster
+        const moveGM = selectBestOpponentSequence(legalSeqs, 'O', 'grandmaster');
+        expect(moveGM).not.toBeNull();
 
         // 2-ply expert expectimax déterministe
         const move2Ply = selectBestOpponentSequence(legalSeqs, 'O', 'expert');

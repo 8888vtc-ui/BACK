@@ -38,6 +38,7 @@ import {
     type AIDifficulty,
 } from '../engine/aiHeuristics';
 import { evaluateBoard, shouldOfferDouble, shouldTakeDouble } from '../lib/engine/evaluator';
+import { initXgWeb, isXgWebReady, getXgWebBestMove } from '../lib/engine/xgWebClient';
 
 export {
     evaluateWin,
@@ -143,7 +144,7 @@ export function createInitialGameState(
     initialScoreO = 0,
     initialTurn: Player = 'X',
     autoOpponent = true,
-    initialDifficulty: AIDifficulty = 'intermediate',
+    initialDifficulty: AIDifficulty = 'expert',
 ): BackgammonGameState {
     const isCrawford =
         matchLength > 0 &&
@@ -516,7 +517,15 @@ export function backgammonGameReducer(
                 };
             }
 
-            const best = selectBestOpponentSequence(legalSeqs, 'O', state.difficulty);
+            let best: MoveSequence | null = null;
+            if (state.difficulty === 'grandmaster' && isXgWebReady()) {
+                best = getXgWebBestMove(state.boardState.board, 'O', rolledDice, legalSeqs, 3);
+            } else if (state.difficulty === 'expert' && isXgWebReady()) {
+                best = getXgWebBestMove(state.boardState.board, 'O', rolledDice, legalSeqs, 2);
+            }
+            if (!best) {
+                best = selectBestOpponentSequence(legalSeqs, 'O', state.difficulty);
+            }
             if (!best) {
                 return {
                     ...state,
@@ -791,7 +800,7 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         initialScoreX = 0,
         initialScoreO = 0,
         initialTurn = 'X',
-        initialDifficulty = 'intermediate',
+        initialDifficulty = 'expert',
         autoOpponent = true,
         opponentDelayMs = 600,
         stepDelayMs = 900,
@@ -819,6 +828,10 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
     const dice = boardState.dice;
     const humanPlayer: Player = playerColor;
     const isHumanTurn = boardState.turn === humanPlayer;
+
+    useEffect(() => {
+        void initXgWeb();
+    }, []);
 
     const { leftDieTargets, rightDieTargets } = useMemo(() => {
         if (!dice || phase !== 'PLAYING_MOVES') {
@@ -996,7 +1009,15 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
             return;
         }
 
-        const best = selectBestOpponentSequence(legalSeqs, 'O', difficulty);
+        let best: MoveSequence | null = null;
+        if (difficulty === 'grandmaster' && isXgWebReady()) {
+            best = getXgWebBestMove(currentBoardState.board, 'O', rolledDice, legalSeqs, 3);
+        } else if (difficulty === 'expert' && isXgWebReady()) {
+            best = getXgWebBestMove(currentBoardState.board, 'O', rolledDice, legalSeqs, 2);
+        }
+        if (!best) {
+            best = selectBestOpponentSequence(legalSeqs, 'O', difficulty);
+        }
         if (!best || best.moves.length === 0) {
             const blockedStatus = formatOpponentBlockedStatus(locale);
             addMonitoringBreadcrumb({
@@ -1220,3 +1241,5 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         applyRemoteState,
     };
 }
+
+export type UseBackgammonGameReturn = ReturnType<typeof useBackgammonGame>;

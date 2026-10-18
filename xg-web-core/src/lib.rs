@@ -83,7 +83,9 @@ pub unsafe extern "C" fn xg_search_moves(
     let player = if turn >= 0 { PLAYER_X } else { PLAYER_O };
     let searcher = SearchEngine::new(engine);
 
-    let results = if ply >= 2 {
+    let results = if ply >= 3 {
+        searcher.search_3ply_selective(&board, d1, d2, player)
+    } else if ply >= 2 {
         searcher.search_2ply(&board, d1, d2, player)
     } else {
         searcher.search_0ply(&board, d1, d2, player)

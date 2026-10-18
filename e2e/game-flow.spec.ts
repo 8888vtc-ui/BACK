@@ -53,13 +53,19 @@ test.describe('E2E : Partie complète & Déroulement du Match Backgammon', () =>
             // sinon sélection + clic sur une cible légale.
             const checker24 = page.getByTestId('checker-p24-0');
             await checker24.click();
-            await page.waitForTimeout(350); // animation de translation
+            // Attente conditionnelle : on attend qu'un état observable change
+            // (ghost de destination ou pion déplacé), au lieu d'un délai fixe.
+            await page
+                .locator('[data-testid^="ghost-checker-"], [data-testid^="checker-p"]')
+                .first()
+                .waitFor({ state: 'visible', timeout: 5000 })
+                .catch(() => { });
 
             // Si une cible légale reste affichée (sélection multiple), cliquer dessus
             const ghost = page.locator('[data-testid^="ghost-checker-"]').first();
             if (await ghost.isVisible()) {
                 await ghost.click();
-                await page.waitForTimeout(350);
+                await ghost.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
             }
         }
     });

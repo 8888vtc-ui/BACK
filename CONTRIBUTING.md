@@ -75,7 +75,7 @@ Avant de soumettre toute modification, vous devez vous assurer que **100% de la 
 |---|---|---|
 | `npm run lint` | Validation ESLint | **0 erreur** (code de sortie 0) |
 | `npm run typecheck` | Validation TypeScript | **0 erreur de typage** |
-| `npm test` | Suite de tests unitaires Vitest | **552 tests réussis (93 fichiers)** |
+| `npm test` | Suite de tests unitaires Vitest | **619 tests réussis (104 fichiers)** |
 | `pytest backend-engine/tests -v` | Tests unitaires Python | **30 tests passés avec succès** |
 | `npm run test:e2e:desktop` | Tests End-to-End Playwright | **27 tests E2E passés** |
 | `npm run build` | Build de production Next.js | **Compilation sans erreur** |

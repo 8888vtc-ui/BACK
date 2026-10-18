@@ -139,6 +139,82 @@ impl MicroMLP {
             cubeless_equity: equity,
         }
     }
+
+    pub fn from_bytes(bytes: &[u8]) -> (Self, usize) {
+        if bytes.len() < 12 {
+            return (Self::new_calibrated(Regime::Contact), 0);
+        }
+        let scale1 = f32::from_le_bytes(bytes[0..4].try_into().unwrap_or([0; 4]));
+        let scale2 = f32::from_le_bytes(bytes[4..8].try_into().unwrap_or([0; 4]));
+        let scale3 = f32::from_le_bytes(bytes[8..12].try_into().unwrap_or([0; 4]));
+        let mut offset = 12;
+
+        let mut b1 = [0.0f32; HIDDEN1_DIM];
+        for i in 0..HIDDEN1_DIM {
+            if offset + 4 <= bytes.len() {
+                b1[i] = f32::from_le_bytes(bytes[offset..offset + 4].try_into().unwrap());
+                offset += 4;
+            }
+        }
+
+        let mut b2 = [0.0f32; HIDDEN2_DIM];
+        for i in 0..HIDDEN2_DIM {
+            if offset + 4 <= bytes.len() {
+                b2[i] = f32::from_le_bytes(bytes[offset..offset + 4].try_into().unwrap());
+                offset += 4;
+            }
+        }
+
+        let mut b3 = [0.0f32; OUTPUT_DIM];
+        for i in 0..OUTPUT_DIM {
+            if offset + 4 <= bytes.len() {
+                b3[i] = f32::from_le_bytes(bytes[offset..offset + 4].try_into().unwrap());
+                offset += 4;
+            }
+        }
+
+        let mut w1 = [0i8; INPUT_DIM * HIDDEN1_DIM];
+        let w1_len = w1.len();
+        if offset + w1_len <= bytes.len() {
+            for i in 0..w1_len {
+                w1[i] = bytes[offset + i] as i8;
+            }
+            offset += w1_len;
+        }
+
+        let mut w2 = [0i8; HIDDEN1_DIM * HIDDEN2_DIM];
+        let w2_len = w2.len();
+        if offset + w2_len <= bytes.len() {
+            for i in 0..w2_len {
+                w2[i] = bytes[offset + i] as i8;
+            }
+            offset += w2_len;
+        }
+
+        let mut w3 = [0i8; HIDDEN2_DIM * OUTPUT_DIM];
+        let w3_len = w3.len();
+        if offset + w3_len <= bytes.len() {
+            for i in 0..w3_len {
+                w3[i] = bytes[offset + i] as i8;
+            }
+            offset += w3_len;
+        }
+
+        (
+            Self {
+                w1,
+                b1,
+                w2,
+                b2,
+                w3,
+                b3,
+                scale1,
+                scale2,
+                scale3,
+            },
+            offset,
+        )
+    }
 }
 
 pub struct TriPhaseEngine {
@@ -147,12 +223,24 @@ pub struct TriPhaseEngine {
     pub race: MicroMLP,
 }
 
+static EMBEDDED_WEIGHTS: &[u8] = include_bytes!("../../public/engine/weights_xg_web.bin");
+
 impl TriPhaseEngine {
     pub fn new() -> Self {
-        Self {
-            contact: MicroMLP::new_calibrated(Regime::Contact),
-            crashed: MicroMLP::new_calibrated(Regime::Crashed),
-            race: MicroMLP::new_calibrated(Regime::Race),
+        if EMBEDDED_WEIGHTS.len() >= 124146 && &EMBEDDED_WEIGHTS[0..6] == b"XGWB01" {
+            let mut offset = 6;
+            let (contact, bytes_read) = MicroMLP::from_bytes(&EMBEDDED_WEIGHTS[offset..]);
+            offset += bytes_read;
+            let (crashed, bytes_read) = MicroMLP::from_bytes(&EMBEDDED_WEIGHTS[offset..]);
+            offset += bytes_read;
+            let (race, _) = MicroMLP::from_bytes(&EMBEDDED_WEIGHTS[offset..]);
+            Self { contact, crashed, race }
+        } else {
+            Self {
+                contact: MicroMLP::new_calibrated(Regime::Contact),
+                crashed: MicroMLP::new_calibrated(Regime::Crashed),
+                race: MicroMLP::new_calibrated(Regime::Race),
+            }
         }
     }
 

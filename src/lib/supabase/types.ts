@@ -55,7 +55,7 @@ export interface Database {
                     id: string;
                     user_id: string;
                     opponent_type: 'ai' | 'human';
-                    opponent_difficulty: 'beginner' | 'intermediate' | 'expert' | 'grandmaster' | null;
+                    opponent_difficulty: 'beginner' | 'intermediate' | 'expert' | 'grandmaster' | 'legend' | null;
                     match_length: number;
                     score_x: number;
                     score_o: number;
@@ -75,7 +75,7 @@ export interface Database {
                     id?: string;
                     user_id: string;
                     opponent_type?: 'ai' | 'human';
-                    opponent_difficulty?: 'beginner' | 'intermediate' | 'expert' | 'grandmaster' | null;
+                    opponent_difficulty?: 'beginner' | 'intermediate' | 'expert' | 'grandmaster' | 'legend' | null;
                     match_length?: number;
                     score_x?: number;
                     score_o?: number;
@@ -95,7 +95,7 @@ export interface Database {
                     id?: string;
                     user_id?: string;
                     opponent_type?: 'ai' | 'human';
-                    opponent_difficulty?: 'beginner' | 'intermediate' | 'expert' | 'grandmaster' | null;
+                    opponent_difficulty?: 'beginner' | 'intermediate' | 'expert' | 'grandmaster' | 'legend' | null;
                     match_length?: number;
                     score_x?: number;
                     score_o?: number;

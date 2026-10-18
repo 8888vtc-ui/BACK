@@ -31,7 +31,7 @@ export interface GameResult {
     pointsWon: number;
 }
 
-export type AIDifficulty = 'beginner' | 'intermediate' | 'expert' | 'grandmaster';
+export type AIDifficulty = 'beginner' | 'expert' | 'grandmaster';
 
 /**
  * Évalue si le plateau actuel correspond à une fin de partie (tous les 15 pions sortis).
@@ -204,10 +204,11 @@ export function scoreBoard2PlyForOpponent(board: number[], player: Player = 'O')
         [2, 1], [3, 1], [4, 2], [5, 3], [6, 1], [5, 4], [6, 3], [3, 3]
     ];
 
+    const adversary: Player = player === 'X' ? 'O' : 'X';
     let totalWorstO = 0;
     const dummyState: BoardState = {
         board,
-        turn: 'X',
+        turn: adversary,
         cubeValue: 1,
         cubeOwner: null,
         dice: null,
@@ -249,7 +250,7 @@ export function scoreBoard2PlyForOpponent(board: number[], player: Player = 'O')
 export function selectBestOpponentSequence(
     legalSeqs: MoveSequence[],
     player: Player = 'O',
-    difficulty: AIDifficulty = 'intermediate',
+    difficulty: AIDifficulty = 'expert',
     randomFn: () => number = Math.random,
 ): MoveSequence | null {
     if (legalSeqs.length === 0) return null;
@@ -261,10 +262,9 @@ export function selectBestOpponentSequence(
         let score = 0;
         if (difficulty === 'beginner') {
             score = scoreBoard0PlyNoisy(seq.board, player, randomFn);
-        } else if (difficulty === 'expert' || difficulty === 'grandmaster') {
-            score = scoreBoard2PlyForOpponent(seq.board, player);
         } else {
-            score = scoreBoard1Ply(seq.board, player);
+            // expert (2-ply) et grandmaster (3-ply) : repli heuristique 2-ply.
+            score = scoreBoard2PlyForOpponent(seq.board, player);
         }
 
         if (score > bestScore) {

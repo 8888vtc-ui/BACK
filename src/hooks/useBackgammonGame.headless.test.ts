@@ -26,7 +26,7 @@ describe('useBackgammonGame - Headless Full Game Loop & End-of-Game Flow', () =>
                 matchLength: 5,
                 autoOpponent: true,
                 opponentDelayMs: 0, // Mode immédiat headless
-                initialDifficulty: 'intermediate',
+                initialDifficulty: 'expert',
                 onGameOver: (res) => {
                     gameOverResults.push(res);
                 },

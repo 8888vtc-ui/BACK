@@ -14,9 +14,22 @@
  * le parent via les handlers, exactement comme `BackgammonBoard`.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { BoardState, Player, X_BAR, O_BAR, pipCount, borneOffCount } from '../../engine/backgammonEngine';
 import { getPointColor, getPointCount } from './boardGeometry';
+import { getPointAriaLabel } from './boardAria';
+import { PipCountBadge } from './PipCountBadge';
+import { Checker, type CheckerColor } from './Checker';
+import { Die } from './Die';
+import { DoublingCube } from './DoublingCube';
+import { CoachArrows } from './CoachArrows';
+import {
+    getOrientedRows,
+    toggleOrientation,
+    getSavedOrientation,
+    saveOrientation,
+    type BoardOrientation,
+} from './boardOrientation';
 
 // ---------------------------------------------------------------------------
 // Constantes de layout
@@ -24,75 +37,6 @@ import { getPointColor, getPointCount } from './boardGeometry';
 
 /** Nombre maximal de pions affichés par pile (règle des 5 + badge). */
 const MAX_VISIBLE = 5;
-
-/** Rangée du haut : points 13..24 (de gauche à droite). */
-const TOP_ROW = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-
-/** Rangée du bas : points 12..1 (de gauche à droite). */
-const BOTTOM_ROW = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
-
-type CheckerColor = 'white' | 'black';
-
-// ---------------------------------------------------------------------------
-// SOUS-COMPOSANT : PION 3D CONCAVE (STYLE CRISLOID / HECTOR SAXE)
-// ---------------------------------------------------------------------------
-
-interface CheckerProps {
-    color: CheckerColor;
-    countBadge?: number;
-    isPlayable?: boolean;
-    isTopChecker?: boolean;
-}
-
-const LuxuryChecker: React.FC<CheckerProps> = ({
-    color,
-    countBadge,
-    isPlayable = false,
-    isTopChecker = false,
-}) => {
-    const isWhite = color === 'white';
-
-    return (
-        <div
-            className={`relative w-[42px] h-[42px] xl:w-[46px] xl:h-[46px] rounded-full flex items-center justify-center select-none transition-all duration-300 ease-out ${isPlayable && isTopChecker
-                ? 'cursor-pointer hover:-translate-y-1 hover:scale-105 hover:ring-2 hover:ring-amber-400/90'
-                : ''
-                }`}
-            style={{
-                background: isWhite
-                    ? 'radial-gradient(circle at 30% 28%, #ffffff 0%, #f5ebd6 45%, #cbb894 82%, #8c7651 100%)'
-                    : 'radial-gradient(circle at 30% 28%, #52525b 0%, #27272a 42%, #141417 82%, #050507 100%)',
-                boxShadow: isWhite
-                    ? '0 6px 12px rgba(0,0,0,0.65), inset 0 2px 3px rgba(255,255,255,0.95), inset 0 -2px 4px rgba(120,95,60,0.6)'
-                    : '0 6px 12px rgba(0,0,0,0.85), inset 0 1.5px 2px rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.9)',
-                border: isWhite ? '1px solid #dfd1b4' : '1px solid #3f3f46',
-            }}
-        >
-            <div
-                className="w-[68%] h-[68%] rounded-full flex items-center justify-center"
-                style={{
-                    background: isWhite
-                        ? 'radial-gradient(circle at 72% 72%, #ffffff 0%, #e6d8bc 58%, #b39d76 100%)'
-                        : 'radial-gradient(circle at 72% 72%, #3f3f46 0%, #18181b 60%, #09090b 100%)',
-                    boxShadow: isWhite
-                        ? 'inset 0 3px 6px rgba(90,70,40,0.45), 0 1px 1px rgba(255,255,255,0.8)'
-                        : 'inset 0 4px 7px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.12)',
-                }}
-            >
-                {countBadge !== undefined && countBadge > 5 && (
-                    <span
-                        className={`text-xs font-extrabold px-1.5 py-0.5 rounded-full shadow-md ${isWhite
-                            ? 'bg-amber-900 text-amber-100 border border-amber-300/40'
-                            : 'bg-amber-400 text-slate-950'
-                            }`}
-                    >
-                        {countBadge}
-                    </span>
-                )}
-            </div>
-        </div>
-    );
-};
 
 // ---------------------------------------------------------------------------
 // SOUS-COMPOSANT : FLÈCHE (POINT) COUSUE EN SVG + PILE DE PIONS
@@ -106,6 +50,7 @@ interface BoardPointProps {
     isTargetDestination?: boolean;
     isBlotTarget?: boolean;
     isSelected?: boolean;
+    ariaLabel?: string;
     onClickPoint: (pointNumber: number, e: React.MouseEvent) => void;
     onDoubleClickPoint?: (pointNumber: number) => void;
     onRightClickPoint?: (pointNumber: number, e: React.MouseEvent) => void;
@@ -119,6 +64,7 @@ const BoardPoint: React.FC<BoardPointProps> = ({
     isTargetDestination = false,
     isBlotTarget = false,
     isSelected = false,
+    ariaLabel,
     onClickPoint,
     onDoubleClickPoint,
     onRightClickPoint,
@@ -129,6 +75,10 @@ const BoardPoint: React.FC<BoardPointProps> = ({
     return (
         <div
             data-point={pointNumber}
+            data-testid={`point-triangle-${pointNumber}`}
+            role="button"
+            aria-label={ariaLabel}
+            tabIndex={0}
             className={`relative flex-1 h-full flex flex-col items-center select-none group ${isSelected ? 'ring-2 ring-amber-400/80 rounded-lg' : ''
                 }`}
             onClick={(e) => onClickPoint(pointNumber, e)}
@@ -184,13 +134,14 @@ const BoardPoint: React.FC<BoardPointProps> = ({
                         return (
                             <div
                                 key={idx}
+                                data-testid={`checker-p${pointNumber}-${idx}`}
                                 className={
                                     isBlotTarget && checkerCount === 1
                                         ? 'rounded-full ring-4 ring-rose-500 animate-pulse'
                                         : ''
                                 }
                             >
-                                <LuxuryChecker
+                                <Checker
                                     color={checkerColor}
                                     countBadge={showCount}
                                     isPlayable
@@ -203,6 +154,7 @@ const BoardPoint: React.FC<BoardPointProps> = ({
 
             {isTargetDestination && (
                 <div
+                    data-testid={`ghost-checker-${pointNumber}`}
                     className={`absolute z-20 w-3.5 h-3.5 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399] ring-2 ring-white animate-pulse pointer-events-none ${isTopRow ? 'bottom-[18%]' : 'top-[18%]'
                         }`}
                 />
@@ -222,6 +174,8 @@ export interface BoardProps {
     selectedPoint: number | null;
     selectedDie: 0 | 1 | null;
     usedDice: [boolean, boolean] | boolean[];
+    /** Dés lancés par l'adversaire (affichés dans la rivière centrale). */
+    opponentDice?: [number, number] | null;
     onCheckerClick: (point: number) => void;
     onCheckerDoubleClick?: (point: number) => void;
     onCheckerRightClick: (point: number) => void;
@@ -233,6 +187,8 @@ export interface BoardProps {
     onUndo?: () => void;
     coachHighlight?: { played: { from: number; to: number }[]; optimal: { from: number; to: number }[] } | null;
     opponentHighlight?: { from: number; to: number }[] | null;
+    /** Le double est-il possible pour le joueur au trait ? (halo du videau). */
+    canDouble?: boolean;
     theme?: string;
     isLoading?: boolean;
 }
@@ -244,6 +200,7 @@ export default function Board({
     selectedPoint,
     selectedDie,
     usedDice,
+    opponentDice = null,
     onCheckerClick,
     onCheckerDoubleClick,
     onCheckerRightClick,
@@ -255,12 +212,30 @@ export default function Board({
     onUndo,
     coachHighlight = null,
     opponentHighlight = null,
+    canDouble = false,
     theme,
     isLoading = false,
 }: BoardProps) {
     const player: Player = state.turn;
     const isX = player === 'X';
     const board = state.board;
+
+    // Orientation du plateau (sortie X à gauche ou à droite), persistée.
+    const [orientation, setOrientation] = useState<BoardOrientation>(() =>
+        getSavedOrientation('normal'),
+    );
+    const { top: TOP_ROW, bottom: BOTTOM_ROW } = useMemo(
+        () => getOrientedRows(orientation),
+        [orientation],
+    );
+
+    const handleToggleOrientation = useCallback(() => {
+        setOrientation((prev) => {
+            const next = toggleOrientation(prev);
+            saveOrientation(next);
+            return next;
+        });
+    }, []);
 
     const pipCounts = useMemo(() => pipCount(board), [board]);
     const off = useMemo(
@@ -336,6 +311,13 @@ export default function Board({
         const isTarget = ghostDestinations.has(point);
         const isBlotTarget =
             isTarget && count === 1 && (isX ? board[point] < 0 : board[point] > 0);
+        const ariaLabel = getPointAriaLabel(
+            point,
+            board,
+            player,
+            selectedPoint,
+            Array.from(ghostDestinations),
+        );
 
         return (
             <BoardPoint
@@ -347,6 +329,7 @@ export default function Board({
                 isTargetDestination={isTarget}
                 isBlotTarget={isBlotTarget}
                 isSelected={selectedPoint === point}
+                ariaLabel={ariaLabel}
                 onClickPoint={handlePointClick}
                 onDoubleClickPoint={onCheckerDoubleClick}
                 onRightClickPoint={handlePointRightClick}
@@ -372,13 +355,17 @@ export default function Board({
             >
                 {count > 0 &&
                     Array.from({ length: visible }).map((_, idx) => (
-                        <LuxuryChecker
+                        <div
                             key={idx}
-                            color={color}
-                            countBadge={count > MAX_VISIBLE && idx === visible - 1 ? count : undefined}
-                            isPlayable={isPlayable}
-                            isTopChecker={idx === visible - 1}
-                        />
+                            className="rounded-full ring-2 ring-rose-400/80 shadow-[0_0_10px_rgba(244,63,94,0.5)]"
+                        >
+                            <Checker
+                                color={color}
+                                countBadge={count > MAX_VISIBLE && idx === visible - 1 ? count : undefined}
+                                isPlayable={isPlayable}
+                                isTopChecker={idx === visible - 1}
+                            />
+                        </div>
                     ))}
             </div>
         );
@@ -416,13 +403,35 @@ export default function Board({
 
     return (
         <div
+            data-testid="backgammon-board"
             className="h-full max-h-full w-full max-w-6xl mx-auto select-none touch-manipulation flex flex-col items-center justify-center"
             onClick={onDeselect}
         >
             {/* Cadre noyer */}
-            <div className="w-full h-full rounded-3xl p-3 sm:p-5 shadow-2xl bg-gradient-to-b from-[#4a2a16] via-[#3a2010] to-[#2b170c] flex flex-col">
-                {/* Bordure supérieure : numéros 13..24 */}
+            <div className="relative w-full h-full rounded-3xl p-3 sm:p-5 shadow-2xl bg-gradient-to-b from-[#4a2a16] via-[#3a2010] to-[#2b170c] flex flex-col">
+                {/* Flèches SVG de trajectoire du Coach (Optimal vs Joué) */}
+                {coachHighlight && (
+                    <CoachArrows
+                        played={coachHighlight.played}
+                        optimal={coachHighlight.optimal}
+                    />
+                )}
+
+                {/* Bordure supérieure : numéros 13..24 + bascule d'orientation */}
                 <div className="flex items-center justify-center gap-0 px-1 pb-1 shrink-0">
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleOrientation();
+                        }}
+                        aria-label="Inverser l'orientation du plateau"
+                        title="Inverser l'orientation (sortie à gauche ou à droite)"
+                        data-testid="orientation-toggle"
+                        className="mr-1 px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-slate-300 hover:text-white text-xs transition-colors shrink-0"
+                    >
+                        ⇄
+                    </button>
                     <div className="flex flex-1 justify-around">
                         {TOP_ROW.map((p) => (
                             <span
@@ -448,12 +457,12 @@ export default function Board({
                         {/* Barre centrale (unique, row-span-2) : pions frappés + videau au centre */}
                         <div className="row-span-2 w-16 sm:w-20 flex flex-col justify-between bg-[#221108] rounded-lg mx-1 border-x-2 border-[#d4af37]/60">
                             {renderBarSection(O_BAR, 'black', bar.O)}
-                            {/* Videau au centre de la barre verticale */}
-                            <div className="flex flex-col items-center justify-center gap-1 py-1">
-                                <div className="w-11 h-11 rounded-md bg-[#fdfaf2] text-slate-900 flex items-center justify-center text-lg font-extrabold shadow-lg border border-slate-700">
-                                    {state.cubeValue === 1 ? '64' : state.cubeValue}
-                                </div>
-                            </div>
+                            {/* Videau dynamique : déplacement vers le possesseur + halo si doublable */}
+                            <DoublingCube
+                                cubeValue={state.cubeValue}
+                                cubeOwner={state.cubeOwner}
+                                canDouble={canDouble}
+                            />
                             {renderBarSection(X_BAR, 'white', bar.X)}
                         </div>
 
@@ -483,7 +492,7 @@ export default function Board({
                         </div>
                     </div>
 
-                    {/* Rivière centrale : dés uniquement (le videau est au centre de la barre) */}
+                    {/* Rivière centrale : dés du joueur + dés de l'adversaire */}
                     <div className="flex items-center justify-center gap-6 py-3 shrink-0">
                         {state.dice && (
                             <div className="flex items-center gap-3">
@@ -492,11 +501,14 @@ export default function Board({
                                     const used = Boolean(usedDice[i]);
                                     const active = selectedDie === die;
                                     return (
-                                        <button
+                                        <Die
                                             key={i}
-                                            type="button"
-                                            data-testid={`board-die-${i}`}
+                                            value={value}
+                                            used={used}
+                                            active={active}
                                             disabled={used}
+                                            label={`Dé ${i + 1}`}
+                                            dataTestId={`board-die-${i}`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 onSelectDie?.(die);
@@ -505,17 +517,27 @@ export default function Board({
                                                 e.stopPropagation();
                                                 onDieDoubleClick?.(die);
                                             }}
-                                            className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-extrabold shadow-md border-2 transition ${used
-                                                ? 'bg-slate-700 text-slate-500 border-slate-600 opacity-60'
-                                                : active
-                                                    ? 'bg-white text-slate-900 border-sky-400 ring-2 ring-sky-400'
-                                                    : 'bg-white text-slate-900 border-slate-300 hover:border-sky-300'
-                                                }`}
-                                        >
-                                            {value}
-                                        </button>
+                                        />
                                     );
                                 })}
+                            </div>
+                        )}
+
+                        {opponentDice && (
+                            <div
+                                data-testid="opponent-dice"
+                                className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-black/50 border border-amber-500/40"
+                                title="Dés lancés par l'adversaire"
+                            >
+                                <span className="text-xs font-bold text-amber-300">IA</span>
+                                {opponentDice.map((value, i) => (
+                                    <span
+                                        key={i}
+                                        className="w-9 h-9 rounded-md flex items-center justify-center text-lg font-extrabold bg-slate-700 text-amber-200 border border-slate-600"
+                                    >
+                                        {value}
+                                    </span>
+                                ))}
                             </div>
                         )}
                     </div>
@@ -536,15 +558,8 @@ export default function Board({
                     <div className="w-16 sm:w-20 shrink-0" />
                 </div>
 
-                {/* Badges Pip Count */}
-                <div className="flex items-center justify-between px-2 pt-3 text-xs font-semibold text-slate-300 shrink-0">
-                    <span className="px-2 py-1 rounded bg-slate-900/70 border border-slate-700">
-                        O : {pipCounts.O}
-                    </span>
-                    <span className="px-2 py-1 rounded bg-slate-900/70 border border-slate-700">
-                        X : {pipCounts.X}
-                    </span>
-                </div>
+                {/* Badges Pip Count Différentiel (±Δ) + toggle masquer/afficher */}
+                <PipCountBadge pipX={pipCounts.X} pipO={pipCounts.O} turn={player} />
             </div>
         </div>
     );

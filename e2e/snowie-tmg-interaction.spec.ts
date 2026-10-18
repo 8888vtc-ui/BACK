@@ -35,8 +35,14 @@ test.describe('E2E : Jouabilité Snowie/TMG, Auto-move, Drag-and-drop, Animation
         for (const checker of candidateCheckers) {
             if (await checker.isVisible()) {
                 await checker.click();
-                // Si le pion s'est déplacé directement (auto-move) ou a sélectionné le pion
-                await page.waitForTimeout(350); // Temps de l'animation de translation SVG (250-350 ms)
+                // Si le pion s'est déplacé directement (auto-move) ou a sélectionné le pion.
+                // Attente conditionnelle : on attend qu'un état observable change
+                // (ghost de destination ou pion déplacé), au lieu d'un délai fixe.
+                await page
+                    .locator('[data-testid^="ghost-checker-"], [data-testid^="checker-p"]')
+                    .first()
+                    .waitFor({ state: 'visible', timeout: 5000 })
+                    .catch(() => { });
                 firstCheckerMoved = true;
                 break;
             }
@@ -47,7 +53,8 @@ test.describe('E2E : Jouabilité Snowie/TMG, Auto-move, Drag-and-drop, Animation
         const activeTarget = page.locator('[data-testid^="ghost-checker-"]').first();
         if (await activeTarget.isVisible()) {
             await activeTarget.click();
-            await page.waitForTimeout(350);
+            // Attente conditionnelle : le ghost disparaît après le coup.
+            await activeTarget.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
         }
 
         // 4. Drag-and-drop pour le second dé (si le tour n'est pas déjà fini) :
