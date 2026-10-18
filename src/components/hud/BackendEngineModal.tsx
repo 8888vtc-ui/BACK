@@ -13,24 +13,23 @@ export default function BackendEngineModal({ isOpen, onClose, theme }: BackendEn
     const { theme: activeTheme } = useBoardTheme();
     const currentTheme = theme || activeTheme;
     const modalClasses = getModalThemeClasses(currentTheme);
-    const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking');
-    const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
+    const [engineStatus, setEngineStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
     useEffect(() => {
         if (!isOpen) return;
         let isMounted = true;
-        setBackendStatus('checking');
+        setEngineStatus('checking');
 
         fetch('/api/evaluate', { method: 'GET' })
             .then((res) => {
                 if (res.ok && isMounted) {
-                    setBackendStatus('online');
+                    setEngineStatus('online');
                 } else if (isMounted) {
-                    setBackendStatus('offline');
+                    setEngineStatus('offline');
                 }
             })
             .catch(() => {
-                if (isMounted) setBackendStatus('offline');
+                if (isMounted) setEngineStatus('offline');
             });
 
         return () => {
@@ -39,12 +38,6 @@ export default function BackendEngineModal({ isOpen, onClose, theme }: BackendEn
     }, [isOpen]);
 
     if (!isOpen) return null;
-
-    const copyToClipboard = (text: string, id: string) => {
-        navigator.clipboard.writeText(text);
-        setCopiedCmd(id);
-        setTimeout(() => setCopiedCmd(null), 2000);
-    };
 
     return (
         <div
@@ -62,10 +55,10 @@ export default function BackendEngineModal({ isOpen, onClose, theme }: BackendEn
                         </div>
                         <div>
                             <h2 id="backend-modal-title" className={`text-lg font-bold ${modalClasses.title}`}>
-                                Architecture de l’Intelligence Artificielle & Back-End
+                                Moteur d’Évaluation & Architecture
                             </h2>
                             <p className={`text-xs ${modalClasses.subtitle}`}>
-                                Moteur Hybride : Client TypeScript 2-ply + Microservice GNU Backgammon
+                                Moteur Pro Expert TypeScript (Tri-Phase) — 100 % local, sans serveur
                             </p>
                         </div>
                     </div>
@@ -83,31 +76,28 @@ export default function BackendEngineModal({ isOpen, onClose, theme }: BackendEn
                 <div className="my-4 flex items-center justify-between rounded-xl border border-amber-900/60 bg-stone-950/60 p-3">
                     <div className="flex items-center gap-2.5">
                         <span
-                            className={`h-3 w-3 rounded-full ${
-                                backendStatus === 'online'
+                            className={`h-3 w-3 rounded-full ${engineStatus === 'online'
                                     ? 'bg-emerald-400 animate-pulse ring-2 ring-emerald-500/40'
-                                    : backendStatus === 'checking'
-                                    ? 'bg-amber-400 animate-spin'
-                                    : 'bg-amber-500'
-                            }`}
+                                    : engineStatus === 'checking'
+                                        ? 'bg-amber-400 animate-spin'
+                                        : 'bg-amber-500'
+                                }`}
                         />
                         <div>
                             <div className="text-xs font-bold text-stone-200">
-                                {backendStatus === 'online'
-                                    ? '🟢 Back-End GNUBG Détecté & Opérationnel'
-                                    : backendStatus === 'checking'
-                                    ? '🟡 Vérification de la connexion...'
-                                    : '⚡ Moteur Local Intégré Actif (TypeScript Expectimax 2-ply)'}
+                                {engineStatus === 'online'
+                                    ? '🟢 Moteur Local Haute Performance Actif'
+                                    : engineStatus === 'checking'
+                                        ? '🟡 Vérification du moteur...'
+                                        : '⚡ Moteur Local Intégré Actif (TypeScript Tri-Phase)'}
                             </div>
                             <div className="text-[11px] text-stone-400">
-                                {backendStatus === 'online'
-                                    ? 'Les analyses profondes sont calculées par le binaire officiel GNU Backgammon.'
-                                    : 'Fonctionne immédiatement sans aucun serveur requis (100% hors-ligne & Web).'}
+                                Évaluation déterministe exécutée directement dans votre navigateur, sans latence réseau.
                             </div>
                         </div>
                     </div>
                     <span className="rounded-md bg-amber-500/10 border border-amber-500/30 px-2 py-1 text-[10px] font-mono font-bold text-amber-300">
-                        {backendStatus === 'online' ? 'Port 8000' : 'Client WASM/TS'}
+                        TypeScript Tri-Phase
                     </span>
                 </div>
 
@@ -115,72 +105,48 @@ export default function BackendEngineModal({ isOpen, onClose, theme }: BackendEn
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1 text-xs text-stone-300">
                     <div className="rounded-xl border border-amber-900/40 bg-stone-900/40 p-3.5 space-y-2">
                         <h3 className="font-bold text-amber-300 flex items-center gap-1.5 text-sm">
-                            <span>📍</span> Où se trouve le Back-End dans le projet ?
+                            <span>📍</span> Où se trouve le moteur dans le projet ?
                         </h3>
                         <p className="leading-relaxed">
-                            Le back-end réside dans le dossier <code className="rounded bg-black/60 px-1.5 py-0.5 font-mono text-amber-200">/backend-engine</code> à la racine du projet.
-                            C’est une application <strong>FastAPI (Python)</strong> qui pilote directement le binaire CLI de référence mondiale <code className="rounded bg-black/60 px-1.5 py-0.5 font-mono text-amber-200">gnubg -t</code> via un pool de processus workers.
+                            Le moteur d’évaluation réside dans <code className="rounded bg-black/60 px-1.5 py-0.5 font-mono text-amber-200">src/lib/engine/evaluator.ts</code>.
+                            C’est un évaluateur <strong>TypeScript pur</strong> à architecture <strong>tri-phase</strong> (Contact / Crashed / Race-BearOff),
+                            inspiré des principes de GNU Backgammon et TD-Gammon, sans aucune dépendance externe.
                         </p>
                     </div>
 
                     <div className="rounded-xl border border-amber-900/40 bg-stone-900/40 p-3.5 space-y-2">
                         <h3 className="font-bold text-amber-300 flex items-center gap-1.5 text-sm">
-                            <span>🚀</span> Comment lancer le Back-End GNUBG ?
+                            <span>🧠</span> Comment fonctionne l’évaluation tri-phase ?
                         </h3>
-                        <p className="text-stone-400">
-                            Deux méthodes simples au choix pour activer l’analyse neuronale de niveau Maître International :
-                        </p>
-
-                        <div className="space-y-2 pt-1">
-                            <div>
-                                <div className="text-[11px] font-semibold text-stone-300 mb-1 flex items-center justify-between">
-                                    <span>Option A : Avec Docker (Recommandé, gnubg déjà compilé)</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => copyToClipboard('docker build -t backgammon-engine ./backend-engine && docker run -p 8000:8000 backgammon-engine', 'docker')}
-                                        className="text-[10px] text-amber-400 hover:underline"
-                                    >
-                                        {copiedCmd === 'docker' ? '✓ Copié !' : 'Copier'}
-                                    </button>
-                                </div>
-                                <pre className="rounded bg-black/70 p-2 font-mono text-[11px] text-emerald-300 overflow-x-auto">
-docker build -t backgammon-engine ./backend-engine
-docker run -p 8000:8000 backgammon-engine
-                                </pre>
-                            </div>
-
-                            <div>
-                                <div className="text-[11px] font-semibold text-stone-300 mb-1 flex items-center justify-between">
-                                    <span>Option B : En Python local (Uvicorn)</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => copyToClipboard('cd backend-engine && pip install -r requirements.txt && uvicorn app.main:app --port 8000', 'pip')}
-                                        className="text-[10px] text-amber-400 hover:underline"
-                                    >
-                                        {copiedCmd === 'pip' ? '✓ Copié !' : 'Copier'}
-                                    </button>
-                                </div>
-                                <pre className="rounded bg-black/70 p-2 font-mono text-[11px] text-emerald-300 overflow-x-auto">
-cd backend-engine
-pip install -r requirements.txt
-uvicorn app.main:app --port 8000
-                                </pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="rounded-xl border border-amber-900/40 bg-stone-900/40 p-3.5 space-y-2">
-                        <h3 className="font-bold text-amber-300 flex items-center gap-1.5 text-sm">
-                            <span>🧠</span> Comment joue l’adversaire en mode Web / Déconnecté ?
-                        </h3>
-                        <p className="leading-relaxed">
-                            Si le backend Python n’est pas allumé, le jeu <strong>ne plante jamais</strong> : il exécute le moteur <strong>TypeScript Expectimax 2-ply</strong> directement dans votre navigateur :
-                        </p>
                         <ul className="list-disc pl-5 space-y-1 text-stone-400">
-                            <li><strong className="text-stone-200">Génération exacte des règles WBF</strong> : Prise en compte stricte des doubles (4 coups consécutifs) et réentrée prioritaire depuis la barre.</li>
-                            <li><strong className="text-stone-200">Arbre Expectimax</strong> : Évalue l’espérance mathématique sur les 21 lancers possibles de Blanc.</li>
-                            <li><strong className="text-stone-200">Animation cadencée à 750 ms</strong> : Visualisation étape par étape de chaque pion, avec dés consommés en direct et arcs de vol dorés.</li>
+                            <li>
+                                <strong className="text-stone-200">Régime RACE / Bear-Off</strong> : formule de course de Thorp
+                                (Effective Pip Count + wastage), portes et blots neutralisés car l’adversaire ne peut plus frapper.
+                            </li>
+                            <li>
+                                <strong className="text-stone-200">Régime CONTACT</strong> : 16 caractéristiques stratégiques réelles
+                                (probabilité de frappe sur 36 combinaisons, force de prime, ancre défensive, contrôle des flèches clés).
+                            </li>
+                            <li>
+                                <strong className="text-stone-200">Régime CRASHED</strong> : positions écrasées (jan intérieur surchargé
+                                ou ≤ 6 pions sur le plateau), évaluées avec les règles de contact.
+                            </li>
+                            <li>
+                                <strong className="text-stone-200">Règles WBF exactes</strong> : doubles (4 coups), réentrée prioritaire
+                                depuis la barre, bear-off exact et par dépassement.
+                            </li>
                         </ul>
+                    </div>
+
+                    <div className="rounded-xl border border-amber-900/40 bg-stone-900/40 p-3.5 space-y-2">
+                        <h3 className="font-bold text-amber-300 flex items-center gap-1.5 text-sm">
+                            <span>🚀</span> Pourquoi 100 % local ?
+                        </h3>
+                        <p className="leading-relaxed">
+                            L’application est <strong>entièrement autonome</strong> : aucune latence réseau, aucun serveur à déployer,
+                            aucune clé API. L’évaluation s’exécute en moins de 1 ms directement dans le navigateur, ce qui garantit
+                            une expérience instantanée, hors-ligne et gratuite.
+                        </p>
                     </div>
                 </div>
 

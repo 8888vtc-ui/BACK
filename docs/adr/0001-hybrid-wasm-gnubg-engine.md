@@ -1,6 +1,6 @@
-# ADR-001 : Architecture Hybride Client WASM / Backend Neural GNUBG
+# ADR-001 : Moteur d'Évaluation TypeScript Tri-Phase 100 % Local
 
-- **Statut** : Accepté
+- **Statut** : Accepté (révisé 2026-10-18)
 - **Date** : 2026-10-15
 - **Décideurs** : Équipe d'ingénierie Backgammon Suite
 - **Domaine** : Moteur de jeu & Évaluation IA
@@ -8,36 +8,31 @@
 ---
 
 ## Contexte
-Le Backgammon moderne repose sur des réseaux de neurones (évaluation de positions et de videau) dont la référence absolue est **GNU Backgammon (GNUBG)**.
-Nous avions deux exigences contradictoires :
-1. **Zéro latence et jeu hors-ligne total** : Le joueur doit pouvoir déplacer ses pions, recevoir une évaluation de base et jouer contre l'IA sans connexion Internet ni latence réseau.
-2. **Précision chirurgicale de tournoi (2-ply+) et rollouts profonds** : Les explications de blunders de haut niveau et les analyses post-partie nécessitent des calculs intensifs (chargement des poids neuronaux, explorations d'arbres à plusieurs demi-coups) inadaptés aux processeurs mobiles modestes ou aux batteries limitées.
+Le Backgammon moderne repose sur des évaluations de position et de videau de haute qualité. L'objectif du produit est d'être **100 % autonome, gratuit et sans serveur** (déploiement Netlify statique), avec une évaluation instantanée exécutée directement dans le navigateur.
 
 ## Décision
-Nous adoptons une **architecture hybride adaptative à deux étages** :
+Nous adoptons un **moteur d'évaluation TypeScript pur à architecture tri-phase**, exécuté localement en moins de 1 ms :
 
-1. **Étage Client (WebAssembly / Web Worker)** :
-   - Évaluation temps réel en **0-ply et 1-ply**.
-   - Exécution asynchrone isolée dans un Web Worker dédié ([`src/workers/gnubg.worker.ts`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/workers/gnubg.worker.ts)) pour garantir 60 FPS constants sur l'UI.
-   - Fonctionne à 100% hors-ligne sur navigateur et mobile (Capacitor).
+1. **Étage Client (TypeScript pur)** :
+   - Évaluateur tri-phase dans [`src/lib/engine/evaluator.ts`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/lib/engine/evaluator.ts) :
+     - **RACE / Bear-Off** : formule de course de Thorp (Effective Pip Count + wastage).
+     - **CONTACT** : 16 caractéristiques stratégiques (probabilité de frappe, prime, ancre, flèches clés).
+     - **CRASHED** : positions écrasées évaluées avec les règles de contact.
+   - Exécution asynchrone isolée dans un Web Worker dédié ([`src/workers/gnubg.worker.ts`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/workers/gnubg.worker.ts)).
+   - Fonctionne à 100 % hors-ligne sur navigateur et mobile (Capacitor).
 
-2. **Étage Serveur (Python FastAPI + GNUBG natif CLI)** :
-   - Microservice dédié ([`backend-engine/`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/backend-engine)) exécutant le binaire natif Linux GNUBG (`gnubg -t`).
-   - Prend en charge l'évaluation profonde **2-ply+** et les **rollouts statistiques multithreadés**.
-
-3. **Orchestrateur Intelligent (`analysisService.ts`)** :
-   - Si la profondeur demandée est ≤ 1-ply : routage direct vers le Web Worker WASM local.
-   - Si la profondeur est ≥ 2-ply : requête vers `POST /api/evaluate`.
-   - **Bascule adaptative (Circuit Breaker)** : Si le backend dépasse 800ms de latence moyenne (EMA) ou subit des échecs consécutifs, l'orchestrateur bascule automatiquement sur le worker WASM local en mode de secours dégradé sans jamais bloquer la partie.
+2. **Aucun binaire WASM ni serveur externe** :
+   - Le fichier `/engine/gnubg.wasm` et les poids neuronaux n'existent pas dans le projet.
+   - Le microservice Python optionnel ([`backend-engine/`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/backend-engine)) n'est **pas** branché en production ; il reste disponible pour une analyse profonde future, mais n'est pas requis.
 
 ## Conséquences
 
 ### Positives
 - Fluidité absolue de jeu sans dépendance au réseau en cours de match.
-- Zéro coût de calcul serveur pour 90% des interactions courantes de jeu.
-- Précision maximale préservée pour l'analyse approfondie des blunders.
-- Résilience native contre les pannes d'infrastructure backend.
+- Zéro coût de calcul serveur, zéro latence réseau.
+- Déploiement statique simple (Netlify), aucune infrastructure à maintenir.
+- Transparence totale : l'interface reflète fidèlement le moteur réel.
 
 ### Négatives / Contraintes
-- Nécessité de maintenir deux implémentations de communication (postMessage Worker vs HTTP REST).
-- Double validation des formats de positions (chaînes XGID standardisées).
+- L'évaluation repose sur des heuristiques à coefficients calibrés, pas sur un réseau de neurones entraîné.
+- La précision de tournoi (2-ply+ profond) est limitée par rapport à un vrai moteur GNU Backgammon.

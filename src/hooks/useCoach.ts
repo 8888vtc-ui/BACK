@@ -126,15 +126,20 @@ export function useCoach({
                         // Plafonne la perte comptabilisée à 0.500 pour éviter qu'un bug isolé
                         // ne détruise la moyenne du PR.
                         const cappedLoss = Math.min(Math.abs(equityLoss), 0.5);
+                        // Seuils de verdict alignés :
+                        //   < 0.020  => OPTIMAL (n'incrémente pas BLUNDERS)
+                        //   0.020-0.080 => DOUTEUX (n'incrémente pas BLUNDERS)
+                        //   >= 0.080 => BLUNDER (incrémente BLUNDERS de +1)
+                        const isBlunder = Math.abs(equityLoss) >= 0.08;
                         setMatchStats((prev) => ({
                             decisionsCount: prev.decisionsCount + 1,
                             totalEquityLoss: prev.totalEquityLoss + cappedLoss,
-                            blundersCount: prev.blundersCount + (equityLoss <= -0.08 ? 1 : 0),
+                            blundersCount: prev.blundersCount + (isBlunder ? 1 : 0),
                         }));
 
-                        if (equityLoss >= -0.025) {
+                        if (Math.abs(equityLoss) < 0.02) {
                             setOptimalStreak((prev) => prev + 1);
-                        } else if (equityLoss <= -0.08) {
+                        } else if (isBlunder) {
                             setOptimalStreak(0);
                         }
 
@@ -146,9 +151,9 @@ export function useCoach({
                         setBrilliantMove(isBrilliant);
                     }
 
-                    if (equityLoss <= -0.06) {
+                    if (Math.abs(equityLoss) >= 0.02) {
                         // Seuil de blunder aligné : >= 0.080 de perte => BLUNDER.
-                        const isBlunder = equityLoss <= -0.08;
+                        const isBlunder = Math.abs(equityLoss) >= 0.08;
                         if (isBlunder) {
                             soundEngine.playBlunderAlert();
                         }

@@ -37,6 +37,7 @@ import {
     type GameResult,
     type AIDifficulty,
 } from '../engine/aiHeuristics';
+import { evaluateBoard, shouldOfferDouble, shouldTakeDouble } from '../lib/engine/evaluator';
 
 export {
     evaluateWin,
@@ -906,6 +907,27 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         // Si une animation de coup est déjà en cours d'exécution, ne pas relancer
         if (opponentTurnInProgressRef.current) return;
 
+        // --- Décision de l'IA sur le videau (Janowski) ---
+        // Au début du tour de l'IA (avant le lancer des dés), si elle a accès au
+        // videau et que son équité cubeless est >= +0.420, elle propose de doubler.
+        const canIADouble =
+            !boardState.crawford &&
+            (boardState.cubeOwner === null || boardState.cubeOwner === 'O') &&
+            !(matchLength > 0 && (boardState.scoreX >= matchLength || boardState.scoreO >= matchLength));
+        if (canIADouble && !forcedOpponentDice) {
+            const iaState: BoardState = {
+                ...boardState,
+                turn: 'O',
+                dice: null,
+            };
+            const iaEval = evaluateBoard(iaState, 2);
+            if (shouldOfferDouble(iaEval.cubelessEquity)) {
+                dispatch({ type: 'OFFER_DOUBLE' });
+                opponentTurnInProgressRef.current = true;
+                return;
+            }
+        }
+
         // Mode immédiat (ex. tests unitaires ou délai à 0)
         if (opponentDelayMs === 0) {
             dispatch({ type: 'PLAY_OPPONENT', dice: forcedOpponentDice });
@@ -1125,16 +1147,23 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         if (!autoOpponent) return;
         if (phase === 'DOUBLING_OFFERED' && doublingOfferedBy === 'X') {
             const timer = setTimeout(() => {
-                const score = scoreBoardForOpponent(boardState.board, 'O');
-                if (score < -500) {
-                    dispatch({ type: 'PASS_DOUBLE' });
-                } else {
+                // Décision de l'IA (O) sur le videau selon Janowski :
+                // Take si équité cubeless >= -0.540 (~23% de gain), sinon Pass.
+                const iaState: BoardState = {
+                    ...boardState,
+                    turn: 'O',
+                    dice: null,
+                };
+                const iaEval = evaluateBoard(iaState, 2);
+                if (shouldTakeDouble(iaEval.cubelessEquity)) {
                     dispatch({ type: 'TAKE_DOUBLE' });
+                } else {
+                    dispatch({ type: 'PASS_DOUBLE' });
                 }
             }, opponentDelayMs);
             return () => clearTimeout(timer);
         }
-    }, [phase, doublingOfferedBy, autoOpponent, opponentDelayMs, boardState.board]);
+    }, [phase, doublingOfferedBy, autoOpponent, opponentDelayMs, boardState]);
 
     const applyRemoteState = useCallback(
         (payload: {

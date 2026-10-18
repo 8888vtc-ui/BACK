@@ -421,6 +421,21 @@ export default function Board({
         >
             {/* Cadre noyer */}
             <div className="w-full h-full rounded-3xl p-3 sm:p-5 shadow-2xl bg-gradient-to-b from-[#4a2a16] via-[#3a2010] to-[#2b170c] flex flex-col">
+                {/* Bordure supérieure : numéros 13..24 */}
+                <div className="flex items-center justify-center gap-0 px-1 pb-1 shrink-0">
+                    <div className="flex flex-1 justify-around">
+                        {TOP_ROW.map((p) => (
+                            <span
+                                key={`num-${p}`}
+                                className="text-[11px] font-mono text-amber-200/75 select-none w-8 text-center"
+                            >
+                                {p}
+                            </span>
+                        ))}
+                    </div>
+                    <div className="w-16 sm:w-20 shrink-0" />
+                </div>
+
                 {/* Surface de feutre */}
                 <div className="flex-1 min-h-0 rounded-2xl bg-[radial-gradient(circle_at_50%_45%,#145337_0%,#0b3824_65%,#051c12_100%)] p-2 sm:p-3 flex flex-col">
                     {/* Grille 3 colonnes × 2 rangées */}
@@ -504,6 +519,21 @@ export default function Board({
                             </div>
                         )}
                     </div>
+                </div>
+
+                {/* Bordure inférieure : numéros 12..1 */}
+                <div className="flex items-center justify-center gap-0 px-1 pt-1 shrink-0">
+                    <div className="flex flex-1 justify-around">
+                        {BOTTOM_ROW.map((p) => (
+                            <span
+                                key={`num-${p}`}
+                                className="text-[11px] font-mono text-amber-200/75 select-none w-8 text-center"
+                            >
+                                {p}
+                            </span>
+                        ))}
+                    </div>
+                    <div className="w-16 sm:w-20 shrink-0" />
                 </div>
 
                 {/* Badges Pip Count */}

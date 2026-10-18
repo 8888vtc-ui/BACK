@@ -19,8 +19,9 @@ describe('GET and POST /api/evaluate Route', () => {
         const res = await GET();
         expect(res.status).toBe(200);
         const data = await res.json();
-        expect(data.service).toBe('gnubg-evaluate');
+        expect(data.service).toBe('backgammon-evaluate');
         expect(data.status).toBe('online');
+        expect(data.engine).toBe('typescript-tri-phase');
     });
 
     it('POST valide un payload correct et renvoie chequerPlay et cubeDecision', async () => {

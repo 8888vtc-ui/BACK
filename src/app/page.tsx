@@ -735,7 +735,7 @@ export default function Home() {
 
     function simulateNetworkError() {
         toast.networkError(
-            'Échec de communication avec le cluster de calcul GNU Backgammon (HTTP 503).',
+            'Échec de communication avec le moteur d’évaluation (HTTP 503).',
             () => toast.info('Nouvelle tentative de connexion au moteur...', 'Reconnexion en cours...'),
         );
     }
@@ -1051,27 +1051,48 @@ export default function Home() {
                                             À vous de jouer — Lancez les dés pour jouer votre tour
                                         </span>
                                     </div>
-                                    <button
-                                        type="button"
-                                        data-testid="roll-dice-btn"
-                                        onClick={() => {
-                                            impactMedium();
-                                            soundEngine.playDiceRoll();
-                                            if (isMultiplayerActive) {
-                                                const d1 = Math.floor(Math.random() * 6) + 1;
-                                                const d2 = Math.floor(Math.random() * 6) + 1;
-                                                const d: [number, number] = [d1, d2];
-                                                game.rollDice(d);
-                                                multiplayer.broadcastDiceRolled(d);
-                                            } else {
-                                                game.rollDice();
-                                            }
-                                        }}
-                                        className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow hover:from-blue-500 hover:to-indigo-500 transition active:scale-95"
-                                    >
-                                        <span>🎲</span>
-                                        <span>Lancer les dés</span>
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        {/* Bouton DOUBLER (videau) — à gauche de LANCER LES DÉS */}
+                                        {game.canDouble && (
+                                            <button
+                                                type="button"
+                                                data-testid="doubler-btn"
+                                                onClick={() => {
+                                                    impactHeavy();
+                                                    soundEngine.playCubeOffer();
+                                                    game.offerDouble();
+                                                    if (isMultiplayerActive) {
+                                                        multiplayer.broadcastDoubleOffered(game.state.cubeValue * 2);
+                                                    }
+                                                }}
+                                                className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-950 shadow hover:from-amber-400 hover:to-amber-500 transition active:scale-95"
+                                            >
+                                                <span>🎲</span>
+                                                <span>Doubler (x{game.state.cubeValue === 1 ? 2 : game.state.cubeValue * 2})</span>
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            data-testid="roll-dice-btn"
+                                            onClick={() => {
+                                                impactMedium();
+                                                soundEngine.playDiceRoll();
+                                                if (isMultiplayerActive) {
+                                                    const d1 = Math.floor(Math.random() * 6) + 1;
+                                                    const d2 = Math.floor(Math.random() * 6) + 1;
+                                                    const d: [number, number] = [d1, d2];
+                                                    game.rollDice(d);
+                                                    multiplayer.broadcastDiceRolled(d);
+                                                } else {
+                                                    game.rollDice();
+                                                }
+                                            }}
+                                            className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow hover:from-blue-500 hover:to-indigo-500 transition active:scale-95"
+                                        >
+                                            <span>🎲</span>
+                                            <span>Lancer les dés</span>
+                                        </button>
+                                    </div>
                                 </div>
                             )}
 
@@ -1115,7 +1136,7 @@ export default function Home() {
                                     const names = {
                                         beginner: 'Débutant (0-ply bruité)',
                                         intermediate: 'Intermédiaire (1-ply)',
-                                        expert: 'Expert (2-ply expectimax)',
+                                        expert: 'Expert (2-ply tri-phase)',
                                     };
                                     toast.info(`Niveau de l’adversaire : ${names[diff]}`, 'Difficulté IA');
                                 }}
@@ -1236,7 +1257,7 @@ export default function Home() {
                                     <div className="flex items-center justify-between text-slate-400">
                                         <span className="font-semibold text-indigo-300">Veille Stratégique Active</span>
                                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-700/60 text-indigo-300 font-mono">
-                                            Expectimax 2-ply
+                                            Tri-Phase 2-ply
                                         </span>
                                     </div>
                                     <p className="text-slate-400 leading-relaxed text-[11px]">

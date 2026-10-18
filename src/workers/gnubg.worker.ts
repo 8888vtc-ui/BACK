@@ -1,17 +1,18 @@
 /**
- * Web Worker GNUBG — Moteur d'évaluation WebAssembly avec chargement paresseux (lazy).
+ * Web Worker du moteur d'évaluation Backgammon — 100 % TypeScript pur.
  *
  * Fonctionnalités :
- * - Chargement différé (lazy) du module WebAssembly et des poids du réseau de neurones
- *   dès la première requête d'évaluation ou sur commande explicite `init`.
+ * - Moteur d'évaluation tri-phase embarqué (Contact / Crashed / Race-BearOff),
+ *   exécuté localement en moins de 1 ms (aucun fetch réseau, aucun WASM).
  * - File d'attente avec priorisation des requêtes (ex: 'high' pour l'analyse du coup du joueur).
  * - Implémentation complète de l'API JSON :
  *     - evaluate
  *     - analyzeMoves
  *     - analyzeCube
  *     - bestMove
- * - Repli automatique sur le moteur neuronal TypeScript embarqué si le binaire WASM
- *   n'est pas encore présent sur le serveur statique (/engine/gnubg.wasm).
+ *
+ * NOTE : l'ancien chargement WASM (`/engine/gnubg.wasm`) a été supprimé car le
+ * binaire n'existait pas et générait un 404 inutile dans la console réseau.
  */
 
 import { serializeXGID } from '../engine/backgammonEngine';
@@ -34,14 +35,6 @@ import {
     WorkerResponse,
 } from '../lib/engine/types';
 
-// État interne du worker
-let isInitialized = false;
-let isWasmLoaded = false;
-let initPromise: Promise<void> | null = null;
-
-let wasmInstance: WebAssembly.Instance | null = null;
-let nnWeightsBuffer: ArrayBuffer | null = null;
-
 // File de traitement avec priorité
 interface QueuedTask {
     request: WorkerRequest;
@@ -51,69 +44,23 @@ const taskQueue: QueuedTask[] = [];
 let isProcessingQueue = false;
 
 /**
- * Charge paresseusement le module WebAssembly et les poids neuronaux.
+ * Initialisation (no-op) : le moteur tri-phase est embarqué et ne nécessite
+ * aucun chargement externe. Conservée pour la compatibilité de l'API `init`.
  */
-export async function loadWasmAndWeights(config: EngineInitConfig = {}): Promise<void> {
-    if (isInitialized) return;
-    if (initPromise) return initPromise;
-
-    initPromise = (async () => {
-        const wasmUrl = config.wasmUrl || '/engine/gnubg.wasm';
-        const weightsUrl = config.weightsUrl || '/engine/gnubg_nn.weights';
-
-        try {
-            if (typeof fetch === 'function' && typeof WebAssembly !== 'undefined') {
-                // Tentative de chargement du WASM
-                const wasmRes = await fetch(wasmUrl);
-                if (wasmRes.ok) {
-                    const wasmBytes = await wasmRes.arrayBuffer();
-                    const wasmModule = await WebAssembly.instantiate(wasmBytes, {
-                        env: {
-                            memory: new WebAssembly.Memory({ initial: 256, maximum: 512 }),
-                            abort: () => console.error('[GNUBG WASM] Aborted'),
-                        },
-                    });
-                    wasmInstance = wasmModule.instance;
-                    isWasmLoaded = true;
-
-                    // Tentative de chargement des poids NN
-                    try {
-                        const weightsRes = await fetch(weightsUrl);
-                        if (weightsRes.ok) {
-                            nnWeightsBuffer = await weightsRes.arrayBuffer();
-                        }
-                    } catch {
-                        // Poids non disponibles, utilisation des poids par défaut
-                    }
-                }
-            }
-        } catch {
-            // Repli gracieux : utilisation du moteur pur embarqué
-            isWasmLoaded = false;
-        } finally {
-            isInitialized = true;
-        }
-    })();
-
-    return initPromise;
+export async function loadWasmAndWeights(_config: EngineInitConfig = {}): Promise<void> {
+    return Promise.resolve();
 }
 
 /**
  * Traite une requête individuelle.
  */
 export async function handleRequest(request: WorkerRequest): Promise<any> {
-    // 1. Initialisation lazy à la première demande
-    if (!isInitialized) {
-        await loadWasmAndWeights();
-    }
-
     switch (request.type) {
         case 'init': {
-            await loadWasmAndWeights(request.payload as EngineInitConfig);
             return {
                 initialized: true,
-                isWasm: isWasmLoaded,
-                hasWeights: nnWeightsBuffer !== null,
+                isWasm: false,
+                hasWeights: false,
             };
         }
 
@@ -128,7 +75,7 @@ export async function handleRequest(request: WorkerRequest): Promise<any> {
                 cubelessEquity: evalResult.cubelessEquity,
                 cubefulEquity: evalResult.cubefulEquity,
                 probabilities: evalResult.probabilities,
-                isWasm: isWasmLoaded,
+                isWasm: false,
             };
             return result;
         }
@@ -143,7 +90,7 @@ export async function handleRequest(request: WorkerRequest): Promise<any> {
             });
             return {
                 ...result,
-                isWasm: isWasmLoaded,
+                isWasm: false,
             };
         }
 
@@ -156,7 +103,7 @@ export async function handleRequest(request: WorkerRequest): Promise<any> {
             });
             return {
                 ...result,
-                isWasm: isWasmLoaded,
+                isWasm: false,
             };
         }
 
@@ -169,7 +116,7 @@ export async function handleRequest(request: WorkerRequest): Promise<any> {
             }
             return {
                 ...result,
-                isWasm: isWasmLoaded,
+                isWasm: false,
             };
         }
 

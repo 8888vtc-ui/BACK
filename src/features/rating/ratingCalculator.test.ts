@@ -9,25 +9,20 @@ import {
 
 describe('ratingCalculator Module', () => {
     describe('classifyMoveEquity', () => {
-        it('qualifie les pertes minimes en optimal (<= 0.005)', () => {
+        it('qualifie les pertes minimes en optimal (< 0.020)', () => {
             expect(classifyMoveEquity(0)).toBe('optimal');
             expect(classifyMoveEquity(-0.003)).toBe('optimal');
-            expect(classifyMoveEquity(0.005)).toBe('optimal');
+            expect(classifyMoveEquity(-0.019)).toBe('optimal');
         });
 
-        it('qualifie les pertes légères en acceptable (0.005 à 0.020)', () => {
-            expect(classifyMoveEquity(-0.012)).toBe('acceptable');
-            expect(classifyMoveEquity(-0.02)).toBe('acceptable');
-        });
-
-        it('qualifie les pertes modérées en douteux (0.020 à 0.080)', () => {
-            expect(classifyMoveEquity(-0.025)).toBe('doubtful');
-            expect(classifyMoveEquity(-0.075)).toBe('doubtful');
-            expect(classifyMoveEquity(-0.08)).toBe('doubtful');
+        it('qualifie les pertes légères en douteux (0.020 à 0.080)', () => {
+            expect(classifyMoveEquity(-0.02)).toBe('doubtful');
+            expect(classifyMoveEquity(-0.05)).toBe('doubtful');
+            expect(classifyMoveEquity(-0.079)).toBe('doubtful');
         });
 
         it('qualifie les erreurs en blunder (0.080 à 0.200)', () => {
-            expect(classifyMoveEquity(-0.085)).toBe('blunder');
+            expect(classifyMoveEquity(-0.08)).toBe('blunder');
             expect(classifyMoveEquity(-0.15)).toBe('blunder');
             expect(classifyMoveEquity(-0.2)).toBe('blunder');
         });
@@ -44,15 +39,15 @@ describe('ratingCalculator Module', () => {
             expect(calculateErrorRate(0, 0)).toBe(0);
         });
 
-        it('calcule exactement PR = (ErrorRate / 3) * 500', () => {
-            // Perte de 0.300 sur 10 décisions -> errorRate = 0.030 -> /3 = 0.010 -> PR = 5.0
+        it('calcule exactement PR = (ErrorRate) * 120', () => {
+            // Perte de 0.300 sur 10 décisions -> errorRate = 0.030 -> PR = 3.6
             const pr = calculatePR(0.3, 10);
-            expect(pr).toBe(5.0);
+            expect(pr).toBe(3.6);
             expect(calculateErrorRate(0.3, 10)).toBe(0.03);
         });
 
         it('borne le PR au plafond officiel de 35.0', () => {
-            const pr = calculatePR(3.0, 5); // (3.0/3)/5 = 0.2 -> 0.2 * 500 = 100 -> plafonné à 35
+            const pr = calculatePR(3.0, 5); // (3.0/5) = 0.6 -> 0.6 * 120 = 72 -> plafonné à 35
             expect(pr).toBe(35.0);
         });
     });

@@ -3,7 +3,7 @@
 [![CI - Quality, Tests & Builds](https://github.com/user/backgammon/actions/workflows/ci.yml/badge.svg)](https://github.com/user/backgammon/actions/workflows/ci.yml)
 [![CD - Deployment](https://github.com/user/backgammon/actions/workflows/deploy.yml/badge.svg)](https://github.com/user/backgammon/actions/workflows/deploy.yml)
 
-Application web et mobile hybride (Next.js 15, React 19, Tailwind CSS, Capacitor) de Backgammon Tournament-grade avec IA neurale GNU Backgammon, analyse en temps réel, opening book certifié, drills de blunders, puzzles quotidiens et multijoueur en ligne.
+Application web et mobile hybride (Next.js 15, React 19, Tailwind CSS, Capacitor) de Backgammon Tournament-grade avec un **moteur d'évaluation TypeScript tri-phase 100 % local** (Contact / Crashed / Race-BearOff), analyse en temps réel, opening book certifié, drills de blunders, puzzles quotidiens et multijoueur en ligne. Aucun serveur requis : l'évaluation s'exécute directement dans le navigateur, sans latence réseau.
 
 ---
 
@@ -14,6 +14,7 @@ Application web et mobile hybride (Next.js 15, React 19, Tailwind CSS, Capacitor
 | [`PROJECT_MAP.md`](PROJECT_MAP.md) | **Carte d'orientation** — comprendre le projet en 1 minute, ajouter une fonction en 2 minutes. **Lire en premier.** |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Architecture détaillée (modules, flux, décisions). |
 | [`SCALABILITY.md`](SCALABILITY.md) | Charte de scalabilité impérative (règles non négociables). |
+| [`GOVERNANCE.md`](GOVERNANCE.md) | **Charte de gouvernance « Zéro Bug »** — 4 règles d'or architecturales et comportementales incompressibles. |
 
 ---
 

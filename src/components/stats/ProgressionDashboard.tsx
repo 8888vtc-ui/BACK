@@ -158,16 +158,15 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                             {performanceRating}
                         </span>
                         <span
-                            className={`rounded-full border px-2.5 py-0.5 text-xs font-bold shadow-md ${
-                                prBadgeColors[prCategory] || prBadgeColors['Intermédiaire']
-                            }`}
+                            className={`rounded-full border px-2.5 py-0.5 text-xs font-bold shadow-md ${prBadgeColors[prCategory] || prBadgeColors['Intermédiaire']
+                                }`}
                             data-testid="stats-pr-category"
                         >
                             {prCategory}
                         </span>
                     </div>
                     <p className="mt-3 text-xs text-slate-400 leading-relaxed">
-                        Équivalent standard eXtreme Gammon / GNU Backgammon. Plus le score est proche de 0, plus votre jeu approche la perfection mathématique.
+                        Échelle de référence du Backgammon de compétition. Plus le score est proche de 0, plus votre jeu approche la perfection mathématique.
                     </p>
                 </div>
 
@@ -282,11 +281,10 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                                                     Match {item.matchLength} pts ({item.scoreX} - {item.scoreO})
                                                 </span>
                                                 <span
-                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                                        item.winner === item.player
+                                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${item.winner === item.player
                                                             ? 'bg-emerald-950 text-emerald-300 border border-emerald-600/50'
                                                             : 'bg-slate-800 text-slate-300'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {item.winner === item.player ? 'Victoire' : 'Défaite'}
                                                 </span>
@@ -453,13 +451,12 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                                     {concept.category}
                                 </span>
                                 <span
-                                    className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${
-                                        concept.priority === 'high'
+                                    className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${concept.priority === 'high'
                                             ? 'bg-rose-950 text-rose-300 border border-rose-700/60'
                                             : concept.priority === 'medium'
-                                            ? 'bg-amber-950 text-amber-300 border border-amber-700/60'
-                                            : 'bg-emerald-950 text-emerald-300 border border-emerald-700/60'
-                                    }`}
+                                                ? 'bg-amber-950 text-amber-300 border border-amber-700/60'
+                                                : 'bg-emerald-950 text-emerald-300 border border-emerald-700/60'
+                                        }`}
                                 >
                                     {concept.priority === 'high' ? 'À travailler' : concept.priority === 'medium' ? 'Perfectible' : 'Maîtrisé'}
                                 </span>
@@ -478,13 +475,12 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                                 </div>
                                 <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
                                     <div
-                                        className={`h-full ${
-                                            concept.masteryScore >= 75
+                                        className={`h-full ${concept.masteryScore >= 75
                                                 ? 'bg-emerald-500'
                                                 : concept.masteryScore >= 50
-                                                ? 'bg-amber-500'
-                                                : 'bg-rose-500'
-                                        }`}
+                                                    ? 'bg-amber-500'
+                                                    : 'bg-rose-500'
+                                            }`}
                                         style={{ width: `${concept.masteryScore}%` }}
                                     />
                                 </div>
