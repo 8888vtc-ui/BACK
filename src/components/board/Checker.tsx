@@ -35,36 +35,36 @@ const CheckerComponent: React.FC<CheckerProps> = ({
 
     return (
         <div
-            className={`relative w-[42px] h-[42px] xl:w-[46px] xl:h-[46px] rounded-full flex items-center justify-center select-none transition-all duration-300 ease-out ${isPlayable && isTopChecker
-                ? 'cursor-pointer hover:-translate-y-1 hover:scale-105 hover:ring-2 hover:ring-amber-400/90'
-                : ''
+            className={`relative w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] xl:w-[40px] xl:h-[40px] rounded-full flex items-center justify-center select-none transition-all duration-300 ease-out ${isPlayable && isTopChecker
+                ? 'cursor-pointer hover:-translate-y-1 hover:scale-105 hover:ring-2 hover:ring-amber-400/90 shadow-[0_8px_16px_rgba(0,0,0,0.6)]'
+                : 'shadow-[0_4px_8px_rgba(0,0,0,0.5)]'
                 }`}
             style={{
                 background: isWhite
-                    ? 'radial-gradient(circle at 30% 28%, #ffffff 0%, #f5ebd6 45%, #cbb894 82%, #8c7651 100%)'
-                    : 'radial-gradient(circle at 30% 28%, #52525b 0%, #27272a 42%, #141417 82%, #050507 100%)',
+                    ? 'radial-gradient(circle at 32% 28%, #ffffff 0%, #f7f0e1 45%, #cfbe9e 82%, #947e5b 100%)'
+                    : 'radial-gradient(circle at 32% 28%, #52525b 0%, #27272a 44%, #141417 84%, #08080a 100%)',
                 boxShadow: isWhite
-                    ? '0 6px 12px rgba(0,0,0,0.65), inset 0 2px 3px rgba(255,255,255,0.95), inset 0 -2px 4px rgba(120,95,60,0.6)'
-                    : '0 6px 12px rgba(0,0,0,0.85), inset 0 1.5px 2px rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.9)',
+                    ? '0 4px 8px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.95), inset 0 -2px 3px rgba(120,95,60,0.5)'
+                    : '0 4px 8px rgba(0,0,0,0.75), inset 0 1.5px 2px rgba(255,255,255,0.35), inset 0 -2px 3px rgba(0,0,0,0.9)',
                 border: isWhite ? '1px solid #dfd1b4' : '1px solid #3f3f46',
             }}
         >
             <div
-                className="w-[68%] h-[68%] rounded-full flex items-center justify-center"
+                className="w-[66%] h-[66%] rounded-full flex items-center justify-center ring-1 ring-black/10"
                 style={{
                     background: isWhite
-                        ? 'radial-gradient(circle at 72% 72%, #ffffff 0%, #e6d8bc 58%, #b39d76 100%)'
-                        : 'radial-gradient(circle at 72% 72%, #3f3f46 0%, #18181b 60%, #09090b 100%)',
+                        ? 'radial-gradient(circle at 70% 70%, #ffffff 0%, #ece0c8 58%, #b8a37f 100%)'
+                        : 'radial-gradient(circle at 70% 70%, #3f3f46 0%, #1c1c1f 60%, #0d0d0f 100%)',
                     boxShadow: isWhite
-                        ? 'inset 0 3px 6px rgba(90,70,40,0.45), 0 1px 1px rgba(255,255,255,0.8)'
-                        : 'inset 0 4px 7px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.12)',
+                        ? 'inset 0 2.5px 5px rgba(90,70,40,0.4), 0 1px 1px rgba(255,255,255,0.8)'
+                        : 'inset 0 3px 6px rgba(0,0,0,0.85), 0 1px 1px rgba(255,255,255,0.12)',
                 }}
             >
                 {countBadge !== undefined && countBadge >= BADGE_MIN_COUNT && (
                     <span
-                        className={`text-xs font-extrabold px-1.5 py-0.5 rounded-full shadow-md ${isWhite
-                            ? 'bg-amber-900 text-amber-100 border border-amber-300/40'
-                            : 'bg-amber-400 text-slate-950'
+                        className={`text-[11px] font-black px-1.5 py-0.2 rounded-full shadow-md leading-none ${isWhite
+                            ? 'bg-amber-950 text-amber-100 border border-amber-300/40'
+                            : 'bg-amber-400 text-slate-950 font-bold'
                             }`}
                     >
                         {countBadge}

@@ -865,6 +865,7 @@ export default function CoachPanel({
                     whyOptimal={propWhyOptimal || parsed.whyOptimal}
                     summary={propSummary || parsed.summary}
                     onReplayMove={onReplayMove}
+                    onClose={onDismiss}
                     locale={locale}
                 />
             </div>

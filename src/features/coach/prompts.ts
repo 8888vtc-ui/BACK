@@ -333,22 +333,54 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
             ? 'Against trapped opponent checkers, extending your prime always trumps racing.'
             : 'Face à des pions adverses piégés, étendre votre prime prime toujours sur la course.';
         conceptId = 'prime-vs-prime';
-    } else if (board.goldenPoint) {
+    } else if (board.goldenPoint || optimalMove.includes('/5') || optimalMove.includes('/20')) {
         summary = isEn
-            ? `Control of the 5-point (Golden Point) is paramount.`
-            : `Le contrôle du Point 5 (Golden Point) est capital.`;
+            ? `The 5-point (Golden Point) is the single most valuable strategic point on the entire backgammon board.`
+            : `Faire la porte du 5 (Golden Point) est le coup le plus précieux et fondamental du Backgammon.`;
         whyFailed = isEn
-            ? `Playing ${playedMove} fails to capitalize on or secure the master 5-point.`
-            : `Jouer ${playedMove} manque l'occasion de verrouiller ou d'exploiter le point 5 maître.`;
+            ? `Playing ${playedMove} completely misses securing the master 5-point, leaving an uncoordinated structure.`
+            : `Jouer ${playedMove} passe à côté de la création du Golden Point et disperse vos pions sans rien construire.`;
         whyOptimal = isEn
-            ? `The move ${optimalMove} establishes firm dominance on the 5-point foundation.`
-            : `Le coup ${optimalMove} verrouille la domination sur le point 5 clé de voûte.`;
+            ? `The optimal move ${optimalMove} constructs the 5-point, immediately blocking opponent escapes and establishing dominance.`
+            : `Le coup optimal ${optimalMove} verrouille la porte du 5 : il bloque la sortie adverse et installe une forteresse imprenable.`;
         explanation = `${whyFailed} ${whyOptimal}`;
         keyConcept = isEn ? 'Golden Point Control' : 'Contrôle du Golden Point';
         advice = isEn
-            ? 'The 5-point is the cornerstone of both offense and defense.'
-            : 'Le Point 5 est la clé de voûte de toute attaque et de toute défense.';
+            ? 'The 5-point is the cornerstone of both offense and defense: secure it whenever the dice allow!'
+            : 'Le Point 5 est la clé de voûte de toute attaque et défense : sécurisez-le dès que les dés le permettent !';
         conceptId = 'golden-point';
+    } else if (board.barPoint || optimalMove.includes('/7') || optimalMove.includes('/18')) {
+        summary = isEn
+            ? `Securing the 7-point (Bar Point) establishes a dominant block against opponent rear checkers.`
+            : `Faire la porte du 7 (Bar Point) bloque la fuite des pions adverses et amorce une prime.`;
+        whyFailed = isEn
+            ? `Playing ${playedMove} misses constructing the crucial 7-point barricade.`
+            : `Jouer ${playedMove} néglige de verrouiller la barricade du 7.`;
+        whyOptimal = isEn
+            ? `The optimal move ${optimalMove} locks down the 7-point to restrict opponent escapes by 6s.`
+            : `Le coup optimal ${optimalMove} verrouille le point 7 pour interdire les fuites par un 6.`;
+        explanation = `${whyFailed} ${whyOptimal}`;
+        keyConcept = isEn ? 'Bar Point Control' : 'Contrôle du Bar Point';
+        advice = isEn
+            ? 'The bar point bridges your home board and outfield to contain opposing checkers.'
+            : 'La porte du Bar (7) fait le pont et piège les pions adverses à 6 cases.';
+        conceptId = 'pure-play';
+    } else if (optimalMove.includes('/4') || optimalMove.includes('/3')) {
+        summary = isEn
+            ? `Closing gates in the home board increases hitting threats and restricts opponent reentry.`
+            : `Fermer une porte intérieure renforce votre jan et complique la réentrée adverse.`;
+        whyFailed = isEn
+            ? `Playing ${playedMove} fails to close a defensive home gate.`
+            : `Jouer ${playedMove} disperse vos pions au lieu de fermer une porte protectrice.`;
+        whyOptimal = isEn
+            ? `The optimal move ${optimalMove} builds a solid home board gate.`
+            : `Le coup optimal ${optimalMove} construit une solide porte dans votre jan intérieur.`;
+        explanation = `${whyFailed} ${whyOptimal}`;
+        keyConcept = isEn ? 'Home Board Gate' : 'Porte Intérieure';
+        advice = isEn
+            ? 'Making home board gates protects against hits and sets up gammon pressure.'
+            : 'Fermer des portes dans son jan intérieur protège vos pions et prépare le verrouillage.';
+        conceptId = 'pure-play';
     } else if (board.advancedAnchor) {
         summary = isEn
             ? `The advanced anchor guarantees safety and restricts your opponent.`
@@ -367,11 +399,11 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         conceptId = 'advanced-anchor';
     } else {
         whyFailed = isEn
-            ? `The move ${playedMove} loses valuable mobility pips and structural harmony.`
-            : `Le coup joué ${playedMove} cède de précieux pips de mobilité et déséquilibre votre structure.`;
+            ? `Playing ${playedMove} weakens your tactical coordination without securing key points or escaping rear checkers.`
+            : `Le coup joué ${playedMove} disperse vos pions sans construire de porte protectrice et affaiblit votre position.`;
         whyOptimal = isEn
-            ? `The optimal move ${optimalMove} achieves superior checker connectivity.`
-            : `Le coup optimal ${optimalMove} maximise la connectivité et l'efficacité des pions.`;
+            ? `The optimal move ${optimalMove} consolidates your structure and maximizes connectivity between your checkers.`
+            : `Le coup optimal ${optimalMove} consolide votre structure et maximise la sécurité et l'efficacité de vos pions.`;
         explanation = `${whyFailed} ${whyOptimal}`;
         conceptId = 'pure-play';
     }

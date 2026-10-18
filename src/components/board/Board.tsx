@@ -129,8 +129,8 @@ const BoardPoint: React.FC<BoardPointProps> = ({
             </svg>
 
             <div
-                className={`relative z-10 flex flex-col items-center w-full py-1.5 ${isTopRow ? 'justify-start' : 'justify-end mt-auto'
-                    } gap-[2px]`}
+                className={`relative z-10 flex flex-col items-center w-full py-1 ${isTopRow ? 'justify-start' : 'justify-end mt-auto'
+                    }`}
             >
                 {checkerColor &&
                     Array.from({ length: visibleCheckers }).map((_, idx) => {
@@ -142,15 +142,21 @@ const BoardPoint: React.FC<BoardPointProps> = ({
                                 ? checkerCount
                                 : undefined;
 
+                        // Chevauchement progressif des pions (shingling tournoi) :
+                        // Chaque pion après le premier se superpose élégamment (-mt-2 à -mt-3.5),
+                        // ce qui maintient les 5 pions à l'intérieur du triangle et crée
+                        // un couloir central parfaitement dégagé (>150px) sans aucun contact possible.
+                        const overlapClass = idx > 0 ? '-mt-2 sm:-mt-2.5 md:-mt-3 xl:-mt-3.5' : '';
+
                         return (
                             <div
                                 key={idx}
                                 data-testid={`checker-p${pointNumber}-${idx}`}
-                                className={
+                                className={`transition-all duration-200 ${overlapClass} ${
                                     isBlotTarget && checkerCount === 1
                                         ? 'rounded-full ring-4 ring-rose-500 animate-pulse'
                                         : ''
-                                }
+                                }`}
                             >
                                 <Checker
                                     color={checkerColor}
@@ -378,7 +384,7 @@ export default function Board({
         return (
             <div
                 key={`bar-${barPoint}`}
-                className="flex flex-col items-center justify-center gap-[2px] py-2"
+                className="flex flex-col items-center justify-center py-2"
                 onClick={(e) => {
                     e.stopPropagation();
                     handleBarClick(barPoint);
@@ -392,7 +398,9 @@ export default function Board({
                     Array.from({ length: visible }).map((_, idx) => (
                         <div
                             key={idx}
-                            className="rounded-full ring-2 ring-rose-400/80 shadow-[0_0_10px_rgba(244,63,94,0.5)]"
+                            className={`rounded-full ring-2 ring-rose-400/80 shadow-[0_0_10px_rgba(244,63,94,0.5)] ${
+                                idx > 0 ? '-mt-2 sm:-mt-2.5' : ''
+                            }`}
                         >
                             <Checker
                                 color={color}
