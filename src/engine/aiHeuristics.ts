@@ -19,6 +19,7 @@ import {
     borneOffCount,
     generateLegalMoves,
 } from './backgammonEngine';
+import { evaluateBoard } from '../lib/engine/evaluator';
 
 export type WinType = 'single' | 'gammon' | 'backgammon' | 'pass';
 
@@ -127,49 +128,43 @@ export function isContactPosition(board: number[]): boolean {
 }
 
 /**
- * Heuristique d'évaluation de position pour sélectionner le meilleur coup légal pour l'IA ('O').
+ * Évaluation de position pour sélectionner le meilleur coup légal pour l'IA.
  *
- * Règles strictes :
- *  - Séparation contact vs course pure : en course pure, bonus de portes/blots désactivés,
- *    et chaque pion sorti vaut un bonus massif (+0.150 d'équité).
- *  - Normalisation `Math.tanh` : l'équité retournée est toujours entre -1.000 et +1.000.
+ * Délègue au moteur d'évaluation unifié [`evaluateBoard`](../lib/engine/evaluator.ts),
+ * qui combine :
+ *   - Table exacte de bear-off (PR 0.00) ;
+ *   - Keith Count officiel en course pure ;
+ *   - Heuristique tri-phase en contact.
+ *
+ * Ceci ALIGNE la force de l'adversaire IA sur celle du coach : l'IA ne commet
+ * plus d'erreurs que le coach signalerait lui-même. La gestion de difficulté
+ * (bruit débutant, 2-ply expert) reste assurée par `selectBestOpponentSequence`.
+ *
+ * L'équité retournée est bornée entre -1.000 et +1.000 (équité cubeful).
  */
 export function scoreBoardForOpponent(board: number[], player: Player = 'O'): number {
     const win = evaluateWin(board, 1);
     if (win && win.winner === player) return 1.0;
     if (win && win.winner !== player) return -1.0;
 
-    const pips = pipCount(board);
-    const borneOff = borneOffCount(board, player);
-    const contact = isContactPosition(board);
+    // Construit un BoardState minimal du point de vue de `player`.
+    const state: BoardState = {
+        board,
+        turn: player,
+        cubeValue: 1,
+        cubeOwner: null,
+        dice: null,
+        matchLength: 0,
+        scoreX: 0,
+        scoreO: 0,
+        crawford: false,
+        doubled: false,
+        resigned: 0,
+    };
 
-    let score = 0;
-
-    // Course aux pips (toujours active).
-    score += (pips.X - pips.O) * 3;
-
-    if (contact) {
-        // --- Position de CONTACT : bonus stratégiques actifs ---
-        if (player === 'O') {
-            // Frapper un pion adverse X (l'envoyer sur la barre)
-            score += board[X_BAR] * 120;
-
-            // Pénaliser ses propres blots vulnérables
-            for (let p = 1; p <= 24; p++) {
-                if (board[p] === -1) score -= 35;
-                if (board[p] <= -2 && p >= 19) score += 40; // Portes sécurisées dans son jan intérieur
-            }
-            // Pénaliser les pions bloqués sur sa propre barre
-            score += board[O_BAR] * 60; // board[O_BAR] est négatif pour O
-        }
-    } else {
-        // --- COURSE PURE / BEAR-OFF : bonus de portes/blots désactivés ---
-        // Chaque pion sorti vaut un bonus massif pour que sortir un pion soit TOUJOURS optimal.
-        score += borneOff * 150;
-    }
-
-    // Normalisation stricte entre -1.000 et +1.000.
-    return Math.tanh(score / 500);
+    // Délègue au moteur unifié (bear-off exact + Keith + contact tri-phase).
+    const evaluation = evaluateBoard(state, 2);
+    return evaluation.cubefulEquity;
 }
 
 /**

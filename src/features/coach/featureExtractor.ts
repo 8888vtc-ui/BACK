@@ -13,9 +13,10 @@
  *   - Point 5 (Golden Point) : 5 pour X, 20 pour O ;
  *   - Bar Point (Point 7) : 7 pour X, 18 pour O.
  *
- * Simplification assumée : le comptage des tirs (shots) considère les pions de
- * l'adversaire présents sur les flèches 1-24 ; les pions adverses sur la barre
- * (qui doivent d'abord rentrer) ne sont pas comptés comme menaces directes.
+ * Le comptage des tirs (shots) est EXACT : il énumère les 36 combinaisons de
+ * dés et compte les tirs directs et indirects, en incluant les pions adverses
+ * sur la barre (qui rentrent sur le jan intérieur adverse et peuvent frapper
+ * un blot sur leur point d'entrée).
  */
 
 import { BoardState, Player, pipCount, X_BAR, O_BAR } from '../../engine/backgammonEngine';
@@ -137,7 +138,29 @@ function isLegalLanding(board: number[], point: number, opponent: Player): boole
     return !isBlockedFor(board, point, opponent);
 }
 
+/** Nombre de pions de `opponent` sur la barre. */
+function barCount(board: number[], opponent: Player): number {
+    return opponent === 'X' ? Math.max(0, board[X_BAR]) : Math.max(0, -board[O_BAR]);
+}
+
+/**
+ * Point d'entrée d'un pion adverse depuis la barre, pour un dé donné.
+ * X entre sur 25 - die (flèches 19..24), O entre sur die (flèches 1..6).
+ */
+function barEntryPoint(opponent: Player, die: number): number {
+    return opponent === 'X' ? 25 - die : die;
+}
+
 function canHitDirect(board: number[], blot: number, opponent: Player, die: number): boolean {
+    // 1. Pions adverses sur la barre : entrent sur le jan intérieur adverse et
+    //    peuvent frapper un blot situé sur leur point d'entrée.
+    if (barCount(board, opponent) > 0) {
+        const entry = barEntryPoint(opponent, die);
+        if (entry === blot && isLegalLanding(board, entry, opponent)) {
+            return true;
+        }
+    }
+    // 2. Pions adverses sur le plateau : tir direct à distance `die`.
     for (let q = 1; q <= 24; q++) {
         if (hasChecker(board, q, opponent) && distanceToBlot(q, blot, opponent) === die) {
             return true;
@@ -154,6 +177,9 @@ function canHitIndirect(
     d2: number,
 ): boolean {
     const total = d1 + d2;
+    // 1. Pions adverses sur la barre : un pion sur la barre ne peut pas faire
+    //    de tir indirect (il doit d'abord entrer avec un seul dé).
+    // 2. Pions adverses sur le plateau : tir indirect à distance `total`.
     for (let q = 1; q <= 24; q++) {
         if (!hasChecker(board, q, opponent)) continue;
         if (distanceToBlot(q, blot, opponent) !== total) continue;
