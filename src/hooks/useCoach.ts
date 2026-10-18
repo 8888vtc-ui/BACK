@@ -32,7 +32,7 @@ import { analyzeBoardMoves, formatMoveSequenceNotationWithHits } from '../lib/en
 import { evaluatePosition } from '../lib/analysisService';
 import { normalizeMoveNotation } from '../features/drills/blunderDrillEngine';
 import { soundEngine } from '../lib/sound/soundEngine';
-import type { CoachHighlight } from '../components/board/BackgammonBoard';
+import type { CoachHighlight } from '../components/board/boardThemes';
 
 export interface CoachState {
     verdict: 'doubtful' | 'blunder';
@@ -123,9 +123,12 @@ export function useCoach({
 
                     const isUnforced = analysis.moves.length > 1;
                     if (isUnforced) {
+                        // Plafonne la perte comptabilisée à 0.500 pour éviter qu'un bug isolé
+                        // ne détruise la moyenne du PR.
+                        const cappedLoss = Math.min(Math.abs(equityLoss), 0.5);
                         setMatchStats((prev) => ({
                             decisionsCount: prev.decisionsCount + 1,
-                            totalEquityLoss: prev.totalEquityLoss + Math.abs(equityLoss),
+                            totalEquityLoss: prev.totalEquityLoss + cappedLoss,
                             blundersCount: prev.blundersCount + (equityLoss <= -0.08 ? 1 : 0),
                         }));
 
@@ -144,7 +147,8 @@ export function useCoach({
                     }
 
                     if (equityLoss <= -0.06) {
-                        const isBlunder = equityLoss <= -0.12;
+                        // Seuil de blunder aligné : >= 0.080 de perte => BLUNDER.
+                        const isBlunder = equityLoss <= -0.08;
                         if (isBlunder) {
                             soundEngine.playBlunderAlert();
                         }

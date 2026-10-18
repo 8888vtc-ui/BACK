@@ -16,7 +16,7 @@ describe('Export / Import Feature', () => {
     describe('XGID', () => {
         it('sérialise et parse un état initial avec exactitude', () => {
             const xgid = serializeToXGID(initialState);
-            expect(xgid).toBe('XGID=-b----E-C---eE---c-e----B-:0:0:1:00:0:0:0:0:7');
+            expect(xgid).toBe('XGID=B----e-c---Ee---C-E----b--:0:0:1:00:0:0:0:0:7');
             expect(isValidXGID(xgid)).toBe(true);
 
             const parsed = parseFromXGID(xgid);

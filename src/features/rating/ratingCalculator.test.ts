@@ -44,15 +44,15 @@ describe('ratingCalculator Module', () => {
             expect(calculateErrorRate(0, 0)).toBe(0);
         });
 
-        it('calcule exactement PR = ErrorRate * 500', () => {
-            // Perte de 0.100 sur 10 décisions -> errorRate = 0.010 -> PR = 5.0
-            const pr = calculatePR(0.1, 10);
+        it('calcule exactement PR = (ErrorRate / 3) * 500', () => {
+            // Perte de 0.300 sur 10 décisions -> errorRate = 0.030 -> /3 = 0.010 -> PR = 5.0
+            const pr = calculatePR(0.3, 10);
             expect(pr).toBe(5.0);
-            expect(calculateErrorRate(0.1, 10)).toBe(0.01);
+            expect(calculateErrorRate(0.3, 10)).toBe(0.03);
         });
 
         it('borne le PR au plafond officiel de 35.0', () => {
-            const pr = calculatePR(1.0, 5); // 0.2 * 500 = 100
+            const pr = calculatePR(3.0, 5); // (3.0/3)/5 = 0.2 -> 0.2 * 500 = 100 -> plafonné à 35
             expect(pr).toBe(35.0);
         });
     });

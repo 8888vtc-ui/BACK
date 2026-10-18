@@ -39,6 +39,6 @@ describe('ExportImportModal', () => {
         expect(html).toContain('SGF (Partie complète)');
         expect(html).toContain('data-testid="copy-export-btn"');
         expect(html).toContain('data-testid="download-export-btn"');
-        expect(html).toContain('XGID=-b----E-C---eE---c-e----B-:0:0:1:00:0:0:0:0:7');
+        expect(html).toContain('XGID=B----e-c---Ee---C-E----b--:0:0:1:00:0:0:0:0:7');
     });
 });

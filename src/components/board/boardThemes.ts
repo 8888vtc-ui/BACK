@@ -1,11 +1,20 @@
 /**
- * Thèmes du plateau de Backgammon — module 100 % pur.
+ * Thèmes et types partagés du plateau de Backgammon — module 100 % pur.
  *
- * Centralise les palettes de couleurs (feutre / bois noble) des trois thèmes.
+ * Centralise les palettes de couleurs (feutre / bois noble) des trois thèmes,
+ * ainsi que les types partagés (`ThemeName`, `CoachHighlight`).
  * Réutilisable par n'importe quel rendu (SVG ou HTML/Tailwind).
  */
 
+import type { Move } from '../../engine/backgammonEngine';
+
 export type ThemeName = 'snowie_classic' | 'tournament' | 'midnight';
+
+/** Surbrillance du coach : coups joués vs coups optimaux. */
+export interface CoachHighlight {
+    played: Move[];
+    optimal: Move[];
+}
 
 export interface Theme {
     frame: string;

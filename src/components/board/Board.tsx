@@ -55,8 +55,8 @@ const LuxuryChecker: React.FC<CheckerProps> = ({
     return (
         <div
             className={`relative w-[42px] h-[42px] xl:w-[46px] xl:h-[46px] rounded-full flex items-center justify-center select-none transition-all duration-300 ease-out ${isPlayable && isTopChecker
-                    ? 'cursor-pointer hover:-translate-y-1 hover:scale-105 hover:ring-2 hover:ring-amber-400/90'
-                    : ''
+                ? 'cursor-pointer hover:-translate-y-1 hover:scale-105 hover:ring-2 hover:ring-amber-400/90'
+                : ''
                 }`}
             style={{
                 background: isWhite
@@ -82,8 +82,8 @@ const LuxuryChecker: React.FC<CheckerProps> = ({
                 {countBadge !== undefined && countBadge > 5 && (
                     <span
                         className={`text-xs font-extrabold px-1.5 py-0.5 rounded-full shadow-md ${isWhite
-                                ? 'bg-amber-900 text-amber-100 border border-amber-300/40'
-                                : 'bg-amber-400 text-slate-950'
+                            ? 'bg-amber-900 text-amber-100 border border-amber-300/40'
+                            : 'bg-amber-400 text-slate-950'
                             }`}
                     >
                         {countBadge}
@@ -390,8 +390,8 @@ export default function Board({
             <div
                 key={`off-${offPoint}`}
                 className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed px-3 py-2 min-h-[64px] ${isTarget
-                        ? 'border-emerald-400 bg-emerald-400/10 cursor-pointer'
-                        : 'border-slate-700 bg-slate-900/40'
+                    ? 'border-emerald-400 bg-emerald-400/10 cursor-pointer'
+                    : 'border-slate-700 bg-slate-900/40'
                     }`}
                 onClick={(e) => {
                     e.stopPropagation();
@@ -430,9 +430,15 @@ export default function Board({
                             {TOP_ROW.slice(0, 6).map((p) => renderPoint(p, true))}
                         </div>
 
-                        {/* Barre centrale (unique, row-span-2) */}
+                        {/* Barre centrale (unique, row-span-2) : pions frappés + videau au centre */}
                         <div className="row-span-2 w-16 sm:w-20 flex flex-col justify-between bg-[#221108] rounded-lg mx-1 border-x-2 border-[#d4af37]/60">
                             {renderBarSection(O_BAR, 'black', bar.O)}
+                            {/* Videau au centre de la barre verticale */}
+                            <div className="flex flex-col items-center justify-center gap-1 py-1">
+                                <div className="w-11 h-11 rounded-md bg-[#fdfaf2] text-slate-900 flex items-center justify-center text-lg font-extrabold shadow-lg border border-slate-700">
+                                    {state.cubeValue === 1 ? '64' : state.cubeValue}
+                                </div>
+                            </div>
                             {renderBarSection(X_BAR, 'white', bar.X)}
                         </div>
 
@@ -462,14 +468,8 @@ export default function Board({
                         </div>
                     </div>
 
-                    {/* Rivière centrale : dés + videau */}
+                    {/* Rivière centrale : dés uniquement (le videau est au centre de la barre) */}
                     <div className="flex items-center justify-center gap-6 py-3 shrink-0">
-                        <div className="flex flex-col items-center gap-1">
-                            <span className="text-[10px] uppercase tracking-wider text-slate-400">Videau</span>
-                            <div className="w-11 h-11 rounded-md bg-[#fdfaf2] text-slate-900 flex items-center justify-center text-lg font-extrabold shadow-lg border border-slate-700">
-                                {state.cubeValue === 1 ? '64' : state.cubeValue}
-                            </div>
-                        </div>
                         {state.dice && (
                             <div className="flex items-center gap-3">
                                 {state.dice.map((value, i) => {
@@ -491,10 +491,10 @@ export default function Board({
                                                 onDieDoubleClick?.(die);
                                             }}
                                             className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-extrabold shadow-md border-2 transition ${used
-                                                    ? 'bg-slate-700 text-slate-500 border-slate-600 opacity-60'
-                                                    : active
-                                                        ? 'bg-white text-slate-900 border-sky-400 ring-2 ring-sky-400'
-                                                        : 'bg-white text-slate-900 border-slate-300 hover:border-sky-300'
+                                                ? 'bg-slate-700 text-slate-500 border-slate-600 opacity-60'
+                                                : active
+                                                    ? 'bg-white text-slate-900 border-sky-400 ring-2 ring-sky-400'
+                                                    : 'bg-white text-slate-900 border-slate-300 hover:border-sky-300'
                                                 }`}
                                         >
                                             {value}

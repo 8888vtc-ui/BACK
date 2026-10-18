@@ -9,7 +9,7 @@ import {
     O_BAR,
 } from '../../engine/backgammonEngine';
 import Board from '../board/Board';
-import type { CoachHighlight } from '../board/BackgammonBoard';
+import type { CoachHighlight } from '../board/boardThemes';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import {
     getDailyPuzzle,

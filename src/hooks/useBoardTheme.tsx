@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import type { ThemeName } from '../components/board/BackgammonBoard';
+import type { ThemeName } from '../components/board/boardThemes';
 
 export type { ThemeName };
 

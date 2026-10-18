@@ -116,11 +116,24 @@ function decodePoint(ch: string): number {
 
 /**
  * Sérialise un état en XGID.
- * Format : XGID=<plateau>:<tour>:<propriétaire>:<valeur>:<dés>:<doublé>:<abandon>:0:0:<match>
+ *
+ * Format standard GNU Backgammon : `XGID=<24 flèches de 24 à 1><barre X><barre O>:...`
+ * L'ordre des 26 caractères est CRITIQUE :
+ *   - caractères 0..23  : flèches 24, 23, ..., 1 (dans cet ordre décroissant)
+ *   - caractère 24      : barre de X (board[0])
+ *   - caractère 25      : barre de O (board[25])
+ *
+ * Ceci garantit que la flèche 6 (jan intérieur de X) est bien mappée sur le point 6
+ * de GNU, et non inversée en point 19.
  */
 export function serializeXGID(state: BoardState): string {
     let board = '';
-    for (let i = 0; i < 26; i++) board += encodePoint(state.board[i]);
+    // Flèches 24 → 1 (ordre décroissant, conforme au standard XGID).
+    for (let p = 24; p >= 1; p--) board += encodePoint(state.board[p]);
+    // Barre de X puis barre de O.
+    board += encodePoint(state.board[X_BAR]);
+    board += encodePoint(state.board[O_BAR]);
+
     const turn = state.turn === 'X' ? '0' : '1';
     const owner = state.cubeOwner === null ? '0' : state.cubeOwner === 'X' ? '1' : '2';
     const dice = state.dice ? `${state.dice[0]}${state.dice[1]}` : '00';
@@ -136,7 +149,11 @@ export function parseXGID(xgid: string): BoardState {
     if (!m) throw new Error(`XGID invalide : "${xgid}"`);
 
     const board = new Array<number>(26);
-    for (let i = 0; i < 26; i++) board[i] = decodePoint(m[1][i]);
+    // Flèches 24 → 1 (ordre décroissant).
+    for (let p = 24; p >= 1; p--) board[p] = decodePoint(m[1][24 - p]);
+    // Barre de X puis barre de O.
+    board[X_BAR] = decodePoint(m[1][24]);
+    board[O_BAR] = decodePoint(m[1][25]);
 
     const turn: Player = m[2] === '1' ? 'O' : 'X';
     const cubeOwner: Player | null = m[3] === '1' ? 'X' : m[3] === '2' ? 'O' : null;

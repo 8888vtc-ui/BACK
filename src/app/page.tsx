@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Board from '../components/board/Board';
-import type { CoachHighlight } from '../components/board/BackgammonBoard';
+import type { CoachHighlight } from '../components/board/boardThemes';
 import CoachPanel from '../components/coach/CoachPanel';
 import ErrorBoundary from '../components/common/ErrorBoundary';
 import MatchHud from '../components/hud/MatchHud';
@@ -1199,7 +1199,7 @@ export default function Home() {
                         )}
                     </div>
 
-                    <div className="p-2 overflow-hidden flex-1 space-y-2">
+                    <div className="p-2 overflow-y-auto flex-1 space-y-2">
                         <ErrorBoundary name="Analyse du Coach">
                             <CoachPanel
                                 verdict={coach?.verdict ?? null}

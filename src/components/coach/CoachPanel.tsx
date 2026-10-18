@@ -835,7 +835,7 @@ export default function CoachPanel({
                     <div>
                         <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">Précision</span>
                         <span className="font-mono text-xl font-black text-white">
-                            {Math.max(0, 100 - performanceRating * 2).toFixed(1)}%
+                            {Math.max(0, Math.min(100, 100 * Math.exp(-performanceRating / 35))).toFixed(1)}%
                         </span>
                     </div>
                     <div>

@@ -98,36 +98,78 @@ export function evaluateWin(board: number[], cubeValue: number = 1): GameResult 
 }
 
 /**
+ * Détermine si les deux armées se sont déjà croisées (course pure / bear-off).
+ *
+ * En course pure, aucun pion Blanc (X) n'est « derrière » le pion Noir (O) le plus
+ * avancé : l'adversaire ne peut plus frapper, donc les bonus de portes/ancres et les
+ * pénalités de blots exposés n'ont plus de sens.
+ */
+export function isContactPosition(board: number[]): boolean {
+    // Pion Noir (O) le plus avancé = flèche la plus haute (O avance de 1 vers 24).
+    let furthestO = 0;
+    for (let p = 1; p <= 24; p++) {
+        if (board[p] < 0) {
+            furthestO = p;
+            break;
+        }
+    }
+    // Pion Blanc (X) le plus avancé = flèche la plus basse (X avance de 24 vers 1).
+    let furthestX = 25;
+    for (let p = 24; p >= 1; p--) {
+        if (board[p] > 0) {
+            furthestX = p;
+            break;
+        }
+    }
+
+    // Contact si un pion Blanc est encore « derrière » (flèche plus haute) le pion Noir le plus avancé.
+    return furthestX > furthestO;
+}
+
+/**
  * Heuristique d'évaluation de position pour sélectionner le meilleur coup légal pour l'IA ('O').
+ *
+ * Règles strictes :
+ *  - Séparation contact vs course pure : en course pure, bonus de portes/blots désactivés,
+ *    et chaque pion sorti vaut un bonus massif (+0.150 d'équité).
+ *  - Normalisation `Math.tanh` : l'équité retournée est toujours entre -1.000 et +1.000.
  */
 export function scoreBoardForOpponent(board: number[], player: Player = 'O'): number {
     const win = evaluateWin(board, 1);
-    if (win && win.winner === player) return 100000;
+    if (win && win.winner === player) return 1.0;
+    if (win && win.winner !== player) return -1.0;
 
     const pips = pipCount(board);
     const borneOff = borneOffCount(board, player);
+    const contact = isContactPosition(board);
 
     let score = 0;
-    // Pions sortis
-    score += borneOff * 250;
 
-    // Course aux pips
+    // Course aux pips (toujours active).
     score += (pips.X - pips.O) * 3;
 
-    if (player === 'O') {
-        // Frapper un pion adverse X (l'envoyer sur la barre)
-        score += board[X_BAR] * 120;
+    if (contact) {
+        // --- Position de CONTACT : bonus stratégiques actifs ---
+        if (player === 'O') {
+            // Frapper un pion adverse X (l'envoyer sur la barre)
+            score += board[X_BAR] * 120;
 
-        // Pénaliser ses propres blots vulnérables
-        for (let p = 1; p <= 24; p++) {
-            if (board[p] === -1) score -= 35;
-            if (board[p] <= -2 && p >= 19) score += 40; // Portes sécurisées dans son jan intérieur
+            // Pénaliser ses propres blots vulnérables
+            for (let p = 1; p <= 24; p++) {
+                if (board[p] === -1) score -= 35;
+                if (board[p] <= -2 && p >= 19) score += 40; // Portes sécurisées dans son jan intérieur
+            }
+            // Pénaliser les pions bloqués sur sa propre barre
+            score += board[O_BAR] * 60; // board[O_BAR] est négatif pour O
         }
-        // Pénaliser les pions bloqués sur sa propre barre
-        score += board[O_BAR] * 60; // board[O_BAR] est négatif pour O
+    } else {
+        // --- COURSE PURE / BEAR-OFF : bonus de portes/blots désactivés ---
+        // Chaque pion sorti vaut un bonus massif pour que sortir un pion soit TOUJOURS optimal.
+        score += borneOff * 150;
     }
 
-    return score;
+    // Normalisation stricte entre -1.000 et +1.000.
+    return Math.tanh(score / 500);
 }
 
 /**
@@ -139,8 +181,8 @@ export function scoreBoard0PlyNoisy(
     randomFn: () => number = Math.random,
 ): number {
     const base = scoreBoardForOpponent(board, player);
-    const noise = (randomFn() - 0.5) * 220;
-    return base + noise;
+    const noise = (randomFn() - 0.5) * 0.2;
+    return Math.tanh(base + noise);
 }
 
 /**
@@ -157,7 +199,8 @@ export function scoreBoard1Ply(board: number[], player: Player = 'O'): number {
  */
 export function scoreBoard2PlyForOpponent(board: number[], player: Player = 'O'): number {
     const win = evaluateWin(board, 1);
-    if (win && win.winner === player) return 100000;
+    if (win && win.winner === player) return 1.0;
+    if (win && win.winner !== player) return -1.0;
 
     const baseScore = scoreBoardForOpponent(board, player);
 
@@ -184,7 +227,7 @@ export function scoreBoard2PlyForOpponent(board: number[], player: Player = 'O')
     for (const roll of testRolls) {
         const xSeqs = generateLegalMoves(dummyState, roll);
         if (xSeqs.length === 0) {
-            totalWorstO += baseScore + 60;
+            totalWorstO += baseScore + 0.05;
             continue;
         }
 
@@ -199,7 +242,7 @@ export function scoreBoard2PlyForOpponent(board: number[], player: Player = 'O')
     }
 
     const expectedScoreAfterReply = totalWorstO / testRolls.length;
-    return Math.round(0.3 * baseScore + 0.7 * expectedScoreAfterReply);
+    return Math.tanh(0.3 * baseScore + 0.7 * expectedScoreAfterReply);
 }
 
 /**

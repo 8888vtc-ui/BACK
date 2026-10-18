@@ -85,7 +85,8 @@ describe('pipCount', () => {
 });
 
 describe('XGID', () => {
-    const EXAMPLE = 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10';
+    // XGID standard GNU Backgammon : flèches 24 → 1, puis barre X, puis barre O.
+    const EXAMPLE = 'XGID=B----e-c---Ee---C-E----b--:0:0:1:42:0:0:0:0:10';
 
     it('parse le format standard', () => {
         const s = parseXGID(EXAMPLE);

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import type { ThemeName } from '../board/BackgammonBoard';
+import type { ThemeName } from '../board/boardThemes';
 import type { Player } from '../../engine/backgammonEngine';
 import AuthButton from '../auth/AuthButton';
 import SyncIndicator from './SyncIndicator';
