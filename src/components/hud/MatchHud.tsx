@@ -24,6 +24,7 @@ import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import HudSettingsMenu from './HudSettingsMenu';
 import HudScoreboard from './HudScoreboard';
 import { Die } from '../board/Die';
+import HudMuteButton from './HudMuteButton';
 import { useSoundManager } from '../../hooks/useSoundManager';
 import { getHudThemeClasses } from '../../hooks/useBoardTheme';
 
@@ -96,9 +97,7 @@ export default function MatchHud({
     onBackToLobby,
 }: MatchHudProps) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    // Gestionnaire audio SSR-safe : `isMuted` démarre sur `false` (identique
-    // SSR/CSR) et se synchronise après montage dans le hook.
-    const { isMuted, toggleMute } = useSoundManager();
+    const { isMuted, toggleMute } = useSoundManager(); // partagé avec le menu ⚙️
     const settingsMenuRef = useRef<HTMLDivElement>(null);
     const settingsToggleBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -151,7 +150,7 @@ export default function MatchHud({
         <header
             role="region"
             aria-label="Barre de match"
-            className="relative z-40 w-full max-w-7xl mx-auto h-12 rounded-xl px-2 sm:px-3 transition-all duration-300 bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.45)] flex items-center justify-between gap-1 sm:gap-2 min-w-0 overflow-hidden"
+            className="relative z-40 w-full max-w-7xl mx-auto h-12 rounded-xl px-2 sm:px-3 transition-all duration-300 bg-slate-900/90 backdrop-blur-xl border border-slate-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.45)] flex items-center justify-between gap-1 sm:gap-2 min-w-0 overflow-hidden"
         >
             {/* ZONE GAUCHE : Lobby + format + Crawford */}
             <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 md:flex-none">
@@ -259,20 +258,7 @@ export default function MatchHud({
                 )}
 
                 {/* Bouton Mute / Unmute — feedback audio du jeu */}
-                <button
-                    type="button"
-                    onClick={toggleMute}
-                    data-testid="hud-mute-btn"
-                    aria-label={isMuted ? 'Activer le son' : 'Couper le son'}
-                    aria-pressed={isMuted}
-                    title={isMuted ? 'Activer le son' : 'Couper le son'}
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg border text-sm transition active:scale-95 ${isMuted
-                        ? 'border-rose-500/50 bg-rose-950/40 text-rose-300 hover:bg-rose-900/50'
-                        : 'border-emerald-500/40 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/40'
-                        }`}
-                >
-                    <span aria-hidden="true">{isMuted ? '🔇' : '🔊'}</span>
-                </button>
+                <HudMuteButton isMuted={isMuted} onToggle={toggleMute} />
 
                 <div className="relative" ref={settingsMenuRef}>
                     <button

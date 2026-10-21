@@ -32,6 +32,8 @@ import { BoardOffTray } from './BoardOffTray';
 import { CoachArrows } from './CoachArrows';
 import { BoardCenterControls } from './BoardCenterControls';
 import { BoardFrame, FeltSurface } from './BoardFrame';
+import { BoardSkeleton } from './BoardSkeleton';
+import { normalizeHighlightPoint, isRealPoint, collectMovableSources } from './boardHighlights';
 import { useBoardPointInteractions } from '../../hooks/useBoardPointInteractions';
 import type { BoardProps } from './boardTypes';
 import {
@@ -43,28 +45,6 @@ import {
 } from './boardOrientation';
 
 export type { BoardProps } from './boardTypes';
-
-/**
- * Normalise une flèche de surbrillance vers la numérotation ABSOLUE du plateau.
- *
- * Le moteur utilise `X_BAR === X_OFF === 0` et `O_BAR === O_OFF === 25` : le même
- * index désigne la barre en `from` et la sortie en `to`. Une destination de
- * sortie (`to === 0` ou `to === 25`) ne doit donc JAMAIS être comparée à une
- * flèche 1..24 — c'est ce qui allumait la case 24 par erreur.
- */
-function normalizeHighlightPoint(point: number, isDestination: boolean): number | null {
-    if (isDestination) {
-        if (point === X_OFF || point === O_OFF) return null;
-        return point;
-    }
-    if (point === X_BAR || point === O_BAR) return null;
-    return point;
-}
-
-/** Vrai si `point` est une flèche réelle 1..24 (ni barre, ni sortie). */
-function isRealPoint(point: number): boolean {
-    return point >= 1 && point <= 24;
-}
 
 export default function Board({
     state,
@@ -122,14 +102,12 @@ export default function Board({
     };
 
     const pipCounts = useMemo(() => pipCount(board), [board]);
-    const off = useMemo(
-        () => ({ X: borneOffCount(board, 'X'), O: borneOffCount(board, 'O') }),
-        [board],
+    const movableSources = useMemo(
+        () => collectMovableSources(leftDieTargets, rightDieTargets, gamePhase),
+        [leftDieTargets, rightDieTargets, gamePhase],
     );
-    const bar = useMemo(
-        () => ({ X: Math.max(0, board[X_BAR]), O: Math.max(0, -board[O_BAR]) }),
-        [board],
-    );
+    const off = useMemo(() => ({ X: borneOffCount(board, 'X'), O: borneOffCount(board, 'O') }), [board]);
+    const bar = useMemo(() => ({ X: Math.max(0, board[X_BAR]), O: Math.max(0, -board[O_BAR]) }), [board]);
 
     const ghostDestinations = useMemo(() => {
         if (selectedPoint === null) return new Set<number>();
@@ -194,6 +172,7 @@ export default function Board({
                 checkerCount={count}
                 isTargetDestination={isTarget}
                 isBlotTarget={isBlotTarget}
+                isMovable={movableSources.has(point)}
                 isSelected={selectedPoint === point}
                 isOpponentFrom={isOpponentFrom}
                 isOpponentTo={isOpponentTo}
@@ -221,15 +200,7 @@ export default function Board({
         />
     );
 
-    if (isLoading) {
-        return (
-            <div className="h-full w-full max-w-6xl mx-auto select-none">
-                <div className="h-full rounded-3xl p-3 sm:p-5 shadow-2xl bg-gradient-to-b from-[#4a2a16] via-[#3a2010] to-[#2b170c]">
-                    <div className="h-full rounded-2xl bg-[radial-gradient(circle_at_50%_45%,#145337_0%,#0b3824_65%,#051c12_100%)] p-2 sm:p-3 animate-pulse" />
-                </div>
-            </div>
-        );
-    }
+    if (isLoading) return <BoardSkeleton />;
 
     return (
         <div
