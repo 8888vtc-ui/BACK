@@ -1,13 +1,15 @@
 'use client';
 
 /**
- * Composant de tableau des scores et affichage des dés du tour (Joueur X, O, Tour, Dés, Lancer, Undo).
+ * Cartes joueurs du HUD supérieur (style table de tournoi XG / Extreme Gammon).
  *
  * Rôle :
- *   Affiche le statut de la manche en cours, les cartes des deux joueurs et les dés jouables.
+ *   Affiche, pour chaque joueur, une carte dense et lisible :
+ *   pion 3D + nom + score + badge PR en direct + pip count.
+ *   Aucun calcul métier : les valeurs arrivent prêtes à afficher.
  *
  * Dépendances :
- *   `Die`, `Player`.
+ *   `Player` (type).
  *
  * Retrait :
  *   Supprimer ce fichier et son appel dans `MatchHud.tsx`.
@@ -15,7 +17,6 @@
 
 import React from 'react';
 import type { Player } from '../../engine/backgammonEngine';
-import { Die } from '../board/Die';
 
 export interface HudScoreboardProps {
     /** Longueur du match en points (0 = partie d'argent) */
@@ -34,31 +35,88 @@ export interface HudScoreboardProps {
     usedDice: [boolean, boolean] | boolean[];
     /** Handler pour relancer les dés */
     onRollDice?: () => void;
-    /** Handler pour annuler le dernier sous-mouvement */
-    onUndo?: () => void;
-    /** Indique si l'action Undo est disponible */
-    canUndo?: boolean;
     /** Performance Rating (PR) Joueur X */
     prX?: number | null;
     /** Performance Rating (PR) Joueur O */
     prO?: number | null;
+    /** Statut de réflexion ou tour de l'IA */
+    isAiThinking?: boolean;
+    /** Pip count du joueur X */
+    pipX?: number | null;
+    /** Pip count du joueur O */
+    pipO?: number | null;
+    /** Libellé de l'adversaire (ex. « IA Maître ») */
+    opponentLabel?: string;
 }
 
-function MiniDie({ value, used, label }: { value: number; used: boolean; label: string }) {
-    return (
-        <div className="flex flex-col items-center gap-0.5">
-            <Die
-                value={value}
-                used={used}
-                label={label}
-                sizeClass="relative flex h-8 w-8 sm:h-9 sm:w-9"
-            />
-            <span className="text-[9px] font-medium tracking-tight text-slate-400 leading-none">
-                {label}
+/**
+ * Couleur du badge PR selon la qualité (plus bas = meilleur).
+ * Rendu « Glow » : bordure colorée + halo externe subtil + fond teinté.
+ */
+function prBadgeClass(pr: number | null | undefined): string {
+    if (pr === null || pr === undefined) {
+        return 'border-slate-600/60 bg-slate-800/60 text-slate-400';
+    }
+    if (pr <= 3) {
+        return 'border-emerald-400/70 bg-emerald-500/15 text-emerald-200 shadow-[0_0_10px_rgba(52,211,153,0.45)]';
+    }
+    if (pr <= 7) {
+        return 'border-amber-400/70 bg-amber-500/15 text-amber-200 shadow-[0_0_10px_rgba(251,191,36,0.45)]';
+    }
+    return 'border-rose-400/70 bg-rose-500/15 text-rose-200 shadow-[0_0_10px_rgba(251,113,133,0.45)]';
+}
+
+interface PlayerCardProps {
+    isWhite: boolean;
+    name: string;
+    score: number;
+    isTurn: boolean;
+    pr?: number | null;
+    pip?: number | null;
+    testId: string;
+}
+
+const PlayerCard: React.FC<PlayerCardProps> = ({
+    isWhite,
+    name,
+    score,
+    isTurn,
+    pr,
+    pip,
+    testId,
+}) => (
+    <div
+        data-testid={testId}
+        title={`${name} — Score : ${score}${isTurn ? ' — Au tour' : ''}`}
+        className={`flex items-center gap-1.5 rounded-lg px-2 py-1 transition-all ${isTurn
+            ? 'bg-slate-900/90 ring-1 ring-blue-400/80 shadow-[0_0_14px_rgba(96,165,250,0.35)]'
+            : 'bg-slate-900/60 ring-1 ring-slate-700/60 opacity-85'
+            }`}
+    >
+        {/* Pion 3D */}
+        <span
+            aria-hidden="true"
+            className={`h-4 w-4 shrink-0 rounded-full ${isWhite
+                ? 'bg-[radial-gradient(circle_at_32%_28%,#ffffff_0%,#e2e8f0_45%,#94a3b8_100%)] ring-1 ring-slate-400 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.35)]'
+                : 'bg-[radial-gradient(circle_at_32%_28%,#52525b_0%,#27272a_44%,#08080a_100%)] ring-1 ring-slate-600 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.8)]'
+                }`}
+        />
+        <div className="hidden sm:flex flex-col leading-none min-w-0">
+            <span className="text-[11px] font-bold text-slate-100 whitespace-nowrap">{name}</span>
+            <span className="text-[9px] text-slate-400 whitespace-nowrap">
+                {pip !== null && pip !== undefined ? `${pip} pips` : '— pips'}
             </span>
         </div>
-    );
-}
+        <span className="ml-0.5 text-sm font-black text-white">{score}</span>
+        <span
+            data-testid={`${testId}-pr`}
+            title="Performance Rating en direct (plus bas = meilleur)"
+            className={`hidden sm:inline ml-0.5 rounded border px-1 py-0.5 font-mono text-[9px] font-bold transition-shadow duration-300 ${prBadgeClass(pr)}`}
+        >
+            PR {pr !== null && pr !== undefined ? pr.toFixed(1) : '--'}
+        </span>
+    </div>
+);
 
 const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     matchLength,
@@ -66,167 +124,52 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     scoreO,
     turn,
     crawford = false,
-    dice,
-    usedDice,
-    onRollDice,
-    onUndo,
-    canUndo = false,
     prX,
     prO,
+    isAiThinking = false,
+    pipX,
+    pipO,
+    opponentLabel = 'IA',
 }) => {
     const isXTurn = turn === 'X';
-    const isOTurn = turn === 'O';
+    const isOTurn = turn === 'O' || isAiThinking;
 
     return (
-        <>
-            {/* 1. Score du match, Joueurs & Tour */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-                {/* Format du match & Badge Crawford */}
-                <div className="flex flex-col text-[10px] leading-tight text-slate-400">
-                    <span className="font-semibold text-slate-300">
-                        {matchLength > 0 ? `Match en ${matchLength} pts` : 'Partie d’argent'}
+        <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+            {/* Format du match & Badge Crawford */}
+            <div className="hidden sm:flex flex-col text-[10px] leading-tight text-slate-400">
+                <span className="font-semibold text-slate-300 whitespace-nowrap">
+                    {matchLength > 0 ? `Match ${matchLength} pts` : 'Money Game'}
+                </span>
+                {crawford && (
+                    <span className="mt-0.5 w-max rounded bg-amber-500/20 px-1.5 text-[9px] font-bold uppercase tracking-wider text-amber-300 ring-1 ring-amber-500/40">
+                        Crawford
                     </span>
-                    {crawford && (
-                        <span className="rounded bg-amber-500/20 px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider text-amber-300 ring-1 ring-amber-500/40 w-max mt-0.5">
-                            Crawford
-                        </span>
-                    )}
-                </div>
-
-                {/* Carte Joueur X */}
-                <div
-                    className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all ${
-                        isXTurn
-                            ? 'bg-slate-800 ring-2 ring-blue-400 shadow-md shadow-blue-500/20'
-                            : 'bg-slate-800/40 ring-1 ring-slate-700/60 opacity-85'
-                    }`}
-                    title={`Joueur X (Blanc) - Score : ${scoreX}${isXTurn ? ' - Au tour' : ''}${prX !== undefined && prX !== null ? ` - PR: ${prX.toFixed(1)}` : ''}`}
-                >
-                    <span className="h-3.5 w-3.5 rounded-full bg-slate-100 shadow-sm ring-1 ring-slate-400 shrink-0" />
-                    <div className="flex flex-col leading-none">
-                        <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-bold text-slate-100">X (Blanc)</span>
-                            {prX !== undefined && (
-                                <span
-                                    data-testid="hud-pr-x"
-                                    title="Performance Rating (PR) Blanc — Taux d'erreur normalisé"
-                                    className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-slate-900/90 border border-emerald-600/60 text-emerald-300"
-                                >
-                                    PR {prX !== null ? prX.toFixed(1) : '--'}
-                                </span>
-                            )}
-                        </div>
-                        {isXTurn && (
-                            <span className="text-[9px] font-semibold text-blue-400">Au tour</span>
-                        )}
-                    </div>
-                    <span className="text-sm sm:text-base font-black text-white ml-1">{scoreX}</span>
-                </div>
-
-                <span className="text-[10px] font-extrabold text-slate-500">VS</span>
-
-                {/* Carte Joueur O */}
-                <div
-                    className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all ${
-                        isOTurn
-                            ? 'bg-slate-800 ring-2 ring-blue-400 shadow-md shadow-blue-500/20'
-                            : 'bg-slate-800/40 ring-1 ring-slate-700/60 opacity-85'
-                    }`}
-                    title={`Joueur O (Noir) - Score : ${scoreO}${isOTurn ? ' - Au tour' : ''}${prO !== undefined && prO !== null ? ` - PR: ${prO.toFixed(1)}` : ''}`}
-                >
-                    <span className="h-3.5 w-3.5 rounded-full bg-slate-900 ring-1 ring-slate-600 shadow-inner shrink-0" />
-                    <div className="flex flex-col leading-none">
-                        <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-bold text-slate-200">O (Noir)</span>
-                            {prO !== undefined && (
-                                <span
-                                    data-testid="hud-pr-o"
-                                    title="Performance Rating (PR) IA Noire — Taux d'erreur normalisé"
-                                    className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-slate-900/90 border border-indigo-600/60 text-indigo-300"
-                                >
-                                    PR {prO !== null ? prO.toFixed(1) : '--'}
-                                </span>
-                            )}
-                        </div>
-                        {isOTurn && (
-                            <span className="text-[9px] font-semibold text-blue-400">Au tour</span>
-                        )}
-                    </div>
-                    <span className="text-sm sm:text-base font-black text-white ml-1">{scoreO}</span>
-                </div>
-            </div>
-
-            {/* 2. Dés du tour (Centre) */}
-            <div className="flex items-center justify-center gap-2 rounded-xl bg-slate-800/40 px-2.5 py-1 ring-1 ring-slate-700/50 shrink-0">
-                {dice ? (
-                    dice[0] === dice[1] ? (
-                        <div className="flex items-center gap-1 sm:gap-1.5">
-                            {[0, 1, 2, 3].map((idx) => (
-                                <MiniDie
-                                    key={idx}
-                                    value={dice[0]}
-                                    used={Boolean(usedDice[idx])}
-                                    label={`Coup ${idx + 1}`}
-                                />
-                            ))}
-                            <span className="hidden sm:inline-block text-[10px] font-bold text-amber-300 bg-amber-500/15 border border-amber-400/40 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                                {Math.max(0, 4 - usedDice.filter(Boolean).length)}/4
-                            </span>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center">
-                            <div className="flex items-center gap-1.5">
-                                <MiniDie value={dice[0]} used={Boolean(usedDice[0])} label="Dé 1 (G)" />
-                                <MiniDie value={dice[1]} used={Boolean(usedDice[1])} label="Dé 2 (D)" />
-                            </div>
-                            <span className="hidden md:inline text-[9px] text-slate-400 leading-none mt-0.5">
-                                Clic G : Dé gauche · Clic D : Dé droit
-                            </span>
-                        </div>
-                    )
-                ) : (
-                    <div className="flex h-8 sm:h-9 items-center justify-center px-2 text-xs text-slate-400 font-medium">
-                        En attente du lancer
-                    </div>
-                )}
-
-                {onRollDice && (
-                    <button
-                        type="button"
-                        onClick={onRollDice}
-                        data-testid="hud-roll-dice-btn"
-                        title="Lancer ou relancer les dés"
-                        className="group flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-600 bg-slate-700/80 text-slate-200 shadow hover:border-blue-400 hover:bg-blue-600 hover:text-white transition active:scale-95 shrink-0"
-                        aria-label="Lancer les dés"
-                    >
-                        <svg className="h-4 w-4 transition group-hover:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                    </button>
-                )}
-
-                {onUndo && (
-                    <button
-                        type="button"
-                        onClick={onUndo}
-                        disabled={!canUndo}
-                        data-testid="hud-undo-btn"
-                        title="Annuler le dernier sous-mouvement"
-                        aria-label="Annuler le dernier coup"
-                        className={`flex h-8 sm:h-9 items-center justify-center gap-1 rounded-xl border px-2 text-xs font-bold transition active:scale-95 shrink-0 ${
-                            canUndo
-                                ? 'border-amber-500/40 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25'
-                                : 'border-slate-700 bg-slate-800/50 text-slate-500 cursor-not-allowed opacity-50'
-                        }`}
-                    >
-                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-                        </svg>
-                        Annuler
-                    </button>
                 )}
             </div>
-        </>
+
+            <PlayerCard
+                isWhite
+                name="X (Vous - Blanc)"
+                score={scoreX}
+                isTurn={isXTurn}
+                pr={prX}
+                pip={pipX}
+                testId="hud-player-x"
+            />
+
+            <span className="text-[10px] font-extrabold text-slate-500">VS</span>
+
+            <PlayerCard
+                isWhite={false}
+                name={`O (${opponentLabel} - Noir)`}
+                score={scoreO}
+                isTurn={isOTurn}
+                pr={prO}
+                pip={pipO}
+                testId="hud-player-o"
+            />
+        </div>
     );
 };
 

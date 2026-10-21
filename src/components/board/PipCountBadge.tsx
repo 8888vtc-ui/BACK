@@ -14,7 +14,7 @@
  * Inclut un toggle pour masquer/afficher le pip count (persisté en localStorage).
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { Player } from '../../engine/backgammonEngine';
 
 /** Clé de persistance du toggle pip count. */
@@ -70,7 +70,14 @@ export interface PipCountBadgeProps {
 }
 
 const PipCountBadgeComponent: React.FC<PipCountBadgeProps> = ({ pipX, pipO, turn }) => {
-    const [visible, setVisible] = useState<boolean>(() => getSavedPipCountVisibility(true));
+    // ANTI-HYDRATATION : valeur initiale constante (identique SSR/CSR), puis
+    // synchronisation de la préférence persistée après le montage.
+    const [visible, setVisible] = useState<boolean>(true);
+
+    useEffect(() => {
+        const saved = getSavedPipCountVisibility(true);
+        if (saved !== true) setVisible(saved);
+    }, []);
 
     const diff = computePipDiff(pipX, pipO);
     const leading = isLeading(diff, turn);
@@ -90,22 +97,25 @@ const PipCountBadgeComponent: React.FC<PipCountBadgeProps> = ({ pipX, pipO, turn
     }, []);
 
     return (
-        <div className="flex items-center justify-between px-2 pt-3 text-xs font-semibold text-slate-300 shrink-0">
-            <div className="flex items-center gap-2">
-                <span className="px-2 py-1 rounded bg-slate-900/70 border border-slate-700">
-                    O : {pipO}
+        <div
+            data-testid="pip-count-bar"
+            className="flex items-center justify-between gap-2 px-2 pt-2 text-[11px] font-semibold text-slate-300 shrink-0"
+        >
+            <div className="flex items-center gap-1.5">
+                <span className="rounded-md border border-slate-700/80 bg-slate-900/70 px-1.5 py-0.5 font-mono">
+                    O {pipO}
                 </span>
-                <span className="px-2 py-1 rounded bg-slate-900/70 border border-slate-700">
-                    X : {pipX}
+                <span className="rounded-md border border-slate-700/80 bg-slate-900/70 px-1.5 py-0.5 font-mono">
+                    X {pipX}
                 </span>
                 {visible && (
                     <span
                         data-testid="pip-diff-badge"
-                        className={`px-2 py-1 rounded-full font-bold border ${leading
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                            : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                        className={`rounded-full border px-2 py-0.5 font-mono font-bold ${leading
+                            ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300'
+                            : 'border-rose-500/40 bg-rose-500/15 text-rose-300'
                             }`}
-                        title={`Différentiel de pip count (${turn} au trait)`}
+                        title={`Écart de course (${turn} au trait) — ${leading ? 'en avance' : 'en retard'}`}
                     >
                         {sign}
                         {absDiff}
@@ -119,7 +129,7 @@ const PipCountBadgeComponent: React.FC<PipCountBadgeProps> = ({ pipX, pipO, turn
                 aria-pressed={visible}
                 title={visible ? 'Masquer le pip count' : 'Afficher le pip count'}
                 data-testid="pip-count-toggle"
-                className="px-2 py-1 rounded bg-slate-900/70 border border-slate-700 text-slate-400 hover:text-white transition-colors"
+                className="rounded-md border border-slate-700/80 bg-slate-900/70 px-1.5 py-0.5 text-slate-400 transition-colors hover:text-white"
             >
                 {visible ? '👁' : '👁‍🗨'}
             </button>

@@ -1,17 +1,24 @@
 'use client';
 
 /**
- * Pion 3D concave (style Crisloid / Hector Saxe) avec badge numérique.
+ * Pion 3D acrylique (style Crisloid / Hector Saxe) — rendu SVG natif.
  *
- * Affiche un pion de backgammon avec un badge numérique sur tous les points
- * ayant ≥ 2 pions (lecture instantanée, confort blitz).
+ * Rendu haut de gamme :
+ *   - `<radialGradient>` pour le reflet de lumière sur la résine (haut-gauche).
+ *   - `<feDropShadow>` pour l'ombre portée réelle sur la feutrine.
+ *   - Anneau central concave (dégradé inversé) pour l'effet « pion tourné ».
+ *   - Halo doré quand le pion est jouable.
+ *   - Badge numérique doré pour les piles ≥ 2 pions.
+ *
+ * Le SVG utilise un `viewBox` fixe (100×100) et se dimensionne via CSS
+ * (`width`/`height` en `clamp`), ce qui garantit un rendu net à toutes les
+ * tailles sans dépendre de `boardGeometry.ts` (découplage total).
  *
  * Composant isolé : ne dépend que de ses props, aucune logique métier.
- * Pour le retirer, supprimer ce fichier et son usage dans `Board.tsx`.
  * Mémoïsé (`React.memo`).
  */
 
-import React from 'react';
+import React, { useId } from 'react';
 
 export type CheckerColor = 'white' | 'black';
 
@@ -32,45 +39,134 @@ const CheckerComponent: React.FC<CheckerProps> = ({
     isTopChecker = false,
 }) => {
     const isWhite = color === 'white';
+    const isInteractive = isPlayable && isTopChecker;
+
+    // Identifiants uniques par instance (évite les collisions de `<defs>` SVG
+    // lorsque plusieurs pions sont rendus dans le même document).
+    const uid = useId().replace(/:/g, '');
+    const bodyGradId = `checker-body-${uid}`;
+    const ringGradId = `checker-ring-${uid}`;
+    const shadowId = `checker-shadow-${uid}`;
+    const glossId = `checker-gloss-${uid}`;
 
     return (
         <div
-            className={`relative w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] xl:w-[40px] xl:h-[40px] rounded-full flex items-center justify-center select-none transition-all duration-300 ease-out ${isPlayable && isTopChecker
-                ? 'cursor-pointer hover:-translate-y-1 hover:scale-105 hover:ring-2 hover:ring-amber-400/90 shadow-[0_8px_16px_rgba(0,0,0,0.6)]'
-                : 'shadow-[0_4px_8px_rgba(0,0,0,0.5)]'
+            className={`relative flex items-center justify-center select-none transition-all duration-150 ease-out ${isInteractive
+                ? 'cursor-pointer hover:-translate-y-1 hover:scale-105'
+                : ''
                 }`}
             style={{
-                background: isWhite
-                    ? 'radial-gradient(circle at 32% 28%, #ffffff 0%, #f7f0e1 45%, #cfbe9e 82%, #947e5b 100%)'
-                    : 'radial-gradient(circle at 32% 28%, #52525b 0%, #27272a 44%, #141417 84%, #08080a 100%)',
-                boxShadow: isWhite
-                    ? '0 4px 8px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.95), inset 0 -2px 3px rgba(120,95,60,0.5)'
-                    : '0 4px 8px rgba(0,0,0,0.75), inset 0 1.5px 2px rgba(255,255,255,0.35), inset 0 -2px 3px rgba(0,0,0,0.9)',
-                border: isWhite ? '1px solid #dfd1b4' : '1px solid #3f3f46',
+                width: 'clamp(22px, 3.2vw, 56px)',
+                height: 'clamp(22px, 3.2vw, 56px)',
+                outline: isInteractive ? '2px solid rgba(251,191,36,0.75)' : 'none',
+                outlineOffset: '1px',
+                borderRadius: '9999px',
             }}
         >
-            <div
-                className="w-[66%] h-[66%] rounded-full flex items-center justify-center ring-1 ring-black/10"
-                style={{
-                    background: isWhite
-                        ? 'radial-gradient(circle at 70% 70%, #ffffff 0%, #ece0c8 58%, #b8a37f 100%)'
-                        : 'radial-gradient(circle at 70% 70%, #3f3f46 0%, #1c1c1f 60%, #0d0d0f 100%)',
-                    boxShadow: isWhite
-                        ? 'inset 0 2.5px 5px rgba(90,70,40,0.4), 0 1px 1px rgba(255,255,255,0.8)'
-                        : 'inset 0 3px 6px rgba(0,0,0,0.85), 0 1px 1px rgba(255,255,255,0.12)',
-                }}
+            <svg
+                viewBox="0 0 100 100"
+                className="h-full w-full"
+                aria-hidden="true"
+                focusable="false"
             >
-                {countBadge !== undefined && countBadge >= BADGE_MIN_COUNT && (
-                    <span
-                        className={`text-[11px] font-black px-1.5 py-0.2 rounded-full shadow-md leading-none ${isWhite
-                            ? 'bg-amber-950 text-amber-100 border border-amber-300/40'
-                            : 'bg-amber-400 text-slate-950 font-bold'
-                            }`}
-                    >
-                        {countBadge}
-                    </span>
-                )}
-            </div>
+                <defs>
+                    {/* Ombre portée sur la feutrine (filtre SVG natif). */}
+                    <filter id={shadowId} x="-30%" y="-30%" width="160%" height="170%">
+                        <feDropShadow
+                            dx="0"
+                            dy="4"
+                            stdDeviation="3.5"
+                            floodColor="#000000"
+                            floodOpacity={isWhite ? 0.55 : 0.75}
+                        />
+                    </filter>
+
+                    {/* Corps du pion : reflet haut-gauche → corps → ombre basse. */}
+                    <radialGradient id={bodyGradId} cx="32%" cy="26%" r="78%">
+                        {isWhite ? (
+                            <>
+                                <stop offset="0%" stopColor="#ffffff" />
+                                <stop offset="26%" stopColor="#fdf8ee" />
+                                <stop offset="60%" stopColor="#e8dcc0" />
+                                <stop offset="86%" stopColor="#b9a37c" />
+                                <stop offset="100%" stopColor="#8a7350" />
+                            </>
+                        ) : (
+                            <>
+                                <stop offset="0%" stopColor="#6b6b74" />
+                                <stop offset="28%" stopColor="#3f3f46" />
+                                <stop offset="62%" stopColor="#232327" />
+                                <stop offset="86%" stopColor="#101013" />
+                                <stop offset="100%" stopColor="#050506" />
+                            </>
+                        )}
+                    </radialGradient>
+
+                    {/* Anneau central concave (lumière inversée). */}
+                    <radialGradient id={ringGradId} cx="68%" cy="72%" r="72%">
+                        {isWhite ? (
+                            <>
+                                <stop offset="0%" stopColor="#ffffff" />
+                                <stop offset="45%" stopColor="#f2e8d4" />
+                                <stop offset="100%" stopColor="#c9b48c" />
+                            </>
+                        ) : (
+                            <>
+                                <stop offset="0%" stopColor="#4a4a52" />
+                                <stop offset="50%" stopColor="#26262b" />
+                                <stop offset="100%" stopColor="#0c0c0e" />
+                            </>
+                        )}
+                    </radialGradient>
+
+                    {/* Reflet spéculaire (vernis acrylique). */}
+                    <radialGradient id={glossId} cx="30%" cy="22%" r="42%">
+                        <stop offset="0%" stopColor="#ffffff" stopOpacity={isWhite ? 0.85 : 0.35} />
+                        <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                    </radialGradient>
+                </defs>
+
+                {/* Corps + ombre portée */}
+                <g filter={`url(#${shadowId})`}>
+                    <circle
+                        cx="50"
+                        cy="50"
+                        r="46"
+                        fill={`url(#${bodyGradId})`}
+                        stroke={isWhite ? 'rgba(255,255,255,0.55)' : 'rgba(120,120,130,0.45)'}
+                        strokeWidth="1.5"
+                    />
+                </g>
+
+                {/* Anneau central concave */}
+                <circle cx="50" cy="50" r="31" fill={`url(#${ringGradId})`} />
+
+                {/* Reflet spéculaire haut-gauche */}
+                <ellipse cx="36" cy="30" rx="20" ry="14" fill={`url(#${glossId})`} />
+
+                {/* Liseré interne de finition */}
+                <circle
+                    cx="50"
+                    cy="50"
+                    r="31"
+                    fill="none"
+                    stroke={isWhite ? 'rgba(95,72,40,0.35)' : 'rgba(255,255,255,0.10)'}
+                    strokeWidth="1"
+                />
+            </svg>
+
+            {/* Badge numérique (HTML, au-dessus du SVG pour la lisibilité). */}
+            {countBadge !== undefined && countBadge >= BADGE_MIN_COUNT && (
+                <span
+                    data-testid="checker-count-badge"
+                    className={`absolute flex items-center justify-center min-w-[20px] h-[20px] rounded-full px-1 text-[11px] font-black leading-none shadow-lg ring-1 ${isWhite
+                        ? 'bg-amber-950 text-amber-100 ring-amber-300/60'
+                        : 'bg-amber-400 text-slate-950 ring-amber-200/80'
+                        }`}
+                >
+                    {countBadge}
+                </span>
+            )}
         </div>
     );
 };

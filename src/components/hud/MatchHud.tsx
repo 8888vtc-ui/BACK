@@ -1,13 +1,30 @@
 'use client';
 
+/**
+ * Barre supérieure UNIQUE du jeu (style Extreme Gammon / TMG) — `h-14`.
+ *
+ * Rôle :
+ *   Une seule rangée dense et ultra-lisible, sans bandeau parasite :
+ *   - Gauche  : bouton « ← Lobby » + format + badge Crawford.
+ *   - Joueurs : cartes X / O (pion 3D, score, PR en direct, pip count).
+ *   - Centre  : dernier coup joué (notation standard) + dés actifs.
+ *   - Droite  : videau + bouton Doubler + menu ⚙️ (Son, Orientation, Thème).
+ *
+ * Dépendances :
+ *   `HudScoreboard`, `HudSettingsMenu`, `Die`, `formatStandardMoveSequence`.
+ *
+ * Retrait :
+ *   Supprimer ce fichier et son import dans `MatchHeader.tsx`.
+ */
+
 import React, { useState, useRef, useEffect } from 'react';
 import type { ThemeName } from '../board/boardThemes';
 import type { Player } from '../../engine/backgammonEngine';
-import BackendEngineModal from './BackendEngineModal';
+import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import HudSettingsMenu from './HudSettingsMenu';
-import HudActivitiesBar from './HudActivitiesBar';
 import HudScoreboard from './HudScoreboard';
-import { soundEngine } from '../../lib/sound/soundEngine';
+import { Die } from '../board/Die';
+import { useSoundManager } from '../../hooks/useSoundManager';
 import { getHudThemeClasses } from '../../hooks/useBoardTheme';
 
 export interface MatchHudProps {
@@ -23,9 +40,9 @@ export interface MatchHudProps {
     crawford?: boolean;
     /** Dés courants [d1, d2] ou null */
     dice: [number, number] | null;
-    /** Statut de consommation des dés [utilisé1, utilisé2, ...] */
+    /** Statut de consommation des dés */
     usedDice: [boolean, boolean] | boolean[];
-    /** Valeur courante du videau (1, 2, 4, 8...) */
+    /** Valeur courante du videau */
     cubeValue: number;
     /** Possesseur du videau (null = centré) */
     cubeOwner: Player | null;
@@ -33,78 +50,70 @@ export interface MatchHudProps {
     theme: ThemeName;
     /** Bascule du thème */
     onThemeToggle: () => void;
-    /** Action de proposition/acceptation du videau */
+    /** Action de proposition du videau */
     onDoubleCube?: () => void;
     /** Action de relancer les dés */
     onRollDice?: () => void;
     /** Action de réinitialisation de la partie */
     onResetGame?: () => void;
-    /** État de chargement du plateau (mode test skeleton) */
-    isLoadingBoard?: boolean;
-    /** Bascule de l'état de chargement du plateau */
-    onToggleLoadingBoard?: () => void;
-    /** Déclenchement de test toast réseau */
-    onSimulateNetworkError?: () => void;
-    /** Ouverture du salon multijoueur */
-    onOpenMultiplayer?: () => void;
-    /** Indique si un match multijoueur est actif */
-    isMultiplayerActive?: boolean;
-    /** Ouverture de la bibliothèque d'ouvertures (Opening Book) */
-    onOpenOpeningBook?: () => void;
-    /** Ouverture de la modale d'exportation/importation/partage (XGID, SGF) */
+    /** Ouverture de la modale d'exportation/importation/partage */
     onOpenExportImport?: () => void;
-    /** Ouverture de l'Encyclopédie & Base de Connaissances */
-    onOpenKnowledgeBase?: () => void;
-    /** Déclenchement manuel de l'analyse ou conseil du Coach */
+    /** Déclenchement manuel de l'analyse du Coach */
     onTriggerCoach?: () => void;
-    /** Annule le dernier sous-mouvement du tour courant */
-    onUndo?: () => void;
-    /** Indique si un sous-mouvement peut être annulé */
-    canUndo?: boolean;
     /** Indique si l'action de doubler est autorisée */
     canDouble?: boolean;
     /** PR Joueur Blanc */
     prX?: number | null;
     /** PR IA Noire */
     prO?: number | null;
+    /** Statut de réflexion IA */
+    isAiThinking?: boolean;
+    /** Niveau d'IA courant */
+    difficulty?: AIDifficulty;
+    /** Pip count du joueur X */
+    pipX?: number | null;
+    /** Pip count du joueur O */
+    pipO?: number | null;
+    /** Dernier coup adverse (notation standard) */
+    lastMoveNotation?: string | null;
+    /** Retour au lobby */
+    onBackToLobby?: () => void;
 }
 
-/**
- * HUD compact « Tournament Pro » :
- * - Rangée unique responsive toujours visible : Score X & O, Tour, Dés, Videau,
- *   bouton Déplier activités et bouton ⚙️ Paramètres.
- * - Menu Popover ⚙️ : Partager/XGID, Thème, Son, Langue, IA&Back-End, Connexion, Sync, Reset.
- * - Barre secondaire repliable : Multijoueur, Drills, Puzzles, Progression, Coach, Ouvertures.
- */
+const DIFFICULTY_LABEL: Record<AIDifficulty, string> = {
+    beginner: 'IA Novice',
+    intermediate: 'IA Intermédiaire',
+    expert: 'IA Maître',
+    grandmaster: 'IA Grand Maître',
+};
+
 export default function MatchHud({
     matchLength, scoreX, scoreO, turn, crawford = false, dice, usedDice,
     cubeValue, cubeOwner, theme, onThemeToggle, onDoubleCube, onRollDice,
-    onResetGame, isLoadingBoard, onToggleLoadingBoard, onSimulateNetworkError,
-    onOpenMultiplayer, isMultiplayerActive = false, onOpenOpeningBook,
-    onOpenExportImport, onOpenKnowledgeBase, onTriggerCoach, onUndo, canUndo = false,
-    canDouble: propCanDouble, prX, prO,
+    onResetGame, onOpenExportImport, onTriggerCoach,
+    canDouble: propCanDouble, prX, prO, isAiThinking,
+    difficulty = 'expert', pipX, pipO, lastMoveNotation,
+    onBackToLobby,
 }: MatchHudProps) {
-
-    const [isBackendModalOpen, setIsBackendModalOpen] = useState(false);
-    const [isMuted, setIsMuted] = useState(() => soundEngine.isMute());
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [isNavExpanded, setIsNavExpanded] = useState(false);
+    // Gestionnaire audio SSR-safe : `isMuted` démarre sur `false` (identique
+    // SSR/CSR) et se synchronise après montage dans le hook.
+    const { isMuted, toggleMute } = useSoundManager();
     const settingsMenuRef = useRef<HTMLDivElement>(null);
     const settingsToggleBtnRef = useRef<HTMLButtonElement>(null);
 
     const cubeOwnerLabel =
         cubeOwner === null
-            ? `Centré (x${cubeValue})`
+            ? 'Centré'
             : cubeOwner === 'X'
-                ? `Joueur X (x${cubeValue})`
-                : `Joueur O (x${cubeValue})`;
+                ? 'Vous'
+                : 'IA';
 
     const canDouble = propCanDouble !== undefined
         ? propCanDouble
         : !crawford && (cubeOwner === null || cubeOwner === turn);
 
-
-    // Fermeture du menu réglages ⚙️ sur clic extérieur ou Escape
+    // Fermeture du menu ⚙️ sur clic extérieur ou Escape
     useEffect(() => {
         if (!isSettingsOpen) return;
 
@@ -135,156 +144,171 @@ export default function MatchHud({
     }, [isSettingsOpen]);
 
     const hudClasses = getHudThemeClasses(theme);
+    const isDouble = dice !== null && dice[0] === dice[1];
+    const visibleDice = dice ? (isDouble ? [dice[0], dice[0], dice[0], dice[0]] : dice) : [];
 
     return (
         <header
             role="region"
-            aria-label="Tableau de bord du match et contrôles de jeu"
-            className={`relative z-40 w-full max-w-7xl mx-auto rounded-2xl p-2 sm:px-3 sm:py-2 transition-all duration-300 backdrop-blur-md flex flex-col gap-2 ${hudClasses.container}`}
+            aria-label="Barre de match"
+            className="relative z-40 w-full max-w-7xl mx-auto h-12 rounded-xl px-2 sm:px-3 transition-all duration-300 bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.45)] flex items-center justify-between gap-1 sm:gap-2 min-w-0 overflow-hidden"
         >
-            {/* RANGÉE UNIQUE RESPONSIVE DU HUD (Score, Dés, Videau & Contrôles) */}
-            <div className="flex items-center justify-between gap-2 sm:gap-4 flex-wrap lg:flex-nowrap w-full">
-                <HudScoreboard
-                    matchLength={matchLength}
-                    scoreX={scoreX}
-                    scoreO={scoreO}
-                    turn={turn}
-                    crawford={crawford}
-                    dice={dice}
-                    usedDice={usedDice}
-                    onRollDice={onRollDice}
-                    onUndo={onUndo}
-                    canUndo={canUndo}
-                    prX={prX}
-                    prO={prO}
-                />
-
-                {/* 3. Videau, Dépliage Navigation & Menu Paramètres ⚙️ */}
-                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    {/* Videau (Doubling Cube) */}
-                    <div className="flex items-center gap-1.5 rounded-xl bg-slate-800/50 px-2 py-1 ring-1 ring-slate-700/50">
-                        <div
-                            className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 font-black text-slate-950 shadow-sm shadow-amber-500/20 ring-1 ring-amber-300"
-                            title={`Videau à ${cubeValue}`}
-                        >
-                            <span className="text-xs sm:text-sm font-black">
-                                {cubeValue === 1 ? '64' : cubeValue}
-                            </span>
-                        </div>
-                        <div className="flex flex-col leading-none">
-                            <span className="text-[10px] font-bold text-slate-200">Videau</span>
-                            <span className="text-[9px] text-slate-400">{cubeOwnerLabel}</span>
-                        </div>
-
-                        {onDoubleCube && (
-                            <button
-                                type="button"
-                                onClick={onDoubleCube}
-                                disabled={!canDouble}
-                                data-testid="hud-double-btn"
-                                title={
-                                    crawford
-                                        ? 'Règle de Crawford : le videau est interdit pour cette manche'
-                                        : !canDouble
-                                            ? 'Vous ne possédez pas le videau'
-                                            : `Doubler à ${cubeValue * 2}`
-                                }
-                                className={`rounded-lg px-2 py-1 text-xs font-bold transition ml-1 ${canDouble
-                                    ? 'border border-amber-500/40 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 active:scale-95'
-                                    : 'border border-slate-700 bg-slate-800/50 text-slate-500 cursor-not-allowed opacity-60'
-                                    }`}
-                            >
-                                x2
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="h-6 w-px bg-slate-800/80 mx-0.5" />
-
-                    {/* Déclencheur Barre secondaire repliable (Multijoueur, Drills, Puzzles...) */}
-                    <button
-                        type="button"
-                        onClick={() => setIsNavExpanded((prev) => !prev)}
-                        aria-expanded={isNavExpanded}
-                        data-testid="hud-modes-toggle-btn"
-                        title={isNavExpanded ? 'Replier la barre de navigation' : 'Déplier Multijoueur, Drills, Puzzles, Progression, Coach, Ouvertures'}
-                        className={`flex items-center gap-1 rounded-xl border px-2 sm:px-2.5 py-1.5 text-xs font-semibold transition shadow-sm ${isNavExpanded
-                            ? 'border-indigo-500/80 bg-indigo-950/60 text-indigo-200 ring-1 ring-indigo-500/40'
-                            : 'border-slate-700/80 bg-slate-800/80 text-slate-300 hover:border-slate-600 hover:text-white'
-                            }`}
-                    >
-                        <span>🧭</span>
-                        <span className="hidden sm:inline">Activités</span>
-                        {isMultiplayerActive && (
-                            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                        )}
-                        <svg
-                            className={`h-3 w-3 transition-transform duration-200 ${isNavExpanded ? 'rotate-180' : ''}`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-
-                    {/* Bouton & Menu Popover ⚙️ (Partager, Thème, Son, Langue, IA&Back-End, Connexion) */}
-                    <div className="relative" ref={settingsMenuRef}>
-                        <button
-                            ref={settingsToggleBtnRef}
-                            type="button"
-                            onClick={() => setIsSettingsOpen((prev) => !prev)}
-                            aria-expanded={isSettingsOpen}
-                            aria-haspopup="dialog"
-                            aria-controls="hud-settings-menu"
-                            data-testid="hud-settings-toggle-btn"
-                            title="Paramètres : Partager, Thème, Son, Langue, IA & Back-End, Connexion"
-                            className={`flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border text-sm transition shadow-sm ${isSettingsOpen
-                                ? 'border-amber-500 bg-amber-500/20 text-amber-200 ring-1 ring-amber-500/40'
-                                : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600 hover:bg-slate-700/80 hover:text-white'
-                                }`}
-                        >
-                            <span className="text-base leading-none">⚙️</span>
-                        </button>
-
-                        <HudSettingsMenu
-                            isOpen={isSettingsOpen}
-                            onClose={() => {
-                                setIsSettingsOpen(false);
-                                settingsToggleBtnRef.current?.focus();
-                            }}
-                            menuThemeClass={hudClasses.menu}
-                            theme={theme}
-                            onThemeToggle={onThemeToggle}
-                            isSoundMuted={isMuted}
-                            onToggleSound={() => setIsMuted(soundEngine.toggleMute())}
-                            onOpenExportImport={onOpenExportImport}
-                            onOpenBackendModal={() => setIsBackendModalOpen(true)}
-                            onResetGame={onResetGame}
-                            isLoadingBoard={isLoadingBoard}
-                            onToggleLoadingBoard={onToggleLoadingBoard}
-                            onSimulateNetworkError={onSimulateNetworkError}
-                        />
-                    </div>
+            {/* ZONE GAUCHE : Lobby + format + Crawford */}
+            <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 md:flex-none">
+                <button
+                    type="button"
+                    onClick={onBackToLobby}
+                    data-testid="hud-back-to-lobby-btn"
+                    title="Retour au lobby"
+                    className="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800/80 px-2 py-1 text-[11px] font-bold text-slate-200 transition hover:border-amber-600/60 hover:text-amber-200 active:scale-95"
+                >
+                    <span aria-hidden="true">←</span>
+                    <span className="hidden sm:inline">Lobby</span>
+                </button>
+                <div id="match-hud" className="flex items-center min-w-0 overflow-hidden">
+                    <HudScoreboard
+                        matchLength={matchLength}
+                        scoreX={scoreX}
+                        scoreO={scoreO}
+                        turn={turn}
+                        crawford={crawford}
+                        dice={dice}
+                        usedDice={usedDice}
+                        prX={prX}
+                        prO={prO}
+                        isAiThinking={isAiThinking ?? turn === 'O'}
+                        pipX={pipX}
+                        pipO={pipO}
+                        opponentLabel={DIFFICULTY_LABEL[difficulty].replace('IA ', '')}
+                    />
                 </div>
             </div>
 
-            <HudActivitiesBar
-                isExpanded={isNavExpanded}
-                onClose={() => setIsNavExpanded(false)}
-                onOpenMultiplayer={onOpenMultiplayer}
-                isMultiplayerActive={isMultiplayerActive}
-                onTriggerCoach={onTriggerCoach}
-                onOpenOpeningBook={onOpenOpeningBook}
-                onOpenKnowledgeBase={onOpenKnowledgeBase}
-            />
+            {/* ZONE CENTRALE : dernier coup + dés actifs */}
+            <div className="hidden md:flex flex-1 min-w-0 items-center justify-center gap-3">
+                {lastMoveNotation && (
+                    <span
+                        data-testid="hud-last-move"
+                        className="truncate rounded-md border border-amber-800/30 bg-stone-900/70 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-200/90"
+                        title={`Dernier coup : ${lastMoveNotation}`}
+                    >
+                        {lastMoveNotation}
+                    </span>
+                )}
+                {visibleDice.length > 0 && (
+                    <div data-testid="hud-dice" className="flex items-center gap-1">
+                        {visibleDice.map((value, idx) => (
+                            <Die
+                                key={idx}
+                                value={value}
+                                used={Boolean(usedDice[idx])}
+                                label={`Dé ${idx + 1}`}
+                                sizeClass="relative flex h-7 w-7"
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
 
-            {/* Modale d'architecture de l'IA et Back-End */}
-            <BackendEngineModal
-                isOpen={isBackendModalOpen}
-                onClose={() => setIsBackendModalOpen(false)}
-                theme={theme}
-            />
+            {/* ZONE DROITE : videau + doubler + ⚙️ */}
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                <div className="hidden sm:flex items-center gap-1 rounded-lg bg-slate-800/50 px-1.5 py-1 ring-1 ring-slate-700/50">
+                    <div
+                        className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-[11px] font-black text-slate-950 ring-1 ring-amber-300"
+                        title={`Videau à ${cubeValue} (${cubeOwnerLabel})`}
+                    >
+                        {cubeValue === 1 ? '64' : cubeValue}
+                    </div>
+                    <span className="hidden lg:inline text-[9px] font-semibold text-slate-400">
+                        {cubeOwnerLabel}
+                    </span>
+                    {onDoubleCube && (
+                        <button
+                            type="button"
+                            onClick={onDoubleCube}
+                            disabled={!canDouble}
+                            data-testid="hud-double-btn"
+                            title={
+                                crawford
+                                    ? 'Règle de Crawford : le videau est interdit'
+                                    : !canDouble
+                                        ? 'Vous ne possédez pas le videau'
+                                        : `Doubler à ${cubeValue * 2}`
+                            }
+                            className={`rounded-md px-1.5 py-0.5 text-[11px] font-bold transition ${canDouble
+                                ? 'border border-amber-500/40 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 active:scale-95'
+                                : 'border border-slate-700 bg-slate-800/50 text-slate-500 cursor-not-allowed opacity-60'
+                                }`}
+                        >
+                            x2
+                        </button>
+                    )}
+                </div>
+
+                {onRollDice && (
+                    <button
+                        type="button"
+                        onClick={onRollDice}
+                        data-testid="hud-roll-dice-btn"
+                        aria-label="Lancer les dés"
+                        title="Lancer les dés"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-600 bg-slate-700/80 text-slate-200 transition hover:border-blue-400 hover:bg-blue-600 hover:text-white active:scale-95"
+                    >
+                        <span aria-hidden="true">🎲</span>
+                    </button>
+                )}
+
+                {/* Bouton Mute / Unmute — feedback audio du jeu */}
+                <button
+                    type="button"
+                    onClick={toggleMute}
+                    data-testid="hud-mute-btn"
+                    aria-label={isMuted ? 'Activer le son' : 'Couper le son'}
+                    aria-pressed={isMuted}
+                    title={isMuted ? 'Activer le son' : 'Couper le son'}
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg border text-sm transition active:scale-95 ${isMuted
+                        ? 'border-rose-500/50 bg-rose-950/40 text-rose-300 hover:bg-rose-900/50'
+                        : 'border-emerald-500/40 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/40'
+                        }`}
+                >
+                    <span aria-hidden="true">{isMuted ? '🔇' : '🔊'}</span>
+                </button>
+
+                <div className="relative" ref={settingsMenuRef}>
+                    <button
+                        ref={settingsToggleBtnRef}
+                        type="button"
+                        onClick={() => setIsSettingsOpen((prev) => !prev)}
+                        aria-expanded={isSettingsOpen}
+                        aria-haspopup="dialog"
+                        aria-controls="hud-settings-menu"
+                        data-testid="hud-settings-toggle-btn"
+                        title="Paramètres : Son, Orientation, Thème"
+                        className={`flex h-8 w-8 items-center justify-center rounded-lg border text-sm transition ${isSettingsOpen
+                            ? 'border-amber-500 bg-amber-500/20 text-amber-200'
+                            : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600 hover:text-white'
+                            }`}
+                    >
+                        <span aria-hidden="true">⚙️</span>
+                    </button>
+
+                    <HudSettingsMenu
+                        isOpen={isSettingsOpen}
+                        onClose={() => {
+                            setIsSettingsOpen(false);
+                            settingsToggleBtnRef.current?.focus();
+                        }}
+                        menuThemeClass={hudClasses.menu}
+                        theme={theme}
+                        onThemeToggle={onThemeToggle}
+                        isSoundMuted={isMuted}
+                        onToggleSound={toggleMute}
+                        onOpenExportImport={onOpenExportImport}
+                        onTriggerCoach={onTriggerCoach}
+                        onResetGame={onResetGame}
+                    />
+                </div>
+            </div>
         </header>
     );
 }

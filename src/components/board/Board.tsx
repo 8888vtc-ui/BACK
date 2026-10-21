@@ -12,17 +12,28 @@
  *
  * Délégation pure : toute la logique métier (auto-move, sélection) est gérée par
  * le parent via les handlers, exactement comme `BackgammonBoard`.
+ *
+ * Composition (LOI 5 — composants ≤ 300 lignes) :
+ *   `BoardPoint`, `BoardCentralBar`, `BoardNumberRow`, `BoardDiceRiver`,
+ *   `BoardOffTray`, `BoardFrame`/`FeltSurface`, `BoardCenterControls`,
+ *   `PipCountBadge`, hook `useBoardPointInteractions`.
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
-import { BoardState, Player, X_BAR, O_BAR, pipCount, borneOffCount } from '../../engine/backgammonEngine';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Player, X_BAR, O_BAR, X_OFF, O_OFF, pipCount, borneOffCount } from '../../engine/backgammonEngine';
 import { getPointColor, getPointCount } from './boardGeometry';
 import { getPointAriaLabel } from './boardAria';
 import { PipCountBadge } from './PipCountBadge';
-import { Checker, type CheckerColor } from './Checker';
-import { Die } from './Die';
-import { DoublingCube } from './DoublingCube';
+import { BoardPoint } from './BoardPoint';
+import { BoardCentralBar } from './BoardCentralBar';
+import { BoardNumberRow } from './BoardNumberRow';
+import { BoardDiceRiver } from './BoardDiceRiver';
+import { BoardOffTray } from './BoardOffTray';
 import { CoachArrows } from './CoachArrows';
+import { BoardCenterControls } from './BoardCenterControls';
+import { BoardFrame, FeltSurface } from './BoardFrame';
+import { useBoardPointInteractions } from '../../hooks/useBoardPointInteractions';
+import type { BoardProps } from './boardTypes';
 import {
     getOrientedRows,
     toggleOrientation,
@@ -31,203 +42,28 @@ import {
     type BoardOrientation,
 } from './boardOrientation';
 
-// ---------------------------------------------------------------------------
-// Constantes de layout
-// ---------------------------------------------------------------------------
+export type { BoardProps } from './boardTypes';
 
-/** Nombre maximal de pions affichés par pile (règle des 5 + badge). */
-const MAX_VISIBLE = 5;
-
-// ---------------------------------------------------------------------------
-// SOUS-COMPOSANT : FLÈCHE (POINT) COUSUE EN SVG + PILE DE PIONS
-// ---------------------------------------------------------------------------
-
-interface BoardPointProps {
-    pointNumber: number;
-    isTopRow: boolean;
-    checkerColor: CheckerColor | null;
-    checkerCount: number;
-    isTargetDestination?: boolean;
-    isBlotTarget?: boolean;
-    isSelected?: boolean;
-    isOpponentFrom?: boolean;
-    isOpponentTo?: boolean;
-    ariaLabel?: string;
-    onClickPoint: (pointNumber: number, e: React.MouseEvent) => void;
-    onDoubleClickPoint?: (pointNumber: number) => void;
-    onRightClickPoint?: (pointNumber: number, e: React.MouseEvent) => void;
+/**
+ * Normalise une flèche de surbrillance vers la numérotation ABSOLUE du plateau.
+ *
+ * Le moteur utilise `X_BAR === X_OFF === 0` et `O_BAR === O_OFF === 25` : le même
+ * index désigne la barre en `from` et la sortie en `to`. Une destination de
+ * sortie (`to === 0` ou `to === 25`) ne doit donc JAMAIS être comparée à une
+ * flèche 1..24 — c'est ce qui allumait la case 24 par erreur.
+ */
+function normalizeHighlightPoint(point: number, isDestination: boolean): number | null {
+    if (isDestination) {
+        if (point === X_OFF || point === O_OFF) return null;
+        return point;
+    }
+    if (point === X_BAR || point === O_BAR) return null;
+    return point;
 }
 
-const BoardPoint: React.FC<BoardPointProps> = ({
-    pointNumber,
-    isTopRow,
-    checkerColor,
-    checkerCount,
-    isTargetDestination = false,
-    isBlotTarget = false,
-    isSelected = false,
-    isOpponentFrom = false,
-    isOpponentTo = false,
-    ariaLabel,
-    onClickPoint,
-    onDoubleClickPoint,
-    onRightClickPoint,
-}) => {
-    const isEven = pointNumber % 2 === 0;
-    const visibleCheckers = Math.min(checkerCount, MAX_VISIBLE);
-
-    return (
-        <div
-            data-point={pointNumber}
-            data-testid={`point-triangle-${pointNumber}`}
-            role="button"
-            aria-label={ariaLabel}
-            tabIndex={0}
-            className={`relative flex-1 h-full flex flex-col items-center select-none group transition-all duration-300 ${
-                isSelected
-                    ? 'ring-2 ring-amber-400/80 rounded-lg'
-                    : isOpponentTo
-                    ? 'ring-2 ring-indigo-400/90 bg-indigo-950/40 shadow-[0_0_16px_rgba(129,140,248,0.45)] rounded-lg'
-                    : isOpponentFrom
-                    ? 'ring-2 ring-indigo-500/50 bg-indigo-950/20 rounded-lg'
-                    : ''
-            }`}
-            onClick={(e) => onClickPoint(pointNumber, e)}
-            onDoubleClick={() => onDoubleClickPoint?.(pointNumber)}
-            onContextMenu={(e) => {
-                e.preventDefault();
-                onRightClickPoint?.(pointNumber, e);
-            }}
-        >
-            <svg
-                viewBox="0 0 100 300"
-                preserveAspectRatio="none"
-                className="absolute inset-0 w-full h-[86%] pointer-events-none"
-                style={{
-                    top: isTopRow ? 0 : 'auto',
-                    bottom: isTopRow ? 'auto' : 0,
-                    filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.45))',
-                }}
-            >
-                <defs>
-                    <linearGradient id={`ivoryPoint-${pointNumber}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#f6eedc" />
-                        <stop offset="100%" stopColor="#d4c29e" />
-                    </linearGradient>
-                    <linearGradient id={`burgundyPoint-${pointNumber}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#861923" />
-                        <stop offset="100%" stopColor="#4c0910" />
-                    </linearGradient>
-                </defs>
-                <polygon
-                    points={isTopRow ? '4,0 96,0 50,292' : '4,300 96,300 50,8'}
-                    fill={isEven ? `url(#ivoryPoint-${pointNumber})` : `url(#burgundyPoint-${pointNumber})`}
-                    stroke="rgba(255,255,255,0.08)"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                />
-            </svg>
-
-            <div
-                className={`relative z-10 flex flex-col items-center w-full py-1 ${isTopRow ? 'justify-start' : 'justify-end mt-auto'
-                    }`}
-            >
-                {checkerColor &&
-                    Array.from({ length: visibleCheckers }).map((_, idx) => {
-                        const isLastRendered = isTopRow
-                            ? idx === visibleCheckers - 1
-                            : idx === 0;
-                        const showCount =
-                            checkerCount > MAX_VISIBLE && idx === visibleCheckers - 1
-                                ? checkerCount
-                                : undefined;
-
-                        // Chevauchement progressif des pions (shingling tournoi) :
-                        // Chaque pion après le premier se superpose élégamment (-mt-2 à -mt-3.5),
-                        // ce qui maintient les 5 pions à l'intérieur du triangle et crée
-                        // un couloir central parfaitement dégagé (>150px) sans aucun contact possible.
-                        const overlapClass = idx > 0 ? '-mt-2 sm:-mt-2.5 md:-mt-3 xl:-mt-3.5' : '';
-
-                        return (
-                            <div
-                                key={idx}
-                                data-testid={`checker-p${pointNumber}-${idx}`}
-                                className={`transition-all duration-200 ${overlapClass} ${
-                                    isBlotTarget && checkerCount === 1
-                                        ? 'rounded-full ring-4 ring-rose-500 animate-pulse'
-                                        : ''
-                                }`}
-                            >
-                                <Checker
-                                    color={checkerColor}
-                                    countBadge={showCount}
-                                    isPlayable
-                                    isTopChecker={isLastRendered}
-                                />
-                            </div>
-                        );
-                    })}
-            </div>
-
-            {isTargetDestination && (
-                <div
-                    data-testid={`ghost-checker-${pointNumber}`}
-                    className={`absolute z-20 w-3.5 h-3.5 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399] ring-2 ring-white animate-pulse pointer-events-none ${isTopRow ? 'bottom-[18%]' : 'top-[18%]'
-                        }`}
-                />
-            )}
-
-            {isOpponentTo && (
-                <div
-                    data-testid={`opp-to-indicator-${pointNumber}`}
-                    className={`absolute z-20 w-4 h-4 rounded-full bg-indigo-400 shadow-[0_0_12px_#818cf8] ring-2 ring-white animate-pulse pointer-events-none flex items-center justify-center text-[10px] font-bold text-slate-900 ${
-                        isTopRow ? 'bottom-[18%]' : 'top-[18%]'
-                    }`}
-                >
-                    ▼
-                </div>
-            )}
-
-            {isOpponentFrom && (
-                <div
-                    data-testid={`opp-from-indicator-${pointNumber}`}
-                    className={`absolute z-20 w-2.5 h-2.5 rounded-full bg-indigo-500/80 ring-2 ring-indigo-300 shadow-[0_0_8px_rgba(99,102,241,0.6)] pointer-events-none ${
-                        isTopRow ? 'top-[18%]' : 'bottom-[18%]'
-                    }`}
-                />
-            )}
-        </div>
-    );
-};
-
-// ---------------------------------------------------------------------------
-// COMPOSANT PRINCIPAL
-// ---------------------------------------------------------------------------
-
-export interface BoardProps {
-    state: BoardState;
-    leftDieTargets: Map<number, number[]>;
-    rightDieTargets: Map<number, number[]>;
-    selectedPoint: number | null;
-    selectedDie: 0 | 1 | null;
-    usedDice: [boolean, boolean] | boolean[];
-    /** Dés lancés par l'adversaire (affichés dans la rivière centrale). */
-    opponentDice?: [number, number] | null;
-    onCheckerClick: (point: number) => void;
-    onCheckerDoubleClick?: (point: number) => void;
-    onCheckerRightClick: (point: number) => void;
-    onDestinationClick: (point: number) => void;
-    onSelectDie?: (die: 0 | 1) => void;
-    onDieDoubleClick?: (die: 0 | 1) => void;
-    onDeselect?: () => void;
-    onPlayMove?: (from: number, to: number, die?: 0 | 1) => void;
-    onUndo?: () => void;
-    coachHighlight?: { played: { from: number; to: number }[]; optimal: { from: number; to: number }[] } | null;
-    opponentHighlight?: { from: number; to: number }[] | null;
-    /** Le double est-il possible pour le joueur au trait ? (halo du videau). */
-    canDouble?: boolean;
-    theme?: string;
-    isLoading?: boolean;
+/** Vrai si `point` est une flèche réelle 1..24 (ni barre, ni sortie). */
+function isRealPoint(point: number): boolean {
+    return point >= 1 && point <= 24;
 }
 
 export default function Board({
@@ -244,35 +80,46 @@ export default function Board({
     onDestinationClick,
     onSelectDie,
     onDieDoubleClick,
+    onDiceClick,
     onDeselect,
-    onPlayMove,
-    onUndo,
     coachHighlight = null,
     opponentHighlight = null,
     canDouble = false,
-    theme,
     isLoading = false,
+    gamePhase = 'HUMAN_WAITING_ROLL',
+    onRoll,
+    onConfirm,
+    onUndo,
+    canUndo = false,
+    canConfirm = false,
+    isMatchStarted = true,
 }: BoardProps) {
     const player: Player = state.turn;
     const isX = player === 'X';
     const board = state.board;
 
     // Orientation du plateau (sortie X à gauche ou à droite), persistée.
-    const [orientation, setOrientation] = useState<BoardOrientation>(() =>
-        getSavedOrientation('normal'),
-    );
+    // ANTI-HYDRATATION : on démarre sur 'normal' (identique SSR/CSR) puis on
+    // synchronise la préférence persistée APRÈS le montage, dans un useEffect.
+    const [orientation, setOrientation] = useState<BoardOrientation>('normal');
+
+    useEffect(() => {
+        const saved = getSavedOrientation('normal');
+        if (saved !== 'normal') setOrientation(saved);
+    }, []);
+
     const { top: TOP_ROW, bottom: BOTTOM_ROW } = useMemo(
         () => getOrientedRows(orientation),
         [orientation],
     );
 
-    const handleToggleOrientation = useCallback(() => {
+    const handleToggleOrientation = () => {
         setOrientation((prev) => {
             const next = toggleOrientation(prev);
             saveOrientation(next);
             return next;
         });
-    }, []);
+    };
 
     const pipCounts = useMemo(() => pipCount(board), [board]);
     const off = useMemo(
@@ -295,54 +142,28 @@ export default function Board({
         return new Set([...left, ...right]);
     }, [selectedPoint, selectedDie, leftDieTargets, rightDieTargets]);
 
-    const handlePointClick = useCallback(
-        (pointNumber: number, e: React.MouseEvent) => {
-            e.stopPropagation();
-            const count = board[pointNumber];
-            const hasPlayerChecker = isX ? count > 0 : count < 0;
-
-            // Si cette case est une destination légale du pion sélectionné (point fantôme),
-            // on déplace le pion ici — y compris pour construire ou renforcer une porte existante !
-            if (ghostDestinations.has(pointNumber)) {
-                onDestinationClick(pointNumber);
-                return;
-            }
-            if (hasPlayerChecker) {
-                onCheckerClick(pointNumber);
-                return;
-            }
-            onDeselect?.();
-        },
-        [board, isX, ghostDestinations, onDestinationClick, onCheckerClick, onDeselect],
-    );
-
-    const handlePointRightClick = useCallback(
-        (pointNumber: number, e: React.MouseEvent) => {
-            e.stopPropagation();
-            onCheckerRightClick(pointNumber);
-        },
-        [onCheckerRightClick],
-    );
-
-    const handleBarClick = useCallback(
-        (barPoint: number) => {
-            const hasBarChecker = barPoint === X_BAR ? bar.X > 0 : bar.O > 0;
-            if (hasBarChecker) onCheckerClick(barPoint);
-            else onDeselect?.();
-        },
-        [bar, onCheckerClick, onDeselect],
-    );
-
-    const handleOffClick = useCallback(
-        (offPoint: number) => {
-            if (ghostDestinations.has(offPoint)) {
-                onDestinationClick(offPoint);
-            } else {
-                onDeselect?.();
-            }
-        },
-        [ghostDestinations, onDestinationClick, onDeselect],
-    );
+    // Interactions clavier/souris des flèches, de la barre et des sabots
+    // (hook dédié — LOI 5).
+    const {
+        focusedPoint,
+        handlePointClick,
+        handlePointRightClick,
+        handleBarClick,
+        handleOffClick,
+        handlePointFocus,
+        handlePointKeyDown,
+    } = useBoardPointInteractions({
+        board,
+        isX,
+        bar,
+        xBarPoint: X_BAR,
+        oBarPoint: O_BAR,
+        ghostDestinations,
+        onCheckerClick,
+        onCheckerRightClick,
+        onDestinationClick,
+        onDeselect,
+    });
 
     const renderPoint = (point: number, isTopRow: boolean) => {
         const color = getPointColor(board, point);
@@ -350,8 +171,12 @@ export default function Board({
         const isTarget = ghostDestinations.has(point);
         const isBlotTarget =
             isTarget && count === 1 && (isX ? board[point] < 0 : board[point] > 0);
-        const isOpponentFrom = opponentHighlight?.some((h) => h.from === point) ?? false;
-        const isOpponentTo = opponentHighlight?.some((h) => h.to === point) ?? false;
+        const isOpponentFrom =
+            isRealPoint(point) &&
+            (opponentHighlight?.some((h) => normalizeHighlightPoint(h.from, false) === point) ?? false);
+        const isOpponentTo =
+            isRealPoint(point) &&
+            (opponentHighlight?.some((h) => normalizeHighlightPoint(h.to, true) === point) ?? false);
         const ariaLabel = getPointAriaLabel(
             point,
             board,
@@ -372,73 +197,29 @@ export default function Board({
                 isSelected={selectedPoint === point}
                 isOpponentFrom={isOpponentFrom}
                 isOpponentTo={isOpponentTo}
+                isFocused={focusedPoint === point}
                 ariaLabel={ariaLabel}
                 onClickPoint={handlePointClick}
                 onDoubleClickPoint={onCheckerDoubleClick}
                 onRightClickPoint={handlePointRightClick}
+                onKeyDownPoint={handlePointKeyDown}
+                onFocusPoint={handlePointFocus}
             />
         );
     };
 
-    const renderBarSection = (barPoint: number, color: CheckerColor, count: number) => {
-        const isPlayable = barPoint === X_BAR ? isX : !isX;
-        const visible = Math.min(count, MAX_VISIBLE);
-        return (
-            <div
-                key={`bar-${barPoint}`}
-                className="flex flex-col items-center justify-center py-2"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    handleBarClick(barPoint);
-                }}
-                onContextMenu={(e) => {
-                    e.preventDefault();
-                    onCheckerRightClick(barPoint);
-                }}
-            >
-                {count > 0 &&
-                    Array.from({ length: visible }).map((_, idx) => (
-                        <div
-                            key={idx}
-                            className={`rounded-full ring-2 ring-rose-400/80 shadow-[0_0_10px_rgba(244,63,94,0.5)] ${
-                                idx > 0 ? '-mt-2 sm:-mt-2.5' : ''
-                            }`}
-                        >
-                            <Checker
-                                color={color}
-                                countBadge={count > MAX_VISIBLE && idx === visible - 1 ? count : undefined}
-                                isPlayable={isPlayable}
-                                isTopChecker={idx === visible - 1}
-                            />
-                        </div>
-                    ))}
-            </div>
-        );
-    };
-
-    const renderOffTray = (offPoint: number, count: number) => {
-        const isTarget = ghostDestinations.has(offPoint);
-        const isOpponentToOff = opponentHighlight?.some((h) => h.to === offPoint) ?? false;
-        return (
-            <div
-                key={`off-${offPoint}`}
-                className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed px-3 py-2 min-h-[64px] transition-colors ${
-                    isTarget
-                        ? 'border-emerald-400 bg-emerald-400/10 cursor-pointer'
-                        : isOpponentToOff
-                        ? 'border-indigo-400 bg-indigo-950/40 ring-2 ring-indigo-400/80 shadow-[0_0_15px_rgba(99,102,241,0.5)]'
-                        : 'border-slate-700 bg-slate-900/40'
-                }`}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    handleOffClick(offPoint);
-                }}
-            >
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Sortie</span>
-                <span className="text-2xl font-extrabold text-slate-200">{count}</span>
-            </div>
-        );
-    };
+    const renderOffTray = (offPoint: number, count: number, trayZoneId: string) => (
+        <BoardOffTray
+            offPoint={offPoint}
+            count={count}
+            board={board}
+            player={player}
+            isTarget={ghostDestinations.has(offPoint)}
+            isOpponentToOff={opponentHighlight?.some((h) => h.to === X_OFF || h.to === O_OFF) ?? false}
+            trayZoneId={trayZoneId}
+            onClick={handleOffClick}
+        />
+    );
 
     if (isLoading) {
         return (
@@ -452,194 +233,92 @@ export default function Board({
 
     return (
         <div
+            id="backgammon-board"
             data-testid="backgammon-board"
-            className="h-full max-h-full w-full max-w-6xl mx-auto select-none touch-manipulation flex flex-col items-center justify-center"
+            className="h-full max-h-full w-full mx-auto select-none touch-manipulation flex flex-col items-center justify-center"
             onClick={onDeselect}
         >
-            {/* Cadre noyer */}
-            <div className="relative w-full h-full rounded-3xl p-3 sm:p-5 shadow-2xl bg-gradient-to-b from-[#4a2a16] via-[#3a2010] to-[#2b170c] flex flex-col">
-                {/* Flèches SVG de trajectoire : Coach (Optimal vs Joué) ou Déplacements IA adverse */}
-                {(coachHighlight || (opponentHighlight && opponentHighlight.length > 0)) && (
+            <BoardFrame>
+                {(coachHighlight || (state.turn === 'O' && opponentHighlight && opponentHighlight.length > 0)) && (
                     <CoachArrows
                         played={coachHighlight?.played}
                         optimal={coachHighlight?.optimal}
-                        opponent={opponentHighlight ?? undefined}
+                        opponent={state.turn === 'O' ? (opponentHighlight ?? undefined) : undefined}
+                        orientation={orientation}
                     />
                 )}
 
-                {/* Bordure supérieure : numéros 13..24 + bascule d'orientation */}
-                <div className="flex items-center justify-center gap-0 px-1 pb-1 shrink-0">
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleOrientation();
-                        }}
-                        aria-label="Inverser l'orientation du plateau"
-                        title="Inverser l'orientation (sortie à gauche ou à droite)"
-                        data-testid="orientation-toggle"
-                        className="mr-1 px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-slate-300 hover:text-white text-xs transition-colors shrink-0"
-                    >
-                        ⇄
-                    </button>
-                    <div className="flex flex-1 justify-around">
-                        {TOP_ROW.map((p) => (
-                            <span
-                                key={`num-${p}`}
-                                className="text-[11px] font-mono text-amber-200/75 select-none w-8 text-center"
-                            >
-                                {p}
-                            </span>
-                        ))}
-                    </div>
-                    <div className="w-16 sm:w-20 shrink-0" />
-                </div>
+                {isMatchStarted && (
+                    <BoardCenterControls
+                        gamePhase={gamePhase}
+                        onRoll={onRoll ?? (() => { })}
+                        onConfirm={onConfirm ?? (() => { })}
+                        onUndo={onUndo ?? (() => { })}
+                        canUndo={canUndo}
+                        canConfirm={canConfirm}
+                        hasDice={Boolean(state.dice)}
+                    />
+                )}
 
-                {/* Surface de feutre */}
-                <div className="flex-1 min-h-0 rounded-2xl bg-[radial-gradient(circle_at_50%_45%,#145337_0%,#0b3824_65%,#051c12_100%)] p-2 sm:p-3 flex flex-col">
-                    {/* Grille 3 colonnes × 2 rangées */}
+                <BoardNumberRow row={TOP_ROW} padding="top" onToggleOrientation={handleToggleOrientation} />
+
+                <FeltSurface>
                     <div className="flex-1 min-h-0 grid grid-cols-[1fr_auto_1fr] grid-rows-2 gap-x-1">
-                        {/* Rangée 1 — gauche (13..18) */}
                         <div className="flex min-h-0">
                             {TOP_ROW.slice(0, 6).map((p) => renderPoint(p, true))}
                         </div>
 
-                        {/* Barre centrale (unique, row-span-2) : pions frappés + videau positionné selon son propriétaire */}
-                        <div
-                            className="row-span-2 w-16 sm:w-20 flex flex-col justify-between items-center bg-[#221108] rounded-lg mx-1 border-x-2 border-[#d4af37]/60 py-2"
-                            data-testid="central-bar-container"
-                        >
-                            {/* Zone Haut (Côté Joueur O / Noir) */}
-                            <div className="flex flex-col items-center gap-1.5 w-full min-h-[48px]" data-testid="bar-zone-top">
-                                {renderBarSection(O_BAR, 'black', bar.O)}
-                                {state.cubeOwner === 'O' && (
-                                    <DoublingCube
-                                        cubeValue={state.cubeValue}
-                                        cubeOwner={state.cubeOwner}
-                                        canDouble={canDouble}
-                                    />
-                                )}
-                            </div>
+                        <BoardCentralBar
+                            barX={bar.X}
+                            barO={bar.O}
+                            isXTurn={isX}
+                            cubeValue={state.cubeValue}
+                            cubeOwner={state.cubeOwner}
+                            canDouble={canDouble}
+                            onBarClick={handleBarClick}
+                            onBarRightClick={onCheckerRightClick}
+                            xBarPoint={X_BAR}
+                            oBarPoint={O_BAR}
+                        />
 
-                            {/* Zone Centre (Neutre au milieu : avant le premier double) */}
-                            <div className="flex items-center justify-center min-h-[48px]" data-testid="bar-zone-middle">
-                                {state.cubeOwner === null && (
-                                    <DoublingCube
-                                        cubeValue={state.cubeValue}
-                                        cubeOwner={state.cubeOwner}
-                                        canDouble={canDouble}
-                                    />
-                                )}
-                            </div>
-
-                            {/* Zone Bas (Côté Joueur X / Blanc) */}
-                            <div className="flex flex-col items-center gap-1.5 w-full min-h-[48px]" data-testid="bar-zone-bottom">
-                                {state.cubeOwner === 'X' && (
-                                    <DoublingCube
-                                        cubeValue={state.cubeValue}
-                                        cubeOwner={state.cubeOwner}
-                                        canDouble={canDouble}
-                                    />
-                                )}
-                                {renderBarSection(X_BAR, 'white', bar.X)}
-                            </div>
-                        </div>
-
-                        {/* Rangée 1 — droite (19..24) + sabot O */}
                         <div className="flex min-h-0">
                             <div className="flex flex-1">
                                 {TOP_ROW.slice(6).map((p) => renderPoint(p, true))}
                             </div>
-                            <div className="w-16 sm:w-20 flex flex-col justify-start pt-2">
-                                {renderOffTray(O_BAR, off.O)}
+                            <div className="w-10 sm:w-16 md:w-20 flex flex-col justify-start pt-2">
+                                {renderOffTray(O_BAR, off.O, 'tray-zone-o')}
                             </div>
                         </div>
 
-                        {/* Rangée 2 — gauche (12..7) */}
                         <div className="flex min-h-0">
                             {BOTTOM_ROW.slice(0, 6).map((p) => renderPoint(p, false))}
                         </div>
 
-                        {/* Rangée 2 — droite (6..1) + sabot X */}
                         <div className="flex min-h-0">
                             <div className="flex flex-1">
                                 {BOTTOM_ROW.slice(6).map((p) => renderPoint(p, false))}
                             </div>
-                            <div className="w-16 sm:w-20 flex flex-col justify-end pb-2">
-                                {renderOffTray(X_BAR, off.X)}
+                            <div className="w-10 sm:w-16 md:w-20 flex flex-col justify-end pb-2">
+                                {renderOffTray(X_BAR, off.X, 'tray-zone-x')}
                             </div>
                         </div>
                     </div>
 
-                    {/* Rivière centrale : dés du joueur + dés de l'adversaire */}
-                    <div className="flex items-center justify-center gap-6 py-3 shrink-0">
-                        {state.dice && (
-                            <div className="flex items-center gap-3">
-                                {state.dice.map((value, i) => {
-                                    const die = i as 0 | 1;
-                                    const used = Boolean(usedDice[i]);
-                                    const active = selectedDie === die;
-                                    return (
-                                        <Die
-                                            key={i}
-                                            value={value}
-                                            used={used}
-                                            active={active}
-                                            disabled={used}
-                                            label={`Dé ${i + 1}`}
-                                            dataTestId={`board-die-${i}`}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onSelectDie?.(die);
-                                            }}
-                                            onDoubleClick={(e) => {
-                                                e.stopPropagation();
-                                                onDieDoubleClick?.(die);
-                                            }}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        )}
+                    <BoardDiceRiver
+                        dice={state.dice}
+                        usedDice={usedDice}
+                        selectedDie={selectedDie}
+                        opponentDice={opponentDice}
+                        onDiceClick={onDiceClick}
+                        onSelectDie={onSelectDie}
+                        onDieDoubleClick={onDieDoubleClick}
+                    />
+                </FeltSurface>
 
-                        {opponentDice && (
-                            <div
-                                data-testid="opponent-dice"
-                                className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-black/50 border border-amber-500/40"
-                                title="Dés lancés par l'adversaire"
-                            >
-                                <span className="text-xs font-bold text-amber-300">IA</span>
-                                {opponentDice.map((value, i) => (
-                                    <span
-                                        key={i}
-                                        className="w-9 h-9 rounded-md flex items-center justify-center text-lg font-extrabold bg-slate-700 text-amber-200 border border-slate-600"
-                                    >
-                                        {value}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                <BoardNumberRow row={BOTTOM_ROW} padding="bottom" />
 
-                {/* Bordure inférieure : numéros 12..1 */}
-                <div className="flex items-center justify-center gap-0 px-1 pt-1 shrink-0">
-                    <div className="flex flex-1 justify-around">
-                        {BOTTOM_ROW.map((p) => (
-                            <span
-                                key={`num-${p}`}
-                                className="text-[11px] font-mono text-amber-200/75 select-none w-8 text-center"
-                            >
-                                {p}
-                            </span>
-                        ))}
-                    </div>
-                    <div className="w-16 sm:w-20 shrink-0" />
-                </div>
-
-                {/* Badges Pip Count Différentiel (±Δ) + toggle masquer/afficher */}
                 <PipCountBadge pipX={pipCounts.X} pipO={pipCounts.O} turn={player} />
-            </div>
+            </BoardFrame>
         </div>
     );
 }
