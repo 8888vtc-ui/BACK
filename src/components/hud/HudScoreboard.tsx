@@ -58,12 +58,12 @@ function prBadgeClass(pr: number | null | undefined): string {
         return 'border-slate-600/60 bg-slate-800/60 text-slate-400';
     }
     if (pr <= 3) {
-        return 'border-emerald-400/70 bg-emerald-500/15 text-emerald-200 shadow-[0_0_10px_rgba(52,211,153,0.45)]';
+        return 'border-emerald-400/70 bg-emerald-500/15 text-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.45)]';
     }
     if (pr <= 7) {
-        return 'border-amber-400/70 bg-amber-500/15 text-amber-200 shadow-[0_0_10px_rgba(251,191,36,0.45)]';
+        return 'border-amber-400/70 bg-amber-500/15 text-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.45)]';
     }
-    return 'border-rose-400/70 bg-rose-500/15 text-rose-200 shadow-[0_0_10px_rgba(251,113,133,0.45)]';
+    return 'border-rose-400/70 bg-rose-500/15 text-rose-300 shadow-[0_0_10px_rgba(251,113,133,0.45)]';
 }
 
 interface PlayerCardProps {
