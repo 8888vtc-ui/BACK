@@ -15,6 +15,52 @@
 
 import type { Player } from '../../engine/backgammonEngine';
 import { calculateExpectedScore, MIN_ELO_RATING } from './elo';
+import {
+    evaluateHeadToHeadCompositeMatch,
+    type HeadToHeadCompositeResult,
+    createDefaultGlicko2Player,
+} from '../../lib/rating/glicko2Composite';
+
+export interface MultiplayerGlicko2Input {
+    playerXRating: number;
+    playerXRD?: number;
+    playerXVolatility?: number;
+    playerORating: number;
+    playerORD?: number;
+    playerOVolatility?: number;
+    winner: Player;
+    playerXPR: number;
+    playerOPR: number;
+    matchLength: number;
+}
+
+/**
+ * Calcule l'évolution Glicko-2 composite d'un match multijoueur pondéré par la longueur w(L) = L / (L + 4)
+ * et le différentiel de Performance Rating (PR) Open Sage.
+ */
+export function calculateMultiplayerGlicko2Rating(
+    input: MultiplayerGlicko2Input,
+): HeadToHeadCompositeResult {
+    const playerX = createDefaultGlicko2Player({
+        rating: input.playerXRating,
+        rd: input.playerXRD,
+        volatility: input.playerXVolatility,
+    });
+    const playerO = createDefaultGlicko2Player({
+        rating: input.playerORating,
+        rd: input.playerORD,
+        volatility: input.playerOVolatility,
+    });
+
+    return evaluateHeadToHeadCompositeMatch({
+        playerX,
+        playerO,
+        winner: input.winner,
+        matchLength: input.matchLength,
+        playerXPR: input.playerXPR,
+        playerOPR: input.playerOPR,
+    });
+}
 
 export interface GalaxyRatingInput {
     /** Galaxy Rating (GR) actuel du joueur X */

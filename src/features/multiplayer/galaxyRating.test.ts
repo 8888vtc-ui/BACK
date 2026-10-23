@@ -5,6 +5,7 @@ import {
     resolvePRWinner,
     getGalaxyStarTier,
     rankLeaderboardEntries,
+    calculateMultiplayerGlicko2Rating,
 } from './galaxyRating';
 
 describe('Galaxy Dual Rating (GR) & Leaderboard System', () => {
@@ -93,5 +94,25 @@ describe('Galaxy Dual Rating (GR) & Leaderboard System', () => {
         ]);
 
         expect(sorted.map((e) => e.displayName)).toEqual(['Bob', 'Charlie', 'Alice']);
+    });
+
+    it('calcule la mise à jour Glicko-2 Composite pondérée par la longueur w(L) = L/(L+4) et PR', () => {
+        const result = calculateMultiplayerGlicko2Rating({
+            playerXRating: 1600,
+            playerXRD: 100,
+            playerORating: 1600,
+            playerORD: 100,
+            winner: 'X',
+            playerXPR: 3.2,
+            playerOPR: 8.5,
+            matchLength: 5,
+        });
+
+        // Longueur 5 : w(5) = 5/9 ≈ 0.5556
+        expect(result.compositeScoreX.matchWeight).toBeCloseTo(5 / 9, 4);
+        expect(result.compositeScoreX.prWeight).toBeCloseTo(4 / 9, 4);
+        expect(result.compositeScoreX.score).toBeGreaterThan(0.70);
+        expect(result.playerX.ratingDelta).toBeGreaterThan(0);
+        expect(result.playerO.ratingDelta).toBeLessThan(0);
     });
 });

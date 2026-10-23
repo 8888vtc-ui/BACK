@@ -3,6 +3,7 @@ import {
     createGameRoom,
     joinGameRoomByCode,
     pushRoomAction,
+    concludeGameRoom,
 } from './roomService';
 import type { PlayerEloProfile } from './types';
 
@@ -90,5 +91,32 @@ describe('RoomService (Rooms, États & Synchronisation)', () => {
 
         expect(action2.sequence_number).toBe(2);
         expect(action2.move_notation).toBe('8/4');
+    });
+
+    it('clôture un match multijoueur avec calcul Glicko-2 Composite pondéré w(L)=L/(L+4) et PR Open Sage', async () => {
+        const room = await createGameRoom({
+            host: hostUser,
+            matchLength: 7,
+        });
+
+        await joinGameRoomByCode({
+            code: room.code,
+            guest: guestUser,
+        });
+
+        // X gagne le match en 7 points avec un excellent PR 2.5 vs PR 7.8
+        const conclusion = await concludeGameRoom({
+            roomId: room.id,
+            winner: 'X',
+            playerXPR: 2.5,
+            playerOPR: 7.8,
+        });
+
+        expect(conclusion.room.status).toBe('completed');
+        expect(conclusion.room.winner).toBe('X');
+        expect(conclusion.deltaRatingX).toBeGreaterThan(0);
+        expect(conclusion.deltaRatingO).toBeLessThan(0);
+        expect(conclusion.glicko2Result.compositeScoreX.matchWeight).toBeCloseTo(7 / 11, 4);
+        expect(conclusion.glicko2Result.compositeScoreX.prWeight).toBeCloseTo(4 / 11, 4);
     });
 });
