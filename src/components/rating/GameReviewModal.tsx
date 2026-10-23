@@ -8,6 +8,13 @@ import EquityCurveChart from './EquityCurveChart';
 import ReviewBoardPreview from './ReviewBoardPreview';
 import ConceptsErrorSummary from './ConceptsErrorSummary';
 import GameReviewCourse from './GameReviewCourse';
+import MatchBlunderReport from '../summary/MatchBlunderReport';
+import SoftPaywallCard from '../subscription/SoftPaywallCard';
+import {
+    FREE_DAILY_ANALYSES_LIMIT,
+    formatQuotaBadgeFr,
+    loadGuestQuota,
+} from '../../lib/subscription/quotaService';
 import { serializeToSGF, downloadFile } from '../../features/export';
 import { useBoardTheme, getModalThemeClasses, type ThemeName } from '../../hooks/useBoardTheme';
 
@@ -18,9 +25,17 @@ export interface GameReviewModalProps {
     theme?: ThemeName;
     /** Onglet initial à afficher à l'ouverture. */
     initialTab?: ReviewTab;
+    /** Force l'état de quota atteint (4e match et suivants). */
+    isQuotaReached?: boolean;
+    /** Compteur d'analyses utilisées aujourd'hui (1 à 3 sous quota). */
+    quotaUsedCount?: number;
+    /** Statut abonné Coach Illimité. */
+    isVip?: boolean;
+    /** Identifiant utilisateur connecté (optionnel). */
+    userId?: string | null;
 }
 
-export type ReviewTab = 'overview' | 'step_by_step' | 'concepts' | 'table' | 'course';
+export type ReviewTab = 'overview' | 'step_by_step' | 'concepts' | 'table' | 'course' | 'blunders';
 
 export default function GameReviewModal({
     analysis,
@@ -28,6 +43,10 @@ export default function GameReviewModal({
     onClose,
     theme,
     initialTab = 'overview',
+    isQuotaReached,
+    quotaUsedCount,
+    isVip = false,
+    userId = null,
 }: GameReviewModalProps) {
     const { theme: activeTheme } = useBoardTheme();
     const currentTheme = theme || activeTheme;
@@ -78,6 +97,30 @@ export default function GameReviewModal({
     }, [mistakeIndices, selectedIndex]);
 
     if (!isOpen || !analysis) return null;
+
+    const guestQuota = loadGuestQuota();
+    const resolvedUsedCount =
+        quotaUsedCount !== undefined
+            ? quotaUsedCount
+            : guestQuota.dailyAnalysesCount > 0
+              ? guestQuota.dailyAnalysesCount
+              : 1;
+    const isGameAlreadyUnlocked = Boolean(
+        analysis.gameId && (guestQuota.consumedGameIds ?? []).includes(analysis.gameId),
+    );
+    const effectiveIsQuotaReached =
+        !isVip &&
+        (isQuotaReached !== undefined
+            ? isQuotaReached
+            : quotaUsedCount !== undefined
+              ? quotaUsedCount > FREE_DAILY_ANALYSES_LIMIT
+              : guestQuota.dailyAnalysesCount >= FREE_DAILY_ANALYSES_LIMIT && !isGameAlreadyUnlocked);
+
+    const quotaBadgeLabel = formatQuotaBadgeFr(
+        resolvedUsedCount,
+        FREE_DAILY_ANALYSES_LIMIT,
+        isVip,
+    );
 
     const currentTurn = evaluatedMoves[selectedIndex] || evaluatedMoves[0];
 
@@ -153,6 +196,12 @@ export default function GameReviewModal({
                                 </h2>
                                 <span className="rounded-full border border-[#d4af37]/50 bg-[#2a1a0d] px-2.5 py-0.5 text-xs font-bold text-[#fce8b2]">
                                     {analysis.prCategory}
+                                </span>
+                                <span
+                                    data-testid="daily-quota-badge"
+                                    className="rounded-full border border-[#d4af37]/40 bg-[#1a0f07] px-2.5 py-0.5 text-[11px] font-semibold text-[#f3c65f]"
+                                >
+                                    {quotaBadgeLabel}
                                 </span>
                             </div>
                             <p className="text-xs text-[#e8dcc6]/70 mt-0.5">
@@ -300,10 +349,27 @@ export default function GameReviewModal({
                         <span>🎓</span>
                         <span>Cours IA</span>
                     </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('blunders')}
+                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${activeTab === 'blunders'
+                            ? 'border border-[#f5d77f]/60 bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] text-[#1a0f07] shadow-md'
+                            : 'border border-[#d4af37]/20 bg-[#1a0f08] text-[#e8dcc6]/80 hover:border-[#d4af37]/45 hover:text-white'
+                            }`}
+                        data-testid="tab-blunder-report"
+                    >
+                        <span>⚜</span>
+                        <span>Rapport de Gaffes</span>
+                    </button>
                 </div>
 
                 {/* 3. Corps de l'onglet actif avec défilement */}
                 <div className="p-4 sm:p-6 space-y-5 overflow-y-auto max-h-[calc(90vh-170px)]">
+                    {effectiveIsQuotaReached ? (
+                        <SoftPaywallCard analysis={analysis} userId={userId} locale="fr" />
+                    ) : (
+                        <>
                     {/* ONGLET 1 : SYNTHÈSE & COURBE D'ÉQUITÉ */}
                     {activeTab === 'overview' && (
                         <div className="space-y-5 animate-in fade-in">
@@ -660,6 +726,15 @@ export default function GameReviewModal({
                                 <GameReviewCourse analysis={analysis} />
                             </div>
                         </div>
+                    )}
+
+                    {/* ONGLET 6 : GRANDMASTER MATCH REVIEW & BLUNDER REPORT */}
+                    {activeTab === 'blunders' && (
+                        <div className="animate-in fade-in">
+                            <MatchBlunderReport analysis={analysis} />
+                        </div>
+                    )}
+                        </>
                     )}
                 </div>
 

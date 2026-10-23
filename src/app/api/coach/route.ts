@@ -1,12 +1,12 @@
 /**
- * Route Handler Next.js App Router — Explication de coach Backgammon en streaming SSE (< 275 lignes, 0 any).
+ * Route Handler Next.js App Router — Explication de coach & Synthèse Post-Match en streaming SSE (< 275 lignes, 0 any).
  *
  * Endpoint : POST /api/coach
  * Comportement :
- * 1. Valide le rate limit et le schéma Zod.
- * 2. Appelle le fournisseur LLM avec timeout strict de 3 s (AbortController).
+ * 1. Valide le rate limit et le schéma Zod (ou le mode `post-match-synthesis`).
+ * 2. Appelle le fournisseur LLM (Gemini / OpenAI-compatible) avec timeout strict de 3 s.
  * 3. En l'absence de clé ou en cas de timeout / erreur HTTP, streame immédiatement
- *    l'explication déterministe `generateRuleBasedExplanation` sans bloquer le client.
+ *    l'explication déterministe sans bloquer le client.
  */
 
 import { NextRequest } from 'next/server';
@@ -16,9 +16,18 @@ import {
     generateRuleBasedExplanation,
     type CoachPromptParams,
 } from '../../../features/coach/prompts';
+import {
+    getGameReviewSystemPrompt,
+    buildPostMatchSummaryUserPrompt,
+} from '../../../features/coach/gameReviewPrompts';
+import {
+    buildRuleBasedSynthesis,
+    type MatchSummaryPayload,
+} from '../../../components/summary/postMatchReportHelpers';
 import { buildMatchContext } from '../../../features/coach/matchContext';
 import { checkRateLimit, RATE_LIMIT_PROFILES } from '../../../lib/security/rateLimit';
 import { CoachRequestSchema, validateJsonBody } from '../../../lib/security/schemas';
+import { verifyCoachApiQuotaGuard } from '../../../actions/coach';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,11 +48,10 @@ function formatSseEvent(data: Record<string, unknown> | string): string {
     return `data: ${payload}\n\n`;
 }
 
-function createRuleBasedStreamResponse(params: CoachPromptParams, encoder: TextEncoder): Response {
+function createJsonFallbackStream(payloadObj: unknown, encoder: TextEncoder): Response {
     const stream = new ReadableStream({
         start(controller) {
-            const explanation = generateRuleBasedExplanation(params);
-            const fullJson = JSON.stringify(explanation, null, 2);
+            const fullJson = JSON.stringify(payloadObj, null, 2);
             const chunkSize = 24;
             let offset = 0;
 
@@ -63,7 +71,7 @@ function createRuleBasedStreamResponse(params: CoachPromptParams, encoder: TextE
                         );
                     } else {
                         clearInterval(interval);
-                        controller.enqueue(encoder.encode(formatSseEvent({ done: true, full: explanation })));
+                        controller.enqueue(encoder.encode(formatSseEvent({ done: true, full: payloadObj })));
                         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
                         controller.close();
                     }
@@ -80,6 +88,79 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
     const rateLimit = checkRateLimit(req, RATE_LIMIT_PROFILES.COACH);
     if (!rateLimit.allowed && rateLimit.response) {
         return rateLimit.response;
+    }
+
+    const encoder = new TextEncoder();
+
+    // Détection non destructive du mode `post-match-synthesis` et du garde de quota
+    try {
+        const cloned = req.clone();
+        const rawBody = (await cloned.json()) as Record<string, unknown>;
+        const quotaGuard = await verifyCoachApiQuotaGuard(rawBody, req.headers);
+        if (!quotaGuard.allowed) {
+            return Response.json(
+                {
+                    error: 'DAILY_COACH_QUOTA_REACHED',
+                    quotaReached: true,
+                    state: quotaGuard.state,
+                },
+                { status: 402 },
+            );
+        }
+        if (rawBody && rawBody.mode === 'post-match-synthesis' && rawBody.summary && typeof rawBody.summary === 'object') {
+            const summary = rawBody.summary as MatchSummaryPayload;
+            const lang = rawBody.language === 'en' ? 'en' : 'fr';
+            const fallbackSynthesis = buildRuleBasedSynthesis(summary, lang);
+            const apiKey = process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY || process.env.LLM_API_KEY || '';
+            if (!apiKey) {
+                return createJsonFallbackStream(fallbackSynthesis, encoder);
+            }
+            const baseUrl = (
+                process.env.OPENAI_BASE_URL ||
+                process.env.GEMINI_BASE_URL ||
+                process.env.LLM_BASE_URL ||
+                'https://generativelanguage.googleapis.com/v1beta/openai/'
+            ).replace(/\/+$/, '');
+            const model =
+                process.env.COACH_MODEL ||
+                process.env.OPENAI_MODEL ||
+                process.env.GEMINI_MODEL ||
+                process.env.LLM_MODEL ||
+                'gemini-2.5-flash';
+
+            const abortController = new AbortController();
+            const timeoutId = setTimeout(() => abortController.abort(), UPSTREAM_LLM_TIMEOUT_MS);
+            try {
+                const resp = await fetch(`${baseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+                    body: JSON.stringify({
+                        model,
+                        messages: [
+                            { role: 'system', content: getGameReviewSystemPrompt(lang) },
+                            { role: 'user', content: buildPostMatchSummaryUserPrompt(summary, lang) },
+                        ],
+                        temperature: 0.3,
+                        stream: false,
+                        response_format: { type: 'json_object' },
+                    }),
+                    signal: abortController.signal,
+                });
+                clearTimeout(timeoutId);
+                if (resp.ok) {
+                    const data = (await resp.json()) as { choices?: Array<{ message?: { content?: string } }> };
+                    const content = data.choices?.[0]?.message?.content;
+                    if (content) {
+                        return createJsonFallbackStream(JSON.parse(content), encoder);
+                    }
+                }
+            } catch {
+                clearTimeout(timeoutId);
+            }
+            return createJsonFallbackStream(fallbackSynthesis, encoder);
+        }
+    } catch {
+        // Corps non-JSON ou standard : délégué à validateJsonBody ci-dessous
     }
 
     const validation = await validateJsonBody(req, CoachRequestSchema);
@@ -146,10 +227,8 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             process.env.LLM_MODEL ||
             'gemini-2.5-flash';
 
-        const encoder = new TextEncoder();
-
         if (!apiKey) {
-            return createRuleBasedStreamResponse(params, encoder);
+            return createJsonFallbackStream(generateRuleBasedExplanation(params), encoder);
         }
 
         const userPrompt = buildCoachUserPrompt(params);
@@ -179,7 +258,6 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                 signal: abortController.signal,
             });
 
-            // Repli automatique si le modèle est obsolète / déprécié (ex: gemini-2.5-flash -> gemini-3.8-flash)
             if (llmResponse.status === 404 && model.includes('gemini')) {
                 model = 'gemini-3.8-flash';
                 requestPayload.model = model;
@@ -199,14 +277,14 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
         } catch (fetchErr: unknown) {
             clearTimeout(timeoutId);
             console.warn('[Coach API] Timeout (3s) ou erreur réseau LLM, repli heuristique :', fetchErr);
-            return createRuleBasedStreamResponse(params, encoder);
+            return createJsonFallbackStream(generateRuleBasedExplanation(params), encoder);
         } finally {
             clearTimeout(timeoutId);
         }
 
         if (!llmResponse.ok || !llmResponse.body) {
             console.warn(`[Coach API] Statut HTTP ${llmResponse.status}, bascule repli heuristique`);
-            return createRuleBasedStreamResponse(params, encoder);
+            return createJsonFallbackStream(generateRuleBasedExplanation(params), encoder);
         }
 
         const upstreamReader = llmResponse.body.getReader();

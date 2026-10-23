@@ -27,6 +27,8 @@ import MultiplayerResultModal from '../multiplayer/MultiplayerResultModal';
 import { OpeningBookModal } from '../openings/OpeningBookModal';
 import ExportImportModal from '../export/ExportImportModal';
 import KnowledgeBaseModal from '../knowledge/KnowledgeBaseModal';
+import DiceAuditModal from '../dice/DiceAuditModal';
+import SubscriptionModal from '../subscription/SubscriptionModal';
 import { toast } from '../toast/ToastContext';
 
 export interface GameModalsContainerProps {
@@ -78,6 +80,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                     onOpenReview={modals.openGameReview}
                     onBackToLobby={onBackToLobby ?? modals.openGameReview}
                     onTrainBlunders={modals.openGameCourse}
+                    onOpenDiceAudit={modals.openDiceAudit}
                     locale="fr"
                 />
             )}
@@ -163,6 +166,21 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                 onClose={modals.closeKnowledgeBase}
                 initialConceptId={modals.selectedKnowledgeConceptId}
                 theme={theme}
+            />
+
+            {/* 7. Modal d'Audit Cryptographique Provably Fair (SHA-256) */}
+            <DiceAuditModal
+                isOpen={modals.isDiceAuditModalOpen}
+                onClose={modals.closeDiceAudit}
+                session={game.provablyFair}
+                onUpdateClientSeeds={game.updateClientSeeds}
+            />
+
+            {/* 8. Modal d'Abonnement Prestige (Soft Paywall) */}
+            <SubscriptionModal
+                isOpen={modals.isSubscriptionModalOpen}
+                onClose={modals.closeSubscriptionModal}
+                locale="fr"
             />
         </>
     );

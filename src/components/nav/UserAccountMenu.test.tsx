@@ -109,6 +109,13 @@ describe('UserAccountMenu', () => {
         expect(onNavigate).toHaveBeenCalledWith('/progression');
         expect(screen.queryByTestId('user-dropdown-menu')).toBeNull();
 
+        // Réouverture et navigation vers tarifs VIP (/pricing)
+        fireEvent.click(accountBtn);
+        const pricingItem = screen.getByTestId('user-menu-pricing-link');
+        fireEvent.click(pricingItem);
+        expect(onNavigate).toHaveBeenCalledWith('/pricing');
+        expect(screen.queryByTestId('user-dropdown-menu')).toBeNull();
+
         // Réouverture et test de déconnexion
         fireEvent.click(accountBtn);
         const signoutBtn = screen.getByTestId('auth-logout-btn');

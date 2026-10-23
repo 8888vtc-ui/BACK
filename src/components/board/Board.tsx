@@ -2,7 +2,7 @@
 
 /**
  * Plateau de Backgammon de Tournoi (style Backgammon Galaxy / Snowie 4 Pro) —
- * Rendu HTML/Tailwind & SVG haute fidélité (< 230 lignes, 0 any).
+ * Rendu HTML/Tailwind & SVG haute fidélité (< 300 lignes, 0 any).
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -24,30 +24,42 @@ import {
     getOrientedRows, toggleOrientation, getSavedOrientation, saveOrientation, type BoardOrientation,
 } from './boardOrientation';
 import { useCheckerDragAndDrop } from '../../hooks/useCheckerDragAndDrop';
+import { useCheckerFlights, HIDDEN_X_BAR_KEY, HIDDEN_O_BAR_KEY } from '../../hooks/useCheckerFlights';
 import { useBarReentry } from '../../hooks/useBarReentry';
 import { useDiceAnimation } from '../../hooks/useDiceAnimation';
+import { sensoryFeedbackController } from '../../lib/sound/SensoryFeedbackController';
 import { DraggedCheckerOverlay } from './DraggedCheckerOverlay';
+import { FlyingCheckerOverlay } from './FlyingCheckerOverlay';
+import {
+    computeRemainingSequences,
+    resolveDestinationClick,
+    type SubMove,
+} from '../../engine/smartClickResolver';
 
 export { BoardQuadrantRow };
 export type { BoardProps } from './boardTypes';
 
 const BoardComponent: React.FC<BoardProps> = ({
     state, leftDieTargets, rightDieTargets, selectedPoint, selectedDie, usedDice,
-    opponentDice = null, onCheckerClick, onCheckerDoubleClick, onCheckerRightClick,
-    onDestinationClick, onSelectDie, onDieDoubleClick, onDiceClick, onDeselect, onPlayMove,
+    opponentDice = null, onCheckerClick, onCheckerRightClick,
+    onDestinationClick, onSelectDie, onDiceClick, onDeselect, onPlayMove,
     coachHighlight = null, opponentHighlight = null, canDouble = false, doublingOfferedBy = null,
     onOfferDouble, onTakeDouble, onPassDouble, theme, isLoading = false,
     gamePhase = 'HUMAN_WAITING_ROLL', onRoll, onConfirm, onUndo,
     canUndo = false, canConfirm = false, autoConfirmEnabled = false, onToggleAutoConfirm,
-    isMatchStarted = true, swapColors = false,
+    autoConfirmMode, onSelectAutoConfirmMode, onCycleAutoConfirmMode,
+    isMatchStarted = true, swapColors = false, gameSpeed, onCycleGameSpeed,
 }) => {
     const { t } = useI18n();
     const player: Player = state.turn;
     const isX = player === 'X';
     const board = state.board;
+    const boardContainerRef = useRef<HTMLDivElement | null>(null);
 
     const [orientation, setOrientation] = useState<BoardOrientation>('normal');
     const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
+    const [dragSourcePoint, setDragSourcePoint] = useState<number | null>(null);
+    const suppressClickAfterDragRef = useRef(false);
 
     useEffect(() => {
         const saved = getSavedOrientation('normal');
@@ -67,16 +79,30 @@ const BoardComponent: React.FC<BoardProps> = ({
     const pipCounts = useMemo(() => pipCount(board), [board]);
     const off = useMemo(() => ({ X: borneOffCount(board, 'X'), O: borneOffCount(board, 'O') }), [board]);
     const bar = useMemo(() => ({ X: Math.max(0, board[X_BAR]), O: Math.max(0, -board[O_BAR]) }), [board]);
-    const diceAnimation = useDiceAnimation({ dice: state.dice });
+    const diceAnimation = useDiceAnimation({
+        dice: state.dice,
+        onRollStartSound: () => {
+            sensoryFeedbackController.triggerGranularDiceRoll();
+        },
+    });
+
+    const { flights, hiddenAt, prepareFlipForStep, completeFlight } = useCheckerFlights({
+        board, dice: state.dice, gameSpeed, orientation, swapColors, containerRef: boardContainerRef,
+    });
+
+    const seenHitFlightIdsRef = useRef<Set<string>>(new Set());
+    useEffect(() => {
+        for (const f of flights) {
+            if (f.id.startsWith('flight-hit-') && !seenHitFlightIdsRef.current.has(f.id)) {
+                seenHitFlightIdsRef.current.add(f.id);
+                // f.delayMs dans useCheckerFlights correspond exactement à 75 % du vol de l'attaquant
+                sensoryFeedbackController.scheduleBlotHitAtFlightApex(Math.round(f.delayMs / 0.75));
+            }
+        }
+    }, [flights]);
 
     const barReentry = useBarReentry({
-        board,
-        player,
-        dice: state.dice,
-        usedDice,
-        leftDieTargets,
-        rightDieTargets,
-        gamePhase,
+        board, player, dice: state.dice, usedDice, leftDieTargets, rightDieTargets, gamePhase,
         onAutoPassTurn: canUndo ? undefined : onConfirm,
     });
 
@@ -88,29 +114,42 @@ const BoardComponent: React.FC<BoardProps> = ({
     const ghostDestinations = useMemo(
         () =>
             computeGhostDestinations({
-                isOnBar: barReentry.isOnBar,
-                barPoint: barReentry.barPoint,
-                legalEntryPoints: barReentry.legalEntryPoints,
-                selectedPoint,
-                selectedDie,
-                leftDieTargets,
-                rightDieTargets,
-                dice: state.dice,
-                gamePhase,
+                isOnBar: barReentry.isOnBar, barPoint: barReentry.barPoint,
+                legalEntryPoints: barReentry.legalEntryPoints, selectedPoint, selectedDie,
+                leftDieTargets, rightDieTargets, dice: state.dice, gamePhase,
             }),
         [barReentry.isOnBar, barReentry.barPoint, barReentry.legalEntryPoints, selectedPoint, selectedDie, leftDieTargets, rightDieTargets, state.dice, gamePhase],
+    );
+
+    const isHumanMoving = gamePhase === 'HUMAN_MOVING';
+    const legalSequences = useMemo<SubMove[][]>(
+        () => (isHumanMoving ? computeRemainingSequences(board, player, state.dice, usedDice) : []),
+        [isHumanMoving, board, player, state.dice, usedDice],
     );
 
     const hoverTargets = useMemo(
         () =>
             computeHoverTargets(
-                barReentry.isOnBar ? barReentry.barPoint : (selectedPoint ?? hoveredPoint),
-                state.dice,
-                selectedDie,
-                leftDieTargets,
-                rightDieTargets,
+                barReentry.isOnBar ? barReentry.barPoint : (dragSourcePoint ?? selectedPoint ?? hoveredPoint),
+                state.dice, selectedDie, leftDieTargets, rightDieTargets, legalSequences, board,
             ),
-        [barReentry.isOnBar, barReentry.barPoint, selectedPoint, hoveredPoint, state.dice, selectedDie, leftDieTargets, rightDieTargets],
+        [barReentry.isOnBar, barReentry.barPoint, dragSourcePoint, selectedPoint, hoveredPoint, state.dice, selectedDie, leftDieTargets, rightDieTargets, legalSequences, board],
+    );
+
+    const handlePlayMoveWithFlip = useMemo(() => {
+        if (!onPlayMove) return undefined;
+        return (from: number, to: number, die?: 0 | 1) => {
+            prepareFlipForStep(from);
+            onPlayMove(from, to, die);
+        };
+    }, [onPlayMove, prepareFlipForStep]);
+
+    const handleDestinationClickWithFlip = useCallback(
+        (to: number) => {
+            prepareFlipForStep(selectedPoint ?? undefined);
+            onDestinationClick(to);
+        },
+        [onDestinationClick, prepareFlipForStep, selectedPoint],
     );
 
     const {
@@ -118,37 +157,61 @@ const BoardComponent: React.FC<BoardProps> = ({
         handleBarClick, handleBarRightClick, handleOffClick, handleOffRightClick, handlePointFocus, handlePointKeyDown,
     } = useBoardPointInteractions({
         board, isX, bar, xBarPoint: X_BAR, oBarPoint: O_BAR, ghostDestinations, selectedPoint,
-        leftDieTargets, rightDieTargets, dice: state.dice, selectedDie,
-        onCheckerClick, onCheckerRightClick, onDestinationClick, onPlayMove, onDeselect,
+        leftDieTargets, rightDieTargets, dice: state.dice, selectedDie, legalSequences,
+        onCheckerClick, onCheckerRightClick, onDestinationClick: handleDestinationClickWithFlip,
+        onPlayMove: handlePlayMoveWithFlip, onDeselect,
     });
 
-    const [dragSourcePoint, setDragSourcePoint] = useState<number | null>(null);
-    const suppressClickAfterDragRef = useRef(false);
-    const activeLegalDestinations = useMemo(() => {
-        const activePt = dragSourcePoint ?? selectedPoint;
-        if (activePt === null) return ghostDestinations;
-        const left = leftDieTargets?.get(activePt) ?? [];
-        const right = rightDieTargets?.get(activePt) ?? [];
-        return new Set([...left, ...right]);
-    }, [dragSourcePoint, selectedPoint, ghostDestinations, leftDieTargets, rightDieTargets]);
+    const computeTargetsForSource = useCallback(
+        (sourcePt: number | null): Set<number> => {
+            if (sourcePt === null) return ghostDestinations;
+            const left = leftDieTargets?.get(sourcePt) ?? [];
+            const right = rightDieTargets?.get(sourcePt) ?? [];
+            const targets = new Set([...left, ...right]);
+            for (const seq of legalSequences) {
+                if (seq.length < 2 || seq[0].from !== sourcePt) continue;
+                for (let i = 1; i < seq.length && seq[i].from === seq[i - 1].to; i++) targets.add(seq[i].to);
+            }
+            return targets;
+        },
+        [ghostDestinations, leftDieTargets, rightDieTargets, legalSequences],
+    );
+
+    const activeLegalDestinations = useMemo(
+        () => computeTargetsForSource(dragSourcePoint ?? selectedPoint),
+        [computeTargetsForSource, dragSourcePoint, selectedPoint],
+    );
 
     const {
-        dragState,
-        handlePointerDown: onCheckerDragStart,
-        handlePointerMove,
-        handlePointerUp,
-        handlePointerCancel,
+        dragState, overlayRef, handlePointerDown: onCheckerDragStart,
+        handlePointerMove, handlePointerUp, handlePointerCancel,
     } = useCheckerDragAndDrop({
         legalDestinations: activeLegalDestinations,
+        resolveLegalDestinations: computeTargetsForSource,
+        onDragStart: (fromPt) => {
+            setDragSourcePoint(fromPt);
+            sensoryFeedbackController.triggerCheckerLift(0.8);
+        },
         onDropMove: (from, to) => {
             suppressClickAfterDragRef.current = true;
             setDragSourcePoint(null);
-            if (onPlayMove) onPlayMove(from, to);
-            else onDestinationClick(to);
+            prepareFlipForStep(from);
+            if (!handlePlayMoveWithFlip) {
+                handleDestinationClickWithFlip(to);
+                return;
+            }
+            const isSingle = (leftDieTargets?.get(from) ?? []).includes(to) || (rightDieTargets?.get(from) ?? []).includes(to);
+            if (isSingle) {
+                handlePlayMoveWithFlip(from, to);
+                return;
+            }
+            const res = resolveDestinationClick(
+                { legalSequences, board, player, selectedSource: from, higherDieFirst: true },
+                to,
+            );
+            if (res.kind !== 'none') res.moves.forEach((m) => handlePlayMoveWithFlip(m.from, m.to));
         },
-        onTapPoint: () => {
-            setDragSourcePoint(null);
-        },
+        onTapPoint: () => setDragSourcePoint(null),
         onCancelDrag: () => {
             suppressClickAfterDragRef.current = true;
             setDragSourcePoint(null);
@@ -159,6 +222,16 @@ const BoardComponent: React.FC<BoardProps> = ({
     const isAwaitingRoll = gamePhase === 'HUMAN_WAITING_ROLL' && !state.dice;
     const isAiPhase = gamePhase === 'AI_TURN_ROLLING' || gamePhase === 'AI_TURN_SHOWING_ARROWS';
 
+    const handleRollWithClick = useCallback(() => {
+        sensoryFeedbackController.triggerMechanicalClick();
+        onRoll?.();
+    }, [onRoll]);
+
+    const handleConfirmWithClick = useCallback(() => {
+        sensoryFeedbackController.triggerMechanicalClick();
+        onConfirm?.();
+    }, [onConfirm]);
+
     const onPointClick = useCallback(
         (...args: Parameters<typeof handlePointClick>) => {
             if (suppressClickAfterDragRef.current) {
@@ -167,12 +240,12 @@ const BoardComponent: React.FC<BoardProps> = ({
             }
             if (diceAnimation.areCheckerClicksLocked) return;
             if (isAwaitingRoll) {
-                onRoll?.();
+                handleRollWithClick();
                 return;
             }
             handlePointClick(...args);
         },
-        [diceAnimation.areCheckerClicksLocked, isAwaitingRoll, onRoll, handlePointClick],
+        [diceAnimation.areCheckerClicksLocked, isAwaitingRoll, handleRollWithClick, handlePointClick],
     );
 
     const handleBackgroundClick = useCallback(
@@ -194,8 +267,14 @@ const BoardComponent: React.FC<BoardProps> = ({
 
     if (isLoading) return <BoardSkeleton />;
 
+    const visibleOpponentArrows =
+        coachHighlight || (state.dice && state.turn !== 'O') || doublingOfferedBy === player
+            ? undefined
+            : (opponentHighlight ?? undefined);
+
     return (
         <div
+            ref={boardContainerRef}
             id="backgammon-board"
             data-testid="backgammon-board"
             data-dice-rolling={diceAnimation.isRolling ? 'true' : 'false'}
@@ -220,40 +299,26 @@ const BoardComponent: React.FC<BoardProps> = ({
                 Flèches directionnelles pour naviguer, Entrée pour sélectionner, 1 et 2 pour changer de dé, Échap pour désélectionner.
             </div>
             <BoardFrame theme={theme}>
-                {(coachHighlight || (opponentHighlight && opponentHighlight.length > 0)) && (
+                {(coachHighlight || (visibleOpponentArrows && visibleOpponentArrows.length > 0)) && (
                     <CoachArrows
                         played={coachHighlight?.played}
                         optimal={coachHighlight?.optimal}
-                        opponent={
-                            coachHighlight
-                                ? undefined
-                                : !state.dice
-                                  ? (opponentHighlight ?? undefined)
-                                  : state.turn === 'O'
-                                    ? (opponentHighlight ?? undefined)
-                                    : undefined
-                        }
+                        opponent={visibleOpponentArrows}
                         orientation={orientation}
                     />
                 )}
 
                 {isMatchStarted && (
                     <BoardCenterControls
-                        gamePhase={gamePhase}
-                        onRoll={onRoll ?? (() => { })}
-                        onConfirm={onConfirm ?? (() => { })}
-                        onUndo={onUndo ?? (() => { })}
-                        canUndo={canUndo}
-                        canConfirm={canConfirm}
-                        hasDice={Boolean(state.dice)}
-                        canDouble={canDouble}
-                        cubeValue={state.cubeValue}
-                        doublingOfferedBy={doublingOfferedBy}
-                        onOfferDouble={onOfferDouble}
-                        onTakeDouble={onTakeDouble}
-                        onPassDouble={onPassDouble}
-                        autoConfirmEnabled={autoConfirmEnabled}
-                        onToggleAutoConfirm={onToggleAutoConfirm}
+                        gamePhase={gamePhase} onRoll={handleRollWithClick} onConfirm={handleConfirmWithClick}
+                        onUndo={onUndo ?? (() => {})} canUndo={canUndo} canConfirm={canConfirm}
+                        hasDice={Boolean(state.dice)} canDouble={canDouble} cubeValue={state.cubeValue}
+                        doublingOfferedBy={doublingOfferedBy} onOfferDouble={onOfferDouble}
+                        onTakeDouble={onTakeDouble} onPassDouble={onPassDouble}
+                        autoConfirmEnabled={autoConfirmEnabled} onToggleAutoConfirm={onToggleAutoConfirm}
+                        autoConfirmMode={autoConfirmMode} onSelectAutoConfirmMode={onSelectAutoConfirmMode}
+                        onCycleAutoConfirmMode={onCycleAutoConfirmMode}
+                        gameSpeed={gameSpeed} onCycleGameSpeed={onCycleGameSpeed}
                     />
                 )}
 
@@ -263,36 +328,32 @@ const BoardComponent: React.FC<BoardProps> = ({
                     <BoardPlayfieldGrid
                         topRow={TOP_ROW} bottomRow={BOTTOM_ROW} board={board} player={player} off={off}
                         ghostDestinations={boardGhostDestinations} hoverTargets={hoverTargets} movableSources={movableSources}
-                        selectedPoint={selectedPoint} opponentHighlight={coachHighlight ? null : opponentHighlight} focusedPoint={focusedPoint}
-                        theme={theme} swapColors={swapColors} onBackgroundClick={handleBackgroundClick}
+                        selectedPoint={selectedPoint} opponentHighlight={visibleOpponentArrows ?? null} focusedPoint={focusedPoint}
+                        hiddenAt={hiddenAt} theme={theme} swapColors={swapColors} onBackgroundClick={handleBackgroundClick}
                         onOffClick={handleOffClick} onOffRightClick={handleOffRightClick} onPointClick={onPointClick}
-                        onCheckerDoubleClick={onCheckerDoubleClick} onPointRightClick={handlePointRightClick}
-                        onPointKeyDown={handlePointKeyDown} onPointFocus={handlePointFocus}
+                        onPointRightClick={handlePointRightClick} onPointKeyDown={handlePointKeyDown} onPointFocus={handlePointFocus}
                         onMouseEnterPoint={handleMouseEnterPoint} onMouseLeavePoint={handleMouseLeavePoint}
                         onCheckerPointerDown={(pt, color, e) => {
                             if (diceAnimation.areCheckerClicksLocked) return;
                             if (barReentry.areOtherCheckersLocked && pt !== barReentry.barPoint) return;
-                            setDragSourcePoint(pt);
                             onCheckerDragStart(pt, color, e);
                         }}
                         centralBarProps={{
-                            barX: bar.X, barO: bar.O, isXTurn: isX,
-                            cubeValue: state.cubeValue, cubeOwner: state.cubeOwner, canDouble,
-                            onBarClick: handleBarClick, onBarDoubleClick: onCheckerDoubleClick,
-                            onBarRightClick: handleBarRightClick, onOfferDouble,
+                            barX: Math.max(0, bar.X - (hiddenAt.get(HIDDEN_X_BAR_KEY) ?? 0)),
+                            barO: Math.max(0, bar.O - (hiddenAt.get(HIDDEN_O_BAR_KEY) ?? 0)),
+                            isXTurn: isX, cubeValue: state.cubeValue, cubeOwner: state.cubeOwner, canDouble,
+                            onBarClick: handleBarClick, onBarRightClick: handleBarRightClick, onOfferDouble,
                             xBarPoint: X_BAR, oBarPoint: O_BAR, theme, swapColors,
                             isDanced: barReentry.isDanced, dancedMessage: barReentry.dancedMessage,
                         }}
                     />
 
                     <BoardDiceRiver
-                        dice={isAiPhase ? null : state.dice}
-                        usedDice={usedDice}
-                        selectedDie={selectedDie}
+                        dice={isAiPhase ? null : state.dice} usedDice={usedDice} selectedDie={selectedDie}
                         opponentDice={isAiPhase ? (state.dice ?? opponentDice) : opponentDice}
-                        onDiceClick={onDiceClick}
-                        onSelectDie={onSelectDie}
-                        onDieDoubleClick={onDieDoubleClick}
+                        onDiceClick={onDiceClick} onSelectDie={onSelectDie}
+                        canConfirm={canConfirm && !autoConfirmEnabled && gamePhase === 'HUMAN_READY_TO_COMMIT'}
+                        onConfirmTurn={handleConfirmWithClick}
                     />
                 </FeltSurface>
 
@@ -304,7 +365,8 @@ const BoardComponent: React.FC<BoardProps> = ({
                 />
             </BoardFrame>
 
-            <DraggedCheckerOverlay dragState={dragState} />
+            <FlyingCheckerOverlay flights={flights} onFlightComplete={completeFlight} />
+            <DraggedCheckerOverlay dragState={dragState} overlayRef={overlayRef} />
         </div>
     );
 };

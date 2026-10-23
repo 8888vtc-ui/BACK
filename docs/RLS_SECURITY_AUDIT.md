@@ -18,6 +18,10 @@ L'audit des politiques de sécurité Row Level Security (RLS) a porté sur les t
 - `game_rooms` (salles de jeu multijoueur)
 - `room_actions` (actions et coups multijoueur en temps réel)
 - `room_presence_sessions` (présence et battements de cœur)
+- `recurring_errors` (erreurs récurrentes par concept et planification FSRS — migration `20261020000000` & `20261024000000`)
+- `coach_explanations` (cache L2 partagé des explications Coach IA — migration `20261023000000`)
+- `daily_puzzles` & `user_puzzle_attempts` (puzzles quotidiens certifiés Open Sage 3-ply et tentatives — migration `20261024000000`)
+- `user_subscriptions` & `coach_usage_logs` (abonnements Stripe VIP et quotas journaliers Coach IA — migration `20261025000000`)
 
 Bien que l'activation de RLS (`ALTER TABLE ... ENABLE ROW LEVEL SECURITY`) soit présente sur **100% des tables**, plusieurs politiques d'insertion et de mise à jour présentaient des clauses de contrôle trop permissives (`with check (true)` ou `using (true)`), créant un risque de falsification de données ou de manipulation d'état.
 
@@ -63,6 +67,12 @@ Un script de migration de durcissement a été généré : [`supabase/migrations
 - **Problème initial** : Les participants pouvaient modifier les valeurs de jeu sans validation des bornes minimales.
 - **Remédiation** :
   - Ajout des contraintes `match_length >= 0`, `score_x >= 0`, `score_o >= 0`, `cube_value >= 1` dans la clause `WITH CHECK`.
+
+### 3.6. Tables Pédagogiques, Puzzles FSRS & Quotas Stripe (Migrations `20261020` à `20261025`)
+- **`recurring_errors` ([`20261020000000_recurring_errors.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261020000000_recurring_errors.sql))** : RLS strict `auth.uid() = user_id` en lecture/écriture + RPC atomique `upsert_recurring_error()`.
+- **`coach_explanations` ([`20261023000000_shared_coach_explanations_cache.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261023000000_shared_coach_explanations_cache.sql))** : cache L2 partagé indexé par `cache_key` en lecture publique et insertion contrôlée.
+- **`daily_puzzles` & `user_puzzle_attempts` ([`20261024000000_glicko2_daily_puzzle_fsrs.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261024000000_glicko2_daily_puzzle_fsrs.sql))** : lecture publique des puzzles certifiés Open Sage (`daily_puzzles`) ; lecture/insertion restreintes à `auth.uid() = user_id` sur `user_puzzle_attempts` ; RPC `submit_daily_puzzle_attempt()` et `get_due_fsrs_reviews()`.
+- **`user_subscriptions` & `coach_usage_logs` ([`20261025000000_subscription_quotas_stripe.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261025000000_subscription_quotas_stripe.sql))** : lecture limitée à `auth.uid() = user_id` ; écriture des abonnements réservée au `service_role` (Webhook Stripe `/api/stripe/webhook`) ; contrôle et incrémentation atomiques du quota (3 analyses / 24h) via la RPC `check_and_increment_coach_quota()`.
 
 ---
 

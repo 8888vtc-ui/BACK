@@ -55,6 +55,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
 
     return (
         <div
+            data-checker-top={isTopChecker ? 'true' : undefined}
             data-gpu-will-change={getScopedWillChange(isActiveMotion)}
             data-checker-pattern={getCheckerPatternKind(color)}
             className={`relative flex items-center justify-center select-none transition-[transform,opacity] duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] touch-none ${isInteractive

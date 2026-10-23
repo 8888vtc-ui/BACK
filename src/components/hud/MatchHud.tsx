@@ -48,6 +48,10 @@ export interface MatchHudProps {
     isGameActive?: boolean;
     /** État courant du plateau pour sauvegarde atomique en cas de sortie vers le Lobby. */
     boardState?: BoardState;
+    /** Empreinte SHA-256 d'engagement pré-match (Provably Fair). */
+    serverSeedHash?: string;
+    /** Ouvre le panneau d'audit cryptographique des dés en 1 clic. */
+    onOpenDiceAudit?: () => void;
 }
 
 const DIFFICULTY_LABEL: Record<AIDifficulty, string> = {
@@ -64,6 +68,7 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
     prX, prO, isAiThinking,
     difficulty = 'expert', pipX, pipO, lastMoveNotation,
     onBackToLobby, playerColor = 'X', isGameActive = false, boardState,
+    serverSeedHash, onOpenDiceAudit,
 }) => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
@@ -164,22 +169,11 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                     </button>
                     <div id="match-hud" className="flex items-center min-w-0 overflow-hidden">
                         <HudScoreboard
-                            matchLength={matchLength}
-                            scoreX={scoreX}
-                            scoreO={scoreO}
-                            turn={turn}
-                            crawford={crawford}
-                            dice={dice}
-                            usedDice={usedDice}
-                            prX={prX}
-                            prO={prO}
-                            isAiThinking={isAiThinking ?? turn === 'O'}
-                            pipX={pipX}
-                            pipO={pipO}
-                            opponentLabel={DIFFICULTY_LABEL[difficulty]}
-                            playerColor={playerColor}
-                            cubeValue={cubeValue}
-                            cubeOwner={cubeOwner}
+                            matchLength={matchLength} scoreX={scoreX} scoreO={scoreO} turn={turn}
+                            crawford={crawford} dice={dice} usedDice={usedDice} prX={prX} prO={prO}
+                            isAiThinking={isAiThinking ?? turn === 'O'} pipX={pipX} pipO={pipO}
+                            opponentLabel={DIFFICULTY_LABEL[difficulty]} playerColor={playerColor}
+                            cubeValue={cubeValue} cubeOwner={cubeOwner}
                         />
                     </div>
                 </div>
@@ -208,8 +202,33 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                     )}
                 </div>
 
-                {/* ZONE DROITE : Médaillon Coach + Audio + Réglages encastrés */}
+                {/* ZONE DROITE : Badge Provably Fair + Médaillon Coach + Audio + Réglages encastrés */}
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                    {(serverSeedHash || onOpenDiceAudit) && (
+                        <button
+                            type="button"
+                            onClick={onOpenDiceAudit}
+                            data-testid="hud-provably-fair-btn"
+                            title={
+                                isGameActive && serverSeedHash
+                                    ? `Empreinte SHA-256 : ${serverSeedHash} (cliquer pour auditer)`
+                                    : 'Vérifier les Dés en 1 Clic (Provably Fair)'
+                            }
+                            className={
+                                isGameActive
+                                    ? 'hidden lg:flex h-8 items-center gap-1 rounded-xl border border-emerald-500/35 bg-[#0a1811]/90 px-2 font-mono text-[10px] font-semibold text-emerald-300/90 transition hover:border-emerald-400 hover:text-emerald-200 active:scale-95'
+                                    : 'flex h-8 items-center gap-1.5 rounded-xl border border-emerald-400/65 bg-gradient-to-b from-[#0f3b28] to-[#081f15] px-2.5 text-[11px] font-bold text-emerald-200 shadow-[inset_0_1px_0_rgba(212,175,55,0.3)] transition hover:border-[#f3c65f] hover:text-white active:scale-95'
+                            }
+                        >
+                            <span aria-hidden="true">{isGameActive ? '🔒' : '🛡'}</span>
+                            <span>
+                                {isGameActive && serverSeedHash
+                                    ? `Empreinte SHA-256 : ${serverSeedHash.slice(0, 4)}...${serverSeedHash.slice(-4)}`
+                                    : 'Vérifier les Dés en 1 Clic (Provably Fair)'}
+                            </span>
+                        </button>
+                    )}
+
                     {onTriggerCoach && (
                         <button
                             type="button"
@@ -246,20 +265,11 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
 
                         <HudSettingsMenu
                             isOpen={isSettingsOpen}
-                            onClose={() => {
-                                setIsSettingsOpen(false);
-                                settingsToggleBtnRef.current?.focus();
-                            }}
-                            menuThemeClass={hudClasses.menu}
-                            theme={theme}
-                            onThemeToggle={onThemeToggle}
-                            isSoundMuted={isMuted}
-                            onToggleSound={toggleMute}
-                            onOpenExportImport={onOpenExportImport}
-                            onTriggerCoach={onTriggerCoach}
-                            onResetGame={onResetGame}
-                            onResign={onResign}
-                            onBackToLobby={handleLobbyClick}
+                            onClose={() => { setIsSettingsOpen(false); settingsToggleBtnRef.current?.focus(); }}
+                            menuThemeClass={hudClasses.menu} theme={theme} onThemeToggle={onThemeToggle}
+                            isSoundMuted={isMuted} onToggleSound={toggleMute}
+                            onOpenExportImport={onOpenExportImport} onTriggerCoach={onTriggerCoach}
+                            onResetGame={onResetGame} onResign={onResign} onBackToLobby={handleLobbyClick}
                         />
                     </div>
                 </div>
@@ -271,21 +281,13 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
             </header>
 
             <InGameMenuModal
-                isOpen={isLeaveModalOpen}
-                onClose={() => setIsLeaveModalOpen(false)}
-                boardState={boardState}
-                cubeValue={cubeValue}
-                theme={theme}
-                onSelectTheme={(nextTheme) => {
-                    setTheme(nextTheme);
-                    onThemeToggle();
-                }}
-                isSoundMuted={isMuted}
-                onToggleSound={toggleMute}
+                isOpen={isLeaveModalOpen} onClose={() => setIsLeaveModalOpen(false)}
+                boardState={boardState} cubeValue={cubeValue} theme={theme}
+                onSelectTheme={(nextTheme) => { setTheme(nextTheme); onThemeToggle(); }}
+                isSoundMuted={isMuted} onToggleSound={toggleMute}
                 onLeaveToLobby={() => onBackToLobby?.()}
                 onResignGame={() => (onResign ? onResign(1) : onResetGame?.())}
-                onTriggerCoach={onTriggerCoach}
-                onOpenExportImport={onOpenExportImport}
+                onTriggerCoach={onTriggerCoach} onOpenExportImport={onOpenExportImport}
             />
         </>
     );

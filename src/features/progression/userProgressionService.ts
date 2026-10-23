@@ -12,6 +12,7 @@
 
 import { getPuzzleStats } from '../puzzles/puzzleStorage';
 import { PUZZLE_DATABASE } from '../puzzles/puzzleDatabase';
+import { DAILY_PUZZLES_CATALOG, loadLocalPuzzleProfile } from '../../lib/puzzle/puzzleService';
 import { getBlunderBankStats } from '../drills/blunderBank';
 import { OPENING_BOOK } from '../openings/openingDatabase';
 import { loadRecentGames } from '../../lib/offline/persistenceService';
@@ -107,17 +108,19 @@ export function markOpeningMastered(openingId: string): string[] {
  */
 export function getSyncAcademySnapshot(eloOverride?: number, avgPrOverride?: number | null): AcademyProgressSnapshot {
     const puzzleStats = getPuzzleStats();
+    const localPuzzleProfile = loadLocalPuzzleProfile();
     const blunderStats = getBlunderBankStats();
     const masteredOpenings = getMasteredOpeningIds();
 
-    const puzzlesTotal = Math.max(1, PUZZLE_DATABASE.length);
+    const puzzlesTotal = Math.max(1, DAILY_PUZZLES_CATALOG.length, PUZZLE_DATABASE.length);
     const puzzlesSolved = Math.min(puzzlesTotal, puzzleStats.solvedPuzzleIds.length);
+    const effectivePuzzleStreak = Math.max(puzzleStats.currentStreak, localPuzzleProfile.currentStreak);
     const openingsTotal = Math.max(1, OPENING_BOOK.length);
     const openingsMastered = Math.min(openingsTotal, masteredOpenings.length);
 
     const badges: Array<{ id: string; icon: string; label: string }> = [];
-    if (puzzleStats.currentStreak >= 1) {
-        badges.push({ id: 'streak', icon: '🔥', label: `Série ${puzzleStats.currentStreak}j` });
+    if (effectivePuzzleStreak >= 1) {
+        badges.push({ id: 'streak', icon: '🔥', label: `Série ${effectivePuzzleStreak}j` });
     }
     if (puzzlesSolved >= 3) {
         badges.push({ id: 'tactician', icon: '🧩', label: 'Tacticien' });
@@ -132,7 +135,7 @@ export function getSyncAcademySnapshot(eloOverride?: number, avgPrOverride?: num
     return {
         puzzlesSolved,
         puzzlesTotal,
-        puzzleStreak: puzzleStats.currentStreak,
+        puzzleStreak: effectivePuzzleStreak,
         openingsMastered,
         openingsTotal,
         blundersToReview: blunderStats.remainingToReview,

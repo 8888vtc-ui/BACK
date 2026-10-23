@@ -199,4 +199,58 @@ describe('Board & BoardDiceRiver Components', () => {
         fireEvent.click(getByTestId('point-triangle-13'));
         expect(onCheckerClick).toHaveBeenCalledWith(X_BAR);
     });
+
+    it('Chantier 3 : affiche les Ghost Checkers stratifiés à 3 niveaux (Dé haut, Dé bas, Somme d1+d2) et l’anneau d’alerte Blot adverse (#EF4444)', () => {
+        const base = createInitialState(7);
+        const board = [...base.board];
+        board[18] = -1; // Blot adverse unique sur la flèche 18 (cible du dé 6 depuis 24)
+        board[17] = 0;  // Libère la flèche 17 pour la somme combinée 6 + 1 = 7
+        const state = {
+            ...base,
+            board,
+            dice: [6, 1] as [number, number],
+            turn: 'X' as const,
+        };
+
+        const leftDieTargets = new Map<number, number[]>([[24, [18]]]);
+        const rightDieTargets = new Map<number, number[]>([[24, [23]]]);
+
+        const { getByTestId } = render(
+            <Board
+                state={state}
+                leftDieTargets={leftDieTargets}
+                rightDieTargets={rightDieTargets}
+                selectedPoint={24}
+                selectedDie={null}
+                usedDice={[false, false]}
+                onCheckerClick={vi.fn()}
+                onCheckerRightClick={vi.fn()}
+                onDestinationClick={vi.fn()}
+                gamePhase="HUMAN_MOVING"
+            />,
+        );
+
+        // Niveau 1 (Dé haut = 6 sur la flèche 18)
+        const level1 = getByTestId('ghost-checker-18');
+        expect(level1.getAttribute('data-ghost-level')).toBe('1');
+        expect(level1.textContent).toBe('6');
+        expect(level1.style.opacity).toBe('0.38');
+
+        // Anneau d'alerte Blot adverse sur la flèche 18 (#EF4444, 2.5px, opacity 0.7)
+        const blotRing = getByTestId('blot-alert-ring-18');
+        expect(blotRing.style.opacity).toBe('0.7');
+        expect(blotRing.style.border).toContain('2.5px solid');
+
+        // Niveau 2 (Dé bas = 1 sur la flèche 23)
+        const level2 = getByTestId('ghost-checker-23');
+        expect(level2.getAttribute('data-ghost-level')).toBe('2');
+        expect(level2.textContent).toBe('1');
+        expect(level2.style.opacity).toBe('0.22');
+
+        // Niveau 3 (Somme d1+d2 = 7 sur la flèche 17)
+        const level3 = getByTestId('hover-target-combined-17');
+        expect(level3.getAttribute('data-ghost-level')).toBe('3');
+        expect(level3.textContent).toBe('7');
+        expect(level3.style.opacity).toBe('0.45');
+    });
 });

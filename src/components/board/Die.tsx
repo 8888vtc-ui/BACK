@@ -51,8 +51,6 @@ export interface DieProps {
     dataTestId?: string;
     /** Callback au clic. */
     onClick?: (e: React.MouseEvent) => void;
-    /** Callback au double-clic. */
-    onDoubleClick?: (e: React.MouseEvent) => void;
     /** Joue l'animation de lancer au montage (plateau uniquement). */
     animateRoll?: boolean;
 }
@@ -68,7 +66,6 @@ const DieComponent: React.FC<DieProps> = ({
     sizeClass = 'w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12',
     dataTestId,
     onClick,
-    onDoubleClick,
     animateRoll = false,
 }) => {
     const uid = useId().replace(/:/g, '');
@@ -121,7 +118,6 @@ const DieComponent: React.FC<DieProps> = ({
             data-roll-duration-ms={animateRoll && !isReanimated ? rollDurationMs : undefined}
             data-roll-easing={animateRoll && !isReanimated ? DICE_ROLL_DECELERATION_EASING : undefined}
             onClick={onClick}
-            onDoubleClick={onDoubleClick}
             aria-label={label ?? `Dé : ${value}`}
             title={label ?? `Dé : ${value}${used ? ' (déjà utilisé)' : ''}`}
             className={`${sizeClass} relative rounded-xl flex items-center justify-center transition-all duration-200 select-none overflow-hidden ${rollAnimClass} ${used

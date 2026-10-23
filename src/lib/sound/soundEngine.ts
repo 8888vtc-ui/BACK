@@ -10,6 +10,8 @@
  */
 
 import { voiceCoach } from './voiceCoach';
+import { luxuryBoardAudioEngine } from './LuxuryBoardAudioEngine';
+import { sensoryFeedbackController } from './SensoryFeedbackController';
 
 class BackgammonSoundEngine {
     private ctx: AudioContext | null = null;
@@ -57,6 +59,8 @@ class BackgammonSoundEngine {
 
     public toggleMute(): boolean {
         this.isMuted = !this.isMuted;
+        luxuryBoardAudioEngine.setMuted(this.isMuted);
+        sensoryFeedbackController.setSoundEnabled(!this.isMuted);
         if (typeof window !== 'undefined') {
             try {
                 localStorage.setItem('bg_sound_muted', String(this.isMuted));

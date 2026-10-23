@@ -16,6 +16,7 @@
 import { useCallback, useEffect } from 'react';
 import type { Player } from '../engine/backgammonEngine';
 import { useSoundManager } from './useSoundManager';
+import { stopCoachVoice } from './useCoachVoice';
 import { impactHeavy, impactMedium, impactLight } from '../lib/capacitor/haptics';
 import {
     classifyMoveSensoryNuance,
@@ -44,6 +45,7 @@ export function useCheckerSoundFeedback({
 
     return useCallback(
         (from: number, to: number, die?: 0 | 1) => {
+            stopCoachVoice();
             const nuance = classifyMoveSensoryNuance(board, turn, from, to);
 
             onPlayMove(from, to, die);

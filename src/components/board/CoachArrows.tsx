@@ -1,15 +1,12 @@
 'use client';
 
 /**
- * Flèches SVG de trajectoire pour le feedback du Coach.
- *
- * Superpose des flèches SVG entre `from` et `to` pour :
- *   - le coup joué (rouge),
- *   - le coup optimal (vert),
- *   - le coup de l'adversaire IA (cyan).
- *
- * Synchronise automatiquement les abscisses sur les centres DOM réels des flèches
- * (`ResizeObserver`) tout en conservant `pointLayout` en repli synchrone/SSR.
+ * Calque SVG (`pointer-events-none`) des flèches de trajectoire :
+ *   - Persistance du dernier coup adverse (Chantier 3 : courbe de Bézier quadratique
+ *     avec flèche de courbure de 28 px, gris ardoise `rgba(148, 163, 184, 0.52)`,
+ *     épaisseur `2.25px`, point d'origine `r=3.5px`, et croix cinétique rouge `✕`
+ *     sur toute frappe d'un blot joueur).
+ *   - Feedback Coach : coup joué (rouge) vs coup optimal (vert).
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -17,13 +14,28 @@ import type { Move } from '../../engine/backgammonEngine';
 import { pointLayout, VB_W, VB_H, TOP_APEX, BOT_APEX, POINT_W } from './boardGeometry';
 import type { BoardOrientation } from './boardOrientation';
 
+/** Flèche de courbure (sagitta) de la courbe de Bézier quadratique du dernier coup adverse (28 px). */
+export const OPPONENT_ARROW_CURVATURE_PX = 28;
+/** Couleur gris ardoise translucide du dernier coup adverse. */
+export const OPPONENT_ARROW_STROKE = 'rgba(148, 163, 184, 0.52)';
+/** Épaisseur du trait du dernier coup adverse (2.25 px). */
+export const OPPONENT_ARROW_STROKE_WIDTH = 2.25;
+/** Rayon du point d'origine du dernier coup adverse (3.5 px). */
+export const OPPONENT_ORIGIN_RADIUS = 3.5;
+
+export interface OpponentSubMoveArrow {
+    readonly from: number;
+    readonly to: number;
+    readonly isHit?: boolean;
+}
+
 export interface CoachArrowsProps {
     /** Coups joués (rouge). */
     played?: Move[];
     /** Coups optimaux (vert). */
     optimal?: Move[];
-    /** Coups de l'adversaire IA (indigo/cyan). */
-    opponent?: { from: number; to: number }[];
+    /** Sous-coups (2 à 4) du dernier tour adverse persistés jusqu'au lancer ou videau. */
+    opponent?: OpponentSubMoveArrow[];
     /** Orientation du plateau (normal ou inverted). */
     orientation?: BoardOrientation;
 }
@@ -35,12 +47,19 @@ export interface ArrowCoords {
     x2: number;
     y2: number;
     path: string;
+    isHit?: boolean;
 }
 
 /**
- * Calcule un tracé de Bézier courbé en arche vers le centre du plateau pour éviter les piles de pions.
+ * Calcule un tracé de Bézier quadratique avec flèche de courbure de 28 px vers le centre du plateau.
  */
-export function computeCurvedArrowPath(x1: number, y1: number, x2: number, y2: number): string {
+export function computeCurvedArrowPath(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    curvaturePx: number = OPPONENT_ARROW_CURVATURE_PX,
+): string {
     const dx = x2 - x1;
     const dy = y2 - y1;
     const dist = Math.hypot(dx, dy);
@@ -48,12 +67,10 @@ export function computeCurvedArrowPath(x1: number, y1: number, x2: number, y2: n
 
     const mx = (x1 + x2) / 2;
     const my = (y1 + y2) / 2;
-
-    const curveAmount = Math.min(48, Math.max(18, dist * 0.14));
     const toCenterSign = my < VB_H / 2 ? 1 : -1;
 
-    const cx = Math.abs(dy) > Math.abs(dx) * 1.5 ? mx + 20 : mx;
-    const cy = my + curveAmount * toCenterSign;
+    const cx = Math.abs(dy) > Math.abs(dx) * 1.5 ? mx + curvaturePx : mx;
+    const cy = my + curvaturePx * toCenterSign;
 
     return `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
 }
@@ -66,6 +83,7 @@ export function computeArrowCoords(
     to: number,
     orientation: BoardOrientation = 'normal',
     domCenters?: Readonly<Record<string, number>> | null,
+    isHit?: boolean,
 ): ArrowCoords {
     const isToOff = to === 0 || to === 25;
     const fromLayout = pointLayout(from, orientation, false);
@@ -80,9 +98,9 @@ export function computeArrowCoords(
     const fromY = fromLayout.top ? TOP_APEX - 40 : BOT_APEX + 40;
     const toY = toLayout.top ? TOP_APEX - 40 : BOT_APEX + 40;
 
-    const path = computeCurvedArrowPath(fromX, fromY, toX, toY);
+    const path = computeCurvedArrowPath(fromX, fromY, toX, toY, OPPONENT_ARROW_CURVATURE_PX);
 
-    return { x1: fromX, y1: fromY, x2: toX, y2: toY, path };
+    return { x1: fromX, y1: fromY, x2: toX, y2: toY, path, isHit };
 }
 
 const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
@@ -139,7 +157,7 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
         [optimal, orientation, domCenters],
     );
     const opponentArrows = useMemo(
-        () => opponent.map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
+        () => opponent.map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters, m.isHit)),
         [opponent, orientation, domCenters],
     );
 
@@ -164,23 +182,44 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
                 <marker id="arrowhead-green" markerWidth="11" markerHeight="8" refX="9.5" refY="4" orient="auto">
                     <polygon points="0 0, 11 4, 0 8, 3 4" fill="#22c55e" />
                 </marker>
-                <marker id="arrowhead-opponent" markerWidth="11" markerHeight="8" refX="9.5" refY="4" orient="auto">
-                    <polygon points="0 0, 11 4, 0 8, 3 4" fill="#38bdf8" />
+                <marker id="arrowhead-opponent" markerWidth="10" markerHeight="8" refX="8.5" refY="4" orient="auto">
+                    <polygon points="0 0, 10 4, 0 8, 2.5 4" fill={OPPONENT_ARROW_STROKE} />
                 </marker>
             </defs>
 
             {opponentArrows.map((a, i) => (
-                <g key={`opp-${i}`} className="transition-opacity duration-300">
+                <g key={`opp-${i}`} data-testid={`opponent-arrow-${i}`} className="transition-opacity duration-300">
                     <path
+                        data-testid={`opponent-arrow-path-${i}`}
                         d={a.path}
                         fill="none"
-                        stroke="#38bdf8"
-                        strokeWidth="2.75"
+                        stroke={OPPONENT_ARROW_STROKE}
+                        strokeWidth={OPPONENT_ARROW_STROKE_WIDTH}
                         strokeLinecap="round"
                         markerEnd="url(#arrowhead-opponent)"
-                        opacity="0.9"
                     />
-                    <circle cx={a.x1} cy={a.y1} r="3.5" fill="#38bdf8" opacity="0.9" />
+                    <circle
+                        data-testid={`opponent-arrow-origin-${i}`}
+                        cx={a.x1}
+                        cy={a.y1}
+                        r={OPPONENT_ORIGIN_RADIUS}
+                        fill={OPPONENT_ARROW_STROKE}
+                    />
+                    {a.isHit && (
+                        <g data-testid={`opponent-hit-cross-${i}`}>
+                            <text
+                                x={a.x2}
+                                y={a.y2}
+                                textAnchor="middle"
+                                dominantBaseline="central"
+                                fill="#EF4444"
+                                fontSize="16"
+                                fontWeight="900"
+                            >
+                                ✕
+                            </text>
+                        </g>
+                    )}
                 </g>
             ))}
 

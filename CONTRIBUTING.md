@@ -1,6 +1,6 @@
-# Guide de Contribution — Backgammon Suite
+# Guide de Contribution — Backgammon Tour & Gammon Academy
 
-Merci de vous intéresser à la contribution sur **Backgammon Pro** ! Ce projet open-source vise à offrir la meilleure expérience de Backgammon compétitif et d'entraînement assisté par IA.
+Merci de vous intéresser à la contribution sur **Backgammon Tour — Cercle Monte-Carlo & Gammon Academy** ! Ce projet vise à offrir la meilleure expérience de Backgammon compétitif et d'entraînement assisté par IA.
 
 ---
 
@@ -14,8 +14,8 @@ Nous nous engageons à offrir un environnement accueillant, respectueux et bienv
 
 Pour compiler et tester l'ensemble du projet, vous aurez besoin de :
 - **Node.js** : Version `20.x` ou supérieure (avec `npm 10+`).
-- **Python** : Version `3.12.x` avec `pip`.
-- **Docker & Docker Compose** *(recommandé)* : Pour exécuter le microservice d'analyse GNU Backgammon dans son environnement natif Debian.
+- **Python** : Version `3.11+` avec `pip`.
+- **Docker & Docker Compose** *(recommandé)* : Pour exécuter le microservice d'analyse neuronal **Open Sage (`bgsage-service`)**.
 - **Git** : Pour le versionnement du code.
 
 ---
@@ -33,14 +33,14 @@ cd backgammon
 npm install
 ```
 
-### 3.3 Installer les Dépendances Backend (FastAPI Python)
+### 3.3 Installer les Dépendances Backend (FastAPI Open Sage)
 ```bash
 # Optionnel : activez un environnement virtuel
 python -m venv venv
 # Linux / macOS : source venv/bin/activate
 # Windows : .\venv\Scripts\Activate.ps1
 
-pip install -r backend-engine/requirements.txt
+pip install -r bgsage-service/requirements.txt -r bgsage-service/requirements-dev.txt
 ```
 
 ### 3.4 Lancer l'Application en Développement
@@ -48,9 +48,9 @@ pip install -r backend-engine/requirements.txt
 # Terminal 1 : Frontend Next.js
 npm run dev
 
-# Terminal 2 (optionnel si vous travaillez sur le moteur) : Backend FastAPI
-cd backend-engine
-uvicorn app.main:app --reload --port 8000
+# Terminal 2 (optionnel si vous travaillez sur le moteur localement) : Backend Open Sage
+cd bgsage-service
+uvicorn app.main:app --reload --port 8080
 ```
 L'application web est accessible sur `http://localhost:3000`.
 
@@ -58,12 +58,12 @@ L'application web est accessible sur `http://localhost:3000`.
 
 ## 4. Stack Complète via Docker Compose
 
-Pour tester l'intégralité de la pile (Frontend + Backend GNU Backgammon avec son binaire CLI natif) en conditions de production :
+Pour tester l'intégralité de la pile (Frontend + Microservice Open Sage `bgsage-service`) en conditions de production :
 ```bash
 docker compose up --build -d
 ```
 - Frontend : `http://localhost:3000`
-- Backend : `http://localhost:8000` (sonde `/health`)
+- Backend Open Sage : `http://localhost:8080` (sonde `/api/health`)
 
 ---
 
@@ -75,8 +75,8 @@ Avant de soumettre toute modification, vous devez vous assurer que **100% de la 
 |---|---|---|
 | `npm run lint` | Validation ESLint | **0 erreur** (code de sortie 0) |
 | `npm run typecheck` | Validation TypeScript | **0 erreur de typage** |
-| `npm test` | Suite de tests unitaires Vitest | **619 tests réussis (104 fichiers)** |
-| `pytest backend-engine/tests -v` | Tests unitaires Python | **30 tests passés avec succès** |
+| `npm test` | Suite de tests unitaires Vitest | **1 145+ tests réussis (201+ fichiers, 0 échec)** |
+| `pytest bgsage-service/tests -v` | Tests unitaires Python Open Sage | **100% des tests passés** |
 | `npm run test:e2e:desktop` | Tests End-to-End Playwright | **27 tests E2E passés** |
 | `npm run build` | Build de production Next.js | **Compilation sans erreur** |
 

@@ -32,6 +32,7 @@ import {
 } from './coachPanelHelpers';
 import { useI18n } from '../../lib/i18n';
 import { soundEngine } from '../../lib/sound/soundEngine';
+import { useCoachVoice } from '../../hooks/useCoachVoice';
 
 // Ré-exports pour compatibilité ascendante (tests et consommateurs existants).
 export {
@@ -96,6 +97,7 @@ export default function CoachPanel({
     matchStatsO,
 }: CoachPanelProps) {
     const { t, locale } = useI18n();
+    const { isVoiceEnabled, isSpeaking, speak, stop, toggleVoice } = useCoachVoice();
 
     const { triggerMode, autoThreshold, isOffline } = useCoachPreferences({
         triggerMode: propTriggerMode,
@@ -160,10 +162,12 @@ export default function CoachPanel({
     }, [positionKey, verdict, playedMove, optimalMove, triggerMode, autoThreshold, isOffline, executeExplain]);
 
     function handleExplainClick() {
+        manualExplainRef.current = true;
         void executeExplain(false);
     }
 
     function handleDismissClick() {
+        stop();
         soundEngine.stopCoachVoice();
         onCandidateHover?.(null);
         abort();
@@ -173,17 +177,24 @@ export default function CoachPanel({
     const currentRawExplanation = cachedExplanation?.rawText || streamedText || explanation;
     const parsed: ParsedExplanation = cachedExplanation || parseStreamedExplanation(currentRawExplanation || '');
     const hasContent = Boolean(currentRawExplanation || isStreaming || cachedExplanation);
+    const speechText = parsed.summary || propTacticalSummary || propSummary || parsed.explanation || currentRawExplanation || '';
 
     const lastSpokenKeyRef = useRef<string | null>(null);
+    const manualExplainRef = useRef(false);
     useEffect(() => {
-        if (!verdict || isStreaming) return;
-        const speechText = parsed.summary || propTacticalSummary || propSummary || currentRawExplanation || '';
-        if (!speechText) return;
+        if (!verdict || isStreaming || !speechText) return;
+        if (verdict !== 'blunder' && !manualExplainRef.current) return;
         const spokenKey = `${playedMove}::${optimalMove}::${verdict}::${speechText.slice(0, 60)}`;
-        if (lastSpokenKeyRef.current === spokenKey) return;
+        if (lastSpokenKeyRef.current === spokenKey && !manualExplainRef.current) return;
         lastSpokenKeyRef.current = spokenKey;
-        soundEngine.speakCoachAlert(speechText, locale);
-    }, [verdict, isStreaming, parsed.summary, propTacticalSummary, propSummary, currentRawExplanation, playedMove, optimalMove, locale]);
+        manualExplainRef.current = false;
+        speak(speechText);
+    }, [verdict, isStreaming, speechText, playedMove, optimalMove, speak]);
+
+    function handleReplayVoice() {
+        if (!speechText) return;
+        speak(speechText, { force: true });
+    }
 
     if (isLoading) {
         return <CoachPanelSkeleton />;
@@ -222,6 +233,10 @@ export default function CoachPanel({
             xgid={xgid}
             candidateMoves={candidateMoves}
             onRolloutCompleted={onRolloutCompleted}
+            isVoiceEnabled={isVoiceEnabled}
+            isSpeaking={isSpeaking}
+            onToggleVoice={toggleVoice}
+            onReplayVoice={speechText ? handleReplayVoice : undefined}
             locale={locale}
             labels={buildCoachViewLabels(t)}
         />

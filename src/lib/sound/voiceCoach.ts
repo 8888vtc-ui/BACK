@@ -28,6 +28,32 @@ export const VOICE_LOCALE_BCP47: Record<VoiceCoachLocale, string> = {
 };
 
 export const VOICE_COACH_STORAGE_KEY = 'bg_voice_coach_enabled';
+export const COACH_VOICE_STORAGE_KEY = 'backgammon.coachVoiceEnabled';
+
+export const VOICE_BCP47_MAP: Record<string, string> = {
+    fr: 'fr-FR',
+    en: 'en-US',
+    es: 'es-ES',
+    de: 'de-DE',
+    ja: 'ja-JP',
+    pt: 'pt-BR',
+    ar: 'ar-SA',
+};
+
+const PREFERRED_VOICE_NAMES: readonly string[] = [
+    'google français',
+    'google us english',
+    'google uk english',
+    'thomas',
+    'audrey',
+    'amélie',
+    'amelie',
+    'daniel',
+    'samantha',
+    'natural',
+    'neural',
+    'google',
+];
 
 interface SpeechHost {
     speechSynthesis?: {
@@ -53,6 +79,74 @@ export function sanitizeTextForSpeech(rawText: string): string {
         .replace(/ΔEq/gi, 'delta equity')
         .replace(/\s+/g, ' ')
         .trim();
+}
+
+/**
+ * Convertit la notation technique brute (ex: "24/18 13/8") et le Markdown en texte fluide.
+ */
+export function cleanCoachTextForSpeech(rawText: string, locale: string = 'fr'): string {
+    if (!rawText) return '';
+    const isFr = locale.toLowerCase().startsWith('fr');
+    const toWord = isFr ? 'vers' : 'to';
+    const barWord = isFr ? 'barre' : 'bar';
+    const offWord = isFr ? 'sortie' : 'off';
+    const deltaWord = isFr ? 'delta équité' : 'delta equity';
+
+    return rawText
+        .replace(/#{1,6}\s*/g, '')
+        .replace(/\*\*([^*]+)\*\*/g, '$1')
+        .replace(/\*([^*]+)\*/g, '$1')
+        .replace(/`([^`]+)`/g, '$1')
+        .replace(/ΔEq/gi, deltaWord)
+        .replace(/\bbar\/(\d+)\*?/gi, `${barWord} ${toWord} $1`)
+        .replace(/\b(\d+)\/off\*?/gi, `$1 ${toWord} ${offWord}`)
+        .replace(/\b(\d+)\/(\d+)\((\d+)\)\*?/g, isFr ? '$1 vers $2 $3 fois' : '$1 to $2 $3 times')
+        .replace(/\b(\d+)\/(\d+)\*?/g, `$1 ${toWord} $2`)
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/**
+ * Sélectionne la meilleure voix disponible correspondant à la langue active.
+ */
+export function selectBestCoachVoice(
+    voices: readonly SpeechSynthesisVoice[],
+    locale: string,
+): SpeechSynthesisVoice | null {
+    if (!voices || voices.length === 0) return null;
+    const shortLang = (locale || 'fr').toLowerCase().slice(0, 2);
+    const targetBcp47 = (VOICE_BCP47_MAP[shortLang] ?? locale).toLowerCase();
+
+    const matching = voices.filter((v) => {
+        const normalized = (v.lang || '').toLowerCase().replace('_', '-');
+        return normalized === targetBcp47 || normalized.startsWith(shortLang);
+    });
+    if (matching.length === 0) return null;
+
+    let bestVoice = matching[0];
+    let bestScore = -1;
+
+    for (const voice of matching) {
+        let score = 0;
+        const nameLower = (voice.name || '').toLowerCase();
+        const langLower = (voice.lang || '').toLowerCase().replace('_', '-');
+
+        if (langLower === targetBcp47) score += 20;
+        if (voice.localService) score += 15;
+        if (voice.default) score += 5;
+
+        for (let i = 0; i < PREFERRED_VOICE_NAMES.length; i++) {
+            if (nameLower.includes(PREFERRED_VOICE_NAMES[i])) {
+                score += 60 - i * 2;
+                break;
+            }
+        }
+        if (score > bestScore) {
+            bestScore = score;
+            bestVoice = voice;
+        }
+    }
+    return bestVoice;
 }
 
 /**

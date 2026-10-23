@@ -5,6 +5,9 @@
 
 > 📚 **Carte d'orientation** : [`PROJECT_MAP.md`](PROJECT_MAP.md) permet de comprendre
 > le projet en 1 minute et d'ajouter une fonction en 2 minutes. **Lire en premier.**
+>
+> 💎 **Référentiel d'Excellence Master** : [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md)
+> regroupe les spécifications ultimes de compétition : Game Feel FLIP, Glicko-2 Composite, Audio modal & Provably Fair.
 
 > ⚠️ **Charte de scalabilité & Doctrine Atomique obligatoires** : toute nouvelle création de code DOIT
 > respecter les 5 Lois Fondamentales définies dans [`SCALABILITY.md`](SCALABILITY.md) :
@@ -51,9 +54,9 @@ Principes directeurs :
 | Moteur serveur | **Open Sage** (`bgsage-service/`) : FastAPI + moteur neuronal `bgsage` (PR 0.23, 4 niveaux de bot + videau Double/Take/Pass) sur Google Cloud Run |
 | Moteur serveur (legacy) | **Backend Python** (archivé sous `archive/backend_engine_gnubg_legacy/`) : FastAPI + client GNUBG |
 | Coach IA | **Google Gemini `gemini-2.5-flash`** via streaming SSE + Market Window + Cache L2 Supabase (`coach_explanations`) |
-| Persistance | **Supabase** (Postgres + Auth + RLS + Cache Coach L2 + Erreurs Récurrentes) |
+| Persistance | **Supabase** (Postgres + Auth + RLS + Cache Coach L2 + Erreurs Récurrentes + Glicko-2/FSRS + Quotas Stripe) |
 | Mobile & PWA | **Capacitor 8** (iOS/Android) + **PWA Web installable** (Desktop & Mobile) |
-| Tests | **Vitest** (1 105 tests unitaires sur 197 fichiers) + **Playwright** (e2e) |
+| Tests | **Vitest** (1 253 tests unitaires sur 215 fichiers) + **Playwright** (e2e) |
 
 ---
 
@@ -67,61 +70,67 @@ backgammon/
 ├── tailwind.config.ts
 ├── src/
 │   ├── app/                     # App Router : pages + Route Handlers
-│   │   ├── page.tsx             # Écran principal de jeu
-│   │   ├── home/page.tsx        # Écran d'accueil (menu principal + onboarding)
-│   │   ├── drills/page.tsx      # Exercices (blunders)
-│   │   ├── puzzles/page.tsx     # Puzzles quotidiens
-│   │   ├── progression/page.tsx # Progression
+│   │   ├── page.tsx             # Orchestrateur principal (3 vues : LOBBY, GAME, SUMMARY)
+│   │   ├── academy/             # Hub SEO Gammon Academy (/academy, /openings/[roll], /concepts/[slug])
+│   │   ├── drills/page.tsx      # Exercices sur blunders personnels
+│   │   ├── puzzles/page.tsx     # Puzzles quotidiens V2 (unifié avec /daily-puzzle)
+│   │   ├── daily-puzzle/page.tsx# Écran DailyPuzzleScreen V2 (certifié Open Sage 3-ply + FSRS)
+│   │   ├── progression/page.tsx # Dashboard de progression & statistiques
+│   │   ├── pricing/page.tsx     # Grille tarifaire VIP & FAQ (/pricing)
 │   │   └── api/                 # Route Handlers serveur
-│   │       ├── coach/           # Explications LLM (SSE)
-│   │       │   └── review/      # Cours explicatif de fin de partie (SSE)
-│   │       ├── evaluate/        # Évaluation de position
-│   │       ├── rollout/         # Rollouts profonds
+│   │       ├── coach/           # Explications LLM (SSE + quota 402)
+│   │       │   └── review/      # Synthèse & cours explicatif de fin de partie (SSE + quota 402)
+│   │       ├── evaluate/        # Évaluation de position (proxy Open Sage + repli local)
+│   │       ├── rollout/         # Rollouts profonds ([jobId], stream, cancel)
+│   │       ├── stripe/          # Stripe Billing (checkout, webhook)
+│   │       ├── multiplayer/     # Validation serveur d'actions (validate-action)
 │   │       └── health/          # Health check
 │   ├── components/              # Composants React
-│   │   ├── board/               # Plateau (Board.tsx, dés, videau)
+│   │   ├── board/               # Plateau (Board.tsx, dés, videau, animations FLIP)
+│   │   ├── academy/             # Composants Gammon Academy (table des 15 ouvertures, MET, concepts)
 │   │   ├── coach/               # Panneau coach
-│   │   ├── hud/                 # HUD de match, difficulté
+│   │   ├── dice/                # Audit cryptographique des dés (DiceAuditModal.tsx)
+│   │   ├── subscription/        # Soft Paywall VIP (SubscriptionModal.tsx)
+│   │   ├── puzzle/              # Composants Daily Puzzle V2 (DailyPuzzleBoard, StreakBadge)
+│   │   ├── summary/             # Rapport de fin de match (PostMatchTrainingReport, PostMatchAiSynthesis)
+│   │   ├── hud/                 # HUD de match, difficulté, sélecteur de cadence
 │   │   ├── multiplayer/         # Modales multijoueur
 │   │   ├── rating/              # Review de partie, courbes, cours IA (GameReviewCourse)
 │   │   ├── stats/               # Dashboard progression, erreurs récurrentes (RecurringErrorsCard)
 │   │   ├── onboarding/          # Onboarding léger (3 écrans)
-│   │   ├── auth/                # Authentification
-│   │   ├── common/              # ErrorBoundary, i18n, annonces
+│   │   ├── auth/, nav/          # Authentification, barre horlogère, menu compte (UserAccountMenu)
+│   │   ├── common/, modals/     # ErrorBoundary, i18n, conteneur de modales (GameModalsContainer)
 │   │   ├── toast/               # Notifications
 │   │   └── providers/           # AppProviders
-│   ├── engine/                  # Moteur de règles pur (backgammonEngine.ts)
+│   ├── engine/                  # Moteur de règles pur (backgammonEngine.ts, smartClickResolver.ts)
 │   ├── features/                # Logique métier par domaine
-│   │   ├── coach/               # Extracteur, classificateur, prompts
+│   │   ├── academy/             # Données encyclopédiques 3-ply et traductions 6 langues
+│   │   ├── coach/               # Extracteur, classificateur, prompts, logAnalyzer.ts
 │   │   ├── drills/              # Moteur d'exercices
 │   │   ├── multiplayer/         # Validation, Elo, matchmaking, rooms
-│   │   ├── puzzles/             # Puzzles
+│   │   ├── puzzles/             # Adaptateur puzzles
 │   │   ├── rating/              # Analyse de partie, PR
 │   │   ├── openings/            # Base d'ouvertures
 │   │   ├── export/              # XGID/SGF, partage
 │   │   └── knowledge/           # Base de connaissances
-│   ├── hooks/                   # useBackgammonGame, useMultiplayerGame, useBoardTheme…
-│   ├── lib/                     # Services : supabase, i18n, offline, monitoring…
-│   ├── workers/                 # gnubg.worker.ts (WASM)
+│   ├── hooks/                   # useBackgammonGame, useCoach, useCoachQuota, useGameModals…
+│   ├── lib/                     # Services : engine, crypto, subscription, stripe, puzzle, rating, telemetry, gameFeel, sound…
+│   ├── workers/                 # gnubg.worker.ts (évaluateur tri-phase hors thread principal)
 │   └── utils/                   # Utilitaires
-├── bgsage-service/              # Microservice Open Sage (FastAPI + moteur neuronal bgsage)
+├── bgsage-service/              # Microservice Open Sage (FastAPI + moteur neuronal bgsage sur Cloud Run)
 │   ├── app/                     # main.py, models.py, xgid.py, notation.py
 │   ├── tests/                   # Tests pytest (test_xgid.py, test_api.py)
 │   ├── Dockerfile               # python:3.11-slim + build-essential/cmake/git
 │   ├── requirements.txt         # fastapi, uvicorn, pydantic, bgsage
 │   └── requirements-dev.txt     # + pytest, httpx
-├── backend-engine/              # Backend Python legacy (FastAPI + GNUBG, rollouts profonds)
-│   ├── app/                     # main.py, models.py, parsers.py, gnubg_client.py…
-│   ├── tests/                   # Tests Python
-│   ├── Dockerfile
-│   └── requirements.txt
+├── archive/                     # Moteurs historiques archivés (backend_engine_gnubg_legacy, wildbg)
 ├── supabase/
-│   └── migrations/              # Schéma SQL + RLS (dont recurring_errors)
-├── docs/                        # Documentation détaillée
+│   └── migrations/              # 8 migrations SQL + RLS (recurring_errors, cache L2, Glicko-2/FSRS, quotas Stripe)
+├── docs/                        # Documentation détaillée & ADRs
 ├── e2e/                         # Tests Playwright
 ├── ios/                         # Projet Capacitor iOS
 ├── android/                     # Projet Capacitor Android
-└── scripts/                     # Scripts de build mobile
+└── scripts/                     # Scripts de build mobile & benchmarks
 ```
 
 ---
@@ -129,10 +138,9 @@ backgammon/
 ## 4. Répartition des responsabilités
 
 - **Côté client (offline-capable)** : règles du jeu, génération des coups légaux, adversaire IA, évaluation rapide de repli (tri-phase TypeScript + table Bear-Off 54 264 états + Keith Count), extraction de concepts, affichage.
-- **Côté serveur (Route Handlers Next.js)** : explications LLM (SSE), rollouts profonds, évaluation.
-- **`bgsage-service/` (Open Sage)** : moteur neuronal de précision professionnelle (PR 0.23), 3 niveaux de bot (1-ply/2-ply/3-ply), game plans, décision cube. Source d'équités du coach IA.
-- **Backend Python (`backend-engine/`, legacy)** : moteur GNUBG serveur (rollouts lourds, pool de workers) — conservé uniquement pour les rollouts profonds asynchrones.
-- **Supabase** : identité, historique, statistiques, multijoueur temps réel.
+- **Côté serveur (Route Handlers Next.js)** : explications LLM (SSE), contrôle de quota Coach IA (`402`), Stripe Checkout & Webhooks, rollouts profonds, évaluation.
+- **`bgsage-service/` (Open Sage)** : moteur neuronal de précision professionnelle (PR 0.23), 4 niveaux de bot (1-ply bruité / 1-ply / 2-ply / 3-ply), game plans, décision cube. Source d'équités du coach IA.
+- **Supabase** : identité, historique, statistiques, cache Coach L2, puzzles FSRS, abonnements Stripe, multijoueur temps réel.
 
 ---
 
@@ -214,18 +222,18 @@ aucun miroir ni inversion :
 
 Module **100 % pur**, sans dépendance React/Node/navigateur :
 
-- Représentation du plateau : tableau de 26 entiers (`board[0]` = barre X, `board[1..24]` = flèches, `board[25]` = barre O ; positif = X, négatif = O).
+- Représentation du plateau : tableau de 26 entiers (`board[0]` = barre O, `board[1..24]` = flèches, `board[25]` = barre X ; positif = X, négatif = O).
 - Génération exhaustive des coups légaux (`generateLegalMoves`, `computeLegalTargets`).
 - Machine à états de partie, videau, bear-off, gammons/backgammons.
 - Sérialisation XGID, pip count, borne-off count.
 
-### 5.2 Moteur Open Sage (bgsage-service/) & Client src/lib/engine/bgsageClient.ts
+### 5.2 Moteur Open Sage (bgsage-service/) & Client `src/lib/engine/bgsageClient.ts`
 - **Moteur neuronal Open Sage (bgsage sur Google Cloud Run)** :
-  - **Service FastAPI (bgsage-service/)** : déployé sur Google Cloud Run (https://bgsage-service-468274233732.europe-west1.run.app), exposant /api/evaluate, /api/evaluate-board, /api/selfplay, /api/health.
-  - **Client TypeScript (src/lib/engine/bgsageClient.ts)** : pilote les coups de pions des bots (selectBotMoveWithBgsage), les décisions de videau (evaluateBotCubeWithBgsage) et le Coach IA (evaluateWithBgsage).
+  - **Service FastAPI (`bgsage-service/`)** : déployé sur Google Cloud Run (`https://bgsage-service-468274233732.europe-west1.run.app`), exposant `/api/evaluate`, `/api/evaluate-board`, `/api/selfplay`, `/api/health`.
+  - **Client TypeScript (`src/lib/engine/bgsageClient.ts`)** : pilote les coups de pions des bots (`selectBotMoveWithBgsage`), les décisions de videau (`evaluateBotCubeWithBgsage`) et le Coach IA (`evaluateWithBgsage`).
   - **Retrait de WildBG WASM** : WildBG a été retiré au profit exclusif d'Open Sage.
-- **Client Fallback Hors-Ligne** : src/lib/engine/evaluator.ts exposant l'évaluation tri-phase instantanée hors-ligne.
-- **Doc de référence** : DOCS_ENGINE.md et bgsage-service/README.md.
+- **Client Fallback Hors-Ligne** : `src/lib/engine/evaluator.ts` exposant l'évaluation tri-phase instantanée hors-ligne.
+- **Doc de référence** : [`DOCS_ENGINE.md`](DOCS_ENGINE.md) et [`bgsage-service/README.md`](bgsage-service/README.md).
 
 ### 5.3 Classificateur d'erreurs — `src/features/coach/moveClassifier.ts`
 
@@ -245,26 +253,31 @@ Fonction pure `Position + contexte → PositionConcepts` : pip counts, classific
 
 ### 5.5 Coach LLM — `src/app/api/coach/route.ts`
 
-- Route Handler serveur (clé API côté serveur) avec streaming SSE.
-- Fournisseur pluggable (OpenAI, Anthropic, Ollama).
-- Cache d'explications (`src/features/coach/explanationCache.ts`).
+- Route Handler serveur (clé API côté serveur) avec streaming SSE et contrôle de quota (`402 Payment Required` au-delà de 3 analyses gratuites / 24h).
+- Fournisseur principal Google Gemini (`gemini-2.5-flash`) + Cache L2 partagé Supabase (`coach_explanations`).
 - Mode dégradé : explication règle-basée locale (`generateRuleBasedExplanation`).
 
-### 5.5bis Cours explicatif de fin de partie — `src/app/api/coach/review/route.ts`
+### 5.5bis Cours explicatif & Synthèse IA de fin de partie — `src/app/api/coach/review/route.ts`
 
-- Route Handler serveur (streaming SSE) qui reçoit le bilan complet d'une partie (`CompleteGameAnalysis`).
+- Route Handler serveur (streaming SSE + contrôle de quota `402`) qui reçoit le bilan complet d'une partie (`CompleteGameAnalysis`).
 - Génère un cours pédagogique structuré (titre, résumé, forces, faiblesses, leçons, prochaines étapes).
 - Prompts dans [`src/features/coach/gameReviewPrompts.ts`](src/features/coach/gameReviewPrompts.ts:1) + repli local déterministe.
-- Affiché dans l'onglet « 🎓 Cours IA » de [`GameReviewModal`](src/components/rating/GameReviewModal.tsx:20) via [`GameReviewCourse`](src/components/rating/GameReviewCourse.tsx:1).
+- Affiché dans [`PostMatchAiSynthesis`](src/components/summary/PostMatchAiSynthesis.tsx:29) et dans l'onglet « 🎓 Cours IA » de [`GameReviewModal`](src/components/rating/GameReviewModal.tsx:20) via [`GameReviewCourse`](src/components/rating/GameReviewCourse.tsx:1).
 
-### 5.6 Adversaire IA — src/hooks/useBackgammonGame.ts & src/lib/engine/bgsageClient.ts
+### 5.6 Adversaire IA — `src/hooks/useBackgammonGame.ts` & `src/lib/engine/bgsageClient.ts`
 
 4 niveaux propulsés par **Open Sage** (bgsage-service sur Google Cloud Run) :
 - **Grandmaster** : Open Sage 3-ply (0.00 PR vs 3-ply)
 - **Expert** : Open Sage 2-ply (~2.22 PR)
 - **Intermédiaire** : Open Sage 1-ply (~4.89 PR)
 - **Débutant** : Open Sage 1-ply + bruit gaussien ±0.14 Eq (~15.07 PR)
-- **Videau (Cube)** : Prise en charge complète (OFFER_DOUBLE, TAKE_DOUBLE, PASS_DOUBLE) via evaluateBotCubeWithBgsage.
+- **Videau (Cube)** : Prise en charge complète (`OFFER_DOUBLE`, `TAKE_DOUBLE`, `PASS_DOUBLE`) via `evaluateBotCubeWithBgsage`.
+
+**Pipeline parallèle « Roll & Compute »** (`runOpponentTurn`) : les dés du Bot sont lancés immédiatement
+et le calcul Open Sage tourne pendant l'animation (`T1 + T2`), borné par `COMPUTE_HARD_DEADLINE_MS`
+avec repli local. Les délais T0–T6 proviennent de [`speedPresets.ts`](src/lib/gameFeel/speedPresets.ts)
+(cadences Coach / Tournoi / Blitz, sélectionnables dans le HUD et persistées en localStorage).
+Sur un double, l'intervalle entre les pions est réduit de 25 %.
 
 ### 5.7 Persistance — `src/lib/supabase/` + `src/lib/offline/`
 
@@ -281,9 +294,32 @@ Fonction pure `Position + contexte → PositionConcepts` : pip counts, classific
 
 ### 5.8 Multijoueur temps réel — `src/features/multiplayer/` + Supabase Realtime
 
-- Matchmaking Elo, salons privés par code.
+- Matchmaking Glicko-2 / Elo, salons privés par code.
 - Canaux Realtime : broadcast, presence, Postgres Changes.
-- Séquençage strict anti-désynchronisation.
+- Séquençage strict anti-désynchronisation et RNG Provably Fair dans [`MatchHeader.tsx`](src/components/hud/MatchHeader.tsx:67).
+
+### 5.9 RNG Cryptographique Provably Fair — `src/lib/crypto/provablyFairRng.ts` & `DiceAuditModal.tsx`
+
+- Protocole **Commit-Play-Reveal HMAC-SHA256** avec échantillonnage par rejet strict (`< 252`) garantissant zéro biais de modulo ($42/252 = 1/6$).
+- Intégré dans [`useBackgammonGame.ts`](src/hooks/useBackgammonGame.ts) (`state.provablyFair`, révélation de `serverSeed` en fin de partie) et [`MatchHeader.tsx`](src/components/hud/MatchHeader.tsx) (jets multijoueur).
+- Audit interactif en 1 clic via [`DiceAuditModal.tsx`](src/components/dice/DiceAuditModal.tsx) (montée dans [`GameModalsContainer.tsx`](src/components/modals/GameModalsContainer.tsx) et accessible depuis le bouton `🛡️ Audit Dés (SHA-256)` de [`PostMatchTrainingReport.tsx`](src/components/summary/PostMatchTrainingReport.tsx)).
+
+### 5.10 Économie Freemium, Quota Coach IA & Stripe — `src/lib/subscription/` & `src/lib/stripe/`
+
+- **Quota Gratuit (3 analyses Coach IA / 24h)** : géré côté serveur et local par [`quotaService.ts`](src/lib/subscription/quotaService.ts) (table `coach_usage_logs` + RPC `check_and_increment_coach_quota`, migration [`20261025000000_subscription_quotas_stripe.sql`](supabase/migrations/20261025000000_subscription_quotas_stripe.sql)) et exposé au client par [`useCoachQuota.ts`](src/hooks/useCoachQuota.ts).
+- **Soft Paywall** : lorsque `/api/coach` ou `/api/coach/review` renvoie `402 Payment Required` (`QUOTA_EXCEEDED`), [`PostMatchAiSynthesis.tsx`](src/components/summary/PostMatchAiSynthesis.tsx) affiche la bannière d'upgrade et ouvre [`SubscriptionModal.tsx`](src/components/subscription/SubscriptionModal.tsx).
+- **Stripe Billing** : grille tarifaire ([`plans.ts`](src/lib/stripe/plans.ts), page [`/pricing`](src/app/pricing/page.tsx), entrée menu [`UserAccountMenu.tsx`](src/components/nav/UserAccountMenu.tsx)) et endpoints [`/api/stripe/checkout`](src/app/api/stripe/checkout/route.ts) + [`/api/stripe/webhook`](src/app/api/stripe/webhook/route.ts).
+
+### 5.11 Puzzles Quotidiens V2 & Répétition Espacée FSRS — `src/lib/puzzle/`
+
+- Routes [`/puzzles`](src/app/puzzles/page.tsx) et [`/daily-puzzle`](src/app/daily-puzzle/page.tsx) unifiées sur [`DailyPuzzleScreen`](src/app/daily-puzzle/page.tsx:24).
+- Catalogue certifié Open Sage 3-ply ([`puzzleService.ts`](src/lib/puzzle/puzzleService.ts)) et ordonnanceur de révision espacée FSRS ([`fsrsScheduler.ts`](src/lib/puzzle/fsrsScheduler.ts), migration [`20261024000000_glicko2_daily_puzzle_fsrs.sql`](supabase/migrations/20261024000000_glicko2_daily_puzzle_fsrs.sql)).
+- Agrégation unifiée des statistiques dans [`userProgressionService.ts`](src/features/progression/userProgressionService.ts).
+
+### 5.12 Classement Glicko-2 Composite & Anti-Triche Ex-Gaussien
+
+- [`glicko2Service.ts`](src/lib/rating/glicko2Service.ts) : calcul Glicko-2 pondéré par le différentiel de PR et la longueur du match $w(L) = L/(L+4)$.
+- [`antiCheatDetector.ts`](src/lib/telemetry/antiCheatDetector.ts) : modélisation Ex-Gaussienne des temps de réflexion et détection des pertes de focus (`visibilitychange` / `blur`) pour identifier le *Smart Cheating*.
 
 ---
 
@@ -293,28 +329,28 @@ Fonction pure `Position + contexte → PositionConcepts` : pip counts, classific
 sequenceDiagram
     participant J as Joueur
     participant UI as Interface
-    participant G as Couche Jeu
-    participant W as Worker GNUBG WASM
-    participant C as Classificateur
+    participant G as Couche Jeu (matchLog)
+    participant S_AI as Open Sage Cloud Run (ou Repli Local)
+    participant C as Classificateur (logAnalyzer)
     participant X as Extracteur de concepts
     participant S as Route Handler /api/coach
-    participant L as LLM
+    participant L as Gemini 2.5 Flash (+ Cache L2)
 
     J->>UI: joue un coup
-    UI->>G: validation + application
-    G->>W: analyzeMoves
-    W-->>C: classement des coups + équités
-    C->>C: verdict (blunder si perte > seuil)
+    UI->>G: validation + ajout MatchLogEntry immuable
+    G->>S_AI: analyzeHumanMoveFromLogWithBgsage
+    S_AI-->>C: classement des coups + équités
+    C->>C: verdict (4 paliers : Optimal / Bon / Imprécision / Blunder)
     alt blunder détecté
         C->>X: extraction des concepts
-        X->>S: POST /api/coach
-        S->>L: prompt structuré
+        X->>S: POST /api/coach (vérification quota 3/24h)
+        S->>L: prompt structuré (ou Cache L2 Supabase)
         L-->>S: explication en streaming
-        S-->>UI: SSE
+        S-->>UI: SSE (ou 402 Soft Paywall)
         UI->>J: panneau coach + surbrillance
     end
-    G->>W: bestMove pour l'IA
-    W-->>G: coup de l'IA
+    G->>S_AI: selectBotMoveWithBgsage (Pipeline parallèle Roll & Compute)
+    S_AI-->>G: coup de l'IA
 ```
 
 ---
@@ -322,61 +358,54 @@ sequenceDiagram
 ## 7. Stratégie Capacitor
 
 - Le projet Next.js est buildé en **export statique** et bundlé dans la webview Capacitor.
-- **Offline** : UI, règles, moteur WASM, classificateur, concepts, coach règle-basée, SQLite local.
-- **Réseau** : `/api/coach` (LLM), `/api/analyze` (rollouts), sync Supabase.
+- **Offline** : UI, règles, évaluateur tri-phase local + table Bear-Off 54 264 états, classificateur, concepts, coach règle-basée, SQLite local.
+- **Réseau** : Open Sage Cloud Run, `/api/coach` (LLM), `/api/rollout` (rollouts), sync Supabase.
 - Plugins : SQLite, Preferences, Haptics, Share.
 
 ---
 
 ## 8. Considérations transverses
 
-### 8.1 Licence GPL
+### 8.1 Indépendance de licence
 
-GNUBG est sous GPLv2/v3. Le WASM est une œuvre dérivée : isoler le moteur dans le worker + `public/engine/`, publier le source de la couche moteur.
+Le moteur principal en ligne repose sur le microservice **Open Sage (`bgsage-service`)** isolé sur Google Cloud Run, et le moteur client hors-ligne est 100 % écrit en TypeScript pur (`src/lib/engine/evaluator.ts`).
 
-### 8.2 Performance
+### 8.2 Performance & Game Feel
 
-- WASM + données chargés en lazy-load.
-- Web Worker obligatoire (aucune évaluation sur le thread principal).
-- Budgets : 0-ply < 50 ms desktop / < 150 ms mobile ; 1-ply < 300 ms.
+- Animations de pions via **Web Animations API (FLIP)** (`flightPhysics.ts`) et drag-and-drop 0 re-render React (`pointerGestureMachine.ts`).
+- Synthèse acoustique modale Web Audio API 0 ms de latence (`modalAcousticEngine.ts`).
+- Web Worker disponible pour le calcul local hors thread principal (`gnubg.worker.ts`).
 
 ### 8.3 Sécurité
 
-- Clés LLM uniquement en variables d'environnement serveur.
-- RLS Supabase sur toutes les tables ; validation Zod des payloads.
-- Rate limiting sur `/api/coach`.
+- Clés LLM et Stripe uniquement en variables d'environnement serveur.
+- RLS Supabase durci sur toutes les tables (8 migrations SQL) ; validation Zod des payloads.
+- Rate limiting et contrôle de quota (`quotaService.ts`) sur `/api/coach` et `/api/coach/review`.
 
-### 8.4 Accessibilité et i18n
+### 8.4 Accessibilité et i18n (6 langues + RTL)
 
-- UI en français (v1), architecture i18n prête (`src/lib/i18n/`).
+- Internationalisation complète en **6 langues** (`fr`, `en`, `es`, `pt`, `de`, `ar` avec support RTL natif) dans `src/i18n/` et `src/lib/i18n/`.
 - Plateau jouable au clavier, contrastes AA, cibles tactiles ≥ 44 px.
 
 ---
 
 ## 9. Dette technique connue (audit 2026-10)
 
-> Ces fichiers hérités violent la charte de scalabilité ([`SCALABILITY.md`](SCALABILITY.md)).
+> Ces fichiers hérités dépassent les budgets de lignes de la charte de scalabilité ([`SCALABILITY.md`](SCALABILITY.md)).
 > **Règle : aucun nouveau code ne doit s'y ajouter** — toute modification passe par
 > l'extraction d'un module conforme.
 
 | Point | Gravité | Statut |
 |---|---|---|
 | `page.tsx` (découpé à 293 lignes, 3 vues exclusives) | — | ✅ Résolu (conforme R1 < 300 lignes) |
-| `useBackgammonGame.ts` (~1389 lignes) | Élevée | À découper |
+| `useBackgammonGame.ts` (~2370 lignes) | Élevée | À découper (extraction reducer / effets IA) |
+| `Board.tsx` (~994 lignes) | Moyenne | À découper (sous-composants SVG) |
 | `knowledgeBaseData.ts` (~1587 lignes de données) | Faible | À externaliser en JSON |
 
 ---
 
-## 10. Décisions ouvertes
+## 10. Innovations Propriétaires : ERH & Anti-Triche Ex-Gaussien
 
-1. **Fournisseur LLM par défaut en production** et modèle de coût.
-2. **Hébergement** : Vercel/Netlify vs conteneur auto-hébergé (impacte les timeouts des rollouts).
-
----
-
-## 11. Innovations Propriétaires : L'ERH (Error Rate Humain)
-
-Le projet intègre un modèle d'évaluation de rupture par rapport au standard mathématique historique (PR d'eXtreme Gammon) : **l'ERH (Error Rate Humain)**.
-- Spécification complète : [`plans/erh-error-rate-humain.md`](plans/erh-error-rate-humain.md).
-- Principe : Profilage en temps réel de l'adversaire (frilosité au videau, panique en backgame, passivité, pression du chrono) pour évaluer la capacité du joueur à exploiter psychologiquement les faiblesses humaines au lieu de réciter froidement un jeu GTO.
-- Déploiement : Réservé aux modes multijoueurs (PvP) et au diagnostic avancé du Coach IA.
+Le projet intègre deux modèles d'analyse comportementale avancée :
+- **Profilage Anti-Triche Ex-Gaussien (`antiCheatDetector.ts`)** : modélisation de la distribution des temps de réflexion ($RT = \mathcal{N}(\mu, \sigma^2) + \text{Exp}(1/\tau)$) et détection des pertes de focus (`visibilitychange` / `blur`) pour identifier le *Smart Cheating* sélectif.
+- **Profilage de style et récurrence (`recurring_errors` + FSRS)** : identification des faiblesses récurrentes par concept stratégique et planification automatique des révisions à J+1, J+3, J+7, J+14, J+30.

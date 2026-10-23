@@ -30,6 +30,7 @@ import { impactHeavy, impactMedium } from '../../lib/capacitor/haptics';
 import { toast } from '../toast/ToastContext';
 import { analyzeCubeDecision } from '../../features/coach/cubeCoach';
 import { formatStandardMoveSequence } from '../../features/coach/coachMoveNotation';
+import { generateProvablyFairRoll } from '../../lib/crypto/provablyFairRng';
 
 export interface MatchHeaderMultiplayerAdapter {
     broadcastDoubleOffered: (cubeVal: number) => void;
@@ -58,6 +59,8 @@ export interface MatchHeaderProps {
     onBackToLobby?: () => void;
     /** Couleur jouée par l'humain (défaut : X = Blanc). */
     playerColor?: Player;
+    /** Ouvre le panneau d'audit cryptographique des dés en 1 clic. */
+    onOpenDiceAudit?: () => void;
 }
 
 const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
@@ -74,6 +77,7 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
     prO,
     onBackToLobby,
     playerColor,
+    onOpenDiceAudit,
 }) => {
     const canDoubleAllowed = game.canDouble;
 
@@ -106,7 +110,10 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
         impactMedium();
         soundEngine.playDiceRoll();
         if (isMultiplayerActive) {
-            const d: [number, number] = [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
+            const pf = game.provablyFair;
+            const d: [number, number] = pf
+                ? generateProvablyFairRoll(pf.serverSeed, pf.clientSeed, pf.nonce, pf.nonce === 0)
+                : [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
             game.rollDice(d);
             multiplayer.broadcastDiceRolled(d);
         } else {
@@ -178,6 +185,8 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                     playerColor={playerColor}
                     isGameActive={game.phase !== 'GAME_OVER'}
                     boardState={game.state}
+                    serverSeedHash={game.serverSeedHash}
+                    onOpenDiceAudit={onOpenDiceAudit}
                 />
         </header>
     );

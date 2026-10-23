@@ -1,19 +1,19 @@
-# Guide de l'Utilisateur & Manuel de Compétition — Backgammon Pro
+# Guide de l'Utilisateur & Manuel de Compétition — Backgammon Tour & Gammon Academy
 
-Bienvenue dans le manuel officiel de **Backgammon Pro**. Ce guide a été conçu pour accompagner les joueurs de tous niveaux, du débutant découvrant le plus ancien jeu de stratégie au compétiteur de tournoi préparant un championnat.
+Bienvenue dans le manuel officiel de **Backgammon Tour — Cercle Monte-Carlo & Gammon Academy** (`backgammontour.com` / `gammonacademy.com`). Ce guide accompagne les joueurs de tous niveaux, du débutant découvrant le plus ancien jeu de stratégie au compétiteur de tournoi préparant un championnat WBGF.
 
 ---
 
 ## Sommaire
 
 1. [Règles Officielles du Backgammon de Tournoi](#1-règles-officielles-du-backgammon-de-tournoi)
-2. [L'Interface de Jeu & Ergonomie Mobile](#2-linterface-de-jeu--ergonomie-mobile)
-3. [Le Coach Grand-Maître IA](#3-le-coach-grand-maître-ia)
+2. [L'Interface de Jeu, Smart Click & Ergonomie Mobile](#2-linterface-de-jeu-smart-click--ergonomie-mobile)
+3. [Le Coach Grand-Maître IA & Quotas VIP](#3-le-coach-grand-maître-ia--quotas-vip)
 4. [L'Analyse Profonde & les Rollouts](#4-lanalyse-profonde--les-rollouts)
 5. [La Stratégie du Videau (Doubling Cube)](#5-la-stratégie-du-videau-doubling-cube)
-6. [Entraînement Délibéré : Drills & Puzzles Quotidiens](#6-entraînement-délibéré--drills--puzzles-quotidiens)
-7. [Le Mode Multijoueur en Ligne](#7-le-mode-multijoueur-en-ligne)
-8. [Mode Hors-Ligne & Installation Mobile](#8-mode-hors-ligne--installation-mobile)
+6. [Entraînement Délibéré : Gammon Academy, Drills & Puzzles Quotidiens V2](#6-entraînement-délibéré--gammon-academy-drills--puzzles-quotidiens-v2)
+7. [Le Mode Multijoueur, Glicko-2 & Audit Provably Fair (SHA-256)](#7-le-mode-multijoueur-glicko-2--audit-provably-fair-sha-256)
+8. [Mode Hors-Ligne, 6 Langues & Installation Mobile](#8-mode-hors-ligne-6-langues--installation-mobile)
 
 ---
 
@@ -50,51 +50,45 @@ Dès que la totalité de vos 15 pions est réunie dans votre jan intérieur (fl�
 
 ---
 
-## 2. L'Interface de Jeu & Ergonomie Mobile
+## 2. L'Interface de Jeu, Smart Click & Ergonomie Mobile
 
-### 2.1 Le HUD de Match
+### 2.1 Le HUD de Match & Cadences de Jeu
 Le bandeau supérieur affiche :
 - Les scores des deux joueurs et la longueur cible du match (ex. premier à 5 points).
 - Le **Pip Count** instantané et son différentiel (ex. `Δ +8`).
 - La valeur courante du videau et son propriétaire.
+- Le **sélecteur de cadence** (**Coach**, **Tournoi** ou **Blitz**) permettant d'adapter la vitesse d'animation et de lecture des coups du Bot IA.
 - L'indicateur de connectivité et de synchronisation (`SyncIndicator`).
 
-### 2.2 Thèmes de Plateau
-Personnalisez votre confort visuel depuis le menu des paramètres :
-1. **Classic Tournament** : Feutrine verte et bois noble de championnat.
-2. **Luxury Leather & Wood** : Cuir grainé bordeaux et finitions dorées.
-3. **Cyber Neon** : Contraste sombre futuriste et reflets néon.
-4. **Minimalist Slate** : Épuration graphique moderne pour une concentration maximale.
+### 2.2 Paradigme « Smart Point Click » & Clic sur les Dés
+- **Smart Point Click (Destination-First)** : cliquez directement sur une flèche de destination pour jouer un dé simple, enchaîner la somme $d_1 + d_2$, ou fermer une porte (*Make a Point*) avec deux pions en un seul clic.
+- **Clic Droit (Desktop)** : joue immédiatement le dé secondaire (le plus petit) ; un clic droit sur le tapis annule le dernier sous-mouvement (*Undo*).
+- **Clic sur les Dés Posés** :
+  - Tant qu'il reste des dés à jouer, cliquer sur les dés **permute leur ordre** ($[d_1, d_2] \leftrightarrow [d_2, d_1]$).
+  - Une fois tous les dés joués, cliquer sur les dés **valide immédiatement le tour**.
 
-### 2.3 Contrôles Tactiles & Sélecteur de Dé Mobile
-Sur smartphone, appuyez sur un pion pour visualiser ses flèches de destination possibles.
-Lorsque plusieurs dés peuvent déplacer le même pion, le **sélecteur tactile de dé** (`mobile-dice-selector`) apparaît au bas de l'écran pour vous permettre de choisir le dé souhaité avec une cible tactile confortable (conforme WCAG ≥ 44px).
+### 2.3 Thèmes de Plateau & Ergonomie Mobile
+Personnalisez votre confort visuel depuis le menu des paramètres (*Monte-Carlo Heritage*, *Classic Tournament*, *Luxury Leather & Wood*, *Cyber Neon*, *Minimalist Slate*).
+Sur smartphone, le **sélecteur tactile de dé** (`mobile-dice-selector`) offre des cibles tactiles confortables (conforme WCAG ≥ 44px).
 
 ---
 
-## 3. Le Coach Grand-Maître IA
+## 3. Le Coach Grand-Maître IA & Quotas VIP
 
-Le Coach Grand-Maître est votre tuteur interactif permanent.
+Le Coach Grand-Maître (propulsé par **Open Sage 3-ply** et **Gemini 2.5 Flash**) est votre tuteur interactif permanent.
 
-### 3.1 Détection des Blunders
-Dès qu'un coup joué entraîne une perte d'équité supérieure au seuil critique :
-- Une alerte visuelle discrète apparaît sur le coup.
-- Le volet du coach s'ouvre pour vous présenter la comparaison entre votre coup et le meilleur coup identifié par le réseau de neurones.
+### 3.1 Détection des Blunders & Métriques
+- **Équité (Eq.)** : valeur mathématique espérée de la position.
+- **Perte d'Équité (Equity Loss)** :
+  - `≤ 0.010` : **Optimal ✅**
+  - `≤ 0.020` : **Bon 👍**
+  - `> 0.020` : **Imprécision ⚠️**
+  - `> 0.080` : **Blunder ❌**
 
-### 3.2 Comprendre les Métriques du Coach
-- **Équité (Eq.)** : La valeur mathématique espérée de la position (de -1.0 à +1.0 en points de match).
-- **Perte d'Équité (Equity Loss)** : La différence entre l'équité du meilleur coup possible et votre coup.
-  - `0.000` : Coup optimal.
-  - `-0.020 à -0.050` : Imprécision mineure (*doubtful*).
-  - `-0.050 à -0.080` : Erreur tactique (*error*).
-  - `< -0.080` : Faute majeure (**Blunder**).
-
-### 3.3 Explications Pédagogiques en Direct
-Le coach ne se contente pas de vous donner des chiffres : il vous explique avec clarté les concepts sous-jacents :
-- **Construction de prime** : Importance de créer des blocs de 4, 5 ou 6 flèches consécutives.
-- **Attaque et Blitz** : Pourquoi attaquer un pion adverse dans votre jan intérieur pour l'empêcher de s'ancrer.
-- **Ancres avancées** : La valeur stratégique des points 20 et 21 (Golden Anchor).
-- **Sécurité et duplication** : Minimiser les tirs directs de l'adversaire.
+### 3.2 Synthèse IA Post-Match, Quota Gratuit & Abonnement VIP (`/pricing`)
+- **Modèle Freemium Éthique** : le jeu solo, le multijoueur, le calcul du PR et les statistiques de dés sont **100 % gratuits et illimités**.
+- **Quota Coach IA** : chaque joueur bénéficie de **3 analyses Coach IA gratuites par tranche de 24h**.
+- **Passer VIP (`/pricing`)** : débloquez le Coach IA illimité (explications en direct + synthèse IA post-match complète) via l'offre Mensuelle (9,99 €/mois), Annuelle (79,99 €/an avec 7 jours d'essai gratuit) ou Club & Chouette (149,99 €/an).
 
 ---
 
@@ -123,26 +117,28 @@ Dans un match en plusieurs points, dès qu'un joueur atteint le score à 1 point
 
 ---
 
-## 6. Entraînement Délibéré : Drills & Puzzles Quotidiens
+## 6. Entraînement Délibéré : Gammon Academy, Drills & Puzzles Quotidiens V2
 
-- **Drills de Blunders (`/drills`)** : Entraînez-vous sur vos propres erreurs passées enregistrées automatiquement. Rejouez la position jusqu'à trouver le coup de grand-maître du premier coup.
-- **Puzzles Quotidiens (`/puzzles`)** : Chaque jour, un défi tactique certifié est proposé à la communauté avec classement ELO.
-- **Dashboard de Progression (`/progression`)** : Suivez votre courbe de **Performance Rating (PR)** match après match. Un PR inférieur à 5.0 vous classe parmi les joueurs de niveau maître international !
-
----
-
-## 7. Le Mode Multijoueur en Ligne
-
-1. Ouvrez le lobby multijoueur depuis l'accueil.
-2. **Matchmaking Rapide** : Vous êtes instantanément mis en relation avec un adversaire de votre niveau ELO.
-3. **Salons Privés** : Créez une chambre avec un code à 6 caractères pour inviter un ami.
-4. **Horloge de Tournoi** : Les pendules utilisent le temps Fischer officiel (ex. 2 minutes de réserve + 12 secondes d'incrément par coup).
-5. **Reconnexion Automatique** : En cas de perte de signal 4G/Wi-Fi, vous disposez de 60 secondes pour revenir dans la partie sans pénalité.
+- **Gammon Academy (`/academy`)** : encyclopédie interactive certifiée Open Sage 3-ply des 15 lancers d'ouverture, calculateur d'équité de match (MET Kazaross-XG2) et guides stratégiques fondamentaux en 6 langues.
+- **Puzzles Quotidiens V2 & Révision FSRS (`/puzzles` & `/daily-puzzle`)** : chaque jour à 00h00 UTC, relevez un défi tactique certifié Open Sage 3-ply avec suivi de série (*Streak*) et révision espacée **FSRS** (J+1, J+3, J+7, J+14, J+30).
+- **Drills de Blunders (`/drills`)** : entraînez-vous sur vos propres erreurs passées enregistrées automatiquement dans la banque d'erreurs récurrentes.
+- **Dashboard de Progression (`/progression`)** : suivez votre courbe de **Performance Rating (PR)**, vos séries de puzzles et vos concepts prioritaires à retravailler.
 
 ---
 
-## 8. Mode Hors-Ligne & Installation Mobile
+## 7. Le Mode Multijoueur, Glicko-2 & Audit Provably Fair (SHA-256)
 
-- **Web / PWA** : L'application peut être installée comme une Progressive Web App sur votre bureau ou écran d'accueil mobile.
-- **iOS & Android** : Disponible nativement sur l'App Store et Google Play.
-- **Résilience 100% Offline** : Jouez contre l'IA, résolvez des drills et consultez vos statistiques en plein vol ou en zone blanche. Vos données se synchronisent de manière transparente dès le retour du réseau.
+1. **Matchmaking Glicko-2 Composite** : appariement en ligne pondérant le résultat du match et la qualité de jeu (PR) pour neutraliser la variance des dés sur les matchs courts.
+2. **Salons Privés & Horloge Fischer** : créez une salle avec un code à 6 caractères et jouez sous pendule officielle Fischer.
+3. **Audit Cryptographique des Dés (Provably Fair SHA-256)** :
+   - Avant chaque partie, l'empreinte `SHA-256(serverSeed)` est engagée (*Commit*).
+   - Chaque jet de dés est dérivé par `HMAC-SHA256(serverSeed, clientSeed:nonce)` avec échantillonnage par rejet (`< 252`) garantissant zéro biais de modulo.
+   - En fin de match (bouton **« 🛡️ Audit Dés (SHA-256) »** du rapport post-match), vérifiez en 1 clic l'intégrité mathématique de tous les jets de la partie et personnalisez votre graine client (`clientSeed`).
+
+---
+
+## 8. Mode Hors-Ligne, 6 Langues & Installation Mobile
+
+- **6 Langues & Support RTL** : interface et terminologie XG intégralement traduites en Français, Anglais, Espagnol, Portugais, Allemand et Arabe (RTL).
+- **Web / PWA & Mobile Natif (iOS / Android)** : installable en PWA ou via l'App Store et Google Play.
+- **Résilience 100 % Offline** : jouez contre l'IA, résolvez des puzzles et consultez vos statistiques hors-ligne ; vos données se synchronisent automatiquement au retour du réseau.

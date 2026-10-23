@@ -1,0 +1,129 @@
+'use client';
+
+/**
+ * Route App Router `/daily-puzzle` — Puzzle du Jour, Streaks, Validation Open Sage 3T & FSRS.
+ *
+ * Orchestre :
+ * - `DailyPuzzleHeader` : Score du match (Away / Money Game), Videau, Dés, Streak & Glicko-2 Puzzle Rating.
+ * - `DailyPuzzleBoard` : Replay initial 1.2s du dernier coup adverse, Smart Click / Drag, Indices progressifs (-25% / -50% XP).
+ * - `DailyPuzzleVerdict` : Grille 🟢 BEST, 🟡 EXCELLENTE ALTERNATIVE, 🟠 ERREUR, 🔴 BLUNDER + alerte piège.
+ * - `DailyPuzzleDebrief` : Flèches Or vs Flèches Rouges, explication IA Gemini & file FSRS (J+1, J+3, J+7, J+14, J+30).
+ */
+
+import React from 'react';
+import Link from 'next/link';
+import { BackToLobbyButton } from '../../components/nav/PageTransition';
+import DailyPuzzleHeader from '../../components/puzzle/DailyPuzzleHeader';
+import DailyPuzzleBoard from '../../components/puzzle/DailyPuzzleBoard';
+import DailyPuzzleVerdict from '../../components/puzzle/DailyPuzzleVerdict';
+import DailyPuzzleDebrief from '../../components/puzzle/DailyPuzzleDebrief';
+import { useDailyPuzzle, type UseDailyPuzzleOptions } from '../../hooks/useDailyPuzzle';
+
+export interface DailyPuzzlePageProps extends UseDailyPuzzleOptions {}
+
+export function DailyPuzzleScreen(props: DailyPuzzlePageProps) {
+    const state = useDailyPuzzle(props);
+
+    return (
+        <div
+            data-testid="daily-puzzle-screen"
+            className="w-full max-w-6xl space-y-5 animate-fade-in"
+        >
+            <DailyPuzzleHeader
+                puzzle={state.puzzle}
+                catalog={state.catalog}
+                utcDateString={state.utcDateString}
+                utcCountdown={state.utcCountdown}
+                matchScoreLabel={state.matchScoreLabel}
+                profile={state.profile}
+                ratingDelta={state.ratingDelta}
+                hintLevel={state.hintLevel}
+                xpPreview={state.xpPreview}
+                isReplayingIntro={state.isReplayingIntro}
+                onSelectPuzzle={state.selectPuzzleById}
+                onReplayIntro={state.triggerIntroReplay}
+            />
+
+            <DailyPuzzleBoard
+                puzzle={state.puzzle}
+                boardState={state.boardState}
+                isReplayingIntro={state.isReplayingIntro}
+                playedMoves={state.playedMoves}
+                usedDice={state.usedDice}
+                selectedPoint={state.selectedPoint}
+                selectedDie={state.selectedDie}
+                leftDieTargets={state.leftDieTargets}
+                rightDieTargets={state.rightDieTargets}
+                hintLevel={state.hintLevel}
+                highlightedHintSources={state.highlightedHintSources}
+                showDebrief={state.showDebrief}
+                isSolved={Boolean(state.verdict?.isSolved)}
+                onSkipIntro={state.skipIntroReplay}
+                onCheckerClick={state.handleCheckerClick}
+                onDestinationClick={state.handleDestinationClick}
+                onPlayMove={state.handlePlayMove}
+                onSelectDie={state.handleSelectDie}
+                onDeselect={state.handleDeselect}
+                onUndoLastMove={state.handleUndoLastMove}
+                onResetAttempt={state.handleResetAttempt}
+                onUnlockNextHint={state.unlockNextHint}
+                onSubmitCheckerSolution={() => {
+                    void state.submitCheckerSolution();
+                }}
+                onSubmitCubeDecision={(action) => {
+                    void state.submitCubeDecision(action);
+                }}
+            />
+
+            <DailyPuzzleVerdict
+                verdict={state.verdict}
+                fsrsScheduledEntry={state.fsrsScheduledEntry}
+                onRetry={state.handleResetAttempt}
+                onOpenDebrief={state.openDebrief}
+            />
+
+            <DailyPuzzleDebrief
+                puzzle={state.puzzle}
+                verdict={state.verdict}
+                showDebrief={state.showDebrief}
+                fsrsScheduledEntry={state.fsrsScheduledEntry}
+            />
+        </div>
+    );
+}
+
+export default function DailyPuzzlePage() {
+    return (
+        <main className="flex h-dvh overflow-y-auto flex-col items-center p-3 sm:p-6 md:p-8 space-y-6 bg-[radial-gradient(ellipse_at_top,#241109_0%,#0b0e16_65%,#05070b_100%)] text-[#fdf8eb]">
+            <div className="w-full max-w-6xl flex flex-wrap items-center justify-between gap-2">
+                <BackToLobbyButton label="Retour au Lobby" />
+
+                <div className="flex flex-wrap items-center gap-2">
+                    <Link
+                        href="/academy"
+                        className="flex items-center gap-1.5 rounded-xl border border-[#d4af37]/35 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-[#fdf8eb] transition shadow-sm"
+                    >
+                        <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🏛️</span>
+                        <span>Gammon Academy</span>
+                    </Link>
+                    <Link
+                        href="/drills"
+                        className="flex items-center gap-1.5 rounded-xl border border-[#d4af37]/35 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-[#fdf8eb] transition shadow-sm"
+                    >
+                        <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🎯</span>
+                        <span>Drills FSRS</span>
+                    </Link>
+                    <Link
+                        href="/progression"
+                        className="flex items-center gap-1.5 rounded-xl border border-[#d4af37]/35 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-[#fdf8eb] transition shadow-sm"
+                    >
+                        <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">📊</span>
+                        <span>Progression &amp; Concepts</span>
+                    </Link>
+                </div>
+            </div>
+
+            <DailyPuzzleScreen />
+        </main>
+    );
+}

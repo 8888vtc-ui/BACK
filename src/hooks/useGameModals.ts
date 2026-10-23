@@ -25,6 +25,8 @@ export function useGameModals() {
     const [isKnowledgeModalOpen, setIsKnowledgeModalOpen] = useState(false);
     const [selectedKnowledgeConceptId, setSelectedKnowledgeConceptId] = useState<string | undefined>(undefined);
     const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+    const [isDiceAuditModalOpen, setIsDiceAuditModalOpen] = useState(false);
+    const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
 
     const openMatchmaking = useCallback(() => setIsMatchmakingModalOpen(true), []);
     const closeMatchmaking = useCallback(() => setIsMatchmakingModalOpen(false), []);
@@ -57,6 +59,12 @@ export function useGameModals() {
     const openMobileDrawer = useCallback(() => setIsMobileDrawerOpen(true), []);
     const closeMobileDrawer = useCallback(() => setIsMobileDrawerOpen(false), []);
 
+    const openDiceAudit = useCallback(() => setIsDiceAuditModalOpen(true), []);
+    const closeDiceAudit = useCallback(() => setIsDiceAuditModalOpen(false), []);
+
+    const openSubscriptionModal = useCallback(() => setIsSubscriptionModalOpen(true), []);
+    const closeSubscriptionModal = useCallback(() => setIsSubscriptionModalOpen(false), []);
+
     return {
         // Matchmaking
         isMatchmakingModalOpen,
@@ -86,5 +94,13 @@ export function useGameModals() {
         isMobileDrawerOpen,
         openMobileDrawer,
         closeMobileDrawer,
+        // Dice Audit (Provably Fair SHA-256)
+        isDiceAuditModalOpen,
+        openDiceAudit,
+        closeDiceAudit,
+        // Subscription / Paywall Modal
+        isSubscriptionModalOpen,
+        openSubscriptionModal,
+        closeSubscriptionModal,
     };
 }

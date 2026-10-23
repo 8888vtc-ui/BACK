@@ -10,3 +10,4 @@ export * from './runAiTurnAction';
 export * from './replayFromLogAction';
 export * from './retryLastHumanTurnAction';
 export * from '../features/coach/analyzeHumanLogAction';
+export * from './coach';

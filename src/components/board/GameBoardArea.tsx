@@ -19,6 +19,10 @@ import Board from './Board';
 import CoachSidebar, { type CoachSidebarProps } from '../coach/CoachSidebar';
 import ErrorBoundary from '../common/ErrorBoundary';
 import LandscapeHint from './LandscapeHint';
+import type { GameSpeed } from '../../lib/gameFeel/speedPresets';
+
+/** Ordre de rotation du sélecteur de cadence du HUD. */
+const NEXT_SPEED: Record<GameSpeed, GameSpeed> = { coach: 'tournament', tournament: 'blitz', blitz: 'coach' };
 
 export interface GameBoardAreaProps {
     theme: ThemeName;
@@ -27,12 +31,10 @@ export interface GameBoardAreaProps {
     isBoardLoading: boolean;
     activeCoachHighlight: CoachHighlight | null;
     onCheckerClick: (point: number) => void;
-    onCheckerDoubleClick: (point: number) => void;
     onCheckerRightClick: (point: number) => void;
     onDestinationClick: (destination: number) => void;
     onPlayMove: (from: number, to: number, die?: 0 | 1) => void;
     onSelectDie: (die: 0 | 1) => void;
-    onDieDoubleClick: (die: 0 | 1) => void;
     /** Clic / tap sur la paire de dés : inverse l'ordre (swapDiceOrderAction). */
     onDiceClick?: () => void;
     onDeselect: () => void;
@@ -66,12 +68,10 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     isBoardLoading,
     activeCoachHighlight,
     onCheckerClick,
-    onCheckerDoubleClick,
     onCheckerRightClick,
     onDestinationClick,
     onPlayMove,
     onSelectDie,
-    onDieDoubleClick,
     onDiceClick,
     onDeselect,
     coach,
@@ -120,12 +120,10 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                             usedDice={game.usedDice}
                             opponentDice={!game.state.dice ? game.lastOpponentDice : null}
                             onCheckerClick={onCheckerClick}
-                            onCheckerDoubleClick={onCheckerDoubleClick}
                             onCheckerRightClick={onCheckerRightClick}
                             onDestinationClick={onDestinationClick}
                             onPlayMove={onPlayMove}
                             onSelectDie={onSelectDie}
-                            onDieDoubleClick={onDieDoubleClick}
                             onDiceClick={onDiceClick}
                             onDeselect={onDeselect}
                             onUndo={game.undoMove}
@@ -145,6 +143,15 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                             canConfirm={game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
                             autoConfirmEnabled={game.autoConfirmTurn}
                             onToggleAutoConfirm={game.toggleAutoConfirmTurn}
+                            autoConfirmMode={game.autoConfirmMode}
+                            onSelectAutoConfirmMode={game.setAutoConfirmMode}
+                            onCycleAutoConfirmMode={game.cycleAutoConfirmMode}
+                            gameSpeed={game.gameSpeed}
+                            onCycleGameSpeed={
+                                game.setGameSpeed
+                                    ? () => game.setGameSpeed(NEXT_SPEED[game.gameSpeed ?? 'tournament'])
+                                    : undefined
+                            }
                             isMatchStarted={isMatchStarted}
                             swapColors={playerColor === 'O'}
                         />

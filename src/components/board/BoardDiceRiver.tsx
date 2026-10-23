@@ -23,7 +23,9 @@ export interface BoardDiceRiverProps {
     opponentDice?: [number, number] | null;
     onDiceClick?: () => void;
     onSelectDie?: (die: 0 | 1) => void;
-    onDieDoubleClick?: (die: 0 | 1) => void;
+    /** Tour complet en validation manuelle : un clic sur les dés valide le tour (« ramasser les dés »). */
+    canConfirm?: boolean;
+    onConfirmTurn?: () => void;
 }
 
 const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
@@ -33,7 +35,8 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
     opponentDice,
     onDiceClick,
     onSelectDie,
-    onDieDoubleClick,
+    canConfirm = false,
+    onConfirmTurn,
 }) => {
     if (!dice && !opponentDice) return null;
 
@@ -42,9 +45,14 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
     const firstUnusedIdx = visibleDice.findIndex((_, idx) => !usedDice[idx]);
     const canSwapOrder = !isDouble && !usedDice[0] && !usedDice[1];
     const rollSignature = dice ? `${dice[0]}-${dice[1]}` : '';
+    const confirmOnClick = canConfirm && Boolean(onConfirmTurn);
 
     const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
+        if (confirmOnClick) {
+            onConfirmTurn?.();
+            return;
+        }
         if (isDouble) {
             if (firstUnusedIdx !== -1) onSelectDie?.(0);
             return;
@@ -55,7 +63,9 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
     const handleContainerKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            if (isDouble) {
+            if (confirmOnClick) {
+                onConfirmTurn?.();
+            } else if (isDouble) {
                 if (firstUnusedIdx !== -1) onSelectDie?.(0);
             } else {
                 onDiceClick?.();
@@ -70,8 +80,14 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                     data-testid="board-dice-pair"
                     role="button"
                     tabIndex={0}
-                    aria-label={isDouble ? `Double ${dice[0]} (${4 - visibleDice.filter((_, i) => usedDice[i]).length} restants)` : "Inverser l'ordre des dés"}
-                    title={isDouble ? `Double ${dice[0]}` : "Cliquer pour inverser l'ordre des dés"}
+                    aria-label={
+                        confirmOnClick
+                            ? 'Valider le tour'
+                            : isDouble
+                              ? `Double ${dice[0]} (${4 - visibleDice.filter((_, i) => usedDice[i]).length} restants)`
+                              : "Inverser l'ordre des dés"
+                    }
+                    title={confirmOnClick ? 'Cliquer sur les dés pour valider le tour' : isDouble ? `Double ${dice[0]}` : "Cliquer pour inverser l'ordre des dés"}
                     onClick={handleContainerClick}
                     onKeyDown={handleContainerKeyDown}
                     className="pointer-events-auto flex items-center gap-2 sm:gap-3 rounded-xl px-1.5 sm:px-2.5 py-1 min-h-[40px] sm:min-h-[44px] cursor-pointer transition hover:bg-white/5 active:scale-95"
@@ -87,7 +103,7 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                                 value={value}
                                 used={used}
                                 active={active}
-                                disabled={used}
+                                disabled={used && !confirmOnClick}
                                 variant="ivory"
                                 rollIndex={i}
                                 animateRoll
@@ -99,6 +115,10 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                                 dataTestId={`board-die-${i}`}
                                 onClick={(e) => {
                                     e.stopPropagation();
+                                    if (confirmOnClick) {
+                                        onConfirmTurn?.();
+                                        return;
+                                    }
                                     if (used) return;
                                     if (isDouble) {
                                         onSelectDie?.(0);
@@ -111,11 +131,6 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                                     } else {
                                         onDiceClick?.();
                                     }
-                                }}
-                                onDoubleClick={(e) => {
-                                    e.stopPropagation();
-                                    if (used) return;
-                                    onDieDoubleClick?.(isDouble ? 0 : dieSlot);
                                 }}
                             />
                         );

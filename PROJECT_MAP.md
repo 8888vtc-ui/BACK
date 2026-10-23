@@ -19,7 +19,7 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 - **Moteur legacy** : backend Python GNUBG (archivé sous `archive/backend_engine_gnubg_legacy/`, rollouts historiques).
 - **Coach** : Pipeline log-driven (`src/features/coach/logAnalyzer.ts`) + Google Gemini `gemini-2.5-flash` via SSE (`src/app/api/coach/`) avec Cache L2 Supabase (`coach_explanations`).
 - **Persistance** : Supabase (Postgres + Auth + RLS + Cache Coach L2) + persistance locale IndexedDB/SQLite Capacitor.
-- **Tests** : Vitest (1 105 tests unitaires sur 197 fichiers, 0 échec) + Playwright (e2e) + pytest (`bgsage-service/`).
+- **Tests** : Vitest (1 253 tests unitaires sur 215 fichiers, 0 échec) + Playwright (e2e) + pytest (`bgsage-service/`).
 
 ---
 
@@ -65,18 +65,22 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | `multiplayer/` | Bannière et composants multijoueur |
 | `rating/` | Review de partie, courbes, cours IA (`GameReviewCourse.tsx`) |
 | `stats/` | Dashboard progression, erreurs récurrentes (`RecurringErrorsCard.tsx`) |
-| `summary/` | Rapport de fin de match |
-| `auth/`, `common/`, `toast/`, `providers/`, `modals/` | Infra UI |
+| `summary/` | Rapport de fin de match (`PostMatchTrainingReport.tsx`, `PostMatchAiSynthesis.tsx` avec Soft Paywall et bouton Audit Dés SHA-256) |
+| `dice/` | Modale d'audit cryptographique des dés (`DiceAuditModal.tsx` — vérification HMAC-SHA256 et graines client) |
+| `subscription/` | Modale Soft Paywall VIP (`SubscriptionModal.tsx`) |
+| `puzzle/` | Composants V2 du Puzzle du Jour (`DailyPuzzleBoard.tsx`, `DailyPuzzleResultCard.tsx`, `DailyStreakBadge.tsx`) |
+| `auth/`, `common/`, `toast/`, `providers/`, `modals/` | Infra UI (`GameModalsContainer.tsx`, `UserAccountMenu.tsx`) |
 
 ### `src/hooks/` — Hooks React (état + effets)
 | Fichier | Rôle |
 |---|---|
-| `useBackgammonGame.ts` | Machine à états de partie (lancer, déplacer, videau, IA) |
+| `useBackgammonGame.ts` | Machine à états de partie (lancer, déplacer, videau, IA, session Provably Fair) |
 | `useCoach.ts` | Orchestration de l'analyse Coach IA log-driven |
-| `useCheckerInteractions.ts` | Interactions pions et dés (clic, double-clic, drag-and-drop) |
+| `useCoachQuota.ts` | Suivi temps réel du quota gratuit de 3 analyses Coach IA / 24h et statut VIP |
+| `useCheckerInteractions.ts` | Interactions pions et dés (Smart Click 1 clic, clic droit = petit dé, drag-and-drop ; plus de double-clic natif) |
 | `usePlatformControlsRouter.ts` | Routage des contrôles Desktop vs Mobile Tactile |
 | `useGamePersistence.ts` | Persistance locale/cloud et analyse de fin de partie |
-| `useGameModals.ts` | Gestion centralisée des modales de jeu |
+| `useGameModals.ts` | Gestion centralisée des modales de jeu (incluant `DiceAuditModal` et `SubscriptionModal`) |
 | `useOpeningAssistant.ts` | Détection et application des coups d'ouverture certifiés |
 | `useMultiplayerGame.ts` | Partie multijoueur temps réel |
 | `useBoardTheme.tsx` | Thème du plateau (contexte) |
@@ -89,17 +93,26 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | `seo/` | Graphe JSON-LD Schema.org (`structuredData.ts` : `WebSite`, `VideoGame`, `Course`, `FAQPage`, `BreadcrumbList`) |
 | `offline/` | Persistance locale (IndexedDB), sync |
 | `engine/` | **`bgsageClient.ts` (client Open Sage Cloud Run)**, évaluateur tri-phase local (`evaluator.ts`), rollouts |
+| `crypto/` | **`provablyFairRng.ts` (RNG cryptographique HMAC-SHA256 Commit-Play-Reveal sans biais de modulo `< 252`)** |
+| `subscription/`, `stripe/` | **`quotaService.ts` (quota 3 analyses Coach IA / 24h), `plans.ts` & `stripeClient.ts` (Stripe Billing VIP)** |
+| `puzzle/` | **`puzzleService.ts` (catalogue Daily Puzzle V2 certifié Open Sage 3-ply) & `fsrsScheduler.ts` (répétition espacée FSRS)** |
+| `rating/` | **`glicko2Service.ts` (classement Glicko-2 Composite pondéré par PR et longueur de match)** |
+| `telemetry/` | **`antiCheatDetector.ts` (profilage Ex-Gaussien 5POINT/Regan des temps de réflexion et pertes de focus)** |
 | `monitoring/` | Sentry, logs, alertes |
 | `security/` | Rate limiting, schémas Zod |
 | `capacitor/` | Haptique, partage, SQLite natif |
-| `sound/`, `stats/`, `analytics/`, `pwa/` | Sons, agrégats, analytics, PWA |
+| `sound/`, `stats/`, `analytics/`, `pwa/` | Synthèse modale Web Audio (`modalAcousticEngine.ts`), haptique (`sensoryFeedbackController.ts`), stats, analytics, PWA |
+| `gameFeel/` | Game Feel pur et testé : `speedPresets.ts` (cadences Coach/Tournoi/Blitz T0–T6), `flightPhysics.ts` (durées/keyframes de vol), `pointerGestureMachine.ts` (tap/drag/long-press par type de pointeur) |
+| `settings/` | `gameplaySettings.ts` : schéma `GameplaySettings`, valeurs par défaut, migration, persistance de la cadence |
+
+> Moteur : `src/engine/smartClickResolver.ts` résout le clic Destination-First (port > dé simple > somme d1+d2) et le clic sur les dés.
 
 ### `src/app/` — App Router (pages + API)
 | Chemin | Rôle |
 |---|---|
 | `page.tsx` | Orchestrateur principal (293 lignes, conforme R1 < 300 lignes) à 3 vues exclusives (`LOBBY`, `GAME`, `SUMMARY`) |
-| `academy/`, `drills/`, `puzzles/`, `progression/` | Hub SEO Gammon Academy (`/academy`, `/academy/openings/[roll]`, `/academy/concepts/[slug]`) et pages secondaires d'entraînement |
-| `api/coach/`, `api/evaluate/`, `api/rollout/`, `api/health/` | Route Handlers serveur |
+| `academy/`, `drills/`, `puzzles/`, `daily-puzzle/`, `progression/`, `pricing/` | Hub SEO Gammon Academy (`/academy`), Puzzles Quotidiens V2 unifiés (`/puzzles` & `/daily-puzzle`), Drills (`/drills`), Progression (`/progression`), Grille Tarifaire VIP (`/pricing`) |
+| `api/coach/`, `api/evaluate/`, `api/rollout/`, `api/stripe/`, `api/multiplayer/`, `api/health/` | Route Handlers serveur (Coach SSE + quota 402, Open Sage, Rollouts, Stripe Checkout/Webhook, Validation multijoueur, Health) |
 
 ### `src/workers/` — Web Workers
 | Fichier | Rôle |
@@ -168,8 +181,12 @@ Voir [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md) pour
 | Où est le plateau ? | [`src/components/board/Board.tsx`](src/components/board/Board.tsx) |
 | Où est la logique de partie ? | [`src/hooks/useBackgammonGame.ts`](src/hooks/useBackgammonGame.ts) |
 | Où est le coach IA ? | [`src/features/coach/`](src/features/coach/) + [`src/app/api/coach/route.ts`](src/app/api/coach/route.ts) |
+| Où est le RNG Provably Fair & son audit UI ? | [`src/lib/crypto/provablyFairRng.ts`](src/lib/crypto/provablyFairRng.ts) + [`src/components/dice/DiceAuditModal.tsx`](src/components/dice/DiceAuditModal.tsx) |
+| Où sont le Soft Paywall, le quota Coach et Stripe ? | [`src/lib/subscription/quotaService.ts`](src/lib/subscription/quotaService.ts) + [`src/hooks/useCoachQuota.ts`](src/hooks/useCoachQuota.ts) + [`src/components/subscription/SubscriptionModal.tsx`](src/components/subscription/SubscriptionModal.tsx) + [`src/app/pricing/page.tsx`](src/app/pricing/page.tsx) |
+| Où sont les Puzzles Quotidiens V2 & FSRS ? | [`src/lib/puzzle/puzzleService.ts`](src/lib/puzzle/puzzleService.ts) + [`src/lib/puzzle/fsrsScheduler.ts`](src/lib/puzzle/fsrsScheduler.ts) + [`src/app/daily-puzzle/page.tsx`](src/app/daily-puzzle/page.tsx) |
 | Où sont les types Supabase ? | [`src/lib/supabase/types.ts`](src/lib/supabase/types.ts) |
 | Où sont les règles de scalabilité ? | [`SCALABILITY.md`](SCALABILITY.md) |
+| Où est le référentiel d'excellence (Game Feel, Glicko-2, Audio, Provably Fair) ? | [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md) |
 | Où est l'architecture détaillée ? | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 
 ---
@@ -178,7 +195,8 @@ Voir [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md) pour
 
 | Catégorie | Fichiers de référence actifs | Archives historiques (remplacées) |
 |---|---|---|
-| **Moteur IA** | [`DOCS_ENGINE.md`](DOCS_ENGINE.md), [`bgsage-service/README.md`](bgsage-service/README.md) | `docs/INTEGRATION_WILDBG.md`, `docs/REFERENCE_WILDBG.md`, `docs/TECHNIQUE_XG.md`, `docs/PLAN_AMELIORATION_XG.md` |
+| **Excellence & Game Feel** | [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md) (Game Feel WAAPI, Glicko-2 Composite, Audio modal, Provably Fair) | — |
+| **Moteur IA** | [`DOCS_ENGINE.md`](DOCS_ENGINE.md), [`bgsage-service/README.md`](bgsage-service/README.md), [`docs/adr/0009-open-sage-cloud-run.md`](docs/adr/0009-open-sage-cloud-run.md) | `archive/projet_abandonne_bot_non_fiable/`, `docs/TECHNIQUE_XG.md`, `docs/PLAN_AMELIORATION_XG.md` |
 | **Architecture & Règles** | [`PROJECT_MAP.md`](PROJECT_MAP.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCALABILITY.md`](SCALABILITY.md), [`GOVERNANCE.md`](GOVERNANCE.md) | `docs/AUDIT_FRONTEND_COMPLET.md`, `docs/FRONTEND_REFACTOR_PLAN.md` |
 | **Marque, SEO & i18n (6 Langues)** | [`docs/SEO_AND_I18N_MASTERPLAN.md`](docs/SEO_AND_I18N_MASTERPLAN.md), [`docs/BRAND_AND_SEO.md`](docs/BRAND_AND_SEO.md) | — |
-| **Feuille de route** | [`plans/plan-action-consolide.md`](plans/plan-action-consolide.md), [`plans/erh-error-rate-humain.md`](plans/erh-error-rate-humain.md) | Audits unitaires dans `plans/audit-*.md` consolidés dans `plan-action-consolide.md` |
+| **Feuille de route & Produit** | [`docs/PLAN_ACTION_PRODUIT.md`](docs/PLAN_ACTION_PRODUIT.md), [`docs/ROADMAP_PARITE_XG_GALAXY.md`](docs/ROADMAP_PARITE_XG_GALAXY.md) | — |

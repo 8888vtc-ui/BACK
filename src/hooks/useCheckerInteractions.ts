@@ -2,8 +2,10 @@
  * Hook d'interaction avec les pions et dés du plateau de jeu.
  *
  * Rôle :
- *   Gère les clics sur pions (clic gauche, double-clic, clic droit), le choix du dé actif,
- *   et la synchronisation multijoueur du déplacement.
+ *   Gère les clics sur pions (clic gauche, clic droit), le choix du dé actif,
+ *   et la synchronisation multijoueur du déplacement. Le double-clic natif est banni :
+ *   le coup combiné (d1+d2) se joue en un clic sur la destination (`useBoardPointInteractions`)
+ *   ou par glisser-déposer (Game Feel Spec §1.1).
  *
  * Dépendances :
  *   `checkerMoveHelpers`, `haptics`, `soundEngine`, `useKeyboardShortcuts`, `useForcedMoveAutoPlay`.
@@ -15,10 +17,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { impactLight, impactMedium } from '../lib/capacitor/haptics';
 import { soundEngine } from '../lib/sound/soundEngine';
+import { sensoryFeedbackController } from '../lib/sound/SensoryFeedbackController';
+import { HIT_ATTACKER_BASE_MS } from '../lib/gameFeel/flightPhysics';
 import {
     getBestCheckerForDie,
-    findSafestMoveForDie,
-    evaluateSumOfDiceMove,
     findClickDestination,
 } from '../engine/checkerMoveHelpers';
 import { getSafestDestination } from '../engine/backgammonEngine';
@@ -134,16 +136,32 @@ export function useCheckerInteractions({
         dice: gameDice,
         canDouble: gameCanDouble,
         canConfirm: canConfirmManualTurn,
-        onRollDice: rollDice,
+        onRollDice: () => {
+            sensoryFeedbackController.triggerMechanicalClick();
+            rollDice();
+        },
         onSwapDice: () => {
             setHasExplicitDiePreference(true);
             setPreferredDie(((1 - activeDie) as 0 | 1));
         },
         onOfferDouble: offerDouble,
-        onConfirmTurn: commitHumanMove ? () => commitHumanMove() : undefined,
+        onConfirmTurn: commitHumanMove
+            ? () => {
+                  sensoryFeedbackController.triggerMechanicalClick();
+                  commitHumanMove();
+              }
+            : undefined,
     });
 
     const handlePlayMove = useCallback((from: number, to: number, die?: 0 | 1) => {
+        const destVal = to >= 1 && to <= 24 ? gameBoard[to] : 0;
+        const isHit = (gameTurn === 'X' && destVal === -1) || (gameTurn === 'O' && destVal === 1);
+        if (isHit) {
+            sensoryFeedbackController.triggerCheckerLift(0.8);
+            sensoryFeedbackController.scheduleBlotHitAtFlightApex(HIT_ATTACKER_BASE_MS);
+        } else {
+            sensoryFeedbackController.triggerStandardCheckerMove();
+        }
         impactMedium();
         const move = { from, to };
         currentTurnMovesRef.current.push(move);
@@ -191,13 +209,6 @@ export function useCheckerInteractions({
         }
     }, [gameSelected, leftDieTargets, rightDieTargets, gameBoard, gameTurn, selectChecker, setSelectedDie, handlePlayMove]);
 
-    const handleDieDoubleClick = useCallback((die: 0 | 1) => {
-        impactMedium();
-        const targets = die === 0 ? leftDieTargets : rightDieTargets;
-        const safest = findSafestMoveForDie(targets, gameBoard, gameTurn, gameSelected?.point);
-        if (safest) handlePlayMove(safest.from, safest.to, die);
-    }, [gameSelected, leftDieTargets, rightDieTargets, gameBoard, gameTurn, handlePlayMove]);
-
     const handleCheckerClick = useCallback((point: number) => {
         impactLight();
         const leftDests = leftDieTargets.get(point) ?? [];
@@ -238,26 +249,6 @@ export function useCheckerInteractions({
         handlePlayMove,
     ]);
 
-    const handleCheckerDoubleClick = useCallback((point: number) => {
-        impactMedium();
-        const leftDests = leftDieTargets.get(point) ?? [];
-        const rightDests = rightDieTargets.get(point) ?? [];
-        const sumResult = evaluateSumOfDiceMove(point, gameDice, gameBoard, gameTurn, leftDests, rightDests);
-
-        if (sumResult.isPossible && sumResult.midDest !== undefined && sumResult.sumDest !== undefined) {
-            const firstDie: 0 | 1 = leftDests.includes(sumResult.midDest) ? 0 : 1;
-            const secondDie: 0 | 1 = (1 - firstDie) as 0 | 1;
-            handlePlayMove(point, sumResult.midDest, firstDie);
-            handlePlayMove(sumResult.midDest, sumResult.sumDest, secondDie);
-            return;
-        }
-        const allDests = Array.from(new Set([...leftDests, ...rightDests]));
-        if (allDests.length > 0) {
-            const safest = getSafestDestination(point, allDests, gameBoard, gameTurn);
-            handlePlayMove(point, safest, leftDests.includes(safest) ? 0 : 1);
-        }
-    }, [leftDieTargets, rightDieTargets, gameBoard, gameTurn, gameDice, handlePlayMove]);
-
     const handleCheckerRightClick = useCallback((point: number) => {
         impactLight();
         const secondaryDie: 0 | 1 = (1 - activeDie) as 0 | 1;
@@ -276,8 +267,13 @@ export function useCheckerInteractions({
         impactLight();
         const destVal = destination >= 1 && destination <= 24 ? gameBoard[destination] : 0;
         const isHit = (gameTurn === 'X' && destVal === -1) || (gameTurn === 'O' && destVal === 1);
-        if (isHit) soundEngine.playCheckerHit();
-        else soundEngine.playCheckerSlide();
+        if (isHit) {
+            soundEngine.playCheckerHit();
+            sensoryFeedbackController.scheduleBlotHitAtFlightApex(HIT_ATTACKER_BASE_MS);
+        } else {
+            soundEngine.playCheckerSlide();
+            sensoryFeedbackController.triggerStandardCheckerMove();
+        }
 
         if (gameSelected) {
             const move = { from: gameSelected.point, to: destination };
@@ -315,9 +311,7 @@ export function useCheckerInteractions({
         activeDie,
         handlePlayMove,
         handleSelectDie,
-        handleDieDoubleClick,
         handleCheckerClick,
-        handleCheckerDoubleClick,
         handleCheckerRightClick,
         handleDestinationClick,
         handleDeselect,

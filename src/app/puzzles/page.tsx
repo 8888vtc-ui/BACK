@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import DailyPuzzleView from '../../components/puzzles/DailyPuzzleView';
+import { DailyPuzzleScreen } from '../daily-puzzle/page';
 import { BackToLobbyButton } from '../../components/nav/PageTransition';
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ export default function PuzzlesPage() {
                         className="flex items-center gap-1.5 rounded-xl border border-[#d4af37]/30 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-[#fdf8eb] transition shadow-sm"
                     >
                         <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🎯</span>
-                        <span>Drills de Blunders</span>
+                        <span>Drills FSRS</span>
                     </Link>
                     <Link
                         href="/progression"
@@ -41,7 +41,7 @@ export default function PuzzlesPage() {
                 </div>
             </div>
 
-            <DailyPuzzleView />
+            <DailyPuzzleScreen />
         </main>
     );
 }

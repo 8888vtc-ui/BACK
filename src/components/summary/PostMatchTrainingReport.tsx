@@ -4,25 +4,21 @@
  * Rapport de Formation Post-Match — remplace l'overlay minimal de fin de partie.
  *
  * Rôle :
- *   Assemble les 4 sections du bilan :
- *     1. `PostMatchHeader` — résultat + comparatif PR + bilan des 4 paliers ;
- *     2. `PostMatchBlundersGallery` — Top 3 à 5 erreurs majeures avec revue de position ;
- *     3. `PostMatchAiSynthesis` — diagnostic IA en 3 blocs (repli local) ;
+ *   Assemble les sections du bilan Grandmaster Match Review & Blunder Report :
+ *     1. `PostMatchHeader` — résultat + comparatif PR + bilan des paliers ;
+ *     2. `MatchBlunderReport` — bannière PR/Accuracy %, carrousel/accordéon de `MiniBoardDiagram` avec flèches comparatives,
+ *        voix du Coach, mode puzzle « Rejouer ce coup », et rapport Gemini en 3 volets (🎯 Diagnostic, 💡 Concept Clé, 🚀 Plan) ;
+ *     3. `PostMatchBlundersGallery` & `PostMatchAiSynthesis` — vue détaillée complémentaire ;
  *     4. Persistance IndexedDB + Supabase (déclenchée une seule fois au montage).
  *
  *   Propose les actions : Manche Suivante / Rejouer, Bilan & Courbe PR, Entraîner mes Blunders, Retour au Lobby.
- *
- * Dépendances :
- *   Sous-composants `summary/*`, `postMatchReportHelpers`, `postMatchPersistence`.
- *
- * Retrait :
- *   Supprimer ce fichier et son usage dans `GameModalsContainer.tsx`.
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PostMatchHeader from './PostMatchHeader';
 import PostMatchBlundersGallery from './PostMatchBlundersGallery';
 import PostMatchAiSynthesis from './PostMatchAiSynthesis';
+import MatchBlunderReport from './MatchBlunderReport';
 import {
     buildMatchSummaryPayload,
     extractMajorBlunders,
@@ -66,6 +62,8 @@ export interface PostMatchTrainingReportProps {
     onBackToLobby: () => void;
     /** Ouvre les Drills sur les blunders. */
     onTrainBlunders?: () => void;
+    /** Ouvre l'auditeur cryptographique Provably Fair des dés en 1 clic. */
+    onOpenDiceAudit?: () => void;
     /** Langue d'affichage. */
     locale?: string;
 }
@@ -88,6 +86,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
     onOpenReview,
     onBackToLobby,
     onTrainBlunders,
+    onOpenDiceAudit,
     locale = 'fr',
 }) => {
     const isEn = locale === 'en';
@@ -144,7 +143,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
             data-testid="post-match-training-report"
             className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto bg-[#070402]/85 p-3 backdrop-blur-md sm:p-6"
         >
-            <div className="w-full max-w-3xl space-y-3 rounded-3xl border border-[#d4af37]/45 bg-[#140d08]/95 p-3 shadow-[0_28px_80px_rgba(0,0,0,0.92),inset_0_1px_0_rgba(255,245,205,0.16)] sm:p-5">
+            <div className="w-full max-w-4xl max-h-[92vh] overflow-y-auto space-y-3 rounded-3xl border border-[#d4af37]/45 bg-[#140d08]/95 p-3 shadow-[0_28px_80px_rgba(0,0,0,0.92),inset_0_1px_0_rgba(255,245,205,0.16)] sm:p-5">
                 {/* Titre du rapport */}
                 <header className="flex items-center justify-between gap-2 px-1">
                     <div className="flex items-center gap-2">
@@ -160,18 +159,25 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                     </div>
                     <span
                         data-testid="post-match-persist-status"
-                        className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${persistStatus === 'saved'
-                            ? 'border-emerald-600/60 bg-emerald-950/60 text-emerald-300'
-                            : persistStatus === 'error'
-                                ? 'border-rose-700/60 bg-rose-950/60 text-rose-300'
-                                : 'border-[#d4af37]/30 bg-[#1e120a]/80 text-[#e8dcc6]/70'
-                            }`}
+                        className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${
+                            persistStatus === 'saved'
+                                ? 'border-emerald-600/60 bg-emerald-950/60 text-emerald-300'
+                                : persistStatus === 'error'
+                                  ? 'border-rose-700/60 bg-rose-950/60 text-rose-300'
+                                  : 'border-[#d4af37]/30 bg-[#1e120a]/80 text-[#e8dcc6]/70'
+                        }`}
                     >
                         {persistStatus === 'saved'
-                            ? isEn ? '💾 Saved' : '💾 Enregistré'
+                            ? isEn
+                                ? '💾 Saved'
+                                : '💾 Enregistré'
                             : persistStatus === 'error'
-                                ? isEn ? '⚠️ Local only' : '⚠️ Local seul'
-                                : isEn ? '⏳ Saving…' : '⏳ Enregistrement…'}
+                              ? isEn
+                                  ? '⚠️ Local only'
+                                  : '⚠️ Local seul'
+                              : isEn
+                                ? '⏳ Saving…'
+                                : '⏳ Enregistrement…'}
                     </span>
                 </header>
 
@@ -192,10 +198,20 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                     locale={locale}
                 />
 
-                {/* Section 2 — Galerie des erreurs majeures */}
+                {/* Section 2 — Grandmaster Match Review & Blunder Report (MiniBoardDiagram + 3 volets Gemini + Rejouer ce coup) */}
+                <MatchBlunderReport
+                    analysis={analysis}
+                    opponentPr={botPr}
+                    isOffline={isOffline}
+                    apiUrl={apiUrl}
+                    locale={locale}
+                    onTrainBlunders={onTrainBlunders}
+                />
+
+                {/* Section 3 — Galerie synthétique des erreurs majeures */}
                 <PostMatchBlundersGallery blunders={blunders} locale={locale} />
 
-                {/* Section 3 — Synthèse pédagogique IA */}
+                {/* Section 4 — Synthèse pédagogique IA */}
                 <PostMatchAiSynthesis
                     payload={summaryPayload}
                     apiUrl={apiUrl}
@@ -214,8 +230,12 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                         <span aria-hidden="true">▶</span>
                         <span>
                             {isMatchOver
-                                ? isEn ? 'New match' : 'Nouveau match'
-                                : isEn ? 'Next game' : 'Manche suivante'}
+                                ? isEn
+                                    ? 'New match'
+                                    : 'Nouveau match'
+                                : isEn
+                                  ? 'Next game'
+                                  : 'Manche suivante'}
                         </span>
                     </button>
 
@@ -243,13 +263,31 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                         </button>
                     )}
 
+                    {onOpenDiceAudit && (
+                        <button
+                            type="button"
+                            onClick={onOpenDiceAudit}
+                            data-testid="post-match-dice-audit-btn"
+                            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-emerald-400/60 bg-gradient-to-r from-[#0a2e20] via-[#0e3f2c] to-[#1a2915] px-4 py-2.5 text-xs font-bold text-emerald-200 shadow-[0_4px_16px_rgba(16,185,129,0.22),inset_0_1px_0_rgba(212,175,55,0.3)] transition hover:border-[#f3c65f] hover:text-white active:scale-95"
+                        >
+                            <span aria-hidden="true">🛡</span>
+                            <span>
+                                {isEn
+                                    ? 'Verify Dice in 1 Click (Provably Fair)'
+                                    : 'Vérifier les Dés en 1 Clic (Provably Fair)'}
+                            </span>
+                        </button>
+                    )}
+
                     <button
                         type="button"
                         onClick={onBackToLobby}
                         data-testid="post-match-back-lobby-btn"
                         className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-[#d4af37]/30 bg-[#1a0f08] px-4 py-2.5 text-xs font-semibold text-[#e8dcc6]/85 transition hover:border-[#d4af37]/60 hover:text-[#fdf8eb] active:scale-95"
                     >
-                        <span aria-hidden="true" className="text-[#f3c65f]">⚜</span>
+                        <span aria-hidden="true" className="text-[#f3c65f]">
+                            ⚜
+                        </span>
                         <span>{isEn ? 'Back to lobby' : 'Retour au Lobby'}</span>
                     </button>
                 </div>

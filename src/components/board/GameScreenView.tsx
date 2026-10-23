@@ -60,12 +60,10 @@ export interface GameScreenViewProps {
     activeDie: 0 | 1;
     isBoardLoading: boolean;
     onCheckerClick: (point: number) => void;
-    onCheckerDoubleClick: (point: number) => void;
     onCheckerRightClick: (point: number) => void;
     onDestinationClick: (point: number) => void;
     onPlayMove: (from: number, to: number, die?: 0 | 1) => void;
     onSelectDie: (die: 0 | 1) => void;
-    onDieDoubleClick: (die: 0 | 1) => void;
     onDiceClick: () => void;
     onDeselect: () => void;
     /** HUD. */
@@ -107,12 +105,10 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     activeDie,
     isBoardLoading,
     onCheckerClick,
-    onCheckerDoubleClick,
     onCheckerRightClick,
     onDestinationClick,
     onPlayMove,
     onSelectDie,
-    onDieDoubleClick,
     onDiceClick,
     onDeselect,
     turnsCount,
@@ -154,6 +150,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 prO={prO}
                 onBackToLobby={onBackToLobby}
                 playerColor={playerColor}
+                onOpenDiceAudit={modals.openDiceAudit}
             />
 
             {/* 2. Plateau et Panneau Coach latéral */}
@@ -164,12 +161,10 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 isBoardLoading={isBoardLoading}
                 activeCoachHighlight={coachHighlight}
                 onCheckerClick={onCheckerClick}
-                onCheckerDoubleClick={onCheckerDoubleClick}
                 onCheckerRightClick={onCheckerRightClick}
                 onDestinationClick={onDestinationClick}
                 onPlayMove={onPlayMove}
                 onSelectDie={onSelectDie}
-                onDieDoubleClick={onDieDoubleClick}
                 onDiceClick={onDiceClick}
                 onDeselect={onDeselect}
                 coach={coach}

@@ -21,6 +21,7 @@ import React from 'react';
 import type { ThemeName } from '../board/boardThemes';
 import CoachPanel, { type CoachPanelProps } from './CoachPanel';
 import ErrorBoundary from '../common/ErrorBoundary';
+import { useCoachVoice } from '../../hooks/useCoachVoice';
 import type { CoachState, MatchStats } from '../../hooks/useCoach';
 import type { MatchContext } from '../../features/coach/matchContext';
 
@@ -78,6 +79,12 @@ const CoachSidebarComponent: React.FC<CoachSidebarProps> = ({
     onCandidateHover,
     turnsHistory,
 }) => {
+    const { isVoiceEnabled, isSpeaking, toggleVoice, stop } = useCoachVoice();
+
+    const handleDismiss = () => {
+        stop();
+        onDismiss();
+    };
 
     return (
         <aside
@@ -89,14 +96,44 @@ const CoachSidebarComponent: React.FC<CoachSidebarProps> = ({
                     <span className="flex h-2 w-2 rounded-full bg-[#f3c65f] shadow-[0_0_8px_rgba(243,198,95,0.9)] animate-pulse" />
                     <h2 className="font-serif text-sm font-bold text-[#fdf8eb] tracking-wide">Coach IA &amp; Analyse</h2>
                 </div>
-                <button
-                    type="button"
-                    onClick={onDismiss}
-                    className="rounded-lg border border-[#d4af37]/30 bg-black/40 px-2 py-0.5 text-[11px] font-bold text-amber-200/80 hover:border-[#f3c65f] hover:text-white transition"
-                    title="Fermer l'analyse"
-                >
-                    Fermer ✕
-                </button>
+                <div className="flex items-center gap-1.5">
+                    {!coach?.verdict && (
+                        <button
+                            type="button"
+                            onClick={toggleVoice}
+                            data-testid="coach-voice-toggle-btn"
+                            aria-pressed={isVoiceEnabled}
+                            aria-label={isVoiceEnabled ? 'Voix Coach' : 'Voix muette'}
+                            title={isVoiceEnabled ? 'Désactiver la voix du Coach' : 'Activer la voix du Coach'}
+                            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[11px] font-bold transition active:scale-95 ${
+                                isVoiceEnabled
+                                    ? 'border-[#f3c65f]/70 bg-[#2a1c0b]/90 text-[#fce8b2]'
+                                    : 'border-[#d4af37]/30 bg-black/40 text-slate-400 hover:border-[#f3c65f]/50 hover:text-slate-200'
+                            }`}
+                        >
+                            <span>{isVoiceEnabled ? '🔊 Voix Coach' : '🔇 Voix muette'}</span>
+                            {isSpeaking && (
+                                <span
+                                    data-testid="coach-voice-wave"
+                                    aria-hidden="true"
+                                    className="inline-flex items-end gap-0.5 h-2.5 ml-0.5 animate-pulse"
+                                >
+                                    <span className="w-0.5 h-1.5 bg-[#f3c65f] rounded-full animate-pulse" />
+                                    <span className="w-0.5 h-2.5 bg-[#f3c65f] rounded-full animate-pulse" />
+                                    <span className="w-0.5 h-1 bg-[#f3c65f] rounded-full animate-pulse" />
+                                </span>
+                            )}
+                        </button>
+                    )}
+                    <button
+                        type="button"
+                        onClick={handleDismiss}
+                        className="rounded-lg border border-[#d4af37]/30 bg-black/40 px-2 py-0.5 text-[11px] font-bold text-amber-200/80 hover:border-[#f3c65f] hover:text-white transition"
+                        title="Fermer l'analyse"
+                    >
+                        Fermer ✕
+                    </button>
+                </div>
             </div>
 
             <div className="p-2.5 overflow-y-auto flex-1 space-y-2.5">

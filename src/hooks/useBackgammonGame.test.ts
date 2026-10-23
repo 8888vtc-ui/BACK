@@ -817,6 +817,35 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
         expect(sPlayedSmallFirst.boardState.board[22]).toBe(1);
         expect(sPlayedSmallFirst.usedDice).toEqual([false, true]);
     });
+
+    it('Chantier 3 : maintient opponentHighlight après le tour de l’IA (avec isHit sur frappe) et l’efface sur ROLL_DICE ou OFFER_DOUBLE', () => {
+        const s0 = createInitialGameState(7, 0, 0, 'O', true);
+        s0.boardState.board[4] = 1; // Blot joueur X sur la flèche 4
+        const sAfterBot = backgammonGameReducer(s0, {
+            type: 'OPPONENT_FINISH_TURN',
+            finalBoard: s0.boardState.board,
+            dice: [3, 1],
+            moves: [
+                { from: 1, to: 4, isHit: true },
+                { from: 12, to: 13 },
+            ],
+        });
+
+        // Les flèches persistent pendant la réflexion du joueur (WAITING_FOR_ROLL)
+        expect(sAfterBot.phase).toBe('WAITING_FOR_ROLL');
+        expect(sAfterBot.opponentHighlight).toEqual([
+            { from: 1, to: 4, isHit: true },
+            { from: 12, to: 13 },
+        ]);
+
+        // 1. Disparaît immédiatement quand le joueur clique sur Proposer le videau (OFFER_DOUBLE)
+        const sAfterDouble = backgammonGameReducer(sAfterBot, { type: 'OFFER_DOUBLE' });
+        expect(sAfterDouble.opponentHighlight).toBeNull();
+
+        // 2. Disparaît immédiatement quand le joueur clique sur Lancer les dés (ROLL_DICE)
+        const sAfterRoll = backgammonGameReducer(sAfterBot, { type: 'ROLL_DICE', dice: [5, 2] });
+        expect(sAfterRoll.opponentHighlight).toBeNull();
+    });
 });
 
 

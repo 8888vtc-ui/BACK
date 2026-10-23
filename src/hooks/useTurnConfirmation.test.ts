@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
     AUTO_CONFIRM_FORCED_DELAY_MS,
     areAllLegalDicePlayed,
+    shouldAutoConfirmTurn,
     useTurnConfirmation,
 } from './useTurnConfirmation';
 import { BoardCenterControls } from '../components/board/BoardCenterControls';
@@ -142,5 +143,40 @@ describe('useTurnConfirmation & TurnActionBar (Audit 8/20)', () => {
 
         fireEvent.keyDown(window, { code: 'Enter', key: 'Enter' });
         expect(onConfirm).toHaveBeenCalledTimes(2);
+    });
+
+    it('supporte les 4 modes AutoConfirmMode (never, forced_only, always_except_cube, always)', () => {
+        // 1. never : jamais d'auto-confirmation, même si coup forcé
+        expect(shouldAutoConfirmTurn({ mode: 'never', isForcedSingleChoice: true })).toBe(false);
+        expect(shouldAutoConfirmTurn({ mode: 'never', isForcedSingleChoice: false })).toBe(false);
+
+        // 2. forced_only : uniquement si coup forcé
+        expect(shouldAutoConfirmTurn({ mode: 'forced_only', isForcedSingleChoice: true })).toBe(true);
+        expect(shouldAutoConfirmTurn({ mode: 'forced_only', isForcedSingleChoice: false })).toBe(false);
+
+        // 3. always_except_cube : auto sauf si l'adversaire peut doubler au tour suivant
+        expect(
+            shouldAutoConfirmTurn({
+                mode: 'always_except_cube',
+                isForcedSingleChoice: false,
+                opponentCanDoubleNextTurn: false,
+            }),
+        ).toBe(true);
+        expect(
+            shouldAutoConfirmTurn({
+                mode: 'always_except_cube',
+                isForcedSingleChoice: false,
+                opponentCanDoubleNextTurn: true,
+            }),
+        ).toBe(false);
+
+        // 4. always : toujours auto-confirmé
+        expect(
+            shouldAutoConfirmTurn({
+                mode: 'always',
+                isForcedSingleChoice: false,
+                opponentCanDoubleNextTurn: true,
+            }),
+        ).toBe(true);
     });
 });

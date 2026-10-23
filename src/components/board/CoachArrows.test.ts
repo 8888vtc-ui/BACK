@@ -1,8 +1,24 @@
+// @vitest-environment jsdom
+import React from 'react';
 import { describe, it, expect } from 'vitest';
-import { computeArrowCoords, computeCurvedArrowPath } from './CoachArrows';
+import { render } from '@testing-library/react';
+import {
+    CoachArrows,
+    OPPONENT_ARROW_CURVATURE_PX,
+    OPPONENT_ARROW_STROKE,
+    OPPONENT_ARROW_STROKE_WIDTH,
+    OPPONENT_ORIGIN_RADIUS,
+    computeArrowCoords,
+    computeCurvedArrowPath,
+} from './CoachArrows';
 
-describe('computeArrowCoords', () => {
-    it('retourne des coordonnées numériques finies et un tracé de Bézier', () => {
+describe('CoachArrows & Last Move Persistence (Chantier 3)', () => {
+    it('retourne des coordonnées numériques finies et un tracé de Bézier quadratique de courbure 28 px', () => {
+        expect(OPPONENT_ARROW_CURVATURE_PX).toBe(28);
+        expect(OPPONENT_ARROW_STROKE).toBe('rgba(148, 163, 184, 0.52)');
+        expect(OPPONENT_ARROW_STROKE_WIDTH).toBe(2.25);
+        expect(OPPONENT_ORIGIN_RADIUS).toBe(3.5);
+
         const coords = computeArrowCoords(13, 8);
         expect(Number.isFinite(coords.x1)).toBe(true);
         expect(Number.isFinite(coords.y1)).toBe(true);
@@ -25,11 +41,30 @@ describe('computeArrowCoords', () => {
         expect(Number.isFinite(toBar.x2)).toBe(true);
     });
 
-    it('computeCurvedArrowPath génère une courbe quadratique Q', () => {
+    it('computeCurvedArrowPath génère une courbe quadratique Q avec flèche de 28 px', () => {
         const path = computeCurvedArrowPath(100, 200, 300, 200);
-        expect(path).toContain('M 100 200');
-        expect(path).toContain('Q');
-        expect(path).toContain('300 200');
+        expect(path).toBe('M 100 200 Q 200 228 300 200');
+    });
+
+    it('affiche les sous-coups adverses en gris ardoise 2.25px, origine r=3.5 et croix rouge ✕ sur frappe de blot', () => {
+        const { getByTestId, queryByTestId } = render(
+            React.createElement(CoachArrows, {
+                opponent: [
+                    { from: 1, to: 7, isHit: false },
+                    { from: 12, to: 16, isHit: true },
+                ],
+            }),
+        );
+
+        const path0 = getByTestId('opponent-arrow-path-0');
+        expect(path0.getAttribute('stroke')).toBe('rgba(148, 163, 184, 0.52)');
+        expect(path0.getAttribute('stroke-width')).toBe('2.25');
+
+        const origin0 = getByTestId('opponent-arrow-origin-0');
+        expect(origin0.getAttribute('r')).toBe('3.5');
+
+        expect(queryByTestId('opponent-hit-cross-0')).toBeNull();
+        const cross1 = getByTestId('opponent-hit-cross-1');
+        expect(cross1.textContent).toBe('✕');
     });
 });
-

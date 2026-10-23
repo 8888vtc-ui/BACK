@@ -7,6 +7,8 @@
 
 import type { BoardState } from '../../engine/backgammonEngine';
 import type { GamePhase } from '../../actions/types';
+import type { GameSpeed } from '../../lib/gameFeel/speedPresets';
+import type { AutoConfirmMode } from '../../lib/settings/gameplaySettings';
 
 export interface BoardProps {
     state: BoardState;
@@ -18,18 +20,16 @@ export interface BoardProps {
     /** Dés lancés par l'adversaire (affichés dans la rivière centrale). */
     opponentDice?: [number, number] | null;
     onCheckerClick: (point: number) => void;
-    onCheckerDoubleClick?: (point: number) => void;
     onCheckerRightClick: (point: number) => void;
     onDestinationClick: (point: number) => void;
     onSelectDie?: (die: 0 | 1) => void;
-    onDieDoubleClick?: (die: 0 | 1) => void;
     /** Clic / tap sur la paire de dés : inverse l'ordre (swapDiceOrderAction). */
     onDiceClick?: () => void;
     onDeselect?: () => void;
     onPlayMove?: (from: number, to: number, die?: 0 | 1) => void;
     onUndo?: () => void;
     coachHighlight?: { played: { from: number; to: number }[]; optimal: { from: number; to: number }[] } | null;
-    opponentHighlight?: { from: number; to: number }[] | null;
+    opponentHighlight?: { from: number; to: number; isHit?: boolean }[] | null;
     /** Le double est-il possible pour le joueur au trait ? (halo du videau). */
     canDouble?: boolean;
     /** Joueur ayant proposé le videau ('X' | 'O' | null). */
@@ -56,6 +56,16 @@ export interface BoardProps {
     autoConfirmEnabled?: boolean;
     /** Bascule l'option « Validation auto » (`autoConfirmTurn`). */
     onToggleAutoConfirm?: () => void;
+    /** Mode étendu d'auto-validation (`never` | `forced_only` | `always_except_cube` | `always`). */
+    autoConfirmMode?: AutoConfirmMode;
+    /** Sélection directe d'un mode d'auto-validation. */
+    onSelectAutoConfirmMode?: (mode: AutoConfirmMode) => void;
+    /** Rotation rapide entre les 4 modes d'auto-validation. */
+    onCycleAutoConfirmMode?: () => void;
+    /** Cadence actuelle du Bot (Coach / Tournoi / Blitz). */
+    gameSpeed?: GameSpeed;
+    /** Passe à la cadence suivante. */
+    onCycleGameSpeed?: () => void;
     /**
      * La partie a-t-elle officiellement démarré ? Tant que la modale de
      * configuration est ouverte, aucun contrôle central n'est affiché.

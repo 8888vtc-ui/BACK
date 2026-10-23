@@ -161,6 +161,24 @@ describe('CoachPanel Component', () => {
         expect(html).toContain('data-testid="coach-total-equity-loss"');
         expect(html).toContain('-0.420');
     });
+
+    it('affiche le bouton à bascule de la voix du Coach et le bouton Réécouter quand une explication est présente', () => {
+        const html = renderToStaticMarkup(
+            <CoachPanel
+                verdict="blunder"
+                equityLoss={-0.125}
+                playedMove="24/20 13/11"
+                optimalMove="8/4 6/4"
+                explanation="Le coup joué expose deux blots directs."
+                onDismiss={() => { }}
+            />,
+        );
+
+        expect(html).toContain('data-testid="coach-voice-toggle-btn"');
+        expect(html).toContain('🔇 Voix muette');
+        expect(html).toContain('data-testid="coach-voice-replay-btn"');
+        expect(html).toContain('Réécouter');
+    });
 });
 
 describe('computePerformanceRating & getPRBadge', () => {

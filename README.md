@@ -18,6 +18,7 @@ Analyse en temps réel, opening book certifié, drills de blunders, puzzles quot
 |---|---|
 | [`PROJECT_MAP.md`](PROJECT_MAP.md) | **Carte d'orientation** — comprendre le projet en 1 minute, ajouter une fonction en 2 minutes. **Lire en premier.** |
 | [`docs/BRAND_AND_SEO.md`](docs/BRAND_AND_SEO.md) | **Charte de Marque, Domaines, Logo & SEO** — architecture `backgammontour.com` & `gammonacademy.com`, blason Monte-Carlo et JSON-LD. |
+| [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md) | **Référentiel d'Excellence Master** — Spécifications absolues : Game Feel FLIP, Glicko-2 Composite, Psychoacoustique & Provably Fair. |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Architecture détaillée (modules, flux, décisions). |
 | [`SCALABILITY.md`](SCALABILITY.md) | Charte de scalabilité impérative (règles non négociables). |
 | [`DOCS_ENGINE.md`](DOCS_ENGINE.md) | Architecture du moteur d'évaluation unifié (Open Sage Cloud Run + repli tri-phase local). |
@@ -56,7 +57,7 @@ docker compose up --build -d
 
 ### 1. Tests Unitaires & Composants (Vitest)
 
-1 105 tests unitaires et d'intégration (197 fichiers de test, 0 échec) couvrant le moteur de règles, le benchmark Open Sage (4 niveaux de bots + videau), la priorité au dé le plus élevé, le coach IA Gemini 2.5 Flash, la notation bijective (4 000 parties), la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
+1 253 tests unitaires et d'intégration (215 fichiers de test, 0 échec) couvrant le moteur de règles, le benchmark Open Sage (4 niveaux de bots + videau), la priorité au dé le plus élevé, le coach IA Gemini 2.5 Flash, la notation bijective (4 000 parties), la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
 
 ```bash
 npm test
@@ -110,7 +111,7 @@ Le système intègre une solution complète de surveillance et de monitoring en 
 - **Logs Structurés JSON** : Format JSON standardisé avec corrélation par requête (`X-Correlation-ID`) compatible Datadog, Grafana Loki, CloudWatch.
 - **Sondes de Santé (Health-Checks)** :
   - Frontend : `GET /api/health` (ping actif du backend, mémoire heap/rss, statut Supabase).
-  - Backend : `GET /health` (standard), `GET /health/ready` (readiness probe vérifiant le pool de workers gnubg), `GET /health/live` (liveness probe).
+  - Backend Open Sage (`bgsage-service`) : `GET /api/health` (statut du moteur neuronal `bgsage` sur Google Cloud Run).
 - **Alerting Opérationnel** : Détection des anomalies (latence > 2.5s, 429 rate limit, échecs consécutifs) avec déduplication et forward webhook (Slack/Discord).
 - **Analytics Produit (RGPD)** : Télémétrie d'usage sans cookies tiers, avec consentement préalable et support pluggable (GA4, PostHog).
 - Documentation complète : [`docs/MONITORING.md`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/MONITORING.md).
@@ -121,8 +122,8 @@ Le système intègre une solution complète de surveillance et de monitoring en 
 
 Le projet intègre une chaîne d'intégration et de déploiement continu automatisée avec **GitHub Actions** :
 
-- **Pipeline CI (`.github/workflows/ci.yml`)** : Exécute ESLint, TypeScript Typecheck, Vitest (619 tests), Pytest (30 tests), build de l'image Docker gnubg et Playwright E2E.
-- **Pipeline CD (`.github/workflows/deploy.yml`)** : Déploie automatiquement le frontend sur **Vercel** ou **Netlify**, et compile/publie l'image conteneurisée du backend d'analyse sur **GitHub Container Registry (GHCR)**.
+- **Pipeline CI (`.github/workflows/ci.yml`)** : Exécute ESLint, TypeScript Typecheck, Vitest (1 145+ tests sur 201+ fichiers), Pytest (`bgsage-service/tests`), build de l'image Docker `bgsage-service` et Playwright E2E.
+- **Pipeline CD (`.github/workflows/deploy.yml`)** : Déploie automatiquement le frontend sur **Vercel** ou **Netlify**, et déploie le microservice **Open Sage (`bgsage-service`)** sur **Google Cloud Run** / **GHCR**.
 - **Configurations dédiées** :
   - [`vercel.json`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/vercel.json) : Configuration Next.js & en-têtes de sécurité
   - [`netlify.toml`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/netlify.toml) : Plugin Netlify Next.js & en-têtes de sécurité
@@ -147,9 +148,10 @@ La publication sur l'**Apple App Store** et le **Google Play Store** est entièr
 
 | Document | Description |
 |---|---|
-| [**Guide Utilisateur & Manuel de Jeu**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/USER_GUIDE.md) | Manuel exhaustif : règles de tournoi WBGF, coach grand-maître, videau, drills, ELO et multijoueur. |
-| [**Référence de l'API**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/API_REFERENCE.md) | Spécification de l'ensemble des endpoints REST, flux SSE (rollouts, coach), schémas et rate-limiting. |
-| [**Index des ADRs d'Architecture**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/README.md) | Les 6 décisions d'architecture structurantes (WASM/GNUBG, Capacitor, Workers SSE, Anti-triche, Sentry, Offline). |
+| [**Guide Utilisateur & Manuel de Jeu**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/USER_GUIDE.md) | Manuel exhaustif : règles de tournoi WBGF, Smart Click, coach IA, videau, Academy, puzzles FSRS, audit Provably Fair et multijoueur. |
+| [**Référence de l'API**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/API_REFERENCE.md) | Spécification des endpoints REST, flux SSE (rollouts, coach, review), quota `402`, Stripe Billing et rate-limiting. |
+| [**Index des ADRs d'Architecture**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/README.md) | Les 9 décisions d'architecture structurantes (`ADR-001` à `ADR-009` : Open Sage Cloud Run, Capacitor, Workers SSE, Anti-triche, Sentry, Offline). |
+| [**Plan d'Action Produit**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/PLAN_ACTION_PRODUIT.md) | État d'avancement consolidé (Octobre 2026) et feuille de route P1/P2. |
 | [**Guide de Contribution (CONTRIBUTING)**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/CONTRIBUTING.md) | Prérequis, installation locale, standards de code, tests et processus de Pull Request. |
 | [**Architecture Système Globale**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/ARCHITECTURE.md) | Spécification technique, modèle de données, extracteur de concepts et moteur de règles. |
 | [**Observabilité & Monitoring**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/MONITORING.md) | Guide Sentry, logs structurés JSON, alertes temps réel, sondes de santé et analytics RGPD. |

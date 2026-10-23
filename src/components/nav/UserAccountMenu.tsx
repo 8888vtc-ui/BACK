@@ -255,6 +255,10 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                                     <span aria-hidden="true">🎯</span>
                                     <span>Entraînement / Drills</span>
                                 </Link>
+                                <Link href="/pricing" prefetch onClick={(e) => handleRouteAction(e, '/pricing')} data-testid="user-menu-pricing-link" className="flex w-full items-center gap-2 rounded-xl border border-[#d4af37]/30 bg-gradient-to-r from-[#2e1318]/60 to-[#180c07]/60 px-3 py-2 font-bold text-[#f3c65f] hover:border-[#f3c65f] hover:text-amber-100 transition">
+                                    <span aria-hidden="true">⚜</span>
+                                    <span>Coach Illimité VIP</span>
+                                </Link>
                                 {onOpenSettings && (
                                     <button type="button" onClick={() => { setIsDropdownOpen(false); onOpenSettings(); }} data-testid="user-menu-settings-btn" className="flex w-full items-center gap-2 rounded-xl px-3 py-2 font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition">
                                         <span aria-hidden="true">⚙️</span>

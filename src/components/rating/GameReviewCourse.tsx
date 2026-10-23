@@ -19,6 +19,7 @@ import type { GameReviewCourseData } from '../../features/coach/gameReviewPrompt
 import { analyzePlaystyle } from '../../features/coach/playstyleProfiler';
 import { upsertRecurringError } from '../../lib/supabase/db';
 import { getCurrentUser } from '../../lib/supabase/auth';
+import MiniBoardDiagram from '../board/MiniBoardDiagram';
 
 export interface GameReviewCourseProps {
     analysis: CompleteGameAnalysis;
@@ -271,6 +272,41 @@ export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourse
                             </span>
                         )}
                     </div>
+
+                    <MiniBoardDiagram
+                        board={activeMistake.boardBefore}
+                        dice={activeMistake.dice}
+                        turn={activeMistake.player}
+                        playedMove={activeMistake.playedNotation}
+                        optimalMove={activeMistake.optimalNotation}
+                        hideOptimalArrow={!showGrandmasterSolution}
+                        locale={language}
+                    />
+                </div>
+            )}
+
+            {/* 3 Volets Gemini (Diagnostic / Concept Clé / Plan d'entraînement) */}
+            {(course.diagnostic || course.keyConcept) && (
+                <div
+                    data-testid="course-three-pillars"
+                    className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
+                >
+                    {course.diagnostic && (
+                        <div className="rounded-xl border border-rose-500/40 bg-rose-950/20 p-3 text-xs text-rose-100">
+                            <p className="font-bold uppercase tracking-wider text-rose-300">
+                                🎯 {language === 'en' ? 'The Diagnostic' : 'Le Diagnostic'}
+                            </p>
+                            <p className="mt-1 leading-relaxed">{course.diagnostic}</p>
+                        </div>
+                    )}
+                    {course.keyConcept && (
+                        <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-3 text-xs text-amber-100">
+                            <p className="font-bold uppercase tracking-wider text-amber-300">
+                                💡 {course.keyConcept.title}
+                            </p>
+                            <p className="mt-1 leading-relaxed">{course.keyConcept.explanation}</p>
+                        </div>
+                    )}
                 </div>
             )}
 

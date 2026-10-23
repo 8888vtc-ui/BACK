@@ -32,7 +32,6 @@ export interface BoardCentralBarProps {
     cubeOwner: Player | null;
     canDouble: boolean;
     onBarClick: (barPoint: number) => void;
-    onBarDoubleClick?: (barPoint: number) => void;
     onBarRightClick: (barPoint: number) => void;
     onCheckerPointerDown?: (pointNumber: number, color: CheckerColor, e: React.PointerEvent) => void;
     onOfferDouble?: () => void;
@@ -56,10 +55,9 @@ const BarStack: React.FC<{
     isPlayable: boolean;
     barPoint: number;
     onBarClick: (barPoint: number) => void;
-    onBarDoubleClick?: (barPoint: number) => void;
     onBarRightClick: (barPoint: number) => void;
     onCheckerPointerDown?: (pointNumber: number, color: CheckerColor, e: React.PointerEvent) => void;
-}> = ({ color, count, isPlayable, barPoint, onBarClick, onBarDoubleClick, onBarRightClick, onCheckerPointerDown }) => {
+}> = ({ color, count, isPlayable, barPoint, onBarClick, onBarRightClick, onCheckerPointerDown }) => {
     const visible = Math.min(count, MAX_VISIBLE);
     return (
         <div
@@ -68,10 +66,6 @@ const BarStack: React.FC<{
             onClick={(e) => {
                 e.stopPropagation();
                 onBarClick(barPoint);
-            }}
-            onDoubleClick={(e) => {
-                e.stopPropagation();
-                onBarDoubleClick?.(barPoint);
             }}
             onContextMenu={(e) => {
                 e.preventDefault();
@@ -112,7 +106,6 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
     cubeOwner,
     canDouble,
     onBarClick,
-    onBarDoubleClick,
     onBarRightClick,
     onCheckerPointerDown,
     onOfferDouble,
@@ -165,7 +158,6 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
                 isPlayable={!isXTurn}
                 barPoint={oBarPoint}
                 onBarClick={onBarClick}
-                onBarDoubleClick={onBarDoubleClick}
                 onBarRightClick={onBarRightClick}
                 onCheckerPointerDown={onCheckerPointerDown}
             />
@@ -192,7 +184,6 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
                 isPlayable={isXTurn}
                 barPoint={xBarPoint}
                 onBarClick={onBarClick}
-                onBarDoubleClick={onBarDoubleClick}
                 onBarRightClick={onBarRightClick}
                 onCheckerPointerDown={onCheckerPointerDown}
             />

@@ -12,6 +12,7 @@ import React from 'react';
 import { BoardCentralBar, type BoardCentralBarProps } from './BoardCentralBar';
 import { BoardQuadrantRow } from './BoardQuadrantRow';
 import { X_OFF, O_OFF, type Player } from '../../engine/backgammonEngine';
+import type { StratifiedHoverTargets } from './boardHighlights';
 
 export interface BoardPlayfieldGridProps {
     topRow: readonly number[];
@@ -20,18 +21,19 @@ export interface BoardPlayfieldGridProps {
     player: Player;
     off: { X: number; O: number };
     ghostDestinations: Set<number>;
-    hoverTargets: { primary: Map<number, number>; secondary: Map<number, number> };
+    hoverTargets: StratifiedHoverTargets | { primary: Map<number, number>; secondary: Map<number, number>; combined?: Map<number, number> };
     movableSources: Set<number>;
     selectedPoint: number | null;
-    opponentHighlight: { from: number; to: number }[] | null;
+    opponentHighlight: { from: number; to: number; isHit?: boolean }[] | null;
     focusedPoint: number | null;
+    /** Pions temporairement masqués à l'arrivée pendant une animation de vol FLIP (`useCheckerFlights`). */
+    hiddenAt?: ReadonlyMap<number, number>;
     theme?: string;
     swapColors?: boolean;
     onBackgroundClick: (e: React.MouseEvent<HTMLDivElement>) => void;
     onOffClick: (offPoint: number) => void;
     onOffRightClick?: (offPoint: number) => void;
     onPointClick: (point: number, e: React.MouseEvent) => void;
-    onCheckerDoubleClick?: (point: number) => void;
     onPointRightClick: (point: number, e: React.MouseEvent) => void;
     onPointKeyDown: (point: number, e: React.KeyboardEvent) => void;
     onPointFocus: (point: number) => void;
@@ -53,13 +55,13 @@ const BoardPlayfieldGridComponent: React.FC<BoardPlayfieldGridProps> = ({
     selectedPoint,
     opponentHighlight,
     focusedPoint,
+    hiddenAt,
     theme,
     swapColors = false,
     onBackgroundClick,
     onOffClick,
     onOffRightClick,
     onPointClick,
-    onCheckerDoubleClick,
     onPointRightClick,
     onPointKeyDown,
     onPointFocus,
@@ -79,10 +81,10 @@ const BoardPlayfieldGridComponent: React.FC<BoardPlayfieldGridProps> = ({
         selectedPoint,
         opponentHighlight,
         focusedPoint,
+        hiddenAt,
         theme,
         swapColors,
         onPointClick,
-        onCheckerDoubleClick,
         onPointRightClick,
         onPointKeyDown,
         onPointFocus,

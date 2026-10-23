@@ -8,6 +8,7 @@ import { getSafestDestination } from '../engine/backgammonEngine';
 import { TOP_ROW_NAV, BOT_ROW_NAV } from '../components/board/boardAria';
 import { findPortMove, findDirectMoveToDestination } from '../engine/checkerMoveHelpers';
 import { resolveDeterministicBearOffMove, selectBestBearOffSourceForTargets } from '../engine/bearOffRules';
+import { resolveDestinationClick, type SubMove } from '../engine/smartClickResolver';
 
 export interface UseBoardPointInteractionsParams {
     board: number[];
@@ -21,6 +22,11 @@ export interface UseBoardPointInteractionsParams {
     rightDieTargets?: Map<number, number[]>;
     dice?: [number, number] | null;
     selectedDie?: 0 | 1 | null;
+    /**
+     * Séquences légales restantes du tour (cf. `computeRemainingSequences`). Active le coup combiné
+     * Destination-First (d1+d2, 2d/3d/4d en double) en un seul clic, en remplacement du double-clic.
+     */
+    legalSequences?: ReadonlyArray<ReadonlyArray<SubMove>>;
     onCheckerClick: (point: number) => void;
     onCheckerRightClick: (point: number) => void;
     onDestinationClick: (point: number) => void;
@@ -65,6 +71,7 @@ export function useBoardPointInteractions({
     rightDieTargets,
     dice = null,
     selectedDie = 0,
+    legalSequences,
     onCheckerClick,
     onCheckerRightClick,
     onDestinationClick,
@@ -115,6 +122,22 @@ export function useBoardPointInteractions({
                 return;
             }
 
+            const playCombined = (selectedSource: number | null): boolean => {
+                if (!legalSequences || legalSequences.length === 0 || !onPlayMove) return false;
+                const res = resolveDestinationClick(
+                    { legalSequences, board, player, selectedSource, higherDieFirst: true },
+                    pointNumber,
+                );
+                if (res.kind !== 'combined') return false;
+                res.moves.forEach((m) => onPlayMove(m.from, m.to));
+                return true;
+            };
+
+            // Pion sélectionné + clic sur une case à d1+d2 de ce pion : coup combiné enchainé.
+            if (selectedPoint !== null && selectedPoint !== pointNumber && playCombined(selectedPoint)) {
+                return;
+            }
+
             const isMovableSource = (leftDieTargets?.has(pointNumber) ?? false) || (rightDieTargets?.has(pointNumber) ?? false);
             if (hasPlayerChecker && (isMovableSource || !onPlayMove || !leftDieTargets || !rightDieTargets)) {
                 onCheckerClick(pointNumber);
@@ -138,6 +161,12 @@ export function useBoardPointInteractions({
                 }
             }
 
+            // Destination-First combinée : un seul pion atteint la case avec la somme des dés
+            // (les cases portant un de mes pions jouables ont déjà été traitées en Source-First).
+            if (playCombined(null)) {
+                return;
+            }
+
             if (hasPlayerChecker) {
                 onCheckerClick(pointNumber);
                 return;
@@ -148,7 +177,7 @@ export function useBoardPointInteractions({
             }
             onDeselect?.();
         },
-        [board, isX, bar.X, bar.O, xBarPoint, oBarPoint, ghostDestinations, selectedPoint, leftDieTargets, rightDieTargets, dice, player, preferredDie, onDestinationClick, onCheckerClick, onPlayMove, onDeselect],
+        [board, isX, bar.X, bar.O, xBarPoint, oBarPoint, ghostDestinations, selectedPoint, leftDieTargets, rightDieTargets, dice, player, preferredDie, legalSequences, onDestinationClick, onCheckerClick, onPlayMove, onDeselect],
     );
 
     const handlePointRightClick = useCallback(

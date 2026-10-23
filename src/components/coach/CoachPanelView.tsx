@@ -48,6 +48,10 @@ export interface CoachPanelViewProps {
     xgid?: string | null;
     candidateMoves?: string[];
     onRolloutCompleted?: (result: RolloutResult) => void;
+    isVoiceEnabled?: boolean;
+    isSpeaking?: boolean;
+    onToggleVoice?: () => void;
+    onReplayVoice?: () => void;
     locale: string;
     labels: {
         title: string;
@@ -90,6 +94,10 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
     xgid,
     candidateMoves,
     onRolloutCompleted,
+    isVoiceEnabled = false,
+    isSpeaking = false,
+    onToggleVoice,
+    onReplayVoice,
     locale,
     labels,
 }) => {
@@ -104,8 +112,8 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
             aria-live="polite"
             className={`w-full max-w-5xl rounded-2xl border p-4 backdrop-blur-md transition-all ${accent}`}
         >
-            {/* Barre de titre et bouton fermeture */}
-            <div className="flex items-center justify-between">
+            {/* Barre de titre, contrôle vocal et bouton fermeture */}
+            <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <span className="flex h-2.5 w-2.5 relative">
                         <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isBlunder ? 'bg-rose-400' : 'bg-[#f3c65f]'}`}></span>
@@ -113,13 +121,58 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                     </span>
                     <h2 className="font-serif text-base font-bold tracking-wide text-[#fdf8eb]">{labels.title}</h2>
                 </div>
-                <button
-                    onClick={onDismiss}
-                    className="rounded-lg border border-[#d4af37]/30 bg-black/40 p-1 text-slate-300 hover:border-[#f3c65f] hover:text-white transition"
-                    aria-label={labels.close}
-                >
-                    ✕
-                </button>
+                <div className="flex items-center gap-1.5">
+                    {onToggleVoice && (
+                        <button
+                            type="button"
+                            onClick={onToggleVoice}
+                            data-testid="coach-voice-toggle-btn"
+                            aria-pressed={isVoiceEnabled}
+                            aria-label={isVoiceEnabled ? 'Voix Coach' : 'Voix muette'}
+                            title={isVoiceEnabled ? 'Désactiver la voix du Coach' : 'Activer la voix du Coach'}
+                            className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[11px] font-bold transition active:scale-95 ${
+                                isVoiceEnabled
+                                    ? 'border-[#f3c65f]/70 bg-[#2a1c0b]/90 text-[#fce8b2] shadow-[0_0_10px_rgba(243,198,95,0.2)]'
+                                    : 'border-[#d4af37]/30 bg-black/40 text-slate-400 hover:border-[#f3c65f]/50 hover:text-slate-200'
+                            }`}
+                        >
+                            <span>{isVoiceEnabled ? '🔊 Voix Coach' : '🔇 Voix muette'}</span>
+                            {isSpeaking && (
+                                <span
+                                    data-testid="coach-voice-wave"
+                                    aria-hidden="true"
+                                    className="inline-flex items-end gap-0.5 h-2.5 ml-0.5 animate-pulse"
+                                >
+                                    <span className="w-0.5 h-1.5 bg-[#f3c65f] rounded-full animate-pulse" />
+                                    <span className="w-0.5 h-2.5 bg-[#f3c65f] rounded-full animate-pulse" />
+                                    <span className="w-0.5 h-1 bg-[#f3c65f] rounded-full animate-pulse" />
+                                </span>
+                            )}
+                        </button>
+                    )}
+                    {onReplayVoice && (
+                        <button
+                            type="button"
+                            onClick={onReplayVoice}
+                            data-testid="coach-voice-replay-btn"
+                            aria-label={locale === 'en' ? 'Replay explanation' : "Réécouter l'explication"}
+                            title={locale === 'en' ? 'Listen to explanation' : "Réécouter l'explication à la demande"}
+                            className={`inline-flex items-center gap-1 rounded-lg border border-indigo-400/40 bg-indigo-950/60 px-2 py-0.5 text-[11px] font-bold text-indigo-200 hover:border-indigo-300 hover:text-white transition active:scale-95 ${
+                                isSpeaking ? 'animate-pulse border-indigo-300 text-white' : ''
+                            }`}
+                        >
+                            <span aria-hidden="true">🔈</span>
+                            <span>{locale === 'en' ? 'Listen' : 'Réécouter'}</span>
+                        </button>
+                    )}
+                    <button
+                        onClick={onDismiss}
+                        className="rounded-lg border border-[#d4af37]/30 bg-black/40 p-1 text-slate-300 hover:border-[#f3c65f] hover:text-white transition"
+                        aria-label={labels.close}
+                    >
+                        ✕
+                    </button>
+                </div>
             </div>
 
             {/* 0. Tableau de bord PR : jauge visuelle + compteurs des 4 paliers */}

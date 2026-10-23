@@ -14,7 +14,7 @@ import { BoardOffTray } from './BoardOffTray';
 import type { Player } from '../../engine/backgammonEngine';
 import { getPointColor, getPointCount } from './boardGeometry';
 import { getPointAriaLabel } from './boardAria';
-import { isRealPoint, normalizeHighlightPoint } from './boardHighlights';
+import { isRealPoint, normalizeHighlightPoint, type StratifiedHoverTargets } from './boardHighlights';
 import { isPointLockedByBar } from '../../engine/barRules';
 
 export interface BoardQuadrantRowProps {
@@ -23,15 +23,16 @@ export interface BoardQuadrantRowProps {
     board: number[];
     player: Player;
     ghostDestinations: Set<number>;
-    hoverTargets: { primary: Map<number, number>; secondary: Map<number, number> };
+    hoverTargets: StratifiedHoverTargets | { primary: Map<number, number>; secondary: Map<number, number>; combined?: Map<number, number> };
     movableSources: Set<number>;
     selectedPoint: number | null;
-    opponentHighlight: { from: number; to: number }[] | null;
+    opponentHighlight: { from: number; to: number; isHit?: boolean }[] | null;
     focusedPoint: number | null;
+    /** Pions temporairement masqués à l'arrivée pendant une animation de vol FLIP (`useCheckerFlights`). */
+    hiddenAt?: ReadonlyMap<number, number>;
     theme?: string;
     swapColors?: boolean;
     onPointClick: (point: number, e: React.MouseEvent) => void;
-    onCheckerDoubleClick?: (point: number) => void;
     onPointRightClick: (point: number, e: React.MouseEvent) => void;
     onPointKeyDown: (point: number, e: React.KeyboardEvent) => void;
     onPointFocus: (point: number) => void;
@@ -61,10 +62,10 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
     selectedPoint,
     opponentHighlight,
     focusedPoint,
+    hiddenAt,
     theme,
     swapColors = false,
     onPointClick,
-    onCheckerDoubleClick,
     onPointRightClick,
     onPointKeyDown,
     onPointFocus,
@@ -79,18 +80,23 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
         swapColors && c ? (c === 'white' ? 'black' : 'white') : c;
 
     const renderPoint = (point: number) => {
-        const color = flipColor(getPointColor(board, point));
-        const count = getPointCount(board, point);
+        const rawCount = getPointCount(board, point);
+        const hiddenCount = hiddenAt?.get(point) ?? 0;
+        const count = Math.max(0, rawCount - hiddenCount);
+        const color = count > 0 ? flipColor(getPointColor(board, point)) : null;
         const isTarget = ghostDestinations.has(point);
         const isForcedOrigin =
             selectedPoint === null &&
             movableSources.size === 1 &&
             movableSources.has(point) &&
             ghostDestinations.size === 1;
-        const isHoverPrimary = selectedPoint === null && hoverTargets.primary.has(point);
-        const isHoverSecondary = selectedPoint === null && hoverTargets.secondary.has(point);
+        const isHoverPrimary = hoverTargets.primary.has(point);
+        const isHoverSecondary = hoverTargets.secondary.has(point);
+        const isHoverCombined = hoverTargets.combined?.has(point) ?? false;
         const isBlotTarget =
-            (isTarget || isHoverPrimary) && count === 1 && (isX ? board[point] < 0 : board[point] > 0);
+            (isTarget || isHoverPrimary || isHoverSecondary || isHoverCombined) &&
+            rawCount === 1 &&
+            (isX ? board[point] < 0 : board[point] > 0);
         const isOpponentFrom =
             isRealPoint(point) &&
             (opponentHighlight?.some((h) => normalizeHighlightPoint(h.from, false) === point) ?? false);
@@ -110,8 +116,10 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
                 isBlotTarget={isBlotTarget}
                 isHoverPrimaryTarget={isHoverPrimary}
                 isHoverSecondaryTarget={isHoverSecondary}
+                isHoverCombinedTarget={isHoverCombined}
                 targetDieValue={hoverTargets.primary.get(point) ?? hoverTargets.secondary.get(point) ?? null}
                 secondaryTargetDieValue={hoverTargets.secondary.get(point) ?? null}
+                combinedTargetDieValue={hoverTargets.combined?.get(point) ?? null}
                 isMovable={movableSources.has(point)}
                 isForcedOrigin={isForcedOrigin}
                 isLockedByBar={isPointLockedByBar(board, player, point)}
@@ -122,7 +130,6 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
                 ariaLabel={ariaLabel}
                 theme={theme}
                 onClickPoint={onPointClick}
-                onDoubleClickPoint={onCheckerDoubleClick}
                 onRightClickPoint={onPointRightClick}
                 onKeyDownPoint={onPointKeyDown}
                 onFocusPoint={onPointFocus}
@@ -147,7 +154,7 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
             >
                 <BoardOffTray
                     offPoint={offTray.offPoint}
-                    count={offTray.count}
+                    count={Math.max(0, offTray.count - (hiddenAt?.get(offTray.offPoint) ?? 0))}
                     board={board}
                     player={player}
                     isTarget={offTray.isTarget}

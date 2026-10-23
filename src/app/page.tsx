@@ -104,8 +104,8 @@ export default function Home() {
 
     // Interaction pions et dés
     const {
-        activeDie, preferredDie, handlePlayMove, handleSelectDie, handleDieDoubleClick,
-        handleCheckerClick, handleCheckerDoubleClick, handleCheckerRightClick,
+        activeDie, preferredDie, handlePlayMove, handleSelectDie,
+        handleCheckerClick, handleCheckerRightClick,
         handleDestinationClick, handleDeselect, handleSwapDice,
     } = useCheckerInteractions({ game, isMultiplayerActive, multiplayer, currentTurnMovesRef });
 
@@ -286,12 +286,10 @@ export default function Home() {
             activeDie={activeDie}
             isBoardLoading={isBoardLoading}
             onCheckerClick={routedCheckerClick}
-            onCheckerDoubleClick={handleCheckerDoubleClick}
             onCheckerRightClick={routedCheckerRightClick}
             onDestinationClick={handleDestinationClick}
             onPlayMove={handlePlayMoveWithSound}
             onSelectDie={handleSelectDie}
-            onDieDoubleClick={handleDieDoubleClick}
             onDiceClick={routedDiceClick}
             onDeselect={handleDeselect}
             turnsCount={turnsHistory.length}

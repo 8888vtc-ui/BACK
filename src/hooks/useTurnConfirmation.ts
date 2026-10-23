@@ -1,13 +1,18 @@
 'use client';
 
 /**
- * Hook de Confirmation de Tour & Auto-Fin de Tour (Audit 8 / 20 — useTurnConfirmation).
+ * Hook de Confirmation de Tour & Auto-Fin de Tour étendu (Audit 8 / 20 & Game Feel Spec §5).
  *
  * Exigences :
  *   1. Afficher le bouton « Valider / Done » uniquement lorsque tous les dés légaux ont été joués
  *      (`areAllLegalDicePlayed`).
- *   2. Proposer l'option « Auto-fin de tour » (`autoConfirmEnabled`) et valider automatiquement
- *      après `AUTO_CONFIRM_FORCED_DELAY_MS = 400 ms` si activée ou si aucun autre choix n'était possible.
+ *   2. Supporter les 4 modes d'auto-confirmation de `gameplaySettings.ts` (`AutoConfirmMode`) :
+ *      - `'never'` : nécessite toujours un clic sur « Valider » ou sur les dés.
+ *      - `'forced_only'` (défaut tournoi) : valide automatiquement uniquement quand le joueur
+ *        n'avait aucun choix tactique (coups forcés), sinon attend confirmation.
+ *      - `'always_except_cube'` : valide automatiquement dès que les 2 ou 4 dés sont joués,
+ *        sauf si le tour suivant implique une décision critique de videau adverse.
+ *      - `'always'` : valide immédiatement dès l'épuisement des dés jouables.
  *   3. Donner un feedback visuel (`turnTransitionPulse`), sonore et haptique net au changement
  *      de joueur actif.
  *
@@ -17,6 +22,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { impactMedium } from '../lib/capacitor/haptics';
 import { soundEngine } from '../lib/sound/soundEngine';
+import {
+    AUTO_CONFIRM_MODES,
+    getNextAutoConfirmMode,
+    getSavedAutoConfirmMode,
+    isAutoConfirmMode,
+    saveAutoConfirmMode,
+    type AutoConfirmMode,
+} from '../lib/settings/gameplaySettings';
+
+export {
+    AUTO_CONFIRM_MODES,
+    getNextAutoConfirmMode,
+    getSavedAutoConfirmMode,
+    isAutoConfirmMode,
+    saveAutoConfirmMode,
+    type AutoConfirmMode,
+};
 
 export const AUTO_CONFIRM_TURN_STORAGE_KEY = 'bg_auto_confirm_turn';
 export const AUTO_CONFIRM_FORCED_DELAY_MS = 400;
@@ -26,8 +48,8 @@ export function getSavedAutoConfirmPreference(defaultValue: boolean = false): bo
     if (typeof window === 'undefined' || !window.localStorage) return defaultValue;
     try {
         const raw = window.localStorage.getItem(AUTO_CONFIRM_TURN_STORAGE_KEY);
-        if (raw === 'true') return true;
-        if (raw === 'false') return false;
+        if (raw === 'true' || raw === 'always' || raw === 'always_except_cube') return true;
+        if (raw === 'false' || raw === 'never' || raw === 'forced_only') return false;
     } catch {
         // Ignorer les erreurs de stockage
     }
@@ -40,6 +62,37 @@ export function saveAutoConfirmPreference(enabled: boolean): void {
         window.localStorage.setItem(AUTO_CONFIRM_TURN_STORAGE_KEY, String(enabled));
     } catch {
         // Ignorer
+    }
+}
+
+export interface ShouldAutoConfirmParams {
+    readonly mode: AutoConfirmMode;
+    readonly isForcedSingleChoice: boolean;
+    readonly opponentCanDoubleNextTurn?: boolean;
+}
+
+/**
+ * Règle pure de décision d'auto-confirmation selon `AutoConfirmMode` (Game Feel Spec §5) :
+ * - `'never'` : jamais d'auto-confirmation (même sur coup forcé).
+ * - `'forced_only'` : auto-confirmation uniquement si `isForcedSingleChoice === true`.
+ * - `'always_except_cube'` : auto-confirmation sauf si l'adversaire peut doubler au tour suivant
+ *   (les coups forcés restent auto-confirmés).
+ * - `'always'` : auto-confirmation systématique dès que tous les dés légaux sont joués.
+ */
+export function shouldAutoConfirmTurn({
+    mode,
+    isForcedSingleChoice,
+    opponentCanDoubleNextTurn = false,
+}: ShouldAutoConfirmParams): boolean {
+    switch (mode) {
+        case 'never':
+            return false;
+        case 'forced_only':
+            return Boolean(isForcedSingleChoice);
+        case 'always_except_cube':
+            return Boolean(isForcedSingleChoice) || !opponentCanDoubleNextTurn;
+        case 'always':
+            return true;
     }
 }
 
@@ -80,7 +133,13 @@ export interface UseTurnConfirmationParams {
     canConfirm?: boolean;
     /** Vrai si aucun autre choix n'était possible (coup forcé unique). */
     isForcedSingleChoice?: boolean;
-    /** Préférence initiale d'auto-validation (si non fournie, lue depuis localStorage). */
+    /** Vrai si le tour suivant implique une décision critique de videau adverse (`always_except_cube`). */
+    opponentCanDoubleNextTurn?: boolean;
+    /** Mode contrôlé d'auto-confirmation (`'never' | 'forced_only' | 'always_except_cube' | 'always'`). */
+    autoConfirmMode?: AutoConfirmMode;
+    /** Mode initial d'auto-confirmation (si non contrôlé). */
+    initialAutoConfirmMode?: AutoConfirmMode;
+    /** Préférence initiale booléenne rétrocompatible (si fournie : `true -> 'always'`, `false -> 'forced_only'`). */
     initialAutoConfirm?: boolean;
     /** Délai d'auto-validation (défaut : `400 ms`). */
     autoConfirmDelayMs?: number;
@@ -93,11 +152,19 @@ export interface UseTurnConfirmationParams {
 export interface UseTurnConfirmationResult {
     /** Vrai uniquement quand tous les dés légaux ont été joués (bouton « Valider / Done » visible). */
     isDoneButtonVisible: boolean;
-    /** État courant de l'option « Auto-fin de tour ». */
+    /** État booléen actif (`true` si mode `'always'` ou `'always_except_cube'`). */
     autoConfirmEnabled: boolean;
+    /** Mode granulaire actif (`'never' | 'forced_only' | 'always_except_cube' | 'always'`). */
+    autoConfirmMode: AutoConfirmMode;
+    /** Vrai si le tour courant remplit les conditions d'auto-confirmation du mode actif. */
+    shouldAutoConfirmCurrentTurn: boolean;
     /** Vrai pendant les 220 ms suivant la confirmation (feedback visuel de changement de joueur). */
     turnTransitionPulse: boolean;
-    /** Bascule et persiste l'option « Auto-fin de tour ». */
+    /** Définit et persiste le mode d'auto-confirmation. */
+    setAutoConfirmMode: (mode: AutoConfirmMode) => void;
+    /** Passe au mode suivant (`never → forced_only → always_except_cube → always`). */
+    cycleAutoConfirmMode: () => AutoConfirmMode;
+    /** Bascule et persiste l'option booléenne « Auto-fin de tour ». */
     toggleAutoConfirm: (nextValue?: boolean) => boolean;
     /** Valide immédiatement le tour avec feedback visuel, sonore et haptique. */
     confirmTurnNow: () => void;
@@ -112,15 +179,24 @@ export function useTurnConfirmation({
     gamePhase = 'HUMAN_MOVING',
     canConfirm = true,
     isForcedSingleChoice = false,
+    opponentCanDoubleNextTurn = false,
+    autoConfirmMode: controlledMode,
+    initialAutoConfirmMode,
     initialAutoConfirm,
     autoConfirmDelayMs = AUTO_CONFIRM_FORCED_DELAY_MS,
     onConfirm,
     onTurnFeedback,
 }: UseTurnConfirmationParams): UseTurnConfirmationResult {
-    const [autoConfirmEnabled, setAutoConfirmEnabled] = useState<boolean>(() =>
-        initialAutoConfirm !== undefined ? initialAutoConfirm : getSavedAutoConfirmPreference(false),
-    );
+    const [internalMode, setInternalMode] = useState<AutoConfirmMode>(() => {
+        if (controlledMode !== undefined) return controlledMode;
+        if (initialAutoConfirmMode !== undefined) return initialAutoConfirmMode;
+        if (initialAutoConfirm !== undefined) return initialAutoConfirm ? 'always' : 'forced_only';
+        return getSavedAutoConfirmMode('forced_only');
+    });
     const [turnTransitionPulse, setTurnTransitionPulse] = useState<boolean>(false);
+
+    const effectiveMode: AutoConfirmMode = controlledMode ?? internalMode;
+    const autoConfirmEnabled = effectiveMode === 'always' || effectiveMode === 'always_except_cube';
 
     const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -132,6 +208,16 @@ export function useTurnConfirmation({
     const isDoneButtonVisible = useMemo(
         () => canConfirm && areAllLegalDicePlayed(usedDice, leftDieTargets, rightDieTargets, gamePhase),
         [canConfirm, usedDice, leftDieTargets, rightDieTargets, gamePhase],
+    );
+
+    const shouldAutoConfirmCurrentTurn = useMemo(
+        () =>
+            shouldAutoConfirmTurn({
+                mode: effectiveMode,
+                isForcedSingleChoice,
+                opponentCanDoubleNextTurn,
+            }),
+        [effectiveMode, isForcedSingleChoice, opponentCanDoubleNextTurn],
     );
 
     const cancelPendingAutoConfirm = useCallback(() => {
@@ -156,12 +242,33 @@ export function useTurnConfirmation({
         onConfirmRef.current();
     }, [cancelPendingAutoConfirm]);
 
+    const setAutoConfirmMode = useCallback((mode: AutoConfirmMode) => {
+        setInternalMode(mode);
+        saveAutoConfirmMode(mode);
+        saveAutoConfirmPreference(mode === 'always' || mode === 'always_except_cube');
+    }, []);
+
+    const cycleAutoConfirmMode = useCallback((): AutoConfirmMode => {
+        let next: AutoConfirmMode = 'forced_only';
+        setInternalMode((prev) => {
+            const base = controlledMode ?? prev;
+            next = getNextAutoConfirmMode(base);
+            saveAutoConfirmMode(next);
+            saveAutoConfirmPreference(next === 'always' || next === 'always_except_cube');
+            return next;
+        });
+        return next;
+    }, [controlledMode]);
+
     const toggleAutoConfirm = useCallback((nextValue?: boolean): boolean => {
         let updated = false;
-        setAutoConfirmEnabled((prev) => {
-            updated = nextValue !== undefined ? nextValue : !prev;
+        setInternalMode((prev) => {
+            const wasEnabled = prev === 'always' || prev === 'always_except_cube';
+            updated = nextValue !== undefined ? nextValue : !wasEnabled;
+            const nextMode: AutoConfirmMode = updated ? 'always' : 'forced_only';
+            saveAutoConfirmMode(nextMode);
             saveAutoConfirmPreference(updated);
-            return updated;
+            return nextMode;
         });
         return updated;
     }, []);
@@ -169,7 +276,7 @@ export function useTurnConfirmation({
     useEffect(() => {
         cancelPendingAutoConfirm();
         if (!isDoneButtonVisible) return;
-        if (!autoConfirmEnabled && !isForcedSingleChoice) return;
+        if (!shouldAutoConfirmCurrentTurn) return;
 
         autoTimerRef.current = setTimeout(() => {
             autoTimerRef.current = null;
@@ -177,7 +284,7 @@ export function useTurnConfirmation({
         }, Math.max(0, autoConfirmDelayMs));
 
         return () => cancelPendingAutoConfirm();
-    }, [isDoneButtonVisible, autoConfirmEnabled, isForcedSingleChoice, autoConfirmDelayMs, confirmTurnNow, cancelPendingAutoConfirm]);
+    }, [isDoneButtonVisible, shouldAutoConfirmCurrentTurn, autoConfirmDelayMs, confirmTurnNow, cancelPendingAutoConfirm]);
 
     useEffect(
         () => () => {
@@ -190,7 +297,11 @@ export function useTurnConfirmation({
     return {
         isDoneButtonVisible,
         autoConfirmEnabled,
+        autoConfirmMode: effectiveMode,
+        shouldAutoConfirmCurrentTurn,
         turnTransitionPulse,
+        setAutoConfirmMode,
+        cycleAutoConfirmMode,
         toggleAutoConfirm,
         confirmTurnNow,
         cancelPendingAutoConfirm,

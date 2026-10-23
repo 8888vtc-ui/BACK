@@ -10,6 +10,7 @@ import { analyzeCubeDecision, mapGameCubeAction, type CubeAction, type CubeActio
 import { buildCubeNotification } from '../features/coach/cubeNotification';
 import { formatCoachMoveSequence, movesFromBoardDiff } from '../features/coach/coachMoveNotation';
 import { soundEngine } from '../lib/sound/soundEngine';
+import { useCoachVoice } from './useCoachVoice';
 import { toast } from '../components/toast/ToastContext';
 import type { CoachHighlight } from '../components/board/boardThemes';
 import { analyzeHumanMoveFromLogWithBgsage, type CoachVerdict } from '../features/coach/logAnalyzer';
@@ -62,14 +63,16 @@ export function useCoach({
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [notificationLevel, setNotificationLevel] = useState<CoachNotificationLevel>('blunder');
     const [lastMoveFeedback, setLastMoveFeedback] = useState<LastMoveFeedback | null>(null);
+    const { speak: speakCoachVoice, stop: stopCoachVoice } = useCoachVoice();
 
     const cancelActiveOperation = useCallback((): { requestId: number; controller: AbortController } => {
         activeAbortRef.current?.abort();
+        stopCoachVoice();
         const controller = new AbortController();
         activeAbortRef.current = controller;
         analysisRequestIdRef.current += 1;
         return { requestId: analysisRequestIdRef.current, controller };
-    }, []);
+    }, [stopCoachVoice]);
 
     useEffect(() => () => { activeAbortRef.current?.abort(); }, []);
 
@@ -103,7 +106,10 @@ export function useCoach({
             }
 
             if (cubeRes.verdict !== 'optimal' && shouldNotify(cubeRes.verdict, notificationLevel)) {
-                if (cubeRes.verdict === 'blunder') soundEngine.playBlunderAlert();
+                if (cubeRes.verdict === 'blunder') {
+                    soundEngine.playBlunderAlert();
+                    speakCoachVoice(cubeRes.explanation || cubeRes.advice);
+                }
                 setCoach({
                     verdict: cubeRes.verdict,
                     equityLoss: rawLoss,
@@ -120,7 +126,7 @@ export function useCoach({
             }
             return cubeRes;
         },
-        [cancelActiveOperation, game.state, notificationLevel, onCoachTriggered, recordDecisionStats],
+        [cancelActiveOperation, game.state, notificationLevel, onCoachTriggered, recordDecisionStats, speakCoachVoice],
     );
 
     // 1. Autorité unifiée de réinitialisation du Coach (nouvelle manche OU nouveau lancer de dés par X)
@@ -222,6 +228,10 @@ export function useCoach({
                     if (isStale()) return;
                     setCoach(coachState);
                     setCoachHighlight(highlight);
+                    if (verdict === 'blunder') {
+                        const summaryText = coachState.summary || coachState.tacticalSummary || coachState.explanation || '';
+                        if (summaryText) speakCoachVoice(summaryText);
+                    }
                     onCoachTriggered?.();
                 } else {
                     setCoach(null);
@@ -231,7 +241,7 @@ export function useCoach({
                 if (!isStale()) console.warn('[Coach] Erreur évaluation log-driven tour X :', err);
             }
         })();
-    }, [game.matchLog, game.state, onCoachTriggered, notificationLevel, recordDecisionStats, evaluateCubeAction, cancelActiveOperation]);
+    }, [game.matchLog, game.state, onCoachTriggered, notificationLevel, recordDecisionStats, evaluateCubeAction, cancelActiveOperation, speakCoachVoice]);
 
     const dismissCoach = useCallback(() => {
         cancelActiveOperation();
@@ -274,6 +284,8 @@ export function useCoach({
             if (isStale()) return;
             setCoach(coachState);
             setCoachHighlight(highlight);
+            const summaryText = coachState.summary || coachState.tacticalSummary || coachState.explanation || '';
+            if (summaryText) speakCoachVoice(summaryText);
         } catch (err) {
             if (isStale()) return;
             console.warn('[Coach] Moteur ou worker indisponible, repli sur featureExtractor :', err);
@@ -281,7 +293,7 @@ export function useCoach({
         } finally {
             if (!isStale()) setIsAnalyzing(false);
         }
-    }, [cancelActiveOperation, currentTurnDiceRef, currentTurnMovesRef, game.dice, game.matchLog, game.moveHistory, game.state, onCoachTriggered, turnBoardBeforeRef]);
+    }, [cancelActiveOperation, currentTurnDiceRef, currentTurnMovesRef, game.dice, game.matchLog, game.moveHistory, game.state, onCoachTriggered, speakCoachVoice, turnBoardBeforeRef]);
 
     return {
         coach,

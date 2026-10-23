@@ -11,6 +11,15 @@ export type Json =
     | { [key: string]: Json | undefined }
     | Json[];
 
+export type SubscriptionTier = 'free' | 'coach_monthly' | 'coach_yearly';
+export type SubscriptionStatus =
+    | 'active'
+    | 'trialing'
+    | 'past_due'
+    | 'canceled'
+    | 'incomplete'
+    | 'none';
+
 export interface Database {
     public: {
         Tables: {
@@ -23,6 +32,18 @@ export interface Database {
                     rating: number;
                     experience_level: 'beginner' | 'intermediate' | 'expert';
                     preferred_theme: string | null;
+                    current_streak?: number;
+                    max_streak?: number;
+                    puzzle_rating?: number;
+                    puzzle_rd?: number;
+                    puzzle_volatility?: number;
+                    last_puzzle_date?: string | null;
+                    subscription_tier?: SubscriptionTier;
+                    subscription_status?: SubscriptionStatus | null;
+                    stripe_customer_id?: string | null;
+                    stripe_subscription_id?: string | null;
+                    daily_analyses_count?: number;
+                    last_analysis_reset_at?: string | null;
                     created_at: string;
                     updated_at: string;
                 };
@@ -34,6 +55,18 @@ export interface Database {
                     rating?: number;
                     experience_level?: 'beginner' | 'intermediate' | 'expert';
                     preferred_theme?: string | null;
+                    current_streak?: number;
+                    max_streak?: number;
+                    puzzle_rating?: number;
+                    puzzle_rd?: number;
+                    puzzle_volatility?: number;
+                    last_puzzle_date?: string | null;
+                    subscription_tier?: SubscriptionTier;
+                    subscription_status?: SubscriptionStatus | null;
+                    stripe_customer_id?: string | null;
+                    stripe_subscription_id?: string | null;
+                    daily_analyses_count?: number;
+                    last_analysis_reset_at?: string | null;
                     created_at?: string;
                     updated_at?: string;
                 };
@@ -45,6 +78,18 @@ export interface Database {
                     rating?: number;
                     experience_level?: 'beginner' | 'intermediate' | 'expert';
                     preferred_theme?: string | null;
+                    current_streak?: number;
+                    max_streak?: number;
+                    puzzle_rating?: number;
+                    puzzle_rd?: number;
+                    puzzle_volatility?: number;
+                    last_puzzle_date?: string | null;
+                    subscription_tier?: SubscriptionTier;
+                    subscription_status?: SubscriptionStatus | null;
+                    stripe_customer_id?: string | null;
+                    stripe_subscription_id?: string | null;
+                    daily_analyses_count?: number;
+                    last_analysis_reset_at?: string | null;
                     created_at?: string;
                     updated_at?: string;
                 };
@@ -569,6 +614,10 @@ export interface Database {
                     concept_label: string;
                     occurrence_count: number;
                     total_equity_loss: number;
+                    next_review_date?: string | null;
+                    repetition_count?: number;
+                    ease_factor?: number;
+                    position_xgid?: string | null;
                     last_seen_at: string;
                     created_at: string;
                     updated_at: string;
@@ -580,6 +629,10 @@ export interface Database {
                     concept_label: string;
                     occurrence_count?: number;
                     total_equity_loss?: number;
+                    next_review_date?: string | null;
+                    repetition_count?: number;
+                    ease_factor?: number;
+                    position_xgid?: string | null;
                     last_seen_at?: string;
                     created_at?: string;
                     updated_at?: string;
@@ -591,6 +644,10 @@ export interface Database {
                     concept_label?: string;
                     occurrence_count?: number;
                     total_equity_loss?: number;
+                    next_review_date?: string | null;
+                    repetition_count?: number;
+                    ease_factor?: number;
+                    position_xgid?: string | null;
                     last_seen_at?: string;
                     created_at?: string;
                     updated_at?: string;
@@ -626,6 +683,19 @@ export interface Database {
                     last_seen_at: string;
                     created_at: string;
                     updated_at: string;
+                };
+            };
+            consume_daily_coach_analysis: {
+                Args: {
+                    p_user_id: string;
+                    p_max_daily?: number;
+                };
+                Returns: {
+                    allowed: boolean;
+                    daily_analyses_count: number;
+                    last_analysis_reset_at: string;
+                    subscription_tier: SubscriptionTier;
+                    subscription_status: SubscriptionStatus | null;
                 };
             };
         };

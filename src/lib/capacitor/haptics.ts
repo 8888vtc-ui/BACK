@@ -114,3 +114,36 @@ export async function vibrate(durationMs = 200): Promise<void> {
         // Ignorer
     }
 }
+
+/**
+ * Impulsion haptique sèche de 15 ms avec rupture nette (freinage électromagnétique actif)
+ * utilisée pour la frappe d'un blot ("Blot Hit").
+ */
+export async function triggerBrakedHapticPulse(durationMs = 15): Promise<void> {
+    try {
+        if (Capacitor.isPluginAvailable('Haptics')) {
+            await Haptics.vibrate({ duration: durationMs });
+            await Haptics.impact({ style: ImpactStyle.Heavy });
+        } else if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+            // Pattern [impulsion, 0] : force l'arrêt net du moteur linéaire à 15 ms
+            navigator.vibrate([durationMs, 0]);
+        }
+    } catch {
+        // Ignorer
+    }
+}
+
+/**
+ * Nappe haptique continue (ex: roulement sur feutre de 0 à 500 ms).
+ */
+export async function triggerContinuousHapticBed(durationMs = 500): Promise<void> {
+    try {
+        if (Capacitor.isPluginAvailable('Haptics')) {
+            await Haptics.vibrate({ duration: durationMs });
+        } else if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+            navigator.vibrate(durationMs);
+        }
+    } catch {
+        // Ignorer
+    }
+}

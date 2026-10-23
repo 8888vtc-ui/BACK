@@ -1,10 +1,20 @@
 /**
- * Fonctions pures de normalisation des surbrillances (flèches Coach / adversaire / survol / coup forcé).
- * Extraites de `Board.tsx` (LOI 5 : composants ≤ 300 lignes).
+ * Fonctions pures de normalisation des surbrillances et Ghost Checkers stratifiés à 3 niveaux
+ * (Chantier 3 — flèches Coach / adversaire / survol / sélection / coup forcé).
+ * Extraites de `Board.tsx` (LOI 5 : composants ≤ 300 lignes, 0 `any`).
  */
 
 import { X_BAR, O_BAR, X_OFF, O_OFF } from '../../engine/backgammonEngine';
 import { detectForcedMove } from '../../engine/forcedMoveDetector';
+
+export interface StratifiedHoverTargets {
+    /** Niveau 1 (Dé actif / Dé haut) : flèche cible -> valeur du dé. */
+    primary: Map<number, number>;
+    /** Niveau 2 (Dé bas / secondaire) : flèche cible -> valeur du dé secondaire. */
+    secondary: Map<number, number>;
+    /** Niveau 3 (Somme d1 + d2) : flèche cible -> somme des deux dés. */
+    combined: Map<number, number>;
+}
 
 /**
  * Normalise une flèche de surbrillance vers la numérotation ABSOLUE du plateau.
@@ -106,9 +116,10 @@ export function computeGhostDestinations(params: {
 }
 
 /**
- * Calcule les cibles de prévisualisation au survol Desktop (ou pour un coup forcé unique) :
- * - `primary`   : destinations du dé actif (clic gauche) avec leur valeur de dé.
- * - `secondary` : destinations du second dé (clic droit) avec leur valeur de dé.
+ * Calcule la hiérarchie à 3 niveaux des cibles au survol / sélection d'un pion (Chantier 3) :
+ * - Niveau 1 (`primary`)   : Dé actif / Dé haut avec sa valeur de dé.
+ * - Niveau 2 (`secondary`) : Dé bas / secondaire avec sa valeur de dé.
+ * - Niveau 3 (`combined`)  : Somme (d1 + d2) atteignable en combinant les deux dés.
  */
 export function computeHoverTargets(
     activeSource: number | null,
@@ -116,14 +127,18 @@ export function computeHoverTargets(
     selectedDie: 0 | 1 | null,
     leftDieTargets: Map<number, number[]>,
     rightDieTargets: Map<number, number[]>,
-): { primary: Map<number, number>; secondary: Map<number, number> } {
+    legalSequences?: ReadonlyArray<ReadonlyArray<{ readonly from: number; readonly to: number }>>,
+    board?: ReadonlyArray<number>,
+): StratifiedHoverTargets {
     const primary = new Map<number, number>();
     const secondary = new Map<number, number>();
+    const combined = new Map<number, number>();
     const resolvedSource =
         activeSource ?? detectForcedMove({ leftDieTargets, rightDieTargets, dice }).highlightOrigin;
-    if (resolvedSource === null || !dice) return { primary, secondary };
+    if (resolvedSource === null || !dice) return { primary, secondary, combined };
 
-    const prefDie: 0 | 1 = selectedDie ?? 0;
+    const defaultHighDie: 0 | 1 = dice[1] > dice[0] ? 1 : 0;
+    const prefDie: 0 | 1 = selectedDie ?? defaultHighDie;
     const secDie: 0 | 1 = (1 - prefDie) as 0 | 1;
     const prefVal = dice[prefDie];
     const secVal = dice[secDie];
@@ -138,5 +153,34 @@ export function computeHoverTargets(
     } else if (secDests.length > 0) {
         secDests.forEach((d) => primary.set(d, secVal));
     }
-    return { primary, secondary };
+
+    const sumVal = prefVal + secVal;
+    if (legalSequences && legalSequences.length > 0) {
+        for (const seq of legalSequences) {
+            if (seq.length >= 2 && seq[0].from === resolvedSource && seq[1].from === seq[0].to) {
+                const dest2 = seq[1].to;
+                if (isRealPoint(dest2) && !primary.has(dest2) && !secondary.has(dest2)) {
+                    combined.set(dest2, sumVal);
+                }
+            }
+        }
+    } else if (leftDieTargets.size > 0 && rightDieTargets.size > 0) {
+        const startPip = resolvedSource === X_BAR ? 25 : resolvedSource === O_BAR ? 0 : resolvedSource;
+        const firstHops: Array<[number, number]> = [...primary.entries(), ...secondary.entries()];
+        for (const [mid, usedVal] of firstHops) {
+            if (!isRealPoint(mid)) continue;
+            const remVal = usedVal === prefVal ? secVal : prefVal;
+            const dir = mid < startPip ? -1 : 1;
+            const sumDest = mid + dir * remVal;
+            if (!isRealPoint(sumDest) || primary.has(sumDest) || secondary.has(sumDest)) continue;
+            if (board) {
+                const occupant = board[sumDest] ?? 0;
+                const isBlocked = dir === -1 ? occupant < -1 : occupant > 1;
+                if (isBlocked) continue;
+            }
+            combined.set(sumDest, sumVal);
+        }
+    }
+
+    return { primary, secondary, combined };
 }

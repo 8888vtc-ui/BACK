@@ -2,7 +2,8 @@
 
 /**
  * Flèche (point) du plateau — Marqueterie triangulaire de tournoi (style Backgammon Galaxy)
- * + pile de pions 3D alignés bord à bord sans écrasement (< 300 lignes, 0 any).
+ * + pile de pions 3D alignés bord à bord + Ghost Checkers stratifiés à 3 niveaux
+ * + anneau d'alerte Blot adverse (< 300 lignes, 0 any).
  */
 
 import React from 'react';
@@ -19,8 +20,10 @@ export interface BoardPointProps {
     isBlotTarget?: boolean;
     isHoverPrimaryTarget?: boolean;
     isHoverSecondaryTarget?: boolean;
+    isHoverCombinedTarget?: boolean;
     targetDieValue?: number | null;
     secondaryTargetDieValue?: number | null;
+    combinedTargetDieValue?: number | null;
     isMovable?: boolean;
     /** Vrai si cette flèche est l'unique point de départ d'un coup forcé (Audit 13/20). */
     isForcedOrigin?: boolean;
@@ -33,7 +36,6 @@ export interface BoardPointProps {
     ariaLabel?: string;
     theme?: string;
     onClickPoint: (pointNumber: number, e: React.MouseEvent) => void;
-    onDoubleClickPoint?: (pointNumber: number) => void;
     onRightClickPoint?: (pointNumber: number, e: React.MouseEvent) => void;
     onKeyDownPoint?: (pointNumber: number, e: React.KeyboardEvent) => void;
     onFocusPoint?: (pointNumber: number) => void;
@@ -41,6 +43,8 @@ export interface BoardPointProps {
     onMouseLeavePoint?: (pointNumber: number) => void;
     onCheckerPointerDown?: (pointNumber: number, color: CheckerColor, e: React.PointerEvent) => void;
 }
+
+const GHOST_CHECKER_SIZE = 'clamp(22px, min(3.2vw, calc((100dvh - 185px) / 14)), 42px)';
 
 const BoardPointComponent: React.FC<BoardPointProps> = ({
     pointNumber,
@@ -51,8 +55,10 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
     isBlotTarget = false,
     isHoverPrimaryTarget = false,
     isHoverSecondaryTarget = false,
+    isHoverCombinedTarget = false,
     targetDieValue = null,
     secondaryTargetDieValue = null,
+    combinedTargetDieValue = null,
     isMovable = false,
     isForcedOrigin = false,
     isLockedByBar = false,
@@ -63,7 +69,6 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
     ariaLabel,
     theme,
     onClickPoint,
-    onDoubleClickPoint,
     onRightClickPoint,
     onKeyDownPoint,
     onFocusPoint,
@@ -74,10 +79,93 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
     const isEven = pointNumber % 2 === 0;
     const stackLayout = computeCheckerStackLayout(checkerCount, isTopRow);
     const pt = getBoardThemeTokens(theme).points;
-    const isHighlightedTarget = isTargetDestination || isHoverPrimaryTarget;
+
+    const showLevel1 =
+        isHoverPrimaryTarget ||
+        (isTargetDestination && !isHoverSecondaryTarget && !isHoverCombinedTarget);
+    const showLevel2 = !showLevel1 && isHoverSecondaryTarget;
+    const showLevel3 = !showLevel1 && !showLevel2 && isHoverCombinedTarget;
+    const isAnyTarget = isTargetDestination || showLevel1 || showLevel2 || showLevel3;
 
     const mainPoints = isTopRow ? '3,0 97,0 50,288' : '3,300 97,300 50,12';
     const innerInlayPoints = isTopRow ? '6,1 94,1 50,280' : '6,299 94,299 50,20';
+
+    const renderGhostChecker = () => {
+        if (showLevel1) {
+            return (
+                <div
+                    data-testid={isTargetDestination ? `ghost-checker-${pointNumber}` : `hover-target-primary-${pointNumber}`}
+                    data-ghost-level="1"
+                    className="relative z-20 rounded-full pointer-events-none flex items-center justify-center shrink-0"
+                    style={{
+                        width: GHOST_CHECKER_SIZE,
+                        height: GHOST_CHECKER_SIZE,
+                        opacity: 0.38,
+                        border: '2px solid #38BDF8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.38)',
+                        boxShadow: '0 0 12px rgba(56, 189, 248, 0.45)',
+                    }}
+                >
+                    <span
+                        data-testid={`ghost-badge-${pointNumber}`}
+                        className="flex items-center justify-center rounded-full bg-slate-950/90 text-[#38BDF8] text-[10px] font-black leading-none border border-[#38BDF8]/80"
+                        style={{ width: '18px', height: '18px' }}
+                    >
+                        {targetDieValue ?? ''}
+                    </span>
+                </div>
+            );
+        }
+        if (showLevel2) {
+            return (
+                <div
+                    data-testid={isTargetDestination ? `ghost-checker-${pointNumber}` : `hover-target-secondary-${pointNumber}`}
+                    data-ghost-level="2"
+                    className="relative z-20 rounded-full pointer-events-none flex items-center justify-center shrink-0"
+                    style={{
+                        width: GHOST_CHECKER_SIZE,
+                        height: GHOST_CHECKER_SIZE,
+                        opacity: 0.22,
+                        border: '1.5px dashed #38BDF8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.22)',
+                    }}
+                >
+                    <span
+                        data-testid={`ghost-badge-secondary-${pointNumber}`}
+                        className="flex items-center justify-center rounded-full bg-slate-950/90 text-[#38BDF8] text-[10px] font-black leading-none border border-[#38BDF8]/70"
+                        style={{ width: '18px', height: '18px' }}
+                    >
+                        {secondaryTargetDieValue ?? targetDieValue ?? ''}
+                    </span>
+                </div>
+            );
+        }
+        if (showLevel3) {
+            return (
+                <div
+                    data-testid={isTargetDestination ? `ghost-checker-${pointNumber}` : `hover-target-combined-${pointNumber}`}
+                    data-ghost-level="3"
+                    className="relative z-20 rounded-full pointer-events-none flex items-center justify-center shrink-0"
+                    style={{
+                        width: GHOST_CHECKER_SIZE,
+                        height: GHOST_CHECKER_SIZE,
+                        opacity: 0.45,
+                        border: '1.5px dotted #38BDF8',
+                        background: 'none',
+                    }}
+                >
+                    <span
+                        data-testid={`ghost-badge-combined-${pointNumber}`}
+                        className="flex items-center justify-center rounded-full bg-slate-950/90 text-[#38BDF8] text-[10px] font-black leading-none px-1.5 border border-[#38BDF8]/70"
+                        style={{ minWidth: '22px', height: '18px' }}
+                    >
+                        {combinedTargetDieValue ?? ''}
+                    </span>
+                </div>
+            );
+        }
+        return null;
+    };
 
     return (
         <div
@@ -87,19 +175,18 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
             data-forced-origin={isForcedOrigin ? 'true' : undefined}
             role="button"
             aria-label={ariaLabel}
-            aria-disabled={isLockedByBar && !isHighlightedTarget ? true : undefined}
+            aria-disabled={isLockedByBar && !isAnyTarget ? true : undefined}
             tabIndex={0}
             className={`relative flex-1 min-w-0 sm:min-w-[36px] md:min-w-[44px] min-h-[44px] h-full flex flex-col items-center select-none group cursor-pointer transition-all duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] touch-manipulation ${
                 isSelected
                     ? 'ring-2 ring-amber-400/90 rounded-lg bg-amber-400/5 shadow-[0_0_16px_rgba(251,191,36,0.4)]'
-                    : isHighlightedTarget
-                        ? 'rounded-lg bg-emerald-400/10'
-                        : isHoverSecondaryTarget
-                            ? 'rounded-lg bg-sky-400/10'
-                            : ''
+                    : showLevel1
+                      ? 'rounded-lg bg-sky-400/10'
+                      : showLevel2 || showLevel3
+                        ? 'rounded-lg bg-sky-400/5'
+                        : ''
             }`}
             onClick={(e) => onClickPoint(pointNumber, e)}
-            onDoubleClick={() => onDoubleClickPoint?.(pointNumber)}
             onContextMenu={(e) => {
                 e.preventDefault();
                 onRightClickPoint?.(pointNumber, e);
@@ -109,7 +196,6 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
             onMouseEnter={() => onMouseEnterPoint?.(pointNumber)}
             onMouseLeave={() => onMouseLeavePoint?.(pointNumber)}
         >
-            {/* Hitbox invisible d'au moins 44×44 px centrée sur la flèche (WCAG 2.5.5 / Mobile Touch) */}
             <span
                 data-testid={`point-touch-zone-${pointNumber}`}
                 aria-hidden="true"
@@ -124,7 +210,6 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                 />
             )}
 
-            {/* Marqueterie SVG de la flèche */}
             <svg
                 viewBox="0 0 100 300"
                 preserveAspectRatio="none"
@@ -161,22 +246,17 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                     strokeWidth="0.5"
                     strokeLinejoin="round"
                 />
-
-                {isHighlightedTarget && (
-                    <polygon points={mainPoints} fill="rgba(52, 211, 153, 0.26)" stroke="#34d399" strokeWidth="2.5" strokeLinejoin="round" />
+                {showLevel1 && (
+                    <polygon points={mainPoints} fill="rgba(56, 189, 248, 0.18)" stroke="#38BDF8" strokeWidth="2" strokeLinejoin="round" />
                 )}
-                {!isHighlightedTarget && isHoverSecondaryTarget && (
-                    <polygon points={mainPoints} fill="rgba(56, 189, 248, 0.18)" stroke="#38bdf8" strokeWidth="2" strokeDasharray="4 2" strokeLinejoin="round" />
+                {showLevel2 && (
+                    <polygon points={mainPoints} fill="rgba(56, 189, 248, 0.10)" stroke="#38BDF8" strokeWidth="1.5" strokeDasharray="4 2" strokeLinejoin="round" />
                 )}
-                {isOpponentTo && (
-                    <polygon points={mainPoints} fill="rgba(56, 189, 248, 0.22)" stroke="#38bdf8" strokeWidth="2.2" strokeLinejoin="round" />
-                )}
-                {isOpponentFrom && (
-                    <polygon points={mainPoints} fill="rgba(56, 189, 248, 0.12)" stroke="#38bdf8" strokeWidth="1.6" strokeDasharray="4 2" strokeLinejoin="round" />
+                {showLevel3 && (
+                    <polygon points={mainPoints} fill="none" stroke="#38BDF8" strokeWidth="1.5" strokeDasharray="2 3" strokeLinejoin="round" />
                 )}
             </svg>
 
-            {/* Piles de pions 3D alignés bord à bord avec tassement adaptatif > 5 (Audit 14/20) */}
             <div
                 data-testid={`point-stack-${pointNumber}`}
                 data-stack-compressed={stackLayout.isCompressed ? 'true' : 'false'}
@@ -185,10 +265,13 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                     isTopRow ? 'justify-start' : 'justify-end mt-auto'
                 } ${isLockedByBar ? 'opacity-55 saturate-50' : ''}`}
             >
+                {!isTopRow && renderGhostChecker()}
+
                 {checkerColor &&
                     Array.from({ length: stackLayout.visibleCheckers }).map((_, idx) => {
                         const isTop = idx === stackLayout.apexIndex;
                         const showCount = isTop ? stackLayout.badgeCount : undefined;
+                        const showBlotRing = isBlotTarget && checkerCount === 1;
                         return (
                             <div
                                 key={idx}
@@ -197,12 +280,21 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                                     marginTop: idx > 0 ? `-${stackLayout.overlapPx}px` : '0px',
                                     zIndex: isTopRow ? idx + 1 : stackLayout.visibleCheckers - idx,
                                 }}
-                                className={`checker-land pointer-events-auto transition-[transform,opacity] duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] ${
+                                className={`relative checker-land pointer-events-auto transition-[transform,opacity] duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] ${
                                     isLockedByBar ? 'cursor-not-allowed' : ''
-                                } ${isBlotTarget && checkerCount === 1 ? 'rounded-full ring-4 ring-rose-500 animate-pulse' : ''} ${
-                                    isForcedOrigin && isTop ? 'rounded-full ring-2 ring-amber-400 animate-pulse' : ''
-                                }`}
+                                } ${isForcedOrigin && isTop ? 'rounded-full ring-2 ring-amber-400 animate-pulse' : ''}`}
                             >
+                                {showBlotRing && (
+                                    <span
+                                        data-testid={`blot-alert-ring-${pointNumber}`}
+                                        aria-hidden="true"
+                                        className="absolute -inset-1 rounded-full pointer-events-none z-20"
+                                        style={{
+                                            border: '2.5px solid #EF4444',
+                                            opacity: 0.7,
+                                        }}
+                                    />
+                                )}
                                 <Checker
                                     color={checkerColor}
                                     countBadge={showCount}
@@ -215,44 +307,14 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                             </div>
                         );
                     })}
+
+                {isTopRow && renderGhostChecker()}
             </div>
-
-            {isTargetDestination && (
-                <div
-                    data-testid={`ghost-checker-${pointNumber}`}
-                    className={`absolute z-20 w-6 h-6 rounded-full bg-emerald-400 shadow-[0_0_14px_#34d399] ring-2 ring-white animate-pulse pointer-events-none flex items-center justify-center text-[11px] font-black text-slate-950 ${
-                        isTopRow ? 'bottom-[15%]' : 'top-[15%]'
-                    }`}
-                >
-                    {targetDieValue ?? ''}
-                </div>
-            )}
-
-            {!isTargetDestination && isHoverPrimaryTarget && (
-                <div
-                    data-testid={`hover-target-primary-${pointNumber}`}
-                    className={`absolute z-20 w-6 h-6 rounded-full bg-emerald-400/95 shadow-[0_0_12px_#34d399] ring-2 ring-white pointer-events-none flex items-center justify-center text-[11px] font-black text-slate-950 ${
-                        isTopRow ? 'bottom-[15%]' : 'top-[15%]'
-                    }`}
-                >
-                    {targetDieValue ?? ''}
-                </div>
-            )}
-            {!isTargetDestination && !isHoverPrimaryTarget && isHoverSecondaryTarget && (
-                <div
-                    data-testid={`hover-target-secondary-${pointNumber}`}
-                    className={`absolute z-20 w-5 h-5 rounded-full bg-sky-400/90 shadow-[0_0_10px_#38bdf8] ring-1.5 ring-white pointer-events-none flex items-center justify-center text-[10px] font-black text-slate-950 ${
-                        isTopRow ? 'bottom-[15%]' : 'top-[15%]'
-                    }`}
-                >
-                    {secondaryTargetDieValue ?? ''}
-                </div>
-            )}
 
             {isOpponentTo && (
                 <div
                     data-testid={`opp-to-indicator-${pointNumber}`}
-                    className={`absolute z-20 w-4 h-4 rounded-full bg-indigo-400 shadow-[0_0_12px_#818cf8] ring-2 ring-white animate-pulse pointer-events-none flex items-center justify-center text-[10px] font-bold text-slate-900 ${
+                    className={`absolute z-20 w-4 h-4 rounded-full bg-slate-400/80 ring-1 ring-slate-200 pointer-events-none flex items-center justify-center text-[9px] font-bold text-slate-900 ${
                         isTopRow ? 'bottom-[16%]' : 'top-[16%]'
                     }`}
                 >
@@ -263,7 +325,7 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
             {isOpponentFrom && (
                 <div
                     data-testid={`opp-from-indicator-${pointNumber}`}
-                    className={`absolute z-20 w-2.5 h-2.5 rounded-full bg-indigo-500/80 ring-2 ring-indigo-300 shadow-[0_0_8px_rgba(99,102,241,0.6)] pointer-events-none ${
+                    className={`absolute z-20 w-2.5 h-2.5 rounded-full bg-slate-400/70 ring-1 ring-slate-300 pointer-events-none ${
                         isTopRow ? 'top-[16%]' : 'bottom-[16%]'
                     }`}
                 />
