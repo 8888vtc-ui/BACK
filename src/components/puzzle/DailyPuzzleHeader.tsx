@@ -93,7 +93,10 @@ export const DailyPuzzleHeader: React.FC<DailyPuzzleHeaderProps> = ({
                                 >
                                     {utcDateString} · 00h00 UTC
                                 </span>
-                                <span className="rounded-full border border-[#d4af37]/25 bg-black/40 px-2.5 py-0.5 font-mono text-[10px] text-[#e2d2b5]">
+                                <span
+                                    suppressHydrationWarning
+                                    className="rounded-full border border-[#d4af37]/25 bg-black/40 px-2.5 py-0.5 font-mono text-[10px] text-[#e2d2b5]"
+                                >
                                     ⏳ Prochain dans {utcCountdown}
                                 </span>
                             </div>
@@ -108,6 +111,7 @@ export const DailyPuzzleHeader: React.FC<DailyPuzzleHeaderProps> = ({
                 <div className="flex flex-wrap items-center gap-2.5">
                     <div
                         data-testid="daily-puzzle-streak-counter"
+                        suppressHydrationWarning
                         className="flex items-center gap-2.5 rounded-2xl border border-[#d4af37]/50 bg-gradient-to-b from-[#2f130d] to-[#160805] px-3.5 py-2 shadow-inner"
                     >
                         <span className="text-xl" aria-hidden="true">
@@ -128,6 +132,7 @@ export const DailyPuzzleHeader: React.FC<DailyPuzzleHeaderProps> = ({
 
                     <div
                         data-testid="daily-puzzle-glicko-rating"
+                        suppressHydrationWarning
                         className="flex items-center gap-2.5 rounded-2xl border border-[#d4af37]/35 bg-[#120b07]/95 px-3.5 py-2 shadow-inner"
                     >
                         <span className="text-lg" aria-hidden="true">

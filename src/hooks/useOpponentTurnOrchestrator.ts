@@ -526,6 +526,7 @@ export function useOpponentTurnOrchestrator({
 
         return () => {
             // Ne nettoie les timers QUE si le tour change réellement ou au unmount (pas à chaque step)
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             if (boardStateRef.current.turn !== 'O') {
                 clearOpponentTimers();
             }

@@ -161,7 +161,7 @@ const VALID_LOCALES = new Set<Locale>(['fr', 'en', 'es', 'pt', 'de', 'ar', 'ja']
  * 5. Défaut : 'en' (Anglais international).
  */
 export function detectLocale(): Locale {
-    if (typeof window === 'undefined') return 'en';
+    if (typeof window === 'undefined') return 'fr';
 
     try {
         const saved = window.localStorage.getItem('bg_locale') as Locale | null;
@@ -215,10 +215,16 @@ export function detectLocale(): Locale {
 }
 
 export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
-    const [locale, setLocaleState] = useState<Locale>(() => {
-        if (initialLocale) return initialLocale;
-        return detectLocale();
-    });
+    const [locale, setLocaleState] = useState<Locale>(initialLocale || 'fr');
+
+    useEffect(() => {
+        if (!initialLocale) {
+            const detected = detectLocale();
+            if (detected !== 'fr') {
+                setLocaleState(detected);
+            }
+        }
+    }, [initialLocale]);
 
     const setLocale = (newLocale: Locale) => {
         setLocaleState(newLocale);
