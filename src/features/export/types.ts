@@ -28,6 +28,10 @@ export interface ParsedSGFData {
     playerX: string;
     playerO: string;
     matchLength: number;
+    scoreX: number;
+    scoreO: number;
+    winner?: Player | null;
+    pointsWon?: number;
     result?: string;
     moves: ParsedSGFMove[];
 }

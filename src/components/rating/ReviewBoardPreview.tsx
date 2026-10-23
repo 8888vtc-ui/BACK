@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import type { EvaluatedTurn } from '../../features/rating/types';
-import { impactLight } from '../../lib/capacitor/haptics';
+import { impactLight, impactMedium } from '../../lib/capacitor/haptics';
 
 export interface ReviewBoardPreviewProps {
     turn: EvaluatedTurn;
@@ -17,6 +17,7 @@ export interface ReviewBoardPreviewProps {
     hasPrevMistake: boolean;
     hasNextMistake: boolean;
     onSelectIndex: (index: number) => void;
+    initialDrillMode?: boolean;
 }
 
 export function parseMoveNotation(notation: string): Array<{ from: number; to: number }> {
@@ -50,8 +51,20 @@ export default function ReviewBoardPreview({
     hasPrevMistake,
     hasNextMistake,
     onSelectIndex,
+    initialDrillMode = false,
 }: ReviewBoardPreviewProps) {
     const [viewMode, setViewMode] = useState<'before' | 'after'>('before');
+    const [isDrillMode, setIsDrillMode] = useState<boolean>(initialDrillMode);
+    const [selectedGuess, setSelectedGuess] = useState<string | null>(null);
+
+    useEffect(() => {
+        setSelectedGuess(null);
+        setViewMode('before');
+    }, [currentIndex, turn.moveNumber]);
+
+    useEffect(() => {
+        if (initialDrillMode) setIsDrillMode(true);
+    }, [initialDrillMode]);
 
     // Navigation clavier fluide
     useEffect(() => {
@@ -74,8 +87,8 @@ export default function ReviewBoardPreview({
     const optimalMoves = useMemo(() => parseMoveNotation(turn.optimalNotation), [turn.optimalNotation]);
 
     const isMistake = turn.verdict === 'doubtful' || turn.verdict === 'blunder' || turn.verdict === 'howler';
+    const hideSolution = isDrillMode && selectedGuess === null;
 
-    // Rendu d'une flèche du plateau (1 à 24)
     const renderPoint = useCallback(
         (pointNum: number, isTop: boolean) => {
             const count = (activeBoard && activeBoard[pointNum]) || 0;
@@ -83,9 +96,8 @@ export default function ReviewBoardPreview({
             const numCheckers = Math.abs(count);
             const isAltColor = pointNum % 2 === 0;
 
-            const isPlayedSource = playedMoves.some((m) => m.from === pointNum);
-            const isPlayedDest = playedMoves.some((m) => m.to === pointNum);
-            const isOptimalDest = optimalMoves.some((m) => m.to === pointNum);
+            const isPlayedDest = !hideSolution && playedMoves.some((m) => m.to === pointNum);
+            const isOptimalDest = !hideSolution && optimalMoves.some((m) => m.to === pointNum);
 
             return (
                 <div
@@ -104,7 +116,6 @@ export default function ReviewBoardPreview({
                             : 'bg-slate-950/60'
                     }`}
                 >
-                    {/* Numéro de la flèche */}
                     <div
                         className={`text-[10px] font-mono font-semibold ${
                             isTop ? 'order-first mb-0.5' : 'order-last mt-0.5'
@@ -121,7 +132,6 @@ export default function ReviewBoardPreview({
                         {pointNum}
                     </div>
 
-                    {/* Empilement des pions */}
                     <div
                         className={`flex flex-col items-center gap-0.5 w-full ${
                             isTop ? 'flex-col' : 'flex-col-reverse'
@@ -141,7 +151,6 @@ export default function ReviewBoardPreview({
                         ))}
                     </div>
 
-                    {/* Badges indicatifs des coups (Joué / Optimal) */}
                     {isOptimalDest && isMistake && (
                         <span
                             className={`absolute ${
@@ -167,8 +176,15 @@ export default function ReviewBoardPreview({
                 </div>
             );
         },
-        [activeBoard, playedMoves, optimalMoves, isMistake],
+        [activeBoard, playedMoves, optimalMoves, isMistake, hideSolution],
     );
+
+    const quizChoices = useMemo(() => {
+        if (!isMistake || turn.playedNotation === turn.optimalNotation) return [turn.optimalNotation];
+        return currentIndex % 2 === 0
+            ? [turn.optimalNotation, turn.playedNotation]
+            : [turn.playedNotation, turn.optimalNotation];
+    }, [isMistake, turn.optimalNotation, turn.playedNotation, currentIndex]);
 
     return (
         <div
@@ -211,47 +227,118 @@ export default function ReviewBoardPreview({
                             </span>
                             <span>•</span>
                             <span className="font-mono font-semibold text-white">
-                                Optimal : <strong className="text-emerald-400">{turn.optimalNotation}</strong>
+                                Optimal :{' '}
+                                <strong className="text-emerald-400">
+                                    {hideSolution ? '??? (Quiz actif)' : turn.optimalNotation}
+                                </strong>
                             </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Bascule Avant / Après coup */}
-                <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
-                    <button
-                        type="button"
-                        onClick={() => setViewMode('before')}
-                        className={`px-3 py-1 rounded-lg font-semibold transition ${
-                            viewMode === 'before'
-                                ? 'bg-slate-800 text-white shadow'
-                                : 'text-slate-400 hover:text-white'
-                        }`}
-                    >
-                        Avant le coup
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setViewMode('after')}
-                        className={`px-3 py-1 rounded-lg font-semibold transition ${
-                            viewMode === 'after'
-                                ? 'bg-slate-800 text-white shadow'
-                                : 'text-slate-400 hover:text-white'
-                        }`}
-                    >
-                        Après le coup
-                    </button>
+                {/* Bascule Avant / Après coup + Bouton Blunder Training */}
+                <div className="flex flex-wrap items-center gap-2">
+                    {isMistake && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                impactLight();
+                                setIsDrillMode((prev) => !prev);
+                                setSelectedGuess(null);
+                                setViewMode('before');
+                            }}
+                            data-testid="toggle-blunder-drill-btn"
+                            className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition ${
+                                isDrillMode
+                                    ? 'border-amber-400 bg-amber-500 text-slate-950 shadow-md'
+                                    : 'border-amber-500/50 bg-amber-950/40 text-amber-300 hover:bg-amber-900/50'
+                            }`}
+                        >
+                            🎯 {isDrillMode ? 'Quitter le Quiz' : 'Blunder Training'}
+                        </button>
+                    )}
+
+                    <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+                        <button
+                            type="button"
+                            onClick={() => setViewMode('before')}
+                            className={`px-3 py-1 rounded-lg font-semibold transition ${
+                                viewMode === 'before'
+                                    ? 'bg-slate-800 text-white shadow'
+                                    : 'text-slate-400 hover:text-white'
+                            }`}
+                        >
+                            Avant le coup
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setViewMode('after')}
+                            className={`px-3 py-1 rounded-lg font-semibold transition ${
+                                viewMode === 'after'
+                                    ? 'bg-slate-800 text-white shadow'
+                                    : 'text-slate-400 hover:text-white'
+                            }`}
+                        >
+                            Après le coup
+                        </button>
+                    </div>
                 </div>
             </div>
 
+            {/* Module interactif Blunder Training (Style Backgammon Galaxy) */}
+            {isDrillMode && isMistake && (
+                <div
+                    className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                    data-testid="blunder-training-panel"
+                >
+                    <div className="text-xs">
+                        <p className="font-bold text-amber-300">
+                            🎯 Blunder Training — Trouvez le coup optimal avec [{turn.dice[0]}-{turn.dice[1]}] :
+                        </p>
+                        {selectedGuess && (
+                            <p
+                                className={`mt-1 font-semibold ${
+                                    selectedGuess === turn.optimalNotation ? 'text-emerald-400' : 'text-rose-400'
+                                }`}
+                                data-testid="blunder-training-feedback"
+                            >
+                                {selectedGuess === turn.optimalNotation
+                                    ? `✅ Exact ! ${turn.optimalNotation} est le meilleur coup certifié.`
+                                    : `❌ ${selectedGuess} perd ${Math.abs(turn.equityLoss).toFixed(3)} EMG. Le coup optimal était ${turn.optimalNotation}.`}
+                            </p>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {quizChoices.map((choice) => (
+                            <button
+                                key={choice}
+                                type="button"
+                                onClick={() => {
+                                    impactMedium();
+                                    setSelectedGuess(choice);
+                                }}
+                                data-testid={`drill-choice-${choice}`}
+                                className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold border transition ${
+                                    selectedGuess === choice
+                                        ? choice === turn.optimalNotation
+                                            ? 'border-emerald-400 bg-emerald-600 text-white'
+                                            : 'border-rose-400 bg-rose-600 text-white'
+                                        : 'border-slate-700 bg-slate-900 text-slate-200 hover:border-amber-400'
+                                }`}
+                            >
+                                {choice}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* 2. Visualisation vectorielle du plateau */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-2 sm:p-3 overflow-hidden shadow-inner">
-                {/* Ligne haute : flèches 13 à 18 (à gauche) puis 19 à 24 (à droite) */}
                 <div className="flex items-stretch border-b border-slate-700/80">
                     <div className="flex flex-1">
                         {[13, 14, 15, 16, 17, 18].map((p) => renderPoint(p, true))}
                     </div>
-                    {/* Barre centrale */}
                     <div className="w-8 sm:w-10 bg-slate-950 flex flex-col items-center justify-center border-x border-slate-800 text-[9px] font-mono text-slate-500">
                         BAR
                     </div>
@@ -260,7 +347,6 @@ export default function ReviewBoardPreview({
                     </div>
                 </div>
 
-                {/* Rivière médiane */}
                 <div className="h-6 sm:h-8 flex items-center justify-between px-3 text-[10px] text-slate-400 bg-slate-950/70 border-y border-slate-800/80 font-mono">
                     <span>JAN EXTÉRIEUR (13-18 / 12-7)</span>
                     <span className="text-amber-400 font-bold">
@@ -269,12 +355,10 @@ export default function ReviewBoardPreview({
                     <span>JAN INTÉRIEUR (19-24 / 6-1)</span>
                 </div>
 
-                {/* Ligne basse : flèches 12 à 7 (à gauche) puis 6 à 1 (à droite) */}
                 <div className="flex items-stretch">
                     <div className="flex flex-1">
                         {[12, 11, 10, 9, 8, 7].map((p) => renderPoint(p, false))}
                     </div>
-                    {/* Barre centrale */}
                     <div className="w-8 sm:w-10 bg-slate-950 flex flex-col items-center justify-center border-x border-slate-800 text-[9px] font-mono text-slate-500">
                         BAR
                     </div>
@@ -286,7 +370,6 @@ export default function ReviewBoardPreview({
 
             {/* 3. Barre de navigation coup par coup */}
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                {/* Saut d'erreur */}
                 <div className="flex items-center gap-1.5">
                     <button
                         type="button"
@@ -308,7 +391,6 @@ export default function ReviewBoardPreview({
                     </button>
                 </div>
 
-                {/* Contrôles pas-à-pas */}
                 <div className="flex items-center gap-1.5">
                     <button
                         type="button"
@@ -359,7 +441,6 @@ export default function ReviewBoardPreview({
                     </button>
                 </div>
 
-                {/* Scrubber / Slider de progression */}
                 <div className="w-full sm:w-48 flex items-center gap-2">
                     <input
                         type="range"

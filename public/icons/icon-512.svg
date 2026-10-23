@@ -1,78 +1,86 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Backgammon Tour &amp; Gammon Academy">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0b1220"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#020617"/>
+      <stop offset="0%" stop-color="#19130a"/>
+      <stop offset="45%" stop-color="#0b101d"/>
+      <stop offset="100%" stop-color="#04060b"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff6d1"/>
+      <stop offset="30%" stop-color="#f3c65f"/>
+      <stop offset="70%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8c5f12"/>
     </linearGradient>
     <radialGradient id="dieGrad" cx="30%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="70%" stop-color="#e2e8f0"/>
-      <stop offset="100%" stop-color="#94a3b8"/>
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="70%" stop-color="#f5cf70"/>
+      <stop offset="100%" stop-color="#b38428"/>
     </radialGradient>
     <radialGradient id="checkerX" cx="35%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="55%" stop-color="#e2e8f0"/>
-      <stop offset="100%" stop-color="#94a3b8"/>
+      <stop offset="0%" stop-color="#fffdf5"/>
+      <stop offset="55%" stop-color="#f3e3b8"/>
+      <stop offset="100%" stop-color="#b89246"/>
     </radialGradient>
     <radialGradient id="checkerO" cx="35%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="#64748b"/>
-      <stop offset="55%" stop-color="#1e293b"/>
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="55%" stop-color="#0f172a"/>
       <stop offset="100%" stop-color="#020617"/>
     </radialGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.75"/>
     </filter>
   </defs>
 
-  <!-- Fond arrondi PWA -->
+  <!-- Fond arrondi PWA Salon Privé Monte-Carlo -->
   <rect width="512" height="512" rx="108" fill="url(#bgGrad)"/>
-  <rect x="16" y="16" width="480" height="480" rx="94" fill="none" stroke="#1e293b" stroke-width="4"/>
+  <rect x="18" y="18" width="476" height="476" rx="92" fill="none" stroke="url(#goldGrad)" stroke-width="5"/>
+  <rect x="30" y="30" width="452" height="452" rx="82" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-dasharray="8,6" opacity="0.45"/>
 
-  <!-- Triangles Backgammon en fond stylisé -->
-  <polygon points="120,440 180,440 150,260" fill="#23405e" opacity="0.4"/>
-  <polygon points="180,440 240,440 210,260" fill="#3b4a63" opacity="0.4"/>
-  <polygon points="272,440 332,440 302,260" fill="#23405e" opacity="0.4"/>
-  <polygon points="332,440 392,440 362,260" fill="#3b4a63" opacity="0.4"/>
+  <!-- Couronne Monte-Carlo subtile en en-tête -->
+  <path d="M216,66 L232,46 L246,62 L256,40 L266,62 L280,46 L296,66 Z" fill="url(#goldGrad)" opacity="0.85"/>
 
-  <!-- Pions superposés -->
+  <!-- Triangles Backgammon en fond stylisé Or & Ardoise -->
+  <polygon points="110,435 175,435 142.5,235" fill="#d4af37" opacity="0.22"/>
+  <polygon points="182,435 247,435 214.5,255" fill="#334155" opacity="0.38"/>
+  <polygon points="265,435 330,435 297.5,255" fill="#d4af37" opacity="0.22"/>
+  <polygon points="337,435 402,435 369.5,235" fill="#334155" opacity="0.38"/>
+
+  <!-- Pions superposés Ébène & Ivoire Or -->
   <g filter="url(#shadow)">
-    <!-- Pion Noir (O) -->
-    <circle cx="210" cy="310" r="62" fill="url(#checkerO)" stroke="#475569" stroke-width="3"/>
-    <circle cx="210" cy="310" r="42" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="8,6"/>
-    
-    <!-- Pion Blanc (X) -->
-    <circle cx="302" cy="310" r="62" fill="url(#checkerX)" stroke="#0f172a" stroke-width="3"/>
-    <circle cx="302" cy="310" r="42" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8,6"/>
+    <!-- Pion Ébène (O) -->
+    <circle cx="206" cy="306" r="64" fill="url(#checkerO)" stroke="url(#goldGrad)" stroke-width="4.5"/>
+    <circle cx="206" cy="306" r="44" fill="none" stroke="#d4af37" stroke-width="2" stroke-dasharray="8,6" opacity="0.65"/>
+
+    <!-- Pion Ivoire (X) -->
+    <circle cx="306" cy="306" r="64" fill="url(#checkerX)" stroke="#5c3d08" stroke-width="4"/>
+    <circle cx="306" cy="306" r="44" fill="none" stroke="#8c5f12" stroke-width="2" stroke-dasharray="8,6" opacity="0.65"/>
   </g>
 
-  <!-- Deux Dés 3D Tournament -->
+  <!-- Deux Dés 3D Tournament Or Ciselé -->
   <!-- Dé gauche (Valeur 5) -->
-  <g filter="url(#shadow)" transform="rotate(-10 190 170)">
-    <rect x="135" y="115" width="110" height="110" rx="22" fill="url(#dieGrad)" stroke="#0f172a" stroke-width="4"/>
-    <!-- Points du 5 -->
-    <circle cx="160" cy="140" r="9" fill="#0f172a"/>
-    <circle cx="220" cy="140" r="9" fill="#0f172a"/>
-    <circle cx="190" cy="170" r="9" fill="#0f172a"/>
-    <circle cx="160" cy="200" r="9" fill="#0f172a"/>
-    <circle cx="220" cy="200" r="9" fill="#0f172a"/>
+  <g filter="url(#shadow)" transform="rotate(-10 190 165)">
+    <rect x="135" y="110" width="110" height="110" rx="22" fill="url(#dieGrad)" stroke="#1c1004" stroke-width="4"/>
+    <circle cx="160" cy="135" r="9" fill="#1c1004"/>
+    <circle cx="220" cy="135" r="9" fill="#1c1004"/>
+    <circle cx="190" cy="165" r="9.5" fill="#1c1004"/>
+    <circle cx="160" cy="195" r="9" fill="#1c1004"/>
+    <circle cx="220" cy="195" r="9" fill="#1c1004"/>
   </g>
 
   <!-- Dé droit (Valeur 6) -->
-  <g filter="url(#shadow)" transform="rotate(12 320 160)">
-    <rect x="265" y="105" width="110" height="110" rx="22" fill="url(#dieGrad)" stroke="#0f172a" stroke-width="4"/>
-    <!-- Points du 6 -->
-    <circle cx="290" cy="130" r="9" fill="#0f172a"/>
-    <circle cx="350" cy="130" r="9" fill="#0f172a"/>
-    <circle cx="290" cy="160" r="9" fill="#0f172a"/>
-    <circle cx="350" cy="160" r="9" fill="#0f172a"/>
-    <circle cx="290" cy="190" r="9" fill="#0f172a"/>
-    <circle cx="350" cy="190" r="9" fill="#0f172a"/>
+  <g filter="url(#shadow)" transform="rotate(12 320 155)">
+    <rect x="265" y="100" width="110" height="110" rx="22" fill="url(#dieGrad)" stroke="#1c1004" stroke-width="4"/>
+    <circle cx="290" cy="125" r="9" fill="#1c1004"/>
+    <circle cx="350" cy="125" r="9" fill="#1c1004"/>
+    <circle cx="290" cy="155" r="9" fill="#1c1004"/>
+    <circle cx="350" cy="155" r="9" fill="#1c1004"/>
+    <circle cx="290" cy="185" r="9" fill="#1c1004"/>
+    <circle cx="350" cy="185" r="9" fill="#1c1004"/>
   </g>
 
-  <!-- Badge Émeraude "PRO" -->
+  <!-- Cartouche Horloger Or "TOUR · IA" -->
   <g filter="url(#shadow)">
-    <rect x="186" y="405" width="140" height="38" rx="19" fill="#059669" stroke="#34d399" stroke-width="2"/>
-    <text x="256" y="429" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="900" fill="#ffffff" letter-spacing="2">COACH</text>
+    <rect x="146" y="400" width="220" height="44" rx="22" fill="#0b101b" stroke="url(#goldGrad)" stroke-width="3"/>
+    <text x="256" y="429" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="21" font-weight="900" fill="#f5cf70" letter-spacing="4">TOUR · IA</text>
   </g>
 </svg>

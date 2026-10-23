@@ -1,20 +1,20 @@
 services:
   # ---------------------------------------------------------------------------
-  # Backend Engine (Python 3.12 FastAPI + GNU Backgammon CLI)
+  # Backend Engine (Python 3.11 FastAPI + Open Sage bgsage)
   # ---------------------------------------------------------------------------
   backend-engine:
     build:
-      context: ./backend-engine
+      context: ./bgsage-service
       dockerfile: Dockerfile
-    container_name: backgammon-backend-engine
+    container_name: backgammon-bgsage-service
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8080:8080"
     environment:
       - PYTHONUNBUFFERED=1
-      - PORT=8000
+      - PORT=8080
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -39,7 +39,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8080
     networks:
       - backgammon-network
 

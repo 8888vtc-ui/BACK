@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useReducer, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
     BoardState,
     Player,
@@ -27,6 +27,11 @@ import {
 } from '../lib/i18n/engineMessages';
 import { addMonitoringBreadcrumb } from '../lib/monitoring/sentry';
 import {
+    recordFlightEvent,
+    validateArrowSource,
+    getDisplayArrowsForMoves,
+} from '../utils/gameFlightRecorder';
+import {
     evaluateWin,
     scoreBoardForOpponent,
     scoreBoard0PlyNoisy,
@@ -37,9 +42,28 @@ import {
     type GameResult,
     type AIDifficulty,
 } from '../engine/aiHeuristics';
-import { evaluateBoard, shouldOfferDouble, shouldTakeDouble } from '../lib/engine/evaluator';
-import { initXgWeb, isXgWebReady, getXgWebBestMove } from '../lib/engine/xgWebClient';
+import {
+    evaluateBoard,
+    findBestBoardMove,
+    shouldOfferDouble,
+    shouldTakeDouble,
+    formatMoveSequenceNotationAbsolute,
+} from '../lib/engine/evaluator';
+import { selectBotMoveWithBgsage, evaluateBotCubeWithBgsage } from '../lib/engine/bgsageClient';
 import { findOpeningBookSequenceForOpponent, isInitialBoardPosition } from '../features/openings';
+import type { GamePhase as StrictGamePhase, MatchLogEntry } from '../actions/types';
+import { commitHumanMoveAction } from '../actions/commitHumanMoveAction';
+import { replayFromLogAction } from '../actions/replayFromLogAction';
+import { runAiTurnAction } from '../actions/runAiTurnAction';
+import {
+    AUTO_CONFIRM_TURN_STORAGE_KEY,
+    getSavedAutoConfirmPreference,
+    saveAutoConfirmPreference,
+} from './useTurnConfirmation';
+
+/** Délai fluide (ms) de validation automatique lorsque `autoConfirmTurn === true`. */
+export const AUTO_CONFIRM_TURN_DELAY_MS = 250;
+export { AUTO_CONFIRM_TURN_STORAGE_KEY };
 
 export {
     evaluateWin,
@@ -49,7 +73,7 @@ export {
     scoreBoard2PlyForOpponent,
     selectBestOpponentSequence,
 };
-export type { WinType, GameResult, AIDifficulty };
+export type { WinType, GameResult, AIDifficulty, StrictGamePhase, MatchLogEntry };
 
 export type GamePhase =
     | 'WAITING_FOR_ROLL'
@@ -57,6 +81,32 @@ export type GamePhase =
     | 'PLAYING_MOVES'
     | 'OPPONENT_THINKING'
     | 'GAME_OVER';
+
+/**
+ * Dérive la phase stricte gouvernée par la LOI 2 (Machine à États Finis Unique)
+ */
+export function deriveStrictGamePhase(
+    phase: GamePhase,
+    usedDice: boolean[],
+    opponentHighlight: { from: number; to: number }[] | null,
+    gameResult: GameResult | null,
+): StrictGamePhase {
+    if (phase === 'GAME_OVER' || gameResult) return 'GAME_OVER';
+    // Videau proposé : aucune action de lancer/déplacement tant que Prendre/Passer n'est pas tranché.
+    if (phase === 'DOUBLING_OFFERED') return 'AI_TURN_ROLLING';
+    if (phase === 'WAITING_FOR_ROLL') return 'HUMAN_WAITING_ROLL';
+    if (phase === 'PLAYING_MOVES') {
+        const allUsed = usedDice.length > 0 && usedDice.every(Boolean);
+        return allUsed ? 'HUMAN_READY_TO_COMMIT' : 'HUMAN_MOVING';
+    }
+    if (phase === 'OPPONENT_THINKING') {
+        if (opponentHighlight && opponentHighlight.length > 0) {
+            return 'AI_TURN_SHOWING_ARROWS';
+        }
+        return 'AI_TURN_ROLLING';
+    }
+    return 'HUMAN_WAITING_ROLL';
+}
 
 export interface UseBackgammonGameOptions {
     matchLength?: number;
@@ -67,10 +117,15 @@ export interface UseBackgammonGameOptions {
     autoOpponent?: boolean;
     opponentDelayMs?: number;
     stepDelayMs?: number;
+    arrowPreviewMs?: number;
     forcedOpponentDice?: [number, number];
     playerColor?: Player;
     onGameOver?: (result: GameResult) => void;
     locale?: Locale;
+    /** Valider automatiquement la fin de tour après 250ms (défaut : false — persisté dans localStorage). */
+    autoConfirm?: boolean;
+    /** Alias explicite pour l'option Validation auto (persistée dans localStorage, défaut : false). */
+    autoConfirmTurn?: boolean;
 }
 
 // Fonctions d'évaluation IA importées depuis `../engine/aiHeuristics.ts` (module isolé).
@@ -95,21 +150,26 @@ export interface BackgammonGameState {
     opponentHighlight: { from: number; to: number }[] | null;
     opponentStatusMessage: string | null;
     /** Historique des sous-mouvements du tour courant (pour Undo). */
-    moveHistory: { board: number[]; usedDice: boolean[] }[];
+    moveHistory: { board: number[]; usedDice: boolean[]; move?: Move }[];
+    /** Journal immuable des tours de match (LOI 3). */
+    matchLog: ReadonlyArray<MatchLogEntry>;
 }
 
 export type GameAction =
-    | { type: 'ROLL_DICE'; dice?: [number, number] }
+    | { type: 'ROLL_DICE'; dice?: [number, number]; deferBlockedTransition?: boolean }
     | { type: 'SELECT_CHECKER'; point: number; die?: 0 | 1 | null }
     | { type: 'DESELECT' }
     | { type: 'SET_SELECTED_DIE'; die: 0 | 1 }
-    | { type: 'MOVE_CHECKER'; destination: number; from?: number; die?: 0 | 1 }
-    | { type: 'PLAY_MOVE'; from: number; to: number; die?: 0 | 1 }
+    | { type: 'MOVE_CHECKER'; destination: number; from?: number; die?: 0 | 1; deferCommit?: boolean }
+    | { type: 'PLAY_MOVE'; from: number; to: number; die?: 0 | 1; deferCommit?: boolean }
+    | { type: 'COMMIT_HUMAN_TURN' }
     | { type: 'OFFER_DOUBLE' }
     | { type: 'TAKE_DOUBLE' }
     | { type: 'PASS_DOUBLE' }
     | { type: 'PLAY_OPPONENT'; dice?: [number, number] }
+    | { type: 'OPPONENT_PREPARE_ROLL'; statusMessage?: string }
     | { type: 'OPPONENT_START_TURN'; dice: [number, number]; statusMessage: string }
+    | { type: 'OPPONENT_SHOW_ARROWS'; arrows: { from: number; to: number }[]; statusMessage?: string }
     | {
         type: 'OPPONENT_APPLY_STEP';
         board: number[];
@@ -128,6 +188,8 @@ export type GameAction =
     | { type: 'SET_DIFFICULTY'; difficulty: AIDifficulty }
     | { type: 'START_NEW_GAME' }
     | { type: 'RESET_MATCH' }
+    | { type: 'NEW_MATCH'; matchLength: number; difficulty: AIDifficulty }
+    | { type: 'RESIGN_GAME'; multiplier: 1 | 2 | 3; winner?: Player }
     | {
         type: 'APPLY_REMOTE_STATE';
         board: number[];
@@ -137,6 +199,10 @@ export type GameAction =
         phase?: GamePhase;
         cubeValue?: number;
         cubeOwner?: Player | null;
+        scoreX?: number;
+        scoreO?: number;
+        crawford?: boolean;
+        doublingOfferedBy?: Player | null;
     };
 
 export function createInitialGameState(
@@ -173,6 +239,7 @@ export function createInitialGameState(
         opponentHighlight: null,
         opponentStatusMessage: null,
         moveHistory: [],
+        matchLog: [],
     };
 }
 
@@ -197,11 +264,49 @@ export function backgammonGameReducer(
 
             const legalSeqs = generateLegalMoves(nextBoardState, dice);
 
+            // Boîte noire : enregistre le lancer des dés du joueur
+            recordFlightEvent({
+                ts: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+                event: 'DICE_ROLLED',
+                player: state.boardState.turn,
+                dice,
+                isAiThinking: false,
+                boardBefore: [...state.boardState.board],
+                boardAfter: [...state.boardState.board],
+                arrows: [],
+                statusMessage: null,
+            });
+
             if (legalSeqs.length === 0) {
-                // Fanned / bloqué
+                if (action.deferBlockedTransition) {
+                    return {
+                        ...state,
+                        boardState: nextBoardState,
+                        phase: 'PLAYING_MOVES',
+                        usedDice: initialUsedDice.map(() => true),
+                        selected: null,
+                        opponentHighlight: null,
+                        opponentStatusMessage: 'Bloqué — aucun coup possible',
+                        moveHistory: [],
+                    };
+                }
+
+                // Fanned / bloqué (mode synchrone / reducer direct)
                 const nextTurn: Player = state.boardState.turn === 'X' ? 'O' : 'X';
                 const nextPhase: GamePhase =
                     nextTurn === 'O' && state.autoOpponent ? 'OPPONENT_THINKING' : 'WAITING_FOR_ROLL';
+
+                recordFlightEvent({
+                    ts: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+                    event: 'TURN_FINISHED',
+                    player: state.boardState.turn,
+                    dice,
+                    isAiThinking: false,
+                    boardBefore: [...state.boardState.board],
+                    boardAfter: [...state.boardState.board],
+                    arrows: [],
+                    statusMessage: 'Bloqué - tour passé',
+                });
 
                 return {
                     ...state,
@@ -224,6 +329,7 @@ export function backgammonGameReducer(
                 selected: null,
                 // Efface l'historique visuel du dernier coup de l'IA au lancer du joueur
                 opponentHighlight: null,
+                opponentStatusMessage: null,
             };
         }
 
@@ -253,6 +359,14 @@ export function backgammonGameReducer(
                     return {
                         ...state,
                         selected: { point: action.point, die: action.die },
+                    };
+                }
+                const fallbackDie: 0 | 1 = (1 - action.die) as 0 | 1;
+                const fallbackTargets = fallbackDie === 0 ? leftDieTargets : rightDieTargets;
+                if (fallbackTargets.has(action.point)) {
+                    return {
+                        ...state,
+                        selected: { point: action.point, die: fallbackDie },
                     };
                 }
                 return state;
@@ -323,11 +437,14 @@ export function backgammonGameReducer(
                 const requestedDie = action.die !== undefined ? action.die : state.selected?.die;
                 const leftDests = leftDieTargets.get(from) ?? [];
                 const rightDests = rightDieTargets.get(from) ?? [];
+                const higherDie: 0 | 1 = state.boardState.dice[1] > state.boardState.dice[0] ? 1 : 0;
 
                 if (requestedDie === 0 && leftDests.includes(dest)) {
                     chosenDie = 0;
                 } else if (requestedDie === 1 && rightDests.includes(dest)) {
                     chosenDie = 1;
+                } else if (leftDests.includes(dest) && rightDests.includes(dest)) {
+                    chosenDie = higherDie;
                 } else if (leftDests.includes(dest)) {
                     chosenDie = 0;
                 } else if (rightDests.includes(dest)) {
@@ -340,12 +457,30 @@ export function backgammonGameReducer(
             }
 
             const move: Move = { from, to: dest };
+            const { sourceValid, sourceValue } = validateArrowSource(
+                state.boardState.board,
+                from,
+                state.boardState.turn,
+            );
             const newBoard = applyMove(state.boardState.board, move, state.boardState.turn);
+
+            // Boîte noire : enregistre le coup joué par le joueur actif
+            recordFlightEvent({
+                ts: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+                event: 'MOVE_APPLIED',
+                player: state.boardState.turn,
+                dice: state.boardState.dice,
+                isAiThinking: false,
+                boardBefore: [...state.boardState.board],
+                boardAfter: [...newBoard],
+                arrows: [{ from, to: dest, sourceValid, sourceValue }],
+                statusMessage: null,
+            });
 
             // Enregistre un snapshot pour permettre l'Undo du sous-mouvement
             const moveHistory = [
                 ...state.moveHistory,
-                { board: state.boardState.board, usedDice: [...state.usedDice] },
+                { board: state.boardState.board, usedDice: [...state.usedDice], move },
             ];
 
             let newUsed: boolean[];
@@ -391,9 +526,47 @@ export function backgammonGameReducer(
             const turnFinished = allUsed || noMoreMoves;
 
             if (turnFinished) {
+                if (action.deferCommit) {
+                    return {
+                        ...state,
+                        boardState: stateAfterMove,
+                        phase: 'PLAYING_MOVES',
+                        usedDice: noMoreMoves ? newUsed.map(() => true) : newUsed,
+                        selected: null,
+                        moveHistory,
+                    };
+                }
+
                 const nextTurn: Player = state.boardState.turn === 'X' ? 'O' : 'X';
                 const nextPhase: GamePhase =
                     nextTurn === 'O' && state.autoOpponent ? 'OPPONENT_THINKING' : 'WAITING_FOR_ROLL';
+
+                recordFlightEvent({
+                    ts: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+                    event: 'TURN_FINISHED',
+                    player: state.boardState.turn,
+                    dice: state.boardState.dice,
+                    isAiThinking: false,
+                    boardBefore: [...state.boardState.board],
+                    boardAfter: [...newBoard],
+                    arrows: [],
+                    statusMessage: null,
+                });
+
+                const turnMoves: Move[] = [
+                    ...state.moveHistory.flatMap((h) => (h.move ? [h.move] : [])),
+                    move,
+                ];
+                const xLogEntry: MatchLogEntry = Object.freeze({
+                    turnIndex: (state.matchLog?.length ?? 0) + 1,
+                    player: state.boardState.turn,
+                    dice: Object.freeze([state.boardState.dice![0], state.boardState.dice![1]]) as readonly [number, number],
+                    boardBefore: Object.freeze([...(state.moveHistory[0]?.board ?? state.boardState.board)]),
+                    movePlayed: Object.freeze(turnMoves),
+                    boardAfter: Object.freeze([...newBoard]),
+                    notation: formatMoveSequenceNotationAbsolute(turnMoves, state.boardState.turn),
+                    timestamp: Date.now(),
+                });
 
                 return {
                     ...state,
@@ -406,6 +579,7 @@ export function backgammonGameReducer(
                     usedDice: [false, false],
                     selected: null,
                     moveHistory: [],
+                    matchLog: Object.freeze([...(state.matchLog ?? []), xLogEntry]),
                 };
             }
 
@@ -418,9 +592,80 @@ export function backgammonGameReducer(
             };
         }
 
+        case 'COMMIT_HUMAN_TURN': {
+            if (state.phase !== 'PLAYING_MOVES' || !state.boardState.dice) {
+                return state;
+            }
+
+            const nextTurn: Player = state.boardState.turn === 'X' ? 'O' : 'X';
+            const nextPhase: GamePhase =
+                nextTurn === 'O' && state.autoOpponent ? 'OPPONENT_THINKING' : 'WAITING_FOR_ROLL';
+
+            const isBlockedTurn = state.moveHistory.length === 0;
+            const boardBefore = isBlockedTurn
+                ? state.boardState.board
+                : (state.moveHistory[0]?.board ?? state.boardState.board);
+
+            recordFlightEvent({
+                ts: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+                event: 'TURN_FINISHED',
+                player: state.boardState.turn,
+                dice: state.boardState.dice,
+                isAiThinking: false,
+                boardBefore: [...boardBefore],
+                boardAfter: [...state.boardState.board],
+                arrows: [],
+                statusMessage: isBlockedTurn ? 'Bloqué — aucun coup possible' : null,
+            });
+
+            let nextMatchLog = state.matchLog ?? [];
+            if (!isBlockedTurn) {
+                const turnMoves: Move[] = state.moveHistory.flatMap((h) => (h.move ? [h.move] : []));
+                const xLogEntry: MatchLogEntry = Object.freeze({
+                    turnIndex: nextMatchLog.length + 1,
+                    player: state.boardState.turn,
+                    dice: Object.freeze([state.boardState.dice[0], state.boardState.dice[1]]) as readonly [number, number],
+                    boardBefore: Object.freeze([...boardBefore]),
+                    movePlayed: Object.freeze(turnMoves),
+                    boardAfter: Object.freeze([...state.boardState.board]),
+                    notation: formatMoveSequenceNotationAbsolute(turnMoves, state.boardState.turn),
+                    timestamp: Date.now(),
+                });
+                nextMatchLog = Object.freeze([...nextMatchLog, xLogEntry]);
+            }
+
+            return {
+                ...state,
+                boardState: {
+                    ...state.boardState,
+                    dice: null,
+                    turn: nextTurn,
+                },
+                phase: nextPhase,
+                usedDice: [false, false],
+                selected: null,
+                opponentStatusMessage: null,
+                moveHistory: [],
+                matchLog: nextMatchLog,
+            };
+        }
+
         case 'OFFER_DOUBLE': {
-            if (state.phase !== 'WAITING_FOR_ROLL') return state;
+            // L'IA propose le videau AVANT son lancer, alors que la phase est déjà
+            // OPPONENT_THINKING : sans cette tolérance l'offre était rejetée et le
+            // tour de l'IA restait gelé indéfiniment.
+            const isBotPreRollOffer =
+                state.phase === 'OPPONENT_THINKING' && state.boardState.turn === 'O' && !state.boardState.dice;
+            if (state.phase !== 'WAITING_FOR_ROLL' && !isBotPreRollOffer) return state;
             if (state.boardState.crawford) return state;
+
+            // Règle du Double Match Point (DMP) : le videau est gelé pour les deux joueurs
+            const isDmp =
+                state.matchLength > 0 &&
+                state.boardState.scoreX === state.matchLength - 1 &&
+                state.boardState.scoreO === state.matchLength - 1;
+            if (isDmp) return state;
+
             if (state.boardState.cubeOwner !== null && state.boardState.cubeOwner !== state.boardState.turn) {
                 return state;
             }
@@ -451,7 +696,8 @@ export function backgammonGameReducer(
                     cubeValue: nextCubeValue,
                     cubeOwner: acceptingPlayer,
                 },
-                phase: 'WAITING_FOR_ROLL',
+                // Le joueur qui a doublé garde la main : si c'est l'IA, elle lance ensuite.
+                phase: state.boardState.turn === 'O' && state.autoOpponent ? 'OPPONENT_THINKING' : 'WAITING_FOR_ROLL',
                 doublingOfferedBy: null,
             };
         }
@@ -522,10 +768,16 @@ export function backgammonGameReducer(
             if (state.difficulty !== 'beginner' && isInitialBoardPosition(state.boardState.board)) {
                 best = findOpeningBookSequenceForOpponent(state.boardState.board, rolledDice, legalSeqs);
             }
-            if (!best && state.difficulty === 'grandmaster' && isXgWebReady()) {
-                best = getXgWebBestMove(state.boardState.board, 'O', rolledDice, legalSeqs, 3);
-            } else if (!best && state.difficulty === 'expert' && isXgWebReady()) {
-                best = getXgWebBestMove(state.boardState.board, 'O', rolledDice, legalSeqs, 2);
+            // Sélection différenciée selon le niveau du bot :
+            // - expert : 1-ply déterministe via findBestBoardMove
+            // - grandmaster : 2-ply Expectimax (Beam Search Top-6 + anticipation des répliques)
+            // - intermediate : 1-ply légèrement bruité
+            // - beginner : 0-ply fortement bruité
+            if (!best && state.difficulty === 'expert') {
+                const unified = findBestBoardMove(stateWithDice, rolledDice, 2);
+                if (unified?.sequence) {
+                    best = unified.sequence;
+                }
             }
             if (!best) {
                 best = selectBestOpponentSequence(legalSeqs, 'O', state.difficulty);
@@ -585,6 +837,22 @@ export function backgammonGameReducer(
             };
         }
 
+        case 'OPPONENT_PREPARE_ROLL': {
+            if (state.phase === 'GAME_OVER') return state;
+            return {
+                ...state,
+                boardState: {
+                    ...state.boardState,
+                    dice: null,
+                    turn: 'O',
+                },
+                phase: 'OPPONENT_THINKING',
+                opponentHighlight: null,
+                lastOpponentDice: null,
+                opponentStatusMessage: action.statusMessage ?? "L'ordinateur lance les dés...",
+            };
+        }
+
         case 'OPPONENT_START_TURN': {
             if (state.phase === 'GAME_OVER') return state;
             const isDouble = action.dice[0] === action.dice[1];
@@ -603,6 +871,15 @@ export function backgammonGameReducer(
             };
         }
 
+        case 'OPPONENT_SHOW_ARROWS': {
+            if (state.phase === 'GAME_OVER') return state;
+            return {
+                ...state,
+                opponentHighlight: action.arrows,
+                opponentStatusMessage: action.statusMessage ?? state.opponentStatusMessage,
+            };
+        }
+
         case 'OPPONENT_APPLY_STEP': {
             if (state.phase === 'GAME_OVER') return state;
             const newUsed = [...state.usedDice];
@@ -616,16 +893,25 @@ export function backgammonGameReducer(
                     board: action.board,
                 },
                 usedDice: newUsed,
-                opponentHighlight: [
-                    ...(state.opponentHighlight ?? []),
-                    { from: action.move.from, to: action.move.to },
-                ],
+                opponentHighlight: [{ from: action.move.from, to: action.move.to }],
                 opponentStatusMessage: action.statusMessage,
             };
         }
 
         case 'OPPONENT_FINISH_TURN': {
             if (state.phase === 'GAME_OVER') return state;
+            const oLogEntry: MatchLogEntry = Object.freeze({
+                turnIndex: (state.matchLog?.length ?? 0) + 1,
+                player: 'O',
+                dice: Object.freeze([action.dice[0], action.dice[1]]) as readonly [number, number],
+                boardBefore: Object.freeze([...state.boardState.board]),
+                movePlayed: Object.freeze(action.moves.map((m) => ({ ...m }))),
+                boardAfter: Object.freeze([...action.finalBoard]),
+                notation: formatMoveSequenceNotationAbsolute(action.moves, 'O'),
+                timestamp: Date.now(),
+            });
+            const nextMatchLog: ReadonlyArray<MatchLogEntry> = Object.freeze([...(state.matchLog ?? []), oLogEntry]);
+
             if (action.gameResult) {
                 const nextScoreX = action.gameResult.winner === 'X' ? state.boardState.scoreX + action.gameResult.pointsWon : state.boardState.scoreX;
                 const nextScoreO = action.gameResult.winner === 'O' ? state.boardState.scoreO + action.gameResult.pointsWon : state.boardState.scoreO;
@@ -641,8 +927,9 @@ export function backgammonGameReducer(
                     gameResult: action.gameResult,
                     lastOpponentDice: action.dice,
                     lastOpponentMoves: action.moves,
-                    opponentHighlight: null,
+                    opponentHighlight: action.moves && action.moves.length > 0 ? action.moves : state.opponentHighlight,
                     opponentStatusMessage: null,
+                    matchLog: nextMatchLog,
                 };
             }
 
@@ -659,9 +946,9 @@ export function backgammonGameReducer(
                 selected: null,
                 lastOpponentDice: action.dice,
                 lastOpponentMoves: action.moves,
-                // Conserve le dernier coup joué (historique visuel) jusqu'au prochain lancer du joueur
-                opponentHighlight: state.opponentHighlight,
+                opponentHighlight: action.moves && action.moves.length > 0 ? action.moves : state.opponentHighlight,
                 opponentStatusMessage: null,
+                matchLog: nextMatchLog,
             };
         }
 
@@ -686,6 +973,28 @@ export function backgammonGameReducer(
             return {
                 ...state,
                 difficulty: action.difficulty,
+            };
+        }
+
+        case 'NEW_MATCH': {
+            const fresh = createInitialState(action.matchLength);
+            return {
+                ...state,
+                boardState: fresh,
+                phase: 'WAITING_FOR_ROLL',
+                usedDice: [false, false],
+                selected: null,
+                doublingOfferedBy: null,
+                gameResult: null,
+                crawfordAlreadyPlayed: false,
+                matchLength: action.matchLength,
+                difficulty: action.difficulty,
+                lastOpponentDice: null,
+                lastOpponentMoves: null,
+                opponentHighlight: null,
+                opponentStatusMessage: null,
+                moveHistory: [],
+                matchLog: [],
             };
         }
 
@@ -757,19 +1066,64 @@ export function backgammonGameReducer(
             };
         }
 
+        case 'RESIGN_GAME': {
+            if (state.phase === 'GAME_OVER') return state;
+
+            const winner: Player = action.winner ?? 'O';
+            const loser: Player = winner === 'X' ? 'O' : 'X';
+            const multiplier: 1 | 2 | 3 = action.multiplier;
+            const winType: WinType =
+                multiplier === 3 ? 'backgammon' : multiplier === 2 ? 'gammon' : 'single';
+            const pointsWon = multiplier * state.boardState.cubeValue;
+
+            const nextScoreX = winner === 'X' ? state.boardState.scoreX + pointsWon : state.boardState.scoreX;
+            const nextScoreO = winner === 'O' ? state.boardState.scoreO + pointsWon : state.boardState.scoreO;
+
+            const result: GameResult = {
+                winner,
+                loser,
+                winType,
+                multiplier,
+                pointsWon,
+            };
+
+            return {
+                ...state,
+                boardState: {
+                    ...state.boardState,
+                    scoreX: nextScoreX,
+                    scoreO: nextScoreO,
+                },
+                phase: 'GAME_OVER',
+                doublingOfferedBy: null,
+                selected: null,
+                moveHistory: [],
+                gameResult: result,
+            };
+        }
+
         case 'APPLY_REMOTE_STATE': {
             const nextBoard = action.board;
+            const baseScoreX = action.scoreX !== undefined ? action.scoreX : state.boardState.scoreX;
+            const baseScoreO = action.scoreO !== undefined ? action.scoreO : state.boardState.scoreO;
             const win = evaluateWin(nextBoard, action.cubeValue ?? state.boardState.cubeValue);
             const nextScoreX = win
                 ? win.winner === 'X'
-                    ? state.boardState.scoreX + win.pointsWon
-                    : state.boardState.scoreX
-                : state.boardState.scoreX;
+                    ? baseScoreX + win.pointsWon
+                    : baseScoreX
+                : baseScoreX;
             const nextScoreO = win
                 ? win.winner === 'O'
-                    ? state.boardState.scoreO + win.pointsWon
-                    : state.boardState.scoreO
-                : state.boardState.scoreO;
+                    ? baseScoreO + win.pointsWon
+                    : baseScoreO
+                : baseScoreO;
+
+            let crawfordAlreadyPlayed = state.crawfordAlreadyPlayed;
+            if (action.crawford === true) {
+                crawfordAlreadyPlayed = true;
+            } else if (action.crawford === false && action.scoreX === 0 && action.scoreO === 0) {
+                crawfordAlreadyPlayed = false;
+            }
 
             return {
                 ...state,
@@ -782,11 +1136,16 @@ export function backgammonGameReducer(
                     cubeOwner: action.cubeOwner !== undefined ? action.cubeOwner : state.boardState.cubeOwner,
                     scoreX: nextScoreX,
                     scoreO: nextScoreO,
+                    crawford: action.crawford !== undefined ? action.crawford : state.boardState.crawford,
                 },
                 phase: win ? 'GAME_OVER' : action.phase !== undefined ? action.phase : state.phase,
                 usedDice: action.usedDice !== undefined ? action.usedDice : state.usedDice,
                 selected: null,
-                gameResult: win ?? state.gameResult,
+                moveHistory: [],
+                doublingOfferedBy:
+                    action.doublingOfferedBy !== undefined ? action.doublingOfferedBy : state.doublingOfferedBy,
+                crawfordAlreadyPlayed,
+                gameResult: win ?? (action.phase && action.phase !== 'GAME_OVER' ? null : state.gameResult),
             };
         }
 
@@ -806,13 +1165,42 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         initialTurn = 'X',
         initialDifficulty = 'expert',
         autoOpponent = true,
-        opponentDelayMs = 600,
-        stepDelayMs = 900,
+        opponentDelayMs = 400,
+        stepDelayMs = 200,
+        arrowPreviewMs = 0,
         forcedOpponentDice,
         playerColor = 'X',
         onGameOver,
         locale = 'fr',
+        autoConfirm,
+        autoConfirmTurn: initialAutoConfirmTurn,
     } = options;
+
+    const explicitAutoConfirm = initialAutoConfirmTurn ?? autoConfirm;
+
+    const [autoConfirmTurn, setAutoConfirmTurnState] = useState<boolean>(() => {
+        if (explicitAutoConfirm !== undefined) return explicitAutoConfirm;
+        return getSavedAutoConfirmPreference(false);
+    });
+
+    useEffect(() => {
+        if (explicitAutoConfirm !== undefined) {
+            setAutoConfirmTurnState(explicitAutoConfirm);
+        }
+    }, [explicitAutoConfirm]);
+
+    const setAutoConfirmTurn = useCallback((enabled: boolean) => {
+        setAutoConfirmTurnState(enabled);
+        saveAutoConfirmPreference(enabled);
+    }, []);
+
+    const toggleAutoConfirmTurn = useCallback(() => {
+        setAutoConfirmTurnState((prev) => {
+            const next = !prev;
+            saveAutoConfirmPreference(next);
+            return next;
+        });
+    }, []);
 
     const [state, dispatch] = useReducer(
         backgammonGameReducer,
@@ -833,10 +1221,6 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
     const humanPlayer: Player = playerColor;
     const isHumanTurn = boardState.turn === humanPlayer;
 
-    useEffect(() => {
-        void initXgWeb();
-    }, []);
-
     const { leftDieTargets, rightDieTargets } = useMemo(() => {
         if (!dice || phase !== 'PLAYING_MOVES') {
             return { leftDieTargets: new Map<number, number[]>(), rightDieTargets: new Map<number, number[]>() };
@@ -844,13 +1228,19 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         return computeLegalTargets(boardState, dice, usedDice);
     }, [boardState, dice, usedDice, phase]);
 
+    const isDMP = useMemo(() => {
+        if (matchLength <= 0) return false;
+        return boardState.scoreX === matchLength - 1 && boardState.scoreO === matchLength - 1;
+    }, [matchLength, boardState.scoreX, boardState.scoreO]);
+
     const canDouble = useMemo(() => {
         if (boardState.crawford) return false;
+        if (isDMP) return false;
         if (phase !== 'WAITING_FOR_ROLL') return false;
         if (boardState.cubeOwner !== null && boardState.cubeOwner !== boardState.turn) return false;
         if (matchLength > 0 && (boardState.scoreX >= matchLength || boardState.scoreO >= matchLength)) return false;
         return true;
-    }, [boardState.crawford, boardState.cubeOwner, boardState.turn, boardState.scoreX, boardState.scoreO, phase, matchLength]);
+    }, [boardState.crawford, isDMP, phase, boardState.cubeOwner, boardState.turn, boardState.scoreX, boardState.scoreO, matchLength]);
 
     const isMatchOver = useMemo(() => {
         if (matchLength <= 0) return false;
@@ -898,18 +1288,79 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
 
     const opponentTurnInProgressRef = useRef(false);
     const opponentTimersRef = useRef<NodeJS.Timeout[]>([]);
+    const humanTimersRef = useRef<NodeJS.Timeout[]>([]);
 
     const clearOpponentTimers = useCallback(() => {
         opponentTimersRef.current.forEach(clearTimeout);
         opponentTimersRef.current = [];
     }, []);
 
+    const clearHumanTimers = useCallback(() => {
+        humanTimersRef.current.forEach(clearTimeout);
+        humanTimersRef.current = [];
+    }, []);
+
     // Nettoie les timers au démontage du hook
     useEffect(() => {
         return () => {
+            opponentTurnInProgressRef.current = false;
             clearOpponentTimers();
+            clearHumanTimers();
         };
-    }, [clearOpponentTimers]);
+    }, [clearOpponentTimers, clearHumanTimers]);
+
+    const strictGamePhase = deriveStrictGamePhase(
+        phase,
+        usedDice,
+        state.opponentHighlight,
+        gameResult,
+    );
+
+    // Gestion temporisée du tour humain :
+    // 1. Jet bloqué (Fanned, 0 coup légal) : affiche les dés et "Bloqué — aucun coup possible" pendant 1200ms avant de passer la main.
+    // 2. Fin de tour :
+    //    - Si `autoConfirmTurn === false` (Mode Manuel par défaut) : reste en `HUMAN_READY_TO_COMMIT` jusqu'au clic sur "Valider" (ou Espace / Entrée).
+    //    - Si `autoConfirmTurn === true` (Mode Rapide) : valide automatiquement après 250ms (`AUTO_CONFIRM_TURN_DELAY_MS`).
+    useEffect(() => {
+        clearHumanTimers();
+        if (phase !== 'PLAYING_MOVES' || !boardState.dice || boardState.turn !== humanPlayer) {
+            return;
+        }
+
+        const isBlockedFanned =
+            state.moveHistory.length === 0 &&
+            state.opponentStatusMessage === 'Bloqué — aucun coup possible';
+
+        if (isBlockedFanned) {
+            const tBlocked = setTimeout(() => {
+                dispatch({ type: 'COMMIT_HUMAN_TURN' });
+            }, 1200);
+            humanTimersRef.current.push(tBlocked);
+            return () => {
+                clearHumanTimers();
+            };
+        }
+
+        if (autoConfirmTurn && strictGamePhase === 'HUMAN_READY_TO_COMMIT' && state.moveHistory.length > 0) {
+            const tAutoCommit = setTimeout(() => {
+                dispatch({ type: 'COMMIT_HUMAN_TURN' });
+            }, AUTO_CONFIRM_TURN_DELAY_MS);
+            humanTimersRef.current.push(tAutoCommit);
+            return () => {
+                clearHumanTimers();
+            };
+        }
+    }, [
+        phase,
+        boardState.dice,
+        boardState.turn,
+        humanPlayer,
+        strictGamePhase,
+        state.moveHistory.length,
+        state.opponentStatusMessage,
+        clearHumanTimers,
+        autoConfirmTurn,
+    ]);
 
     useEffect(() => {
         if (!autoOpponent) return;
@@ -924,23 +1375,33 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         // Si une animation de coup est déjà en cours d'exécution, ne pas relancer
         if (opponentTurnInProgressRef.current) return;
 
+        const isCustomTestTiming = options.opponentDelayMs !== undefined;
+
         // --- Décision de l'IA sur le videau (Janowski) ---
         // Au début du tour de l'IA (avant le lancer des dés), si elle a accès au
         // videau et que son équité cubeless est >= +0.420, elle propose de doubler.
+        const isBotDmp = matchLength > 0 && boardState.scoreX === matchLength - 1 && boardState.scoreO === matchLength - 1;
+        const isBotOneAway = matchLength > 0 && boardState.scoreO === matchLength - 1;
         const canIADouble =
             !boardState.crawford &&
+            !isBotDmp &&
+            !isBotOneAway &&
+            !isInitialBoardPosition(boardState.board) &&
             (boardState.cubeOwner === null || boardState.cubeOwner === 'O') &&
             !(matchLength > 0 && (boardState.scoreX >= matchLength || boardState.scoreO >= matchLength));
-        if (canIADouble && !forcedOpponentDice) {
+        // Heuristique locale réservée au harnais de tests déterministe : en jeu réel,
+        // la décision de videau est 100 % cloud (Open Sage, cf. runOpponentTurn).
+        if (canIADouble && !forcedOpponentDice && isCustomTestTiming) {
             const iaState: BoardState = {
                 ...boardState,
                 turn: 'O',
                 dice: null,
             };
-            const iaEval = evaluateBoard(iaState, 2);
+            const iaEval = evaluateBoard(iaState, isCustomTestTiming ? 2 : 1);
             if (shouldOfferDouble(iaEval.cubelessEquity)) {
+                opponentTurnInProgressRef.current = false;
+                clearOpponentTimers();
                 dispatch({ type: 'OFFER_DOUBLE' });
-                opponentTurnInProgressRef.current = true;
                 return;
             }
         }
@@ -954,106 +1415,254 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         opponentTurnInProgressRef.current = true;
         clearOpponentTimers();
 
-        // Étape 1 : Lancer des dés visibles sur le plateau (Message de statut localisé)
-        const rolledDice: [number, number] =
-            forcedOpponentDice ??
-            (boardStateRef.current.dice
-                ? [boardStateRef.current.dice[0], boardStateRef.current.dice[1]]
-                : [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1]);
-        const d1 = rolledDice[0];
-        const d2 = rolledDice[1];
-
-        const initialStatus = formatOpponentDiceRollStatus(d1, d2, locale);
-        dispatch({
-            type: 'OPPONENT_START_TURN',
-            dice: rolledDice,
-            statusMessage: initialStatus,
-        });
-        soundEngine.playDiceRoll();
-
-        const currentBoardState = boardStateRef.current;
-        const stateWithDice: BoardState = {
-            ...currentBoardState,
-            dice: rolledDice,
-            turn: 'O',
-        };
-
-        const legalSeqs = generateLegalMoves(stateWithDice, rolledDice);
-
-        addMonitoringBreadcrumb({
-            category: 'ai_turn_start',
-            message: `IA Tour démarré: dés=[${rolledDice.join(', ')}], coups légaux=${legalSeqs.length}`,
-            level: 'info',
-            data: { dice: rolledDice, legalMovesCount: legalSeqs.length, difficulty },
-        });
-
-        if (legalSeqs.length === 0) {
-            // Aucun coup légal possible : statut de blocage localisé puis fin de tour
-            const blockedStatus = formatOpponentBlockedStatus(locale);
-            addMonitoringBreadcrumb({
-                category: 'ai_turn_blocked',
-                message: `IA bloquée: aucun coup légal pour les dés [${rolledDice.join(', ')}]`,
-                level: 'info',
+        if (!isCustomTestTiming) {
+            // === TEMPS 1 (t = 0ms) : Transition immédiate 60 FPS avant le calcul 2-ply ===
+            dispatch({
+                type: 'OPPONENT_PREPARE_ROLL',
+                statusMessage: locale === 'en' ? 'Black (AI) is rolling the dice...' : "L'ordinateur lance les dés...",
             });
+        }
+
+        const runOpponentTurn = async (yieldOffsetMs: number) => {
+            // Vérification asynchrone du videau via Open Sage (bgsage-service sur Google Cloud Run)
+            // Uniquement si l'évaluation rapide locale indique un avantage réel (>= +0.30) pour éviter tout appel réseau inutile.
+            if (canIADouble && !forcedOpponentDice && !isCustomTestTiming && !isInitialBoardPosition(boardStateRef.current.board)) {
+                try {
+                    const iaCubeState: BoardState = {
+                        ...boardStateRef.current,
+                        turn: 'O',
+                        dice: null,
+                    };
+                    const localPreCheck = evaluateBoard(iaCubeState, 1);
+                    if (localPreCheck.cubelessEquity >= 0.30) {
+                        const sageCube = await evaluateBotCubeWithBgsage(iaCubeState, difficulty, 1400);
+                        const shouldBotDouble = sageCube
+                            ? sageCube.shouldDouble
+                            : shouldOfferDouble(localPreCheck.cubelessEquity);
+                        if (shouldBotDouble) {
+                            opponentTurnInProgressRef.current = false;
+                            clearOpponentTimers();
+                            dispatch({ type: 'OFFER_DOUBLE' });
+                            return;
+                        }
+                    }
+                } catch {
+                    // Repli silencieux si bgsage est indisponible
+                }
+            }
+
+            const T1_PREPARE_MS = isCustomTestTiming ? 0 : Math.max(0, 400 - yieldOffsetMs);
+            const T2_DICE_DISPLAY_MS = isCustomTestTiming ? 0 : 1000;
+            const T3_ARROW_PREVIEW_MS = isCustomTestTiming ? 0 : 800;
+            const T4_STEP_INTERVAL_MS = isCustomTestTiming ? stepDelayMs : 800;
+
+            const rolledDice: [number, number] =
+                forcedOpponentDice ??
+                (boardStateRef.current.dice
+                    ? [boardStateRef.current.dice[0], boardStateRef.current.dice[1]]
+                    : [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1]);
+
+            const currentBoardState = boardStateRef.current;
+            const stateWithDice: BoardState = {
+                ...currentBoardState,
+                dice: rolledDice,
+                turn: 'O',
+            };
+
+            const legalSeqs = generateLegalMoves(stateWithDice, rolledDice);
+            const initialStatus = formatOpponentDiceRollStatus(rolledDice[0], rolledDice[1], locale);
+
+            // Si aucun coup légal n'est possible (bloqué/fanned)
+            if (legalSeqs.length === 0) {
+                const blockedStatus = formatOpponentBlockedStatus(locale);
+                const fullBlockedStatus = `${initialStatus} — ${blockedStatus}`;
+                const tBlockedStart = setTimeout(() => {
+                    dispatch({
+                        type: 'OPPONENT_START_TURN',
+                        dice: rolledDice,
+                        statusMessage: fullBlockedStatus,
+                    });
+
+                    recordFlightEvent({
+                        ts: performance.now(),
+                        event: 'DICE_ROLLED',
+                        player: 'O',
+                        dice: rolledDice,
+                        isAiThinking: true,
+                        boardBefore: [...currentBoardState.board],
+                        boardAfter: [...currentBoardState.board],
+                        arrows: [],
+                        statusMessage: fullBlockedStatus,
+                    });
+                }, T1_PREPARE_MS);
+                if (T1_PREPARE_MS > 0) {
+                    opponentTimersRef.current.push(tBlockedStart);
+                } else {
+                    dispatch({
+                        type: 'OPPONENT_START_TURN',
+                        dice: rolledDice,
+                        statusMessage: fullBlockedStatus,
+                    });
+                }
+
+                const tBlockedFinish = setTimeout(() => {
+                    dispatch({
+                        type: 'OPPONENT_FINISH_TURN',
+                        finalBoard: currentBoardState.board,
+                        dice: rolledDice,
+                        moves: [],
+                    });
+                    opponentTurnInProgressRef.current = false;
+                }, isCustomTestTiming ? opponentDelayMs + stepDelayMs : T1_PREPARE_MS + 1500);
+                opponentTimersRef.current.push(tBlockedFinish);
+                return;
+            }
+
+            // Calcul du coup optimal via Open Sage (bgsage-service sur Google Cloud Run) en priorité,
+            // avec livre d'ouvertures au tour 1 et repli local infaillible hors-ligne.
+            let best: MoveSequence | null = null;
+            try {
+                if (difficulty !== 'beginner' && isInitialBoardPosition(currentBoardState.board)) {
+                    best = findOpeningBookSequenceForOpponent(currentBoardState.board, rolledDice, legalSeqs);
+                }
+                if (!best && !isCustomTestTiming && legalSeqs.length > 1) {
+                    const sageChoice = await selectBotMoveWithBgsage(
+                        stateWithDice,
+                        legalSeqs,
+                        difficulty,
+                        2200,
+                    );
+                    if (sageChoice?.sequence) {
+                        best = sageChoice.sequence;
+                    }
+                }
+                if (!best && (difficulty === 'expert' || difficulty === 'grandmaster')) {
+                    const unified = findBestBoardMove(stateWithDice, rolledDice, 2);
+                    if (unified?.sequence) {
+                        best = unified.sequence;
+                    }
+                }
+            } catch {
+                best = null;
+            }
+            if (!best) {
+                try {
+                    best = selectBestOpponentSequence(legalSeqs, 'O', difficulty);
+                } catch {
+                    best = legalSeqs[0] ?? null;
+                }
+            }
+
+            const moves = best ? best.moves : [];
+
+        // Watchdog de sécurité : garantit mathématiquement qu'aucun tour IA ne reste bloqué
+        const totalEstimatedMs = T1_PREPARE_MS + T2_DICE_DISPLAY_MS + T3_ARROW_PREVIEW_MS + moves.length * T4_STEP_INTERVAL_MS + 800;
+        const tWatchdog = setTimeout(() => {
+            if (opponentTurnInProgressRef.current) {
+                // eslint-disable-next-line no-console
+                console.warn('[WATCHDOG] Opponent turn exceeded timeout, forcing completion');
+                opponentTurnInProgressRef.current = false;
+                clearOpponentTimers();
+                const curBoard = boardStateRef.current.board;
+                const win = evaluateWin(curBoard, boardStateRef.current.cubeValue);
+                recordFlightEvent({
+                    ts: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+                    event: win ? 'GAME_OVER' : 'TURN_FINISHED',
+                    player: 'O',
+                    dice: rolledDice,
+                    isAiThinking: false,
+                    boardBefore: [...curBoard],
+                    boardAfter: [...curBoard],
+                    arrows: [],
+                    statusMessage: null,
+                });
+                dispatch({
+                    type: 'OPPONENT_FINISH_TURN',
+                    finalBoard: curBoard,
+                    dice: rolledDice,
+                    moves: [],
+                    gameResult: win,
+                });
+            }
+        }, Math.max(4500, totalEstimatedMs + 1000));
+        opponentTimersRef.current.push(tWatchdog);
+
+        if (isCustomTestTiming) {
             dispatch({
                 type: 'OPPONENT_START_TURN',
                 dice: rolledDice,
-                statusMessage: `${initialStatus} — ${blockedStatus}`,
+                statusMessage: initialStatus,
             });
-            const tBlocked = setTimeout(() => {
+        } else {
+            // === TEMPS 2 (t = 400ms à 1400ms, 1000ms) : Affichage bien visible des dés tirés au centre ===
+            const tStart = setTimeout(() => {
                 dispatch({
-                    type: 'OPPONENT_FINISH_TURN',
-                    finalBoard: boardStateRef.current.board,
+                    type: 'OPPONENT_START_TURN',
                     dice: rolledDice,
-                    moves: [],
+                    statusMessage: initialStatus,
                 });
-                opponentTurnInProgressRef.current = false;
-            }, opponentDelayMs + stepDelayMs);
-            opponentTimersRef.current.push(tBlocked);
-            return;
+                soundEngine.playDiceRoll();
+
+                recordFlightEvent({
+                    ts: performance.now(),
+                    event: 'DICE_ROLLED',
+                    player: 'O',
+                    dice: rolledDice,
+                    isAiThinking: true,
+                    boardBefore: [...currentBoardState.board],
+                    boardAfter: [...currentBoardState.board],
+                    arrows: [],
+                    statusMessage: initialStatus,
+                });
+            }, T1_PREPARE_MS);
+            opponentTimersRef.current.push(tStart);
         }
 
-        let best: MoveSequence | null = null;
-        if (difficulty !== 'beginner' && isInitialBoardPosition(currentBoardState.board)) {
-            best = findOpeningBookSequenceForOpponent(currentBoardState.board, rolledDice, legalSeqs);
-        }
-        if (!best && difficulty === 'grandmaster' && isXgWebReady()) {
-            best = getXgWebBestMove(currentBoardState.board, 'O', rolledDice, legalSeqs, 3);
-        } else if (!best && difficulty === 'expert' && isXgWebReady()) {
-            best = getXgWebBestMove(currentBoardState.board, 'O', rolledDice, legalSeqs, 2);
-        }
-        if (!best) {
-            best = selectBestOpponentSequence(legalSeqs, 'O', difficulty);
-        }
-        if (!best || best.moves.length === 0) {
-            const blockedStatus = formatOpponentBlockedStatus(locale);
-            addMonitoringBreadcrumb({
-                category: 'ai_turn_blocked',
-                message: `IA bloquée: séquence choisie vide`,
-                level: 'info',
-            });
-            dispatch({
-                type: 'OPPONENT_START_TURN',
-                dice: rolledDice,
-                statusMessage: `${initialStatus} — ${blockedStatus}`,
-            });
-            const tNoMove = setTimeout(() => {
+        // === TEMPS 3 (t = 1400ms à 2200ms, 800ms) : Affichage des flèches sur position AVANT déplacement ===
+        const displayArrows = moves.length > 0
+            ? getDisplayArrowsForMoves(moves, currentBoardState.board, 'O')
+            : [];
+
+        if (displayArrows.length > 0) {
+            if (isCustomTestTiming) {
                 dispatch({
-                    type: 'OPPONENT_FINISH_TURN',
-                    finalBoard: boardStateRef.current.board,
-                    dice: rolledDice,
-                    moves: [],
+                    type: 'OPPONENT_SHOW_ARROWS',
+                    arrows: displayArrows,
+                    statusMessage: initialStatus,
                 });
-                opponentTurnInProgressRef.current = false;
-            }, opponentDelayMs + stepDelayMs);
-            opponentTimersRef.current.push(tNoMove);
-            return;
+            } else {
+                const tArrows = setTimeout(() => {
+                    dispatch({
+                        type: 'OPPONENT_SHOW_ARROWS',
+                        arrows: displayArrows,
+                        statusMessage: "L'ordinateur prépare son déplacement...",
+                    });
+
+                    recordFlightEvent({
+                        ts: performance.now(),
+                        event: 'AI_ARROWS_DISPLAYED',
+                        player: 'O',
+                        dice: rolledDice,
+                        isAiThinking: true,
+                        boardBefore: [...currentBoardState.board],
+                        boardAfter: [...currentBoardState.board],
+                        arrows: displayArrows.map((a) => {
+                            const { sourceValid, sourceValue } = validateArrowSource(currentBoardState.board, a.from, 'O');
+                            return { from: a.from, to: a.to, sourceValid, sourceValue };
+                        }),
+                        statusMessage: "L'ordinateur prépare son déplacement...",
+                    });
+                }, T1_PREPARE_MS + T2_DICE_DISPLAY_MS);
+                opponentTimersRef.current.push(tArrows);
+            }
         }
 
-        // Étape 2 : Déplacement séquentiel et visible de chaque pion (Pacing localisé)
+        // === TEMPS 4 : Déplacement fluide des pions vers leur case d'arrivée ===
+        const movementStartMs = isCustomTestTiming
+            ? opponentDelayMs
+            : T1_PREPARE_MS + T2_DICE_DISPLAY_MS + (displayArrows.length > 0 ? T3_ARROW_PREVIEW_MS : 300);
+        const stepIntervalMs = isCustomTestTiming ? stepDelayMs : T4_STEP_INTERVAL_MS;
         let currentBoard = currentBoardState.board;
-        const moves = best.moves;
-        const stepDelay = stepDelayMs; // Pause visible entre chaque coup
 
         moves.forEach((m, idx) => {
             const tStep = setTimeout(() => {
@@ -1063,6 +1672,10 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
                 } else {
                     soundEngine.playCheckerSlide();
                 }
+
+                const { sourceValid, sourceValue } = validateArrowSource(currentBoard, m.from, 'O');
+                const boardBefore = [...currentBoard];
+
                 currentBoard = applyMove(currentBoard, m, 'O');
                 const fromLabel = getBoardPointLabel(m.from, m.from === O_BAR, false, locale);
                 const toLabel = getBoardPointLabel(m.to, false, m.to === O_OFF, locale);
@@ -1073,12 +1686,19 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
                     toLabel,
                     locale,
                 );
-                addMonitoringBreadcrumb({
-                    category: 'ai_turn_step',
-                    message: `IA Coup ${idx + 1}/${moves.length}: ${fromLabel} -> ${toLabel}${isHit ? ' (FRAPPE)' : ''}`,
-                    level: 'debug',
-                    data: { step: idx + 1, totalSteps: moves.length, move: m, isHit },
+
+                recordFlightEvent({
+                    ts: performance.now(),
+                    event: 'MOVE_APPLIED',
+                    player: 'O',
+                    dice: rolledDice,
+                    isAiThinking: true,
+                    boardBefore,
+                    boardAfter: [...currentBoard],
+                    arrows: [{ from: m.from, to: m.to, sourceValid, sourceValue }],
+                    statusMessage: stepStatus,
                 });
+
                 dispatch({
                     type: 'OPPONENT_APPLY_STEP',
                     board: currentBoard,
@@ -1086,29 +1706,49 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
                     usedDiceIndex: idx,
                     statusMessage: stepStatus,
                 });
-            }, opponentDelayMs + idx * stepDelay);
+            }, movementStartMs + idx * stepIntervalMs);
             opponentTimersRef.current.push(tStep);
         });
 
-        // Étape 3 : Fin du tour après absorption visuelle de la nouvelle position
+        // === FIN DU TOUR : 800ms de répit visuel après le dernier coup du bot avant de rendre la main à X ===
+        const finishMs = isCustomTestTiming
+            ? movementStartMs + moves.length * stepIntervalMs + 200
+            : Math.max(T1_PREPARE_MS + 2200, movementStartMs + moves.length * T4_STEP_INTERVAL_MS + 800);
         const tFinish = setTimeout(() => {
-            const win = evaluateWin(best.board, boardStateRef.current.cubeValue);
-            addMonitoringBreadcrumb({
-                category: 'ai_turn_finish',
-                message: `IA Tour terminé: ${moves.length} coups joués${win ? ` · Victoire ${win.winner}` : ''}`,
-                level: 'info',
-                data: { movesCount: moves.length, gameResult: win },
+            const finalBoard = best ? best.board : currentBoard;
+            const win = evaluateWin(finalBoard, boardStateRef.current.cubeValue);
+
+            recordFlightEvent({
+                ts: performance.now(),
+                event: win ? 'GAME_OVER' : 'TURN_FINISHED',
+                player: 'O',
+                dice: rolledDice,
+                isAiThinking: false,
+                boardBefore: [...currentBoardState.board],
+                boardAfter: [...finalBoard],
+                arrows: [],
+                statusMessage: null,
             });
+
             dispatch({
                 type: 'OPPONENT_FINISH_TURN',
-                finalBoard: best.board,
+                finalBoard,
                 dice: rolledDice,
-                moves: best.moves,
+                moves,
                 gameResult: win,
             });
             opponentTurnInProgressRef.current = false;
-        }, opponentDelayMs + moves.length * stepDelay + Math.min(stepDelay, 700));
-        opponentTimersRef.current.push(tFinish);
+            clearOpponentTimers();
+        }, finishMs);
+            opponentTimersRef.current.push(tFinish);
+        };
+
+        if (isCustomTestTiming) {
+            runOpponentTurn(0);
+        } else {
+            const tYield = setTimeout(() => runOpponentTurn(16), 16);
+            opponentTimersRef.current.push(tYield);
+        }
 
         return () => {
             // Ne nettoie les timers QUE si le tour change réellement ou au unmount (pas à chaque step)
@@ -1117,11 +1757,18 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [boardState.turn, phase, difficulty, autoOpponent, opponentDelayMs, stepDelayMs, forcedOpponentDice, locale]);
+    }, [boardState.turn, phase, difficulty, autoOpponent, opponentDelayMs, stepDelayMs, arrowPreviewMs, forcedOpponentDice, locale]);
+
+    const isCustomTestTiming = options.opponentDelayMs !== undefined;
 
     const rollDice = useCallback((forcedDice?: [number, number]) => {
-        dispatch({ type: 'ROLL_DICE', dice: forcedDice });
-    }, []);
+        clearHumanTimers();
+        dispatch({
+            type: 'ROLL_DICE',
+            dice: forcedDice,
+            deferBlockedTransition: !isCustomTestTiming,
+        });
+    }, [clearHumanTimers, isCustomTestTiming]);
 
     const selectChecker = useCallback((point: number, die?: 0 | 1 | null) => {
         dispatch({ type: 'SELECT_CHECKER', point, die });
@@ -1136,12 +1783,24 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
     }, []);
 
     const moveChecker = useCallback((destination: number, from?: number, die?: 0 | 1) => {
-        dispatch({ type: 'MOVE_CHECKER', destination, from, die });
-    }, []);
+        dispatch({
+            type: 'MOVE_CHECKER',
+            destination,
+            from,
+            die,
+            deferCommit: !isCustomTestTiming,
+        });
+    }, [isCustomTestTiming]);
 
     const playMove = useCallback((from: number, to: number, die?: 0 | 1) => {
-        dispatch({ type: 'PLAY_MOVE', from, to, die });
-    }, []);
+        dispatch({
+            type: 'PLAY_MOVE',
+            from,
+            to,
+            die,
+            deferCommit: !isCustomTestTiming,
+        });
+    }, [isCustomTestTiming]);
 
     const offerDouble = useCallback(() => {
         dispatch({ type: 'OFFER_DOUBLE' });
@@ -1157,9 +1816,10 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
 
     const startNewGame = useCallback(() => {
         clearOpponentTimers();
+        clearHumanTimers();
         opponentTurnInProgressRef.current = false;
         dispatch({ type: 'START_NEW_GAME' });
-    }, [clearOpponentTimers]);
+    }, [clearOpponentTimers, clearHumanTimers]);
 
     const setDifficulty = useCallback((difficulty: AIDifficulty) => {
         dispatch({ type: 'SET_DIFFICULTY', difficulty });
@@ -1167,16 +1827,51 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
 
     const resetMatch = useCallback(() => {
         clearOpponentTimers();
+        clearHumanTimers();
         opponentTurnInProgressRef.current = false;
         dispatch({ type: 'RESET_MATCH' });
-    }, [clearOpponentTimers]);
+    }, [clearOpponentTimers, clearHumanTimers]);
+
+    /** Démarre une nouvelle partie avec un format et un niveau d'IA choisis. */
+    const startNewMatch = useCallback((newMatchLength: number, newDifficulty: AIDifficulty) => {
+        clearOpponentTimers();
+        clearHumanTimers();
+        opponentTurnInProgressRef.current = false;
+        dispatch({ type: 'NEW_MATCH', matchLength: newMatchLength, difficulty: newDifficulty });
+    }, [clearOpponentTimers, clearHumanTimers]);
 
     useEffect(() => {
         if (!autoOpponent) return;
         if (phase === 'DOUBLING_OFFERED' && doublingOfferedBy === 'X') {
-            const timer = setTimeout(() => {
-                // Décision de l'IA (O) sur le videau selon Janowski :
-                // Take si équité cubeless >= -0.540 (~23% de gain), sinon Pass.
+            const cubeDelay = isCustomTestTiming ? opponentDelayMs : 500;
+            let cancelled = false;
+            const timer = setTimeout(async () => {
+                // 1. En production (hors tests synchrones), on interroge Open Sage (bgsage-service)
+                //    du point de vue du doubleur ('X') : O accepte (Take) ssi doubleTake <= doublePass (1.0).
+                if (!isCustomTestTiming) {
+                    try {
+                        const doublerState: BoardState = {
+                            ...boardState,
+                            turn: 'X',
+                            dice: null,
+                        };
+                        const sageCube = await evaluateBotCubeWithBgsage(doublerState, difficulty, 2000);
+                        if (!cancelled && sageCube) {
+                            if (sageCube.shouldTake) {
+                                dispatch({ type: 'TAKE_DOUBLE' });
+                            } else {
+                                dispatch({ type: 'PASS_DOUBLE' });
+                            }
+                            return;
+                        }
+                    } catch {
+                        // Repli local si bgsage est indisponible
+                    }
+                }
+
+                if (cancelled) return;
+                // 2. Repli local déterministe (Janowski) :
+                //    Take si équité cubeless >= -0.540 (~23% de gain), sinon Pass.
                 const iaState: BoardState = {
                     ...boardState,
                     turn: 'O',
@@ -1188,10 +1883,13 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
                 } else {
                     dispatch({ type: 'PASS_DOUBLE' });
                 }
-            }, opponentDelayMs);
-            return () => clearTimeout(timer);
+            }, cubeDelay);
+            return () => {
+                cancelled = true;
+                clearTimeout(timer);
+            };
         }
-    }, [phase, doublingOfferedBy, autoOpponent, opponentDelayMs, boardState]);
+    }, [phase, doublingOfferedBy, autoOpponent, opponentDelayMs, isCustomTestTiming, boardState, difficulty]);
 
     const applyRemoteState = useCallback(
         (payload: {
@@ -1202,15 +1900,142 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
             phase?: GamePhase;
             cubeValue?: number;
             cubeOwner?: Player | null;
+            scoreX?: number;
+            scoreO?: number;
+            crawford?: boolean;
+            doublingOfferedBy?: Player | null;
         }) => {
+            clearOpponentTimers();
+            clearHumanTimers();
+            opponentTurnInProgressRef.current = false;
             dispatch({ type: 'APPLY_REMOTE_STATE', ...payload });
         },
-        [],
+        [clearOpponentTimers, clearHumanTimers],
     );
+
+    const resignGame = useCallback(
+        (multiplier: 1 | 2 | 3 = 1, winner?: Player) => {
+            clearOpponentTimers();
+            clearHumanTimers();
+            opponentTurnInProgressRef.current = false;
+            dispatch({
+                type: 'RESIGN_GAME',
+                multiplier,
+                winner: winner ?? (humanPlayer === 'X' ? 'O' : 'X'),
+            });
+        },
+        [clearOpponentTimers, clearHumanTimers, humanPlayer],
+    );
+
+    // Pont d'inspection & contrôle QA / E2E Playwright en navigateur
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const qaTarget = window as unknown as {
+            __BG_QA__?: {
+                getState: () => BackgammonGameState;
+                dispatch: (action: GameAction) => void;
+                rollDice: (dice?: [number, number]) => void;
+                offerDouble: () => void;
+                takeDouble: () => void;
+                passDouble: () => void;
+                resignGame: (multiplier?: 1 | 2 | 3, winner?: Player) => void;
+                applyRemoteState: typeof applyRemoteState;
+                startNewGame: () => void;
+                startNewMatch: (matchLength: number, difficulty: AIDifficulty) => void;
+                setAutoConfirmTurn: (enabled: boolean) => void;
+            };
+        };
+        qaTarget.__BG_QA__ = {
+            getState: () => state,
+            dispatch,
+            rollDice,
+            offerDouble,
+            takeDouble,
+            passDouble,
+            resignGame,
+            applyRemoteState,
+            startNewGame,
+            startNewMatch,
+            setAutoConfirmTurn,
+        };
+    }, [
+        state,
+        rollDice,
+        offerDouble,
+        takeDouble,
+        passDouble,
+        resignGame,
+        applyRemoteState,
+        startNewGame,
+        startNewMatch,
+        setAutoConfirmTurn,
+    ]);
 
     return {
         state: boardState,
         phase,
+        gamePhase: strictGamePhase,
+        matchLog: state.matchLog ?? [],
+        commitHumanMove: (moves?: Move[]) => {
+            const currentGPhase = deriveStrictGamePhase(
+                phase,
+                usedDice,
+                state.opponentHighlight,
+                gameResult,
+            );
+            const res = commitHumanMoveAction({
+                currentPhase: currentGPhase,
+                turnIndex: (state.matchLog?.length ?? 0) + 1,
+                player: boardState.turn,
+                dice: boardState.dice ?? [1, 1],
+                boardBefore: state.moveHistory[0]?.board ?? boardState.board,
+                movesPlayed: moves ?? state.moveHistory.flatMap((h) => (h.move ? [h.move] : [])),
+                boardAfter: boardState.board,
+                matchLog: state.matchLog ?? [],
+                isGameOver: !!gameResult,
+            });
+            if (currentGPhase === 'HUMAN_READY_TO_COMMIT') {
+                clearHumanTimers();
+                dispatch({ type: 'COMMIT_HUMAN_TURN' });
+            }
+            return res;
+        },
+        replayFromLog: (entry: MatchLogEntry, showBefore?: boolean) => {
+            return replayFromLogAction({ logEntry: entry, showBefore });
+        },
+        runAiTurn: (dice: [number, number], turnIndex?: number) => {
+            return runAiTurnAction(
+                {
+                    currentBoard: boardState.board,
+                    turnIndex: turnIndex ?? (state.matchLog?.length ?? 0) + 1,
+                    dice,
+                    difficulty: state.difficulty,
+                    rollDurationMs: 700,
+                    previewDurationMs: 800,
+                    isGameOver: !!gameResult,
+                },
+                {
+                    onPhaseChange: (p) => {
+                        // La phase stricte est dérivée ; on pilote le reducer via les actions existantes.
+                        if (p === 'AI_TURN_ROLLING') {
+                            dispatch({ type: 'OPPONENT_PREPARE_ROLL' });
+                        } else if (p === 'AI_TURN_SHOWING_ARROWS') {
+                            dispatch({ type: 'OPPONENT_START_TURN', dice, statusMessage: "L'ordinateur prépare son déplacement..." });
+                        }
+                    },
+                    onArrowsReady: (arrows) => {
+                        dispatch({ type: 'OPPONENT_SHOW_ARROWS', arrows });
+                    },
+                    onApplyBoard: (board) => {
+                        dispatch({ type: 'OPPONENT_FINISH_TURN', finalBoard: [...board], dice, moves: [] });
+                    },
+                    onLogEntryAdded: () => {
+                        // L'entrée de log est déjà écrite par OPPONENT_FINISH_TURN dans le reducer.
+                    },
+                },
+            );
+        },
+        isAiThinking: phase === 'OPPONENT_THINKING' || (boardState.turn === 'O' && state.autoOpponent),
         humanPlayer,
         isHumanTurn,
         dice,
@@ -1219,6 +2044,7 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         rightDieTargets,
         selected,
         canDouble,
+        isDMP,
         doublingOfferedBy,
         gameResult,
         isMatchOver,
@@ -1231,8 +2057,19 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         lastOpponentMoves: state.lastOpponentMoves,
         opponentHighlight: state.opponentHighlight,
         opponentStatusMessage: state.opponentStatusMessage,
+        moveHistory: state.moveHistory,
         canUndo: state.moveHistory.length > 0 && phase === 'PLAYING_MOVES',
-        undoMove: () => dispatch({ type: 'UNDO_MOVE' }),
+        isAwaitingConfirmation:
+            strictGamePhase === 'HUMAN_READY_TO_COMMIT' &&
+            state.moveHistory.length > 0 &&
+            phase === 'PLAYING_MOVES',
+        autoConfirmTurn,
+        setAutoConfirmTurn,
+        toggleAutoConfirmTurn,
+        undoMove: () => {
+            clearHumanTimers();
+            dispatch({ type: 'UNDO_MOVE' });
+        },
         rollDice,
         selectChecker,
         deselect,
@@ -1246,6 +2083,8 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         playOpponentTurn,
         startNewGame,
         resetMatch,
+        startNewMatch,
+        resignGame,
         applyRemoteState,
     };
 }

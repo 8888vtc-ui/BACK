@@ -12,5 +12,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 screenshot_*.png
+debug-*.png
+e2e/_shot-*.png
+*.exe
+vendor/
+supabase/.temp/
 target/
 **/target/

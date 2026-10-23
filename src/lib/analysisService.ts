@@ -16,6 +16,7 @@
 
 import { BoardState, parseXGID, serializeXGID } from '../engine/backgammonEngine';
 import gnubgClient from './engine/client';
+import { ensureBgsageSafeXgid } from './engine/bgsageClient';
 
 export type EngineProvider = 'wasm' | 'backend';
 
@@ -386,7 +387,7 @@ async function evaluateWithBackend(
                 Accept: 'application/json',
             },
             body: JSON.stringify({
-                xgid,
+                xgid: ensureBgsageSafeXgid(xgid),
                 ply,
             }),
             signal: abortController.signal,
@@ -510,7 +511,7 @@ export async function evaluatePosition(
 // Alias ergonomique
 export const analyzePosition = evaluatePosition;
 
-export default {
+const analysisService = {
     evaluatePosition,
     analyzePosition,
     buildXGID,
@@ -527,3 +528,5 @@ export default {
     measureBackendLatency,
     isBackendAvailable,
 };
+
+export default analysisService;

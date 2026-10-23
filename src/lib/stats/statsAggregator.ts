@@ -8,7 +8,14 @@
  */
 
 import { getAllRecords } from '../offline/idb';
-import type { LocalGameRecord, LocalMoveRecord, LocalCoachExplanationRecord } from '../offline/persistenceService';
+import type {
+    LocalGameRecord,
+    LocalMoveRecord,
+    LocalCoachExplanationRecord,
+    LocalRecurrentMistakeRecord,
+} from '../offline/persistenceService';
+import type { RecurringErrorRecord } from '../supabase/types';
+import { getPRCategory as getPRCategoryFromRating } from '../../features/rating/ratingCalculator';
 
 export interface ConceptMetric {
     id: string;
@@ -116,15 +123,11 @@ export function categorizeExplanation(keyConcept?: string | null, text?: string 
 
 /**
  * Évalue la catégorie PR en fonction du score PR (GNU / XG standard).
+ *
+ * Source de vérité unique : [`getPRCategory`](src/features/rating/ratingCalculator.ts:61).
+ * Réexporté ici pour préserver la compatibilité des imports existants.
  */
-export function getPRCategory(pr: number): PlayerProgressionStats['prCategory'] {
-    if (pr < 3.0) return 'Grand-Maître';
-    if (pr < 5.0) return 'Maître';
-    if (pr < 7.5) return 'Expert';
-    if (pr < 10.0) return 'Avancé';
-    if (pr < 15.0) return 'Intermédiaire';
-    return 'Débutant';
-}
+export const getPRCategory = getPRCategoryFromRating;
 
 /**
  * Calcule l'agrégation complète des statistiques joueur depuis IndexedDB et l'historique.
@@ -250,4 +253,38 @@ export async function aggregateUserStats(): Promise<PlayerProgressionStats> {
         weakestConcepts,
         recentExplanations: explanations.slice(-5).reverse(),
     };
+}
+
+/**
+ * Agrège les erreurs récurrentes stockées localement dans IndexedDB ('recurrent_mistakes')
+ * pour servir de fallback hors-ligne ou invité à `getRecurringErrors` (Supabase).
+ */
+export async function loadAggregatedLocalRecurringErrors(limit = 5): Promise<RecurringErrorRecord[]> {
+    const mistakes = await getAllRecords<LocalRecurrentMistakeRecord>('recurrent_mistakes');
+    if (mistakes.length === 0) return [];
+    const byConcept = new Map<string, { count: number; totalLoss: number; lastSeen: string }>();
+    for (const m of mistakes) {
+        const cid = m.category || 'blot_safety';
+        const prev = byConcept.get(cid) ?? { count: 0, totalLoss: 0, lastSeen: m.created_at || new Date().toISOString() };
+        const loss = Math.abs(Number(m.equity_loss) || 0);
+        const lastSeen = m.created_at && m.created_at > prev.lastSeen ? m.created_at : prev.lastSeen;
+        byConcept.set(cid, { count: prev.count + 1, totalLoss: Number((prev.totalLoss + loss).toFixed(4)), lastSeen });
+    }
+    return Array.from(byConcept.entries())
+        .map(([conceptId, agg]) => {
+            const match = STRATEGIC_CONCEPTS_CATALOG.find((c) => c.id === conceptId || c.id.replace('_', '-') === conceptId);
+            return {
+                id: `local_rec_${conceptId}`,
+                user_id: 'guest_local',
+                concept_id: conceptId,
+                concept_label: match?.name ?? conceptId,
+                occurrence_count: agg.count,
+                total_equity_loss: agg.totalLoss,
+                last_seen_at: agg.lastSeen,
+                created_at: agg.lastSeen,
+                updated_at: agg.lastSeen,
+            };
+        })
+        .sort((a, b) => b.occurrence_count - a.occurrence_count || b.total_equity_loss - a.total_equity_loss)
+        .slice(0, limit);
 }

@@ -31,7 +31,7 @@ describe('rolloutClient', () => {
         } as any);
 
         const res = await submitRollout({
-            xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+            xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
             trials: 1296,
             ply: 2,
             candidateMoves: ['8/5 6/5', '24/20 13/10'],

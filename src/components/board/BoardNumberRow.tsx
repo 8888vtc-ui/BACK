@@ -1,18 +1,7 @@
 'use client';
 
 /**
- * Bordure de numérotation du plateau (13..24 en haut, 12..1 en bas).
- *
- * Rôle :
- *   Isole la rangée de chiffres hors de `Board.tsx` (LOI 5). Affiche
- *   optionnellement le bouton de bascule d'orientation (rangée du haut
- *   uniquement).
- *
- * Dépendances :
- *   Aucune (présentation pure).
- *
- * Retrait :
- *   Supprimer ce fichier et réinliner le JSX dans `Board.tsx`.
+ * Bordure de numérotation du plateau (13..24 en haut, 12..1 en bas) — Gravure sur Laiton & Noyer.
  */
 
 import React from 'react';
@@ -32,50 +21,48 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
     onToggleOrientation,
 }) => (
     <div
-        className={`flex items-center justify-center gap-0 px-1 shrink-0 ${padding === 'top' ? 'pb-1' : 'pt-1'
-            }`}
+        className={`grid grid-cols-[1fr_auto_1fr_auto] items-center px-1 sm:px-2.5 shrink-0 ${
+            padding === 'top' ? 'pb-0.5 sm:pb-1' : 'pt-0.5 sm:pt-1'
+        }`}
     >
-        {onToggleOrientation ? (
-            <button
-                type="button"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleOrientation();
-                }}
-                aria-label="Inverser l'orientation du plateau"
-                title="Inverser l'orientation (sortie à gauche ou à droite)"
-                data-testid="orientation-toggle"
-                className="mr-1 px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-slate-300 hover:text-white text-xs transition-colors shrink-0"
-            >
-                ⇄
-            </button>
-        ) : (
-            <div className="w-8 shrink-0 mr-1" />
-        )}
-        <div className="flex flex-1 items-center min-w-0">
-            <div className="flex flex-1 justify-around min-w-0">
-                {row.slice(0, 6).map((p) => (
-                    <span
-                        key={`num-${p}`}
-                        className="text-[9px] sm:text-[11px] font-mono text-amber-200/75 select-none flex-1 min-w-0 text-center"
-                    >
-                        {p}
-                    </span>
-                ))}
-            </div>
-            <div className="w-8 sm:w-16 md:w-20 shrink-0 mx-1" />
-            <div className="flex flex-1 justify-around min-w-0">
-                {row.slice(6).map((p) => (
-                    <span
-                        key={`num-${p}`}
-                        className="text-[9px] sm:text-[11px] font-mono text-amber-200/75 select-none flex-1 min-w-0 text-center"
-                    >
-                        {p}
-                    </span>
-                ))}
-            </div>
+        <div className="flex min-w-0">
+            {row.slice(0, 6).map((p) => (
+                <span
+                    key={`num-${p}`}
+                    className="text-[10px] sm:text-xs font-serif font-bold tracking-wider text-[#f3c65f]/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)] select-none flex-1 min-w-0 text-center"
+                >
+                    {p}
+                </span>
+            ))}
         </div>
-        <div className="w-8 sm:w-16 md:w-20 shrink-0" />
+        <div className="w-8 sm:w-14 md:w-20 mx-0.5 sm:mx-1 shrink-0" />
+        <div className="flex min-w-0">
+            {row.slice(6).map((p) => (
+                <span
+                    key={`num-${p}`}
+                    className="text-[10px] sm:text-xs font-serif font-bold tracking-wider text-[#f3c65f]/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)] select-none flex-1 min-w-0 text-center"
+                >
+                    {p}
+                </span>
+            ))}
+        </div>
+        <div className="w-9 sm:w-14 md:w-20 pl-1 ml-0.5 sm:pl-1.5 sm:ml-1 shrink-0 flex items-center justify-center">
+            {onToggleOrientation && (
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleOrientation();
+                    }}
+                    aria-label="Inverser l'orientation du plateau"
+                    title="Inverser l'orientation (sortie à gauche ou à droite)"
+                    data-testid="orientation-toggle"
+                    className="px-1.5 py-0.5 rounded-md bg-[#1c0e06]/90 border border-[#d4af37]/45 text-[#f3c65f] hover:border-[#f3c65f] hover:text-white text-[10px] sm:text-xs font-serif font-bold shadow-inner transition-colors shrink-0"
+                >
+                    ⇄
+                </button>
+            )}
+        </div>
     </div>
 );
 

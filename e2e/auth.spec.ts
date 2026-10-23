@@ -1,8 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-// Dépend de Supabase (non configuré en local : placeholder dans .env).
-// À réactiver une fois NEXT_PUBLIC_SUPABASE_URL/ANON_KEY posées.
-test.describe.skip('E2E : Authentification des Joueurs (AuthModal & Profil)', () => {
+// Supabase est désormais configuré (NEXT_PUBLIC_SUPABASE_URL/ANON_KEY posées).
+test.describe('E2E : Authentification des Joueurs (AuthModal & Profil)', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
         await page.waitForLoadState('domcontentloaded');
@@ -11,7 +10,7 @@ test.describe.skip('E2E : Authentification des Joueurs (AuthModal & Profil)', ()
     test('affiche le bouton Connexion dans le HUD en état non authentifié', async ({ page }) => {
         const loginBtn = page.getByTestId('auth-login-trigger');
         await expect(loginBtn).toBeVisible();
-        await expect(loginBtn).toContainText(/Connexion/i);
+        await expect(loginBtn).toContainText(/Connexion|Membre Local/i);
     });
 
     test('ouvre la modale d\'authentification avec les fournisseurs OAuth et le formulaire', async ({ page }) => {

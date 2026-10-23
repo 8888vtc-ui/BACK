@@ -85,8 +85,9 @@ describe('pipCount', () => {
 });
 
 describe('XGID', () => {
-    // XGID standard GNU Backgammon : flèches 24 → 1, puis barre X, puis barre O.
-    const EXAMPLE = 'XGID=B----e-c---Ee---C-E----b--:0:0:1:42:0:0:0:0:10';
+    // XGID standard GNU Backgammon : corps(26) : matchplay : scoreX : scoreO : dice : player_on_roll : cube : cube_owner : ...
+    // Position d'ouverture, X au trait, dés 4-2, cube à 1, match 10 pts.
+    const EXAMPLE = 'XGID=B----e-c---Ee---C-E----b--:1:0:0:42:0:1:0:0:0:10';
 
     it('parse le format standard', () => {
         const s = parseXGID(EXAMPLE);
@@ -142,6 +143,17 @@ describe('generateLegalMoves', () => {
         const moves = generateLegalMoves(makeState(board), [6, 1]);
         expect(moves).toHaveLength(1);
         expect(moves[0].moves).toEqual([{ from: 7, to: 1 }]);
+    });
+
+    it('oblige à jouer le dé le plus fort depuis la barre si un seul dé est jouable (WBF/USBGF 4.2)', () => {
+        // X a 1 pion sur la barre et 14 pions sur la flèche 1. Dés [6, 2].
+        // Flèches 19 et 23 ouvertes, mais la flèche 17 est bloquée par 2 pions O :
+        // Ni depuis 19 (19-2=17), ni depuis 23 (23-6=17) le 2e dé ne peut être joué.
+        // La règle officielle impose formellement l'entrée avec le 6 (bar -> 19).
+        const board = makeBoard({ 1: 14 }, { 17: 2, 12: 13 }, 1, 0);
+        const moves = generateLegalMoves(makeState(board), [6, 2]);
+        expect(moves).toHaveLength(1);
+        expect(moves[0].moves).toEqual([{ from: X_BAR, to: 19 }]);
     });
 
     it('gère les doubles (4 mouvements)', () => {
@@ -243,6 +255,17 @@ describe("computeLegalTargets (règle du max-de-dés dans l'UI)", () => {
         const after6 = computeLegalTargets(makeState(boardAfter6), [6, 1], [true, false]);
         expect(after6.leftDieTargets.size).toBe(0);
         expect(after6.rightDieTargets.size).toBe(0);
+    });
+
+    it("oblige à cibler le dé le plus fort depuis la barre dans l'UI si un seul dé est jouable", () => {
+        const board = makeBoard({ 1: 14 }, { 17: 2, 12: 13 }, 1, 0);
+        const state = makeState(board);
+        const { leftDieTargets, rightDieTargets } = computeLegalTargets(state, [6, 2], [false, false]);
+
+        // Seul le dé le plus fort (6, gauche) a une cible d'entrée légale (19).
+        // Le dé 2 (droit) est exclu car il empêcherait de jouer le plus fort dé.
+        expect(leftDieTargets.get(X_BAR)).toEqual([19]);
+        expect(rightDieTargets.size).toBe(0);
     });
 
     it('autorise le petit dé si le grand dé ne peut pas être joué du tout', () => {

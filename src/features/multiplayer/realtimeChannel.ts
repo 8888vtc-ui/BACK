@@ -17,10 +17,18 @@ import type {
     MultiplayerRole,
 } from './types';
 
+export type ChannelConnectionStatus =
+    | 'SUBSCRIBED'
+    | 'RECONNECTING'
+    | 'CLOSED'
+    | 'TIMED_OUT'
+    | 'CHANNEL_ERROR';
+
 export interface RealtimeChannelCallbacks {
     onActionReceived: (action: RealtimeBroadcastAction) => void;
     onOpponentPresenceChange: (isOnline: boolean, opponentInfo?: PresenceUserInfo) => void;
-    onChannelStatusChange: (status: 'SUBSCRIBED' | 'CLOSED' | 'TIMED_OUT' | 'CHANNEL_ERROR') => void;
+    onChannelStatusChange: (status: ChannelConnectionStatus) => void;
+    onOpponentForfeitByDisconnect?: () => void;
 }
 
 export class MultiplayerRealtimeManager {
@@ -30,6 +38,14 @@ export class MultiplayerRealtimeManager {
     private callbacks: RealtimeChannelCallbacks;
     private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
     private opponentTimeoutTimer: ReturnType<typeof setTimeout> | null = null;
+    private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    private reconnectAttempts = 0;
+    private readonly maxReconnectAttempts = 5;
+    private readonly baseReconnectDelayMs = 1000;
+    private isConnected = false;
+    private isReconnecting = false;
+    private pendingActions: RealtimeBroadcastAction[] = [];
+    private onlineListener: (() => void) | null = null;
     private isDestroyed = false;
 
     // Simulation interne si Supabase n'est pas branché
@@ -46,15 +62,37 @@ export class MultiplayerRealtimeManager {
     }
 
     /**
+     * Retourne l'état courant de la connexion et de la file de résilience.
+     */
+    public getConnectionState(): {
+        isConnected: boolean;
+        isReconnecting: boolean;
+        reconnectAttempts: number;
+        pendingActionsCount: number;
+    } {
+        return {
+            isConnected: this.isConnected,
+            isReconnecting: this.isReconnecting,
+            reconnectAttempts: this.reconnectAttempts,
+            pendingActionsCount: this.pendingActions.length,
+        };
+    }
+
+    /**
      * Initialise la souscription au canal temps réel du match.
      */
     public async connect(): Promise<void> {
         this.isDestroyed = false;
+        this.registerOnlineListener();
 
         if (!isSupabaseConfigured() || typeof window === 'undefined') {
             // Mode fallback local / test
             this.registerMockChannel();
+            this.isConnected = true;
+            this.isReconnecting = false;
+            this.reconnectAttempts = 0;
             this.callbacks.onChannelStatusChange('SUBSCRIBED');
+            await this.flushPendingActions();
             return;
         }
 
@@ -107,6 +145,10 @@ export class MultiplayerRealtimeManager {
             this.channel.subscribe(async (status) => {
                 if (this.isDestroyed) return;
                 if (status === 'SUBSCRIBED') {
+                    this.isConnected = true;
+                    this.isReconnecting = false;
+                    this.reconnectAttempts = 0;
+                    this.clearReconnectTimer();
                     await this.channel?.track({
                         userId: this.localUser.userId,
                         username: this.localUser.username,
@@ -115,26 +157,70 @@ export class MultiplayerRealtimeManager {
                     });
                     this.callbacks.onChannelStatusChange('SUBSCRIBED');
                     this.startHeartbeat();
+                    await this.flushPendingActions();
                 } else if (status === 'CHANNEL_ERROR') {
+                    this.isConnected = false;
                     this.callbacks.onChannelStatusChange('CHANNEL_ERROR');
+                    this.attemptReconnect();
                 } else if (status === 'TIMED_OUT') {
+                    this.isConnected = false;
                     this.callbacks.onChannelStatusChange('TIMED_OUT');
+                    this.attemptReconnect();
                 } else if (status === 'CLOSED') {
+                    this.isConnected = false;
                     this.callbacks.onChannelStatusChange('CLOSED');
                 }
             });
         } catch (err) {
             console.warn('[MultiplayerRealtime] Erreur connexion Supabase :', err);
             this.registerMockChannel();
+            this.isConnected = true;
+            this.isReconnecting = false;
             this.callbacks.onChannelStatusChange('SUBSCRIBED');
+            await this.flushPendingActions();
         }
     }
 
     /**
-     * Envoie une action de jeu à l'adversaire via Broadcast.
+     * Déclenche une tentative de reconnexion avec backoff exponentiel (1s, 2s, 4s, 8s, 16s).
+     */
+    public attemptReconnect(immediate = false): void {
+        if (this.isDestroyed) return;
+        if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+            this.isReconnecting = false;
+            return;
+        }
+
+        this.clearReconnectTimer();
+        this.isConnected = false;
+        this.isReconnecting = true;
+        this.reconnectAttempts += 1;
+        this.callbacks.onChannelStatusChange('RECONNECTING');
+
+        const delayMs = immediate
+            ? 0
+            : this.baseReconnectDelayMs * Math.pow(2, Math.max(0, this.reconnectAttempts - 1));
+
+        this.reconnectTimer = setTimeout(() => {
+            if (this.isDestroyed) return;
+            if (this.channel) {
+                supabase.removeChannel(this.channel).catch(() => {});
+                this.channel = null;
+            }
+            void this.connect();
+        }, delayMs);
+    }
+
+    /**
+     * Envoie une action de jeu à l'adversaire via Broadcast (ou la met en file d'attente si en reconnexion).
      */
     public async sendAction(action: RealtimeBroadcastAction): Promise<void> {
         if (this.isDestroyed) return;
+
+        if (this.isReconnecting && action.type !== 'HEARTBEAT') {
+            this.pendingActions.push(action);
+            return;
+        }
 
         if (!this.channel) {
             // Mode mock : envoi direct aux autres instances du mock channel
@@ -154,7 +240,23 @@ export class MultiplayerRealtimeManager {
                 payload: action,
             });
         } catch (err) {
-            console.warn('[MultiplayerRealtime] Échec envoi broadcast :', err);
+            console.warn('[MultiplayerRealtime] Échec envoi broadcast, mise en file d’attente :', err);
+            if (action.type !== 'HEARTBEAT') {
+                this.pendingActions.push(action);
+            }
+            this.attemptReconnect();
+        }
+    }
+
+    /**
+     * Vide la file d'actions en attente une fois la connexion rétablie.
+     */
+    private async flushPendingActions(): Promise<void> {
+        if (this.pendingActions.length === 0 || this.isDestroyed || this.isReconnecting) return;
+        const queue = [...this.pendingActions];
+        this.pendingActions = [];
+        for (const action of queue) {
+            await this.sendAction(action);
         }
     }
 
@@ -163,8 +265,13 @@ export class MultiplayerRealtimeManager {
      */
     public disconnect(): void {
         this.isDestroyed = true;
+        this.isConnected = false;
+        this.isReconnecting = false;
+        this.pendingActions = [];
         this.clearHeartbeat();
         this.clearOpponentTimeout();
+        this.clearReconnectTimer();
+        this.unregisterOnlineListener();
 
         if (this.channel) {
             supabase.removeChannel(this.channel).catch(() => {});
@@ -214,6 +321,7 @@ export class MultiplayerRealtimeManager {
         this.opponentTimeoutTimer = setTimeout(() => {
             if (!this.isDestroyed) {
                 this.callbacks.onOpponentPresenceChange(false);
+                this.callbacks.onOpponentForfeitByDisconnect?.();
             }
         }, 45000);
     }
@@ -223,6 +331,30 @@ export class MultiplayerRealtimeManager {
             clearTimeout(this.opponentTimeoutTimer);
             this.opponentTimeoutTimer = null;
         }
+    }
+
+    private clearReconnectTimer(): void {
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+        }
+    }
+
+    private registerOnlineListener(): void {
+        if (typeof window === 'undefined' || this.onlineListener) return;
+        this.onlineListener = () => {
+            if (!this.isDestroyed && !this.isConnected) {
+                this.reconnectAttempts = 0;
+                this.attemptReconnect(true);
+            }
+        };
+        window.addEventListener('online', this.onlineListener);
+    }
+
+    private unregisterOnlineListener(): void {
+        if (typeof window === 'undefined' || !this.onlineListener) return;
+        window.removeEventListener('online', this.onlineListener);
+        this.onlineListener = null;
     }
 
     private handlePresenceSync(state: Record<string, PresenceUserInfo[]>): void {
@@ -246,7 +378,9 @@ export class MultiplayerRealtimeManager {
 
     private registerMockChannel(): void {
         const list = MultiplayerRealtimeManager.mockChannels.get(this.roomId) || [];
-        list.push(this);
+        if (!list.includes(this)) {
+            list.push(this);
+        }
         MultiplayerRealtimeManager.mockChannels.set(this.roomId, list);
 
         // Notifier les pairs existants dans ce mock room

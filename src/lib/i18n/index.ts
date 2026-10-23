@@ -1,5 +1,11 @@
 export * from './types';
 export * from './I18nContext';
 export * from './engineMessages';
+export * from './terminologyMatrix';
 export { fr } from './translations/fr';
 export { en } from './translations/en';
+export { es } from './translations/es';
+export { pt } from './translations/pt';
+export { de } from './translations/de';
+export { ar } from './translations/ar';
+export { ja } from './translations/ja';

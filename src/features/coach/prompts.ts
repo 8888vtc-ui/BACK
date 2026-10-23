@@ -9,8 +9,10 @@
  */
 
 import { Player } from '../../engine/backgammonEngine';
-import { StrategicFeatures } from './featureExtractor';
+import { StrategicFeatures, computeMarketWindowMetrics } from './featureExtractor';
 import { buildMatchContext, MatchContext } from './matchContext';
+import type { Locale } from '../../lib/i18n/types';
+import { appendCoachLanguageDirective, localizeOfflineExplanation } from './coachMultiLangPrompts';
 
 export type { MatchContext };
 
@@ -22,7 +24,7 @@ export interface CoachPromptParams {
     features: StrategicFeatures;
     matchContext?: MatchContext;
     playerLevel?: 'beginner' | 'intermediate' | 'expert';
-    language?: 'fr' | 'en';
+    language?: Locale;
 }
 
 export interface CoachStructuredResponse {
@@ -91,8 +93,10 @@ JSON Schema:
   "explanation": "2 short sentences combining whyFailed and whyOptimal (30 words max)."
 }`;
 
-export function getCoachSystemPrompt(language: 'fr' | 'en' = 'fr'): string {
-    return language === 'en' ? BACKGAMMON_COACH_SYSTEM_PROMPT_EN : BACKGAMMON_COACH_SYSTEM_PROMPT;
+export function getCoachSystemPrompt(language: Locale = 'fr'): string {
+    if (language === 'fr') return BACKGAMMON_COACH_SYSTEM_PROMPT;
+    if (language === 'en') return BACKGAMMON_COACH_SYSTEM_PROMPT_EN;
+    return appendCoachLanguageDirective(BACKGAMMON_COACH_SYSTEM_PROMPT_EN, language);
 }
 
 /**
@@ -124,8 +128,8 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
     const userShots = features.blotsAndShots.user;
     const bestShots = features.blotsAndShots.best;
 
-    const totalUserShots = userShots.reduce((acc, b) => acc + b.totalShots, 0);
-    const totalBestShots = bestShots.reduce((acc, b) => acc + b.totalShots, 0);
+    const totalUserShots = Math.min(36, userShots.reduce((acc, b) => acc + b.totalShots, 0));
+    const totalBestShots = Math.min(36, bestShots.reduce((acc, b) => acc + b.totalShots, 0));
 
     let matchInfo = isEn ? 'Casual game without specified match context.' : 'Partie amicale sans contexte de match renseigné.';
     if (matchContext) {
@@ -176,6 +180,70 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
         }
     }
 
+    const resolvedMatchCtx = matchContext ? buildMatchContext(matchContext) : undefined;
+    const oppPlayer: Player = features.player === 'X' ? 'O' : 'X';
+    const mw =
+        features.marketWindow ??
+        computeMarketWindowMetrics({
+            contactStatus: features.contactStatus,
+            boardStructure: features.boardStructure,
+            blotsAndShots: features.blotsAndShots,
+            pipCountDiff: features.pipCountDiff,
+            opponentTakePoint: resolvedMatchCtx ? resolvedMatchCtx.takePoint[oppPlayer] : 0.25,
+            gammonPrice: resolvedMatchCtx ? resolvedMatchCtx.gammonPrice[features.player] : 0.5,
+            bgsage: features.bgsage,
+        });
+
+    const volLabelFr = mw.volatility === 'high' ? 'Élevée' : mw.volatility === 'medium' ? 'Modérée' : 'Faible';
+    const marketSectionEn = [
+        '',
+        '## CUBE & MARKET WINDOW VOLATILITY:',
+        `- Market Window: Double Point ${(mw.doublePoint * 100).toFixed(1)}% → Cash Point ${(mw.cashPoint * 100).toFixed(1)}% (In window: ${mw.inMarketWindow ? 'Yes' : 'No'})`,
+        `- Position Volatility: ${mw.volatility.toUpperCase()} (~${mw.estimatedMarketLosers}/36 market-losing sequences)`,
+    ].join('\n');
+
+    const marketSectionFr = [
+        '',
+        '## ANALYSE DU VIDEAU & VOLATILITÉ (MARKET WINDOW) :',
+        `- Fenêtre de marché (Market Window) : Seuil de double ${(mw.doublePoint * 100).toFixed(1)}% → Cash Point ${(mw.cashPoint * 100).toFixed(1)}% (Dans la fenêtre : ${mw.inMarketWindow ? 'Oui' : 'Non'})`,
+        `- Volatilité de la position : ${volLabelFr} (~${mw.estimatedMarketLosers}/36 séquences de perte de marché / Market Loss)`,
+    ].join('\n');
+
+    const bgsage = features.bgsage;
+    let bgsageSectionEn = '';
+    let bgsageSectionFr = '';
+    if (bgsage) {
+        const optM = bgsage.optimalMetrics;
+        const pldM = bgsage.playedMetrics;
+        bgsageSectionEn = [
+            '',
+            `## OPEN SAGE NEURAL ENGINE DATA (${bgsage.evalLevel}):`,
+            `- Position Game Plan: Player = ${bgsage.playerGamePlan}, Opponent = ${bgsage.opponentGamePlan} (Pure race: ${bgsage.isRace ? 'Yes' : 'No'})`,
+            optM
+                ? `- Optimal Move (${optimalMove}) Neural Probabilities: Win ${(optM.winProb * 100).toFixed(1)}% (Gammon ${(optM.winGammonProb * 100).toFixed(1)}%), Opponent Gammon Risk ${(optM.loseGammonProb * 100).toFixed(1)}%, Resulting Plan = ${optM.playerGamePlan}`
+                : '',
+            pldM
+                ? `- Played Move (${playedMove}) Neural Probabilities: Win ${(pldM.winProb * 100).toFixed(1)}% (Gammon ${(pldM.winGammonProb * 100).toFixed(1)}%), Opponent Gammon Risk ${(pldM.loseGammonProb * 100).toFixed(1)}%, Resulting Plan = ${pldM.playerGamePlan}`
+                : '',
+        ]
+            .filter(Boolean)
+            .join('\n');
+
+        bgsageSectionFr = [
+            '',
+            `## DONNÉES NEURALES OPEN SAGE (${bgsage.evalLevel}) :`,
+            `- Plan de jeu identifié : Joueur = ${bgsage.playerGamePlan}, Adversaire = ${bgsage.opponentGamePlan} (Course pure : ${bgsage.isRace ? 'Oui' : 'Non'})`,
+            optM
+                ? `- Probabilités neurales du coup optimal (${optimalMove}) : Gain ${(optM.winProb * 100).toFixed(1)}% (Gammon ${(optM.winGammonProb * 100).toFixed(1)}%), Risque de gammon adverse ${(optM.loseGammonProb * 100).toFixed(1)}%, Plan résultant = ${optM.playerGamePlan}`
+                : '',
+            pldM
+                ? `- Probabilités neurales du coup joué (${playedMove}) : Gain ${(pldM.winProb * 100).toFixed(1)}% (Gammon ${(pldM.winGammonProb * 100).toFixed(1)}%), Risque de gammon adverse ${(pldM.loseGammonProb * 100).toFixed(1)}%, Plan résultant = ${pldM.playerGamePlan}`
+                : '',
+        ]
+            .filter(Boolean)
+            .join('\n');
+    }
+
     if (isEn) {
         return `Here is the verified data for the position and analyzed move:
 
@@ -186,7 +254,7 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
 - Declared player level: ${playerLevel}
 
 ## MATCH CONTEXT:
-${matchInfo}
+${matchInfo}${marketSectionEn}
 
 ## STRATEGIC CONCEPTS EXTRACTED:
 - Game situation: ${features.contactStatus === 'contact' ? 'Contact play' : 'Pure race without contact'}
@@ -200,7 +268,7 @@ ${matchInfo}
   - Golden Point (Point 5): ${features.boardStructure.goldenPoint ? 'Controlled' : 'Not controlled'}
   - Bar Point (Point 7): ${features.boardStructure.barPoint ? 'Controlled' : 'Not controlled'}
   - Advanced anchor: ${features.boardStructure.advancedAnchor ? 'Yes' : 'No'}
-  - Longest consecutive prime: ${features.boardStructure.longestPrime} points
+  - Longest consecutive prime: ${features.boardStructure.longestPrime} points${bgsageSectionEn}
 
 Write your explanation in the requested strict JSON format.`;
     }
@@ -214,7 +282,7 @@ Write your explanation in the requested strict JSON format.`;
 - Niveau déclaré du joueur : ${playerLevel}
 
 ## CONTEXTE DE MATCH :
-${matchInfo}
+${matchInfo}${marketSectionFr}
 
 ## CONCEPTS STRATÉGIQUES EXTRAITS :
 - Situation de jeu : ${features.contactStatus === 'contact' ? 'Jeu avec contact' : 'Course pure sans contact'}
@@ -228,7 +296,7 @@ ${matchInfo}
   - Golden Point (Point 5) : ${features.boardStructure.goldenPoint ? 'Contrôlé' : 'Non contrôlé'}
   - Bar Point (Point 7) : ${features.boardStructure.barPoint ? 'Contrôlé' : 'Non contrôlé'}
   - Ancre avancée : ${features.boardStructure.advancedAnchor ? 'Oui' : 'Non'}
-  - Plus longue prime consécutive : ${features.boardStructure.longestPrime} portes consécutives
+  - Plus longue prime consécutive : ${features.boardStructure.longestPrime} portes consécutives${bgsageSectionFr}
 
 Rédige ton explication au format JSON strict demandé.`;
 }
@@ -261,8 +329,8 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
     const userBlots = features?.blotsAndShots?.user ?? [];
     const bestBlots = features?.blotsAndShots?.best ?? [];
 
-    const userShots = userBlots.reduce((acc, b) => acc + b.totalShots, 0);
-    const bestShots = bestBlots.reduce((acc, b) => acc + b.totalShots, 0);
+    const userShots = Math.min(36, userBlots.reduce((acc, b) => acc + b.totalShots, 0));
+    const bestShots = Math.min(36, bestBlots.reduce((acc, b) => acc + b.totalShots, 0));
 
     const board = features?.boardStructure ?? {
         innerBoardPoints: 2,
@@ -408,6 +476,28 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         conceptId = 'pure-play';
     }
 
+    // Complément neuronal Open Sage (probabilités exactes et plan de jeu Grand-Maître)
+    if (features?.bgsage?.optimalMetrics && features?.bgsage?.playedMetrics) {
+        const opt = features.bgsage.optimalMetrics;
+        const pld = features.bgsage.playedMetrics;
+        const winDrop = ((opt.winProb - pld.winProb) * 100).toFixed(1);
+        const plan = features.bgsage.playerGamePlan;
+        explanation += isEn
+            ? ` (Open Sage ${features.bgsage.evalLevel}: Win probability drops by ${winDrop}% [${(opt.winProb * 100).toFixed(1)}% → ${(pld.winProb * 100).toFixed(1)}%], plan: ${plan}).`
+            : ` (Open Sage ${features.bgsage.evalLevel} : vos chances de gain chutent de ${winDrop}% [${(opt.winProb * 100).toFixed(1)}% → ${(pld.winProb * 100).toFixed(1)}%], plan : ${plan}).`;
+    }
+
+    // Complément sur la volatilité du videau (Market Window / Market Loss)
+    if (features?.marketWindow?.inMarketWindow && features.marketWindow.volatility === 'high') {
+        const mw = features.marketWindow;
+        explanation += isEn
+            ? ` [Market Window: High volatility (~${mw.estimatedMarketLosers}/36 market losers, cash point ${(mw.cashPoint * 100).toFixed(1)}%)].`
+            : ` [Fenêtre de marché : Volatilité élevée (~${mw.estimatedMarketLosers}/36 séquences de perte de marché, cash point ${(mw.cashPoint * 100).toFixed(1)}%)].`;
+        if (conceptId === 'pure-play') {
+            conceptId = 'market-loss';
+        }
+    }
+
     // Complément contextuel selon la situation du match
     if (matchContext) {
         const ctx = buildMatchContext(matchContext);
@@ -426,7 +516,7 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         }
     }
 
-    return {
+    const baseResult: CoachStructuredResponse = {
         verdict,
         summary,
         explanation,
@@ -436,4 +526,10 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         whyOptimal,
         conceptId,
     };
+
+    if (language !== 'fr' && language !== 'en') {
+        return localizeOfflineExplanation(baseResult, params);
+    }
+
+    return baseResult;
 }

@@ -224,6 +224,7 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
 
     it('gère l’abandon de videau (PASS_DOUBLE) avec victoire immédiate', () => {
         const s0 = createInitialGameState(7, 2, 1);
+        s0.boardState.board[1] = 1; // Partie en cours
         const s1 = backgammonGameReducer(s0, { type: 'OFFER_DOUBLE' });
 
         // O refuse (PASS)
@@ -235,6 +236,23 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
         expect(s2.gameResult?.winType).toBe('pass');
         expect(s2.gameResult?.pointsWon).toBe(1); // Valeur du videau avant le double
         expect(s2.boardState.scoreX).toBe(3); // 2 + 1 = 3
+    });
+
+    it('rejette le double à Double Match Point (DMP : 6-6 dans un match en 7)', () => {
+        const sDmp = createInitialGameState(7, 6, 6);
+        sDmp.boardState.board[1] = 1;
+        const res = backgammonGameReducer(sDmp, { type: 'OFFER_DOUBLE' });
+        expect(res.phase).toBe('WAITING_FOR_ROLL');
+        expect(res.doublingOfferedBy).toBeNull();
+    });
+
+    it('rejette le double sous la règle du Dead Cube pour un joueur à 1-away', () => {
+        // X est à 1 point de la victoire (score 6-4 dans un match en 7)
+        const sOneAway = createInitialGameState(7, 6, 4);
+        sOneAway.boardState.board[1] = 1;
+        const res = backgammonGameReducer(sOneAway, { type: 'OFFER_DOUBLE' });
+        expect(res.phase).toBe('WAITING_FOR_ROLL');
+        expect(res.doublingOfferedBy).toBeNull();
     });
 
     it('applique la règle de Crawford : interdiction de doubler pendant la manche Crawford', () => {
@@ -286,7 +304,7 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
         expect(sExpert.difficulty).toBe('expert');
     });
 
-    it('selectBestOpponentSequence supporte débutant (bruité), expert (2-ply) et grandmaster', () => {
+    it('selectBestOpponentSequence supporte débutant (bruité), intermédiaire (1-ply), expert (2-ply) et grandmaster', () => {
         const state = createInitialState(7);
         state.turn = 'O';
         const legalSeqs = generateLegalMoves(state, [3, 1]);
@@ -299,6 +317,10 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
         // 2-ply expert expectimax déterministe
         const move2Ply = selectBestOpponentSequence(legalSeqs, 'O', 'expert');
         expect(move2Ply).not.toBeNull();
+
+        // 1-ply intermédiaire déterministe
+        const moveIntermediate = selectBestOpponentSequence(legalSeqs, 'O', 'intermediate');
+        expect(moveIntermediate).not.toBeNull();
 
         // 0-ply débutant bruité avec fonction aléatoire contrôlée
         const moveBeginner = selectBestOpponentSequence(legalSeqs, 'O', 'beginner', () => 0.9);
@@ -566,6 +588,234 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
 
         // Vérifie qu'il n'a PAS fait l'erreur 12/14 14/17
         expect(board[17]).toBe(-3); // Le point 17 ne doit pas avoir reçu le pion de 14
+    });
+
+    it('affiche les dés et "Bloqué — aucun coup possible" pendant 1200ms en cas de jet bloqué (Fanned) avant de passer la main', () => {
+        vi.useFakeTimers();
+
+        try {
+            const { result } = renderHook(() =>
+                useBackgammonGame({
+                    initialTurn: 'X',
+                    autoOpponent: true,
+                    initialDifficulty: 'beginner',
+                }),
+            );
+
+            // Plateau où X est sur la barre et les portes 19..24 sont fermées par O
+            const blockedBoard = new Array<number>(26).fill(0);
+            blockedBoard[X_BAR] = 1;
+            blockedBoard[6] = 14;
+            for (let p = 19; p <= 24; p++) {
+                blockedBoard[p] = -2;
+            }
+            blockedBoard[12] = -3;
+
+            act(() => {
+                result.current.applyRemoteState({
+                    board: blockedBoard,
+                    turn: 'X',
+                    phase: 'WAITING_FOR_ROLL',
+                    dice: null,
+                    usedDice: [false, false],
+                });
+            });
+
+            act(() => {
+                result.current.rollDice([4, 2]);
+            });
+
+            // Immédiatement : les dés [4, 2] restent affichés avec le message de blocage
+            expect(result.current.dice).toEqual([4, 2]);
+            expect(result.current.state.turn).toBe('X');
+            expect(result.current.phase).toBe('PLAYING_MOVES');
+            expect(result.current.opponentStatusMessage).toBe('Bloqué — aucun coup possible');
+
+            // À 1100ms (< 1200ms), toujours affiché
+            act(() => {
+                vi.advanceTimersByTime(1100);
+            });
+            expect(result.current.dice).toEqual([4, 2]);
+            expect(result.current.state.turn).toBe('X');
+
+            // À 1200ms, transition vers OPPONENT_THINKING
+            act(() => {
+                vi.advanceTimersByTime(100);
+            });
+            expect(result.current.state.turn).toBe('O');
+            expect(result.current.phase).toBe('OPPONENT_THINKING');
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('maintient HUMAN_READY_TO_COMMIT à la fin du tour humain pour permettre Annuler (Undo) avant l’auto-commit de 250ms quand autoConfirmTurn=true', () => {
+        vi.useFakeTimers();
+
+        try {
+            const { result } = renderHook(() =>
+                useBackgammonGame({
+                    initialTurn: 'X',
+                    autoOpponent: true,
+                    initialDifficulty: 'beginner',
+                    autoConfirmTurn: true,
+                }),
+            );
+
+            expect(result.current.autoConfirmTurn).toBe(true);
+
+            act(() => {
+                result.current.rollDice([3, 1]);
+            });
+
+            // Joue les deux dés (8/5 et 6/5)
+            act(() => {
+                result.current.playMove(8, 5, 0);
+                result.current.playMove(6, 5, 1);
+            });
+
+            // Le joueur est en HUMAN_READY_TO_COMMIT : il peut encore annuler avant les 250ms !
+            expect(result.current.state.turn).toBe('X');
+            expect(result.current.phase).toBe('PLAYING_MOVES');
+            expect(result.current.gamePhase).toBe('HUMAN_READY_TO_COMMIT');
+            expect(result.current.canUndo).toBe(true);
+            expect(result.current.dice).toEqual([3, 1]);
+
+            // 1. Test de l'annulation avant les 250ms
+            act(() => {
+                vi.advanceTimersByTime(150);
+                result.current.undoMove();
+            });
+
+            expect(result.current.state.turn).toBe('X');
+            expect(result.current.gamePhase).toBe('HUMAN_MOVING');
+            expect(result.current.usedDice).toEqual([true, false]);
+
+            // Même après 1000ms supplémentaires, le timer d'auto-commit annulé ne s'est pas déclenché
+            act(() => {
+                vi.advanceTimersByTime(1000);
+            });
+            expect(result.current.state.turn).toBe('X');
+            expect(result.current.gamePhase).toBe('HUMAN_MOVING');
+
+            // 2. Rejoue le second dé -> retour en HUMAN_READY_TO_COMMIT puis auto-commit à 250ms
+            act(() => {
+                result.current.playMove(6, 5, 1);
+            });
+            expect(result.current.gamePhase).toBe('HUMAN_READY_TO_COMMIT');
+
+            act(() => {
+                vi.advanceTimersByTime(250);
+            });
+            expect(result.current.state.turn).toBe('O');
+            expect(result.current.phase).toBe('OPPONENT_THINKING');
+            expect(result.current.matchLog).toHaveLength(1);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('par défaut (autoConfirmTurn=false), le tour reste indéfiniment en HUMAN_READY_TO_COMMIT, attend le clic sur Valider, et persiste toggleAutoConfirmTurn dans localStorage', () => {
+        vi.useFakeTimers();
+        window.localStorage.clear();
+
+        try {
+            const { result } = renderHook(() =>
+                useBackgammonGame({
+                    initialTurn: 'X',
+                    autoOpponent: true,
+                    initialDifficulty: 'beginner',
+                }),
+            );
+
+            expect(result.current.autoConfirmTurn).toBe(false);
+
+            act(() => {
+                result.current.rollDice([3, 1]);
+            });
+
+            act(() => {
+                result.current.playMove(8, 5, 0);
+                result.current.playMove(6, 5, 1);
+            });
+
+            // En HUMAN_READY_TO_COMMIT ("En attente de confirmation")
+            expect(result.current.gamePhase).toBe('HUMAN_READY_TO_COMMIT');
+            expect(result.current.isAwaitingConfirmation).toBe(true);
+            expect(result.current.state.turn).toBe('X');
+            expect(result.current.matchLog).toHaveLength(0);
+
+            // Même après 5 secondes, AUCUNE auto-validation ni évaluation de tour ne se produit
+            act(() => {
+                vi.advanceTimersByTime(5000);
+            });
+            expect(result.current.gamePhase).toBe('HUMAN_READY_TO_COMMIT');
+            expect(result.current.state.turn).toBe('X');
+            expect(result.current.matchLog).toHaveLength(0);
+
+            // Le joueur valide MANUELLEMENT via le bouton Valider (commitHumanMove)
+            act(() => {
+                result.current.commitHumanMove();
+            });
+
+            expect(result.current.state.turn).toBe('O');
+            expect(result.current.phase).toBe('OPPONENT_THINKING');
+            expect(result.current.matchLog).toHaveLength(1);
+
+            // Bascule de l'option Validation auto et persistance dans localStorage
+            act(() => {
+                result.current.toggleAutoConfirmTurn();
+            });
+            expect(result.current.autoConfirmTurn).toBe(true);
+            expect(window.localStorage.getItem('bg_auto_confirm_turn')).toBe('true');
+        } finally {
+            window.localStorage.clear();
+            vi.useRealTimers();
+        }
+    });
+
+    it('règle officielle d’obligation du plus grand dé : impose le dé le plus élevé en cas de coup mutuellement exclusif et autorise le petit dé en premier uniquement si les deux dés restent jouables', () => {
+        // 1. Cas mutuellement exclusif (1 seul dé jouable sur [2, 5]) :
+        // X a un seul pion mobile en 24 ; 22 (dé 2) et 19 (dé 5) sont libres, mais 17 (24 - 2 - 5) est bloqué par O (-2)
+        // et tous les autres pions X sont bloqués en 6 (avec 4 et 1 bloqués par O).
+        const sMutuallyExclusive = createInitialGameState(7, 0, 0, 'X', false);
+        const boardEx = new Array<number>(26).fill(0);
+        boardEx[24] = 1;
+        boardEx[6] = 14;
+        boardEx[17] = -2; // Bloque 22 -> 17 et 19 -> 17
+        boardEx[4] = -2;  // Bloque 6 -> 4 (dé 2)
+        boardEx[1] = -2;  // Bloque 6 -> 1 (dé 5)
+        boardEx[12] = -9;
+        sMutuallyExclusive.boardState.board = boardEx;
+
+        const sRolledEx = backgammonGameReducer(sMutuallyExclusive, { type: 'ROLL_DICE', dice: [2, 5] });
+        // Tenter de jouer le petit dé (2 : 24 -> 22) doit être refusé
+        const sAfterIllegalSmall = backgammonGameReducer(sRolledEx, {
+            type: 'PLAY_MOVE',
+            from: 24,
+            to: 22,
+        });
+        expect(sAfterIllegalSmall.boardState.board[24]).toBe(1);
+        expect(sAfterIllegalSmall.usedDice).toEqual([false, false]);
+
+        // Jouer le grand dé (5 : 24 -> 19) est légal et obligatoire
+        const sAfterLegalHigh = backgammonGameReducer(sRolledEx, {
+            type: 'PLAY_MOVE',
+            from: 24,
+            to: 19,
+        });
+        expect(sAfterLegalHigh.boardState.board[19]).toBe(1);
+
+        // 2. Cas où les deux dés sont jouables : le joueur peut glisser-déposer le petit dé en premier (24 -> 22)
+        const sBothPlayable = createInitialGameState(7, 0, 0, 'X', false);
+        const sRolledBoth = backgammonGameReducer(sBothPlayable, { type: 'ROLL_DICE', dice: [5, 2] });
+        const sPlayedSmallFirst = backgammonGameReducer(sRolledBoth, {
+            type: 'PLAY_MOVE',
+            from: 24,
+            to: 22,
+        });
+        expect(sPlayedSmallFirst.boardState.board[22]).toBe(1);
+        expect(sPlayedSmallFirst.usedDice).toEqual([false, true]);
     });
 });
 

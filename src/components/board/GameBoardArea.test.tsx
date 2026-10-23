@@ -33,7 +33,13 @@ describe('GameBoardArea Component', () => {
                 onSelectDie={vi.fn()}
                 onDieDoubleClick={vi.fn()}
                 onDeselect={vi.fn()}
-                coach={null}
+                coach={{
+                    verdict: 'blunder',
+                    equityLoss: 0.12,
+                    playedMove: '13/9',
+                    optimalMove: '13/11',
+                    explanation: null,
+                }}
                 isAnalyzing={false}
                 onDismissCoach={vi.fn()}
                 onTriggerCoach={vi.fn()}
@@ -41,6 +47,7 @@ describe('GameBoardArea Component', () => {
             />
         );
 
+        expect(html).toContain('id="backgammon-board"');
         expect(html).toContain('id="coach-panel"');
     });
 

@@ -11,12 +11,12 @@ describe('PWA Static Assets & Configuration', () => {
         const manifest = JSON.parse(manifestRaw);
 
         // Champs obligatoires PWA
-        expect(manifest.name).toBe('Backgammon Tournament & Grand-Maître Coach');
-        expect(manifest.short_name).toBe('Backgammon');
+        expect(manifest.name).toBe('Backgammon Tour — Cercle Monte-Carlo & Gammon Academy');
+        expect(manifest.short_name).toBe('Backgammon Tour');
         expect(manifest.start_url).toBe('/');
         expect(manifest.display).toBe('standalone');
-        expect(manifest.background_color).toBe('#0b1220');
-        expect(manifest.theme_color).toBe('#0f172a');
+        expect(manifest.background_color).toBe('#06090f');
+        expect(manifest.theme_color).toBe('#090d16');
 
         // Icônes obligatoires (192 et 512 + maskable)
         expect(manifest.icons).toBeInstanceOf(Array);

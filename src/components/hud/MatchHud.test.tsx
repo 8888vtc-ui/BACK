@@ -1,7 +1,10 @@
+// @vitest-environment jsdom
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { render, fireEvent } from '@testing-library/react';
 import MatchHud from './MatchHud';
+import { createInitialState } from '../../engine/backgammonEngine';
 
 describe('MatchHud', () => {
     const defaultProps = {
@@ -19,50 +22,35 @@ describe('MatchHud', () => {
         onDoubleCube: vi.fn(),
         onRollDice: vi.fn(),
         onResetGame: vi.fn(),
-        isLoadingBoard: false,
-        onToggleLoadingBoard: vi.fn(),
-        onSimulateNetworkError: vi.fn(),
     };
 
-    it('affiche le score du match, le format et l’indicateur du tour actif', () => {
+    it('affiche le format, les cartes joueurs (Vous vs IA Expert) et le tour actif sans jargon X/O', () => {
         const html = renderToStaticMarkup(<MatchHud {...defaultProps} />);
 
-        // Format du match
-        expect(html.replace(/&#x27;/g, "'")).toContain('Match en 7 pts');
-
-        // Cartes joueurs et scores
-        expect(html).toContain('X (Blanc)');
-        expect(html).toContain('O (Noir)');
+        expect(html).toContain('Match 7 pts');
+        expect(html).toContain('>Vous<');
+        expect(html).toContain('>IA Expert<');
+        expect(html).not.toContain('X (Vous - Blanc)');
         expect(html).toContain('>3<');
         expect(html).toContain('>2<');
-
-        // Joueur X est au tour
-        expect(html).toContain('Au tour');
+        expect(html).toContain('ring-[#f3c65f]');
     });
 
-    it('affiche les dés avec leurs valeurs et l’état utilisé/disponible', () => {
+    it('ne duplique ni les dés ni le videau dans le HUD supérieur (unifiés sur le plateau)', () => {
         const html = renderToStaticMarkup(
             <MatchHud {...defaultProps} usedDice={[true, false]} />,
         );
 
-        expect(html).toContain('Dé 1 (G)');
-        expect(html).toContain('Dé 2 (D)');
-        expect(html).toContain('Clic G : Dé gauche');
-        // Le dé 1 utilisé a l'icône de validation checkmark SVG
-        expect(html).toContain('text-emerald-400');
+        expect(html).not.toContain('data-testid="hud-dice"');
+        expect(html).not.toContain('data-testid="hud-double-btn"');
+        expect(html).not.toContain('data-testid="hud-roll-dice-btn"');
     });
 
-    it('affiche la valeur et le possesseur du videau', () => {
-        const htmlCentered = renderToStaticMarkup(<MatchHud {...defaultProps} />);
-        // En backgammon, la valeur 1 s'affiche '64' sur le dé de videau centré
-        expect(htmlCentered).toContain('>64<');
-        expect(htmlCentered).toContain('Centré');
-
-        const htmlDoubled = renderToStaticMarkup(
-            <MatchHud {...defaultProps} cubeValue={4} cubeOwner="X" />,
+    it('affiche le bouton Coach 1-clic directement dans la barre HUD quand onTriggerCoach est fourni', () => {
+        const html = renderToStaticMarkup(
+            <MatchHud {...defaultProps} onTriggerCoach={vi.fn()} />,
         );
-        expect(htmlDoubled).toContain('>4<');
-        expect(htmlDoubled).toContain('Joueur X');
+        expect(html).toContain('data-testid="hud-coach-btn"');
     });
 
     it('affiche l’indicateur de règle de Crawford quand activée', () => {
@@ -72,38 +60,31 @@ describe('MatchHud', () => {
         expect(html).toContain('Crawford');
     });
 
-    it('affiche le toggle de thème avec le libellé Midnight ou Tournament', () => {
-        const htmlMidnight = renderToStaticMarkup(
-            <MatchHud {...defaultProps} theme="midnight" />,
-        );
-        expect(htmlMidnight).toContain('Midnight');
-        expect(htmlMidnight).toContain('🌙');
-
-        const htmlTour = renderToStaticMarkup(
-            <MatchHud {...defaultProps} theme="tournament" />,
-        );
-        expect(htmlTour).toContain('Tournament');
-        expect(htmlTour).toContain('🏆');
-    });
-
-    it('contient les boutons d’actions rapides et de test', () => {
-        const html = renderToStaticMarkup(<MatchHud {...defaultProps} />);
-        expect(html).toContain('aria-label="Lancer les dés"');
-        expect(html).toContain('Skeleton');
-        expect(html).toContain('Réseau');
-        expect(html).toContain('Reset');
-    });
-
-    it('affiche le bouton d’accès à la bibliothèque d’ouvertures si la callback est fournie', () => {
-        const onOpenOpeningBook = vi.fn();
+    it('affiche le dernier coup joué en notation standard', () => {
         const html = renderToStaticMarkup(
-            <MatchHud {...defaultProps} onOpenOpeningBook={onOpenOpeningBook} />,
+            <MatchHud {...defaultProps} lastMoveNotation="24/18 18/13" />,
         );
-        expect(html).toContain('data-testid="opening-book-hud-btn"');
-        expect(html).toContain('Ouvertures');
+        expect(html).toContain('data-testid="hud-last-move"');
+        expect(html).toContain('24/18 18/13');
     });
 
-    it('affiche le bouton d’exportation / importation / partage si onOpenExportImport est fourni', () => {
+    it('contient le bouton Lobby et le menu ⚙️ sans boutons de jeu redondants', () => {
+        const html = renderToStaticMarkup(<MatchHud {...defaultProps} />);
+        expect(html).toContain('data-testid="hud-back-to-lobby-btn"');
+        expect(html).toContain('data-testid="hud-settings-toggle-btn"');
+        expect(html).not.toContain('data-testid="hud-roll-dice-btn"');
+        expect(html).not.toContain('data-testid="hud-double-btn"');
+    });
+
+    it('ne contient plus le bouton « Nouvelle Partie » ni les outils de debug', () => {
+        const html = renderToStaticMarkup(<MatchHud {...defaultProps} />);
+        expect(html).not.toContain('hud-new-game-btn');
+        expect(html).not.toContain('copy-debug-btn');
+        expect(html).not.toContain('hud-modes-toggle-btn');
+        expect(html).not.toContain('hud-secondary-nav');
+    });
+
+    it('affiche le bouton d’exportation / importation dans le menu ⚙️', () => {
         const onOpenExportImport = vi.fn();
         const html = renderToStaticMarkup(
             <MatchHud {...defaultProps} onOpenExportImport={onOpenExportImport} />,
@@ -112,41 +93,66 @@ describe('MatchHud', () => {
         expect(html).toContain('Partager / XGID');
     });
 
-    it('regroupe les paramètres dans le menu popover ⚙️ et les activités dans la barre secondaire repliable', () => {
-        const onOpenMultiplayer = vi.fn();
-        const onOpenOpeningBook = vi.fn();
+    it('regroupe les paramètres dans le menu popover ⚙️', () => {
         const onOpenExportImport = vi.fn();
         const onTriggerCoach = vi.fn();
 
         const html = renderToStaticMarkup(
             <MatchHud
                 {...defaultProps}
-                onOpenMultiplayer={onOpenMultiplayer}
-                onOpenOpeningBook={onOpenOpeningBook}
                 onOpenExportImport={onOpenExportImport}
                 onTriggerCoach={onTriggerCoach}
             />,
         );
 
-        // Déclencheurs dans la rangée principale
         expect(html).toContain('data-testid="hud-settings-toggle-btn"');
-        expect(html).toContain('data-testid="hud-modes-toggle-btn"');
-
-        // Menu Paramètres ⚙️
         expect(html).toContain('data-testid="hud-settings-menu"');
-        expect(html).toContain('Paramètres &amp; Outils');
         expect(html).toContain('data-testid="audio-toggle-btn"');
-        expect(html).toContain('data-testid="backend-info-btn"');
         expect(html).toContain('data-testid="export-import-hud-btn"');
-
-        // Barre secondaire repliable
-        expect(html).toContain('data-testid="hud-secondary-nav"');
-        expect(html).toContain('data-testid="multiplayer-hud-trigger"');
-        expect(html).toContain('data-testid="drills-hud-link"');
-        expect(html).toContain('data-testid="puzzles-hud-link"');
         expect(html).toContain('data-testid="coach-hud-trigger"');
-        expect(html).toContain('data-testid="opening-book-hud-btn"');
-        expect(html).toContain('/progression');
+    });
+
+    it('ouvre la modale InGameMenuModal lors du clic sur Lobby quand une manche est active', () => {
+        const onBackToLobby = vi.fn();
+        const { getByTestId, queryByTestId } = render(
+            <MatchHud
+                {...defaultProps}
+                isGameActive={true}
+                onBackToLobby={onBackToLobby}
+            />,
+        );
+
+        // Au début la modale est fermée
+        expect(queryByTestId('in-game-menu-modal')).toBeNull();
+
+        // Clic sur le bouton Lobby
+        fireEvent.click(getByTestId('hud-back-to-lobby-btn'));
+
+        // La modale est maintenant ouverte et onBackToLobby n’est pas appelé directement
+        expect(getByTestId('in-game-menu-modal')).toBeDefined();
+        expect(onBackToLobby).not.toHaveBeenCalled();
+    });
+
+    it('affiche l’alerte explicite de rentrée obligatoire quand un pion est sur la barre', () => {
+        const boardState = createInitialState(7);
+        boardState.board[0] = 1; // 1 pion blanc sur la barre
+        boardState.turn = 'X';
+
+        const html = renderToStaticMarkup(
+            <MatchHud {...defaultProps} turn="X" playerColor="X" boardState={boardState} />,
+        );
+
+        expect(html).toContain('data-testid="hud-bar-checker-alert"');
+        expect(html).toContain('1 sur la barre : rentrée obligatoire (flèches 19 à 24)');
+    });
+
+    it('affiche l’enjeu du videau dans le scoreboard quand cubeValue > 1', () => {
+        const html = renderToStaticMarkup(
+            <MatchHud {...defaultProps} cubeValue={4} cubeOwner="X" />,
+        );
+
+        expect(html).toContain('Cube 4×');
+        expect(html).toContain('Enjeu : 4 pts');
     });
 });
 

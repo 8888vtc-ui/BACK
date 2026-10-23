@@ -105,7 +105,8 @@ export const PositionFeaturesSchema = z.object({
         longestPrime: 0,
     }),
     contactStatus: z.enum(['contact', 'pureRace']).default('contact'),
-});
+    bgsage: z.any().optional(),
+}).passthrough();
 
 export const MatchContextSchema = z.object({
     matchLength: z.number().int().min(0).default(7),
@@ -117,16 +118,74 @@ export const MatchContextSchema = z.object({
 
 export const CoachRequestSchema = z.object({
     verdict: z.enum(['blunder', 'doubtful']).default('blunder'),
-    equityLoss: z.number().max(0.1, "L'equityLoss doit être négatif ou quasi-nul").default(-0.1),
+    equityLoss: z.number().min(-2.0).max(2.0).default(-0.1),
     playedMove: z.string().min(1, 'playedMove requis').max(100),
     optimalMove: z.string().min(1, 'optimalMove requis').max(100),
     features: PositionFeaturesSchema.optional(),
     matchContext: MatchContextSchema.optional(),
     playerLevel: z.enum(['beginner', 'intermediate', 'expert']).default('intermediate'),
-    language: z.enum(['fr', 'en']).default('fr'),
+    language: z.enum(['fr', 'en', 'es', 'pt', 'de', 'ar', 'ja']).default('fr'),
 });
 
 export type CoachRequestInput = z.infer<typeof CoachRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// 3bis. Schéma Cours de fin de partie (/api/coach/review)
+// ---------------------------------------------------------------------------
+
+const EvaluatedTurnSchema = z.object({
+    moveNumber: z.number().int().min(0),
+    player: z.enum(['X', 'O']),
+    dice: z.tuple([z.number().int().min(1).max(6), z.number().int().min(1).max(6)]),
+    boardBefore: z.array(z.number().int()),
+    boardAfter: z.array(z.number().int()),
+    playedNotation: z.string(),
+    optimalNotation: z.string(),
+    equityLoss: z.number(),
+    verdict: z.enum(['optimal', 'acceptable', 'doubtful', 'blunder', 'howler']),
+    isUnforced: z.boolean(),
+    candidateCount: z.number().int().min(0),
+    explanation: z.string().optional(),
+    conceptId: z.string().optional(),
+});
+
+const MoveBreakdownSchema = z.object({
+    optimal: z.number().int().min(0),
+    acceptable: z.number().int().min(0),
+    doubtful: z.number().int().min(0),
+    blunder: z.number().int().min(0),
+    howler: z.number().int().min(0),
+});
+
+export const GameReviewRequestSchema = z.object({
+    analysis: z.object({
+        id: z.string().min(1),
+        gameId: z.string().min(1),
+        date: z.string(),
+        player: z.enum(['X', 'O']),
+        opponentType: z.enum(['ai', 'human']),
+        opponentDifficulty: z.string().nullable().optional(),
+        winner: z.enum(['X', 'O']).nullable().optional(),
+        winType: z.enum(['single', 'gammon', 'backgammon', 'pass']).nullable().optional(),
+        pointsWon: z.number().optional(),
+        scoreX: z.number().int().min(0),
+        scoreO: z.number().int().min(0),
+        matchLength: z.number().int().min(0),
+        totalMovesCount: z.number().int().min(0),
+        decisionsCount: z.number().int().min(0),
+        unforcedDecisionsCount: z.number().int().min(0),
+        totalEquityLoss: z.number(),
+        errorRate: z.number(),
+        performanceRating: z.number(),
+        estimatedRating: z.number(),
+        prCategory: z.string(),
+        breakdown: MoveBreakdownSchema,
+        evaluatedMoves: z.array(EvaluatedTurnSchema).max(500),
+    }),
+    language: z.enum(['fr', 'en']).default('fr'),
+});
+
+export type GameReviewRequestInput = z.infer<typeof GameReviewRequestSchema>;
 
 // ---------------------------------------------------------------------------
 // 4. Schéma Validation Coup Multijoueur (/api/multiplayer/validate-action)
@@ -168,7 +227,7 @@ export const MultiplayerRoomSchema = z.object({
     crawford: z.boolean().default(false),
     cube_value: z.number().int().min(1).default(1),
     cube_owner: z.enum(['X', 'O']).nullable().default(null),
-    board: z.array(z.number()).length(28).optional(),
+    board: z.array(z.number()).min(26).max(28).optional(),
     dice: z.array(z.number()).optional(),
     used_dice: z.array(z.boolean()).optional(),
 }).passthrough();

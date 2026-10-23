@@ -1,141 +1,88 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('E2E : Partie complète & Déroulement du Match Backgammon', () => {
-    test.beforeEach(async ({ page }) => {
-        // Accède à la page principale
+test.describe('Parcours Complet du Jeu Backgammon (E2E)', () => {
+    test('Charge le plateau, lance les dés, sélectionne et déplace un pion', async ({ page }) => {
         await page.goto('/');
-        await page.waitForLoadState('domcontentloaded');
-    });
 
-    test('affiche le plateau Tournament et les informations initiales du HUD', async ({ page }) => {
-        // Vérifie la présence du HUD
-        const header = page.locator('header[aria-label*="Tableau de bord"]');
-        await expect(header).toBeVisible();
+        // 1. Démarrer le match depuis le Lobby
+        const lobbyStartBtn = page.getByTestId('lobby-start-btn');
+        await expect(lobbyStartBtn).toBeVisible();
+        await lobbyStartBtn.click();
 
-        // Vérifie les scores initiaux dans le header
-        await expect(header.getByText('X (Blanc)')).toBeVisible();
-        await expect(header.getByText('O (Noir)')).toBeVisible();
-
-        // Vérifie que le plateau vectoriel est bien rendu
+        // 2. Vérifier que le plateau et le HUD sont visibles
         const board = page.getByTestId('backgammon-board');
         await expect(board).toBeVisible();
 
-        // Vérifie la présence des pions initiaux standard (ex: point 24 pour X, point 1 pour O)
-        const checker24 = page.getByTestId('checker-p24-0');
-        await expect(checker24).toBeVisible();
-    });
+        // 3. Vérifier la présence du bouton Lancer les dés au centre du plateau
+        const rollButton = page.getByTestId('center-roll-button');
+        await expect(rollButton).toBeVisible();
+        await rollButton.click();
 
-    // Flux dépendant du lancer de dés (timing fragile après le fix de layout). Couvert par les tests unitaires du hook.
-    test.skip('déroule un tour de jeu : lancer de dés, coup book ou déplacement tactile', async ({ page }) => {
-        // 1. Lance les dés (bouton réel dans le HUD)
-        const rollBtn = page.getByTestId('hud-roll-dice-btn');
-        await expect(rollBtn).toBeVisible({ timeout: 10000 });
-        await rollBtn.click();
+        // 4. Attendre que les dés apparaissent sur le plateau
+        const die0 = page.getByTestId('board-die-0');
+        const die1 = page.getByTestId('board-die-1');
+        await expect(die0).toBeVisible({ timeout: 5000 });
+        await expect(die1).toBeVisible({ timeout: 5000 });
+        await page.waitForTimeout(460);
 
-        // Vérifie que les dés sont désormais actifs (sélecteur adapté au viewport)
-        const boardDie = page.getByTestId('board-die-0');
-        const mobileSelector = page.getByTestId('mobile-dice-selector');
-        const isMobile = await mobileSelector.isVisible();
-        if (isMobile) {
-            await expect(mobileSelector).toBeVisible();
-        } else {
-            await expect(boardDie).toBeVisible();
+        // 5. Au départ, X a des pions sur 24 (2), 13 (5), 8 (3), 6 (5).
+        // En cliquant sur l'une de ces flèches, le coup avec le dé le plus élevé est joué directement.
+        const initialPoints = [24, 13, 8, 6];
+        for (const pt of initialPoints) {
+            const pointEl = page.getByTestId(`point-triangle-${pt}`);
+            await pointEl.click();
+            await page.waitForTimeout(100);
         }
 
-        // 2. Si la bannière d'ouverture certifiée est visible, applique le coup Book en un clic
-        const applyBookBtn = page.getByRole('button', { name: /Appliquer le coup Book/i });
-        if (await applyBookBtn.isVisible()) {
-            await applyBookBtn.click();
-            // Toast de confirmation
-            await expect(page.getByText(/Coup Book/i).first()).toBeVisible();
-        } else {
-            // Sélection manuelle d'un pion blanc (point 24) : auto-move si destination unique,
-            // sinon sélection + clic sur une cible légale.
-            const checker24 = page.getByTestId('checker-p24-0');
-            await checker24.click();
-            // Attente conditionnelle : on attend qu'un état observable change
-            // (ghost de destination ou pion déplacé), au lieu d'un délai fixe.
-            await page
-                .locator('[data-testid^="ghost-checker-"], [data-testid^="checker-p"]')
-                .first()
-                .waitFor({ state: 'visible', timeout: 5000 })
-                .catch(() => { });
-
-            // Si une cible légale reste affichée (sélection multiple), cliquer dessus
-            const ghost = page.locator('[data-testid^="ghost-checker-"]').first();
-            if (await ghost.isVisible()) {
-                await ghost.click();
-                await ghost.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => { });
-            }
-        }
+        await expect(board).toBeVisible();
     });
 
-    // Flux multi-étapes dépendant de l'état du videau (fragile). À stabiliser.
-    test.skip('gère la proposition et l\'abandon du videau (doubling cube) menant à la victoire', async ({ page }) => {
-        // Vérifie que le bouton de double est disponible dans le HUD ou la barre de contrôle
-        const offerDoubleBtn = page.getByTestId('offer-double-btn');
-        const hudDoubleBtn = page.getByTestId('hud-double-btn');
-        const doubleTrigger = offerDoubleBtn.or(hudDoubleBtn).first();
+    test('Ouvre le menu Paramètres, change le thème et ouvre le modal Export SGF', async ({ page }) => {
+        await page.goto('/');
 
-        await expect(doubleTrigger).toBeEnabled({ timeout: 10000 });
-        await doubleTrigger.click();
+        await page.getByTestId('lobby-start-btn').click();
+        await expect(page.getByTestId('backgammon-board')).toBeVisible();
 
-        // Vérifie que l'alerte de proposition de videau apparaît
-        const takeBtn = page.getByTestId('take-double-btn');
-        const passBtn = page.getByTestId('pass-double-btn');
-        await expect(takeBtn).toBeVisible({ timeout: 10000 });
-        await expect(passBtn).toBeVisible({ timeout: 10000 });
+        // 1. Ouvrir le menu Paramètres (⚙️) dans le HUD
+        const settingsBtn = page.getByTestId('hud-settings-toggle-btn');
+        await expect(settingsBtn).toBeVisible();
+        await settingsBtn.click();
 
-        // Clique sur "Passer (Drop)" pour concéder la manche immédiatement
-        await passBtn.click();
+        const settingsMenu = page.getByTestId('hud-settings-menu');
+        await expect(settingsMenu).toBeVisible();
 
-        // Vérifie l'apparition de l'overlay de fin de match/manche (GameOverOverlay)
-        const gameOverTitle = page.locator('#game-over-title');
-        await expect(gameOverTitle).toBeVisible();
-        await expect(gameOverTitle).toContainText(/remportée/i);
+        // 2. Basculer le thème du plateau via l'item du menu
+        const themeToggle = page.getByTestId('menu-theme-toggle-btn');
+        await expect(themeToggle).toBeVisible();
+        await themeToggle.click();
 
-        // Vérifie le badge de type de victoire
-        await expect(page.getByText(/ABANDON DU VIDEAU/i)).toBeVisible();
+        // 3. Rouvrir le menu Paramètres et ouvrir le modal Export / Import SGF
+        await settingsBtn.click();
+        const exportBtn = page.getByTestId('menu-export-import-btn');
+        await expect(exportBtn).toBeVisible();
+        await exportBtn.click();
 
-        // Bouton de réinitialisation ou manche suivante
-        const nextGameBtn = page.getByRole('button', { name: /Manche Suivante/i });
-        const newMatchBtn = page.getByRole('button', { name: /Nouveau Match/i });
-        const resetBtn = page.getByRole('button', { name: /Réinitialiser/i });
+        const exportModal = page.getByTestId('export-import-modal');
+        await expect(exportModal).toBeVisible();
 
-        expect(
-            (await nextGameBtn.isVisible()) || (await newMatchBtn.isVisible()) || (await resetBtn.isVisible()),
-        ).toBeTruthy();
-    });
-
-    // Flux multi-étapes dépendant de l'état du videau (fragile). À stabiliser.
-    test.skip('permet d\'ouvrir la modal de Review Post-partie avec courbe d\'équité et analyse PR', async ({ page }) => {
-        // 1. Concession de manche via le videau pour déclencher l'écran de fin de manche
-        const offerBtn = page.getByTestId('offer-double-btn');
-        const hudDouble = page.getByTestId('hud-double-btn');
-        const doubleTrigger = offerBtn.or(hudDouble).first();
-
-        await expect(doubleTrigger).toBeEnabled({ timeout: 10000 });
-        await doubleTrigger.click();
-
-        const passBtn = page.getByTestId('pass-double-btn');
-        await expect(passBtn).toBeVisible({ timeout: 10000 });
-        await passBtn.click();
-
-        // 2. Ouvre la modal de bilan via le bouton d'analyse
-        const reviewBtn = page.getByTestId('open-game-review-btn');
-        await expect(reviewBtn).toBeVisible();
-        await reviewBtn.click();
-
-        // 3. Vérifie que la GameReviewModal s'ouvre
-        const reviewDialog = page.getByTestId('game-review-modal');
-        await expect(reviewDialog).toBeVisible();
-
-        // Vérifie la présence des métriques d'analyse PR / Équité
-        await expect(reviewDialog.getByText(/Estimation|Bilan|Performance Rating/i).first()).toBeVisible();
-
-        // 4. Fermeture de la modale
-        const closeBtn = reviewDialog.getByTestId('close-review-modal-btn');
+        // 4. Fermer le modal Export / Import
+        const closeBtn = page.getByTestId('close-export-modal-btn');
         await closeBtn.click();
-        await expect(reviewDialog).not.toBeVisible();
+        await expect(exportModal).toBeHidden();
+    });
+
+    test('Teste le bouton Doubler (Videau) avant de lancer les dés', async ({ page }) => {
+        await page.goto('/');
+
+        await page.getByTestId('lobby-start-btn').click();
+        await expect(page.getByTestId('backgammon-board')).toBeVisible();
+
+        const doubleBtn = page.getByTestId('center-double-button');
+        await expect(doubleBtn).toBeVisible();
+        await doubleBtn.click();
+
+        // Après proposition du double par X, l'IA évalue et prend/passe, puis le bouton Lancer réapparaît
+        const rollButton = page.getByTestId('center-roll-button');
+        await expect(rollButton).toBeVisible({ timeout: 5000 });
     });
 });

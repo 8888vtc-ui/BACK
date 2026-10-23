@@ -1,8 +1,36 @@
 /**
- * Types et définitions pour le système d'internationalisation (i18n) FR/EN.
+ * Types et définitions pour le système d'internationalisation (i18n) multilingue (FR/EN/ES/PT/DE/AR/JA).
  */
 
-export type Locale = 'fr' | 'en';
+export type Locale = 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja';
+
+export type PrimaryLocale = 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar';
+
+export interface LocaleMetadata {
+    readonly code: Locale;
+    readonly label: string;
+    readonly nativeLabel: string;
+    readonly shortLabel: string;
+    readonly flag: string;
+    readonly dir: 'ltr' | 'rtl';
+    readonly hreflang: string;
+}
+
+export const LOCALE_METADATA: Record<Locale, LocaleMetadata> = {
+    fr: { code: 'fr', label: 'Français', nativeLabel: 'Français', shortLabel: 'FR', flag: '🇫🇷', dir: 'ltr', hreflang: 'fr-FR' },
+    en: { code: 'en', label: 'English', nativeLabel: 'English', shortLabel: 'EN', flag: '🇬🇧', dir: 'ltr', hreflang: 'en-US' },
+    es: { code: 'es', label: 'Español', nativeLabel: 'Español', shortLabel: 'ES', flag: '🇪🇸', dir: 'ltr', hreflang: 'es-ES' },
+    pt: { code: 'pt', label: 'Português', nativeLabel: 'Português', shortLabel: 'PT', flag: '🇵🇹', dir: 'ltr', hreflang: 'pt-BR' },
+    de: { code: 'de', label: 'Deutsch', nativeLabel: 'Deutsch', shortLabel: 'DE', flag: '🇩🇪', dir: 'ltr', hreflang: 'de-DE' },
+    ar: { code: 'ar', label: 'Arabic', nativeLabel: 'العربية', shortLabel: 'AR', flag: '🇸🇦', dir: 'rtl', hreflang: 'ar-SA' },
+    ja: { code: 'ja', label: 'Japanese', nativeLabel: '日本語', shortLabel: 'JA', flag: '🇯🇵', dir: 'ltr', hreflang: 'ja-JP' },
+};
+
+export const PRIMARY_LOCALES: readonly PrimaryLocale[] = ['fr', 'en', 'es', 'pt', 'de', 'ar'] as const;
+
+export function isRtlLocale(locale: string): boolean {
+    return locale === 'ar';
+}
 
 export interface TranslationDictionary {
     common: {

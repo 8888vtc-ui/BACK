@@ -58,8 +58,9 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                     setInfoMsg('Compte créé ! Vérifiez vos emails pour confirmer votre inscription.');
                 }
             }
-        } catch (err: any) {
-            setErrorMsg(err.message || 'Une erreur est survenue lors de l\'authentification.');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Une erreur est survenue lors de l\'authentification.';
+            setErrorMsg(message);
         } finally {
             setLoading(false);
         }
@@ -71,8 +72,9 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         try {
             const { error } = await signInWithGoogle();
             if (error) throw error;
-        } catch (err: any) {
-            setErrorMsg(err.message || 'Échec de la connexion avec Google.');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Échec de la connexion avec Google.';
+            setErrorMsg(message);
             setLoading(false);
         }
     }
@@ -83,8 +85,9 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         try {
             const { error } = await signInWithApple();
             if (error) throw error;
-        } catch (err: any) {
-            setErrorMsg(err.message || 'Échec de la connexion avec Apple.');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Échec de la connexion avec Apple.';
+            setErrorMsg(message);
             setLoading(false);
         }
     }

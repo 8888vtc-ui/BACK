@@ -66,6 +66,43 @@ export interface BoardStructure {
     longestPrime: number;
 }
 
+export interface BgsageMoveMetrics {
+    equity: number;
+    cubelessEquity: number;
+    winProb: number;
+    winGammonProb: number;
+    winBackgammonProb: number;
+    loseGammonProb: number;
+    loseBackgammonProb: number;
+    playerGamePlan: string;
+    opponentGamePlan: string;
+    evalLevel?: string;
+}
+
+export interface BgsageStrategicInsights {
+    isRace: boolean;
+    playerGamePlan: string;
+    opponentGamePlan: string;
+    evalLevel: string;
+    playedMetrics?: BgsageMoveMetrics;
+    optimalMetrics?: BgsageMoveMetrics;
+}
+
+export type VolatilityLevel = 'low' | 'medium' | 'high';
+
+export interface MarketWindowMetrics {
+    /** Seuil d'entrée dans la fenêtre de double (Double Point, ex: 0.65). */
+    doublePoint: number;
+    /** Seuil d'abandon adverse (Cash Point = 1 - Take Point adverse, ex: 0.75). */
+    cashPoint: number;
+    /** Niveau de volatilité de la position ('low' | 'medium' | 'high'). */
+    volatility: VolatilityLevel;
+    /** Estimation des séquences sur 36 faisant perdre le marché (Market Losers, 0..36). */
+    estimatedMarketLosers: number;
+    /** Indique si la position se situe dans la fenêtre de marché (Market Window). */
+    inMarketWindow: boolean;
+}
+
 export interface StrategicFeatures {
     /** Joueur dont le coup est analysé (perspective des features). */
     player: Player;
@@ -73,6 +110,10 @@ export interface StrategicFeatures {
     blotsAndShots: BlotsAndShots;
     boardStructure: BoardStructure;
     contactStatus: ContactStatus;
+    /** Analyse de la fenêtre de marché (Market Window) et volatilité du videau. */
+    marketWindow?: MarketWindowMetrics;
+    /** Métriques neurales enrichies fournies par Open Sage (bgsage-service). */
+    bgsage?: BgsageStrategicInsights;
 }
 
 // ---------------------------------------------------------------------------
@@ -99,10 +140,6 @@ function barPointOf(player: Player): number {
     return player === 'X' ? 7 : 18;
 }
 
-// ---------------------------------------------------------------------------
-// Helpers de lecture du plateau
-// ---------------------------------------------------------------------------
-
 function isMadePoint(board: number[], point: number, player: Player): boolean {
     const v = board[point];
     return player === 'X' ? v >= 2 : v <= -2;
@@ -113,26 +150,16 @@ function isBlot(board: number[], point: number, player: Player): boolean {
     return player === 'X' ? v === 1 : v === -1;
 }
 
-// ---------------------------------------------------------------------------
-// Comptage des tirs (shots)
-// ---------------------------------------------------------------------------
-
 export function analyzeBlots(board: number[], player: Player): BlotAnalysis[] {
     const opponent = other(player);
     const result: BlotAnalysis[] = [];
     for (let p = 1; p <= 24; p++) {
         if (!isBlot(board, p, player)) continue;
-        // Comptage exact des 36 lancers (directs + indirects + pions sur la barre),
-        // factorisé dans le module partagé `shotCounter`.
         const { direct, indirect } = countShotsExact(board, p, opponent);
         result.push({ point: p, directShots: direct, indirectShots: indirect, totalShots: direct + indirect });
     }
     return result;
 }
-
-// ---------------------------------------------------------------------------
-// Structure du plateau
-// ---------------------------------------------------------------------------
 
 function computeLongestPrime(board: number[], player: Player): number {
     let longest = 0;
@@ -161,10 +188,6 @@ export function analyzeBoardStructure(board: number[], player: Player): BoardStr
     return { innerBoardPoints, advancedAnchor, goldenPoint, barPoint, longestPrime };
 }
 
-// ---------------------------------------------------------------------------
-// Classification contact / course
-// ---------------------------------------------------------------------------
-
 function classifyContact(board: number[]): ContactStatus {
     if (board[X_BAR] > 0 || board[O_BAR] < 0) return 'contact';
     let maxX = 0;
@@ -185,17 +208,74 @@ function classifyContact(board: number[]): ContactStatus {
     return 'contact';
 }
 
-// ---------------------------------------------------------------------------
-// API principale
-// ---------------------------------------------------------------------------
+/**
+ * Calcule les métriques de fenêtre de marché (Market Window) et de volatilité du videau.
+ */
+export function computeMarketWindowMetrics(params: {
+    contactStatus: ContactStatus;
+    boardStructure: BoardStructure;
+    blotsAndShots: BlotsAndShots;
+    pipCountDiff: PipCountDiff;
+    opponentTakePoint?: number;
+    gammonPrice?: number;
+    bgsage?: BgsageStrategicInsights;
+}): MarketWindowMetrics {
+    const {
+        contactStatus,
+        boardStructure,
+        blotsAndShots,
+        pipCountDiff,
+        opponentTakePoint = 0.25,
+        gammonPrice = 0.5,
+        bgsage,
+    } = params;
+
+    const cashPoint = Number(Math.max(0.55, Math.min(0.95, 1 - opponentTakePoint)).toFixed(3));
+    const userShotsTotal = Math.min(36, blotsAndShots.user.reduce((s, b) => s + b.totalShots, 0));
+    const bestShotsTotal = Math.min(36, blotsAndShots.best.reduce((s, b) => s + b.totalShots, 0));
+    const gammonThreat = bgsage?.optimalMetrics?.winGammonProb ?? (boardStructure.innerBoardPoints >= 4 ? 0.22 : 0.1);
+
+    let volatility: VolatilityLevel = 'medium';
+    if (contactStatus === 'pureRace') {
+        volatility = 'low';
+    } else if (
+        userShotsTotal >= 6 ||
+        bestShotsTotal >= 6 ||
+        (boardStructure.innerBoardPoints >= 4 && gammonThreat >= 0.2) ||
+        Math.abs(userShotsTotal - bestShotsTotal) >= 5
+    ) {
+        volatility = 'high';
+    }
+
+    const windowWidth = volatility === 'high' ? 0.13 : volatility === 'medium' ? 0.10 : 0.08;
+    const doublePoint = Number(Math.max(0.50, cashPoint - windowWidth).toFixed(3));
+
+    const baseLosers =
+        contactStatus === 'pureRace'
+            ? Math.max(2, Math.min(12, Math.round((12 - Math.min(12, Math.abs(pipCountDiff.diff))) * 0.8)))
+            : Math.min(36, Math.max(userShotsTotal, bestShotsTotal) + boardStructure.innerBoardPoints * 2);
+
+    const optWin = bgsage?.optimalMetrics?.winProb;
+    const optGammon = bgsage?.optimalMetrics?.winGammonProb ?? 0;
+    const effectiveWinEq =
+        optWin !== undefined
+            ? optWin + gammonPrice * optGammon * 0.5
+            : 0.5 - pipCountDiff.diff * 0.008;
+
+    const inMarketWindow = effectiveWinEq >= doublePoint && effectiveWinEq <= cashPoint + 0.03;
+
+    return {
+        doublePoint,
+        cashPoint,
+        volatility,
+        estimatedMarketLosers: Math.max(0, Math.min(36, baseLosers)),
+        inMarketWindow,
+    };
+}
 
 /**
  * Compare l'état du plateau après le coup du joueur et après le meilleur coup
  * du moteur, et retourne un objet JSON structuré de concepts stratégiques.
- *
- * @param initialState  État avant le coup (définit le joueur analysé via `turn`).
- * @param userEndState  État après le coup réellement joué.
- * @param bestEndState  État après le meilleur coup du moteur.
  */
 export function extractStrategicFeatures(
     initialState: BoardState,
@@ -211,14 +291,26 @@ export function extractStrategicFeatures(
     const diff = playerPips - opponentPips;
     const leader: Player | 'tie' = diff < 0 ? player : diff > 0 ? opponent : 'tie';
 
+    const pipCountDiff: PipCountDiff = { player: playerPips, opponent: opponentPips, leader, diff };
+    const blotsAndShots: BlotsAndShots = {
+        user: analyzeBlots(userEndState.board, player),
+        best: analyzeBlots(bestEndState.board, player),
+    };
+    const boardStructure = analyzeBoardStructure(userEndState.board, player);
+    const contactStatus = classifyContact(userEndState.board);
+    const marketWindow = computeMarketWindowMetrics({
+        contactStatus,
+        boardStructure,
+        blotsAndShots,
+        pipCountDiff,
+    });
+
     return {
         player,
-        pipCountDiff: { player: playerPips, opponent: opponentPips, leader, diff },
-        blotsAndShots: {
-            user: analyzeBlots(userEndState.board, player),
-            best: analyzeBlots(bestEndState.board, player),
-        },
-        boardStructure: analyzeBoardStructure(userEndState.board, player),
-        contactStatus: classifyContact(userEndState.board),
+        pipCountDiff,
+        blotsAndShots,
+        boardStructure,
+        contactStatus,
+        marketWindow,
     };
 }

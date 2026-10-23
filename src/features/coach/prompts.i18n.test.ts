@@ -46,7 +46,7 @@ const SAMPLE_PARAMS: CoachPromptParams = {
     playerLevel: 'intermediate',
 };
 
-describe('Coach Prompts & Explanations i18n (FR/EN)', () => {
+describe('Coach Prompts & Explanations i18n (6 Languages: FR, EN, ES, PT, DE, AR)', () => {
     describe('getCoachSystemPrompt', () => {
         it('retourne le prompt système français par défaut ou avec "fr"', () => {
             const promptFr = getCoachSystemPrompt('fr');
@@ -60,6 +60,13 @@ describe('Coach Prompts & Explanations i18n (FR/EN)', () => {
             expect(promptEn).toBe(BACKGAMMON_COACH_SYSTEM_PROMPT_EN);
             expect(promptEn).toContain('Backgammon Grandmaster');
             expect(promptEn).toContain('MANDATORY RESPONSE FORMAT (STRICT JSON)');
+        });
+
+        it('adapte la directive linguistique du Coach pour ES, PT, DE et AR', () => {
+            expect(getCoachSystemPrompt('es')).toContain('Spanish (Español)');
+            expect(getCoachSystemPrompt('pt')).toContain('Portuguese (Português)');
+            expect(getCoachSystemPrompt('de')).toContain('German (Deutsch)');
+            expect(getCoachSystemPrompt('ar')).toContain('Arabic (العربية)');
         });
     });
 
@@ -100,6 +107,24 @@ describe('Coach Prompts & Explanations i18n (FR/EN)', () => {
             expect(explanation.explanation).toContain('The optimal move 8/4 6/4 reduces this exposure');
             expect(explanation.keyConcept).toBe('Shot Minimization');
             expect(explanation.advice).toContain('When your opponent has a strong home board');
+        });
+
+        it('produit une explication règle-basée localisée en ES, PT, DE et AR', () => {
+            const esExp = generateRuleBasedExplanation({ ...SAMPLE_PARAMS, language: 'es' });
+            expect(esExp.keyConcept).toBe('Minimización de tiros');
+            expect(esExp.explanation).toContain('13/7');
+
+            const ptExp = generateRuleBasedExplanation({ ...SAMPLE_PARAMS, language: 'pt' });
+            expect(ptExp.keyConcept).toBe('Minimização de tiros');
+            expect(ptExp.explanation).toContain('8/4 6/4');
+
+            const deExp = generateRuleBasedExplanation({ ...SAMPLE_PARAMS, language: 'de' });
+            expect(deExp.keyConcept).toBe('Schussminimierung');
+            expect(deExp.explanation).toContain('13/7');
+
+            const arExp = generateRuleBasedExplanation({ ...SAMPLE_PARAMS, language: 'ar' });
+            expect(arExp.keyConcept).toBe('تقليل الرميات المباشرة');
+            expect(arExp.explanation).toContain('13/7');
         });
     });
 });

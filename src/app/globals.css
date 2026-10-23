@@ -8,6 +8,8 @@
     height: 100%;
     max-height: 100dvh;
     overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
     margin: 0;
     padding: 0;
     -webkit-overflow-scrolling: touch;
@@ -38,4 +40,37 @@
       scroll-behavior: auto !important;
     }
   }
+}
+
+@layer utilities {
+  /* Lancer de dés : rebond 3D asymétrique + micro-inclinaison naturelle sur le tapis. */
+  @keyframes dice-roll {
+    0% { transform: translate3d(-12px, -22px, 0) rotate(-210deg) scale(0.68); opacity: 0; }
+    58% { transform: translate3d(2px, 3px, 0) rotate(11deg) scale(1.06); opacity: 1; }
+    82% { transform: translate3d(-1px, -1px, 0) rotate(-3deg) scale(0.99); opacity: 1; }
+    100% { transform: rotate(-1.2deg); opacity: 1; }
+  }
+  @keyframes dice-roll-alt {
+    0% { transform: translate3d(14px, -20px, 0) rotate(195deg) scale(0.68); opacity: 0; }
+    62% { transform: translate3d(-2px, 3px, 0) rotate(-12deg) scale(1.05); opacity: 1; }
+    84% { transform: translate3d(1px, -1px, 0) rotate(3.5deg) scale(0.99); opacity: 1; }
+    100% { transform: rotate(1.4deg); opacity: 1; }
+  }
+  .die-roll { animation: dice-roll 0.37s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .die-roll-alt { animation: dice-roll-alt 0.40s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  /* Atterrissage d'un pion sur sa flèche (rebond court 100 % GPU translate3d). */
+  @keyframes checker-land {
+    0% { transform: translate3d(0, -14px, 0) scale3d(1.12, 1.12, 1); opacity: 0.6; }
+    70% { transform: translate3d(0, 1px, 0) scale3d(0.98, 0.98, 1); opacity: 1; }
+    100% { transform: translate3d(0, 0, 0) scale3d(1, 1, 1); opacity: 1; }
+  }
+  .checker-land { animation: checker-land 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+}
+
+/* Isolation stricte de l'indicateur technique Next.js en bas à gauche */
+nextjs-portal,
+[data-nextjs-toast],
+[data-nextjs-dialog-overlay] {
+  display: none !important;
 }

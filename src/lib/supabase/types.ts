@@ -184,7 +184,7 @@ export interface Database {
             coach_explanations: {
                 Row: {
                     id: string;
-                    user_id: string;
+                    user_id: string | null;
                     game_id: string | null;
                     move_id: string | null;
                     position_key: string;
@@ -201,7 +201,7 @@ export interface Database {
                 };
                 Insert: {
                     id?: string;
-                    user_id: string;
+                    user_id?: string | null;
                     game_id?: string | null;
                     move_id?: string | null;
                     position_key: string;
@@ -561,12 +561,73 @@ export interface Database {
                 };
                 Relationships: [];
             };
+            recurring_errors: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    concept_id: string;
+                    concept_label: string;
+                    occurrence_count: number;
+                    total_equity_loss: number;
+                    last_seen_at: string;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    concept_id: string;
+                    concept_label: string;
+                    occurrence_count?: number;
+                    total_equity_loss?: number;
+                    last_seen_at?: string;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    user_id?: string;
+                    concept_id?: string;
+                    concept_label?: string;
+                    occurrence_count?: number;
+                    total_equity_loss?: number;
+                    last_seen_at?: string;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Relationships: [
+                    {
+                        foreignKeyName: 'recurring_errors_user_id_fkey';
+                        columns: ['user_id'];
+                        referencedRelation: 'profiles';
+                        referencedColumns: ['id'];
+                    },
+                ];
+            };
         };
         Views: {
             [_ in never]: never;
         };
         Functions: {
-            [_ in never]: never;
+            upsert_recurring_error: {
+                Args: {
+                    p_user_id: string;
+                    p_concept_id: string;
+                    p_concept_label: string;
+                    p_equity_loss: number;
+                };
+                Returns: {
+                    id: string;
+                    user_id: string;
+                    concept_id: string;
+                    concept_label: string;
+                    occurrence_count: number;
+                    total_equity_loss: number;
+                    last_seen_at: string;
+                    created_at: string;
+                    updated_at: string;
+                };
+            };
         };
         Enums: {
             [_ in never]: never;
@@ -586,5 +647,6 @@ export type MatchmakingQueueRecord = Database['public']['Tables']['matchmaking_q
 export type GameRoomRecord = Database['public']['Tables']['game_rooms']['Row'];
 export type RoomActionRecord = Database['public']['Tables']['room_actions']['Row'];
 export type RoomPresenceSessionRecord = Database['public']['Tables']['room_presence_sessions']['Row'];
+export type RecurringErrorRecord = Database['public']['Tables']['recurring_errors']['Row'];
 
 

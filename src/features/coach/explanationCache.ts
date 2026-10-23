@@ -1,8 +1,8 @@
 /**
- * Cache d'explications du Coach IA (hash position + coup).
+ * Cache d'explications du Coach IA (clé canonique XGID complète : plateau + dés + videau + Crawford + score + coup).
  *
- * Permet d'éviter les appels API redondants lors des retours en arrière,
- * ré-analyses de positions identiques, ou consultations multiples d'un même coup.
+ * Permet d'éviter les appels API redondants tout en garantissant zéro collision
+ * entre deux positions ressemblantes ayant un contexte de videau, de dés ou de Crawford différent.
  */
 
 export interface CachedExplanation {
@@ -10,6 +10,9 @@ export interface CachedExplanation {
     explanation?: string;
     keyConcept?: string;
     advice?: string;
+    whyFailed?: string;
+    whyOptimal?: string;
+    conceptId?: string;
     rawText: string;
     source: 'llm' | 'rule-based' | 'cache';
     timestamp: number;
@@ -17,6 +20,12 @@ export interface CachedExplanation {
 
 export interface CacheKeyParams {
     positionKey?: string | null;
+    xgid?: string | null;
+    board?: ReadonlyArray<number> | null;
+    dice?: readonly [number, number] | [number, number] | null;
+    cubeValue?: number | null;
+    cubeOwner?: 'X' | 'O' | null;
+    crawford?: boolean | null;
     playedMove: string;
     optimalMove?: string | null;
     verdict?: string | null;
@@ -26,16 +35,19 @@ export interface CacheKeyParams {
 }
 
 /**
- * Calcule une clé de cache déterministe pour une position et un coup donné.
+ * Calcule une clé de cache canonique complète (XGID / plateau, dés, videau, Crawford, score, coup joué/optimal).
  */
 export function computeExplanationCacheKey(params: CacheKeyParams): string {
-    const pos = (params.positionKey || 'default_pos').trim();
+    const rawPos = params.xgid || params.positionKey || (params.board ? params.board.join(',') : 'default_pos');
+    const pos = rawPos.trim();
     const played = params.playedMove.trim();
     const opt = (params.optimalMove || '').trim();
     const verdict = (params.verdict || '').trim().toLowerCase();
     const score = `${params.matchLength ?? 0}_${params.scoreX ?? 0}_${params.scoreO ?? 0}`;
+    const diceStr = params.dice ? `${params.dice[0]}-${params.dice[1]}` : 'no_dice';
+    const cubeStr = `${params.cubeValue ?? 1}_${params.cubeOwner ?? 'center'}_${params.crawford ? '1' : '0'}`;
 
-    return `coach::pos[${pos}]::mv[${played}]::opt[${opt}]::v[${verdict}]::score[${score}]`;
+    return `coach::pos[${pos}]::dice[${diceStr}]::cube[${cubeStr}]::mv[${played}]::opt[${opt}]::v[${verdict}]::score[${score}]`;
 }
 
 export class ExplanationCache {
@@ -54,11 +66,11 @@ export class ExplanationCache {
         try {
             const raw = window.sessionStorage.getItem(this.storageKey);
             if (!raw) return;
-            const entries = JSON.parse(raw);
+            const entries: unknown = JSON.parse(raw);
             if (Array.isArray(entries)) {
-                for (const [key, value] of entries) {
-                    if (key && value && typeof value === 'object') {
-                        this.memoryMap.set(key, value);
+                for (const entry of entries) {
+                    if (Array.isArray(entry) && typeof entry[0] === 'string' && entry[1] && typeof entry[1] === 'object') {
+                        this.memoryMap.set(entry[0], entry[1] as CachedExplanation);
                     }
                 }
             }
@@ -88,7 +100,9 @@ export class ExplanationCache {
     }
 
     public set(key: string, explanation: Omit<CachedExplanation, 'timestamp'>): void {
-        if (this.memoryMap.size >= this.maxEntries) {
+        if (this.memoryMap.has(key)) {
+            this.memoryMap.delete(key);
+        } else if (this.memoryMap.size >= this.maxEntries) {
             const oldestKey = this.memoryMap.keys().next().value;
             if (oldestKey) {
                 this.memoryMap.delete(oldestKey);
@@ -124,5 +138,4 @@ export class ExplanationCache {
     }
 }
 
-// Instance singleton partagée
 export const globalExplanationCache = new ExplanationCache();

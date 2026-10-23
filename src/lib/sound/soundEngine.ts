@@ -9,6 +9,8 @@
  * - Fanfare de victoire de tournoi
  */
 
+import { voiceCoach } from './voiceCoach';
+
 class BackgammonSoundEngine {
     private ctx: AudioContext | null = null;
     private isMuted: boolean = false;
@@ -43,6 +45,14 @@ class BackgammonSoundEngine {
 
     public isMute(): boolean {
         return this.isMuted;
+    }
+
+    public setVolume(val: number): void {
+        this.volume = Math.max(0, Math.min(1, val));
+    }
+
+    public getVolume(): number {
+        return this.volume;
     }
 
     public toggleMute(): boolean {
@@ -368,6 +378,28 @@ class BackgammonSoundEngine {
             osc.start(t);
             osc.stop(t + 0.4);
         });
+    }
+
+    /**
+     * Synthèse vocale facultative du Coach IA (Web Speech API en 5 langues : EN, FR, ES, DE, JA).
+     */
+    public isVoiceCoachEnabled(): boolean {
+        return voiceCoach.isEnabled();
+    }
+
+    public toggleVoiceCoach(): boolean {
+        return voiceCoach.toggleEnabled();
+    }
+
+    public speakCoachAlert(text: string, locale: string = 'fr', force: boolean = false): boolean {
+        return voiceCoach.speak(text, locale, {
+            force,
+            isGlobalMuted: this.isMuted,
+        });
+    }
+
+    public stopCoachVoice(): void {
+        voiceCoach.stop();
     }
 }
 

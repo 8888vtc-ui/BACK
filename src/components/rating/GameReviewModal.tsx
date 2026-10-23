@@ -7,6 +7,7 @@ import { impactLight } from '../../lib/capacitor/haptics';
 import EquityCurveChart from './EquityCurveChart';
 import ReviewBoardPreview from './ReviewBoardPreview';
 import ConceptsErrorSummary from './ConceptsErrorSummary';
+import GameReviewCourse from './GameReviewCourse';
 import { serializeToSGF, downloadFile } from '../../features/export';
 import { useBoardTheme, getModalThemeClasses, type ThemeName } from '../../hooks/useBoardTheme';
 
@@ -15,25 +16,29 @@ export interface GameReviewModalProps {
     isOpen: boolean;
     onClose: () => void;
     theme?: ThemeName;
+    /** Onglet initial à afficher à l'ouverture. */
+    initialTab?: ReviewTab;
 }
 
-export type ReviewTab = 'overview' | 'step_by_step' | 'concepts' | 'table';
+export type ReviewTab = 'overview' | 'step_by_step' | 'concepts' | 'table' | 'course';
 
 export default function GameReviewModal({
     analysis,
     isOpen,
     onClose,
     theme,
+    initialTab = 'overview',
 }: GameReviewModalProps) {
     const { theme: activeTheme } = useBoardTheme();
     const currentTheme = theme || activeTheme;
     const modalClasses = getModalThemeClasses(currentTheme);
 
-    const [activeTab, setActiveTab] = useState<ReviewTab>('overview');
+    const [activeTab, setActiveTab] = useState<ReviewTab>(initialTab);
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
     const [filterOnlyMistakes, setFilterOnlyMistakes] = useState<boolean>(false);
+    const [drillModeActive, setDrillModeActive] = useState<boolean>(false);
 
-    const evaluatedMoves = analysis?.evaluatedMoves || [];
+    const evaluatedMoves = useMemo(() => analysis?.evaluatedMoves ?? [], [analysis]);
     const totalMoves = evaluatedMoves.length;
 
     const isMistakeIndex = useCallback(
@@ -114,8 +119,8 @@ export default function GameReviewModal({
 
     const movesToShow = filterOnlyMistakes
         ? evaluatedMoves.filter(
-              (m) => m.verdict === 'doubtful' || m.verdict === 'blunder' || m.verdict === 'howler',
-          )
+            (m) => m.verdict === 'doubtful' || m.verdict === 'blunder' || m.verdict === 'howler',
+        )
         : evaluatedMoves;
 
     const totalDecisions = Math.max(1, analysis.unforcedDecisionsCount);
@@ -132,26 +137,26 @@ export default function GameReviewModal({
                 {/* 1. En-tête du Modal */}
                 <div className={`flex items-center justify-between border-b p-4 sm:p-5 ${modalClasses.header}`}>
                     <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-2xl shadow-lg shadow-blue-950">
-                            📊
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#d4af37]/50 bg-gradient-to-br from-[#33200f] to-[#1a0f07] text-2xl text-[#f3c65f] shadow-lg">
+                            ⚜
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
                                 <h2
                                     id="game-review-title"
-                                    className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-2"
+                                    className="font-serif text-lg sm:text-xl font-black tracking-tight text-[#fdf8eb] flex items-center gap-2"
                                 >
                                     <span>Bilan &amp; Estimation du PR</span>
-                                    <span className="text-xs font-normal text-slate-400 hidden sm:inline">
+                                    <span className="text-xs font-sans font-normal text-[#e8dcc6]/60 hidden sm:inline">
                                         (Partie Complète)
                                     </span>
                                 </h2>
-                                <span className="rounded-full border border-blue-400/40 bg-blue-500/20 px-2 py-0.5 text-xs font-bold text-blue-300">
+                                <span className="rounded-full border border-[#d4af37]/50 bg-[#2a1a0d] px-2.5 py-0.5 text-xs font-bold text-[#fce8b2]">
                                     {analysis.prCategory}
                                 </span>
                             </div>
-                            <p className="text-xs text-slate-400 mt-0.5">
-                                Review complète certifiée GNUBG : navigation coup par coup, courbe d'équité et analyse conceptuelle.
+                            <p className="text-xs text-[#e8dcc6]/70 mt-0.5">
+                                Review complète certifiée GNUBG : navigation coup par coup, courbe d&apos;équité et analyse conceptuelle.
                             </p>
                         </div>
                     </div>
@@ -183,7 +188,7 @@ export default function GameReviewModal({
                                     console.warn('Erreur export SGF :', e);
                                 }
                             }}
-                            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-indigo-700/60 bg-indigo-950/40 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-900/60 transition shadow-sm"
+                            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-[#d4af37]/40 bg-[#221309] px-3 py-1.5 text-xs font-semibold text-[#fce8b2] hover:border-[#f3c65f] hover:bg-[#2d1a0d] transition shadow-sm"
                             title="Télécharger l'enregistrement de la partie au format standard SGF (Backgammon GM[6])"
                             data-testid="export-sgf-review-btn"
                         >
@@ -199,9 +204,9 @@ export default function GameReviewModal({
                                     title: 'Mon bilan Backgammon Pro',
                                     text: `J'ai terminé mon match avec un PR de ${analysis.performanceRating} (${analysis.prCategory}) et un Elo estimé à ${analysis.estimatedRating} !`,
                                     dialogTitle: 'Partager mon bilan de partie',
-                                }).catch(() => {});
+                                }).catch(() => { });
                             }}
-                            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-blue-700/60 bg-blue-950/40 px-3 py-1.5 text-xs font-semibold text-blue-300 hover:bg-blue-900/60 transition shadow-sm"
+                            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-[#d4af37]/40 bg-[#221309] px-3 py-1.5 text-xs font-semibold text-[#fce8b2] hover:border-[#f3c65f] hover:bg-[#2d1a0d] transition shadow-sm"
                             title="Partager mon bilan et mon Performance Rating"
                             data-testid="share-review-btn"
                         >
@@ -212,7 +217,7 @@ export default function GameReviewModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-xl border border-slate-700 bg-slate-800/80 p-2 text-slate-400 hover:text-white hover:bg-slate-700 transition"
+                            className="rounded-xl border border-[#d4af37]/35 bg-[#1e120a] p-2 text-[#e8dcc6]/80 hover:text-white hover:border-[#f3c65f] transition"
                             aria-label="Fermer le bilan"
                             data-testid="close-review-modal-btn"
                         >
@@ -222,15 +227,14 @@ export default function GameReviewModal({
                 </div>
 
                 {/* 2. Onglets de Navigation Post-Partie */}
-                <div className="flex items-center gap-1.5 border-b border-slate-800 bg-slate-950/40 px-4 sm:px-6 py-2.5 overflow-x-auto">
+                <div className="flex items-center gap-1.5 border-b border-[#d4af37]/25 bg-[#0d0704]/80 px-4 sm:px-6 py-2.5 overflow-x-auto">
                     <button
                         type="button"
                         onClick={() => setActiveTab('overview')}
-                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${
-                            activeTab === 'overview'
-                                ? 'bg-blue-600 text-white shadow-md'
-                                : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white'
-                        }`}
+                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${activeTab === 'overview'
+                            ? 'border border-[#f5d77f]/60 bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] text-[#1a0f07] shadow-md'
+                            : 'border border-[#d4af37]/20 bg-[#1a0f08] text-[#e8dcc6]/80 hover:border-[#d4af37]/45 hover:text-white'
+                            }`}
                         data-testid="tab-overview"
                     >
                         <span>📈</span>
@@ -240,16 +244,15 @@ export default function GameReviewModal({
                     <button
                         type="button"
                         onClick={() => setActiveTab('step_by_step')}
-                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${
-                            activeTab === 'step_by_step'
-                                ? 'bg-blue-600 text-white shadow-md'
-                                : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white'
-                        }`}
+                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${activeTab === 'step_by_step'
+                            ? 'border border-[#f5d77f]/60 bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] text-[#1a0f07] shadow-md'
+                            : 'border border-[#d4af37]/20 bg-[#1a0f08] text-[#e8dcc6]/80 hover:border-[#d4af37]/45 hover:text-white'
+                            }`}
                         data-testid="tab-step-by-step"
                     >
                         <span>♟️</span>
                         <span>Coup par Coup</span>
-                        <span className="rounded-full bg-slate-900 px-1.5 py-0.2 text-[10px] text-blue-300">
+                        <span className="rounded-full bg-[#120904] px-1.5 py-0.2 text-[10px] text-[#f3c65f]">
                             #{selectedIndex + 1}
                         </span>
                     </button>
@@ -257,11 +260,10 @@ export default function GameReviewModal({
                     <button
                         type="button"
                         onClick={() => setActiveTab('concepts')}
-                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${
-                            activeTab === 'concepts'
-                                ? 'bg-blue-600 text-white shadow-md'
-                                : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white'
-                        }`}
+                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${activeTab === 'concepts'
+                            ? 'border border-[#f5d77f]/60 bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] text-[#1a0f07] shadow-md'
+                            : 'border border-[#d4af37]/20 bg-[#1a0f08] text-[#e8dcc6]/80 hover:border-[#d4af37]/45 hover:text-white'
+                            }`}
                         data-testid="tab-concepts"
                     >
                         <span>🧠</span>
@@ -276,15 +278,27 @@ export default function GameReviewModal({
                     <button
                         type="button"
                         onClick={() => setActiveTab('table')}
-                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${
-                            activeTab === 'table'
-                                ? 'bg-blue-600 text-white shadow-md'
-                                : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white'
-                        }`}
+                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${activeTab === 'table'
+                            ? 'border border-[#f5d77f]/60 bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] text-[#1a0f07] shadow-md'
+                            : 'border border-[#d4af37]/20 bg-[#1a0f08] text-[#e8dcc6]/80 hover:border-[#d4af37]/45 hover:text-white'
+                            }`}
                         data-testid="tab-table"
                     >
                         <span>📋</span>
                         <span>Table des Coups</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('course')}
+                        className={`flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${activeTab === 'course'
+                            ? 'border border-[#f5d77f]/60 bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] text-[#1a0f07] shadow-md'
+                            : 'border border-[#d4af37]/20 bg-[#1a0f08] text-[#e8dcc6]/80 hover:border-[#d4af37]/45 hover:text-white'
+                            }`}
+                        data-testid="tab-course"
+                    >
+                        <span>🎓</span>
+                        <span>Cours IA</span>
                     </button>
                 </div>
 
@@ -313,7 +327,19 @@ export default function GameReviewModal({
                                     </div>
                                     <p className="mt-1 text-[11px] text-slate-400">
                                         Erreur moyenne : -{analysis.errorRate} ΔEq / coup
+                                        {analysis.snowieErrorRate !== undefined && (
+                                            <span className="ml-2 text-slate-500">
+                                                (Snowie ER: -{analysis.snowieErrorRate})
+                                            </span>
+                                        )}
                                     </p>
+                                    {analysis.luckAdjustedPR !== undefined && (
+                                        <p className="mt-0.5 text-[10px] text-blue-300/80 font-mono" data-testid="review-luck-adjusted-pr">
+                                            PR Ajusté Chance : {analysis.luckAdjustedPR} • Luck :{' '}
+                                            {(analysis.totalLuck ?? 0) >= 0 ? '+' : ''}
+                                            {(analysis.totalLuck ?? 0).toFixed(3)} EMG
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Elo Estimé Card */}
@@ -462,6 +488,7 @@ export default function GameReviewModal({
                                 hasPrevMistake={hasPrevMistake}
                                 hasNextMistake={hasNextMistake}
                                 onSelectIndex={(idx) => setSelectedIndex(idx)}
+                                initialDrillMode={drillModeActive}
                             />
 
                             {/* Courbe miniature synchronisée pour saut direct */}
@@ -501,22 +528,20 @@ export default function GameReviewModal({
                                     <button
                                         type="button"
                                         onClick={() => setFilterOnlyMistakes(false)}
-                                        className={`px-3 py-1 rounded-lg font-medium transition ${
-                                            !filterOnlyMistakes
-                                                ? 'bg-slate-800 text-white shadow'
-                                                : 'text-slate-400 hover:text-white'
-                                        }`}
+                                        className={`px-3 py-1 rounded-lg font-medium transition ${!filterOnlyMistakes
+                                            ? 'bg-slate-800 text-white shadow'
+                                            : 'text-slate-400 hover:text-white'
+                                            }`}
                                     >
                                         Tous les coups ({evaluatedMoves.length})
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setFilterOnlyMistakes(true)}
-                                        className={`px-3 py-1 rounded-lg font-medium transition ${
-                                            filterOnlyMistakes
-                                                ? 'bg-rose-900/60 text-rose-200 border border-rose-700/50 shadow'
-                                                : 'text-slate-400 hover:text-white'
-                                        }`}
+                                        className={`px-3 py-1 rounded-lg font-medium transition ${filterOnlyMistakes
+                                            ? 'bg-rose-900/60 text-rose-200 border border-rose-700/50 shadow'
+                                            : 'text-slate-400 hover:text-white'
+                                            }`}
                                     >
                                         Erreurs uniquement (
                                         {analysis.breakdown.doubtful +
@@ -569,11 +594,10 @@ export default function GameReviewModal({
                                                             {m.optimalNotation}
                                                         </td>
                                                         <td
-                                                            className={`p-3 text-right font-bold ${
-                                                                m.equityLoss === 0
-                                                                    ? 'text-slate-400'
-                                                                    : 'text-rose-400'
-                                                            }`}
+                                                            className={`p-3 text-right font-bold ${m.equityLoss === 0
+                                                                ? 'text-slate-400'
+                                                                : 'text-rose-400'
+                                                                }`}
                                                         >
                                                             {m.equityLoss === 0
                                                                 ? '0.000'
@@ -587,18 +611,37 @@ export default function GameReviewModal({
                                                             </span>
                                                         </td>
                                                         <td className="p-3 text-right font-sans">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    if (originalIndex >= 0) {
-                                                                        setSelectedIndex(originalIndex);
-                                                                        setActiveTab('step_by_step');
-                                                                    }
-                                                                }}
-                                                                className="rounded-lg bg-slate-800 hover:bg-slate-700 px-2.5 py-1 text-[11px] font-semibold text-slate-200 transition"
-                                                            >
-                                                                Inspecter ➔
-                                                            </button>
+                                                            <div className="flex items-center justify-end gap-1.5">
+                                                                {(m.verdict === 'doubtful' || m.verdict === 'blunder' || m.verdict === 'howler') && (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            if (originalIndex >= 0) {
+                                                                                setSelectedIndex(originalIndex);
+                                                                                setDrillModeActive(true);
+                                                                                setActiveTab('step_by_step');
+                                                                            }
+                                                                        }}
+                                                                        data-testid={`drill-row-btn-${m.moveNumber}`}
+                                                                        className="rounded-lg border border-amber-500/40 bg-amber-950/40 hover:bg-amber-900/60 px-2 py-1 text-[11px] font-bold text-amber-300 transition"
+                                                                    >
+                                                                        🎯 Drill
+                                                                    </button>
+                                                                )}
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        if (originalIndex >= 0) {
+                                                                            setSelectedIndex(originalIndex);
+                                                                            setDrillModeActive(false);
+                                                                            setActiveTab('step_by_step');
+                                                                        }
+                                                                    }}
+                                                                    className="rounded-lg bg-slate-800 hover:bg-slate-700 px-2.5 py-1 text-[11px] font-semibold text-slate-200 transition"
+                                                                >
+                                                                    Inspecter ➔
+                                                                </button>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 );
@@ -607,6 +650,15 @@ export default function GameReviewModal({
                                     </table>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* ONGLET 5 : COURS EXPLICATIF IA */}
+                    {activeTab === 'course' && (
+                        <div className="space-y-5 animate-in fade-in">
+                            <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-950/30 to-slate-900 p-4 sm:p-5">
+                                <GameReviewCourse analysis={analysis} />
+                            </div>
                         </div>
                     )}
                 </div>
@@ -633,7 +685,7 @@ export default function GameReviewModal({
                                     scoreX: analysis.scoreX,
                                     scoreO: analysis.scoreO,
                                     matchLength: analysis.matchLength,
-                                }).catch(() => {});
+                                }).catch(() => { });
                             }}
                             className="rounded-xl border border-blue-500/40 bg-blue-950/40 px-3.5 py-2 text-xs font-bold text-blue-300 hover:bg-blue-900/40 transition flex items-center gap-1.5"
                         >

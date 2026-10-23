@@ -486,6 +486,20 @@ export function isInitialBoardPosition(board: number[]): boolean {
 }
 
 /**
+ * Vérifie si les 15 pions du joueur X sont encore dans leur configuration initiale d'ouverture.
+ */
+export function isPlayerXInitialSetup(board: number[]): boolean {
+    if (!board || board.length < 26) return false;
+    return (
+        board[6] === 5 &&
+        board[8] === 3 &&
+        board[13] === 5 &&
+        board[24] === 2 &&
+        (board[0] || 0) === 0
+    );
+}
+
+/**
  * Détermine si le contexte actuel correspond à un coup d'ouverture pour le joueur X.
  */
 export function isOpeningSituation(
@@ -495,6 +509,7 @@ export function isOpeningSituation(
 ): boolean {
     if (!dice) return false;
     if (dice[0] === dice[1]) return false; // Pas un coup d'ouverture standard
+    if (!isPlayerXInitialSetup(board)) return false;
     if (turnCount <= 1) return true;
     return isInitialBoardPosition(board);
 }

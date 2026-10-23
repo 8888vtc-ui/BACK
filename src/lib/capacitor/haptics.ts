@@ -48,7 +48,7 @@ export async function impactHeavy(): Promise<void> {
         if (Capacitor.isPluginAvailable('Haptics')) {
             await Haptics.impact({ style: ImpactStyle.Heavy });
         } else if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
-            navigator.vibrate([40, 30, 40]);
+            navigator.vibrate(50);
         }
     } catch {
         // Ignorer

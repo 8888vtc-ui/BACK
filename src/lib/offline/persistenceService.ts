@@ -1,17 +1,18 @@
 /**
  * Service de Persistance Offline-First pour Backgammon.
  *
- * Architecture :
- * 1. Écrit immédiatement dans IndexedDB (accès local 0ms et résistant aux pannes).
- * 2. Enfile la mutation dans la Sync Queue.
- * 3. Tente la synchronisation vers Supabase si en ligne.
- * 4. Déclenche automatiquement le vidage de la file à la reconnexion (événement 'online').
+ * Architecture résiliente :
+ * 1. Écrit immédiatement dans IndexedDB (accès local 0ms et résistant aux crashs).
+ * 2. Supporte les écritures par lot sécurisées (writeBatch).
+ * 3. Enfile les mutations dans la Sync Queue avec déduplication et horodatage.
+ * 4. Tente la synchronisation vers Supabase si en ligne avec replay à la reconnexion.
  */
 
-import { putRecord, getRecord, getAllRecords } from './idb';
+import { putRecord, getRecord, writeBatch, getAllRecords } from './idb';
 import {
     enqueueSync,
     processSyncQueue,
+    flushSyncQueue,
     subscribeSyncStatus,
     SyncStatus,
 } from './syncQueue';
@@ -73,6 +74,29 @@ export interface LocalCoachExplanationRecord {
     created_at: string;
 }
 
+export interface LocalGameAnalysisRecord {
+    id: string;
+    game_id: string;
+    user_id?: string;
+    error_rate: number;
+    bmab_rating: string;
+    performance_rating: number;
+    cube_performance_rating?: number;
+    created_at: string;
+    raw_data: Record<string, unknown>;
+}
+
+export interface LocalRecurrentMistakeRecord {
+    id: string;
+    game_id?: string;
+    category: string;
+    position_xgid: string;
+    played_move: string;
+    optimal_move: string;
+    equity_loss: number;
+    created_at: string;
+}
+
 let isInitialized = false;
 
 /**
@@ -82,19 +106,17 @@ export function initOfflineSync(): void {
     if (isInitialized || typeof window === 'undefined') return;
     isInitialized = true;
 
-    // Si Supabase n'est pas configuré -> mode local-only, aucun écouteur réseau nécessaire
     if (!supabaseModule.isSupabaseConfigured()) {
         return;
     }
 
     window.addEventListener('online', () => {
-        console.log('[OfflineSync] Connexion réseau rétablie, vidage de la file de synchronisation...');
-        processSyncQueue();
+        console.log('[OfflineSync] Connexion rétablie, vidage de la file de synchronisation...');
+        flushSyncQueue();
     });
 
-    // Synchronisation initiale au démarrage si en ligne
     if (window.navigator.onLine) {
-        processSyncQueue();
+        flushSyncQueue();
     }
 }
 
@@ -108,45 +130,50 @@ export async function persistNewGame(game: LocalGameRecord): Promise<void> {
         user_id: game.user_id || user?.id || 'anonymous_player',
     };
 
-    // 1. Stockage local immédiat dans IndexedDB
     await putRecord('games', enriched);
 
-    // 2. Enfilement Supabase uniquement si configuré
     if (supabaseModule.isSupabaseConfigured()) {
-        await enqueueSync('games', 'insert', enriched);
+        await enqueueSync('games', 'insert', enriched as unknown as Record<string, unknown>);
 
-        // 3. Déclenchement de synchronisation si en ligne
         if (typeof window !== 'undefined' && window.navigator.onLine) {
-            processSyncQueue();
+            flushSyncQueue();
         }
     }
 }
 
 /**
- * Met à jour une partie existante (Offline-first).
+ * Met à jour une partie existante sans écraser les propriétés existantes (videau, scores).
  */
 export async function persistGameUpdate(
     gameId: string,
     updates: Partial<LocalGameRecord>,
 ): Promise<void> {
     const existing = await getRecord<LocalGameRecord>('games', gameId);
+    const nowIso = new Date().toISOString();
     const updated: LocalGameRecord = {
-        ...(existing || ({} as LocalGameRecord)),
+        opponent_type: existing?.opponent_type ?? 'ai',
+        match_length: existing?.match_length ?? 7,
+        score_x: existing?.score_x ?? 0,
+        score_o: existing?.score_o ?? 0,
+        cube_value: existing?.cube_value ?? 1,
+        cube_owner: existing?.cube_owner ?? null,
+        is_crawford: existing?.is_crawford ?? false,
+        status: existing?.status ?? 'in_progress',
+        started_at: existing?.started_at ?? nowIso,
+        created_at: existing?.created_at ?? nowIso,
+        ...existing,
         ...updates,
         id: gameId,
-        updated_at: new Date().toISOString(),
+        updated_at: updates.updated_at || nowIso,
     };
 
-    // 1. Mise à jour locale immédiate
     await putRecord('games', updated);
 
-    // 2. Enfilement dans la file Supabase si configuré
     if (supabaseModule.isSupabaseConfigured()) {
-        await enqueueSync('games', 'update', updated);
+        await enqueueSync('games', 'update', updated as unknown as Record<string, unknown>);
 
-        // 3. Synchronisation
         if (typeof window !== 'undefined' && window.navigator.onLine) {
-            processSyncQueue();
+            flushSyncQueue();
         }
     }
 }
@@ -164,10 +191,33 @@ export async function persistMove(move: LocalMoveRecord): Promise<void> {
     await putRecord('moves', enriched);
 
     if (supabaseModule.isSupabaseConfigured()) {
-        await enqueueSync('moves', 'insert', enriched);
+        await enqueueSync('moves', 'insert', enriched as unknown as Record<string, unknown>);
 
         if (typeof window !== 'undefined' && window.navigator.onLine) {
-            processSyncQueue();
+            flushSyncQueue();
+        }
+    }
+}
+
+/**
+ * Enregistre un lot de coups en une seule transaction atomique (writeBatch).
+ */
+export async function persistMovesBatch(moves: LocalMoveRecord[]): Promise<void> {
+    if (moves.length === 0) return;
+    const user = await getCurrentUser().catch(() => null);
+    const enrichedList = moves.map((m) => ({
+        ...m,
+        user_id: m.user_id || user?.id || 'anonymous_player',
+    }));
+
+    await writeBatch('moves', enrichedList);
+
+    if (supabaseModule.isSupabaseConfigured()) {
+        for (const move of enrichedList) {
+            await enqueueSync('moves', 'insert', move as unknown as Record<string, unknown>);
+        }
+        if (typeof window !== 'undefined' && window.navigator.onLine) {
+            flushSyncQueue();
         }
     }
 }
@@ -187,13 +237,62 @@ export async function persistCoachExplanation(
     await putRecord('coach_explanations', enriched);
 
     if (supabaseModule.isSupabaseConfigured()) {
-        await enqueueSync('coach_explanations', 'insert', enriched);
+        await enqueueSync('coach_explanations', 'insert', enriched as unknown as Record<string, unknown>);
 
         if (typeof window !== 'undefined' && window.navigator.onLine) {
-            processSyncQueue();
+            flushSyncQueue();
         }
     }
 }
 
-export { subscribeSyncStatus, processSyncQueue };
+/**
+ * Sauvegarde une analyse de partie dans le store IDB v2 'game_analyses'.
+ */
+export async function persistLocalGameAnalysis(
+    analysisRecord: LocalGameAnalysisRecord,
+): Promise<void> {
+    await putRecord('game_analyses', analysisRecord);
+}
+
+/**
+ * Sauvegarde une erreur récurrente dans le store IDB v2 'recurrent_mistakes'.
+ */
+export async function persistRecurrentMistake(
+    mistakeRecord: LocalRecurrentMistakeRecord,
+): Promise<void> {
+    await putRecord('recurrent_mistakes', mistakeRecord);
+}
+
+/**
+ * Recherche une explication Coach dans le cache IndexedDB local par `position_key`.
+ */
+export async function getLocalCoachExplanationByKey(
+    positionKey: string,
+): Promise<LocalCoachExplanationRecord | null> {
+    if (!positionKey) return null;
+    const all = await getAllRecords<LocalCoachExplanationRecord>('coach_explanations');
+    const matches = all.filter((r) => r.position_key === positionKey && Boolean(r.explanation));
+    if (matches.length === 0) return null;
+    matches.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return matches.find((m) => m.source === 'llm') ?? matches[0] ?? null;
+}
+
+/**
+ * Charge toutes les erreurs récurrentes stockées localement dans IndexedDB ('recurrent_mistakes').
+ */
+export async function loadLocalRecurrentMistakes(): Promise<LocalRecurrentMistakeRecord[]> {
+    return getAllRecords<LocalRecurrentMistakeRecord>('recurrent_mistakes');
+}
+
+/**
+ * Charge les parties récentes sauvegardées localement dans IndexedDB.
+ */
+export async function loadRecentGames(limit = 10): Promise<LocalGameRecord[]> {
+    const all = await getAllRecords<LocalGameRecord>('games');
+    return all
+        .sort((a, b) => new Date(b.created_at || b.started_at).getTime() - new Date(a.created_at || a.started_at).getTime())
+        .slice(0, limit);
+}
+
+export { subscribeSyncStatus, processSyncQueue, flushSyncQueue };
 export type { SyncStatus };

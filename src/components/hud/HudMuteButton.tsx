@@ -1,11 +1,8 @@
 'use client';
 
 /**
- * Bouton Mute / Unmute du HUD supérieur — feedback audio du jeu.
+ * Bouton Mute / Unmute du HUD supérieur — Médaillon en Laiton Brossé & Ébène.
  * Extrait de `MatchHud.tsx` (LOI 5 : composants ≤ 300 lignes).
- *
- * L'état (`isMuted`, `toggleMute`) vient de `useSoundManager` appelé par le
- * parent, afin de rester synchronisé avec le menu ⚙️.
  */
 
 import React from 'react';
@@ -26,12 +23,18 @@ export const HudMuteButton: React.FC<HudMuteButtonProps> = ({ isMuted, onToggle 
             aria-label={label}
             aria-pressed={isMuted}
             title={label}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg border text-sm transition active:scale-95 ${isMuted
-                ? 'border-rose-500/50 bg-rose-950/40 text-rose-300 hover:bg-rose-900/50'
-                : 'border-emerald-500/40 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/40'
-                }`}
+            className={`flex h-8 w-8 items-center justify-center rounded-xl border text-xs transition active:scale-95 ${
+                isMuted
+                    ? 'border-rose-500/50 bg-[#24080b] text-rose-300 hover:border-rose-400'
+                    : 'border-[#d4af37]/40 bg-[#180c06] text-[#f3c65f] hover:border-[#f3c65f] hover:text-white'
+            }`}
         >
-            <span aria-hidden="true">{isMuted ? '🔇' : '🔊'}</span>
+            <span
+                aria-hidden="true"
+                className="[filter:sepia(0.9)_saturate(2.5)_hue-rotate(5deg)]"
+            >
+                {isMuted ? '🔇' : '🔊'}
+            </span>
         </button>
     );
 };

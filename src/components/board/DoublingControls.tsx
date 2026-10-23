@@ -10,6 +10,7 @@ export interface DoublingControlsProps {
     cubeOwner: Player | null;
     canDouble: boolean;
     crawford: boolean;
+    isDMP?: boolean;
     doublingOfferedBy: Player | null;
     currentTurn: Player;
     onOfferDouble: () => void;
@@ -23,6 +24,7 @@ export default function DoublingControls({
     cubeOwner,
     canDouble,
     crawford,
+    isDMP = false,
     doublingOfferedBy,
     currentTurn,
     onOfferDouble,
@@ -116,8 +118,10 @@ export default function DoublingControls({
                         title={
                             crawford
                                 ? 'Règle de Crawford : le videau est suspendu pour cette manche'
+                                : isDMP
+                                ? 'Double Match Point (DMP) : le videau est désactivé'
                                 : !canDouble
-                                ? 'Vous ne possédez pas le videau pour doubler'
+                                ? 'Vous ne possédez pas le videau pour doubler ou le videau est indisponible'
                                 : `Proposer de doubler le videau à ${nextCubeValue}`
                         }
                         className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-bold transition shadow ${

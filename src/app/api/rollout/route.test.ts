@@ -25,7 +25,7 @@ describe('Rollout API Routes', () => {
         const req = new NextRequest('http://localhost:3000/api/rollout', {
             method: 'POST',
             body: JSON.stringify({
-                xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
                 trials: 144,
                 ply: 2,
                 candidateMoves: ['8/5 6/5', '24/20 13/10'],
@@ -52,7 +52,7 @@ describe('Rollout API Routes', () => {
         const req = new NextRequest('http://localhost:3000/api/rollout', {
             method: 'POST',
             body: JSON.stringify({
-                xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
                 trials: 324,
                 candidateMoves: ['8/5 6/5'],
             }),

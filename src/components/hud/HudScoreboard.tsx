@@ -1,122 +1,140 @@
 'use client';
 
 /**
- * Cartes joueurs du HUD supérieur (style table de tournoi XG / Extreme Gammon).
+ * Cartes joueurs du HUD supérieur — Guichets Horlogers Encastrés dans la Boiserie.
  *
  * Rôle :
- *   Affiche, pour chaque joueur, une carte dense et lisible :
- *   pion 3D + nom + score + badge PR en direct + pip count.
+ *   Affiche, pour chaque joueur, un cadran encastré en onyx et laiton :
+ *   pion 3D + nom + guichet de score biseauté + badge PR en direct + pip count.
  *   Aucun calcul métier : les valeurs arrivent prêtes à afficher.
- *
- * Dépendances :
- *   `Player` (type).
- *
- * Retrait :
- *   Supprimer ce fichier et son appel dans `MatchHud.tsx`.
  */
 
 import React from 'react';
 import type { Player } from '../../engine/backgammonEngine';
 
 export interface HudScoreboardProps {
-    /** Longueur du match en points (0 = partie d'argent) */
     matchLength: number;
-    /** Score du joueur X */
     scoreX: number;
-    /** Score du joueur O */
     scoreO: number;
-    /** Joueur au tour */
     turn: Player;
-    /** Règle de Crawford active */
     crawford?: boolean;
-    /** Dés du tour ou null */
     dice: [number, number] | null;
-    /** État d'utilisation des dés */
     usedDice: [boolean, boolean] | boolean[];
-    /** Handler pour relancer les dés */
     onRollDice?: () => void;
-    /** Performance Rating (PR) Joueur X */
     prX?: number | null;
-    /** Performance Rating (PR) Joueur O */
     prO?: number | null;
-    /** Statut de réflexion ou tour de l'IA */
     isAiThinking?: boolean;
-    /** Pip count du joueur X */
     pipX?: number | null;
-    /** Pip count du joueur O */
     pipO?: number | null;
-    /** Libellé de l'adversaire (ex. « IA Maître ») */
+    epcX?: number | null;
+    epcO?: number | null;
+    isPureRace?: boolean;
     opponentLabel?: string;
+    playerColor?: Player;
+    cubeValue?: number;
+    cubeOwner?: Player | null;
 }
 
-/**
- * Couleur du badge PR selon la qualité (plus bas = meilleur).
- * Rendu « Glow » : bordure colorée + halo externe subtil + fond teinté.
- */
+/** Libellé pédagogique du palier de PR (selon standard international XG/Snowie). */
+export function getPRCategoryLabel(pr: number | null | undefined): string {
+    if (pr === null || pr === undefined) return 'Non classé';
+    if (pr <= 3.5) return 'Superhuman / Grand-Maître';
+    if (pr <= 6.0) return 'Maître / Expert';
+    if (pr <= 9.0) return 'Avancé';
+    if (pr <= 13.0) return 'Intermédiaire';
+    if (pr <= 18.0) return 'Amateur';
+    return 'Débutant (En apprentissage)';
+}
+
 function prBadgeClass(pr: number | null | undefined): string {
     if (pr === null || pr === undefined) {
-        return 'border-slate-600/60 bg-slate-800/60 text-slate-400';
+        return 'border-[#d4af37]/30 bg-[#140b06]/80 text-amber-200/60';
     }
     if (pr <= 3) {
-        return 'border-emerald-400/70 bg-emerald-500/15 text-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.45)]';
+        return 'border-emerald-400/70 bg-emerald-500/15 text-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.35)]';
     }
     if (pr <= 7) {
-        return 'border-amber-400/70 bg-amber-500/15 text-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.45)]';
+        return 'border-amber-400/70 bg-amber-500/15 text-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.35)]';
     }
-    return 'border-rose-400/70 bg-rose-500/15 text-rose-300 shadow-[0_0_10px_rgba(251,113,133,0.45)]';
+    return 'border-rose-400/70 bg-rose-500/15 text-rose-300 shadow-[0_0_10px_rgba(251,113,133,0.35)]';
 }
 
 interface PlayerCardProps {
     isWhite: boolean;
     name: string;
+    colorLabel: string;
     score: number;
     isTurn: boolean;
     pr?: number | null;
     pip?: number | null;
+    epc?: number | null;
+    isPureRace?: boolean;
     testId: string;
 }
 
 const PlayerCard: React.FC<PlayerCardProps> = ({
     isWhite,
     name,
+    colorLabel,
     score,
     isTurn,
     pr,
     pip,
+    epc,
+    isPureRace,
     testId,
-}) => (
-    <div
-        data-testid={testId}
-        title={`${name} — Score : ${score}${isTurn ? ' — Au tour' : ''}`}
-        className={`flex items-center gap-1.5 rounded-lg px-2 py-1 transition-all ${isTurn
-            ? 'bg-slate-900/90 ring-1 ring-blue-400/80 shadow-[0_0_14px_rgba(96,165,250,0.35)]'
-            : 'bg-slate-900/60 ring-1 ring-slate-700/60 opacity-85'
+}) => {
+    const pipTitle = isPureRace && typeof epc === 'number'
+        ? `Pip count : ${pip} pips | EPC: ${epc}`
+        : `${pip} pips`;
+    const prCategory = getPRCategoryLabel(pr);
+
+    return (
+        <div
+            data-testid={testId}
+            title={`${name} (${colorLabel}) — Score : ${score}${isTurn ? ' — Au tour' : ''}`}
+            className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1 transition-all ${
+                isTurn
+                    ? 'border-[#f3c65f]/90 bg-gradient-to-b from-[#26160a] to-[#110904] ring-1 ring-[#f3c65f]/70 shadow-[0_0_16px_rgba(243,198,95,0.32),inset_0_1px_1px_rgba(255,245,205,0.3)]'
+                    : 'border-[#d4af37]/25 bg-[#0c0603]/85 ring-1 ring-transparent opacity-85 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]'
             }`}
-    >
-        {/* Pion 3D */}
-        <span
-            aria-hidden="true"
-            className={`h-4 w-4 shrink-0 rounded-full ${isWhite
-                ? 'bg-[radial-gradient(circle_at_32%_28%,#ffffff_0%,#e2e8f0_45%,#94a3b8_100%)] ring-1 ring-slate-400 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.35)]'
-                : 'bg-[radial-gradient(circle_at_32%_28%,#52525b_0%,#27272a_44%,#08080a_100%)] ring-1 ring-slate-600 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.8)]'
+        >
+            {/* Pion 3D serti */}
+            <span
+                aria-hidden="true"
+                className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 rounded-full ${
+                    isWhite
+                        ? 'bg-[radial-gradient(circle_at_32%_28%,#fffdf7_0%,#e8dec8_48%,#b8a47e_100%)] ring-1 ring-[#d4af37]/80 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.4)]'
+                        : 'bg-[radial-gradient(circle_at_32%_28%,#4a2518_0%,#241009_48%,#0a0402_100%)] ring-1 ring-[#d4af37]/60 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.85)]'
                 }`}
-        />
-        <div className="hidden sm:flex flex-col leading-none min-w-0">
-            <span className="text-[11px] font-bold text-slate-100 whitespace-nowrap">{name}</span>
-            <span className="text-[9px] text-slate-400 whitespace-nowrap">
-                {pip !== null && pip !== undefined ? `${pip} pips` : '— pips'}
+            />
+            <div className="flex flex-col leading-none min-w-0">
+                <span className="font-serif text-[10px] sm:text-[11px] font-bold text-[#fdf8eb] truncate max-w-[68px] sm:max-w-none">
+                    {name}
+                </span>
+                {pip !== null && pip !== undefined && (
+                    <span
+                        className="hidden lg:inline font-mono text-[9px] text-[#d4af37]/80 whitespace-nowrap cursor-help"
+                        title={pipTitle}
+                    >
+                        {pip} pips
+                    </span>
+                )}
+            </div>
+            {/* Guichet horloger du score */}
+            <span className="ml-0.5 rounded border border-[#d4af37]/40 bg-black/70 px-1.5 py-0.5 font-mono text-xs sm:text-sm font-black tabular-nums text-[#f3c65f] shadow-inner">
+                {score}
+            </span>
+            <span
+                data-testid={`${testId}-pr`}
+                title={`Performance Rating (PR) : ${pr !== null && pr !== undefined ? pr.toFixed(1) : '--'} — Niveau : ${prCategory} (plus bas = meilleur)`}
+                className={`ml-0.5 rounded border px-1 py-0.5 font-mono text-[8px] sm:text-[9px] font-bold transition-shadow duration-300 ${prBadgeClass(pr)}`}
+            >
+                PR {pr !== null && pr !== undefined ? pr.toFixed(1) : '--'}
             </span>
         </div>
-        <span className="ml-0.5 text-sm font-black text-white">{score}</span>
-        <span
-            data-testid={`${testId}-pr`}
-            title="Performance Rating en direct (plus bas = meilleur)"
-            className={`hidden sm:inline ml-0.5 rounded border px-1 py-0.5 font-mono text-[9px] font-bold transition-shadow duration-300 ${prBadgeClass(pr)}`}
-        >
-            PR {pr !== null && pr !== undefined ? pr.toFixed(1) : '--'}
-        </span>
-    </div>
-);
+    );
+};
 
 const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     matchLength,
@@ -129,44 +147,94 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     isAiThinking = false,
     pipX,
     pipO,
+    epcX,
+    epcO,
+    isPureRace = false,
     opponentLabel = 'IA',
+    playerColor = 'X',
+    cubeValue = 1,
+    cubeOwner = null,
 }) => {
     const isXTurn = turn === 'X';
     const isOTurn = turn === 'O' || isAiThinking;
+    const humanIsWhite = playerColor === 'X';
+    const nameX = 'Vous';
+    const normalizedOpponent = opponentLabel.startsWith('IA') ? opponentLabel : `IA ${opponentLabel}`;
+    const nameO = opponentLabel === 'IA' ? 'IA' : normalizedOpponent;
+    const colorLabelX = humanIsWhite ? 'Blanc' : 'Noir';
+    const colorLabelO = humanIsWhite ? 'Noir' : 'Blanc';
+    const effectiveCube = Math.max(1, cubeValue);
+    const cubeStakeLabel = effectiveCube > 1
+        ? `Enjeu : ${effectiveCube} pt${effectiveCube > 1 ? 's' : ''} (Gammon: ${effectiveCube * 2})`
+        : 'Partie simple (1 pt)';
+    const cubeOwnershipTitle = cubeOwner === 'X'
+        ? 'Videau possédé par Vous (Double possible)'
+        : cubeOwner === 'O'
+            ? 'Videau possédé par l’IA (Double interdit)'
+            : 'Videau centré (Accessible aux deux joueurs)';
 
     return (
         <div className="flex items-center gap-1 sm:gap-2 min-w-0">
-            {/* Format du match & Badge Crawford */}
-            <div className="hidden sm:flex flex-col text-[10px] leading-tight text-slate-400">
-                <span className="font-semibold text-slate-300 whitespace-nowrap">
-                    {matchLength > 0 ? `Match ${matchLength} pts` : 'Money Game'}
-                </span>
-                {crawford && (
-                    <span className="mt-0.5 w-max rounded bg-amber-500/20 px-1.5 text-[9px] font-bold uppercase tracking-wider text-amber-300 ring-1 ring-amber-500/40">
+            {/* Cartouche en laiton gravé : Format du match, Crawford & Enjeu du Videau */}
+            <div className="hidden sm:flex flex-col rounded-lg border border-[#d4af37]/30 bg-[#0d0703]/85 px-2 py-0.5 text-[10px] leading-tight text-amber-100/80 shadow-inner">
+                <div className="flex items-center gap-1 whitespace-nowrap">
+                    <span data-testid="hud-match-format" className="font-serif font-bold text-[#f5d78e]">
+                        {matchLength > 0 ? `Match ${matchLength} pts` : 'Money Game'}
+                    </span>
+                    {effectiveCube > 1 && !crawford && (
+                        <span
+                            data-testid="hud-cube-badge"
+                            className="rounded bg-amber-500/20 border border-[#f3c65f]/50 px-1 text-[9px] font-black text-[#f3c65f]"
+                            title={cubeOwnershipTitle}
+                        >
+                            Cube {effectiveCube}×{cubeOwner === 'X' ? ' (Vous)' : cubeOwner === 'O' ? ' (IA)' : ''}
+                        </span>
+                    )}
+                </div>
+                {crawford ? (
+                    <span
+                        data-testid="hud-crawford-badge"
+                        className="mt-0.5 w-max rounded bg-amber-500/20 px-1.5 text-[9px] font-bold uppercase tracking-wider text-amber-300 ring-1 ring-amber-500/40"
+                    >
                         Crawford
+                    </span>
+                ) : (
+                    <span
+                        className="text-[9px] text-amber-200/75 whitespace-nowrap font-medium cursor-help"
+                        title={cubeOwnershipTitle}
+                    >
+                        {cubeStakeLabel}
                     </span>
                 )}
             </div>
 
             <PlayerCard
-                isWhite
-                name="X (Vous - Blanc)"
+                isWhite={humanIsWhite}
+                name={nameX}
+                colorLabel={colorLabelX}
                 score={scoreX}
                 isTurn={isXTurn}
                 pr={prX}
                 pip={pipX}
+                epc={epcX}
+                isPureRace={isPureRace}
                 testId="hud-player-x"
             />
 
-            <span className="text-[10px] font-extrabold text-slate-500">VS</span>
+            <span className="font-serif text-[9px] sm:text-[10px] font-black tracking-widest text-[#d4af37]/80">
+                VS
+            </span>
 
             <PlayerCard
-                isWhite={false}
-                name={`O (${opponentLabel} - Noir)`}
+                isWhite={!humanIsWhite}
+                name={nameO}
+                colorLabel={colorLabelO}
                 score={scoreO}
                 isTurn={isOTurn}
                 pr={prO}
                 pip={pipO}
+                epc={epcO}
+                isPureRace={isPureRace}
                 testId="hud-player-o"
             />
         </div>

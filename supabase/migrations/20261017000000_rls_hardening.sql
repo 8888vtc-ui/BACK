@@ -89,13 +89,12 @@ create policy "Insertion sécurisée d'une action de jeu par un joueur actif de 
         exists (
             select 1 from public.game_rooms r
             where r.id = room_actions.room_id
-              and r.status in ('waiting', 'playing')
+              and r.status in ('waiting', 'in_progress')
               and (
                   r.host_id = auth.uid() or
                   r.guest_id = auth.uid() or
                   r.player_x_id = auth.uid() or
-                  r.player_o_id = auth.uid() or
-                  room_actions.user_id = coalesce(auth.uid()::text, room_actions.user_id)
+                  r.player_o_id = auth.uid()
               )
         )
     );

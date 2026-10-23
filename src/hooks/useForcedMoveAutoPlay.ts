@@ -1,66 +1,106 @@
 /**
- * Hook d'auto-play du coup forcé unique.
+ * Hook d'auto-play et de surbrillance du coup forcé unique (Audit 13 / 20).
  *
  * Rôle :
- *   Si le joueur ne dispose que d'un seul coup légal sur l'ensemble du plateau,
- *   ce coup est joué automatiquement après un délai de 600 ms.
+ *   - Détecte mathématiquement si le joueur ne dispose que d'un seul sous-coup légal
+ *     `(from -> to)` sur l'ensemble du plateau (via `detectForcedMove`).
+ *   - Si l'option d'auto-play est activée (défaut : `true`), exécute automatiquement
+ *     ce coup forcé après `FORCED_MOVE_AUTO_PLAY_DELAY_MS` (300 ms).
+ *   - Expose `highlightOrigin` et `highlightDestination` pour faire pulser le pion
+ *     de départ et la flèche d'arrivée si l'auto-play est désactivé ou pendant les 300 ms.
  *
- * Dépendances :
- *   `react`.
- *
- * Retrait :
- *   Supprimer ce fichier et son appel dans `useCheckerInteractions`.
+ * Strictement 0 `any`, < 300 lignes.
  */
 
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+    detectForcedMove,
+    FORCED_MOVE_AUTO_PLAY_DELAY_MS,
+    getSavedForcedMoveAutoPlay,
+    saveForcedMoveAutoPlay,
+    type ForcedMoveDescriptor,
+} from '../engine/forcedMoveDetector';
 
 export interface UseForcedMoveAutoPlayOptions {
     phase: string;
     turn: 'X' | 'O';
+    isHumanTurn?: boolean;
     dice: [number, number] | null;
     leftDieTargets: Map<number, number[]>;
     rightDieTargets: Map<number, number[]>;
     onPlayMove: (from: number, to: number, die: 0 | 1) => void;
+    /** Permet de forcer l'activation/désactivation de l'auto-play (sinon lu depuis localStorage). */
+    autoPlayEnabled?: boolean;
+    /** Délai avant exécution automatique (défaut : 300 ms — Audit 13 / 20). */
+    delayMs?: number;
+}
+
+export interface UseForcedMoveAutoPlayReturn {
+    readonly isForcedMove: boolean;
+    readonly forcedMove: ForcedMoveDescriptor | null;
+    readonly highlightOrigin: number | null;
+    readonly highlightDestination: number | null;
+    readonly autoPlayEnabled: boolean;
+    readonly setAutoPlayEnabled: (enabled: boolean) => void;
 }
 
 export function useForcedMoveAutoPlay({
     phase,
     turn,
+    isHumanTurn,
     dice,
     leftDieTargets,
     rightDieTargets,
     onPlayMove,
-}: UseForcedMoveAutoPlayOptions) {
+    autoPlayEnabled: externalAutoPlay,
+    delayMs = FORCED_MOVE_AUTO_PLAY_DELAY_MS,
+}: UseForcedMoveAutoPlayOptions): UseForcedMoveAutoPlayReturn {
+    const [storedAutoPlay, setStoredAutoPlay] = useState<boolean>(() =>
+        getSavedForcedMoveAutoPlay(true),
+    );
+
+    const effectiveAutoPlay =
+        externalAutoPlay !== undefined ? externalAutoPlay : storedAutoPlay;
+
+    const setAutoPlayEnabled = useCallback((enabled: boolean) => {
+        setStoredAutoPlay(enabled);
+        saveForcedMoveAutoPlay(enabled);
+    }, []);
+
+    const activeHumanTurn = isHumanTurn !== undefined ? isHumanTurn : turn === 'X';
+    const isMovingPhase = phase === 'PLAYING_MOVES' || phase === 'HUMAN_MOVING';
+
+    const detection = useMemo(() => {
+        if (!isMovingPhase || !activeHumanTurn || !dice) {
+            return {
+                isForced: false,
+                forcedMove: null,
+                uniqueLegalMoves: [],
+                highlightOrigin: null,
+                highlightDestination: null,
+            };
+        }
+        return detectForcedMove({ leftDieTargets, rightDieTargets, dice });
+    }, [isMovingPhase, activeHumanTurn, dice, leftDieTargets, rightDieTargets]);
+
     useEffect(() => {
-        if (phase !== 'PLAYING_MOVES' || turn !== 'X' || !dice) return;
-
-        let totalMoves = 0;
-        let singleFrom: number | null = null;
-        let singleTo: number | null = null;
-        let singleDie: 0 | 1 | null = null;
-
-        for (const [from, dests] of leftDieTargets) {
-            for (const to of dests) {
-                totalMoves++;
-                singleFrom = from;
-                singleTo = to;
-                singleDie = 0;
-            }
+        if (!effectiveAutoPlay || !detection.isForced || !detection.forcedMove) {
+            return;
         }
-        for (const [from, dests] of rightDieTargets) {
-            for (const to of dests) {
-                totalMoves++;
-                singleFrom = from;
-                singleTo = to;
-                singleDie = 1;
-            }
-        }
+        const { from, to, die } = detection.forcedMove;
+        const timer = window.setTimeout(() => {
+            onPlayMove(from, to, die);
+        }, delayMs);
 
-        if (totalMoves === 1 && singleFrom !== null && singleTo !== null && singleDie !== null) {
-            const timer = window.setTimeout(() => {
-                onPlayMove(singleFrom!, singleTo!, singleDie!);
-            }, 600);
-            return () => window.clearTimeout(timer);
-        }
-    }, [phase, turn, dice, leftDieTargets, rightDieTargets, onPlayMove]);
+        return () => window.clearTimeout(timer);
+    }, [effectiveAutoPlay, detection.isForced, detection.forcedMove, delayMs, onPlayMove]);
+
+    return {
+        isForcedMove: detection.isForced,
+        forcedMove: detection.forcedMove,
+        highlightOrigin: detection.highlightOrigin,
+        highlightDestination: detection.highlightDestination,
+        autoPlayEnabled: effectiveAutoPlay,
+        setAutoPlayEnabled,
+    };
 }

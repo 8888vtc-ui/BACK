@@ -157,9 +157,64 @@ export function useMultiplayerGame(
         };
     }, [status, isReconnecting, matchInfo]);
 
+    const handleMatchOver = useCallback(
+        (winner: Player, _winType: string, _pointsWon: number) => {
+            if (!matchInfo) return;
+            setStatus('game_over');
+            clearActiveSession();
+            setRecoverableSession(null);
+
+            const ratingX = matchInfo.playerX.rating;
+            const ratingO = matchInfo.playerO.rating;
+            const elo = calculateMatchElo(ratingX, ratingO, winner);
+            setEloResult(elo);
+
+            // Mettre à jour l'Elo local
+            const newLocalRating =
+                matchInfo.localRole === 'X' ? elo.playerXNewRating : elo.playerONewRating;
+
+            setLocalProfile((prev) => ({
+                ...prev,
+                rating: newLocalRating,
+            }));
+
+            // Sauvegarder dans Supabase si connecté
+            if (isSupabaseConfigured() && !localProfile.isGuest) {
+                supabase
+                    .from('profiles')
+                    .update({
+                        rating: newLocalRating,
+                        updated_at: new Date().toISOString(),
+                    })
+                    .eq('id', localProfile.id)
+                    .then(() => {}, () => {});
+            }
+        },
+        [matchInfo, localProfile],
+    );
+
+    const broadcastResign = useCallback(
+        (reason: 'surrender' | 'timeout' | 'disconnect' = 'surrender') => {
+            if (!matchInfo || !realtimeRef.current) return;
+            realtimeRef.current.sendAction({
+                type: 'RESIGNED',
+                player: matchInfo.localRole,
+                reason,
+                timestamp: Date.now(),
+            });
+            const winner = matchInfo.localRole === 'X' ? 'O' : 'X';
+            handleMatchOver(winner, reason, 1);
+        },
+        [matchInfo, handleMatchOver],
+    );
+
+    const hasClockState = clockState !== null;
+    const isClockPaused = clockState?.isPaused ?? false;
+    const isClockFlagFallen = clockState?.isFlagFallen ?? false;
+
     // 3. Ticking précis de la pendule de match (WBF delay / flag fall)
     useEffect(() => {
-        if (status !== 'connected' || !clockState || clockState.isPaused || clockState.isFlagFallen) {
+        if (status !== 'connected' || !hasClockState || isClockPaused || isClockFlagFallen) {
             return;
         }
 
@@ -191,7 +246,7 @@ export function useMultiplayerGame(
         }, 500);
 
         return () => clearInterval(interval);
-    }, [status, clockState?.isPaused, clockState?.isFlagFallen, matchInfo]);
+    }, [status, hasClockState, isClockPaused, isClockFlagFallen, matchInfo, broadcastResign]);
 
     // 4. Heartbeat de persistance de session (touch toutes les 10s)
     useEffect(() => {
@@ -252,7 +307,7 @@ export function useMultiplayerGame(
         return () => {
             if (turnTimerRef.current) clearInterval(turnTimerRef.current);
         };
-    }, [status, currentTurnRef.current]);
+    }, [status]);
 
     // Détection d'expiration du temps de jeu
     useEffect(() => {
@@ -263,7 +318,7 @@ export function useMultiplayerGame(
                 broadcastResign('timeout');
             }
         }
-    }, [turnTimeRemaining, status, matchInfo]);
+    }, [turnTimeRemaining, status, matchInfo, broadcastResign]);
 
     const isMyTurn = Boolean(
         matchInfo && status === 'connected' && currentTurnRef.current === matchInfo.localRole,
@@ -380,6 +435,7 @@ export function useMultiplayerGame(
                 initMatchedRoom(info, opponent);
             }, 3200);
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [localProfile],
     );
 
@@ -424,6 +480,7 @@ export function useMultiplayerGame(
 
             return room.code;
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [localProfile],
     );
 
@@ -455,6 +512,7 @@ export function useMultiplayerGame(
 
             initMatchedRoom(info, opp);
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [localProfile],
     );
 
@@ -720,21 +778,6 @@ export function useMultiplayerGame(
         [matchInfo],
     );
 
-    const broadcastResign = useCallback(
-        (reason: 'surrender' | 'timeout' | 'disconnect' = 'surrender') => {
-            if (!matchInfo || !realtimeRef.current) return;
-            realtimeRef.current.sendAction({
-                type: 'RESIGNED',
-                player: matchInfo.localRole,
-                reason,
-                timestamp: Date.now(),
-            });
-            const winner = matchInfo.localRole === 'X' ? 'O' : 'X';
-            handleMatchOver(winner, reason, 1);
-        },
-        [matchInfo],
-    );
-
     const sendQuickChat = useCallback(
         (messageId: 'gg' | 'nice_move' | 'unlucky' | 'thinking' | 'thanks') => {
             if (!matchInfo || !realtimeRef.current) return;
@@ -748,42 +791,6 @@ export function useMultiplayerGame(
             });
         },
         [matchInfo],
-    );
-
-    const handleMatchOver = useCallback(
-        (winner: Player, winType: string, pointsWon: number) => {
-            if (!matchInfo) return;
-            setStatus('game_over');
-            clearActiveSession();
-            setRecoverableSession(null);
-
-            const ratingX = matchInfo.playerX.rating;
-            const ratingO = matchInfo.playerO.rating;
-            const elo = calculateMatchElo(ratingX, ratingO, winner);
-            setEloResult(elo);
-
-            // Mettre à jour l'Elo local
-            const newLocalRating =
-                matchInfo.localRole === 'X' ? elo.playerXNewRating : elo.playerONewRating;
-
-            setLocalProfile((prev) => ({
-                ...prev,
-                rating: newLocalRating,
-            }));
-
-            // Sauvegarder dans Supabase si connecté
-            if (isSupabaseConfigured() && !localProfile.isGuest) {
-                supabase
-                    .from('profiles')
-                    .update({
-                        rating: newLocalRating,
-                        updated_at: new Date().toISOString(),
-                    })
-                    .eq('id', localProfile.id)
-                    .then(() => {}, () => {});
-            }
-        },
-        [matchInfo, localProfile],
     );
 
     const reconnectActiveSession = useCallback(async () => {
@@ -811,6 +818,7 @@ export function useMultiplayerGame(
 
         connectToRealtime(info, session.opponentProfile);
         setIsReconnecting(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [recoverableSession]);
 
     const dismissRecoverableSession = useCallback(() => {

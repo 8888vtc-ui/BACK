@@ -87,4 +87,55 @@ describe('MultiplayerRealtimeManager', () => {
         managerX.disconnect();
         managerO.disconnect();
     });
+
+    it('met en file d’attente les actions pendant une reconnexion et les vide au retour en ligne', async () => {
+        const roomId = 'test_room_reconnect';
+        const receivedByO: RealtimeBroadcastAction[] = [];
+        const statusHistoryX: string[] = [];
+
+        const managerX = new MultiplayerRealtimeManager(roomId, userX, {
+            onActionReceived: vi.fn(),
+            onOpponentPresenceChange: vi.fn(),
+            onChannelStatusChange: (status) => {
+                statusHistoryX.push(status);
+            },
+        });
+
+        const managerO = new MultiplayerRealtimeManager(roomId, userO, {
+            onActionReceived: (action) => {
+                receivedByO.push(action);
+            },
+            onOpponentPresenceChange: vi.fn(),
+            onChannelStatusChange: vi.fn(),
+        });
+
+        await managerX.connect();
+        await managerO.connect();
+
+        // Déclencher une reconnexion immédiate (simule une micro-coupure réseau)
+        managerX.attemptReconnect(false);
+        expect(managerX.getConnectionState().isReconnecting).toBe(true);
+        expect(statusHistoryX).toContain('RECONNECTING');
+
+        // Envoyer une action pendant l'état RECONNECTING : elle doit être mise en file d'attente
+        const queuedAction: RealtimeBroadcastAction = {
+            type: 'DICE_ROLLED',
+            player: 'X',
+            dice: [6, 6],
+            timestamp: Date.now(),
+        };
+        await managerX.sendAction(queuedAction);
+        expect(managerX.getConnectionState().pendingActionsCount).toBe(1);
+        expect(receivedByO).toHaveLength(0);
+
+        // Reconnexion immédiate -> doit vider la file d'attente vers O
+        await managerX.connect();
+        expect(managerX.getConnectionState().isConnected).toBe(true);
+        expect(managerX.getConnectionState().pendingActionsCount).toBe(0);
+        expect(receivedByO).toHaveLength(1);
+        expect(receivedByO[0].type).toBe('DICE_ROLLED');
+
+        managerX.disconnect();
+        managerO.disconnect();
+    });
 });

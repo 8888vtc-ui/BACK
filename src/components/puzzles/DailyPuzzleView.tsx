@@ -225,44 +225,44 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
     return (
         <div className="w-full max-w-6xl space-y-5 animate-fade-in" data-testid="daily-puzzle-view">
             {/* 1. En-tête : Badge Quotidien, Séries (Streaks) & Stats */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 rounded-3xl border border-slate-700/80 bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 p-4 sm:p-6 shadow-2xl backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 rounded-3xl border border-[#d4af37]/35 bg-gradient-to-r from-[#180c06] via-[#0e121b] to-[#080a0f] p-4 sm:p-6 shadow-[0_24px_60px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(243,198,95,0.2)] backdrop-blur-md">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/20 text-lg">
-                            🧩
+                    <div className="flex items-center gap-2.5">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d4af37]/40 bg-gradient-to-br from-[#2a170c] to-[#120904] text-lg shadow-inner">
+                            <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🧩</span>
                         </span>
-                        <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-white">
+                        <h1 className="text-lg sm:text-xl font-black tracking-tight text-[#fdf8eb]">
                             Défi Backgammon Quotidien
                         </h1>
-                        <span className="rounded-full bg-slate-800 border border-slate-700 px-2.5 py-0.5 text-xs text-slate-300 font-mono">
+                        <span className="rounded-full bg-[#090b10] border border-[#d4af37]/30 px-2.5 py-0.5 text-xs text-[#f3c65f] font-mono">
                             {getTodayDateString()}
                         </span>
                     </div>
-                    <p className="text-xs text-slate-400">
-                        Chaque jour, une situation tactique ou stratégique à résoudre certifiée par GNUBG.
+                    <p className="text-xs text-[#a5b0c4]">
+                        Chaque jour, une situation tactique ou stratégique à résoudre certifiée par Open Sage 3-Ply / GNUBG.
                     </p>
                 </div>
 
                 {/* Badges de série et progression */}
                 <div className="flex items-center gap-3">
                     <div
-                        className="flex items-center gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-2 shadow-inner"
+                        className="flex items-center gap-2 rounded-2xl border border-[#d4af37]/45 bg-[#1a1109]/90 px-3.5 py-2 shadow-inner"
                         title="Série de victoires quotidiennes consécutives"
                         data-testid="puzzle-streak-badge"
                     >
                         <span className="text-xl animate-bounce">🔥</span>
                         <div>
-                            <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                            <div className="text-[10px] font-bold text-[#f3c65f] uppercase tracking-wider">
                                 Série en cours
                             </div>
-                            <div className="text-sm font-extrabold text-white font-mono">
+                            <div className="text-sm font-extrabold text-[#fdf8eb] font-mono">
                                 {stats.currentStreak} {stats.currentStreak > 1 ? 'jours' : 'jour'}
                             </div>
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-slate-800 bg-slate-800/60 px-3.5 py-2 text-right">
-                        <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                    <div className="rounded-2xl border border-[#d4af37]/25 bg-[#090b10]/90 px-3.5 py-2 text-right">
+                        <div className="text-[10px] font-semibold text-[#a5b0c4] uppercase tracking-wider">
                             Résolus
                         </div>
                         <div className="text-sm font-extrabold text-emerald-400 font-mono">
@@ -274,7 +274,7 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-xl border border-slate-700 bg-slate-800/80 p-2 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+                            className="rounded-xl border border-[#d4af37]/30 bg-[#150c07] p-2 text-[#e2d2b5] hover:border-[#f3c65f] hover:text-white transition-colors"
                             aria-label="Fermer le mode puzzle"
                         >
                             ✕
@@ -284,10 +284,10 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
             </div>
 
             {/* 2. Carte Descriptive du Puzzle & Objectif */}
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5 shadow-xl backdrop-blur-md space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div className="rounded-3xl border border-[#d4af37]/25 bg-[#0e121b]/95 p-5 shadow-2xl backdrop-blur-md space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#d4af37]/15 pb-3">
                     <div className="flex items-center gap-2.5">
-                        <h2 className="text-base sm:text-lg font-bold text-white">{puzzle.title}</h2>
+                        <h2 className="text-base sm:text-lg font-bold text-[#fdf8eb]">{puzzle.title}</h2>
                         <span
                             className={`rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider ${difficultyColors[puzzle.difficulty]
                                 }`}
@@ -298,30 +298,30 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                                     ? 'Intermédiaire'
                                     : 'Expert'}
                         </span>
-                        <span className="rounded-full bg-slate-800 border border-slate-700/80 px-2.5 py-0.5 text-[10px] text-slate-300">
+                        <span className="rounded-full bg-[#150c07] border border-[#d4af37]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#e2d2b5]">
                             {categoryLabels[puzzle.category] || puzzle.category}
                         </span>
                     </div>
 
                     {/* Dés obtenus pour ce puzzle */}
-                    <div className="flex items-center gap-2 rounded-xl bg-slate-800/80 border border-slate-700 px-3 py-1">
-                        <span className="text-xs text-slate-400 font-medium">Jet à jouer :</span>
-                        <div className="flex items-center gap-1.5 font-mono font-bold text-amber-400 text-sm">
-                            <span className="rounded-md bg-slate-900 px-2 py-0.5 border border-slate-700">
+                    <div className="flex items-center gap-2 rounded-xl bg-[#090b10] border border-[#d4af37]/35 px-3 py-1">
+                        <span className="text-xs text-[#a5b0c4] font-medium">Jet à jouer :</span>
+                        <div className="flex items-center gap-1.5 font-mono font-bold text-[#f3c65f] text-sm">
+                            <span className="rounded-md bg-[#180c06] px-2 py-0.5 border border-[#d4af37]/40 text-[#fdf8eb]">
                                 {puzzle.dice[0]}
                             </span>
-                            <span className="rounded-md bg-slate-900 px-2 py-0.5 border border-slate-700">
+                            <span className="rounded-md bg-[#180c06] px-2 py-0.5 border border-[#d4af37]/40 text-[#fdf8eb]">
                                 {puzzle.dice[1]}
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <div className="text-sm text-slate-200">{puzzle.description}</div>
+                <div className="text-sm text-[#e2d2b5] leading-relaxed">{puzzle.description}</div>
 
                 {/* Historique des coups joués en direct */}
                 <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <span className="text-slate-400 font-semibold">Votre coup :</span>
+                    <span className="text-[#a5b0c4] font-semibold">Votre coup :</span>
                     {playedMoves.length === 0 ? (
                         <span className="italic text-slate-500">
                             Sélectionnez un pion puis sa flèche de destination
@@ -330,7 +330,7 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                         playedMoves.map((m, idx) => (
                             <span
                                 key={idx}
-                                className="rounded-lg bg-amber-500/20 border border-amber-500/40 px-2 py-1 font-mono font-bold text-amber-300"
+                                className="rounded-lg bg-[#d4af37]/15 border border-[#d4af37]/45 px-2 py-1 font-mono font-bold text-[#f3c65f]"
                             >
                                 {m.from === X_BAR ? 'bar' : m.from}/{m.to === 0 ? 'off' : m.to}
                             </span>
@@ -340,9 +340,10 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
             </div>
 
             {/* 3. Plateau Interactif de Backgammon */}
-            <div className="relative rounded-3xl border border-slate-800 bg-slate-950 p-2 sm:p-4 shadow-2xl">
+            <div className="relative rounded-3xl border border-[#d4af37]/35 bg-[#080a0f] p-2 sm:p-4 shadow-[0_24px_60px_rgba(0,0,0,0.9)]">
                 <Board
                     state={boardState}
+                    gamePhase="HUMAN_MOVING"
                     leftDieTargets={leftDieTargets}
                     rightDieTargets={rightDieTargets}
                     selectedPoint={selectedPoint}
@@ -356,15 +357,15 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
             </div>
 
             {/* 4. Barre d'Actions & Boutons */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4 shadow-xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#d4af37]/25 bg-[#0e121b]/95 p-4 shadow-xl">
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
                         onClick={handleReset}
                         disabled={playedMoves.length === 0}
-                        className={`rounded-xl border border-slate-700 px-3.5 py-2 text-xs font-semibold transition ${playedMoves.length > 0
-                            ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white'
-                            : 'bg-slate-800/40 text-slate-500 opacity-50 cursor-not-allowed'
+                        className={`rounded-xl border border-[#d4af37]/30 px-3.5 py-2 text-xs font-bold transition ${playedMoves.length > 0
+                            ? 'bg-[#150c07] text-[#fdf8eb] hover:border-[#f3c65f] hover:bg-[#1e1008]'
+                            : 'bg-[#090b10]/60 text-slate-500 opacity-50 cursor-not-allowed'
                             }`}
                         data-testid="puzzle-reset-button"
                     >
@@ -374,7 +375,7 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                     <button
                         type="button"
                         onClick={() => setShowHint(!showHint)}
-                        className="rounded-xl border border-indigo-500/40 bg-indigo-500/10 px-3.5 py-2 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 transition"
+                        className="rounded-xl border border-[#d4af37]/40 bg-[#1a1109] px-3.5 py-2 text-xs font-bold text-[#f3c65f] hover:border-[#f3c65f] hover:bg-[#25170b] transition"
                         data-testid="puzzle-hint-button"
                     >
                         💡 {showHint ? 'Masquer l’indice' : 'Indice'}
@@ -383,7 +384,7 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                     <button
                         type="button"
                         onClick={handleRevealSolution}
-                        className="rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition"
+                        className="rounded-xl border border-slate-700/80 bg-[#090b10] px-3.5 py-2 text-xs font-semibold text-[#e2d2b5] hover:border-[#d4af37]/40 hover:text-white transition"
                         data-testid="puzzle-solution-button"
                     >
                         👁️ Voir la solution
@@ -393,36 +394,36 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                 <button
                     type="button"
                     onClick={handleVerify}
-                    className="rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 px-6 py-2.5 text-xs sm:text-sm font-extrabold text-slate-950 shadow-xl shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    className="rounded-2xl border border-[#ffecb3]/70 bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#c69214] px-6 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-[#1a0f08] shadow-[0_8px_24px_rgba(212,175,55,0.35),inset_0_1px_0_rgba(255,255,255,0.65)] transition-all hover:scale-[1.02] active:scale-[0.98]"
                     data-testid="puzzle-verify-button"
                 >
-                    ⚡ Valider ma réponse
+                    ✦ Valider ma réponse
                 </button>
             </div>
 
             {/* Boîte d'Indice dépliable */}
             {showHint && (
                 <div
-                    className="rounded-2xl border border-indigo-500/40 bg-indigo-950/30 p-4 text-xs text-indigo-200 shadow-lg animate-fade-in"
+                    className="rounded-2xl border border-[#d4af37]/40 bg-[#180c06]/90 p-4 text-xs text-[#fdf8eb] shadow-lg animate-fade-in"
                     data-testid="puzzle-hint-box"
                 >
-                    <span className="font-bold text-indigo-300">💡 Indice tactique :</span> {puzzle.hint}
+                    <span className="font-bold text-[#f3c65f]">💡 Indice tactique :</span> {puzzle.hint}
                 </div>
             )}
 
             {/* Boîte de Solution Dévoilée */}
             {showSolution && (
                 <div
-                    className="rounded-2xl border border-amber-500/50 bg-amber-950/25 p-4 text-xs text-amber-200 shadow-xl animate-fade-in space-y-2"
+                    className="rounded-2xl border border-[#d4af37]/50 bg-[#180c06]/95 p-4 text-xs text-[#e2d2b5] shadow-xl animate-fade-in space-y-2"
                     data-testid="puzzle-solution-box"
                 >
-                    <div className="flex items-center gap-2 text-sm font-extrabold text-amber-300">
+                    <div className="flex items-center gap-2 text-sm font-extrabold text-[#f3c65f]">
                         <span>🎯 Solution certifiée GNUBG :</span>
-                        <span className="rounded-md bg-amber-500/20 px-2 py-0.5 font-mono">
+                        <span className="rounded-md bg-[#090b10] border border-[#d4af37]/40 px-2 py-0.5 font-mono text-[#fdf8eb]">
                             {puzzle.optimalNotation}
                         </span>
                     </div>
-                    <p className="text-slate-300">{puzzle.explanation}</p>
+                    <p className="text-[#e2d2b5]">{puzzle.explanation}</p>
                 </div>
             )}
 
@@ -448,26 +449,26 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                                         : 'Inexactitude ou Blunder'}
                             </span>
                         </div>
-                        <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-700">
+                        <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-xl bg-[#090b10] border border-[#d4af37]/30">
                             ΔEq : -{validationResult.equityLoss.toFixed(3)}
                         </span>
                     </div>
 
-                    <p className="text-xs sm:text-sm text-slate-200">
+                    <p className="text-xs sm:text-sm text-[#fdf8eb]">
                         {validationResult.explanation}
                     </p>
 
                     <div className="flex items-center gap-3 pt-2">
                         <div className="text-xs">
-                            <span className="text-slate-400 font-semibold">Coup joué : </span>
+                            <span className="text-[#a5b0c4] font-semibold">Coup joué : </span>
                             <span className="font-mono font-bold text-white">
                                 {validationResult.playedNotation}
                             </span>
                         </div>
                         <span className="text-slate-600">•</span>
                         <div className="text-xs">
-                            <span className="text-slate-400 font-semibold">Optimal : </span>
-                            <span className="font-mono font-bold text-amber-400">
+                            <span className="text-[#a5b0c4] font-semibold">Optimal : </span>
+                            <span className="font-mono font-bold text-[#f3c65f]">
                                 {validationResult.optimalNotation}
                             </span>
                         </div>
@@ -476,9 +477,9 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
             )}
 
             {/* 6. Catalogue & Archives des Puzzles */}
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl space-y-3">
-                <h3 className="text-sm font-extrabold text-white">
-                    📚 Catalogue des Puzzles & Archives
+            <div className="rounded-3xl border border-[#d4af37]/25 bg-[#0e121b]/90 p-5 shadow-xl space-y-3">
+                <h3 className="text-sm font-extrabold uppercase tracking-wider text-[#f3c65f]">
+                    📚 Catalogue des Puzzles &amp; Archives
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {allPuzzles.map((p) => {
@@ -491,13 +492,13 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                                 type="button"
                                 onClick={() => setSelectedPuzzleId(p.id)}
                                 className={`flex flex-col text-left rounded-2xl border p-3.5 transition-all ${isCurrent
-                                    ? 'border-amber-500 bg-amber-500/15 ring-1 ring-amber-500/60 shadow-lg'
-                                    : 'border-slate-800 bg-slate-800/40 hover:border-slate-700 hover:bg-slate-800'
+                                    ? 'border-[#f3c65f] bg-gradient-to-br from-[#2a170c] to-[#120904] ring-1 ring-[#f3c65f]/50 shadow-lg'
+                                    : 'border-[#d4af37]/20 bg-[#090b10]/90 hover:border-[#d4af37]/45 hover:bg-[#150c07]'
                                     }`}
                                 data-testid={`puzzle-card-${p.id}`}
                             >
                                 <div className="flex items-center justify-between gap-2 mb-1">
-                                    <span className="text-xs font-bold text-white truncate">
+                                    <span className="text-xs font-bold text-[#fdf8eb] truncate">
                                         {p.title}
                                     </span>
                                     {solved && (
@@ -513,7 +514,7 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                                     >
                                         {p.difficulty}
                                     </span>
-                                    <span className="text-slate-400">
+                                    <span className="text-[#a5b0c4]">
                                         {categoryLabels[p.category] || p.category}
                                     </span>
                                 </div>

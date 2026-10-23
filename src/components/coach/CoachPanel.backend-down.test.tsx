@@ -66,7 +66,7 @@ describe('Coach déclenchement & Repli local quand Backend Down', () => {
     });
 
     it('bascule de bout en bout sur l\'explication locale regla-basée quand le backend est down (503 Service Unavailable)', async () => {
-        vi.spyOn(console, 'warn').mockImplementation(() => {});
+        vi.spyOn(console, 'warn').mockImplementation(() => { });
 
         // Simulation d'une panne complète du backend (erreur réseau / HTTP 503 / timeout)
         globalThis.fetch = vi.fn().mockRejectedValue(new Error('Failed to fetch: Backend down (HTTP 503)'));
@@ -111,7 +111,7 @@ describe('Coach déclenchement & Repli local quand Backend Down', () => {
                 optimalMove="8/5 6/5"
                 features={features}
                 matchContext={matchCtx}
-                onDismiss={() => {}}
+                onDismiss={() => { }}
                 triggerMode="auto"
                 autoThreshold="doubtful"
                 apiUrl="/api/coach"
@@ -131,7 +131,8 @@ describe('Coach déclenchement & Repli local quand Backend Down', () => {
         // Vérification de la présence de l'explication locale regla-basée affichée à l'utilisateur
         expect(screen.getAllByText('24/23 13/10').length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText('8/5 6/5').length).toBeGreaterThanOrEqual(1);
-        expect(screen.getByText(/Concept clé/i)).toBeDefined();
+        // Le diagnostic pédagogique du Grand-Maître est affiché.
+        expect(screen.getByTestId('coach-diagnostic-box')).toBeDefined();
         expect(screen.getByText(/Conseil/i)).toBeDefined();
     });
 

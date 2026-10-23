@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import type { GameResult } from '../../hooks/useBackgammonGame';
 import type { Player } from '../../engine/backgammonEngine';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
@@ -18,6 +19,7 @@ export interface GameOverOverlayProps {
     isCrawfordNext?: boolean;
     analysis?: CompleteGameAnalysis | null;
     onOpenReview?: () => void;
+    onOpenCourse?: () => void;
     onNextGame: () => void;
     onResetMatch: () => void;
     theme?: ThemeName;
@@ -33,6 +35,7 @@ export default function GameOverOverlay({
     isCrawfordNext = false,
     analysis,
     onOpenReview,
+    onOpenCourse,
     onNextGame,
     onResetMatch,
     theme,
@@ -79,9 +82,8 @@ export default function GameOverOverlay({
             <div className={`relative w-full max-w-lg overflow-hidden rounded-3xl p-6 sm:p-8 shadow-2xl transition-all ${modalClasses.container}`}>
                 {/* Lueur d'ambiance selon le vainqueur */}
                 <div
-                    className={`absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full blur-3xl pointer-events-none opacity-40 ${
-                        isXWinner ? 'bg-blue-500' : 'bg-emerald-500'
-                    }`}
+                    className={`absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full blur-3xl pointer-events-none opacity-40 ${isXWinner ? 'bg-blue-500' : 'bg-emerald-500'
+                        }`}
                 />
 
                 <div className="relative flex flex-col items-center text-center">
@@ -131,16 +133,28 @@ export default function GameOverOverlay({
                                 </div>
                             </div>
 
-                            {onOpenReview && (
-                                <button
-                                    type="button"
-                                    onClick={onOpenReview}
-                                    className="rounded-xl border border-blue-400/50 bg-blue-600/30 hover:bg-blue-600/50 px-3 py-1.5 text-xs font-bold text-blue-200 transition shadow-sm"
-                                    data-testid="open-game-review-btn"
-                                >
-                                    🔍 Analyser
-                                </button>
-                            )}
+                            <div className="flex flex-col gap-1.5">
+                                {onOpenCourse && (
+                                    <button
+                                        type="button"
+                                        onClick={onOpenCourse}
+                                        className="rounded-xl border border-amber-400/50 bg-amber-500/30 hover:bg-amber-500/50 px-3 py-1.5 text-xs font-bold text-amber-200 transition shadow-sm"
+                                        data-testid="open-game-course-btn"
+                                    >
+                                        🎓 Voir mon cours
+                                    </button>
+                                )}
+                                {onOpenReview && (
+                                    <button
+                                        type="button"
+                                        onClick={onOpenReview}
+                                        className="rounded-xl border border-blue-400/50 bg-blue-600/30 hover:bg-blue-600/50 px-3 py-1.5 text-xs font-bold text-blue-200 transition shadow-sm"
+                                        data-testid="open-game-review-btn"
+                                    >
+                                        🔍 Analyser
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -209,6 +223,14 @@ export default function GameOverOverlay({
                                 >
                                     🏆 Nouveau Match ({matchLength} pts)
                                 </button>
+                                <Link
+                                    href="/drills"
+                                    className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/50 bg-amber-950/40 px-4 py-3 text-xs font-bold text-amber-300 hover:bg-amber-900/40 transition active:scale-95"
+                                    data-testid="replay-blunders-btn"
+                                >
+                                    <span>🎯</span>
+                                    <span>Rejouer mes blunders</span>
+                                </Link>
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -220,7 +242,7 @@ export default function GameOverOverlay({
                                             scoreX,
                                             scoreO,
                                             matchLength,
-                                        }).catch(() => {});
+                                        }).catch(() => { });
                                     }}
                                     className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-xl border border-blue-500/50 bg-blue-950/40 px-4 py-3 text-xs font-bold text-blue-300 hover:bg-blue-900/40 transition active:scale-95"
                                 >
@@ -248,7 +270,7 @@ export default function GameOverOverlay({
                                             scoreX,
                                             scoreO,
                                             matchLength,
-                                        }).catch(() => {});
+                                        }).catch(() => { });
                                     }}
                                     className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-xl border border-blue-500/50 bg-blue-950/40 px-4 py-3 text-xs font-bold text-blue-300 hover:bg-blue-900/40 transition active:scale-95"
                                 >

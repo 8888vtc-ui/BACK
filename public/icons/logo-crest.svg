@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="Blason Backgammon Tour Monte-Carlo">
+  <defs>
+    <linearGradient id="crestBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a150b"/>
+      <stop offset="45%" stop-color="#0d121d"/>
+      <stop offset="100%" stop-color="#05070c"/>
+    </linearGradient>
+    <linearGradient id="goldBezel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff6d6"/>
+      <stop offset="28%" stop-color="#f3c65f"/>
+      <stop offset="65%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8a5e10"/>
+    </linearGradient>
+    <linearGradient id="goldSoft" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="50%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#78500d"/>
+    </linearGradient>
+    <radialGradient id="ivoryChecker" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="65%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#b48327"/>
+    </radialGradient>
+    <radialGradient id="ebonyChecker" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="60%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+    <filter id="crestGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.75"/>
+    </filter>
+  </defs>
+
+  <!-- Écusson octogonal horloger -->
+  <polygon
+    points="76,12 180,12 244,76 244,180 180,244 76,244 12,180 12,76"
+    fill="url(#crestBg)"
+    stroke="url(#goldBezel)"
+    stroke-width="8"
+    filter="url(#crestGlow)"
+  />
+  <polygon
+    points="82,24 174,24 232,82 232,174 174,232 82,232 24,174 24,82"
+    fill="none"
+    stroke="url(#goldSoft)"
+    stroke-width="1.75"
+    stroke-dasharray="5,3"
+    opacity="0.75"
+  />
+
+  <!-- 4 Flèches de plateau (Points) opposées en symétrie Royale -->
+  <polygon points="68,224 96,224 82,126" fill="url(#goldSoft)" opacity="0.32"/>
+  <polygon points="104,224 132,224 118,136" fill="#334155" opacity="0.45"/>
+  <polygon points="124,224 152,224 138,136" fill="url(#goldSoft)" opacity="0.32"/>
+  <polygon points="160,224 188,224 174,126" fill="#334155" opacity="0.45"/>
+
+  <!-- Couronne Monte-Carlo supérieure (3 étoiles / lys stylisés) -->
+  <path
+    d="M88,68 L102,46 L116,64 L128,38 L140,64 L154,46 L168,68 Z"
+    fill="url(#goldBezel)"
+    filter="url(#crestGlow)"
+  />
+  <rect x="86" y="72" width="84" height="5" rx="2.5" fill="url(#goldBezel)"/>
+
+  <!-- Deux Pions de Prestige (Ébène & Ivoire Or) -->
+  <g filter="url(#crestGlow)">
+    <circle cx="96" cy="148" r="34" fill="url(#ebonyChecker)" stroke="url(#goldBezel)" stroke-width="3.5"/>
+    <circle cx="96" cy="148" r="22" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.7"/>
+
+    <circle cx="160" cy="148" r="34" fill="url(#ivoryChecker)" stroke="#5c3d08" stroke-width="3"/>
+    <circle cx="160" cy="148" r="22" fill="none" stroke="#78500d" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.65"/>
+  </g>
+
+  <!-- Dé / Videau Central diamanté au sommet -->
+  <g filter="url(#crestGlow)" transform="translate(128, 108) rotate(45)">
+    <rect x="-20" y="-20" width="40" height="40" rx="8" fill="url(#goldBezel)" stroke="#1c1204" stroke-width="2.5"/>
+    <circle cx="-8" cy="-8" r="3.2" fill="#1c1204"/>
+    <circle cx="8" cy="-8" r="3.2" fill="#1c1204"/>
+    <circle cx="0" cy="0" r="3.8" fill="#1c1204"/>
+    <circle cx="-8" cy="8" r="3.2" fill="#1c1204"/>
+    <circle cx="8" cy="8" r="3.2" fill="#1c1204"/>
+  </g>
+
+  <!-- Cartouche inférieur "TOUR" -->
+  <g filter="url(#crestGlow)">
+    <rect x="68" y="192" width="120" height="26" rx="13" fill="#0b101b" stroke="url(#goldBezel)" stroke-width="2.2"/>
+    <text
+      x="128"
+      y="209.5"
+      text-anchor="middle"
+      font-family="Georgia, 'Times New Roman', serif"
+      font-size="13.5"
+      font-weight="900"
+      fill="#f5cf70"
+      letter-spacing="4"
+    >TOUR</text>
+  </g>
+</svg>

@@ -1,34 +1,47 @@
 'use client';
 
+/**
+ * Contexte d'internationalisation multilingue (5 langues : FR, EN, ES, DE, JA).
+ * Strictement 0 any, typage rigoureux et fallback robuste.
+ */
+
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
-import { Locale, TranslationDictionary } from './types';
+import { Locale, TranslationDictionary, isRtlLocale } from './types';
 import { fr } from './translations/fr';
 import { en } from './translations/en';
+import { es } from './translations/es';
+import { pt } from './translations/pt';
+import { de } from './translations/de';
+import { ar } from './translations/ar';
+import { ja } from './translations/ja';
 
-export const DICTIONARIES: Record<Locale, TranslationDictionary> = { fr, en };
+export const DICTIONARIES: Record<Locale, TranslationDictionary> = { fr, en, es, pt, de, ar, ja };
 
 export interface I18nContextValue {
     locale: Locale;
     setLocale: (locale: Locale) => void;
     t: (keyPath: string, params?: Record<string, string | number>) => string;
+    dir: 'ltr' | 'rtl';
+    isRtl: boolean;
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 /**
  * Résout une clé imbriquée de type "coach.title" dans le dictionnaire donné,
- * avec remplacement des variables {var}.
+ * avec remplacement des variables {var}. Strictement 0 any.
  */
 export function resolveTranslation(
-    dict: Record<string, any>,
+    dict: Record<string, unknown>,
     keyPath: string,
-    params?: Record<string, string | number>
+    params?: Record<string, string | number>,
 ): string | null {
     const parts = keyPath.split('.');
-    let current: any = dict;
+    let current: unknown = dict;
+
     for (const part of parts) {
         if (current && typeof current === 'object' && part in current) {
-            current = current[part];
+            current = (current as Record<string, unknown>)[part];
         } else {
             return null;
         }
@@ -55,16 +68,29 @@ export function resolveTranslation(
 export function getTranslation(
     locale: Locale,
     keyPath: string,
-    params?: Record<string, string | number>
+    params?: Record<string, string | number>,
 ): string {
-    const dict = DICTIONARIES[locale] || DICTIONARIES.fr;
+    const dict = (DICTIONARIES[locale] || DICTIONARIES.fr) as unknown as Record<string, unknown>;
     const resolved = resolveTranslation(dict, keyPath, params);
     if (resolved !== null) return resolved;
 
-    // Repli sur le dictionnaire français
+    // Repli sur l'anglais puis sur le français
+    if (locale !== 'en') {
+        const fallbackEn = resolveTranslation(
+            DICTIONARIES.en as unknown as Record<string, unknown>,
+            keyPath,
+            params,
+        );
+        if (fallbackEn !== null) return fallbackEn;
+    }
+
     if (locale !== 'fr') {
-        const fallback = resolveTranslation(DICTIONARIES.fr, keyPath, params);
-        if (fallback !== null) return fallback;
+        const fallbackFr = resolveTranslation(
+            DICTIONARIES.fr as unknown as Record<string, unknown>,
+            keyPath,
+            params,
+        );
+        if (fallbackFr !== null) return fallbackFr;
     }
 
     return keyPath;
@@ -75,9 +101,6 @@ export interface I18nProviderProps {
     initialLocale?: Locale;
 }
 
-/**
- * Fuseaux horaires francophones (fallback lieu) pour la détection automatique.
- */
 const FRENCH_TIMEZONES = new Set([
     'Europe/Paris',
     'Europe/Brussels',
@@ -94,42 +117,100 @@ const FRENCH_TIMEZONES = new Set([
     'Pacific/Tahiti',
 ]);
 
+const SPANISH_TIMEZONES = new Set([
+    'Europe/Madrid',
+    'America/Mexico_City',
+    'America/Buenos_Aires',
+    'America/Bogota',
+    'America/Lima',
+    'America/Santiago',
+]);
+
+const GERMAN_TIMEZONES = new Set([
+    'Europe/Berlin',
+    'Europe/Vienna',
+]);
+
+const PORTUGUESE_TIMEZONES = new Set([
+    'Europe/Lisbon',
+    'America/Sao_Paulo',
+    'America/Fortaleza',
+    'America/Recife',
+    'America/Manaus',
+]);
+
+const ARABIC_TIMEZONES = new Set([
+    'Asia/Riyadh',
+    'Asia/Dubai',
+    'Asia/Qatar',
+    'Asia/Kuwait',
+    'Asia/Baghdad',
+    'Asia/Amman',
+    'Asia/Beirut',
+    'Africa/Cairo',
+]);
+
+const VALID_LOCALES = new Set<Locale>(['fr', 'en', 'es', 'pt', 'de', 'ar', 'ja']);
+
 /**
  * Détecte la langue initiale selon l'ordre de priorité :
  * 1. Choix manuel sauvegardé (localStorage 'bg_locale').
- * 2. Langue du navigateur (navigator.language / navigator.languages[0]).
- * 3. Fuseau horaire (Intl.DateTimeFormat().resolvedOptions().timeZone).
- * 4. Défaut : 'en' (Anglais international).
+ * 2. Paramètre d'URL (?lang=fr|en|es|pt|de|ar|ja).
+ * 3. Langue du navigateur.
+ * 4. Fuseau horaire.
+ * 5. Défaut : 'en' (Anglais international).
  */
 export function detectLocale(): Locale {
     if (typeof window === 'undefined') return 'en';
 
-    // 1. Choix manuel sauvegardé.
     try {
-        const saved = window.localStorage.getItem('bg_locale');
-        if (saved === 'fr' || saved === 'en') return saved;
+        const saved = window.localStorage.getItem('bg_locale') as Locale | null;
+        if (saved && VALID_LOCALES.has(saved)) {
+            return saved;
+        }
     } catch {
         // localStorage indisponible
     }
 
-    // 2. Langue du navigateur.
     try {
-        const navLang = navigator.language || (navigator.languages && navigator.languages[0]) || '';
-        if (navLang.toLowerCase().startsWith('fr')) return 'fr';
-        if (navLang.toLowerCase().startsWith('en')) return 'en';
+        if (typeof window.location?.search === 'string' && window.location.search.length > 1) {
+            const params = new URLSearchParams(window.location.search);
+            const urlLang = params.get('lang')?.toLowerCase() as Locale | undefined;
+            if (urlLang && VALID_LOCALES.has(urlLang)) {
+                return urlLang;
+            }
+        }
+    } catch {
+        // URLSearchParams indisponible
+    }
+
+    try {
+        const navLang = (navigator.language || (navigator.languages && navigator.languages[0]) || '').toLowerCase();
+        if (navLang.startsWith('fr')) return 'fr';
+        if (navLang.startsWith('es')) return 'es';
+        if (navLang.startsWith('pt')) return 'pt';
+        if (navLang.startsWith('de')) return 'de';
+        if (navLang.startsWith('ar')) return 'ar';
+        if (navLang.startsWith('ja')) return 'ja';
+        if (navLang.startsWith('en')) return 'en';
     } catch {
         // navigator indisponible
     }
 
-    // 3. Fuseau horaire (fallback lieu).
     try {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        if (timeZone && FRENCH_TIMEZONES.has(timeZone)) return 'fr';
+        if (timeZone) {
+            if (FRENCH_TIMEZONES.has(timeZone)) return 'fr';
+            if (SPANISH_TIMEZONES.has(timeZone)) return 'es';
+            if (PORTUGUESE_TIMEZONES.has(timeZone)) return 'pt';
+            if (GERMAN_TIMEZONES.has(timeZone)) return 'de';
+            if (ARABIC_TIMEZONES.has(timeZone)) return 'ar';
+            if (timeZone.startsWith('Asia/Tokyo')) return 'ja';
+        }
     } catch {
         // Intl indisponible
     }
 
-    // 4. Défaut : Anglais international.
     return 'en';
 }
 
@@ -145,13 +226,17 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
             try {
                 window.localStorage?.setItem('bg_locale', newLocale);
                 document.documentElement.lang = newLocale;
-            } catch { }
+                document.documentElement.dir = isRtlLocale(newLocale) ? 'rtl' : 'ltr';
+            } catch {
+                // ignore
+            }
         }
     };
 
     useEffect(() => {
         if (typeof document !== 'undefined') {
             document.documentElement.lang = locale;
+            document.documentElement.dir = isRtlLocale(locale) ? 'rtl' : 'ltr';
         }
     }, [locale]);
 
@@ -161,11 +246,16 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
         };
     }, [locale]);
 
+    const isRtl = isRtlLocale(locale);
+    const dir: 'ltr' | 'rtl' = isRtl ? 'rtl' : 'ltr';
+
     const value = useMemo<I18nContextValue>(() => ({
         locale,
         setLocale,
         t,
-    }), [locale, t]);
+        dir,
+        isRtl,
+    }), [locale, t, dir, isRtl]);
 
     return (
         <I18nContext.Provider value={value}>
@@ -174,18 +264,16 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
     );
 }
 
-/**
- * Hook d'internationalisation. Si utilisé en dehors d'un I18nProvider (par ex. tests isolés),
- * retourne un fallback gracieux vers le français.
- */
 export function useI18n(): I18nContextValue {
     const ctx = useContext(I18nContext);
     if (!ctx) {
         return {
             locale: 'fr',
-            setLocale: () => { },
+            setLocale: () => {},
             t: (keyPath: string, params?: Record<string, string | number>) =>
                 getTranslation('fr', keyPath, params),
+            dir: 'ltr',
+            isRtl: false,
         };
     }
     return ctx;

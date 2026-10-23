@@ -49,4 +49,13 @@ describe('DoublingControls', () => {
         expect(html).toContain('Prendre (Take)');
         expect(html).toContain('Passer (Drop)');
     });
+
+    it('affiche le bouton Doubler désactivé à Double Match Point (DMP)', () => {
+        const html = renderToStaticMarkup(
+            <DoublingControls {...defaultProps} canDouble={false} isDMP={true} />,
+        );
+
+        expect(html).toContain('Double Match Point (DMP) : le videau est désactivé');
+        expect(html).toContain('cursor-not-allowed');
+    });
 });

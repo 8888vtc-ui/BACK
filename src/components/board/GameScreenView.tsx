@@ -19,6 +19,14 @@ import MatchHeader from '../hud/MatchHeader';
 import GameBoardArea from './GameBoardArea';
 import CoachMobileDrawer from '../coach/CoachMobileDrawer';
 import GameModalsContainer from '../modals/GameModalsContainer';
+import type { ThemeName, CoachHighlight } from './boardThemes';
+import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
+import type { useGameModals } from '../../hooks/useGameModals';
+import type { useMultiplayerGame } from '../../hooks/useMultiplayerGame';
+import type { useCoach } from '../../hooks/useCoach';
+import type { CompleteGameAnalysis, RawGameTurn } from '../../features/rating';
+import type { OpeningEntry } from '../../features/openings';
+import type { CoachSidebarProps } from '../coach/CoachSidebar';
 
 export interface GameScreenViewProps {
     /** Classe d'ambiance du thème actif. */
@@ -28,19 +36,19 @@ export interface GameScreenViewProps {
     /** Locale active. */
     locale: string;
     /** Thème actif. */
-    theme: any;
+    theme: ThemeName;
     onToggleTheme: () => void;
     /** État et actions du jeu. */
-    game: any;
+    game: UseBackgammonGameReturn;
     isMultiplayerActive: boolean;
-    multiplayer: any;
-    modals: any;
+    multiplayer: ReturnType<typeof useMultiplayerGame>;
+    modals: ReturnType<typeof useGameModals>;
     /** Coach. */
-    coach: any;
-    coachHighlight: any;
+    coach: CoachSidebarProps['coach'];
+    coachHighlight: CoachHighlight | null;
     isAnalyzing: boolean;
-    matchStats: any;
-    matchStatsO: any;
+    matchStats: CoachSidebarProps['matchStats'];
+    matchStatsO: CoachSidebarProps['matchStatsO'];
     prX: number | null;
     prO: number | null;
     hoveredCandidate: string | null;
@@ -64,12 +72,14 @@ export interface GameScreenViewProps {
     turnsCount: number;
     onBackToLobby: () => void;
     /** Modales. */
-    latestGameAnalysis: any;
-    turnsHistory: any[];
-    openingEntry: any;
+    latestGameAnalysis: CompleteGameAnalysis | null;
+    turnsHistory: RawGameTurn[];
+    openingEntry: OpeningEntry | null;
     onApplyOpeningMove: () => void;
     onResetGameHistory: () => void;
     gameId: string;
+    /** Couleur du joueur humain */
+    playerColor?: 'X' | 'O';
 }
 
 const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
@@ -113,6 +123,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     onApplyOpeningMove,
     onResetGameHistory,
     gameId,
+    playerColor,
 }) => {
     const matchContext = {
         scoreX: game.state.scoreX,
@@ -142,6 +153,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 prX={prX}
                 prO={prO}
                 onBackToLobby={onBackToLobby}
+                playerColor={playerColor}
             />
 
             {/* 2. Plateau et Panneau Coach latéral */}
@@ -173,6 +185,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 gameId={gameId}
                 matchContext={matchContext}
                 isMatchStarted
+                playerColor={playerColor}
             />
 
             {/* 3. Tiroir mobile du Coach */}
@@ -211,6 +224,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 openingEntry={openingEntry}
                 onApplyOpeningMove={onApplyOpeningMove}
                 onResetGameHistory={onResetGameHistory}
+                onBackToLobby={onBackToLobby}
             />
         </main>
     );

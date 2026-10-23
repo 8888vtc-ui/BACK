@@ -11,6 +11,9 @@ import {
     RolloutResult,
     PoolStats,
 } from '../../lib/engine/rolloutClient';
+import RolloutResultsTable from './RolloutResultsTable';
+import RolloutProgressPanel from './RolloutProgressPanel';
+import RolloutHeader from './RolloutHeader';
 
 export interface DeepRolloutSectionProps {
     xgid?: string | null;
@@ -192,50 +195,7 @@ export default function DeepRolloutSection({
             className={`rounded-xl border border-slate-700/80 bg-slate-900/95 p-4 text-slate-100 shadow-xl backdrop-blur-md ${className}`}
         >
             {/* Entête avec badge du pool de workers */}
-            <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-400 text-sm font-bold shadow-inner">
-                        🔬
-                    </span>
-                    <div>
-                        <h3 className="text-sm font-bold tracking-wide text-white flex items-center gap-2">
-                            {t('rollout.title')}
-                            <span className="rounded bg-indigo-900/60 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-300 border border-indigo-700/50">
-                                {t('rollout.badge')}
-                            </span>
-                        </h3>
-                        <p className="text-xs text-slate-400">
-                            {t('rollout.subtitle')}
-                        </p>
-                    </div>
-                </div>
-
-                {/* Métriques du pool de workers */}
-                <div
-                    data-testid="worker-pool-stats"
-                    className="flex items-center gap-1.5 rounded-full bg-slate-800/80 px-2.5 py-1 text-[11px] font-medium text-slate-300 border border-slate-700"
-                    title={`Workers: ${poolStats?.idleWorkers ?? 4} libres / ${poolStats?.poolSize ?? 4} totaux`}
-                >
-                    <span
-                        className={`h-2 w-2 rounded-full ${
-                            status === 'running'
-                                ? 'bg-amber-400 animate-pulse'
-                                : (poolStats?.idleWorkers ?? 4) > 0
-                                ? 'bg-emerald-400'
-                                : 'bg-amber-400'
-                        }`}
-                        aria-hidden="true"
-                    />
-                    <span>
-                        {poolStats
-                            ? t('rollout.poolStats', { idle: poolStats.idleWorkers, total: poolStats.poolSize })
-                            : t('rollout.workersReady', { count: 4 })}
-                    </span>
-                    {poolStats && poolStats.busyWorkers > 0 && (
-                        <span className="text-amber-400 font-semibold">{t('rollout.workersActive', { count: poolStats.busyWorkers })}</span>
-                    )}
-                </div>
-            </header>
+            <RolloutHeader poolStats={poolStats} status={status} t={t} />
 
             {/* Coups comparés */}
             <div className="mt-3 rounded-lg bg-slate-800/40 p-2.5 border border-slate-800">
@@ -246,11 +206,10 @@ export default function DeepRolloutSection({
                     {candidateMoves.map((m, idx) => (
                         <div
                             key={m}
-                            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-mono font-medium ${
-                                idx === 0
-                                    ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60'
-                                    : 'bg-slate-800 text-slate-200 border border-slate-700'
-                            }`}
+                            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-mono font-medium ${idx === 0
+                                ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60'
+                                : 'bg-slate-800 text-slate-200 border border-slate-700'
+                                }`}
                         >
                             <span className="text-[10px] font-bold text-slate-400">#{idx + 1}</span>
                             <span>{m}</span>
@@ -282,11 +241,10 @@ export default function DeepRolloutSection({
                                 type="button"
                                 data-testid={`trial-opt-${opt.value}`}
                                 onClick={() => setTrials(opt.value)}
-                                className={`flex flex-col items-center justify-center rounded-lg p-2 text-center transition-all ${
-                                    trials === opt.value
-                                        ? 'bg-blue-600/30 border-2 border-blue-500 text-white shadow-sm shadow-blue-500/20'
-                                        : 'bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-                                }`}
+                                className={`flex flex-col items-center justify-center rounded-lg p-2 text-center transition-all ${trials === opt.value
+                                    ? 'bg-blue-600/30 border-2 border-blue-500 text-white shadow-sm shadow-blue-500/20'
+                                    : 'bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                                    }`}
                             >
                                 <span className="text-xs font-bold">{opt.label}</span>
                                 <span className="text-[10px] text-slate-400 mt-0.5">{opt.speed}</span>
@@ -298,65 +256,15 @@ export default function DeepRolloutSection({
 
             {/* Barre de progression temps réel SSE */}
             {(status === 'running' || status === 'queued' || status === 'completed') && progress && (
-                <div
-                    data-testid="rollout-progress-container"
-                    className="mt-4 rounded-lg bg-slate-950/80 p-3 border border-slate-800 shadow-inner"
-                >
-                    <div className="flex items-center justify-between text-xs mb-1.5">
-                        <div className="flex items-center gap-2">
-                            <span className="inline-block h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
-                            <span className="font-semibold text-cyan-300">
-                                {status === 'queued' ? t('rollout.queued') : t('rollout.running', { move: progress.currentMove || '...' })}
-                            </span>
-                        </div>
-                        <span className="font-mono font-bold text-white">
-                            {progress.progress.toFixed(1)}%
-                        </span>
-                    </div>
-
-                    {/* Progress Bar stylisée */}
-                    <div
-                        id={progressAriaId}
-                        role="progressbar"
-                        aria-valuenow={progress.progress}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-label={t('rollout.progressBarLabel')}
-                        className="h-2.5 w-full overflow-hidden rounded-full bg-slate-800"
-                    >
-                        <div
-                            data-testid="rollout-progress-bar"
-                            className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 transition-all duration-150 ease-out shadow-sm shadow-cyan-500/50"
-                            style={{ width: `${Math.max(2, Math.min(100, progress.progress))}%` }}
-                        />
-                    </div>
-
-                    {/* Statistiques de progression */}
-                    <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
-                        <span>
-                            {t('rollout.gamesLabel')} : <strong className="text-slate-200 font-mono">{progress.trialsDone}</strong> / {progress.totalTrials}
-                        </span>
-                        <span>
-                            {t('rollout.etaLabel')} : <strong className="text-slate-200 font-mono">{progress.etaSeconds > 0 ? `~${progress.etaSeconds.toFixed(1)}s` : t('rollout.finalCalculating')}</strong>
-                        </span>
-                    </div>
-
-                    {/* Bouton d'annulation */}
-                    <div className="mt-3 flex justify-end">
-                        <button
-                            type="button"
-                            onClick={handleCancelRollout}
-                            disabled={isCancelling}
-                            data-testid="rollout-cancel-btn"
-                            className="inline-flex items-center gap-1.5 rounded-md bg-red-950/70 border border-red-800/80 px-2.5 py-1 text-xs font-semibold text-red-300 hover:bg-red-900 transition disabled:opacity-50"
-                        >
-                            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            {isCancelling ? (locale === 'en' ? 'Cancelling…' : 'Annulation…') : t('rollout.cancelBtn')}
-                        </button>
-                    </div>
-                </div>
+                <RolloutProgressPanel
+                    status={status}
+                    progress={progress}
+                    progressAriaId={progressAriaId}
+                    isCancelling={isCancelling}
+                    onCancel={handleCancelRollout}
+                    t={t}
+                    locale={locale}
+                />
             )}
 
             {/* Message d'erreur ou d'annulation */}
@@ -378,89 +286,13 @@ export default function DeepRolloutSection({
 
             {/* Résultats du rollout terminé */}
             {status === 'completed' && result && (
-                <div data-testid="rollout-results" className="mt-4 space-y-3">
-                    {/* Verdict de confirmation */}
-                    <div
-                        data-testid="rollout-verdict"
-                        className={`rounded-lg p-2.5 border text-xs font-medium flex items-center gap-2 ${
-                            result.confirmedBestMove === (optimalMove || candidateMoves[0])
-                                ? 'bg-emerald-950/60 border-emerald-800 text-emerald-200'
-                                : 'bg-amber-950/60 border-amber-800 text-amber-200'
-                        }`}
-                    >
-                        <span className="text-base">
-                            {result.confirmedBestMove === (optimalMove || candidateMoves[0]) ? '✅' : '⚠️'}
-                        </span>
-                        <div>
-                            <strong>
-                                {result.confirmedBestMove === (optimalMove || candidateMoves[0])
-                                    ? t('rollout.verdictConfirmed')
-                                    : t('rollout.verdictReversed')}
-                            </strong>{' '}
-                            <span>
-                                {t('rollout.confirmedDesc', {
-                                    trials: result.trials,
-                                    move: result.confirmedBestMove,
-                                    diff: result.equityDifference.toFixed(3),
-                                })}
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Tableau comparatif des coups */}
-                    <div className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950/60">
-                        <table className="w-full text-left text-xs">
-                            <thead className="bg-slate-800/60 text-[10px] uppercase tracking-wider text-slate-400">
-                                <tr>
-                                    <th className="py-2 px-3">{t('rollout.tableRank')}</th>
-                                    <th className="py-2 px-3">{t('rollout.tableMove')}</th>
-                                    <th className="py-2 px-3">{t('rollout.tableEquity')}</th>
-                                    <th className="py-2 px-3">{t('rollout.tableWin')}</th>
-                                    <th className="py-2 px-3">{t('rollout.tableGammon')}</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-800 font-mono">
-                                {result.moves.map((m) => (
-                                    <tr
-                                        key={m.notation}
-                                        className={m.isConfirmed ? 'bg-emerald-950/20 text-emerald-200' : 'text-slate-300'}
-                                    >
-                                        <td className="py-2 px-3 font-bold">
-                                            #{m.rank} {m.isConfirmed && '🏆'}
-                                        </td>
-                                        <td className="py-2 px-3 font-semibold text-white">
-                                            {m.notation}
-                                        </td>
-                                        <td className="py-2 px-3 font-bold">
-                                            {m.equity > 0 ? `+${m.equity.toFixed(3)}` : m.equity.toFixed(3)}
-                                            <span className="text-[10px] text-slate-400 font-normal ml-1">
-                                                (±{m.confidenceInterval.toFixed(3)})
-                                            </span>
-                                        </td>
-                                        <td className="py-2 px-3">
-                                            {(m.probabilities.win * 100).toFixed(1)}%
-                                        </td>
-                                        <td className="py-2 px-3">
-                                            {(m.probabilities.winGammon * 100).toFixed(1)}%
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Synthèse du pool */}
-                    <div className="flex items-center justify-between text-[11px] text-slate-500">
-                        <span>{t('rollout.calculatedIn', { duration: result.durationSeconds.toFixed(2) })}</span>
-                        <button
-                            type="button"
-                            onClick={handleStartRollout}
-                            className="text-indigo-400 hover:text-indigo-300 hover:underline"
-                        >
-                            {t('rollout.rerunBtn')}
-                        </button>
-                    </div>
-                </div>
+                <RolloutResultsTable
+                    result={result}
+                    optimalMove={optimalMove}
+                    fallbackMove={candidateMoves[0]}
+                    onRerun={handleStartRollout}
+                    t={t}
+                />
             )}
 
             {/* Bouton de déclenchement (CTA) */}

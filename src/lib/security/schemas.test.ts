@@ -11,7 +11,7 @@ describe('Zod Schemas Validation', () => {
     describe('EvaluateRequestSchema', () => {
         it('valide un XGID correct avec ply optionnel', () => {
             const valid = {
-                xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
                 ply: 2,
             };
             const result = EvaluateRequestSchema.safeParse(valid);
@@ -23,7 +23,7 @@ describe('Zod Schemas Validation', () => {
 
         it('applique le ply par défaut si omis', () => {
             const valid = {
-                xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
             };
             const result = EvaluateRequestSchema.safeParse(valid);
             expect(result.success).toBe(true);
@@ -41,14 +41,14 @@ describe('Zod Schemas Validation', () => {
         it('rejette un ply supérieur à 4 ou négatif', () => {
             expect(
                 EvaluateRequestSchema.safeParse({
-                    xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                    xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
                     ply: 5,
                 }).success,
             ).toBe(false);
 
             expect(
                 EvaluateRequestSchema.safeParse({
-                    xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                    xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
                     ply: -1,
                 }).success,
             ).toBe(false);
@@ -58,7 +58,7 @@ describe('Zod Schemas Validation', () => {
     describe('RolloutRequestSchema', () => {
         it('valide une soumission de rollout standard', () => {
             const valid = {
-                xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
                 trials: 1296,
                 candidateMoves: ['24/20 13/10', '8/5 6/5'],
             };
@@ -69,14 +69,14 @@ describe('Zod Schemas Validation', () => {
         it('rejette un nombre de trials en dehors des bornes [18, 10000]', () => {
             expect(
                 RolloutRequestSchema.safeParse({
-                    xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                    xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
                     trials: 5,
                 }).success,
             ).toBe(false);
 
             expect(
                 RolloutRequestSchema.safeParse({
-                    xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                    xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
                     trials: 20000,
                 }).success,
             ).toBe(false);
@@ -114,7 +114,7 @@ describe('Zod Schemas Validation', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10',
+                    xgid: 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10',
                     ply: 2,
                 }),
             });

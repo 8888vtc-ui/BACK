@@ -32,6 +32,14 @@ import {
 import { bearoffExpectedRolls } from './bearoffTable';
 import { computeKeithCount, evaluateKeithCube } from './keithCount';
 import { countShotsExact } from './shotCounter';
+export {
+    calculateEffectivePipCount,
+    evaluateRaceCube,
+    isPureRace,
+    isBearOffPhase,
+    type EffectivePipResult,
+    type RaceCubeEvaluation,
+} from './effectivePipCount';
 
 /**
  * Formate un déplacement unique en notation standard de Backgammon (ex: "24/20", "bar/20", "6/off").
@@ -476,45 +484,69 @@ function evaluateContact(
     // 1. Course aux pips (base).
     z += -0.02 * pipDiff;
 
-    // 2. Vraie probabilité de frappe : pénalise les blots exposés.
-    let blotPenalty = 0;
+    // 2. Vraie probabilité de frappe : pénalise les blots exposés (antisymétrique player vs opponent).
+    let blotPenaltyPlayer = 0;
+    let blotPenaltyOpponent = 0;
     for (let p = 1; p <= 24; p++) {
         const v = board[p];
         const isPlayerBlot = player === 'X' ? v === 1 : v === -1;
-        if (!isPlayerBlot) continue;
-        const shots = countShotsOnBlot(board, p, player, opponent);
-        // Un blot qui ne peut être frappé par aucun pion adverse a une pénalité de 0.
-        blotPenalty += shots * 0.06;
+        const isOpponentBlot = opponent === 'X' ? v === 1 : v === -1;
+        if (isPlayerBlot) {
+            const shots = countShotsOnBlot(board, p, player, opponent);
+            blotPenaltyPlayer += shots * 0.06;
+        } else if (isOpponentBlot) {
+            const shots = countShotsOnBlot(board, p, opponent, player);
+            blotPenaltyOpponent += shots * 0.06;
+        }
     }
-    z -= blotPenalty;
+    z += blotPenaltyOpponent - blotPenaltyPlayer;
 
-    // 3. Force de Prime (mur de portes consécutives).
-    const prime = longestPrime(board, player);
-    const trapped = trappedCheckersBehindPrime(board, player);
-    if (prime >= 5 && trapped > 0) {
-        z += 0.45 + Math.min(0.4, (prime - 5) * 0.2);
-    } else if (prime >= 4 && trapped > 0) {
+    // 3. Force de Prime (mur de portes consécutives, antisymétrique player vs opponent).
+    const primePlayer = longestPrime(board, player);
+    const trappedByPlayer = trappedCheckersBehindPrime(board, player);
+    if (primePlayer >= 5 && trappedByPlayer > 0) {
+        z += 0.45 + Math.min(0.4, (primePlayer - 5) * 0.2);
+    } else if (primePlayer >= 4 && trappedByPlayer > 0) {
         z += 0.25;
+    } else if (primePlayer >= 2) {
+        z += primePlayer * 0.04;
+    }
+
+    const primeOpponent = longestPrime(board, opponent);
+    const trappedByOpponent = trappedCheckersBehindPrime(board, opponent);
+    if (primeOpponent >= 5 && trappedByOpponent > 0) {
+        z -= 0.45 + Math.min(0.4, (primeOpponent - 5) * 0.2);
+    } else if (primeOpponent >= 4 && trappedByOpponent > 0) {
+        z -= 0.25;
+    } else if (primeOpponent >= 2) {
+        z -= primeOpponent * 0.04;
     }
 
     // 4. Qualité de l'ancre défensive.
     z += anchorValue(board, player);
     z -= anchorValue(board, opponent);
 
-    // 5. Contrôle des flèches clés (builder & key points), SYMÉTRIQUE X/O.
-    // Les points clés d'un joueur sont dans son jan intérieur : flèches 1-7
-    // pour X, flèches 18-24 pour O (miroir). Le poids dépend de la position
-    // relative dans le jan (flèche 1 de X = flèche 24 de O, etc.).
+    // 5. Contrôle des flèches clés (jan intérieur 1..7 + jan extérieur 8..11), SYMÉTRIQUE X/O.
     let keyPointsPlayer = 0;
     let keyPointsOpponent = 0;
     for (let p = 1; p <= 24; p++) {
         const v = board[p];
-        const countX = Math.max(0, v); // pions X sur la flèche p
-        const countO = Math.max(0, -v); // pions O sur la flèche p
+        const countX = Math.max(0, v);
+        const countO = Math.max(0, -v);
 
-        // Poids du point clé pour X (flèches 1..7) et pour O (flèches 18..24).
-        const wX = p >= 1 && p <= 7 ? (KEY_POINT_WEIGHTS[p] ?? 1.0) : 0;
-        const wO = p >= 18 && p <= 24 ? (KEY_POINT_WEIGHTS[25 - p] ?? 1.0) : 0;
+        const wX =
+            p >= 1 && p <= 7
+                ? (KEY_POINT_WEIGHTS[p] ?? 1.0)
+                : p >= 8 && p <= 11
+                  ? 0.45 - (p - 8) * 0.05
+                  : 0;
+        const revP = 25 - p;
+        const wO =
+            revP >= 1 && revP <= 7
+                ? (KEY_POINT_WEIGHTS[revP] ?? 1.0)
+                : revP >= 8 && revP <= 11
+                  ? 0.45 - (revP - 8) * 0.05
+                  : 0;
 
         if (countX >= 2) {
             if (player === 'X') keyPointsPlayer += wX;
@@ -525,24 +557,33 @@ function evaluateContact(
             else keyPointsOpponent += wO;
         }
     }
-    z += 0.12 * (keyPointsPlayer - keyPointsOpponent);
+    z += 0.14 * (keyPointsPlayer - keyPointsOpponent);
 
-    // 6. Pénalité de chandeliers (empilement > 5 pions sur une même flèche).
-    let stackingPenalty = 0;
+    // 6. Pénalité de chandeliers (empilement > 5 pions sur une même flèche, antisymétrique).
+    let stackingPenaltyPlayer = 0;
+    let stackingPenaltyOpponent = 0;
     for (let p = 1; p <= 24; p++) {
         const v = board[p];
-        const count = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
-        if (count > 5) stackingPenalty += 0.08 * (count - 5);
+        const countP = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
+        const countO = opponent === 'X' ? Math.max(0, v) : Math.max(0, -v);
+        if (countP > 5) stackingPenaltyPlayer += 0.08 * (countP - 5);
+        if (countO > 5) stackingPenaltyOpponent += 0.08 * (countO - 5);
     }
-    z -= stackingPenalty;
+    z += stackingPenaltyOpponent - stackingPenaltyPlayer;
 
-    // 7. Mobilité des pions arrières (bloqués en 24/23 face à une prime adverse).
-    const oppPrime = longestPrime(board, opponent);
-    if (oppPrime >= 4) {
+    // 7. Mobilité des pions arrières (bloqués en 24/23 face à une prime adverse, antisymétrique).
+    if (primeOpponent >= 4) {
         for (const p of player === 'X' ? [24, 23] : [1, 2]) {
             const v = board[p];
             const count = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
             if (count > 0) z -= 0.06 * count;
+        }
+    }
+    if (primePlayer >= 4) {
+        for (const p of opponent === 'X' ? [24, 23] : [1, 2]) {
+            const v = board[p];
+            const count = opponent === 'X' ? Math.max(0, v) : Math.max(0, -v);
+            if (count > 0) z += 0.06 * count;
         }
     }
 
@@ -704,6 +745,16 @@ export function analyzeBoardMoves(
     const player = state.turn;
     const opponent: Player = player === 'X' ? 'O' : 'X';
 
+    // SANITY CHECK (Règle d'or n°1) : log de vérification du coin de mire
+    // uniquement si explicitement activé via DEBUG_EVALUATOR=true.
+    if (typeof console !== 'undefined' && process.env.DEBUG_EVALUATOR === 'true') {
+        const pips = pipCount(state.board);
+        // eslint-disable-next-line no-console
+        console.log('BOARD ANALYSÉ POUR', player, state.board);
+        // eslint-disable-next-line no-console
+        console.log('PIP COUNT — X (Blanc):', pips.X, '| O (Noir):', pips.O);
+    }
+
     // Évaluation de chaque séquence candidate
     const scoredCandidates: Array<{
         seq: MoveSequence;
@@ -750,6 +801,24 @@ export function analyzeBoardMoves(
     const maxMoves = options.maxMoves ?? 5;
     const sliced = scoredCandidates.slice(0, maxMoves);
 
+    // SANITY CHECK (Règle d'or n°3) : chaque sous-coup de la meilleure séquence doit
+    // partir d'une flèche contenant un pion du joueur actif sur le plateau simulé pas à pas.
+    if (typeof console !== 'undefined' && process.env.NODE_ENV !== 'production') {
+        const bestSeq = scoredCandidates[0].seq;
+        let simBoard = state.board.slice();
+        for (const m of bestSeq.moves) {
+            const src = simBoard[m.from];
+            const ownsSource = player === 'X' ? src > 0 : src < 0;
+            if (!ownsSource) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                    `[SANITY CHECK] Meilleur coup invalide pour ${player} : from=${m.from} (board[${m.from}]=${src}) ne contient pas de pion du joueur actif. Indice potentiellement inversé.`,
+                );
+            }
+            simBoard = applyMove(simBoard, m, player);
+        }
+    }
+
     const moves: MoveAnalysis[] = sliced.map((item, index) => ({
         rank: index + 1,
         notation: item.notation,
@@ -768,12 +837,14 @@ export function analyzeBoardMoves(
     };
 }
 
+import { calculateTakePoint } from '../../features/coach/matchContext';
+import { isInitialBoardPosition } from '../../features/openings/openingDatabase';
+
 /**
  * Analyse la décision de videau pour la position donnée.
  *
- * Utilise les seuils officiels de Janowski :
- *   - Take (accepter) si l'équité cubeless de l'IA est >= -0.540 (~23% de gain).
- *   - Double (proposer) si l'équité cubeless est >= +0.420.
+ * Utilise les seuils officiels de Janowski ajustés dynamiquement selon
+ * la table d'équité de match (MET Kazaross-XG2) et les régimes Crawford / DMP / Dead Cube.
  */
 export function analyzeBoardCube(
     state: BoardState,
@@ -787,32 +858,57 @@ export function analyzeBoardCube(
     const equity = evaluation.cubefulEquity;
     const cubelessEquity = evaluation.cubelessEquity;
 
-    // Seuils de Janowski.
-    const TAKE_THRESHOLD = -0.54; // ~23% de gain ajusté gammons
-    const DOUBLE_THRESHOLD = 0.42;
-
     const noDouble = Number(equity.toFixed(4));
     const doubleTake = Number(clamp(2 * cubelessEquity - 0.15, -1.0, 1.0).toFixed(4));
     const doublePass = 1.0;
 
+    const effectiveMatchLength = options.score?.matchLength ?? state.matchLength ?? 0;
+    const scoreX = options.score?.scoreX ?? state.scoreX ?? 0;
+    const scoreO = options.score?.scoreO ?? state.scoreO ?? 0;
+    const isMoney = effectiveMatchLength <= 0;
+
     let optimalAction = 'No double, take';
 
-    // Règle de Crawford : le videau est gelé.
+    // 1. Règle de Crawford : le videau est gelé
     if (state.crawford) {
         optimalAction = 'No double (Crawford rule)';
+    } else if (!isMoney && scoreX === effectiveMatchLength - 1 && scoreO === effectiveMatchLength - 1) {
+        // 2. Double Match Point (DMP) : le videau est sans objet pour les deux joueurs
+        optimalAction = 'No double (DMP)';
+    } else if (!isMoney && (state.turn === 'X' ? scoreX === effectiveMatchLength - 1 : scoreO === effectiveMatchLength - 1)) {
+        // 3. Dead Cube : un joueur à 1 point de la victoire (1-away) ne double jamais
+        optimalAction = 'No double (Dead cube)';
+    } else if (isInitialBoardPosition(state.board)) {
+        // 4. Règle officielle WBF 5.1 : pas de double sur la position initiale avant le premier coup joué
+        optimalAction = 'No double (Opening position)';
     } else {
         const regime = classifyPosition(state.board);
         if (regime === 'RACE') {
-            // En course pure, la formule de Tom Keith donne la décision exacte de videau.
+            // En course pure, la formule de Tom Keith donne la décision exacte de videau
             const isRedouble = state.cubeOwner === state.turn;
             const keithDecision = evaluateKeithCube(state.board, state.turn, isRedouble);
             optimalAction = keithDecision.action;
-        } else if (cubelessEquity < DOUBLE_THRESHOLD) {
-            optimalAction = 'No double, take';
-        } else if (cubelessEquity >= DOUBLE_THRESHOLD && cubelessEquity < 0.79) {
-            optimalAction = 'Double, take';
         } else {
-            optimalAction = 'Double, pass';
+            // Calcul du seuil de passe dynamique (Take Point MET Kazaross-XG2 en match play)
+            let takePoint = 0.25;
+            if (!isMoney) {
+                const awayX = Math.max(1, effectiveMatchLength - scoreX);
+                const awayO = Math.max(1, effectiveMatchLength - scoreO);
+                const awayTaker = state.turn === 'X' ? awayO : awayX;
+                const awayDoubler = state.turn === 'X' ? awayX : awayO;
+                takePoint = calculateTakePoint(awayTaker, awayDoubler, false);
+            }
+
+            const DOUBLE_THRESHOLD = 0.42;
+            const passThreshold = Number(clamp(1.0 - 2 * (takePoint - 0.145), 0.55, 0.95).toFixed(2));
+
+            if (cubelessEquity < DOUBLE_THRESHOLD) {
+                optimalAction = 'No double, take';
+            } else if (cubelessEquity >= DOUBLE_THRESHOLD && cubelessEquity < passThreshold) {
+                optimalAction = 'Double, take';
+            } else {
+                optimalAction = 'Double, pass';
+            }
         }
     }
 

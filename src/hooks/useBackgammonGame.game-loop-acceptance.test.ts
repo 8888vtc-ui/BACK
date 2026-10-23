@@ -141,4 +141,51 @@ describe('useBackgammonGame - Boucle de jeu complète et zéro blocage', () => {
         expect(finalRes?.winner).toBe('X');
         expect(result.current.state.scoreX).toBeGreaterThanOrEqual(1);
     });
+
+    it('ne bloque JAMAIS l’état OPPONENT_THINKING : un tour complet Humain → IA → Humain se termine toujours', () => {
+        vi.useFakeTimers();
+
+        try {
+            const { result } = renderHook(() =>
+                useBackgammonGame({
+                    matchLength: 5,
+                    autoOpponent: true,
+                    opponentDelayMs: 800,
+                    stepDelayMs: 400,
+                    forcedOpponentDice: [6, 5],
+                    initialDifficulty: 'beginner',
+                }),
+            );
+
+            // 1. Le joueur X lance les dés et joue un coup complet.
+            act(() => {
+                result.current.rollDice([3, 1]);
+            });
+            expect(result.current.phase).toBe('PLAYING_MOVES');
+
+            act(() => {
+                result.current.selectChecker(8, 0);
+                result.current.moveChecker(5);
+                result.current.selectChecker(6, 1);
+                result.current.moveChecker(5);
+            });
+
+            // 2. Le tour bascule vers l'IA (OPPONENT_THINKING).
+            expect(result.current.phase).toBe('OPPONENT_THINKING');
+            expect(result.current.state.turn).toBe('O');
+
+            // 3. On avance largement le temps (bien au-delà de tous les timers IA).
+            act(() => {
+                vi.advanceTimersByTime(10000);
+            });
+
+            // 4. L'IA doit avoir rendu la main : plus jamais bloqué en OPPONENT_THINKING.
+            expect(result.current.phase).not.toBe('OPPONENT_THINKING');
+            expect(result.current.state.turn).toBe('X');
+            expect(result.current.phase).toBe('WAITING_FOR_ROLL');
+            expect(result.current.dice).toBeNull();
+        } finally {
+            vi.useRealTimers();
+        }
+    });
 });

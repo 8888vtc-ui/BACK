@@ -1,5 +1,6 @@
 /**
- * Calculateur Analytics — Error Rate par type de coup, Heatmap des concepts et Courbe de progression.
+ * Calculateur Analytics — Error Rate par type de coup, Blunder Heatmap Tactique (3×5),
+ * Heatmap des concepts et Courbe de progression.
  */
 
 import type { EvaluatedTurn, CompleteGameAnalysis } from '../rating/types';
@@ -11,10 +12,43 @@ import type {
     MoveTypeCategory,
     MoveTypeMetric,
     GamePhase,
+    TacticalTheme,
+    TacticalHeatmapCell,
     HeatmapCell,
     ProgressionDataPoint,
     AnalyticsSummary,
 } from './types';
+
+export const TACTICAL_THEME_CONFIGS: Record<
+    TacticalTheme,
+    { label: string; description: string; icon: string }
+> = {
+    slotting: {
+        label: 'Slotting',
+        description: 'Exposition calculée d’un blot sur une case clé (Point 5, 4 ou Bar-point) pour préparer une porte.',
+        icon: '🎯',
+    },
+    priming: {
+        label: 'Priming',
+        description: 'Construction d’un mur de portes consécutives (Prime de 4, 5 ou 6 portes) pour enfermer les pions adverses.',
+        icon: '🏰',
+    },
+    blitz: {
+        label: 'Blitz',
+        description: 'Attaque frontale dans le jan intérieur avec frappes répétées et fermeture de portes pour viser le Gammon.',
+        icon: '⚡',
+    },
+    holding: {
+        label: 'Holding',
+        description: 'Maintien d’une ancre haute ou basse dans le camp adverse pour contrôler le timing et menacer un coup direct.',
+        icon: '⚓',
+    },
+    racing: {
+        label: 'Racing',
+        description: 'Course pure sans contact, gestion du Pip Count, rapatriement sécurisé et sortie des pions (Bearing off).',
+        icon: '🏁',
+    },
+};
 
 export const MOVE_TYPE_CONFIGS: Record<
     MoveTypeCategory,
@@ -51,6 +85,150 @@ export const MOVE_TYPE_CONFIGS: Record<
         icon: '🏁',
     },
 };
+
+/**
+ * Classifie un coup dans l'un des 5 thèmes tactiques fondamentaux :
+ * Slotting, Priming, Blitz, Holding, Racing.
+ */
+export function classifyTacticalTheme(turn: EvaluatedTurn): TacticalTheme {
+    const played = (turn.playedNotation || '').toLowerCase();
+    const explanation = (turn.explanation || '').toLowerCase();
+
+    // 0. Sortie des pions (Bearing off) -> Racing
+    if (played.includes('/off') || played.includes('/0')) {
+        return 'racing';
+    }
+
+    // 1. Blitz : frappe dans le jan intérieur (/1*, /2*, /3*, /4*, /5*, /6*) ou mention explicite
+    if (
+        explanation.includes('blitz') ||
+        /\/[1-6]\*/.test(played) ||
+        (played.includes('*') && (explanation.includes('attaque') || explanation.includes('attack')))
+    ) {
+        return 'blitz';
+    }
+
+    // 2. Slotting : mention explicite de slot/blot ou coup unique exposant une flèche clé (5, 4, 7)
+    const parts = played.split(/\s+/).filter(Boolean);
+    const dests = parts.map((p) => p.split('/')[1]?.replace('*', ''));
+    const isPointMade =
+        dests.length >= 2 &&
+        dests[0] !== undefined &&
+        dests[0] !== 'off' &&
+        dests[0] !== '0' &&
+        dests[0] === dests[1];
+
+    if (
+        explanation.includes('slot') ||
+        explanation.includes('blot') ||
+        turn.conceptId === 'blot_safety' ||
+        (!isPointMade && /\b(13\/7|8\/5|6\/5|8\/4|6\/4)\b/.test(played))
+    ) {
+        return 'slotting';
+    }
+
+    // 3. Priming : construction de portes consécutives ou deux pions sur la même case
+    if (
+        isPointMade ||
+        explanation.includes('prime') ||
+        explanation.includes('mur') ||
+        explanation.includes('porte') ||
+        turn.conceptId === 'prime_building' ||
+        turn.conceptId === 'golden_point'
+    ) {
+        return 'priming';
+    }
+
+    // 4. Holding : ancre arrière (points 20 à 24 ou entrée depuis la barre)
+    if (
+        explanation.includes('ancre') ||
+        explanation.includes('anchor') ||
+        explanation.includes('holding') ||
+        turn.conceptId === 'anchor_defense' ||
+        played.includes('bar/') ||
+        played.includes('24/') ||
+        /\/2[0-4]\b/.test(played)
+    ) {
+        return 'holding';
+    }
+
+    // 5. Racing : course pure et sortie des pions (Bearing off)
+    return 'racing';
+}
+
+/**
+ * Génère la Blunder Heatmap Tactique 2D :
+ * 3 Phases (Opening, Midgame, Bearing off) × 5 Thèmes (Slotting, Priming, Blitz, Holding, Racing).
+ */
+export function calculateTacticalBlunderHeatmap(
+    analyses: CompleteGameAnalysis[],
+): TacticalHeatmapCell[] {
+    const phases: Array<{ phase: GamePhase; label: string }> = [
+        { phase: 'opening', label: 'Opening (Ouverture)' },
+        { phase: 'middle_game', label: 'Midgame (Milieu de jeu)' },
+        { phase: 'endgame', label: 'Bearing off (Sortie)' },
+    ];
+
+    const themes: TacticalTheme[] = ['slotting', 'priming', 'blitz', 'holding', 'racing'];
+    const cellMap = new Map<string, TacticalHeatmapCell>();
+
+    for (const theme of themes) {
+        const cfg = TACTICAL_THEME_CONFIGS[theme];
+        for (const p of phases) {
+            const key = `${theme}_${p.phase}`;
+            cellMap.set(key, {
+                theme,
+                themeLabel: cfg.label,
+                themeDescription: cfg.description,
+                phase: p.phase,
+                phaseLabel: p.label,
+                decisionsCount: 0,
+                errorCount: 0,
+                blunderCount: 0,
+                totalEquityLoss: 0,
+                intensity: 0,
+            });
+        }
+    }
+
+    let maxLossInCell = 0.05;
+
+    for (const analysis of analyses) {
+        for (const move of analysis.evaluatedMoves) {
+            const theme = classifyTacticalTheme(move);
+            const phase = classifyGamePhase(move.moveNumber, move.boardBefore);
+            const key = `${theme}_${phase}`;
+            const cell = cellMap.get(key);
+            if (!cell) continue;
+
+            cell.decisionsCount += 1;
+            const isError =
+                move.verdict === 'doubtful' ||
+                move.verdict === 'blunder' ||
+                move.verdict === 'howler';
+
+            if (isError) {
+                cell.errorCount += 1;
+                if (move.verdict === 'blunder' || move.verdict === 'howler') {
+                    cell.blunderCount += 1;
+                }
+                cell.totalEquityLoss += Math.abs(move.equityLoss);
+                if (cell.totalEquityLoss > maxLossInCell) {
+                    maxLossInCell = cell.totalEquityLoss;
+                }
+            }
+        }
+    }
+
+    return Array.from(cellMap.values()).map((cell) => {
+        const intensity = Math.min(1, cell.totalEquityLoss / maxLossInCell);
+        return {
+            ...cell,
+            totalEquityLoss: Number(cell.totalEquityLoss.toFixed(3)),
+            intensity: Number(intensity.toFixed(2)),
+        };
+    });
+}
 
 /**
  * Détermine la catégorie tactique d'un coup.
@@ -179,8 +357,6 @@ export function calculateMoveTypeMetrics(analyses: CompleteGameAnalysis[]): Move
         const count = Math.max(1, b.decisionsCount);
         const errorRate = Number((b.totalEquityLoss / count).toFixed(4));
 
-        // Score de maîtrise : 100% à 0 perte, diminue avec le taux d'erreur
-        // Un error rate de 0.080 (seuil blunder) correspond à ~40%
         const masteryPercentage = Math.max(
             15,
             Math.min(100, Math.round(100 - errorRate * 600)),
@@ -213,7 +389,6 @@ export function generateConceptsHeatmap(analyses: CompleteGameAnalysis[]): Heatm
 
     const cellMap = new Map<string, HeatmapCell>();
 
-    // Initialisation
     for (const concept of STRATEGIC_CONCEPTS_CATALOG) {
         for (const p of phases) {
             const key = `${concept.id}_${p.phase}`;
@@ -233,7 +408,6 @@ export function generateConceptsHeatmap(analyses: CompleteGameAnalysis[]): Heatm
 
     let maxLossInCell = 0.05;
 
-    // Remplissage
     for (const analysis of analyses) {
         for (const move of analysis.evaluatedMoves) {
             const isError =
@@ -248,7 +422,6 @@ export function generateConceptsHeatmap(analyses: CompleteGameAnalysis[]): Heatm
 
             let cell = cellMap.get(key);
             if (!cell) {
-                // Si conceptId non trouvé dans le catalogue initial, utiliser le premier
                 cell = cellMap.get(`${STRATEGIC_CONCEPTS_CATALOG[0].id}_${phase}`)!;
             }
 
@@ -265,7 +438,6 @@ export function generateConceptsHeatmap(analyses: CompleteGameAnalysis[]): Heatm
         }
     }
 
-    // Normalisation de l'intensité (0 à 1)
     const cells = Array.from(cellMap.values()).map((cell) => {
         const intensity = Math.min(1, cell.totalEquityLoss / maxLossInCell);
         return {
@@ -284,7 +456,6 @@ export function generateConceptsHeatmap(analyses: CompleteGameAnalysis[]): Heatm
 export function calculateProgressionTimeline(
     analyses: CompleteGameAnalysis[],
 ): ProgressionDataPoint[] {
-    // Trier les analyses par date croissante
     const sorted = [...analyses].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
@@ -295,7 +466,6 @@ export function calculateProgressionTimeline(
     for (let i = 0; i < sorted.length; i++) {
         const item = sorted[i];
 
-        // Moyenne mobile sur les `windowSize` dernières parties
         const start = Math.max(0, i - windowSize + 1);
         const windowSlice = sorted.slice(start, i + 1);
         const avgPR =
@@ -322,6 +492,7 @@ export function calculateProgressionTimeline(
 export function computeAnalyticsSummary(analyses: CompleteGameAnalysis[]): AnalyticsSummary {
     const moveTypeMetrics = calculateMoveTypeMetrics(analyses);
     const heatmapCells = generateConceptsHeatmap(analyses);
+    const tacticalHeatmapCells = calculateTacticalBlunderHeatmap(analyses);
     const progressionPoints = calculateProgressionTimeline(analyses);
 
     const totalDecisions = moveTypeMetrics.reduce((acc, m) => acc + m.decisionsCount, 0);
@@ -338,6 +509,7 @@ export function computeAnalyticsSummary(analyses: CompleteGameAnalysis[]): Analy
         totalDecisions,
         moveTypeMetrics,
         heatmapCells,
+        tacticalHeatmapCells,
         progressionPoints,
         overallMastery,
     };

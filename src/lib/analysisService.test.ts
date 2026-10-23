@@ -20,7 +20,7 @@ import {
 } from './analysisService';
 import { BoardState, createInitialState } from '../engine/backgammonEngine';
 
-const MOCK_XGID = 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10';
+const MOCK_XGID = 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10';
 
 const MOCK_MOVES: MoveAnalysis[] = [
     {

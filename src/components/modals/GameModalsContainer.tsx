@@ -20,7 +20,7 @@ import type { CompleteGameAnalysis, RawGameTurn } from '../../features/rating';
 import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
 import type { useGameModals } from '../../hooks/useGameModals';
 import type { OpeningEntry } from '../../features/openings';
-import GameOverOverlay from '../board/GameOverOverlay';
+import PostMatchTrainingReport from '../summary/PostMatchTrainingReport';
 import GameReviewModal from '../rating/GameReviewModal';
 import MultiplayerLobbyModal from '../multiplayer/MultiplayerLobbyModal';
 import MultiplayerResultModal from '../multiplayer/MultiplayerResultModal';
@@ -40,6 +40,7 @@ export interface GameModalsContainerProps {
     openingEntry: OpeningEntry | null;
     onApplyOpeningMove?: () => void;
     onResetGameHistory: () => void;
+    onBackToLobby?: () => void;
 }
 
 const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
@@ -53,30 +54,31 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
     openingEntry,
     onApplyOpeningMove,
     onResetGameHistory,
+    onBackToLobby,
 }) => {
     return (
         <>
-            {/* 1. Overlay Fin de Partie (si terminée en mode Solo) */}
-            {!isMultiplayerActive && game.phase === 'GAME_OVER' && game.gameResult && (
-                <GameOverOverlay
-                    result={game.gameResult}
+            {/* 1. Rapport de Formation Post-Match (si manche terminée en mode Solo et que le modal Bilan détaillé n'est pas ouvert) */}
+            {!isMultiplayerActive && game.phase === 'GAME_OVER' && game.gameResult && !modals.isGameReviewModalOpen && (
+                <PostMatchTrainingReport
+                    analysis={latestGameAnalysis}
+                    winner={game.gameResult.winner}
+                    winType={game.gameResult.winType}
+                    pointsWon={game.gameResult.pointsWon}
                     scoreX={game.state.scoreX}
                     scoreO={game.state.scoreO}
                     matchLength={game.state.matchLength}
                     isMatchOver={game.isMatchOver}
-                    matchWinner={game.matchWinner}
-                    isCrawfordNext={game.isCrawfordNext}
-                    analysis={latestGameAnalysis}
-                    onOpenReview={modals.openGameReview}
+                    gameId={latestGameAnalysis?.gameId ?? `game_${game.state.scoreX}_${game.state.scoreO}`}
                     onNextGame={() => {
                         onResetGameHistory();
-                        game.startNewGame();
+                        if (game.isMatchOver) game.resetMatch();
+                        else game.startNewGame();
                     }}
-                    onResetMatch={() => {
-                        onResetGameHistory();
-                        game.resetMatch();
-                    }}
-                    theme={theme}
+                    onOpenReview={modals.openGameReview}
+                    onBackToLobby={onBackToLobby ?? modals.openGameReview}
+                    onTrainBlunders={modals.openGameCourse}
+                    locale="fr"
                 />
             )}
 
@@ -86,6 +88,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                 isOpen={modals.isGameReviewModalOpen}
                 onClose={modals.closeGameReview}
                 theme={theme}
+                initialTab={modals.reviewInitialTab}
             />
 
             {/* 3. Modals Multijoueur */}

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-// Sélecteurs obsolètes (textes du HUD compacté). À réaligner sur les testids réels.
-test.describe.skip('E2E : Internationalisation i18n FR/EN', () => {
+// Skip links i18n et sélecteur de langue désormais présents.
+test.describe('E2E : Internationalisation i18n FR/EN', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
         await page.waitForLoadState('domcontentloaded');

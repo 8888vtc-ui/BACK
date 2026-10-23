@@ -7,8 +7,9 @@ Cette documentation décrit l'ensemble des points d'accès (**Endpoints REST**),
 ## 1. Vue d'Ensemble & Sécurité
 
 ### 1.1 Architecture des Services
-- **Passerelle Web & Proxy de Sécurité** : Next.js 15 App Router (port par défaut : `3000`).
-- **Moteur d'Analyse Neuronal** : FastAPI Python 3.12 + GNU Backgammon CLI (port par défaut : `8000`).
+- **Passerelle Web & Client Applicatif** : Next.js 15 App Router (port local : `3000`).
+- **Moteur d'Analyse Neuronal Open Sage** : Microservice FastAPI Python + C++ `bgsage` (Google Cloud Run / port local : `8080`).
+  - Production : `https://bgsage-service-468274233732.europe-west1.run.app`
 
 ### 1.2 En-têtes HTTP de Sécurité
 Toutes les réponses de l'API incluent automatiquement les en-têtes suivants :
@@ -20,7 +21,7 @@ X-Correlation-ID: <UUID-v4>
 ```
 
 ### 1.3 Limitation de Débit (Rate Limiting)
-- Seuil standard : **60 requêtes par minute** par adresse IP sur les endpoints de calcul (`/api/evaluate`, `/api/coach`).
+- Seuil standard : **60 requêtes par minute** par adresse IP sur les endpoints de calcul (`/api/evaluate`, `/analyze`).
 - En cas de dépassement, l'API répond avec le code HTTP **`429 Too Many Requests`** accompagné des en-têtes :
   - `Retry-After: 60`
   - `X-RateLimit-Limit: 60`
@@ -28,11 +29,11 @@ X-Correlation-ID: <UUID-v4>
 
 ---
 
-## 2. Endpoints du Moteur d'Analyse (GNUBG)
+## 2. Endpoints du Moteur d'Analyse (Open Sage / bgsage)
 
 ### 2.1 Évaluer une Position — `POST /api/evaluate`
 
-Analyse une position XGID donnée : fournit le top des meilleurs coups de pions et l'analyse de la décision de videau.
+Analyse une position XGID donnée via le moteur neuronal Open Sage : fournit le meilleur coup, les coups candidats ordonnés, l'équité, et l'analyse de décision de videau.
 
 - **URL** : `/api/evaluate`
 - **Méthode** : `POST`

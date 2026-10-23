@@ -72,7 +72,7 @@ function ToastItem({
     onClose: (id: string) => void;
 }) {
     const [paused, setPaused] = useState(false);
-    const duration = toast.duration ?? 5000;
+    const duration = toast.duration ?? 2400;
     const remainingRef = useRef(duration);
     const lastTickRef = useRef(Date.now());
 
@@ -114,7 +114,7 @@ function ToastItem({
             role="alert"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
-            className={`pointer-events-auto relative flex w-full max-w-sm items-start gap-3 rounded-xl border bg-slate-900/95 p-4 shadow-2xl backdrop-blur-md transition-all duration-200 hover:scale-[1.01] ${borderClass}`}
+            className={`pointer-events-auto relative flex w-full max-w-xs items-center gap-2.5 rounded-xl border border-[#d4af37]/55 bg-[#120b06]/95 px-3.5 py-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,245,205,0.2)] backdrop-blur-md transition-all duration-200 hover:scale-[1.01] ${borderClass}`}
         >
             <div className="mt-0.5 flex-shrink-0">
                 <ToastIcon type={toast.type} />
@@ -161,7 +161,7 @@ export default function ToastContainer() {
     return (
         <aside
             aria-label="Notifications"
-            className="fixed bottom-4 right-4 z-50 flex max-w-sm flex-col-reverse gap-2.5 pointer-events-none"
+            className="fixed bottom-4 right-4 z-[60] flex max-w-[280px] sm:max-w-xs flex-col gap-2 pointer-events-none"
         >
             {toasts.map((t) => (
                 <ToastItem key={t.id} toast={t} onClose={removeToast} />

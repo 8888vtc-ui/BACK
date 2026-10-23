@@ -16,7 +16,7 @@ function TestApp() {
     );
 }
 
-describe('LanguageSelector Component', () => {
+describe('LanguageSelector Component (5 Langues : FR, EN, ES, DE, JA)', () => {
     beforeEach(() => {
         window.localStorage.clear();
         document.documentElement.lang = 'fr';
@@ -26,49 +26,61 @@ describe('LanguageSelector Component', () => {
         cleanup();
     });
 
-    it('affiche le sélecteur de langue avec les boutons FR et EN', () => {
+    it('affiche le sélecteur de langue avec les 5 boutons FR, EN, ES, DE, JA', () => {
         render(
             <I18nProvider initialLocale="fr">
                 <TestApp />
-            </I18nProvider>
+            </I18nProvider>,
         );
 
         expect(screen.getByTestId('language-selector')).toBeDefined();
         expect(screen.getByTestId('lang-btn-fr')).toBeDefined();
         expect(screen.getByTestId('lang-btn-en')).toBeDefined();
+        expect(screen.getByTestId('lang-btn-es')).toBeDefined();
+        expect(screen.getByTestId('lang-btn-de')).toBeDefined();
+        expect(screen.getByTestId('lang-btn-ja')).toBeDefined();
         expect(screen.getByTestId('current-lang').textContent).toBe('fr');
         expect(screen.getByTestId('translated-title').textContent).toBe('Coach en Temps Réel');
     });
 
-    it('bascule vers l’anglais au clic sur le bouton EN', () => {
+    it('bascule vers l’espagnol, l’allemand et le japonais au clic', () => {
         render(
             <I18nProvider initialLocale="fr">
                 <TestApp />
-            </I18nProvider>
+            </I18nProvider>,
         );
 
-        const btnEn = screen.getByTestId('lang-btn-en');
-        fireEvent.click(btnEn);
+        // Clic sur ES
+        fireEvent.click(screen.getByTestId('lang-btn-es'));
+        expect(screen.getByTestId('current-lang').textContent).toBe('es');
+        expect(screen.getByTestId('translated-title').textContent).toBe('Entrenador en Tiempo Real');
+        expect(document.documentElement.lang).toBe('es');
+
+        // Clic sur DE
+        fireEvent.click(screen.getByTestId('lang-btn-de'));
+        expect(screen.getByTestId('current-lang').textContent).toBe('de');
+        expect(screen.getByTestId('translated-title').textContent).toBe('Echtzeit-Trainer');
+        expect(document.documentElement.lang).toBe('de');
+
+        // Clic sur JA
+        fireEvent.click(screen.getByTestId('lang-btn-ja'));
+        expect(screen.getByTestId('current-lang').textContent).toBe('ja');
+        expect(screen.getByTestId('translated-title').textContent).toBe('リアルタイム・コーチ');
+        expect(document.documentElement.lang).toBe('ja');
+    });
+
+    it('bascule vers l’anglais et mémorise le choix dans localStorage', () => {
+        render(
+            <I18nProvider initialLocale="fr">
+                <TestApp />
+            </I18nProvider>,
+        );
+
+        fireEvent.click(screen.getByTestId('lang-btn-en'));
 
         expect(screen.getByTestId('current-lang').textContent).toBe('en');
         expect(screen.getByTestId('translated-title').textContent).toBe('Real-Time Coach');
         expect(document.documentElement.lang).toBe('en');
         expect(window.localStorage.getItem('bg_locale')).toBe('en');
-    });
-
-    it('bascule à nouveau vers le français au clic sur FR', () => {
-        render(
-            <I18nProvider initialLocale="en">
-                <TestApp />
-            </I18nProvider>
-        );
-
-        const btnFr = screen.getByTestId('lang-btn-fr');
-        fireEvent.click(btnFr);
-
-        expect(screen.getByTestId('current-lang').textContent).toBe('fr');
-        expect(screen.getByTestId('translated-title').textContent).toBe('Coach en Temps Réel');
-        expect(document.documentElement.lang).toBe('fr');
-        expect(window.localStorage.getItem('bg_locale')).toBe('fr');
     });
 });

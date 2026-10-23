@@ -1,24 +1,13 @@
 'use client';
 
 /**
- * Hook de gestion audio SSR-safe — feedback sonore du jeu.
+ * Hook de gestion audio & synthèse vocale SSR-safe — feedback sonore du jeu et vocalisation Coach IA.
  *
  * Rôle :
  *   Expose une API stable (`playDice`, `playMove`, `playHit`, `playCube`,
- *   `playVictory`, `playBlunder`) et l'état `isMuted` / `toggleMute` du
- *   moteur audio procédural (`soundEngine`).
- *
- * ANTI-HYDRATATION :
- *   `soundEngine.isMute()` lit `localStorage` dans le constructeur du singleton.
- *   L'état React démarre donc sur `false` (identique SSR/CSR) et n'est
- *   synchronisé qu'après le montage, dans un `useEffect`.
- *
- * Dépendances :
- *   `soundEngine` (singleton Web Audio).
- *
- * Retrait :
- *   Supprimer ce fichier et remplacer ses usages par des appels directs à
- *   `soundEngine`.
+ *   `playVictory`, `playBlunder`, `speakCoachAlert`, `stopSpeaking`,
+ *   `isVoiceEnabled`, `toggleVoice`) et l'état `isMuted` / `toggleMute` du
+ *   moteur audio procédural (`soundEngine`) et Web Speech API (`voiceCoach`).
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -29,6 +18,14 @@ export interface UseSoundManagerResult {
     isMuted: boolean;
     /** Bascule mute/unmute et persiste la préférence. */
     toggleMute: () => boolean;
+    /** La synthèse vocale du Coach IA (Web Speech API) est-elle activée ? */
+    isVoiceEnabled: boolean;
+    /** Bascule l'activation de la synthèse vocale du Coach IA. */
+    toggleVoice: () => boolean;
+    /** Prononce une alerte tactique du Coach IA en 5 langues (EN, FR, ES, DE, JA). */
+    speakCoachAlert: (text: string, locale?: string, force?: boolean) => boolean;
+    /** Interrompt toute annonce vocale en cours. */
+    stopSpeaking: () => void;
     /** Lancer de dés (gobelet + rebonds feutrés). */
     playDice: () => void;
     /** Déplacement d'un pion (glissement + clac boisé). */
@@ -46,17 +43,39 @@ export interface UseSoundManagerResult {
 }
 
 export function useSoundManager(): UseSoundManagerResult {
-    // ANTI-HYDRATATION : constante stricte, identique SSR/CSR.
+    // ANTI-HYDRATATION : constantes strictes, identiques SSR/CSR.
     const [isMuted, setIsMuted] = useState(false);
+    const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
 
     useEffect(() => {
         setIsMuted(soundEngine.isMute());
+        setIsVoiceEnabled(soundEngine.isVoiceCoachEnabled());
     }, []);
 
     const toggleMute = useCallback(() => {
         const next = soundEngine.toggleMute();
         setIsMuted(next);
+        if (next) {
+            soundEngine.stopCoachVoice();
+        }
         return next;
+    }, []);
+
+    const toggleVoice = useCallback(() => {
+        const next = soundEngine.toggleVoiceCoach();
+        setIsVoiceEnabled(next);
+        return next;
+    }, []);
+
+    const speakCoachAlert = useCallback(
+        (text: string, locale: string = 'fr', force: boolean = false) => {
+            return soundEngine.speakCoachAlert(text, locale, force);
+        },
+        [],
+    );
+
+    const stopSpeaking = useCallback(() => {
+        soundEngine.stopCoachVoice();
     }, []);
 
     const playDice = useCallback(() => soundEngine.playDiceRoll(), []);
@@ -73,6 +92,10 @@ export function useSoundManager(): UseSoundManagerResult {
     return {
         isMuted,
         toggleMute,
+        isVoiceEnabled,
+        toggleVoice,
+        speakCoachAlert,
+        stopSpeaking,
         playDice,
         playMove,
         playHit,

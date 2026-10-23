@@ -130,38 +130,116 @@ export function serializeXGID(state: BoardState): string {
     let board = '';
     // Flèches 24 → 1 (ordre décroissant, conforme au standard XGID).
     for (let p = 24; p >= 1; p--) board += encodePoint(state.board[p]);
-    // Barre de X puis barre de O.
-    board += encodePoint(state.board[X_BAR]);
-    board += encodePoint(state.board[O_BAR]);
+    // Barre : supporte sans perte la présence simultanée de pions X et O sur la barre.
+    const barX = Math.max(0, state.board[X_BAR]);
+    const barO = Math.max(0, -state.board[O_BAR]);
+    if (barX > 0 && barO > 0) {
+        board += encodePoint(barX);
+        board += encodePoint(-barO);
+    } else {
+        board += encodePoint(barX - barO);
+        // Bear-off : positif = pions X sortis, négatif = pions O sortis.
+        const offX = borneOffCount(state.board, 'X');
+        const offO = borneOffCount(state.board, 'O');
+        board += encodePoint(offX - offO);
+    }
 
-    const turn = state.turn === 'X' ? '0' : '1';
-    const owner = state.cubeOwner === null ? '0' : state.cubeOwner === 'X' ? '1' : '2';
-    const dice = state.dice ? `${state.dice[0]}${state.dice[1]}` : '00';
+    // Format XGID standard GNU : corps:matchplay:scoreX:scoreO:dice:player_on_roll:cube:cube_owner:crawford:doubled:matchLength
+    const matchplay = state.matchLength > 0 ? '1' : '0';
+    const scoreX = state.scoreX ?? 0;
+    const scoreO = state.scoreO ?? 0;
+    const dice = state.dice ? `${state.dice[0]}${state.dice[1]}` : '0';
+    const playerOnRoll = state.turn === 'X' ? '0' : '1';
+    const cube = state.cubeValue ?? 1;
+    const cubeOwner = state.cubeOwner === null ? '0' : state.cubeOwner === 'X' ? '1' : '2';
+    const crawford = state.crawford ? '1' : '0';
     const doubled = state.doubled ? '1' : '0';
-    return `XGID=${board}:${turn}:${owner}:${state.cubeValue}:${dice}:${doubled}:${state.resigned}:0:0:${state.matchLength}`;
+    return `XGID=${board}:${matchplay}:${scoreX}:${scoreO}:${dice}:${playerOnRoll}:${cube}:${cubeOwner}:${crawford}:${doubled}:${state.matchLength}`;
 }
 
-/** Parse un XGID et reconstruit l'état correspondant. */
+/** Parse un XGID (format 11 champs ou format canonique eXtreme Gammon 10 champs) et reconstruit l'état correspondant sans perte. */
 export function parseXGID(xgid: string): BoardState {
-    const m = xgid.match(
-        /^XGID=([^:]{26}):([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):([^:]+)$/,
-    );
-    if (!m) throw new Error(`XGID invalide : "${xgid}"`);
+    const raw = xgid.startsWith('XGID=') ? xgid.slice(5) : xgid;
+    const parts = raw.split(':');
+    if ((parts.length !== 10 && parts.length < 11) || parts[0].length !== 26) {
+        throw new Error(`XGID invalide : "${xgid}"`);
+    }
 
-    const board = new Array<number>(26);
+    const body = parts[0];
+    const board = new Array<number>(26).fill(0);
+
+    // Support du format canonique eXtreme Gammon à 10 champs :
+    // XGID=[26 chars]:cubeExp:cubeOwner:turnDir:dice:scoreBottom:scoreTop:crawfordJacoby:matchLength:maxCube
+    if (parts.length === 10) {
+        const barO = decodePoint(body[0]);
+        board[O_BAR] = barO <= 0 ? barO : -barO;
+        for (let p = 1; p <= 24; p++) {
+            board[p] = decodePoint(body[p]);
+        }
+        const barX = decodePoint(body[25]);
+        board[X_BAR] = barX >= 0 ? barX : -barX;
+
+        const cubeExp = Number(parts[1]);
+        const cubeValue = cubeExp > 0 ? Math.pow(2, cubeExp) : 1;
+        const cubeOwner: Player | null = parts[2] === '1' ? 'X' : parts[2] === '-1' ? 'O' : null;
+        const turn: Player = parts[3] === '-1' ? 'O' : 'X';
+        const diceField = parts[4];
+        const doubled = diceField === 'D' || diceField === 'd';
+        const dice: [number, number] | null =
+            !diceField || diceField === '0' || diceField === '00' || doubled
+                ? null
+                : diceField.length === 1
+                    ? [Number(diceField), Number(diceField)]
+                    : [Number(diceField[0]), Number(diceField[1])];
+        const scoreX = Number(parts[5]);
+        const scoreO = Number(parts[6]);
+        const matchLength = Number(parts[8]);
+        const crawford = matchLength > 0 && parts[7] === '1';
+
+        return {
+            board,
+            turn,
+            cubeValue,
+            cubeOwner,
+            dice,
+            matchLength,
+            scoreX,
+            scoreO,
+            crawford,
+            doubled,
+            resigned: 0,
+        };
+    }
+
     // Flèches 24 → 1 (ordre décroissant).
-    for (let p = 24; p >= 1; p--) board[p] = decodePoint(m[1][24 - p]);
-    // Barre de X puis barre de O.
-    board[X_BAR] = decodePoint(m[1][24]);
-    board[O_BAR] = decodePoint(m[1][25]);
+    for (let p = 24; p >= 1; p--) board[p] = decodePoint(body[24 - p]);
+    // Barre (caractères 24 et 25 si présence simultanée X et O sur la barre)
+    const bar24 = decodePoint(body[24]);
+    const bar25 = decodePoint(body[25]);
+    if (bar24 > 0 && bar25 < 0) {
+        board[X_BAR] = bar24;
+        board[O_BAR] = bar25;
+    } else {
+        board[X_BAR] = bar24 > 0 ? bar24 : 0;
+        board[O_BAR] = bar24 < 0 ? bar24 : 0;
+    }
 
-    const turn: Player = m[2] === '1' ? 'O' : 'X';
-    const cubeOwner: Player | null = m[3] === '1' ? 'X' : m[3] === '2' ? 'O' : null;
-    const cubeValue = Number(m[4]);
-    const dice: [number, number] | null = m[5] === '00' ? null : [Number(m[5][0]), Number(m[5][1])];
-    const doubled = m[6] === '1';
-    const resigned = Number(m[7]);
-    const matchLength = Number(m[10]);
+    // Format XGID 11 champs : corps:matchplay:scoreX:scoreO:dice:player_on_roll:cube:cube_owner:crawford:doubled:matchLength
+    const scoreX = Number(parts[2]);
+    const scoreO = Number(parts[3]);
+    const diceField = parts[4];
+    const dice: [number, number] | null =
+        !diceField || diceField === '0' || diceField === '00'
+            ? null
+            : diceField.length === 1
+                ? [Number(diceField), Number(diceField)]
+                : [Number(diceField[0]), Number(diceField[1])];
+    const turn: Player = parts[5] === '1' ? 'O' : 'X';
+    const cubeValue = Number(parts[6]);
+    const cubeOwner: Player | null = parts[7] === '1' ? 'X' : parts[7] === '2' ? 'O' : null;
+    const crawford = parts[8] === '1';
+    const doubled = parts[9] === '1';
+    const matchLength = Number(parts[10]);
 
     return {
         board,
@@ -170,11 +248,11 @@ export function parseXGID(xgid: string): BoardState {
         cubeOwner,
         dice,
         matchLength,
-        scoreX: 0,
-        scoreO: 0,
-        crawford: false,
+        scoreX,
+        scoreO,
+        crawford,
         doubled,
-        resigned,
+        resigned: 0,
     };
 }
 
@@ -386,15 +464,20 @@ export function generateLegalMoves(state: BoardState, dice: [number, number]): M
     const maxDice = Math.max(...all.map((s) => s.moves.length));
     let filtered = all.filter((s) => s.moves.length === maxDice);
 
-    // Règle du plus fort dé : uniquement quand un seul dé est jouable ET que le
-    // joueur n'est PAS sur la barre. Depuis la barre, le joueur peut entrer avec
-    // n'importe quel dé jouable (aucune règle du plus fort dé ne s'applique).
+    // Règle officielle du plus fort dé (WBF / USBGF Règle 4.2 / XG2 / Snowie) :
+    // Lorsqu'un seul dé peut être joué au total (maxDice === 1) et que chaque dé
+    // est individuellement jouable, le joueur a l'obligation de jouer le plus fort,
+    // y compris s'il entre depuis la barre.
     const onBar = player === 'X' ? state.board[X_BAR] > 0 : state.board[O_BAR] < 0;
-    if (maxDice === 1 && d1 !== d2 && !onBar) {
-        const used = new Set(filtered.map((s) => moveDistance(s.moves[0], player)));
-        if (used.size === 2) {
+    if (maxDice === 1 && d1 !== d2) {
+        const d1Moves = generateSingleMoves(state.board, player, d1);
+        const d2Moves = generateSingleMoves(state.board, player, d2);
+        if (d1Moves.length > 0 && d2Moves.length > 0) {
             const higher = Math.max(d1, d2);
-            filtered = filtered.filter((s) => moveDistance(s.moves[0], player) === higher);
+            const higherMoves = d1 === higher ? d1Moves : d2Moves;
+            filtered = filtered.filter((s) =>
+                higherMoves.some((m) => m.from === s.moves[0].from && m.to === s.moves[0].to),
+            );
         }
     }
 
@@ -501,11 +584,7 @@ export function computeLegalTargets(
         const d1Moves = generateSingleMoves(state.board, player, d1);
         const d2Moves = generateSingleMoves(state.board, player, d2);
 
-        // Depuis la barre, le joueur peut entrer avec n'importe quel dé jouable :
-        // aucune règle du plus fort dé ne s'applique.
-        const onBar = player === 'X' ? state.board[X_BAR] > 0 : state.board[O_BAR] < 0;
-
-        if (d1Moves.length > 0 && d2Moves.length > 0 && !onBar) {
+        if (d1Moves.length > 0 && d2Moves.length > 0) {
             // Deux dés individuellement jouables mais un seul possible : règle du plus fort
             const higher = Math.max(d1, d2);
             const moves = d1 === higher ? d1Moves : d2Moves;
@@ -513,13 +592,16 @@ export function computeLegalTargets(
             for (const m of moves) {
                 addTarget(targetMap, m.from, m.to);
             }
-        } else if (d1Moves.length > 0) {
-            for (const m of d1Moves) {
-                addTarget(leftDieTargets, m.from, m.to);
+        } else {
+            if (d1Moves.length > 0) {
+                for (const m of d1Moves) {
+                    addTarget(leftDieTargets, m.from, m.to);
+                }
             }
-        } else if (d2Moves.length > 0) {
-            for (const m of d2Moves) {
-                addTarget(rightDieTargets, m.from, m.to);
+            if (d2Moves.length > 0) {
+                for (const m of d2Moves) {
+                    addTarget(rightDieTargets, m.from, m.to);
+                }
             }
         }
         return { leftDieTargets, rightDieTargets };

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Link from 'next/link';
 import type { Move, BoardState } from '../../engine/backgammonEngine';
 import {
     applyMove,
@@ -268,20 +269,22 @@ export default function BlunderDrillView({
     };
 
     return (
-        <div className="flex w-full flex-col items-center gap-4 p-2 sm:p-4 text-slate-100 max-w-5xl mx-auto">
+        <div className="flex w-full flex-col items-center gap-4 p-2 sm:p-4 text-[#fdf8eb] max-w-5xl mx-auto">
             {/* Header & Navigation */}
-            <div className="w-full flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+            <div className="w-full flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-[#d4af37]/35 bg-gradient-to-r from-[#180c06] via-[#0e121b] to-[#080a0f] p-4 sm:p-6 shadow-[0_24px_60px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(243,198,95,0.2)]">
                 <div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-2xl">🎯</span>
-                        <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                    <div className="flex items-center gap-2.5">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d4af37]/40 bg-gradient-to-br from-[#2a170c] to-[#120904] text-lg shadow-inner">
+                            <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🎯</span>
+                        </span>
+                        <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#fdf8eb]">
                             Drills de Blunders
                         </h1>
-                        <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-bold text-amber-300">
+                        <span className="rounded-full border border-[#d4af37]/45 bg-[#1a1109] px-2.5 py-0.5 text-[11px] font-bold text-[#f3c65f]">
                             Rejeu interactif
                         </span>
                     </div>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-[#a5b0c4] mt-1">
                         Rejouez automatiquement vos erreurs passées jusqu'à trouver le bon coup certifié par le moteur GNUBG.
                     </p>
                 </div>
@@ -291,51 +294,51 @@ export default function BlunderDrillView({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-xl border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition"
+                            className="rounded-xl border border-[#d4af37]/30 bg-[#150c07] px-3 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-white transition"
                         >
                             ← Retour au plateau
                         </button>
                     ) : (
-                        <a
+                        <Link
                             href="/"
-                            className="rounded-xl border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition"
+                            className="rounded-xl border border-[#d4af37]/30 bg-[#150c07] px-3 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-white transition"
                         >
                             ← Retour au plateau
-                        </a>
+                        </Link>
                     )}
                 </div>
             </div>
 
             {/* Barre de Stats & Filtre de Concept */}
             <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
-                <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-2.5">
-                    <p className="text-[10px] text-slate-400 font-semibold uppercase">Erreurs en banque</p>
-                    <p className="font-mono text-lg font-bold text-white mt-0.5">{stats.totalBlunders}</p>
+                <div className="rounded-2xl border border-[#d4af37]/25 bg-[#0e121b]/95 p-3 shadow-lg">
+                    <p className="text-[10px] text-[#a5b0c4] font-bold uppercase tracking-wider">Erreurs en banque</p>
+                    <p className="font-mono text-lg font-extrabold text-[#fdf8eb] mt-0.5">{stats.totalBlunders}</p>
                 </div>
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-2.5">
-                    <p className="text-[10px] text-emerald-400 font-semibold uppercase">Maîtrisées</p>
-                    <p className="font-mono text-lg font-bold text-emerald-300 mt-0.5" data-testid="mastered-count">
+                <div className="rounded-2xl border border-emerald-500/35 bg-emerald-950/25 p-3 shadow-lg">
+                    <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Maîtrisées</p>
+                    <p className="font-mono text-lg font-extrabold text-emerald-300 mt-0.5" data-testid="mastered-count">
                         {stats.masteredCount} / {stats.totalBlunders}
                     </p>
                 </div>
-                <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-2.5">
-                    <p className="text-[10px] text-amber-400 font-semibold uppercase">À travailler</p>
-                    <p className="font-mono text-lg font-bold text-amber-300 mt-0.5">{stats.remainingToReview}</p>
+                <div className="rounded-2xl border border-[#d4af37]/40 bg-[#180c06]/90 p-3 shadow-lg">
+                    <p className="text-[10px] text-[#f3c65f] font-bold uppercase tracking-wider">À travailler</p>
+                    <p className="font-mono text-lg font-extrabold text-[#fdf8eb] mt-0.5">{stats.remainingToReview}</p>
                 </div>
-                <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-2.5">
-                    <p className="text-[10px] text-blue-400 font-semibold uppercase">Taux de maîtrise</p>
-                    <p className="font-mono text-lg font-bold text-blue-300 mt-0.5">{stats.masteryRate}%</p>
+                <div className="rounded-2xl border border-[#d4af37]/25 bg-[#0e121b]/95 p-3 shadow-lg">
+                    <p className="text-[10px] text-[#f3c65f] font-bold uppercase tracking-wider">Taux de maîtrise</p>
+                    <p className="font-mono text-lg font-extrabold text-[#f3c65f] mt-0.5">{stats.masteryRate}%</p>
                 </div>
             </div>
 
             {/* Filtre par concept */}
-            <div className="w-full flex items-center justify-between flex-wrap gap-2 text-xs">
+            <div className="w-full flex items-center justify-between flex-wrap gap-2 text-xs rounded-2xl border border-[#d4af37]/20 bg-[#0e121b]/90 px-4 py-2.5">
                 <div className="flex items-center gap-2">
-                    <span className="text-slate-400">Concept :</span>
+                    <span className="font-bold text-[#e2d2b5]">Concept :</span>
                     <select
                         value={selectedConceptFilter}
                         onChange={(e) => handleFilterChange(e.target.value)}
-                        className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                        className="rounded-xl border border-[#d4af37]/35 bg-[#090b10] px-3 py-1.5 text-[#fdf8eb] focus:outline-none focus:ring-1 focus:ring-[#f3c65f]"
                         data-testid="concept-filter"
                     >
                         <option value="all">🎯 Tous les concepts ({stats.totalBlunders})</option>
@@ -350,7 +353,7 @@ export default function BlunderDrillView({
                 <button
                     type="button"
                     onClick={handleResetAllMastery}
-                    className="text-slate-400 hover:text-slate-200 underline text-[11px] transition"
+                    className="text-[#e2d2b5] hover:text-[#f3c65f] underline text-[11px] font-semibold transition"
                     title="Réinitialise le statut de toutes les erreurs pour les retravailler"
                 >
                     🔄 Réinitialiser la maîtrise
@@ -359,27 +362,27 @@ export default function BlunderDrillView({
 
             {/* Session terminée ou Aucune erreur */}
             {session.isCompleted || !currentBlunder ? (
-                <div className="w-full rounded-2xl border border-emerald-500/40 bg-gradient-to-b from-slate-900 to-emerald-950/30 p-8 text-center shadow-xl">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 text-3xl">
+                <div className="w-full rounded-3xl border border-[#d4af37]/40 bg-gradient-to-b from-[#180c06] to-[#0b0e16] p-8 text-center shadow-2xl">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[#d4af37]/45 bg-[#2a170c] text-3xl shadow-inner">
                         🏆
                     </div>
-                    <h2 className="mt-4 text-xl font-bold text-white">
+                    <h2 className="mt-4 text-xl font-black text-[#fdf8eb]">
                         Session de Drill terminée !
                     </h2>
-                    <p className="mt-2 text-sm text-slate-300 max-w-md mx-auto">
+                    <p className="mt-2 text-sm text-[#e2d2b5] max-w-md mx-auto">
                         Félicitations ! Vous avez rejoué et trouvé les bons coups sur l'ensemble des erreurs de cette sélection.
                     </p>
                     <div className="mt-6 flex flex-wrap justify-center gap-3">
                         <button
                             type="button"
                             onClick={handleRestartSession}
-                            className="rounded-xl border border-emerald-400 bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg hover:bg-emerald-500 transition"
+                            className="rounded-xl border border-[#ffecb3]/70 bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#c69214] px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#1a0f08] shadow-lg transition hover:brightness-105"
                         >
                             🎯 Démarrer un nouveau drill
                         </button>
                         <a
                             href="/progression"
-                            className="rounded-xl border border-slate-700 bg-slate-800 px-5 py-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition"
+                            className="rounded-xl border border-[#d4af37]/30 bg-[#150c07] px-5 py-2.5 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-white transition"
                         >
                             📊 Voir ma progression
                         </a>
@@ -388,18 +391,18 @@ export default function BlunderDrillView({
             ) : (
                 <>
                     {/* Stepper de Progression du Drill */}
-                    <div className="w-full rounded-xl border border-slate-800 bg-slate-900/90 p-4 shadow-md">
+                    <div className="w-full rounded-2xl border border-[#d4af37]/30 bg-[#0e121b]/95 p-4 shadow-xl">
                         <div className="flex items-center justify-between text-xs mb-2">
-                            <span className="font-bold text-amber-400">
+                            <span className="font-bold text-[#f3c65f]">
                                 Erreur {session.currentIndex + 1} sur {session.blunders.length}
                             </span>
-                            <span className="font-mono text-slate-400">
+                            <span className="font-mono text-[#a5b0c4]">
                                 {Math.round(((session.currentIndex) / session.blunders.length) * 100)}% complété
                             </span>
                         </div>
-                        <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                        <div className="w-full h-2 rounded-full bg-[#090b10] border border-[#d4af37]/20 overflow-hidden">
                             <div
-                                className="h-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-300"
+                                className="h-full bg-gradient-to-r from-[#d4af37] to-emerald-500 transition-all duration-300"
                                 style={{
                                     width: `${((session.currentIndex) / session.blunders.length) * 100}%`,
                                 }}
@@ -407,13 +410,13 @@ export default function BlunderDrillView({
                         </div>
 
                         {/* Carte d'information de l'erreur */}
-                        <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-slate-800/80 pt-3">
+                        <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-[#d4af37]/15 pt-3">
                             <div>
                                 <span className="rounded bg-rose-950/80 border border-rose-800/60 px-2 py-0.5 text-[10px] font-bold text-rose-300 uppercase tracking-wider">
                                     {currentBlunder.conceptName}
                                 </span>
-                                <p className="text-xs text-slate-300 mt-1">
-                                    <span className="text-slate-400">Votre coup passé : </span>
+                                <p className="text-xs text-[#e2d2b5] mt-1">
+                                    <span className="text-[#a5b0c4]">Votre coup passé : </span>
                                     <span className="font-mono font-bold text-rose-400 underline decoration-rose-500/50">
                                         {currentBlunder.playedMove}
                                     </span>
@@ -427,7 +430,7 @@ export default function BlunderDrillView({
                                 <button
                                     type="button"
                                     onClick={() => setShowHint((prev) => !prev)}
-                                    className="rounded-lg border border-amber-500/40 bg-amber-950/30 px-3 py-1 text-xs font-semibold text-amber-300 hover:bg-amber-900/50 transition"
+                                    className="rounded-lg border border-[#d4af37]/40 bg-[#1a1109] px-3 py-1 text-xs font-bold text-[#f3c65f] hover:border-[#f3c65f] transition"
                                     data-testid="drill-hint-toggle"
                                 >
                                     💡 {showHint ? 'Masquer indice' : 'Indice'}
@@ -435,7 +438,7 @@ export default function BlunderDrillView({
                                 <button
                                     type="button"
                                     onClick={handleResetCurrentAttempt}
-                                    className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-medium text-slate-300 hover:bg-slate-700 transition"
+                                    className="rounded-lg border border-[#d4af37]/25 bg-[#090b10] px-3 py-1 text-xs font-semibold text-[#e2d2b5] hover:border-[#d4af37]/50 transition"
                                     data-testid="drill-reset-btn"
                                 >
                                     ↺ Réinitialiser
@@ -446,19 +449,20 @@ export default function BlunderDrillView({
                         {/* Indice déroulant */}
                         {showHint && currentBlunder.hint && (
                             <div
-                                className="mt-3 rounded-lg border border-amber-500/40 bg-amber-950/40 p-3 text-xs text-amber-200 leading-relaxed animate-in fade-in duration-200"
+                                className="mt-3 rounded-lg border border-[#d4af37]/40 bg-[#180c06]/90 p-3 text-xs text-[#fdf8eb] leading-relaxed animate-in fade-in duration-200"
                                 data-testid="drill-hint-box"
                             >
-                                <span className="font-bold text-amber-100">💡 Conseil pédagogique : </span>
+                                <span className="font-bold text-[#f3c65f]">💡 Conseil pédagogique : </span>
                                 {currentBlunder.hint}
                             </div>
                         )}
                     </div>
 
                     {/* Plateau de Backgammon interactif */}
-                    <div className="w-full flex justify-center overflow-x-auto">
+                    <div className="w-full flex justify-center overflow-x-auto rounded-3xl border border-[#d4af37]/35 bg-[#080a0f] p-2 sm:p-4 shadow-2xl">
                         <Board
                             state={boardState}
+                            gamePhase="HUMAN_MOVING"
                             leftDieTargets={leftDieTargets}
                             rightDieTargets={rightDieTargets}
                             selectedPoint={selectedPoint}

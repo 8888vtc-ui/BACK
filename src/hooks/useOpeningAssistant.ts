@@ -17,6 +17,7 @@ import { getOpening, isOpeningSituation, type OpeningEntry } from '../features/o
 import { applyMove, type Move } from '../engine/backgammonEngine';
 import { impactHeavy } from '../lib/capacitor/haptics';
 import { toast } from '../components/toast/ToastContext';
+import { recordFlightEvent, validateArrowSource, type FlightArrow } from '../utils/gameFlightRecorder';
 import type { UseBackgammonGameReturn } from './useBackgammonGame';
 
 export interface UseOpeningAssistantOptions {
@@ -40,14 +41,22 @@ export function useOpeningAssistant({
     historyLength,
     isLiveAdviceEnabled: initialLiveAdvice,
 }: UseOpeningAssistantOptions) {
-    const [isLiveAdviceEnabled, setIsLiveAdviceEnabled] = useState<boolean>(() => {
-        if (initialLiveAdvice !== undefined) return initialLiveAdvice;
-        if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-            const stored = window.localStorage.getItem('bg_live_advice');
-            if (stored !== null) return stored === 'true';
+    // ANTI-HYDRATATION : l'initialiseur doit être 100 % déterministe (SSR = CSR).
+    // Toute lecture de `localStorage` ici produirait un HTML différent entre le
+    // serveur et le client. La préférence persistée est appliquée dans l'effet
+    // ci-dessous, une fois le composant monté.
+    const [isLiveAdviceEnabled, setIsLiveAdviceEnabled] = useState<boolean>(
+        initialLiveAdvice !== undefined ? initialLiveAdvice : true,
+    );
+
+    useEffect(() => {
+        if (initialLiveAdvice !== undefined) return;
+        if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') return;
+        const stored = window.localStorage.getItem('bg_live_advice');
+        if (stored !== null) {
+            setIsLiveAdviceEnabled(stored === 'true');
         }
-        return false;
-    });
+    }, [initialLiveAdvice]);
     const [isOpeningDismissed, setIsOpeningDismissed] = useState(false);
     const [isOpeningHighlightActive, setIsOpeningHighlightActive] = useState(true);
 
@@ -80,10 +89,38 @@ export function useOpeningAssistant({
         if (!game.dice) return;
         impactHeavy();
         let currentBoard = [...game.state.board];
+        const arrows: FlightArrow[] = [];
         for (const m of moves) {
+            const { sourceValid, sourceValue } = validateArrowSource(currentBoard, m.from, 'X');
+            arrows.push({ from: m.from, to: m.to, sourceValid, sourceValue });
             currentBoard = applyMove(currentBoard, m, 'X');
             currentTurnMovesRef.current.push(m);
         }
+
+        recordFlightEvent({
+            ts: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+            event: 'MOVE_APPLIED',
+            player: 'X',
+            dice: game.dice,
+            isAiThinking: false,
+            boardBefore: [...game.state.board],
+            boardAfter: [...currentBoard],
+            arrows,
+            statusMessage: `Coup Book : ${openingEntry?.bestMoveNotation ?? 'Optimal'}`,
+        });
+
+        recordFlightEvent({
+            ts: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+            event: 'TURN_FINISHED',
+            player: 'X',
+            dice: game.dice,
+            isAiThinking: false,
+            boardBefore: [...game.state.board],
+            boardAfter: [...currentBoard],
+            arrows: [],
+            statusMessage: `Coup Book : ${openingEntry?.bestMoveNotation ?? 'Optimal'} terminé`,
+        });
+
         if (isMultiplayerActive) {
             for (const m of moves) multiplayer.broadcastMovePlayed(m, currentBoard, [true, true]);
             multiplayer.broadcastTurnFinished('O');

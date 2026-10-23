@@ -18,22 +18,28 @@ import { soundEngine } from '../lib/sound/soundEngine';
 
 export interface UseKeyboardShortcutsOptions {
     phase: string;
+    gamePhase?: string;
     turn: 'X' | 'O';
     dice: [number, number] | null;
     canDouble: boolean;
+    canConfirm?: boolean;
     onRollDice: () => void;
     onSwapDice: () => void;
     onOfferDouble: () => void;
+    onConfirmTurn?: () => void;
 }
 
 export function useKeyboardShortcuts({
     phase,
+    gamePhase,
     turn,
     dice,
     canDouble,
+    canConfirm = false,
     onRollDice,
     onSwapDice,
     onOfferDouble,
+    onConfirmTurn,
 }: UseKeyboardShortcutsOptions) {
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -44,7 +50,14 @@ export function useKeyboardShortcuts({
                 return;
             }
 
-            if (e.key === ' ' && phase === 'WAITING_FOR_ROLL' && turn === 'X') {
+            const isReadyToCommit = gamePhase === 'HUMAN_READY_TO_COMMIT' || canConfirm;
+
+            if ((e.key === ' ' || e.key === 'Enter') && isReadyToCommit && canConfirm && turn === 'X' && onConfirmTurn) {
+                e.preventDefault();
+                impactMedium();
+                soundEngine.playCheckerClack();
+                onConfirmTurn();
+            } else if (e.key === ' ' && phase === 'WAITING_FOR_ROLL' && turn === 'X') {
                 e.preventDefault();
                 impactMedium();
                 soundEngine.playDiceRoll();
@@ -63,5 +76,5 @@ export function useKeyboardShortcuts({
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [phase, turn, dice, canDouble, onRollDice, onSwapDice, onOfferDouble]);
+    }, [phase, gamePhase, turn, dice, canDouble, canConfirm, onRollDice, onSwapDice, onOfferDouble, onConfirmTurn]);
 }

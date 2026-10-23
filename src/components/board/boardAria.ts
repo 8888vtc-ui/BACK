@@ -7,7 +7,7 @@
  * Ce module ne dépend d'aucun composant React : il est testable isolément.
  */
 
-import { Player, X_BAR, O_BAR, borneOffCount } from '../../engine/backgammonEngine';
+import { Player, borneOffCount } from '../../engine/backgammonEngine';
 
 /** Ordre de navigation clavier de la rangée du haut. */
 export const TOP_ROW_NAV = [13, 14, 15, 16, 17, 18, 25, 19, 20, 21, 22, 23, 24, 101];
@@ -47,36 +47,6 @@ export function getPointAriaLabel(
         label += ` Destination légale${activeDieVal ? ` avec le dé ${activeDieVal}` : ''}.${hit ? ' Frappe le pion adverse !' : ''} Appuyez sur Entrée pour jouer.`;
     } else if ((isX && count > 0) || (!isX && count < 0)) {
         label += ' Appuyez sur Entrée pour sélectionner ce pion.';
-    }
-
-    return label;
-}
-
-export function getBarAriaLabel(
-    barPoint: number,
-    board: number[],
-    player: Player,
-    selectedPoint: number | null,
-    ghostDestinations: number[],
-): string {
-    const isX = barPoint === X_BAR;
-    const count = isX ? board[X_BAR] : -board[O_BAR];
-    const ownerName = isX ? 'Joueur X (Blanc)' : 'Joueur O (Noir)';
-    let label = `Barre centrale ${ownerName} : `;
-
-    if (count === 0) {
-        label += 'aucun pion frappé.';
-    } else {
-        label += `${count} pion${count > 1 ? 's' : ''} frappé${count > 1 ? 's' : ''}.`;
-        if ((isX && player === 'X') || (!isX && player === 'O')) {
-            label += ' Prioritaire : vous devez réentrer ce pion sur le plateau avant tout autre déplacement.';
-        }
-    }
-
-    if (selectedPoint === barPoint) {
-        label += ' Pion de barre actuellement sélectionné.';
-    } else if (ghostDestinations.includes(barPoint)) {
-        label += ' Destination légale.';
     }
 
     return label;

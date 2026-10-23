@@ -38,6 +38,9 @@ export default defineConfig({
                 ...devices['iPhone 13'],
                 defaultBrowserType: 'chromium',
                 hasTouch: true,
+                // L'app force le paysage sur mobile (bloqueur de rotation) :
+                // les tests s'exécutent donc en orientation paysage.
+                viewport: { width: 844, height: 390 },
             },
         },
         {
@@ -45,11 +48,14 @@ export default defineConfig({
             use: {
                 ...devices['Pixel 5'],
                 hasTouch: true,
+                // L'app force le paysage sur mobile (bloqueur de rotation) :
+                // les tests s'exécutent donc en orientation paysage.
+                viewport: { width: 851, height: 393 },
             },
         },
     ],
     webServer: {
-        command: 'npm run start',
+        command: 'npm run dev',
         url: 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
         timeout: 120000,

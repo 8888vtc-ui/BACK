@@ -17,24 +17,32 @@ describe('DIE_PIPS', () => {
 describe('Die', () => {
     it('rend un dé avec le bon nombre de pips (cercles)', () => {
         const html = renderToStaticMarkup(<Die value={6} />);
-        // 6 cercles de pips
         const circles = (html.match(/<circle/g) || []).length;
         expect(circles).toBe(6);
     });
 
-    it('rend un dé avec 1 pip pour la valeur 1', () => {
+    it('rend un dé avec 1 pip élargi pour l’As (valeur 1)', () => {
         const html = renderToStaticMarkup(<Die value={1} />);
         const circles = (html.match(/<circle/g) || []).length;
         expect(circles).toBe(1);
+        expect(html).toContain('r="12.2"');
     });
 
-    it('applique l\'état used (opacité réduite)', () => {
+    it('applique l’état used en retrait (opacity-40 scale-[0.92]) sans coche verte masquant les pips', () => {
         const html = renderToStaticMarkup(<Die value={3} used />);
-        expect(html).toContain('opacity-60');
+        expect(html).toContain('opacity-40');
+        expect(html).toContain('scale-[0.92]');
+        expect(html).not.toContain('M5 13l4 4L19 7');
     });
 
-    it('applique l\'état active (ring sky)', () => {
+    it('applique l’état active (ring sky)', () => {
         const html = renderToStaticMarkup(<Die value={3} active />);
         expect(html).toContain('ring-sky-400');
+    });
+
+    it('supporte la variante ébène (ebony) et le décalage d’animation rollIndex', () => {
+        const html = renderToStaticMarkup(<Die value={4} variant="ebony" animateRoll rollIndex={1} />);
+        expect(html).toContain('die-roll-alt');
+        expect(html).toContain('20ms');
     });
 });

@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-    appId: 'com.backgammon.coach',
-    appName: 'Backgammon Pro & Coach',
+    appId: 'com.backgammontour.app',
+    appName: 'Backgammon Tour',
     webDir: 'out',
     server: {
         androidScheme: 'https',

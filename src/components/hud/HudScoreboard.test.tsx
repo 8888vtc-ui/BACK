@@ -1,10 +1,10 @@
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import HudScoreboard from './HudScoreboard';
 
 describe('HudScoreboard Component', () => {
-    it('affiche les scores de X et O et met en évidence le joueur au tour', () => {
+    it('affiche les scores de Vous et IA sans jargon X/O et met en évidence le joueur au tour', () => {
         const html = renderToStaticMarkup(
             <HudScoreboard
                 matchLength={7}
@@ -15,13 +15,15 @@ describe('HudScoreboard Component', () => {
                 usedDice={[false, false]}
             />,
         );
-        expect(html).toContain('Match en 7 pts');
-        expect(html).toContain('X (Blanc)');
-        expect(html).toContain('O (Noir)');
-        expect(html).toContain('3');
-        expect(html).toContain('2');
-        expect(html).toContain('Au tour');
-        expect(html).toContain('En attente du lancer');
+        expect(html).toContain('Match 7 pts');
+        expect(html).toContain('>Vous<');
+        expect(html).toContain('>IA<');
+        expect(html).toContain('Vous (Blanc)');
+        expect(html).toContain('IA (Noir)');
+        expect(html).not.toContain('X (Vous - Blanc)');
+        expect(html).toContain('>3<');
+        expect(html).toContain('>2<');
+        expect(html).toContain('ring-[#f3c65f]/70');
     });
 
     it('affiche le badge Crawford si actif', () => {
@@ -39,42 +41,79 @@ describe('HudScoreboard Component', () => {
         expect(html).toContain('Crawford');
     });
 
-    it('affiche les doubles (4 dés) quand dice[0] === dice[1]', () => {
+    it('affiche les badges PR en direct pour les deux joueurs', () => {
         const html = renderToStaticMarkup(
             <HudScoreboard
                 matchLength={5}
                 scoreX={1}
                 scoreO={0}
                 turn="X"
-                dice={[6, 6]}
-                usedDice={[true, false, false, false]}
-                onRollDice={vi.fn()}
-                onUndo={vi.fn()}
-                canUndo={true}
+                dice={null}
+                usedDice={[false, false]}
+                prX={4.2}
+                prO={12.7}
             />,
         );
-        expect(html).toContain('Coup 1');
-        expect(html).toContain('Coup 4');
-        expect(html).toContain('3/4');
-        expect(html).toContain('Annuler');
+        expect(html).toContain('data-testid="hud-player-x-pr"');
+        expect(html).toContain('data-testid="hud-player-o-pr"');
+        expect(html).toContain('PR 4.2');
+        expect(html).toContain('PR 12.7');
+        // PR ≤ 7 → ambre, PR > 7 → rouge.
+        expect(html).toContain('text-amber-300');
+        expect(html).toContain('text-rose-300');
     });
 
-    it('affiche les badges PR pour le Joueur Blanc et l’IA Noire', () => {
+    it('affiche les pip counts des deux joueurs', () => {
         const html = renderToStaticMarkup(
             <HudScoreboard
                 matchLength={7}
+                scoreX={0}
+                scoreO={0}
+                turn="X"
+                dice={null}
+                usedDice={[false, false]}
+                pipX={148}
+                pipO={153}
+            />,
+        );
+        expect(html).toContain('148 pips');
+        expect(html).toContain('153 pips');
+    });
+
+    it('affiche le joueur humain en Noir quand il choisit les Noirs (couleur visuelle)', () => {
+        const html = renderToStaticMarkup(
+            <HudScoreboard
+                matchLength={7}
+                scoreX={0}
+                scoreO={0}
+                turn="X"
+                dice={null}
+                usedDice={[false, false]}
+                playerColor="O"
+            />,
+        );
+        expect(html).toContain('Vous (Noir)');
+        expect(html).toContain('IA (Blanc)');
+        expect(html).not.toContain('Vous (Blanc)');
+    });
+
+    it('affiche l’EPC en infobulle de pip count lorsque la course est pure', () => {
+        const html = renderToStaticMarkup(
+            <HudScoreboard
+                matchLength={5}
                 scoreX={2}
                 scoreO={1}
                 turn="X"
                 dice={null}
                 usedDice={[false, false]}
-                prX={4.2}
-                prO={2.1}
+                pipX={45}
+                pipO={52}
+                epcX={51.2}
+                epcO={58.6}
+                isPureRace={true}
             />,
         );
-        expect(html).toContain('PR 4.2');
-        expect(html).toContain('PR 2.1');
-        expect(html).toContain('data-testid="hud-pr-x"');
-        expect(html).toContain('data-testid="hud-pr-o"');
+        expect(html).toContain('title="Pip count : 45 pips | EPC: 51.2"');
+        expect(html).toContain('title="Pip count : 52 pips | EPC: 58.6"');
     });
 });

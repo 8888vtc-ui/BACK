@@ -13,10 +13,12 @@
  */
 
 import { useState, useCallback } from 'react';
+import type { ReviewTab } from '../components/rating/GameReviewModal';
 
 export function useGameModals() {
     const [isMatchmakingModalOpen, setIsMatchmakingModalOpen] = useState(false);
     const [isGameReviewModalOpen, setIsGameReviewModalOpen] = useState(false);
+    const [reviewInitialTab, setReviewInitialTab] = useState<ReviewTab>('overview');
     const [isOpeningBookModalOpen, setIsOpeningBookModalOpen] = useState(false);
     const [selectedOpeningIdForModal, setSelectedOpeningIdForModal] = useState<string | undefined>(undefined);
     const [isExportImportModalOpen, setIsExportImportModalOpen] = useState(false);
@@ -27,7 +29,14 @@ export function useGameModals() {
     const openMatchmaking = useCallback(() => setIsMatchmakingModalOpen(true), []);
     const closeMatchmaking = useCallback(() => setIsMatchmakingModalOpen(false), []);
 
-    const openGameReview = useCallback(() => setIsGameReviewModalOpen(true), []);
+    const openGameReview = useCallback(() => {
+        setReviewInitialTab('overview');
+        setIsGameReviewModalOpen(true);
+    }, []);
+    const openGameCourse = useCallback(() => {
+        setReviewInitialTab('course');
+        setIsGameReviewModalOpen(true);
+    }, []);
     const closeGameReview = useCallback(() => setIsGameReviewModalOpen(false), []);
 
     const openOpeningBook = useCallback((id?: string) => {
@@ -55,7 +64,9 @@ export function useGameModals() {
         closeMatchmaking,
         // Game Review
         isGameReviewModalOpen,
+        reviewInitialTab,
         openGameReview,
+        openGameCourse,
         closeGameReview,
         // Opening Book
         isOpeningBookModalOpen,

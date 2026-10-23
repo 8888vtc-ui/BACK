@@ -1,37 +1,23 @@
 'use client';
 
 /**
- * Page principale de jeu Backgammon — architecture à 3 vues EXCLUSIVES.
- *
- * Rôle :
- *   Orchestre l'initialisation du moteur de jeu, du multijoueur temps réel, du coach IA,
- *   de la persistance locale et des modales. Le rendu est gouverné par un état maître
- *   `appScreen` :
- *     - `'LOBBY'`   : seul `LobbyScreen` est monté (ni plateau, ni HUD dans le DOM).
- *     - `'GAME'`    : HUD + plateau + coach + modales.
- *     - `'SUMMARY'` : résumé de fin de match (retour au lobby possible).
- *
- * Dépendances :
- *   `useBackgammonGame`, `useCoach`, `useMultiplayerGame`, `useCheckerInteractions`,
- *   `useGamePersistence`, `useGameModals`, `useOpeningAssistant`, `useRollOff`,
- *   `LobbyScreen`, `MatchHeader`, `GameBoardArea`, `CoachMobileDrawer`, `GameModalsContainer`.
- *
- * Retrait :
- *   Point d'entrée de l'application Next.js.
+ * Page principale de jeu Backgammon — architecture à 3 vues EXCLUSIVES (LOBBY, GAME, SUMMARY).
+ * Loi 5 de Scalabilité : strictement 0 any, < 300 lignes.
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LobbyView, SummaryView, type LobbyModuleId } from '../components/lobby/AppScreenViews';
 import type { LobbySelection } from '../components/lobby/LobbyScreen';
 import GameScreenView from '../components/board/GameScreenView';
+import GameModalsContainer from '../components/modals/GameModalsContainer';
+import PageTransition, { useSpaNavigation } from '../components/nav/PageTransition';
 import { useBoardTheme } from '../hooks/useBoardTheme';
 import { useBackgammonGame } from '../hooks/useBackgammonGame';
 import { useCoach } from '../hooks/useCoach';
 import { useMultiplayerGame } from '../hooks/useMultiplayerGame';
 import { useCheckerInteractions } from '../hooks/useCheckerInteractions';
-import { useDesktopControls } from '../hooks/useDesktopControls';
-import { useMobileTouchControls } from '../hooks/useMobileTouchControls';
-import { useIsTouchDevice } from '../hooks/useIsTouchDevice';
+import { usePlatformControlsRouter } from '../hooks/usePlatformControlsRouter';
+import { useCandidateHighlight } from '../hooks/useCandidateHighlight';
 import { useGamePersistence } from '../hooks/useGamePersistence';
 import { useGameModals } from '../hooks/useGameModals';
 import { useOpeningAssistant } from '../hooks/useOpeningAssistant';
@@ -42,6 +28,8 @@ import { soundEngine } from '../lib/sound/soundEngine';
 import { useCheckerSoundFeedback } from '../hooks/useCheckerSoundFeedback';
 import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
+import { readStoredPlayerColor } from '../components/hud/ColorSelector';
+import type { Player } from '../engine/backgammonEngine';
 
 /** Vues exclusives de l'application (une seule montée à la fois). */
 type AppScreen = 'LOBBY' | 'GAME' | 'SUMMARY';
@@ -49,19 +37,21 @@ type AppScreen = 'LOBBY' | 'GAME' | 'SUMMARY';
 export default function Home() {
     const { t, locale } = useI18n();
     const { theme, toggleTheme } = useBoardTheme();
+    const { navigateTo, isNavigating } = useSpaNavigation();
     const [isBoardLoading] = useState(false);
+    const [playerColor, setPlayerColor] = useState<Player>('X');
     const modals = useGameModals();
 
     // État maître : aucune modale superposée au plateau au démarrage.
     const [appScreen, setAppScreen] = useState<AppScreen>('LOBBY');
+    const userInitiatedMultiplayerRef = useRef<boolean>(false);
 
-    // Initialisation du moteur de jeu.
-    //
-    // IMPORTANT (anti-hydratation) : les valeurs initiales DOIVENT être des
-    // constantes strictes, identiques côté serveur et côté client. Toute lecture
-    // de `localStorage` ici produirait un HTML différent entre SSR et CSR et
-    // déclencherait un `Hydration failed`. Les préférences persistées sont
-    // appliquées uniquement au clic sur « DÉMARRER LE MATCH » (startNewMatch).
+    // Anti-hydratation : lecture des préférences post-montage client
+    useEffect(() => {
+        setPlayerColor(readStoredPlayerColor());
+    }, []);
+
+    // Initialisation du moteur de jeu (autoConfirmTurn à false par défaut, persisté dans localStorage).
     const game = useBackgammonGame({
         matchLength: 7,
         playerColor: 'X',
@@ -73,7 +63,11 @@ export default function Home() {
                     : result.winType === 'gammon' ? '🎉 GAMMON (2x) !'
                         : result.winType === 'pass' ? '🏳️ Abandon de videau'
                             : '⚡ Victoire simple (1x) !';
-            toast.success(`Le Joueur ${result.winner} remporte la manche (+${result.pointsWon} pts) contre ${result.loser}.`, title);
+            const ptsLabel = result.pointsWon > 1 ? `+${result.pointsWon} pts` : '+1 pt';
+            const summaryText = result.winner === 'X'
+                ? `Vous remportez la manche (${ptsLabel}) !`
+                : `L'adversaire remporte la manche (${ptsLabel}).`;
+            toast.success(summaryText, title);
             notificationSuccess();
             soundEngine.playVictory();
 
@@ -115,40 +109,21 @@ export default function Home() {
         handleDestinationClick, handleDeselect, handleSwapDice,
     } = useCheckerInteractions({ game, isMultiplayerActive, multiplayer, currentTurnMovesRef });
 
-    // Feedback sonore des coups (clac de pose / frappe sèche sur blot).
+    // Feedback sonore des coups
     const handlePlayMoveWithSound = useCheckerSoundFeedback({
         board: game.state.board,
         turn: game.state.turn,
         onPlayMove: handlePlayMove,
     });
 
-    // Détection de plateforme : tactile (mobile) vs souris (desktop).
-    const isTouchDevice = useIsTouchDevice();
-
-    // Contrôles spécifiques à la plateforme (couches de présentation).
-    // Desktop : One-Click TMG (smartClickCheckerAction + swapDiceOrderAction).
-    const desktopControls = useDesktopControls({
+    // Contrôles spécifiques à la plateforme (tactile vs souris)
+    const { routedCheckerClick, routedCheckerRightClick, routedDiceClick } = usePlatformControlsRouter({
         game,
-        onPlayMove: handlePlayMoveWithSound,
-        onSelectChecker: (point, die) => game.selectChecker(point, die),
-        onSwapDice: () => handleSwapDice(),
+        onPlayMoveWithSound: handlePlayMoveWithSound,
+        handleSwapDice,
         preferredDie,
-    });
-    // Mobile : tap-to-move + tap sur les dés = inversion de l'ordre.
-    const mobileControls = useMobileTouchControls({
-        game,
-        onPlayMove: handlePlayMoveWithSound,
         activeDie,
-        onSwapDice: handleSwapDice,
     });
-
-    // Routage des handlers selon la plateforme :
-    // - Desktop : one-click (clic gauche = dé 1, clic droit = dé 2).
-    // - Mobile : tap-to-move (tap = dé actif le plus sûr).
-    const routedCheckerClick = isTouchDevice ? mobileControls.handleTapPoint : desktopControls.handleOneClick;
-    const routedCheckerRightClick = isTouchDevice ? mobileControls.handleTapPoint : desktopControls.handleOneRightClick;
-    // Clic / tap sur la paire de dés : inverse l'ordre (swapDiceOrderAction).
-    const routedDiceClick = isTouchDevice ? mobileControls.handleTapDice : desktopControls.handleDiceClick;
 
     // Assistant de coup d'ouverture certifié
     const {
@@ -159,9 +134,9 @@ export default function Home() {
         historyLength: turnsHistoryRef.current.length,
     });
 
-    // Synchronisation match multijoueur
+    // Synchronisation match multijoueur (uniquement sur action explicite de l'utilisateur)
     useEffect(() => {
-        if (multiplayer.status === 'matched' && multiplayer.matchInfo) {
+        if (userInitiatedMultiplayerRef.current && multiplayer.status === 'matched' && multiplayer.matchInfo) {
             game.resetMatch();
             modals.closeMatchmaking();
             setAppScreen('GAME');
@@ -171,6 +146,10 @@ export default function Home() {
 
     /** Démarre le match depuis le lobby et bascule sur la vue GAME. */
     const handleLobbyStart = useCallback((selection: LobbySelection) => {
+        userInitiatedMultiplayerRef.current = false;
+        if (selection.playerColor) {
+            setPlayerColor(selection.playerColor);
+        }
         game.startNewMatch(selection.matchLength, selection.difficulty);
         resetGameHistory();
         if (selection.coachEnabled !== isLiveAdviceEnabled) {
@@ -181,47 +160,48 @@ export default function Home() {
         toast.success(`${formatLabel} — ${selection.coachEnabled ? 'Mode Formation' : 'Mode Tournoi'}.`, 'Match lancé');
     }, [game, resetGameHistory, isLiveAdviceEnabled, toggleLiveAdvice]);
 
-    /** Retour au lobby (abandon de la vue courante). */
+    /** Retour au lobby. */
     const handleBackToLobby = useCallback(() => {
+        userInitiatedMultiplayerRef.current = false;
         setAppScreen('LOBBY');
     }, []);
 
-    /** Routage des modules ouverts depuis le lobby. */
+    /** Routage SPA fluide des modules ouverts depuis le lobby (0 window.location.href). */
     const handleOpenLobbyModule = useCallback((moduleId: LobbyModuleId) => {
         switch (moduleId) {
             case 'multiplayer':
+                userInitiatedMultiplayerRef.current = true;
                 modals.openMatchmaking();
                 break;
             case 'openings':
                 modals.openOpeningBook();
                 break;
             case 'stats':
-                modals.openGameReview();
+                if (latestGameAnalysis) {
+                    modals.openGameReview();
+                } else {
+                    navigateTo('/progression');
+                }
                 break;
             case 'drills':
-                window.location.href = '/drills';
+                navigateTo('/drills');
                 break;
             case 'puzzles':
-                window.location.href = '/puzzles';
+                navigateTo('/puzzles');
                 break;
         }
-    }, [modals]);
+    }, [modals, navigateTo, latestGameAnalysis]);
 
-    // Survol d'une ligne du tableau des candidats : notation du coup prévisualisé.
+    // Survol d'une ligne du tableau des candidats
     const [hoveredCandidate, setHoveredCandidate] = useState<string | null>(null);
 
-    const activeCoachHighlight = useMemo(() => {
-        if (openingEntry && isOpeningHighlightActive) return { optimal: openingEntry.bestMoves, played: [] };
-        if (!coach) return null;
-        // Prévisualisation d'un candidat : on ne dessine que ses flèches.
-        if (hoveredCandidate) {
-            const candidate = coach.candidateMoves?.find((m) => m.notation === hoveredCandidate);
-            if (candidate) {
-                return { optimal: [], played: [] };
-            }
-        }
-        return coachHighlight;
-    }, [openingEntry, isOpeningHighlightActive, coach, coachHighlight, hoveredCandidate]);
+    const activeCoachHighlight = useCandidateHighlight({
+        openingEntry,
+        isOpeningHighlightActive,
+        coach,
+        coachHighlight,
+        hoveredCandidate,
+    });
 
     // Accessibilité WCAG
     useGameAnnouncements({
@@ -243,23 +223,31 @@ export default function Home() {
                 ? 'bg-[#0a180f] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#183a24_0%,#0c1f14_50%,#040a06_100%)] text-slate-100 selection:bg-emerald-600'
                 : 'bg-slate-950 text-slate-100 selection:bg-amber-500';
 
-    // ---------------------------------------------------------------------
-    // VUE 1 — LOBBY : ni plateau, ni HUD dans le DOM.
-    // ---------------------------------------------------------------------
     if (appScreen === 'LOBBY') {
         return (
-            <LobbyView
-                onStart={handleLobbyStart}
-                onOpenModule={handleOpenLobbyModule}
-                initialMatchLength={7}
-                initialCoachEnabled={isLiveAdviceEnabled}
-            />
+            <PageTransition isTransitioning={isNavigating}>
+                <LobbyView
+                    onStart={handleLobbyStart}
+                    onOpenModule={handleOpenLobbyModule}
+                    initialMatchLength={7}
+                    initialCoachEnabled={isLiveAdviceEnabled}
+                />
+                <GameModalsContainer
+                    theme={theme}
+                    modals={modals}
+                    game={game}
+                    multiplayer={multiplayer}
+                    isMultiplayerActive={isMultiplayerActive}
+                    latestGameAnalysis={latestGameAnalysis}
+                    turnsHistory={turnsHistory}
+                    openingEntry={openingEntry}
+                    onApplyOpeningMove={openingEntry ? () => handleApplyOpeningMove(openingEntry.bestMoves) : () => { }}
+                    onResetGameHistory={resetGameHistory}
+                />
+            </PageTransition>
         );
     }
 
-    // ---------------------------------------------------------------------
-    // VUE 3 — SUMMARY : résumé de fin de match.
-    // ---------------------------------------------------------------------
     if (appScreen === 'SUMMARY') {
         return (
             <SummaryView
@@ -272,9 +260,6 @@ export default function Home() {
         );
     }
 
-    // ---------------------------------------------------------------------
-    // VUE 2 — GAME : HUD + plateau + coach + modales.
-    // ---------------------------------------------------------------------
     return (
         <GameScreenView
             ambianceClass={mainAmbianceClass}
@@ -317,6 +302,7 @@ export default function Home() {
             onApplyOpeningMove={openingEntry ? () => handleApplyOpeningMove(openingEntry.bestMoves) : () => { }}
             onResetGameHistory={resetGameHistory}
             gameId={gameIdRef.current}
+            playerColor={playerColor}
         />
     );
 }

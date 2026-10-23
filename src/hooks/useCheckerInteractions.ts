@@ -22,6 +22,7 @@ import {
     findClickDestination,
 } from '../engine/checkerMoveHelpers';
 import { getSafestDestination } from '../engine/backgammonEngine';
+import { swapDiceOrderAction } from '../actions/swapDiceOrderAction';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { useForcedMoveAutoPlay } from './useForcedMoveAutoPlay';
 import type { UseBackgammonGameReturn } from './useBackgammonGame';
@@ -32,9 +33,14 @@ export interface UseCheckerInteractionsOptions {
     multiplayer: {
         broadcastMovePlayed: (move: { from: number; to: number }, board: number[], usedDice: [boolean, boolean]) => void;
         broadcastTurnFinished: (nextTurn: 'X' | 'O') => void;
-        matchInfo?: any;
+        matchInfo?: { localRole?: 'X' | 'O' } | null;
     };
     currentTurnMovesRef: React.MutableRefObject<{ from: number; to: number }[]>;
+}
+
+export function getDefaultHigherDieIndex(dice: [number, number] | null): 0 | 1 {
+    if (!dice) return 0;
+    return dice[1] > dice[0] ? 1 : 0;
 }
 
 export function useCheckerInteractions({
@@ -43,150 +49,266 @@ export function useCheckerInteractions({
     multiplayer,
     currentTurnMovesRef,
 }: UseCheckerInteractionsOptions) {
-    const [preferredDie, setPreferredDie] = useState<0 | 1>(0);
+    const [preferredDie, setPreferredDie] = useState<0 | 1>(() => getDefaultHigherDieIndex(game.dice));
+    const [hasExplicitDiePreference, setHasExplicitDiePreference] = useState<boolean>(false);
 
-    // Synchronisation automatique quand un dé est joué
+    const {
+        dice: gameDice,
+        usedDice: gameUsedDice,
+        phase: gamePhase,
+        gamePhase: strictGamePhase,
+        state: gameState,
+        canDouble: gameCanDouble,
+        canUndo: gameCanUndo,
+        isHumanTurn: gameIsHumanTurn,
+        autoConfirmTurn,
+        moveHistory,
+        rollDice,
+        offerDouble,
+        commitHumanMove,
+        selected: gameSelected,
+        playMove,
+        leftDieTargets,
+        rightDieTargets,
+        setSelectedDie,
+        selectChecker,
+        deselect,
+        moveChecker,
+    } = game;
+    const { board: gameBoard, turn: gameTurn } = gameState;
+
+    // Synchronise la référence des coups du tour en cas d'annulation (Undo)
     useEffect(() => {
-        if (game.dice && game.dice[0] === game.dice[1]) {
-            setPreferredDie(0);
-        } else if (game.usedDice[0] && !game.usedDice[1]) {
-            setPreferredDie(1);
-        } else if (game.usedDice[1] && !game.usedDice[0]) {
-            setPreferredDie(0);
+        if (Array.isArray(moveHistory)) {
+            const recordedMoves = moveHistory.flatMap((h) => (h.move ? [h.move] : []));
+            if (currentTurnMovesRef.current.length > recordedMoves.length) {
+                currentTurnMovesRef.current = [...recordedMoves];
+            }
         }
-    }, [game.usedDice, game.dice]);
+    }, [moveHistory, currentTurnMovesRef]);
 
-    // Raccourcis clavier (Espace, Tab, D)
-    useKeyboardShortcuts({
-        phase: game.phase,
-        turn: game.state.turn,
-        dice: game.dice,
-        canDouble: game.canDouble,
-        onRollDice: game.rollDice,
-        onSwapDice: () => setPreferredDie((prev) => ((1 - prev) as 0 | 1)),
-        onOfferDouble: game.offerDouble,
-    });
+    // Réinitialise l'inversion manuelle et sélectionne le dé le plus élevé à chaque nouveau jet
+    useEffect(() => {
+        setHasExplicitDiePreference(false);
+        setPreferredDie(getDefaultHigherDieIndex(gameDice));
+    }, [gameDice]);
+
+    // Synchronisation automatique quand un dé est joué (ou annulé via Undo)
+    useEffect(() => {
+        if (!gameDice) {
+            setHasExplicitDiePreference(false);
+            return;
+        }
+        if (gameDice[0] === gameDice[1]) {
+            setPreferredDie(0);
+        } else if (gameUsedDice[0] && !gameUsedDice[1]) {
+            setPreferredDie(1);
+        } else if (gameUsedDice[1] && !gameUsedDice[0]) {
+            setPreferredDie(0);
+        } else if (!gameUsedDice[0] && !gameUsedDice[1] && !hasExplicitDiePreference) {
+            setPreferredDie(getDefaultHigherDieIndex(gameDice));
+        }
+    }, [gameUsedDice, gameDice, hasExplicitDiePreference]);
+
+    const defaultHigherDie = getDefaultHigherDieIndex(gameDice);
+    const resolvedPreferredDie: 0 | 1 =
+        !gameDice || gameDice[0] === gameDice[1]
+            ? 0
+            : !gameUsedDice[0] && !gameUsedDice[1] && !hasExplicitDiePreference
+              ? defaultHigherDie
+              : preferredDie;
 
     const activeDie: 0 | 1 =
-        game.selected?.die ?? (game.usedDice[preferredDie] ? ((1 - preferredDie) as 0 | 1) : preferredDie);
+        gameSelected?.die ?? (gameUsedDice[resolvedPreferredDie] ? ((1 - resolvedPreferredDie) as 0 | 1) : resolvedPreferredDie);
+
+    // Raccourcis clavier (Espace, Entrée, Tab, D)
+    const canConfirmManualTurn =
+        !autoConfirmTurn &&
+        strictGamePhase === 'HUMAN_READY_TO_COMMIT' &&
+        Boolean(gameCanUndo);
+
+    useKeyboardShortcuts({
+        phase: gamePhase,
+        gamePhase: strictGamePhase,
+        turn: gameTurn,
+        dice: gameDice,
+        canDouble: gameCanDouble,
+        canConfirm: canConfirmManualTurn,
+        onRollDice: rollDice,
+        onSwapDice: () => {
+            setHasExplicitDiePreference(true);
+            setPreferredDie(((1 - activeDie) as 0 | 1));
+        },
+        onOfferDouble: offerDouble,
+        onConfirmTurn: commitHumanMove ? () => commitHumanMove() : undefined,
+    });
 
     const handlePlayMove = useCallback((from: number, to: number, die?: 0 | 1) => {
         impactMedium();
-        currentTurnMovesRef.current.push({ from, to });
-        game.playMove(from, to, die);
-    }, [game.playMove, currentTurnMovesRef]);
+        const move = { from, to };
+        currentTurnMovesRef.current.push(move);
+        playMove(from, to, die);
+        if (isMultiplayerActive) {
+            setTimeout(() => {
+                const safeUsedDice: [boolean, boolean] = [Boolean(gameUsedDice[0]), Boolean(gameUsedDice[1])];
+                multiplayer.broadcastMovePlayed(move, gameBoard, safeUsedDice);
+                if (gameTurn !== multiplayer.matchInfo?.localRole) {
+                    multiplayer.broadcastTurnFinished(gameTurn);
+                }
+            }, 50);
+        }
+    }, [playMove, currentTurnMovesRef, isMultiplayerActive, gameUsedDice, multiplayer, gameBoard, gameTurn]);
 
-    // Auto-play du coup forcé unique
+    // Auto-play du coup forcé unique (actif uniquement si autoConfirmTurn est activé)
     useForcedMoveAutoPlay({
-        phase: game.phase,
-        turn: game.state.turn,
-        dice: game.dice,
-        leftDieTargets: game.leftDieTargets,
-        rightDieTargets: game.rightDieTargets,
+        phase: gamePhase,
+        turn: gameTurn,
+        isHumanTurn: gameIsHumanTurn,
+        dice: gameDice,
+        leftDieTargets,
+        rightDieTargets,
         onPlayMove: handlePlayMove,
+        autoPlayEnabled: Boolean(autoConfirmTurn),
     });
 
     const handleSelectDie = useCallback((die: 0 | 1) => {
         impactLight();
         setPreferredDie(die);
-        const targets = die === 0 ? game.leftDieTargets : game.rightDieTargets;
+        setHasExplicitDiePreference(true);
+        const targets = die === 0 ? leftDieTargets : rightDieTargets;
         if (targets.size === 0) return;
 
-        if (game.selected && targets.has(game.selected.point)) {
-            game.setSelectedDie(die);
+        if (gameSelected && targets.has(gameSelected.point)) {
+            setSelectedDie(die);
             return;
         }
 
-        const bestFrom = getBestCheckerForDie(targets, game.state.board, game.state.turn);
+        const bestFrom = getBestCheckerForDie(targets, gameBoard, gameTurn);
         if (bestFrom !== null) {
             const dests = targets.get(bestFrom) ?? [];
             if (targets.size === 1 && dests.length === 1) handlePlayMove(bestFrom, dests[0], die);
-            else game.selectChecker(bestFrom, die);
+            else selectChecker(bestFrom, die);
         }
-    }, [game.selected, game.leftDieTargets, game.rightDieTargets, game.state.board, game.state.turn, game.selectChecker, game.setSelectedDie, handlePlayMove]);
+    }, [gameSelected, leftDieTargets, rightDieTargets, gameBoard, gameTurn, selectChecker, setSelectedDie, handlePlayMove]);
 
     const handleDieDoubleClick = useCallback((die: 0 | 1) => {
         impactMedium();
-        const targets = die === 0 ? game.leftDieTargets : game.rightDieTargets;
-        const safest = findSafestMoveForDie(targets, game.state.board, game.state.turn, game.selected?.point);
+        const targets = die === 0 ? leftDieTargets : rightDieTargets;
+        const safest = findSafestMoveForDie(targets, gameBoard, gameTurn, gameSelected?.point);
         if (safest) handlePlayMove(safest.from, safest.to, die);
-    }, [game.selected, game.leftDieTargets, game.rightDieTargets, game.state.board, game.state.turn, handlePlayMove]);
+    }, [gameSelected, leftDieTargets, rightDieTargets, gameBoard, gameTurn, handlePlayMove]);
 
     const handleCheckerClick = useCallback((point: number) => {
         impactLight();
-        if (game.selected?.point === point) {
-            game.deselect();
-            return;
-        }
-
-        const leftDests = game.leftDieTargets.get(point) ?? [];
-        const rightDests = game.rightDieTargets.get(point) ?? [];
+        const leftDests = leftDieTargets.get(point) ?? [];
+        const rightDests = rightDieTargets.get(point) ?? [];
         const allDests = Array.from(new Set([...leftDests, ...rightDests]));
 
-        if (allDests.length === 0) return;
-
-        // Si ce pion n'a qu'UNE SEULE destination possible (aucun choix ambigu), on le déplace directement
-        if (allDests.length === 1) {
-            const dest = allDests[0];
-            const die = leftDests.includes(dest) ? 0 : 1;
-            handlePlayMove(point, dest, die);
+        if (allDests.length === 0) {
+            if (gameSelected?.point === point) deselect();
             return;
         }
 
-        // Si le pion a plusieurs destinations possibles (ex. avec dé 1 vers 5 ou dé 3 vers 3),
-        // on ne devine pas arbitrairement à la place du joueur ! On sélectionne le pion
-        // et on affiche les cibles pour que le joueur clique sa destination exacte.
-        game.selectChecker(point);
-    }, [game.selected?.point, game.deselect, game.leftDieTargets, game.rightDieTargets, game.selectChecker, handlePlayMove]);
+        const primaryDie: 0 | 1 = activeDie;
+        const fallbackDie: 0 | 1 = (1 - primaryDie) as 0 | 1;
+        const primaryDests = primaryDie === 0 ? leftDests : rightDests;
+        const fallbackDests = primaryDie === 0 ? rightDests : leftDests;
+
+        // 1. Priorité par défaut au dé actif (le dé le plus élevé, sauf inversion manuelle par le joueur)
+        if (primaryDests.length > 0) {
+            const dest = getSafestDestination(point, primaryDests, gameBoard, gameTurn);
+            handlePlayMove(point, dest, primaryDie);
+            return;
+        }
+
+        // 2. Repli automatique sur l'autre dé (le plus bas) si le dé le plus élevé est illégal/bloqué pour ce pion
+        if (fallbackDests.length > 0) {
+            const dest = getSafestDestination(point, fallbackDests, gameBoard, gameTurn);
+            handlePlayMove(point, dest, fallbackDie);
+            return;
+        }
+    }, [
+        gameSelected?.point,
+        activeDie,
+        deselect,
+        leftDieTargets,
+        rightDieTargets,
+        gameBoard,
+        gameTurn,
+        handlePlayMove,
+    ]);
 
     const handleCheckerDoubleClick = useCallback((point: number) => {
         impactMedium();
-        const leftDests = game.leftDieTargets.get(point) ?? [];
-        const rightDests = game.rightDieTargets.get(point) ?? [];
-        const sumResult = evaluateSumOfDiceMove(point, game.dice, game.state.board, game.state.turn, leftDests, rightDests);
+        const leftDests = leftDieTargets.get(point) ?? [];
+        const rightDests = rightDieTargets.get(point) ?? [];
+        const sumResult = evaluateSumOfDiceMove(point, gameDice, gameBoard, gameTurn, leftDests, rightDests);
 
         if (sumResult.isPossible && sumResult.midDest !== undefined && sumResult.sumDest !== undefined) {
-            handlePlayMove(point, sumResult.midDest, 0);
-            window.setTimeout(() => handlePlayMove(sumResult.midDest!, sumResult.sumDest!, 1), 200);
+            const firstDie: 0 | 1 = leftDests.includes(sumResult.midDest) ? 0 : 1;
+            const secondDie: 0 | 1 = (1 - firstDie) as 0 | 1;
+            handlePlayMove(point, sumResult.midDest, firstDie);
+            handlePlayMove(sumResult.midDest, sumResult.sumDest, secondDie);
             return;
         }
         const allDests = Array.from(new Set([...leftDests, ...rightDests]));
         if (allDests.length > 0) {
-            const safest = getSafestDestination(point, allDests, game.state.board, game.state.turn);
+            const safest = getSafestDestination(point, allDests, gameBoard, gameTurn);
             handlePlayMove(point, safest, leftDests.includes(safest) ? 0 : 1);
         }
-    }, [game.leftDieTargets, game.rightDieTargets, game.state.board, game.state.turn, game.dice, handlePlayMove]);
+    }, [leftDieTargets, rightDieTargets, gameBoard, gameTurn, gameDice, handlePlayMove]);
 
     const handleCheckerRightClick = useCallback((point: number) => {
         impactLight();
-        const result = findClickDestination(point, game.leftDieTargets.get(point) ?? [], game.rightDieTargets.get(point) ?? [], game.state.board, game.state.turn, true);
+        const secondaryDie: 0 | 1 = (1 - activeDie) as 0 | 1;
+        const result = findClickDestination(
+            point,
+            leftDieTargets.get(point) ?? [],
+            rightDieTargets.get(point) ?? [],
+            gameBoard,
+            gameTurn,
+            secondaryDie === 1,
+        );
         if (result) handlePlayMove(point, result.dest, result.die);
-    }, [game.rightDieTargets, game.leftDieTargets, game.state.board, game.state.turn, handlePlayMove]);
+    }, [activeDie, rightDieTargets, leftDieTargets, gameBoard, gameTurn, handlePlayMove]);
 
     const handleDestinationClick = useCallback((destination: number) => {
         impactLight();
-        const destVal = destination >= 1 && destination <= 24 ? game.state.board[destination] : 0;
-        const isHit = (game.state.turn === 'X' && destVal === -1) || (game.state.turn === 'O' && destVal === 1);
+        const destVal = destination >= 1 && destination <= 24 ? gameBoard[destination] : 0;
+        const isHit = (gameTurn === 'X' && destVal === -1) || (gameTurn === 'O' && destVal === 1);
         if (isHit) soundEngine.playCheckerHit();
         else soundEngine.playCheckerSlide();
 
-        if (game.selected) {
-            const move = { from: game.selected.point, to: destination };
+        if (gameSelected) {
+            const move = { from: gameSelected.point, to: destination };
             currentTurnMovesRef.current.push(move);
             if (isMultiplayerActive) {
                 setTimeout(() => {
-                    const safeUsedDice: [boolean, boolean] = [Boolean(game.usedDice[0]), Boolean(game.usedDice[1])];
-                    multiplayer.broadcastMovePlayed(move, game.state.board, safeUsedDice);
-                    if (game.state.turn !== multiplayer.matchInfo?.localRole) multiplayer.broadcastTurnFinished(game.state.turn);
+                    const safeUsedDice: [boolean, boolean] = [Boolean(gameUsedDice[0]), Boolean(gameUsedDice[1])];
+                    multiplayer.broadcastMovePlayed(move, gameBoard, safeUsedDice);
+                    if (gameTurn !== multiplayer.matchInfo?.localRole) multiplayer.broadcastTurnFinished(gameTurn);
                 }, 50);
             }
         }
-        game.moveChecker(destination);
-    }, [game.state.turn, game.state.board, game.selected, game.usedDice, game.moveChecker, isMultiplayerActive, multiplayer, currentTurnMovesRef]);
+        moveChecker(destination);
+    }, [gameTurn, gameBoard, gameSelected, gameUsedDice, moveChecker, isMultiplayerActive, multiplayer, currentTurnMovesRef]);
 
     const handleDeselect = useCallback(() => {
-        if (game.selected) game.deselect();
-    }, [game.selected, game.deselect]);
+        if (gameSelected) deselect();
+    }, [gameSelected, deselect]);
+
+    /**
+     * Inverse l'ordre des dés via `swapDiceOrderAction` (LOI 1).
+     * Utilisé par le clic sur les dés (desktop) et le tap tactile (mobile).
+     * Un double reste inchangé ; le dé préféré bascule sinon.
+     */
+    const handleSwapDice = useCallback(() => {
+        impactLight();
+        setHasExplicitDiePreference(true);
+        const result = swapDiceOrderAction({ dice: gameDice, preferredDie: activeDie });
+        setPreferredDie(result.preferredDie);
+        return result.dice;
+    }, [gameDice, activeDie]);
 
     return {
         preferredDie,
@@ -199,5 +321,6 @@ export function useCheckerInteractions({
         handleCheckerRightClick,
         handleDestinationClick,
         handleDeselect,
+        handleSwapDice,
     };
 }

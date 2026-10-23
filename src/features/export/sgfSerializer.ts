@@ -50,11 +50,26 @@ export function parseSGF(sgfContent: string): ParsedSGFData {
     const pwMatch = sgfContent.match(/PW\[([^\]]*)\]/);
     const reMatch = sgfContent.match(/RE\[([^\]]*)\]/);
     const miMatch = sgfContent.match(/MI\[[^\]]*length:(\d+)[^\]]*\]/);
+    const bsMatch = sgfContent.match(/\[bs:(\d+)\]/);
+    const wsMatch = sgfContent.match(/\[ws:(\d+)\]/);
 
     const playerX = pbMatch ? pbMatch[1] : 'Joueur X';
     const playerO = pwMatch ? pwMatch[1] : 'Joueur O';
     const result = reMatch ? reMatch[1] : undefined;
     const matchLength = miMatch ? parseInt(miMatch[1], 10) : 7;
+    const scoreX = bsMatch ? parseInt(bsMatch[1], 10) : 0;
+    const scoreO = wsMatch ? parseInt(wsMatch[1], 10) : 0;
+
+    let winner: 'X' | 'O' | null = null;
+    let pointsWon: number | undefined;
+    if (result) {
+        const resParts = result.match(/^([XOBW])(?:\+(\d+))?/i);
+        if (resParts) {
+            const wChar = resParts[1].toUpperCase();
+            winner = wChar === 'X' || wChar === 'B' ? 'X' : 'O';
+            pointsWon = resParts[2] ? parseInt(resParts[2], 10) : 1;
+        }
+    }
 
     // Extraction des nœuds de coups (;B[31]8/5 6/5 ou ;W[65]24/13)
     const moveRegex = /;([BW])\[(\d{2})\]([^;\)]*)/g;
@@ -78,6 +93,10 @@ export function parseSGF(sgfContent: string): ParsedSGFData {
         playerX,
         playerO,
         matchLength,
+        scoreX,
+        scoreO,
+        winner,
+        pointsWon,
         result,
         moves,
     };

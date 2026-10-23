@@ -1,11 +1,15 @@
 import { test, expect } from '@playwright/test';
 
-// Sélecteurs obsolètes (focus clavier / liens d'évitement). À réaligner.
-test.describe.skip('Accessibilité & Navigation Clavier (WCAG 2.1 AA)', () => {
+// Skip links, navigation clavier et indicateurs de focus désormais implémentés.
+test.describe('Accessibilité & Navigation Clavier (WCAG 2.1 AA)', () => {
     test.beforeEach(async ({ page }) => {
         // Prévention de blocage par les boîtes de dialogue ou alertes
         page.on('dialog', (dialog) => dialog.dismiss());
         await page.goto('/');
+        const lobbyStartBtn = page.getByTestId('lobby-start-btn');
+        if (await lobbyStartBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+            await lobbyStartBtn.click();
+        }
         await expect(page.locator('[data-testid="backgammon-board"]')).toBeVisible({ timeout: 10000 });
     });
 

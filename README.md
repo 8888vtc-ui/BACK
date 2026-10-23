@@ -1,9 +1,14 @@
-# 🎲 Backgammon Pro — Tournoi & Coach Grand-Maître IA
+# 🎲 Backgammon Tour — Cercle Monte-Carlo & Gammon Academy (Coach Grand-Maître IA)
 
 [![CI - Quality, Tests & Builds](https://github.com/user/backgammon/actions/workflows/ci.yml/badge.svg)](https://github.com/user/backgammon/actions/workflows/ci.yml)
 [![CD - Deployment](https://github.com/user/backgammon/actions/workflows/deploy.yml/badge.svg)](https://github.com/user/backgammon/actions/workflows/deploy.yml)
 
-Application web et mobile hybride (Next.js 15, React 19, Tailwind CSS, Capacitor) de Backgammon Tournament-grade avec un **moteur d'évaluation TypeScript tri-phase 100 % local** (Contact / Crashed / Race-BearOff), analyse en temps réel, opening book certifié, drills de blunders, puzzles quotidiens et multijoueur en ligne. Aucun serveur requis : l'évaluation s'exécute directement dans le navigateur, sans latence réseau.
+Plateforme officielle **Backgammon Tour** (`backgammontour.com`) & **Gammon Academy** (`gammonacademy.com`) — application web et mobile hybride (Next.js 15, React 19, Tailwind CSS, Capacitor) de Backgammon Tournament-grade avec direction artistique **Salon Privé Monte-Carlo** et **moteur d'évaluation hybride** :
+
+- **Cloud (précision professionnelle)** : microservice **Open Sage** (`bgsage-service/`, PR 0.23, 4 niveaux de bot + videau Double/Take/Pass) déployé sur Google Cloud Run avec repli automatique sur le moteur local.
+- **Local (offline, temps réel)** : évaluateur **tri-phase TypeScript** (`evaluator.ts` : Contact / Crashed / Race-BearOff) + bear-off exact (54 264 états) + Keith Count, derrière un point d'entrée unifié.
+
+Analyse en temps réel, opening book certifié, drills de blunders, puzzles quotidiens et multijoueur en ligne. Le jeu et l'analyse rapide fonctionnent **100 % hors-ligne** ; le cloud ajoute la précision super-grand-maître et les rollouts profonds.
 
 ---
 
@@ -12,8 +17,10 @@ Application web et mobile hybride (Next.js 15, React 19, Tailwind CSS, Capacitor
 | Document | Rôle |
 |---|---|
 | [`PROJECT_MAP.md`](PROJECT_MAP.md) | **Carte d'orientation** — comprendre le projet en 1 minute, ajouter une fonction en 2 minutes. **Lire en premier.** |
+| [`docs/BRAND_AND_SEO.md`](docs/BRAND_AND_SEO.md) | **Charte de Marque, Domaines, Logo & SEO** — architecture `backgammontour.com` & `gammonacademy.com`, blason Monte-Carlo et JSON-LD. |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Architecture détaillée (modules, flux, décisions). |
 | [`SCALABILITY.md`](SCALABILITY.md) | Charte de scalabilité impérative (règles non négociables). |
+| [`DOCS_ENGINE.md`](DOCS_ENGINE.md) | Architecture du moteur d'évaluation unifié (Open Sage Cloud Run + repli tri-phase local). |
 | [`GOVERNANCE.md`](GOVERNANCE.md) | **Charte de gouvernance « Zéro Bug »** — 4 règles d'or architecturales et comportementales incompressibles. |
 
 ---
@@ -37,9 +44,9 @@ npm run build
 npm start
 ```
 
-### Stack Complète via Docker Compose (Frontend + Backend Moteur)
+### Stack Complète via Docker Compose (Frontend + Microservice Open Sage)
 ```bash
-# Lance le frontend sur :3000 et le backend gnubg sur :8000
+# Lance le frontend sur :3000 et le backend bgsage sur :8080
 docker compose up --build -d
 ```
 
@@ -49,18 +56,18 @@ docker compose up --build -d
 
 ### 1. Tests Unitaires & Composants (Vitest)
 
-619 tests unitaires et d'intégration couvrant le moteur de règles, l'IA heuristique, le videau, la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
+870 tests unitaires et d'intégration (153 fichiers de test) couvrant le moteur de règles, le benchmark Open Sage (4 niveaux de bots + videau), la notation bijective (4 000 parties), la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
 
 ```bash
 npm test
 ```
 
-### 2. Tests Backend Python & Moteur Neural (Pytest)
+### 2. Tests Backend Python & Open Sage (Pytest)
 
-30 tests validant les parsers, les modèles Pydantic, le pool de workers, l'API FastAPI et les sondes de santé de monitoring :
+Tests validant l'API FastAPI, le parser XGID et l'évaluation Open Sage :
 
 ```bash
-pytest backend-engine/tests -v
+pytest bgsage-service/tests -v
 ```
 
 ### 3. Tests End-to-End (Playwright)
@@ -85,12 +92,12 @@ npm run test:e2e
 npm run test:e2e:ui
 ```
 
-### 4. Microservice Backend & Tests gnubg (Docker)
+### 4. Microservice Backend & Tests Open Sage (Docker)
 
 ```bash
-cd backend-engine
-docker build -t backgammon-engine .
-docker run --rm backgammon-engine pytest -v tests/test_integration_gnubg.py
+cd bgsage-service
+docker build -t bgsage-service .
+docker run --rm bgsage-service pytest -v tests/test_api.py
 ```
 
 ---

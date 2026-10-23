@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
     classifyMoveType,
     classifyGamePhase,
+    classifyTacticalTheme,
+    calculateTacticalBlunderHeatmap,
     calculateMoveTypeMetrics,
     generateConceptsHeatmap,
     calculateProgressionTimeline,
@@ -214,6 +216,96 @@ describe('Analytics Calculator', () => {
         });
     });
 
+    describe('calculateTacticalBlunderHeatmap (3 Phases × 5 Tactical Themes)', () => {
+        it('catégorise les bévues dans la matrice 15 cellules (Opening/Midgame/Bearing off × Slotting/Priming/Blitz/Holding/Racing)', () => {
+            const mockAnalysis: CompleteGameAnalysis = {
+                id: 'analysis_tactical',
+                gameId: 'game_tactical',
+                date: '2026-10-22T12:00:00Z',
+                player: 'X',
+                opponentType: 'ai',
+                scoreX: 3,
+                scoreO: 1,
+                matchLength: 7,
+                totalMovesCount: 3,
+                decisionsCount: 3,
+                unforcedDecisionsCount: 3,
+                totalEquityLoss: 0.25,
+                errorRate: 0.083,
+                performanceRating: 8.5,
+                estimatedRating: 1700,
+                prCategory: 'Avancé',
+                breakdown: { optimal: 0, acceptable: 0, doubtful: 1, blunder: 2, howler: 0 },
+                evaluatedMoves: [
+                    {
+                        moveNumber: 1,
+                        player: 'X',
+                        dice: [2, 1],
+                        boardBefore: new Array(28).fill(0),
+                        boardAfter: new Array(28).fill(0),
+                        playedNotation: '13/11 6/5',
+                        optimalNotation: '24/23 13/11',
+                        equityLoss: -0.05,
+                        verdict: 'doubtful',
+                        isUnforced: true,
+                        candidateCount: 8,
+                        explanation: 'Slotting du point 5 risqué.',
+                    },
+                    {
+                        moveNumber: 6,
+                        player: 'X',
+                        dice: [5, 3],
+                        boardBefore: new Array(28).fill(0),
+                        boardAfter: new Array(28).fill(0),
+                        playedNotation: '13/8 8/5*',
+                        optimalNotation: '8/3 6/3',
+                        equityLoss: -0.14,
+                        verdict: 'blunder',
+                        isUnforced: true,
+                        candidateCount: 10,
+                        explanation: 'Blitz prématuré au lieu de construire un prime.',
+                    },
+                    {
+                        moveNumber: 16,
+                        player: 'X',
+                        dice: [6, 5],
+                        boardBefore: new Array(28).fill(0),
+                        boardAfter: new Array(28).fill(0),
+                        playedNotation: '6/off 5/off',
+                        optimalNotation: '6/off 5/off',
+                        equityLoss: -0.09,
+                        verdict: 'blunder',
+                        isUnforced: true,
+                        candidateCount: 3,
+                    },
+                ],
+            };
+
+            expect(classifyTacticalTheme(mockAnalysis.evaluatedMoves[0])).toBe('slotting');
+            expect(classifyTacticalTheme(mockAnalysis.evaluatedMoves[1])).toBe('blitz');
+            expect(classifyTacticalTheme(mockAnalysis.evaluatedMoves[2])).toBe('racing');
+
+            const cells = calculateTacticalBlunderHeatmap([mockAnalysis]);
+            expect(cells).toHaveLength(15); // 5 thèmes × 3 phases
+
+            const slottingOpening = cells.find(
+                (c) => c.theme === 'slotting' && c.phase === 'opening',
+            );
+            expect(slottingOpening?.errorCount).toBe(1);
+
+            const blitzMid = cells.find(
+                (c) => c.theme === 'blitz' && c.phase === 'middle_game',
+            );
+            expect(blitzMid?.blunderCount).toBe(1);
+            expect(blitzMid?.intensity).toBe(1);
+
+            const racingEnd = cells.find(
+                (c) => c.theme === 'racing' && c.phase === 'endgame',
+            );
+            expect(racingEnd?.blunderCount).toBe(1);
+        });
+    });
+
     describe('calculateProgressionTimeline', () => {
         it('calcule la moyenne mobile du PR sur plusieurs parties', () => {
             const createAnalysis = (date: string, pr: number): CompleteGameAnalysis => ({
@@ -247,16 +339,17 @@ describe('Analytics Calculator', () => {
             const timeline = calculateProgressionTimeline(analyses);
             expect(timeline).toHaveLength(3);
             expect(timeline[0].movingAveragePR).toBe(10);
-            expect(timeline[1].movingAveragePR).toBe(8); // (10+6)/2
-            expect(timeline[2].movingAveragePR).toBe(7); // (10+6+5)/3
+            expect(timeline[1].movingAveragePR).toBe(8);
+            expect(timeline[2].movingAveragePR).toBe(7);
         });
     });
 
     describe('computeAnalyticsSummary', () => {
-        it('produit une synthèse complète avec score global de maîtrise', () => {
+        it('produit une synthèse complète avec score global de maîtrise et tacticalHeatmapCells', () => {
             const summary = computeAnalyticsSummary([]);
             expect(summary.totalGames).toBe(0);
             expect(summary.moveTypeMetrics).toHaveLength(6);
+            expect(summary.tacticalHeatmapCells).toHaveLength(15);
             expect(summary.overallMastery).toBeGreaterThanOrEqual(0);
         });
     });

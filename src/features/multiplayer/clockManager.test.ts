@@ -130,4 +130,41 @@ describe('clockManager (Tournament Backgammon Clocks)', () => {
         expect(formatClockTime(8400, true)).toBe('8.4s');
         expect(formatClockTime(0)).toBe('0.0s');
     });
+
+    it('supporte le mode Bronstein et les cadences Speed / Blitz de Backgammon Galaxy', () => {
+        const speedCfg = getRecommendedClockConfig(5, 'bronstein', 'speed');
+        expect(speedCfg.type).toBe('bronstein');
+        expect(speedCfg.bankMs).toBe(5 * 60 * 1000); // 1 min / pt = 5 min
+        expect(speedCfg.delaySeconds).toBe(8);
+
+        const blitzCfg = getRecommendedClockConfig(5, 'bronstein', 'blitz');
+        expect(blitzCfg.bankMs).toBe(5 * 30 * 1000); // 30s / pt = 2.5 min
+        expect(blitzCfg.delaySeconds).toBe(5);
+
+        const start = 100000;
+        const clock = createMatchClock(speedCfg, 'X', start);
+        expect(clock.delayRemainingMs).toBe(8000);
+
+        // X joue en 6s (< 8s délai Bronstein) : la réserve reste exactement à sa valeur initiale
+        const nextClock = switchClockTurn(clock, 'O', speedCfg, start + 6000);
+        expect(nextClock.bankXMs).toBe(speedCfg.bankMs);
+        expect(nextClock.delayRemainingMs).toBe(8000);
+    });
+
+    it('applique correctement l’incrément Fischer sans double délai initial', () => {
+        const fischerCfg = getRecommendedClockConfig(3, 'fischer', 'normal');
+        const start = 100000;
+        const clock = createMatchClock(fischerCfg, 'X', start);
+
+        // En Fischer, delayRemainingMs = 0 : la réserve diminue immédiatement pendant le coup
+        expect(clock.delayRemainingMs).toBe(0);
+        const tickAfter5s = computeClockTick(clock, start + 5000);
+        expect(tickAfter5s.bankXMs).toBe(fischerCfg.bankMs - 5000);
+
+        // À la fin du coup de 5s, X reçoit +12s d'incrément -> réserve finale = bankMs - 5s + 12s = bankMs + 7s
+        const nextClock = switchClockTurn(clock, 'O', fischerCfg, start + 5000);
+        expect(nextClock.bankXMs).toBe(fischerCfg.bankMs + 7000);
+        expect(nextClock.activePlayer).toBe('O');
+        expect(nextClock.delayRemainingMs).toBe(0);
+    });
 });

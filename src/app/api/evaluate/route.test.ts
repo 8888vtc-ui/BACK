@@ -3,7 +3,7 @@ import { GET, POST } from './route';
 import { rateLimiter } from '../../../lib/security/rateLimit';
 import { NextRequest } from 'next/server';
 
-const VALID_XGID = 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10';
+const VALID_XGID = 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10';
 
 describe('GET and POST /api/evaluate Route', () => {
     beforeEach(() => {

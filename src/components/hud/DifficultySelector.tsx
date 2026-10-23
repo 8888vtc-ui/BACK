@@ -28,6 +28,15 @@ const LEVELS: Array<{
             activeClass: 'border-emerald-500/80 bg-emerald-950/60 text-emerald-200 shadow-emerald-500/20',
         },
         {
+            id: 'intermediate',
+            name: 'Intermédiaire',
+            ply: '1-ply',
+            badge: 'Déterministe',
+            icon: '🟡',
+            tooltip: '1-ply déterministe : évaluation à un coup d\'avance, sans bruit.',
+            activeClass: 'border-yellow-500/80 bg-yellow-950/60 text-yellow-200 shadow-yellow-500/20',
+        },
+        {
             id: 'expert',
             name: 'Maître',
             ply: 'WASM 2-Ply',

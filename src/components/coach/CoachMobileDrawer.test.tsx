@@ -18,18 +18,43 @@ describe('CoachMobileDrawer Component', () => {
         expect(html).toContain('translate-y-full');
     });
 
-    it('affiche le bouton flottant quand coach est actif mais tiroir fermé', () => {
+    it('affiche la barre résumée (PR | verdict | Ouvrir) quand le tiroir est fermé', () => {
         const html = renderToStaticMarkup(
             <CoachMobileDrawer
                 isOpen={false}
                 onOpen={vi.fn()}
                 onClose={vi.fn()}
-                coach={{ verdict: 'blunder' } as any}
+                coach={{ verdict: 'blunder', equityLoss: -0.142 } as any}
                 isAnalyzing={false}
                 onDismiss={vi.fn()}
+                pr={5.42}
             />,
         );
-        expect(html).toContain('Analyse (Blunder)');
-        expect(html).toContain('animate-bounce');
+        expect(html).toContain('data-testid="coach-mobile-summary-bar"');
+        expect(html).toContain('data-testid="coach-mobile-pr"');
+        expect(html).toContain('5.42');
+        expect(html).toContain('data-testid="coach-mobile-verdict"');
+        expect(html).toContain('BLUNDER MAJEUR');
+        expect(html).toContain('data-testid="coach-mobile-open-btn"');
+        // `renderToStaticMarkup` échappe l'apostrophe en entité HTML.
+        expect(html).toContain('Ouvrir l');
+        expect(html).toContain('analyse</span>');
+        // L'animation clignotante a été retirée pour rester sobre.
+        expect(html).not.toContain('animate-bounce');
+    });
+
+    it('masque la barre résumée quand le Bottom Sheet est déplié', () => {
+        const html = renderToStaticMarkup(
+            <CoachMobileDrawer
+                isOpen={true}
+                onOpen={vi.fn()}
+                onClose={vi.fn()}
+                coach={{ verdict: 'doubtful', equityLoss: -0.045 } as any}
+                isAnalyzing={false}
+                onDismiss={vi.fn()}
+                pr={5.42}
+            />,
+        );
+        expect(html).not.toContain('data-testid="coach-mobile-summary-bar"');
     });
 });

@@ -16,23 +16,23 @@ export default function CoachPanelSkeleton({ message }: { message?: string }) {
             role="status"
             aria-live="polite"
             aria-label={effectiveMessage}
-            className="w-full max-w-5xl animate-pulse rounded-lg border-2 border-blue-500/30 bg-slate-800/90 p-4 shadow-xl backdrop-blur-sm"
+            className="w-full max-w-5xl animate-pulse rounded-2xl border border-[#d4af37]/45 bg-gradient-to-b from-[#1a130b]/95 to-[#0b0f18]/95 p-4 shadow-xl backdrop-blur-sm"
         >
             {/* Header avec radar / spinner discret */}
-            <div className="flex items-center justify-between border-b border-slate-700/60 pb-3">
+            <div className="flex items-center justify-between border-b border-[#d4af37]/25 pb-3">
                 <div className="flex items-center gap-3">
                     <span className="relative flex h-3 w-3">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
-                        <span className="relative inline-flex h-3 w-3 rounded-full bg-blue-500" />
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f3c65f] opacity-75" />
+                        <span className="relative inline-flex h-3 w-3 rounded-full bg-[#d4af37]" />
                     </span>
-                    <h2 className="text-lg font-bold text-slate-200">{t('coach.title')}</h2>
+                    <h2 className="font-serif text-base font-bold text-[#fdf8eb]">{t('coach.title')}</h2>
                 </div>
                 <div className="flex items-center gap-2">
-                    <svg className="h-4 w-4 animate-spin text-blue-400" viewBox="0 0 24 24" fill="none">
+                    <svg className="h-4 w-4 animate-spin text-[#f3c65f]" viewBox="0 0 24 24" fill="none">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                     </svg>
-                    <span className="text-xs font-medium text-blue-300">{effectiveMessage}</span>
+                    <span className="text-xs font-medium text-amber-200">{effectiveMessage}</span>
                 </div>
             </div>
 

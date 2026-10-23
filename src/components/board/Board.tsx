@@ -1,204 +1,196 @@
 'use client';
 
 /**
- * Plateau de Backgammon « Luxury Crisloid / Hector Saxe » — Rendu HTML/Tailwind.
- *
- * Rendu alternatif au `BackgammonBoard.tsx` (SVG) : pions 3D concaves (finger-dish),
- * flèches cousues en SVG, pile plafonnée à 5 avec badge.
- *
- * Réutilise les fonctions pures isolées :
- *   - `boardGeometry.ts` : géométrie, layout, hit-testing.
- *   - `boardAria.ts` : labels ARIA et navigation clavier.
- *
- * Délégation pure : toute la logique métier (auto-move, sélection) est gérée par
- * le parent via les handlers, exactement comme `BackgammonBoard`.
- *
- * Composition (LOI 5 — composants ≤ 300 lignes) :
- *   `BoardPoint`, `BoardCentralBar`, `BoardNumberRow`, `BoardDiceRiver`,
- *   `BoardOffTray`, `BoardFrame`/`FeltSurface`, `BoardCenterControls`,
- *   `PipCountBadge`, hook `useBoardPointInteractions`.
+ * Plateau de Backgammon de Tournoi (style Backgammon Galaxy / Snowie 4 Pro) —
+ * Rendu HTML/Tailwind & SVG haute fidélité (< 230 lignes, 0 any).
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { Player, X_BAR, O_BAR, X_OFF, O_OFF, pipCount, borneOffCount } from '../../engine/backgammonEngine';
-import { getPointColor, getPointCount } from './boardGeometry';
-import { getPointAriaLabel } from './boardAria';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type Player, X_BAR, O_BAR, pipCount, borneOffCount } from '../../engine/backgammonEngine';
 import { PipCountBadge } from './PipCountBadge';
-import { BoardPoint } from './BoardPoint';
-import { BoardCentralBar } from './BoardCentralBar';
+import { BoardPlayfieldGrid } from './BoardPlayfieldGrid';
+import { BoardQuadrantRow } from './BoardQuadrantRow';
 import { BoardNumberRow } from './BoardNumberRow';
 import { BoardDiceRiver } from './BoardDiceRiver';
-import { BoardOffTray } from './BoardOffTray';
 import { CoachArrows } from './CoachArrows';
 import { BoardCenterControls } from './BoardCenterControls';
 import { BoardFrame, FeltSurface } from './BoardFrame';
 import { BoardSkeleton } from './BoardSkeleton';
-import { normalizeHighlightPoint, isRealPoint, collectMovableSources } from './boardHighlights';
+import { collectMovableSources, computeGhostDestinations, computeHoverTargets } from './boardHighlights';
 import { useBoardPointInteractions } from '../../hooks/useBoardPointInteractions';
 import type { BoardProps } from './boardTypes';
+import { useI18n } from '../../lib/i18n';
 import {
-    getOrientedRows,
-    toggleOrientation,
-    getSavedOrientation,
-    saveOrientation,
-    type BoardOrientation,
+    getOrientedRows, toggleOrientation, getSavedOrientation, saveOrientation, type BoardOrientation,
 } from './boardOrientation';
+import { useCheckerDragAndDrop } from '../../hooks/useCheckerDragAndDrop';
+import { useBarReentry } from '../../hooks/useBarReentry';
+import { useDiceAnimation } from '../../hooks/useDiceAnimation';
+import { DraggedCheckerOverlay } from './DraggedCheckerOverlay';
 
+export { BoardQuadrantRow };
 export type { BoardProps } from './boardTypes';
 
-export default function Board({
-    state,
-    leftDieTargets,
-    rightDieTargets,
-    selectedPoint,
-    selectedDie,
-    usedDice,
-    opponentDice = null,
-    onCheckerClick,
-    onCheckerDoubleClick,
-    onCheckerRightClick,
-    onDestinationClick,
-    onSelectDie,
-    onDieDoubleClick,
-    onDiceClick,
-    onDeselect,
-    coachHighlight = null,
-    opponentHighlight = null,
-    canDouble = false,
-    isLoading = false,
-    gamePhase = 'HUMAN_WAITING_ROLL',
-    onRoll,
-    onConfirm,
-    onUndo,
-    canUndo = false,
-    canConfirm = false,
-    isMatchStarted = true,
-}: BoardProps) {
+const BoardComponent: React.FC<BoardProps> = ({
+    state, leftDieTargets, rightDieTargets, selectedPoint, selectedDie, usedDice,
+    opponentDice = null, onCheckerClick, onCheckerDoubleClick, onCheckerRightClick,
+    onDestinationClick, onSelectDie, onDieDoubleClick, onDiceClick, onDeselect, onPlayMove,
+    coachHighlight = null, opponentHighlight = null, canDouble = false, doublingOfferedBy = null,
+    onOfferDouble, onTakeDouble, onPassDouble, theme, isLoading = false,
+    gamePhase = 'HUMAN_WAITING_ROLL', onRoll, onConfirm, onUndo,
+    canUndo = false, canConfirm = false, autoConfirmEnabled = false, onToggleAutoConfirm,
+    isMatchStarted = true, swapColors = false,
+}) => {
+    const { t } = useI18n();
     const player: Player = state.turn;
     const isX = player === 'X';
     const board = state.board;
 
-    // Orientation du plateau (sortie X à gauche ou à droite), persistée.
-    // ANTI-HYDRATATION : on démarre sur 'normal' (identique SSR/CSR) puis on
-    // synchronise la préférence persistée APRÈS le montage, dans un useEffect.
     const [orientation, setOrientation] = useState<BoardOrientation>('normal');
+    const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
 
     useEffect(() => {
         const saved = getSavedOrientation('normal');
         if (saved !== 'normal') setOrientation(saved);
     }, []);
 
-    const { top: TOP_ROW, bottom: BOTTOM_ROW } = useMemo(
-        () => getOrientedRows(orientation),
-        [orientation],
-    );
+    const { top: TOP_ROW, bottom: BOTTOM_ROW } = useMemo(() => getOrientedRows(orientation), [orientation]);
 
-    const handleToggleOrientation = () => {
+    const handleToggleOrientation = useCallback(() => {
         setOrientation((prev) => {
             const next = toggleOrientation(prev);
             saveOrientation(next);
             return next;
         });
-    };
+    }, []);
 
     const pipCounts = useMemo(() => pipCount(board), [board]);
-    const movableSources = useMemo(
-        () => collectMovableSources(leftDieTargets, rightDieTargets, gamePhase),
-        [leftDieTargets, rightDieTargets, gamePhase],
-    );
     const off = useMemo(() => ({ X: borneOffCount(board, 'X'), O: borneOffCount(board, 'O') }), [board]);
     const bar = useMemo(() => ({ X: Math.max(0, board[X_BAR]), O: Math.max(0, -board[O_BAR]) }), [board]);
+    const diceAnimation = useDiceAnimation({ dice: state.dice });
 
-    const ghostDestinations = useMemo(() => {
-        if (selectedPoint === null) return new Set<number>();
-        if (selectedDie !== null) {
-            const targets = selectedDie === 0 ? leftDieTargets : rightDieTargets;
-            return new Set(targets.get(selectedPoint) ?? []);
-        }
-        const left = leftDieTargets.get(selectedPoint) ?? [];
-        const right = rightDieTargets.get(selectedPoint) ?? [];
-        return new Set([...left, ...right]);
-    }, [selectedPoint, selectedDie, leftDieTargets, rightDieTargets]);
-
-    // Interactions clavier/souris des flèches, de la barre et des sabots
-    // (hook dédié — LOI 5).
-    const {
-        focusedPoint,
-        handlePointClick,
-        handlePointRightClick,
-        handleBarClick,
-        handleOffClick,
-        handlePointFocus,
-        handlePointKeyDown,
-    } = useBoardPointInteractions({
+    const barReentry = useBarReentry({
         board,
-        isX,
-        bar,
-        xBarPoint: X_BAR,
-        oBarPoint: O_BAR,
-        ghostDestinations,
-        onCheckerClick,
-        onCheckerRightClick,
-        onDestinationClick,
-        onDeselect,
+        player,
+        dice: state.dice,
+        usedDice,
+        leftDieTargets,
+        rightDieTargets,
+        gamePhase,
+        onAutoPassTurn: canUndo ? undefined : onConfirm,
     });
 
-    const renderPoint = (point: number, isTopRow: boolean) => {
-        const color = getPointColor(board, point);
-        const count = getPointCount(board, point);
-        const isTarget = ghostDestinations.has(point);
-        const isBlotTarget =
-            isTarget && count === 1 && (isX ? board[point] < 0 : board[point] > 0);
-        const isOpponentFrom =
-            isRealPoint(point) &&
-            (opponentHighlight?.some((h) => normalizeHighlightPoint(h.from, false) === point) ?? false);
-        const isOpponentTo =
-            isRealPoint(point) &&
-            (opponentHighlight?.some((h) => normalizeHighlightPoint(h.to, true) === point) ?? false);
-        const ariaLabel = getPointAriaLabel(
-            point,
-            board,
-            player,
-            selectedPoint,
-            Array.from(ghostDestinations),
-        );
-
-        return (
-            <BoardPoint
-                key={`point-${point}`}
-                pointNumber={point}
-                isTopRow={isTopRow}
-                checkerColor={color}
-                checkerCount={count}
-                isTargetDestination={isTarget}
-                isBlotTarget={isBlotTarget}
-                isMovable={movableSources.has(point)}
-                isSelected={selectedPoint === point}
-                isOpponentFrom={isOpponentFrom}
-                isOpponentTo={isOpponentTo}
-                isFocused={focusedPoint === point}
-                ariaLabel={ariaLabel}
-                onClickPoint={handlePointClick}
-                onDoubleClickPoint={onCheckerDoubleClick}
-                onRightClickPoint={handlePointRightClick}
-                onKeyDownPoint={handlePointKeyDown}
-                onFocusPoint={handlePointFocus}
-            />
-        );
-    };
-
-    const renderOffTray = (offPoint: number, count: number, trayZoneId: string) => (
-        <BoardOffTray
-            offPoint={offPoint}
-            count={count}
-            board={board}
-            player={player}
-            isTarget={ghostDestinations.has(offPoint)}
-            isOpponentToOff={opponentHighlight?.some((h) => h.to === X_OFF || h.to === O_OFF) ?? false}
-            trayZoneId={trayZoneId}
-            onClick={handleOffClick}
-        />
+    const movableSources = useMemo(
+        () => collectMovableSources(leftDieTargets, rightDieTargets, gamePhase, barReentry.isOnBar),
+        [leftDieTargets, rightDieTargets, gamePhase, barReentry.isOnBar],
     );
+
+    const ghostDestinations = useMemo(
+        () =>
+            computeGhostDestinations({
+                isOnBar: barReentry.isOnBar,
+                barPoint: barReentry.barPoint,
+                legalEntryPoints: barReentry.legalEntryPoints,
+                selectedPoint,
+                selectedDie,
+                leftDieTargets,
+                rightDieTargets,
+                dice: state.dice,
+                gamePhase,
+            }),
+        [barReentry.isOnBar, barReentry.barPoint, barReentry.legalEntryPoints, selectedPoint, selectedDie, leftDieTargets, rightDieTargets, state.dice, gamePhase],
+    );
+
+    const hoverTargets = useMemo(
+        () =>
+            computeHoverTargets(
+                barReentry.isOnBar ? barReentry.barPoint : (selectedPoint ?? hoveredPoint),
+                state.dice,
+                selectedDie,
+                leftDieTargets,
+                rightDieTargets,
+            ),
+        [barReentry.isOnBar, barReentry.barPoint, selectedPoint, hoveredPoint, state.dice, selectedDie, leftDieTargets, rightDieTargets],
+    );
+
+    const {
+        focusedPoint, handlePointClick, handlePointRightClick,
+        handleBarClick, handleBarRightClick, handleOffClick, handleOffRightClick, handlePointFocus, handlePointKeyDown,
+    } = useBoardPointInteractions({
+        board, isX, bar, xBarPoint: X_BAR, oBarPoint: O_BAR, ghostDestinations, selectedPoint,
+        leftDieTargets, rightDieTargets, dice: state.dice, selectedDie,
+        onCheckerClick, onCheckerRightClick, onDestinationClick, onPlayMove, onDeselect,
+    });
+
+    const [dragSourcePoint, setDragSourcePoint] = useState<number | null>(null);
+    const suppressClickAfterDragRef = useRef(false);
+    const activeLegalDestinations = useMemo(() => {
+        const activePt = dragSourcePoint ?? selectedPoint;
+        if (activePt === null) return ghostDestinations;
+        const left = leftDieTargets?.get(activePt) ?? [];
+        const right = rightDieTargets?.get(activePt) ?? [];
+        return new Set([...left, ...right]);
+    }, [dragSourcePoint, selectedPoint, ghostDestinations, leftDieTargets, rightDieTargets]);
+
+    const {
+        dragState,
+        handlePointerDown: onCheckerDragStart,
+        handlePointerMove,
+        handlePointerUp,
+        handlePointerCancel,
+    } = useCheckerDragAndDrop({
+        legalDestinations: activeLegalDestinations,
+        onDropMove: (from, to) => {
+            suppressClickAfterDragRef.current = true;
+            setDragSourcePoint(null);
+            if (onPlayMove) onPlayMove(from, to);
+            else onDestinationClick(to);
+        },
+        onTapPoint: () => {
+            setDragSourcePoint(null);
+        },
+        onCancelDrag: () => {
+            suppressClickAfterDragRef.current = true;
+            setDragSourcePoint(null);
+        },
+    });
+
+    const boardGhostDestinations = dragState.isDragging ? activeLegalDestinations : ghostDestinations;
+    const isAwaitingRoll = gamePhase === 'HUMAN_WAITING_ROLL' && !state.dice;
+    const isAiPhase = gamePhase === 'AI_TURN_ROLLING' || gamePhase === 'AI_TURN_SHOWING_ARROWS';
+
+    const onPointClick = useCallback(
+        (...args: Parameters<typeof handlePointClick>) => {
+            if (suppressClickAfterDragRef.current) {
+                suppressClickAfterDragRef.current = false;
+                return;
+            }
+            if (diceAnimation.areCheckerClicksLocked) return;
+            if (isAwaitingRoll) {
+                onRoll?.();
+                return;
+            }
+            handlePointClick(...args);
+        },
+        [diceAnimation.areCheckerClicksLocked, isAwaitingRoll, onRoll, handlePointClick],
+    );
+
+    const handleBackgroundClick = useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
+            if (suppressClickAfterDragRef.current) {
+                suppressClickAfterDragRef.current = false;
+                return;
+            }
+            if (e.target === e.currentTarget) onDeselect?.();
+        },
+        [onDeselect],
+    );
+
+    const handleMouseEnterPoint = useCallback((pt: number) => {
+        if (typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches) return;
+        setHoveredPoint(pt);
+    }, []);
+    const handleMouseLeavePoint = useCallback(() => setHoveredPoint(null), []);
 
     if (isLoading) return <BoardSkeleton />;
 
@@ -206,15 +198,34 @@ export default function Board({
         <div
             id="backgammon-board"
             data-testid="backgammon-board"
-            className="h-full max-h-full w-full mx-auto select-none touch-manipulation flex flex-col items-center justify-center"
-            onClick={onDeselect}
+            data-dice-rolling={diceAnimation.isRolling ? 'true' : 'false'}
+            role="region"
+            aria-label={t('board.regionLabel') || 'Backgammon Game Board'}
+            className="h-full max-h-full w-full max-w-[1260px] mx-auto select-none touch-manipulation flex flex-col items-center justify-center relative"
+            onClick={handleBackgroundClick}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
         >
-            <BoardFrame>
-                {(coachHighlight || (state.turn === 'O' && opponentHighlight && opponentHighlight.length > 0)) && (
+            <div aria-live="polite" aria-atomic="true" className="sr-only" data-testid="board-accessibility-announcer">
+                {t('hud.turn', { player })}
+                {state.dice ? `. ${t('engine.diceRolled', { player, d1: state.dice[0], d2: state.dice[1] })}` : ''}
+                {doublingOfferedBy ? `. ${t('engine.doubleOffered', { player: doublingOfferedBy, val: state.cubeValue })}` : ''}
+            </div>
+            <BoardFrame theme={theme}>
+                {(coachHighlight || (opponentHighlight && opponentHighlight.length > 0)) && (
                     <CoachArrows
                         played={coachHighlight?.played}
                         optimal={coachHighlight?.optimal}
-                        opponent={state.turn === 'O' ? (opponentHighlight ?? undefined) : undefined}
+                        opponent={
+                            coachHighlight
+                                ? undefined
+                                : !state.dice
+                                  ? (opponentHighlight ?? undefined)
+                                  : state.turn === 'O'
+                                    ? (opponentHighlight ?? undefined)
+                                    : undefined
+                        }
                         orientation={orientation}
                     />
                 )}
@@ -228,58 +239,50 @@ export default function Board({
                         canUndo={canUndo}
                         canConfirm={canConfirm}
                         hasDice={Boolean(state.dice)}
+                        canDouble={canDouble}
+                        cubeValue={state.cubeValue}
+                        doublingOfferedBy={doublingOfferedBy}
+                        onOfferDouble={onOfferDouble}
+                        onTakeDouble={onTakeDouble}
+                        onPassDouble={onPassDouble}
+                        autoConfirmEnabled={autoConfirmEnabled}
+                        onToggleAutoConfirm={onToggleAutoConfirm}
                     />
                 )}
 
                 <BoardNumberRow row={TOP_ROW} padding="top" onToggleOrientation={handleToggleOrientation} />
 
-                <FeltSurface>
-                    <div className="flex-1 min-h-0 grid grid-cols-[1fr_auto_1fr] grid-rows-2 gap-x-1">
-                        <div className="flex min-h-0">
-                            {TOP_ROW.slice(0, 6).map((p) => renderPoint(p, true))}
-                        </div>
-
-                        <BoardCentralBar
-                            barX={bar.X}
-                            barO={bar.O}
-                            isXTurn={isX}
-                            cubeValue={state.cubeValue}
-                            cubeOwner={state.cubeOwner}
-                            canDouble={canDouble}
-                            onBarClick={handleBarClick}
-                            onBarRightClick={onCheckerRightClick}
-                            xBarPoint={X_BAR}
-                            oBarPoint={O_BAR}
-                        />
-
-                        <div className="flex min-h-0">
-                            <div className="flex flex-1">
-                                {TOP_ROW.slice(6).map((p) => renderPoint(p, true))}
-                            </div>
-                            <div className="w-10 sm:w-16 md:w-20 flex flex-col justify-start pt-2">
-                                {renderOffTray(O_BAR, off.O, 'tray-zone-o')}
-                            </div>
-                        </div>
-
-                        <div className="flex min-h-0">
-                            {BOTTOM_ROW.slice(0, 6).map((p) => renderPoint(p, false))}
-                        </div>
-
-                        <div className="flex min-h-0">
-                            <div className="flex flex-1">
-                                {BOTTOM_ROW.slice(6).map((p) => renderPoint(p, false))}
-                            </div>
-                            <div className="w-10 sm:w-16 md:w-20 flex flex-col justify-end pb-2">
-                                {renderOffTray(X_BAR, off.X, 'tray-zone-x')}
-                            </div>
-                        </div>
-                    </div>
+                <FeltSurface theme={theme}>
+                    <BoardPlayfieldGrid
+                        topRow={TOP_ROW} bottomRow={BOTTOM_ROW} board={board} player={player} off={off}
+                        ghostDestinations={boardGhostDestinations} hoverTargets={hoverTargets} movableSources={movableSources}
+                        selectedPoint={selectedPoint} opponentHighlight={coachHighlight ? null : opponentHighlight} focusedPoint={focusedPoint}
+                        theme={theme} swapColors={swapColors} onBackgroundClick={handleBackgroundClick}
+                        onOffClick={handleOffClick} onOffRightClick={handleOffRightClick} onPointClick={onPointClick}
+                        onCheckerDoubleClick={onCheckerDoubleClick} onPointRightClick={handlePointRightClick}
+                        onPointKeyDown={handlePointKeyDown} onPointFocus={handlePointFocus}
+                        onMouseEnterPoint={handleMouseEnterPoint} onMouseLeavePoint={handleMouseLeavePoint}
+                        onCheckerPointerDown={(pt, color, e) => {
+                            if (diceAnimation.areCheckerClicksLocked) return;
+                            if (barReentry.areOtherCheckersLocked && pt !== barReentry.barPoint) return;
+                            setDragSourcePoint(pt);
+                            onCheckerDragStart(pt, color, e);
+                        }}
+                        centralBarProps={{
+                            barX: bar.X, barO: bar.O, isXTurn: isX,
+                            cubeValue: state.cubeValue, cubeOwner: state.cubeOwner, canDouble,
+                            onBarClick: handleBarClick, onBarDoubleClick: onCheckerDoubleClick,
+                            onBarRightClick: handleBarRightClick, onOfferDouble,
+                            xBarPoint: X_BAR, oBarPoint: O_BAR, theme, swapColors,
+                            isDanced: barReentry.isDanced, dancedMessage: barReentry.dancedMessage,
+                        }}
+                    />
 
                     <BoardDiceRiver
-                        dice={state.dice}
+                        dice={isAiPhase ? null : state.dice}
                         usedDice={usedDice}
                         selectedDie={selectedDie}
-                        opponentDice={opponentDice}
+                        opponentDice={isAiPhase ? (state.dice ?? opponentDice) : opponentDice}
                         onDiceClick={onDiceClick}
                         onSelectDie={onSelectDie}
                         onDieDoubleClick={onDieDoubleClick}
@@ -288,8 +291,16 @@ export default function Board({
 
                 <BoardNumberRow row={BOTTOM_ROW} padding="bottom" />
 
-                <PipCountBadge pipX={pipCounts.X} pipO={pipCounts.O} turn={player} />
+                <PipCountBadge
+                    pipX={pipCounts.X} pipO={pipCounts.O} turn={player}
+                    swapColors={swapColors} playerColor={swapColors ? 'O' : 'X'}
+                />
             </BoardFrame>
+
+            <DraggedCheckerOverlay dragState={dragState} />
         </div>
     );
-}
+};
+
+export const Board = React.memo(BoardComponent);
+export default Board;

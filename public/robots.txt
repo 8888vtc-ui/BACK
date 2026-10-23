@@ -1,0 +1,12 @@
+# Backgammon Tour & Gammon Academy — Robots.txt Officiel (6 Langues : FR, EN, ES, PT, DE, AR)
+# Domaines officiels : https://backgammontour.com | https://gammonacademy.com | https://bgmontecarlo.com
+
+User-agent: *
+Allow: /
+Allow: /academy
+Allow: /puzzles
+Allow: /drills
+Allow: /progression
+Disallow: /api/
+
+Sitemap: https://backgammontour.com/sitemap.xml

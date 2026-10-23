@@ -3,6 +3,8 @@ import {
     getBestCheckerForDie,
     findSafestMoveForDie,
     evaluateSumOfDiceMove,
+    findDirectMoveToDestination,
+    findPortMove,
 } from './checkerMoveHelpers';
 import { createInitialState, X_BAR } from './backgammonEngine';
 
@@ -44,5 +46,43 @@ describe('checkerMoveHelpers', () => {
         const board = createInitialState().board;
         const result = evaluateSumOfDiceMove(24, [3, 3], board, 'X', [21], [21]);
         expect(result.isPossible).toBe(false);
+    });
+
+    it('evaluateSumOfDiceMove computes valid sum-of-dice move when single-die targets are open', () => {
+        const board = createInitialState().board;
+        // Sur [6, 5] à l'ouverture, le pion en 24 a leftDests=[18] et rightDests=[] (20 bloqué par O)
+        // mais la case finale 24 - 11 = 13 est libre (+5 pions X) !
+        const result = evaluateSumOfDiceMove(24, [6, 5], board, 'X', [18], []);
+        expect(result.isPossible).toBe(true);
+        expect(result.midDest).toBe(18);
+        expect(result.sumDest).toBe(13);
+    });
+
+    it('findDirectMoveToDestination prioritizes bar entry and single-source target', () => {
+        const left = new Map<number, number[]>([[X_BAR, [22]]]);
+        const right = new Map<number, number[]>([[X_BAR, [20]]]);
+        expect(findDirectMoveToDestination(22, 'X', left, right, 0)).toEqual({
+            from: X_BAR,
+            to: 22,
+            die: 0,
+        });
+        expect(findDirectMoveToDestination(20, 'X', left, right, 0)).toEqual({
+            from: X_BAR,
+            to: 20,
+            die: 1,
+        });
+    });
+
+    it('findPortMove finds 2 checkers converging on an empty point to build a door', () => {
+        const board = createInitialState().board;
+        const left = new Map<number, number[]>([[8, [5]]]);
+        const right = new Map<number, number[]>([[6, [5]]]);
+        const port = findPortMove(5, [3, 1], board, 'X', left, right);
+        expect(port).toEqual({
+            from1: 8,
+            from2: 6,
+            die1: 0,
+            die2: 1,
+        });
     });
 });

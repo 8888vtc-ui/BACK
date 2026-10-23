@@ -6,6 +6,7 @@ import {
     aggregateUserStats,
     PlayerProgressionStats,
     ConceptMetric,
+    STRATEGIC_CONCEPTS_CATALOG,
 } from '../../lib/stats/statsAggregator';
 import PRHistoryChart from '../rating/PRHistoryChart';
 import GameReviewModal from '../rating/GameReviewModal';
@@ -19,14 +20,41 @@ import { computeAnalyticsSummary } from '../../features/analytics';
 import MoveTypeStatsCard from '../analytics/MoveTypeStatsCard';
 import ConceptsHeatmap from '../analytics/ConceptsHeatmap';
 import ProgressionCurve from '../analytics/ProgressionCurve';
+import RecurringErrorsCard from './RecurringErrorsCard';
 
 export interface ProgressionDashboardProps {
     onBackToGame?: () => void;
 }
 
+const DEFAULT_CONCEPTS: ConceptMetric[] = STRATEGIC_CONCEPTS_CATALOG.map((base) => ({
+    ...base,
+    errorCount: 0,
+    blunderCount: 0,
+    totalEquityLoss: 0,
+    masteryScore: 100,
+    priority: 'low',
+}));
+
+const INITIAL_PROGRESSION_STATS: PlayerProgressionStats = {
+    totalGamesPlayed: 0,
+    totalGamesWon: 0,
+    winRate: 50,
+    totalGammonsWon: 0,
+    totalBackgammonsWon: 0,
+    totalMovesEvaluated: 1,
+    totalBlunders: 0,
+    totalDoubtful: 0,
+    totalEquityLoss: 0,
+    averageErrorRate: 0,
+    performanceRating: 6.5,
+    prCategory: 'Expert',
+    concepts: DEFAULT_CONCEPTS,
+    weakestConcepts: [DEFAULT_CONCEPTS[0], DEFAULT_CONCEPTS[1]],
+    recentExplanations: [],
+};
+
 export default function ProgressionDashboard({ onBackToGame }: ProgressionDashboardProps) {
-    const [stats, setStats] = useState<PlayerProgressionStats | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [stats, setStats] = useState<PlayerProgressionStats>(INITIAL_PROGRESSION_STATS);
     const [selectedAnalysis, setSelectedAnalysis] = useState<CompleteGameAnalysis | null>(null);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [allAnalyses, setAllAnalyses] = useState<CompleteGameAnalysis[]>([]);
@@ -45,10 +73,6 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                 }
             } catch (err) {
                 console.warn('[ProgressionDashboard] Erreur chargement stats :', err);
-            } finally {
-                if (mounted) {
-                    setIsLoading(false);
-                }
             }
         }
 
@@ -62,20 +86,6 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
     const analyticsSummary = useMemo(() => {
         return computeAnalyticsSummary(allAnalyses);
     }, [allAnalyses]);
-
-    if (isLoading || !stats) {
-        return (
-            <div className="w-full max-w-6xl p-6 space-y-6 animate-pulse">
-                <div className="h-28 rounded-2xl bg-slate-800/60" />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="h-40 rounded-xl bg-slate-800/60" />
-                    <div className="h-40 rounded-xl bg-slate-800/60" />
-                    <div className="h-40 rounded-xl bg-slate-800/60" />
-                </div>
-                <div className="h-64 rounded-2xl bg-slate-800/60" />
-            </div>
-        );
-    }
 
     const {
         performanceRating,
@@ -102,15 +112,17 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
     };
 
     return (
-        <div className="w-full max-w-6xl space-y-6 text-slate-100">
+        <div className="w-full max-w-6xl space-y-6 text-[#fdf8eb]">
             {/* Barre de navigation / Retour */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-[#d4af37]/35 bg-gradient-to-r from-[#180c06] via-[#0e121b] to-[#080a0f] p-5 sm:p-6 shadow-[0_24px_60px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(243,198,95,0.2)]">
                 <div>
-                    <h1 className="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                        <span>📊</span>
+                    <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#fdf8eb] flex items-center gap-2.5">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d4af37]/40 bg-gradient-to-br from-[#2a170c] to-[#120904] text-lg shadow-inner">
+                            <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">📊</span>
+                        </span>
                         <span>Tableau de Progression &amp; Analyse Stratégique</span>
                     </h1>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-[#a5b0c4] mt-1">
                         Diagnostic en continu de vos décisions, calcul du Performance Rating (PR) et identification de vos axes de progrès.
                     </p>
                 </div>
@@ -118,7 +130,7 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                 <div className="flex items-center gap-2">
                     <Link
                         href="/drills"
-                        className="rounded-xl border border-amber-500/50 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 px-3.5 py-2 text-xs font-bold text-amber-300 hover:border-amber-400 hover:bg-amber-500/30 transition shadow-sm flex items-center gap-1.5"
+                        className="rounded-xl border border-[#ffecb3]/70 bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#c69214] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#1a0f08] hover:brightness-105 transition shadow-md flex items-center gap-1.5"
                     >
                         <span>🎯</span>
                         <span>Drills de Blunders</span>
@@ -128,7 +140,7 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                         <button
                             type="button"
                             onClick={onBackToGame}
-                            className="rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition shadow-sm flex items-center gap-2"
+                            className="rounded-xl border border-[#d4af37]/30 bg-[#150c07] px-4 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-white transition shadow-sm flex items-center gap-2"
                         >
                             <span>←</span>
                             <span>Retour au plateau</span>
@@ -136,7 +148,7 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                     ) : (
                         <Link
                             href="/"
-                            className="rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition shadow-sm flex items-center gap-2"
+                            className="rounded-xl border border-[#d4af37]/30 bg-[#150c07] px-4 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-white transition shadow-sm flex items-center gap-2"
                         >
                             <span>←</span>
                             <span>Retour au plateau</span>
@@ -148,13 +160,13 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
             {/* 1. HERO : Performance Rating (PR) & Taux d'Erreur Global */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Carte PR */}
-                <div className="md:col-span-1 rounded-2xl border border-slate-700/80 bg-gradient-to-br from-slate-900 to-slate-950 p-5 shadow-xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 -mr-6 -mt-6 h-28 w-28 rounded-full bg-blue-600/10 blur-2xl pointer-events-none" />
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <div className="md:col-span-1 rounded-2xl border border-[#d4af37]/35 bg-gradient-to-br from-[#180c06] via-[#0e121b] to-[#080a0f] p-5 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 -mr-6 -mt-6 h-28 w-28 rounded-full bg-[#d4af37]/15 blur-2xl pointer-events-none" />
+                    <p className="text-xs font-bold text-[#f3c65f] uppercase tracking-wider">
                         Performance Rating (PR)
                     </p>
                     <div className="mt-3 flex items-baseline gap-3">
-                        <span className="text-4xl font-extrabold font-mono text-white tracking-tight" data-testid="stats-pr-value">
+                        <span className="text-4xl font-extrabold font-mono text-[#fdf8eb] tracking-tight" data-testid="stats-pr-value">
                             {performanceRating}
                         </span>
                         <span
@@ -165,48 +177,48 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                             {prCategory}
                         </span>
                     </div>
-                    <p className="mt-3 text-xs text-slate-400 leading-relaxed">
+                    <p className="mt-3 text-xs text-[#a5b0c4] leading-relaxed">
                         Échelle de référence du Backgammon de compétition. Plus le score est proche de 0, plus votre jeu approche la perfection mathématique.
                     </p>
                 </div>
 
                 {/* Carte Taux d'erreur moyen */}
-                <div className="rounded-2xl border border-slate-700/80 bg-slate-900/90 p-5 shadow-xl">
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <div className="rounded-2xl border border-[#d4af37]/25 bg-[#0e121b]/95 p-5 shadow-xl">
+                    <p className="text-xs font-bold text-[#e2d2b5] uppercase tracking-wider">
                         Taux d'Erreur Moyen (Error Rate)
                     </p>
                     <div className="mt-3 flex items-baseline gap-2">
-                        <span className="text-3xl font-extrabold font-mono text-amber-400" data-testid="stats-error-rate">
+                        <span className="text-3xl font-extrabold font-mono text-[#f3c65f]" data-testid="stats-error-rate">
                             {averageErrorRate.toFixed(3)}
                         </span>
-                        <span className="text-xs text-slate-400">équité / coup</span>
+                        <span className="text-xs text-[#a5b0c4]">équité / coup</span>
                     </div>
-                    <div className="mt-4 flex items-center justify-between text-xs border-t border-slate-800 pt-3">
-                        <span className="text-slate-400">Blunders :</span>
+                    <div className="mt-4 flex items-center justify-between text-xs border-t border-[#d4af37]/15 pt-3">
+                        <span className="text-[#a5b0c4]">Blunders :</span>
                         <strong className="font-mono text-red-400">{totalBlunders}</strong>
                         <span className="text-slate-600">·</span>
-                        <span className="text-slate-400">Doutes :</span>
-                        <strong className="font-mono text-amber-400">{totalDoubtful}</strong>
+                        <span className="text-[#a5b0c4]">Doutes :</span>
+                        <strong className="font-mono text-[#f3c65f]">{totalDoubtful}</strong>
                     </div>
                 </div>
 
                 {/* Carte Bilan des Parties */}
-                <div className="rounded-2xl border border-slate-700/80 bg-slate-900/90 p-5 shadow-xl">
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <div className="rounded-2xl border border-[#d4af37]/25 bg-[#0e121b]/95 p-5 shadow-xl">
+                    <p className="text-xs font-bold text-[#e2d2b5] uppercase tracking-wider">
                         Bilan des Parties
                     </p>
                     <div className="mt-3 flex items-baseline gap-3">
                         <span className="text-3xl font-extrabold font-mono text-emerald-400">
                             {winRate}%
                         </span>
-                        <span className="text-xs text-slate-400">de victoires</span>
+                        <span className="text-xs text-[#a5b0c4]">de victoires</span>
                     </div>
-                    <div className="mt-4 flex items-center justify-between text-xs border-t border-slate-800 pt-3">
-                        <span className="text-slate-400">Jouées :</span>
-                        <strong className="font-mono text-white">{totalGamesPlayed}</strong>
+                    <div className="mt-4 flex items-center justify-between text-xs border-t border-[#d4af37]/15 pt-3">
+                        <span className="text-[#a5b0c4]">Jouées :</span>
+                        <strong className="font-mono text-[#fdf8eb]">{totalGamesPlayed}</strong>
                         <span className="text-slate-600">·</span>
-                        <span className="text-slate-400">Gagnées :</span>
-                        <strong className="font-mono text-white">{totalGamesWon}</strong>
+                        <span className="text-[#a5b0c4]">Gagnées :</span>
+                        <strong className="font-mono text-[#fdf8eb]">{totalGamesWon}</strong>
                     </div>
                 </div>
             </div>
@@ -243,7 +255,10 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                 {/* 1d. ANALYTICS : TAUX D'ERREUR PAR TYPE DE COUP & HEATMAP DES CONCEPTS FAIBLES */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <MoveTypeStatsCard metrics={analyticsSummary.moveTypeMetrics} />
-                    <ConceptsHeatmap cells={analyticsSummary.heatmapCells} />
+                    <ConceptsHeatmap
+                        cells={analyticsSummary.heatmapCells}
+                        tacticalCells={analyticsSummary.tacticalHeatmapCells}
+                    />
                 </div>
 
                 {/* Liste des parties analysées avec détail coup par coup */}
@@ -282,8 +297,8 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                                                 </span>
                                                 <span
                                                     className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${item.winner === item.player
-                                                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-600/50'
-                                                            : 'bg-slate-800 text-slate-300'
+                                                        ? 'bg-emerald-950 text-emerald-300 border border-emerald-600/50'
+                                                        : 'bg-slate-800 text-slate-300'
                                                         }`}
                                                 >
                                                     {item.winner === item.player ? 'Victoire' : 'Défaite'}
@@ -338,15 +353,15 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
             <section className="space-y-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                        <h2 className="text-lg font-bold text-[#fdf8eb] flex items-center gap-2">
                             <span>🎯</span>
                             <span>Concepts Stratégiques à Travailler en Priorité</span>
                         </h2>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-[#a5b0c4]">
                             Les failles tactiques ayant causé le plus de perte d'équité lors de vos dernières parties.
                         </p>
                     </div>
-                    <span className="rounded-full bg-rose-950/80 border border-rose-600 px-3 py-1 text-xs font-bold text-rose-300">
+                    <span className="rounded-full bg-rose-950/80 border border-rose-600/60 px-3 py-1 text-xs font-bold text-rose-300">
                         {weakestConcepts.length} axe(s) critique(s)
                     </span>
                 </div>
@@ -355,35 +370,35 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                     {weakestConcepts.map((concept, idx) => (
                         <div
                             key={concept.id}
-                            className="rounded-2xl border border-rose-500/40 bg-gradient-to-b from-slate-900/95 to-slate-950 p-5 shadow-lg shadow-rose-950/10 flex flex-col justify-between relative overflow-hidden"
+                            className="rounded-2xl border border-[#d4af37]/30 bg-gradient-to-b from-[#150c07]/95 via-[#0e121b] to-[#080a0f] p-5 shadow-xl flex flex-col justify-between relative overflow-hidden"
                         >
                             <div className="absolute top-3 right-3">
-                                <span className="rounded bg-rose-900/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-200 border border-rose-700/60">
+                                <span className="rounded bg-rose-950/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-200 border border-rose-700/60">
                                     Priorité {idx + 1}
                                 </span>
                             </div>
 
                             <div>
-                                <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">
+                                <span className="text-[10px] font-bold text-[#f3c65f] uppercase tracking-wider">
                                     {concept.category}
                                 </span>
-                                <h3 className="mt-1 text-sm font-bold text-white leading-snug">
+                                <h3 className="mt-1 text-sm font-bold text-[#fdf8eb] leading-snug">
                                     {concept.name}
                                 </h3>
-                                <p className="mt-2 text-xs text-slate-300 leading-relaxed">
+                                <p className="mt-2 text-xs text-[#e2d2b5] leading-relaxed">
                                     {concept.description}
                                 </p>
 
                                 {/* Métriques de perte */}
-                                <div className="mt-4 grid grid-cols-2 gap-2 rounded-xl bg-slate-950/70 p-2.5 text-xs border border-slate-800">
+                                <div className="mt-4 grid grid-cols-2 gap-2 rounded-xl bg-[#090b10]/90 p-2.5 text-xs border border-[#d4af37]/20">
                                     <div>
-                                        <p className="text-[10px] text-slate-400">Fautes commises</p>
-                                        <p className="font-mono font-bold text-white mt-0.5">
+                                        <p className="text-[10px] text-[#a5b0c4]">Fautes commises</p>
+                                        <p className="font-mono font-bold text-[#fdf8eb] mt-0.5">
                                             {concept.errorCount} {concept.blunderCount > 0 ? `(${concept.blunderCount} blunders)` : ''}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-slate-400">Équité perdue</p>
+                                        <p className="text-[10px] text-[#a5b0c4]">Équité perdue</p>
                                         <p className="font-mono font-bold text-rose-400 mt-0.5">
                                             -{concept.totalEquityLoss.toFixed(3)}
                                         </p>
@@ -393,14 +408,14 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                                 {/* Jauge de maîtrise */}
                                 <div className="mt-4">
                                     <div className="flex items-center justify-between text-xs mb-1">
-                                        <span className="text-slate-400 font-medium">Niveau de maîtrise</span>
-                                        <span className="font-mono font-bold text-rose-300">
+                                        <span className="text-[#a5b0c4] font-medium">Niveau de maîtrise</span>
+                                        <span className="font-mono font-bold text-[#f3c65f]">
                                             {concept.masteryScore}%
                                         </span>
                                     </div>
-                                    <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                                    <div className="w-full h-2 rounded-full bg-[#090b10] border border-[#d4af37]/20 overflow-hidden">
                                         <div
-                                            className="h-full bg-gradient-to-r from-rose-500 to-amber-500 transition-all duration-500"
+                                            className="h-full bg-gradient-to-r from-rose-500 to-[#d4af37] transition-all duration-500"
                                             style={{ width: `${concept.masteryScore}%` }}
                                         />
                                     </div>
@@ -408,15 +423,15 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                             </div>
 
                             {/* Conseil pédagogique du Coach */}
-                            <div className="mt-5 rounded-xl border border-amber-500/30 bg-amber-950/20 p-3 text-xs text-amber-200 leading-relaxed">
-                                💡 <span className="font-bold text-amber-100">Conseil du Coach :</span> {concept.recommendation}
+                            <div className="mt-5 rounded-xl border border-[#d4af37]/30 bg-[#180c06]/80 p-3 text-xs text-[#e2d2b5] leading-relaxed">
+                                💡 <span className="font-bold text-[#f3c65f]">Conseil du Coach :</span> {concept.recommendation}
                             </div>
 
                             {/* Action de Drill direct pour ce concept */}
                             <div className="mt-3">
                                 <Link
                                     href="/drills"
-                                    className="w-full flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-yellow-500/10 py-2 text-xs font-bold text-amber-300 hover:border-amber-400 hover:bg-amber-500/30 transition shadow-sm"
+                                    className="w-full flex items-center justify-center gap-1.5 rounded-xl border border-[#d4af37]/45 bg-gradient-to-r from-[#2a170c] to-[#150c07] py-2 text-xs font-bold text-[#f3c65f] hover:border-[#f3c65f] hover:text-[#fdf8eb] transition shadow-sm"
                                     data-testid={`drill-concept-btn-${concept.id}`}
                                 >
                                     <span>🎯</span>
@@ -428,14 +443,17 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                 </div>
             </section>
 
+            {/* 2b. ERREURS RÉCURRENTES (agrégation Supabase par concept) */}
+            <RecurringErrorsCard />
+
             {/* 3. MATRICE COMPLÈTE : Tous les Concepts Stratégiques */}
-            <section className="rounded-2xl border border-slate-700/80 bg-slate-900/90 p-5 shadow-xl space-y-4">
-                <div className="border-b border-slate-800 pb-3">
-                    <h2 className="text-base font-bold text-white flex items-center gap-2">
+            <section className="rounded-3xl border border-[#d4af37]/25 bg-[#0e121b]/95 p-5 shadow-xl space-y-4">
+                <div className="border-b border-[#d4af37]/15 pb-3">
+                    <h2 className="text-base font-bold text-[#fdf8eb] flex items-center gap-2">
                         <span>🧩</span>
                         <span>Matrice Globale de Maîtrise des Concepts de Backgammon</span>
                     </h2>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-[#a5b0c4] mt-0.5">
                         Vue d'ensemble de votre solidité tactique sur les 6 piliers fondamentaux.
                     </p>
                 </div>
@@ -444,49 +462,49 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                     {concepts.map((concept) => (
                         <div
                             key={concept.id}
-                            className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-3"
+                            className="rounded-2xl border border-[#d4af37]/20 bg-[#090b10]/90 p-4 space-y-3 hover:border-[#d4af37]/40 transition"
                         >
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-semibold text-slate-400 uppercase">
+                                <span className="text-[10px] font-bold text-[#f3c65f] uppercase tracking-wider">
                                     {concept.category}
                                 </span>
                                 <span
                                     className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${concept.priority === 'high'
-                                            ? 'bg-rose-950 text-rose-300 border border-rose-700/60'
-                                            : concept.priority === 'medium'
-                                                ? 'bg-amber-950 text-amber-300 border border-amber-700/60'
-                                                : 'bg-emerald-950 text-emerald-300 border border-emerald-700/60'
+                                        ? 'bg-rose-950 text-rose-300 border border-rose-700/60'
+                                        : concept.priority === 'medium'
+                                            ? 'bg-amber-950 text-amber-300 border border-amber-700/60'
+                                            : 'bg-emerald-950 text-emerald-300 border border-emerald-700/60'
                                         }`}
                                 >
                                     {concept.priority === 'high' ? 'À travailler' : concept.priority === 'medium' ? 'Perfectible' : 'Maîtrisé'}
                                 </span>
                             </div>
 
-                            <h3 className="text-xs font-bold text-white leading-tight">
+                            <h3 className="text-xs font-bold text-[#fdf8eb] leading-tight">
                                 {concept.name}
                             </h3>
 
                             <div>
                                 <div className="flex items-center justify-between text-xs mb-1">
-                                    <span className="text-[11px] text-slate-400">Maîtrise</span>
-                                    <span className="font-mono text-xs font-semibold text-white">
+                                    <span className="text-[11px] text-[#a5b0c4]">Maîtrise</span>
+                                    <span className="font-mono text-xs font-semibold text-[#fdf8eb]">
                                         {concept.masteryScore}%
                                     </span>
                                 </div>
-                                <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                                <div className="w-full h-1.5 rounded-full bg-[#150c07] overflow-hidden">
                                     <div
                                         className={`h-full ${concept.masteryScore >= 75
-                                                ? 'bg-emerald-500'
-                                                : concept.masteryScore >= 50
-                                                    ? 'bg-amber-500'
-                                                    : 'bg-rose-500'
+                                            ? 'bg-emerald-500'
+                                            : concept.masteryScore >= 50
+                                                ? 'bg-[#d4af37]'
+                                                : 'bg-rose-500'
                                             }`}
                                         style={{ width: `${concept.masteryScore}%` }}
                                     />
                                 </div>
                             </div>
 
-                            <p className="text-[11px] text-slate-400 italic">
+                            <p className="text-[11px] text-[#a5b0c4] italic">
                                 {concept.recommendation}
                             </p>
                         </div>

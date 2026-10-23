@@ -1,27 +1,31 @@
 /**
- * Gestionnaire d'Horloges de Match (Tournament Clocks) pour le Backgammon.
+ * Gestionnaire d'Horloges de Match (Tournament Clocks) pour le Backgammon (Audit 15 / 20).
  *
  * Implémente les règles officielles de cadences WBF / WBIF :
- * 1. Mode Delay (Bronstein / Simple Delay) :
- *    - Chaque joueur dispose d'une réserve de temps principale (Time Bank), ex: 2 min par point.
- *    - Chaque coup bénéficie d'un délai de réflexion gratuit (Turn Delay), ex: 12 secondes.
- *    - La réserve principale ne commence à s'écouler que si le coup dépasse le délai.
- * 2. Mode Fischer (Incrément) :
- *    - Réserve principale + incrément fixe ajouté au début/fin de chaque coup.
- * 3. Mode Per-Turn :
- *    - Temps fixe strict par coup (ex: 45s).
+ * 1. Mode Delay (Bronstein / Simple Delay) : réserve principale + délai gratuit par coup.
+ * 2. Mode Fischer (Incrément) : réserve principale + incrément fixe ajouté en fin de tour.
+ * 3. Mode Per-Turn : temps fixe strict par coup.
  *
- * Détection de chute de drapeau (Flag Fall / Timeout) avec précision à la milliseconde.
+ * Détection de chute de drapeau (Flag Fall / Timeout) et précision 100ms sous 10s.
  */
 
 import type { Player } from '../../engine/backgammonEngine';
 
-export type TimeControlType = 'delay' | 'fischer' | 'per_turn' | 'unlimited';
+export type TimeControlType = 'delay' | 'bronstein' | 'fischer' | 'per_turn' | 'unlimited';
+export type ClockSpeedPreset = 'normal' | 'speed' | 'blitz';
+
+/** Seuil critique (< 10s) déclenchant l'affichage au dixième (100ms), le flash rouge et le tic-tac. */
+export const CLOCK_CRITICAL_THRESHOLD_MS = 10_000;
+/** Intervalle de rafraîchissement haute précision sous 10 secondes (100ms). */
+export const CLOCK_CRITICAL_TICK_INTERVAL_MS = 100;
+/** Intervalle de rafraîchissement standard hors zone critique (250ms). */
+export const CLOCK_NORMAL_TICK_INTERVAL_MS = 250;
 
 export interface ClockConfig {
     type: TimeControlType;
     bankMs: number;
     delaySeconds: number;
+    speed?: ClockSpeedPreset;
 }
 
 export interface MatchClockState {
@@ -30,7 +34,7 @@ export interface MatchClockState {
     bankOMs: number;
     delayRemainingMs: number;
     activePlayer: Player;
-    turnStartedAt: number; // timestamp ms
+    turnStartedAt: number;
     isFlagFallen: boolean;
     flagFallenPlayer: Player | null;
     isPaused: boolean;
@@ -46,42 +50,43 @@ export interface ClockTickResult {
 }
 
 /**
- * Configure la pendule selon la longueur du match.
- * WBF Standard : 2 minutes par point de match + 12 secondes de délai par coup.
+ * Configure la pendule selon la longueur du match et la cadence choisie (WBF / Backgammon Galaxy).
  */
-export function getRecommendedClockConfig(matchLength: number, type: TimeControlType = 'delay'): ClockConfig {
+export function getRecommendedClockConfig(
+    matchLength: number,
+    type: TimeControlType = 'delay',
+    speed: ClockSpeedPreset = 'normal',
+): ClockConfig {
     if (type === 'unlimited') {
-        return { type: 'unlimited', bankMs: 999999999, delaySeconds: 0 };
+        return { type: 'unlimited', bankMs: 999999999, delaySeconds: 0, speed };
     }
     if (type === 'per_turn') {
-        return { type: 'per_turn', bankMs: 45000, delaySeconds: 0 };
+        const perTurnMs = speed === 'blitz' ? 20000 : speed === 'speed' ? 30000 : 45000;
+        return { type: 'per_turn', bankMs: perTurnMs, delaySeconds: 0, speed };
     }
 
-    // 2 minutes (120 000 ms) par point de match (ex: 7 pts = 14 min = 840 000 ms)
     const points = Math.max(1, matchLength);
-    const bankMs = points * 120 * 1000;
-    const delaySeconds = 12;
+    const bankPerPointSec = speed === 'blitz' ? 30 : speed === 'speed' ? 60 : 120;
+    const delaySeconds = speed === 'blitz' ? 5 : speed === 'speed' ? 8 : 12;
+    const bankMs = points * bankPerPointSec * 1000;
 
-    return {
-        type,
-        bankMs,
-        delaySeconds,
-    };
+    return { type, bankMs, delaySeconds, speed };
 }
 
-/**
- * Initialise l'état de la pendule au démarrage d'une partie.
- */
+/** Initialise l'état de la pendule au démarrage d'une partie. */
 export function createMatchClock(
     config: ClockConfig,
     activePlayer: Player = 'X',
     nowMs: number = Date.now(),
 ): MatchClockState {
+    const initialDelayMs =
+        config.type === 'delay' || config.type === 'bronstein' ? config.delaySeconds * 1000 : 0;
+
     return {
         timeControlType: config.type,
         bankXMs: config.bankMs,
         bankOMs: config.bankMs,
-        delayRemainingMs: config.delaySeconds * 1000,
+        delayRemainingMs: initialDelayMs,
         activePlayer,
         turnStartedAt: nowMs,
         isFlagFallen: false,
@@ -90,9 +95,7 @@ export function createMatchClock(
     };
 }
 
-/**
- * Calcule l'état dynamique de la pendule à un instant t.
- */
+/** Calcule l'état dynamique de la pendule à un instant t sans saut de transition. */
 export function computeClockTick(state: MatchClockState, nowMs: number = Date.now()): ClockTickResult {
     if (state.isFlagFallen) {
         return {
@@ -120,10 +123,9 @@ export function computeClockTick(state: MatchClockState, nowMs: number = Date.no
     const elapsedMs = Math.max(0, nowMs - state.turnStartedAt);
 
     if (state.timeControlType === 'per_turn') {
-        const timeLimitMs = state.bankXMs; // bankMs = temps par coup (ex: 45000 ms)
+        const timeLimitMs = state.bankXMs;
         const remaining = Math.max(0, timeLimitMs - elapsedMs);
         const isFallen = remaining === 0;
-
         return {
             bankXMs: state.activePlayer === 'X' ? remaining : timeLimitMs,
             bankOMs: state.activePlayer === 'O' ? remaining : timeLimitMs,
@@ -134,16 +136,27 @@ export function computeClockTick(state: MatchClockState, nowMs: number = Date.no
         };
     }
 
-    // Mode Delay (Bronstein / WBF)
+    if (state.timeControlType === 'fischer') {
+        const currentBankX = state.activePlayer === 'X' ? Math.max(0, state.bankXMs - elapsedMs) : state.bankXMs;
+        const currentBankO = state.activePlayer === 'O' ? Math.max(0, state.bankOMs - elapsedMs) : state.bankOMs;
+        const activeBank = state.activePlayer === 'X' ? currentBankX : currentBankO;
+        const isFallen = activeBank <= 0;
+        return {
+            bankXMs: currentBankX,
+            bankOMs: currentBankO,
+            delayRemainingMs: 0,
+            activePlayerTimeRemainingMs: activeBank,
+            isFlagFallen: isFallen,
+            flagFallenPlayer: isFallen ? state.activePlayer : null,
+        };
+    }
+
     const delayTotalMs = state.delayRemainingMs;
     const consumedDelay = Math.min(elapsedMs, delayTotalMs);
     const delayRemaining = Math.max(0, delayTotalMs - consumedDelay);
-
-    // Temps puisé dans la réserve principale
     const bankDeduction = Math.max(0, elapsedMs - delayTotalMs);
     const currentBankX = state.activePlayer === 'X' ? Math.max(0, state.bankXMs - bankDeduction) : state.bankXMs;
     const currentBankO = state.activePlayer === 'O' ? Math.max(0, state.bankOMs - bankDeduction) : state.bankOMs;
-
     const activeBank = state.activePlayer === 'X' ? currentBankX : currentBankO;
     const isFallen = activeBank <= 0;
 
@@ -157,9 +170,7 @@ export function computeClockTick(state: MatchClockState, nowMs: number = Date.no
     };
 }
 
-/**
- * Change de tour (passe la pendule au joueur suivant et applique les déductions).
- */
+/** Change de tour et applique les déductions / incréments Fischer sans saut. */
 export function switchClockTurn(
     state: MatchClockState,
     nextPlayer: Player,
@@ -168,7 +179,6 @@ export function switchClockTurn(
 ): MatchClockState {
     if (state.isFlagFallen) return state;
 
-    // Calculer le reliquat exact avant le switch
     const tick = computeClockTick(state, nowMs);
     if (tick.isFlagFallen) {
         return {
@@ -180,7 +190,6 @@ export function switchClockTurn(
         };
     }
 
-    // Fischer : ajouter incrément au joueur qui vient de terminer son tour
     let newBankX = tick.bankXMs;
     let newBankO = tick.bankOMs;
     if (state.timeControlType === 'fischer') {
@@ -189,11 +198,16 @@ export function switchClockTurn(
         else newBankO += incrementMs;
     }
 
+    const nextDelayMs =
+        state.timeControlType === 'delay' || state.timeControlType === 'bronstein'
+            ? config.delaySeconds * 1000
+            : 0;
+
     return {
         ...state,
         bankXMs: newBankX,
         bankOMs: newBankO,
-        delayRemainingMs: config.delaySeconds * 1000,
+        delayRemainingMs: nextDelayMs,
         activePlayer: nextPlayer,
         turnStartedAt: nowMs,
         isFlagFallen: false,
@@ -201,13 +215,10 @@ export function switchClockTurn(
     };
 }
 
-/**
- * Met en pause la pendule (ex: lors d'une déconnexion d'un joueur).
- */
+/** Met en pause la pendule. */
 export function pauseClock(state: MatchClockState, nowMs: number = Date.now()): MatchClockState {
     if (state.isPaused || state.isFlagFallen) return state;
     const tick = computeClockTick(state, nowMs);
-
     return {
         ...state,
         bankXMs: tick.bankXMs,
@@ -219,21 +230,13 @@ export function pauseClock(state: MatchClockState, nowMs: number = Date.now()): 
     };
 }
 
-/**
- * Reprend la pendule après une pause.
- */
+/** Reprend la pendule après une pause. */
 export function resumeClock(state: MatchClockState, nowMs: number = Date.now()): MatchClockState {
     if (!state.isPaused || state.isFlagFallen) return state;
-    return {
-        ...state,
-        isPaused: false,
-        turnStartedAt: nowMs,
-    };
+    return { ...state, isPaused: false, turnStartedAt: nowMs };
 }
 
-/**
- * Synchronise l'état de la pendule reçu du serveur ou de l'adversaire.
- */
+/** Synchronise l'état de la pendule reçu du serveur ou de l'adversaire. */
 export function syncClockState(
     state: MatchClockState,
     sync: {
@@ -260,16 +263,15 @@ export function syncClockState(
     };
 }
 
-/**
- * Formate un temps en millisecondes en affichage numérique Backgammon (ex: "04:32" ou "08.4s").
- */
+/** Formate un temps en millisecondes en affichage numérique ("04:32" ou "8.4s" sous 10s). */
 export function formatClockTime(ms: number, showTenthsWhenCritical = true): string {
-    const totalSeconds = Math.max(0, ms / 1000);
+    const safeMs = Math.max(0, ms);
+    const totalSeconds = safeMs / 1000;
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = Math.floor(totalSeconds % 60);
 
-    if (totalSeconds < 10 && showTenthsWhenCritical) {
-        const tenths = Math.floor((ms % 1000) / 100);
+    if (safeMs < CLOCK_CRITICAL_THRESHOLD_MS && showTenthsWhenCritical) {
+        const tenths = Math.floor((safeMs % 1000) / 100);
         return `${seconds}.${tenths}s`;
     }
 

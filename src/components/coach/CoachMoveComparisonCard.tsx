@@ -1,20 +1,31 @@
 'use client';
 
 /**
- * Carte comparative visuelle des coups du Coach (Coup joué vs Meilleur coup).
+ * Carte Verdict & Comparaison des coups — style eXtreme Gammon / Snowie.
  *
- * Résout le problème de clarté pour les joueurs :
- * - Explique clairement ce que signifie "Douteux" ou "Blunder" sans jargon ni chiffres cryptiques.
- * - Met en vis-à-vis direct le coup joué par le joueur et le coup recommandé par le moteur IA.
- * - Indique clairement le défaut du coup joué et le bénéfice du coup optimal.
+ * Rôle :
+ *   - Bandeau de verdict immédiat à 4 niveaux :
+ *       ✅ COUP OPTIMAL / 👍 BON COUP / ⚠️ IMPRÉCISION (-0.045) / ❌ BLUNDER MAJEUR (-0.142)
+ *   - Deux boîtes côte à côte : « Votre coup joué » (rouge si erreur) et
+ *     « Meilleur coup Open Sage » (émeraude), en notation ABSOLUE complète
+ *     (1..24) issue de `coachMoveNotation.ts`, sans aucune troncature.
+ *   - Bouton d'entraînement immédiat « ⏪ Rejouer ce tour sur le plateau ».
  *
- * Conforme SCALABILITY.md (< 300 lignes, composant isolé et mémoïsé).
+ * Composant 100 % muet (LOI 5) : le verdict est dérivé de `equityLoss` via les
+ * seuils officiels du cahier des charges (0.010 / 0.020 / 0.080).
+ *
+ * Dépendances :
+ *   Aucune (présentation pure).
+ *
+ * Retrait :
+ *   Supprimer ce fichier et son usage dans `CoachPanel.tsx`.
  */
 
 import React from 'react';
+import type { CoachDisplayVerdict } from './coachPanelHelpers';
 
 export interface CoachMoveComparisonCardProps {
-    verdict: 'doubtful' | 'blunder' | null;
+    verdict: CoachDisplayVerdict | null;
     equityLoss: number | null;
     playedMove: string | null;
     optimalMove: string | null;
@@ -24,6 +35,77 @@ export interface CoachMoveComparisonCardProps {
     onReplayMove?: () => void;
     onClose?: () => void;
     locale?: string;
+}
+
+/** Palier de décision dérivé de la perte d'équité. */
+export type DecisionTier = 'optimal' | 'good' | 'inaccuracy' | 'blunder';
+
+/** Seuils officiels (exigence 3.3 du cahier des charges). */
+export const DECISION_THRESHOLDS = {
+    OPTIMAL: 0.01,
+    GOOD: 0.02,
+    BLUNDER: 0.08,
+} as const;
+
+/**
+ * Classe une perte d'équité dans l'un des 4 paliers.
+ * `≤ 0.010` optimal · `≤ 0.020` bon · `≤ 0.080` imprécision · `> 0.080` blunder.
+ */
+export function classifyDecisionTier(equityLoss: number | null): DecisionTier {
+    const loss = Math.abs(equityLoss ?? 0);
+    if (loss <= DECISION_THRESHOLDS.OPTIMAL) return 'optimal';
+    if (loss <= DECISION_THRESHOLDS.GOOD) return 'good';
+    if (loss <= DECISION_THRESHOLDS.BLUNDER) return 'inaccuracy';
+    return 'blunder';
+}
+
+interface TierStyle {
+    icon: string;
+    label: string;
+    /** Classes du bandeau de verdict. */
+    bannerClass: string;
+    /** Classes du texte du bandeau. */
+    textClass: string;
+    /** Classes de l'encadré du coup joué. */
+    playedClass: string;
+}
+
+/** Style visuel de chaque palier. */
+export function getTierStyle(tier: DecisionTier, isEn: boolean): TierStyle {
+    switch (tier) {
+        case 'optimal':
+            return {
+                icon: '✅',
+                label: isEn ? 'OPTIMAL MOVE' : 'COUP OPTIMAL',
+                bannerClass: 'border-emerald-500/60 bg-emerald-950/50',
+                textClass: 'text-emerald-300',
+                playedClass: 'border-emerald-800/60 bg-emerald-950/25',
+            };
+        case 'good':
+            return {
+                icon: '👍',
+                label: isEn ? 'GOOD MOVE' : 'BON COUP',
+                bannerClass: 'border-cyan-500/60 bg-cyan-950/50',
+                textClass: 'text-cyan-300',
+                playedClass: 'border-cyan-800/60 bg-cyan-950/25',
+            };
+        case 'inaccuracy':
+            return {
+                icon: '⚠️',
+                label: isEn ? 'INACCURACY' : 'IMPRÉCISION',
+                bannerClass: 'border-amber-500/60 bg-amber-950/50',
+                textClass: 'text-amber-300',
+                playedClass: 'border-amber-800/60 bg-amber-950/25',
+            };
+        default:
+            return {
+                icon: '❌',
+                label: isEn ? 'MAJOR BLUNDER' : 'BLUNDER MAJEUR',
+                bannerClass: 'border-rose-500/60 bg-rose-950/50',
+                textClass: 'text-rose-300',
+                playedClass: 'border-rose-800/60 bg-rose-950/25',
+            };
+    }
 }
 
 export function CoachMoveComparisonCard({
@@ -40,51 +122,50 @@ export function CoachMoveComparisonCard({
 }: CoachMoveComparisonCardProps) {
     if (!verdict) return null;
 
-    const isBlunder = verdict === 'blunder';
     const isEn = locale === 'en';
-
-    // Intitulé explicite et compréhensible pour les joueurs
-    const verdictTitle = isBlunder
-        ? (isEn ? 'Major Blunder (Tactical Error)' : 'Gaffe Majeure (Blunder)')
-        : (isEn ? 'Imprecise Move (Doubtful)' : 'Coup Imprécis (Douteux)');
-
-    // Explication vulgarisée du diagnostic (pourquoi ce n'est pas optimal)
-    const verdictExplanation = isBlunder
-        ? (isEn
-            ? 'This move significantly swings the advantage towards your opponent.'
-            : 'Ce coup affaiblit lourdement votre position et donne une opportunité décisive à votre adversaire.')
-        : (isEn
-            ? 'Not an outright disaster, but it unnecessarily weakens your position when a much safer option existed.'
-            : 'Ce coup n’est pas catastrophique, mais il fragilise votre jeu alors qu’une meilleure option existait.');
-
+    const tier = classifyDecisionTier(equityLoss);
+    const style = getTierStyle(tier, isEn);
+    const isError = tier === 'inaccuracy' || tier === 'blunder';
     const formattedLoss = equityLoss !== null ? Math.abs(equityLoss).toFixed(3) : null;
+
+    // Le bandeau n'affiche la perte que pour les paliers non optimaux.
+    const bannerLabel =
+        tier === 'optimal' || tier === 'good' || !formattedLoss
+            ? style.label
+            : `${style.label} (-${formattedLoss})`;
 
     return (
         <div
-            className={`rounded-2xl border p-3.5 sm:p-4 space-y-3 shadow-lg transition-all ${
-                isBlunder
-                    ? 'border-red-500/50 bg-gradient-to-b from-red-950/40 to-slate-900/90 shadow-red-950/20'
-                    : 'border-amber-500/50 bg-gradient-to-b from-amber-950/30 to-slate-900/90 shadow-amber-950/20'
-            }`}
+            className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-3 space-y-2.5 shadow-lg"
             data-testid="coach-move-comparison-card"
         >
-            {/* 0. Attribution explicite du joueur analysé */}
-            <div className="flex items-center justify-between text-xs font-semibold px-2.5 py-1 rounded-lg bg-sky-950/60 border border-sky-800/60 text-sky-200">
-                <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-3 rounded-full bg-slate-100 ring-1 ring-slate-400 shrink-0" />
-                    <span>{isEn ? 'Analysis of your previous move — White (X)' : 'Analyse de votre coup précédent — Joueur Blanc (X)'}</span>
-                </span>
-                <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-sky-300/80 font-mono">
-                        {playedMove ? `Coup : ${playedMove}` : ''}
+            {/* 1. Bandeau de verdict immédiat */}
+            <div
+                data-testid="coach-verdict-banner"
+                data-tier={tier}
+                className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 ${style.bannerClass}`}
+            >
+                <div className="flex items-center gap-2 min-w-0">
+                    <span aria-hidden="true" className="text-base shrink-0">
+                        {style.icon}
+                    </span>
+                    <span
+                        className={`truncate text-xs sm:text-sm font-black uppercase tracking-wide ${style.textClass}`}
+                    >
+                        {bannerLabel}
+                    </span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[10px] font-semibold text-slate-400">
+                        {isEn ? 'White (X)' : 'Blanc (X)'}
                     </span>
                     {onClose && (
                         <button
                             type="button"
                             onClick={onClose}
-                            className="text-sky-300 hover:text-white px-1 text-xs transition"
+                            className="rounded px-1 text-xs text-slate-400 transition hover:text-white"
                             title={isEn ? 'Dismiss analysis' : 'Masquer cette analyse'}
-                            aria-label="Fermer l'analyse"
+                            aria-label={isEn ? 'Dismiss analysis' : "Fermer l'analyse"}
                         >
                             ✕
                         </button>
@@ -92,105 +173,72 @@ export function CoachMoveComparisonCard({
                 </div>
             </div>
 
-            {/* 1. En-tête de diagnostic : Titre clair + explication accessible */}
-            <div className="flex flex-col gap-1 border-b border-slate-800/80 pb-3">
-                <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                        <span className="text-lg" aria-hidden="true">
-                            {isBlunder ? '🚨' : '⚠️'}
+            {/* 2. Comparaison côte à côte */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {/* Votre coup joué */}
+                {playedMove && (
+                    <div
+                        className={`rounded-xl border p-2.5 space-y-1 ${style.playedClass}`}
+                        data-testid="coach-played-move-card"
+                    >
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">
+                            <span aria-hidden="true">{isError ? '❌' : '🎯'}</span>
+                            <span>{isEn ? 'Your move' : 'Votre coup joué'}</span>
                         </span>
-                        <h3
-                            className={`font-black uppercase tracking-wide text-sm sm:text-base ${
-                                isBlunder ? 'text-red-400' : 'text-amber-400'
-                            }`}
-                        >
-                            {verdictTitle}
-                        </h3>
-                    </div>
-
-                    {formattedLoss && (
                         <div
-                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-mono font-bold ${
-                                isBlunder
-                                    ? 'bg-red-950/80 text-red-300 border border-red-700/60'
-                                    : 'bg-amber-950/80 text-amber-300 border border-amber-700/60'
-                            }`}
-                            title={isEn ? `Equity lost: -${formattedLoss}` : `Perte d'avantage : -${formattedLoss}`}
+                            className="break-words font-mono text-sm sm:text-base font-black leading-snug text-white"
+                            title={playedMove}
                         >
-                            <span>ΔEq:</span>
-                            <span>-{formattedLoss}</span>
+                            {playedMove}
                         </div>
-                    )}
-                </div>
+                        {whyFailed && (
+                            <p className="border-t border-slate-700/50 pt-1 text-[10px] leading-snug text-slate-300">
+                                {whyFailed}
+                            </p>
+                        )}
+                    </div>
+                )}
 
-                <p className="text-xs text-slate-300/90 leading-relaxed pt-0.5">
-                    {summary || verdictExplanation}
-                </p>
+                {/* Meilleur coup Open Sage */}
+                {optimalMove && (
+                    <div
+                        className="rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-2.5 space-y-1 ring-1 ring-inset ring-emerald-500/20"
+                        data-testid="coach-optimal-move-card"
+                    >
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                            <span aria-hidden="true">⭐</span>
+                            <span>{isEn ? 'Best move (Open Sage)' : 'Meilleur coup Open Sage'}</span>
+                        </span>
+                        <div
+                            className="break-words font-mono text-sm sm:text-base font-black leading-snug text-emerald-100"
+                            title={optimalMove}
+                        >
+                            {optimalMove}
+                        </div>
+                        {whyOptimal && (
+                            <p className="border-t border-emerald-900/40 pt-1 text-[10px] leading-snug text-emerald-200/90">
+                                {whyOptimal}
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
 
-            {/* 2. Visualisation comparative côte-à-côte des deux coups */}
-            {(playedMove || optimalMove) && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-0.5">
-                    {/* Cartouche Coup Joué */}
-                    {playedMove && (
-                        <div
-                            className="rounded-xl border border-red-900/50 bg-red-950/25 p-3 flex flex-col justify-between gap-2"
-                            data-testid="coach-played-move-card"
-                        >
-                            <div className="space-y-1">
-                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-red-400 uppercase tracking-wider">
-                                    <span>❌</span>
-                                    <span>{isEn ? 'Your Move' : 'Votre coup joué'}</span>
-                                </span>
-                                <div className="font-mono text-base sm:text-lg font-black text-red-100 bg-red-950/50 px-2 py-1 rounded-lg border border-red-900/40 text-center tracking-wider">
-                                    {playedMove}
-                                </div>
-                            </div>
-
-                            {whyFailed && (
-                                <p className="text-[11px] text-red-200/90 leading-snug pt-1 border-t border-red-900/30">
-                                    {whyFailed}
-                                </p>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Cartouche Meilleur Coup Recommandé */}
-                    {optimalMove && (
-                        <div
-                            className="rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-3 flex flex-col justify-between gap-2 ring-1 ring-emerald-500/20"
-                            data-testid="coach-optimal-move-card"
-                        >
-                            <div className="space-y-1">
-                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
-                                    <span>⭐</span>
-                                    <span>{isEn ? 'Best Move (AI)' : 'Meilleur coup recommandé'}</span>
-                                </span>
-                                <div className="font-mono text-base sm:text-lg font-black text-emerald-100 bg-emerald-950/60 px-2 py-1 rounded-lg border border-emerald-700/50 text-center tracking-wider shadow-sm">
-                                    {optimalMove}
-                                </div>
-                            </div>
-
-                            {whyOptimal && (
-                                <p className="text-[11px] text-emerald-200/90 leading-snug pt-1 border-t border-emerald-900/30">
-                                    {whyOptimal}
-                                </p>
-                            )}
-                        </div>
-                    )}
-                </div>
+            {/* 3. Résumé d'accroche */}
+            {summary && (
+                <p className="px-1 text-[11px] leading-relaxed text-slate-300">{summary}</p>
             )}
 
-            {/* 3. Bouton Reprendre le coup si disponible */}
+            {/* 4. Bouton d'entraînement immédiat */}
             {onReplayMove && (
                 <button
                     type="button"
                     onClick={onReplayMove}
                     data-testid="coach-replay-move-btn"
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-blue-900/30 transition active:scale-98"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-blue-900/30 transition hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98]"
                 >
-                    <span>⏪</span>
-                    <span>{isEn ? 'Replay with optimal move' : 'Rejouer le bon coup'}</span>
+                    <span aria-hidden="true">⏪</span>
+                    <span>{isEn ? 'Replay this turn on the board' : 'Rejouer ce tour sur le plateau'}</span>
                 </button>
             )}
         </div>

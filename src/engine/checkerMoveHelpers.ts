@@ -117,24 +117,135 @@ export function evaluateSumOfDiceMove(
     }
 
     const isX = turn === 'X';
+    const effectiveStart = point === X_BAR ? 25 : point === O_BAR ? 0 : point;
     const sum = dice[0] + dice[1];
-    const sumDest = isX ? point - sum : point + sum;
-    const midDest = isX ? point - dice[0] : point + dice[0];
+    const sumDest = isX ? effectiveStart - sum : effectiveStart + sum;
 
-    const allDests = Array.from(new Set([...leftDests, ...rightDests]));
-    const sumIsLegal = allDests.includes(sumDest) || leftDests.includes(sumDest) || rightDests.includes(sumDest);
+    const sumVal = board[sumDest] ?? 0;
+    const sumIsFree =
+        sumDest >= 1 &&
+        sumDest <= 24 &&
+        (isX ? sumVal >= -1 : sumVal <= 1);
 
-    const midVal = board[midDest] ?? 0;
-    const midIsFree =
-        midDest >= 1 &&
-        midDest <= 24 &&
-        (isX ? midVal >= -1 : midVal <= 1);
+    if (!sumIsFree) {
+        return { isPossible: false };
+    }
 
-    if (sumIsLegal && midIsFree) {
-        return { isPossible: true, midDest, sumDest };
+    const mid1 = isX ? effectiveStart - dice[0] : effectiveStart + dice[0];
+    const mid2 = isX ? effectiveStart - dice[1] : effectiveStart + dice[1];
+
+    const isMidFree = (m: number) => {
+        if (m < 1 || m > 24) return false;
+        const val = board[m] ?? 0;
+        return isX ? val >= -1 : val <= 1;
+    };
+
+    const mid1Valid = leftDests.includes(mid1) && isMidFree(mid1);
+    const mid2Valid = rightDests.includes(mid2) && isMidFree(mid2);
+
+    if (mid1Valid && mid2Valid) {
+        // Priorise le passage intermédiaire qui frappe un blot adverse s'il existe
+        const mid1Hits = isX ? (board[mid1] ?? 0) === -1 : (board[mid1] ?? 0) === 1;
+        const mid2Hits = isX ? (board[mid2] ?? 0) === -1 : (board[mid2] ?? 0) === 1;
+        const chosenMid = mid2Hits && !mid1Hits ? mid2 : mid1;
+        return { isPossible: true, midDest: chosenMid, sumDest };
+    }
+
+    if (mid1Valid) {
+        return { isPossible: true, midDest: mid1, sumDest };
+    }
+
+    if (mid2Valid) {
+        return { isPossible: true, midDest: mid2, sumDest };
     }
 
     return { isPossible: false };
+}
+
+/**
+ * Trouve un coup direct vers une destination cliquée `dest` :
+ * 1. Priorité absolue à la rentrée depuis la barre si le joueur a un pion sur la barre.
+ * 2. Sinon, si un seul pion peut atteindre `dest` avec le dé actif (ou un seul pion tous dés confondus),
+ *    retourne ce coup `(from, dest, die)`.
+ */
+export function findDirectMoveToDestination(
+    dest: number,
+    turn: Player,
+    leftDieTargets: Map<number, number[]>,
+    rightDieTargets: Map<number, number[]>,
+    preferredDie: 0 | 1 = 0,
+): { from: number; to: number; die: 0 | 1 } | null {
+    const barPoint = turn === 'X' ? X_BAR : O_BAR;
+    const primaryTargets = preferredDie === 0 ? leftDieTargets : rightDieTargets;
+    const secondaryTargets = preferredDie === 0 ? rightDieTargets : leftDieTargets;
+    const secondaryDie: 0 | 1 = (1 - preferredDie) as 0 | 1;
+
+    // 1. Si un pion est sur la barre et peut entrer sur `dest`
+    if ((primaryTargets.get(barPoint) ?? []).includes(dest)) {
+        return { from: barPoint, to: dest, die: preferredDie };
+    }
+    if ((secondaryTargets.get(barPoint) ?? []).includes(dest)) {
+        return { from: barPoint, to: dest, die: secondaryDie };
+    }
+
+    // 2. Cherche les sources pouvant atteindre `dest` avec le dé actif
+    const primarySources = Array.from(primaryTargets.entries())
+        .filter(([, dests]) => dests.includes(dest))
+        .map(([from]) => from);
+    if (primarySources.length === 1) {
+        return { from: primarySources[0], to: dest, die: preferredDie };
+    }
+
+    // 3. Repli sur le second dé si une seule source peut atteindre `dest`
+    const secondarySources = Array.from(secondaryTargets.entries())
+        .filter(([, dests]) => dests.includes(dest))
+        .map(([from]) => from);
+    if (primarySources.length === 0 && secondarySources.length === 1) {
+        return { from: secondarySources[0], to: dest, die: secondaryDie };
+    }
+
+    return null;
+}
+
+/**
+ * Détecte si un clic sur une flèche d'arrivée (vide ou blot) peut faire une porte
+ * (2 pions sur la même flèche) en déplaçant deux pions avec les deux dés.
+ *
+ * Retourne les deux coups à jouer (from1→dest, from2→dest) ou null si impossible.
+ */
+export function findPortMove(
+    dest: number,
+    dice: [number, number] | null,
+    board: number[],
+    turn: Player,
+    leftDieTargets: Map<number, number[]>,
+    rightDieTargets: Map<number, number[]>,
+): { from1: number; from2: number; die1: 0 | 1; die2: 0 | 1 } | null {
+    if (!dice || dice[0] === dice[1]) return null;
+
+    const isX = turn === 'X';
+    // La flèche d'arrivée doit être vide ou un blot (≤ 1 pion adverse).
+    const destVal = board[dest] ?? 0;
+    const destIsFree = isX ? destVal >= -1 : destVal <= 1;
+    if (!destIsFree) return null;
+
+    // Cherche un pion qui peut atteindre `dest` avec le dé 1.
+    const from1Candidates = Array.from(leftDieTargets.entries())
+        .filter(([, dests]) => dests.includes(dest))
+        .map(([from]) => from);
+
+    // Cherche un pion qui peut atteindre `dest` avec le dé 2.
+    const from2Candidates = Array.from(rightDieTargets.entries())
+        .filter(([, dests]) => dests.includes(dest))
+        .map(([from]) => from);
+
+    // Il faut deux pions distincts (ou le même pion si les deux dés peuvent l'atteindre).
+    if (from1Candidates.length === 0 || from2Candidates.length === 0) return null;
+
+    const from1 = from1Candidates[0];
+    const from2 = from2Candidates.find((f) => f !== from1) ?? from2Candidates[0];
+
+    return { from1, from2, die1: 0, die2: 1 };
 }
 
 /**
@@ -148,21 +259,6 @@ export function findClickDestination(
     turn: Player,
     preferRight = false,
 ): { dest: number; die: 0 | 1 } | null {
-    const allDests = Array.from(new Set([...leftDests, ...rightDests]));
-    if (allDests.length === 0) return null;
-
-    if (allDests.length === 1) {
-        const dest = allDests[0];
-        return { dest, die: leftDests.includes(dest) ? 0 : 1 };
-    }
-
-    if (leftDests.length === 1 && rightDests.length === 0) {
-        return { dest: leftDests[0], die: 0 };
-    }
-    if (rightDests.length === 1 && leftDests.length === 0) {
-        return { dest: rightDests[0], die: 1 };
-    }
-
     if (preferRight) {
         if (rightDests.length > 0) {
             return { dest: getSafestDestination(point, rightDests, board, turn), die: 1 };

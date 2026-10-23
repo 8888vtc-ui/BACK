@@ -16,7 +16,7 @@ describe('Export / Import Feature', () => {
     describe('XGID', () => {
         it('sérialise et parse un état initial avec exactitude', () => {
             const xgid = serializeToXGID(initialState);
-            expect(xgid).toBe('XGID=B----e-c---Ee---C-E----b--:0:0:1:00:0:0:0:0:7');
+            expect(xgid).toBe('XGID=B----e-c---Ee---C-E----b--:1:0:0:0:0:1:0:0:0:7');
             expect(isValidXGID(xgid)).toBe(true);
 
             const parsed = parseFromXGID(xgid);
@@ -31,6 +31,48 @@ describe('Export / Import Feature', () => {
         it('valide et rejette les chaînes XGID incorrectes', () => {
             expect(isValidXGID('XGID=invalid')).toBe(false);
             expect(isValidXGID('')).toBe(false);
+        });
+
+        it('préserve sans perte crawford, doubled et la présence simultanée sur la barre (X_BAR et O_BAR)', () => {
+            const complexState = createInitialState(7);
+            complexState.board[0] = 2; // 2 pions X sur la barre
+            complexState.board[6] = 3;
+            complexState.board[25] = -1; // 1 pion O sur la barre
+            complexState.board[1] = -1;
+            complexState.crawford = true;
+            complexState.doubled = true;
+            complexState.cubeValue = 4;
+            complexState.cubeOwner = 'O';
+            complexState.scoreX = 6;
+            complexState.scoreO = 4;
+            complexState.dice = [6, 5];
+
+            const xgid = serializeToXGID(complexState);
+            const restored = parseFromXGID(xgid);
+
+            expect(restored.board[0]).toBe(2);
+            expect(restored.board[25]).toBe(-1);
+            expect(restored.crawford).toBe(true);
+            expect(restored.doubled).toBe(true);
+            expect(restored.cubeValue).toBe(4);
+            expect(restored.cubeOwner).toBe('O');
+            expect(restored.scoreX).toBe(6);
+            expect(restored.scoreO).toBe(4);
+            expect(restored.dice).toEqual([6, 5]);
+        });
+
+        it('parse également le format canonique eXtreme Gammon à 10 champs', () => {
+            const canonicalXGID = 'XGID=-b----E-C---eE---c-e----B-:1:1:-1:42:3:2:1:7:8';
+            expect(isValidXGID(canonicalXGID)).toBe(true);
+            const parsed = parseFromXGID(canonicalXGID);
+            expect(parsed.cubeValue).toBe(2);
+            expect(parsed.cubeOwner).toBe('X');
+            expect(parsed.turn).toBe('O');
+            expect(parsed.dice).toEqual([4, 2]);
+            expect(parsed.scoreX).toBe(3);
+            expect(parsed.scoreO).toBe(2);
+            expect(parsed.crawford).toBe(true);
+            expect(parsed.matchLength).toBe(7);
         });
     });
 
@@ -77,11 +119,15 @@ describe('Export / Import Feature', () => {
             expect(sgf).toContain(';B[31]8/5 6/5');
             expect(sgf).toContain(';W[65]1/12');
 
-            // Vérification du parsing
+            // Vérification du parsing sans perte
             const parsed = parseSGF(sgf);
             expect(parsed.playerX).toBe('Alice');
             expect(parsed.playerO).toBe('Bob');
             expect(parsed.matchLength).toBe(7);
+            expect(parsed.scoreX).toBe(3);
+            expect(parsed.scoreO).toBe(2);
+            expect(parsed.winner).toBe('X');
+            expect(parsed.pointsWon).toBe(2);
             expect(parsed.moves).toHaveLength(2);
             expect(parsed.moves[0].player).toBe('X');
             expect(parsed.moves[0].dice).toEqual([3, 1]);

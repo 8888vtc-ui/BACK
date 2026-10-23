@@ -1,8 +1,9 @@
 /**
  * Service de base de données SQLite native unifié pour Backgammon.
  *
- * Utilise @capacitor-community/sqlite sur iOS et Android, avec repli
- * transparent sur IndexedDB ou mémoire lorsque le plugin natif n'est pas actif.
+ * Architecture hybride :
+ * - Mobile natif (iOS / Android) : requêtes directes via @capacitor-community/sqlite.
+ * - Navigateur Web / PWA : bascule transparente et instantanée sans latence ni exception bloquante.
  */
 
 import { Capacitor } from '@capacitor/core';
@@ -12,7 +13,7 @@ import {
     SQLiteDBConnection,
 } from '@capacitor-community/sqlite';
 
-const DB_NAME = 'backgammon_local.db';
+export const SQLITE_DB_NAME = 'backgammon_local.db';
 
 let sqliteInstance: SQLiteConnection | null = null;
 let dbInstance: SQLiteDBConnection | null = null;
@@ -64,9 +65,16 @@ CREATE TABLE IF NOT EXISTS local_coach_explanations (
 
 /**
  * Détermine si le plugin natif SQLite est disponible dans l'environnement d'exécution.
+ * Renvoie true uniquement sur mobile natif (iOS / Android) ou si le plugin Capacitor est disponible.
  */
 export function isSqliteAvailable(): boolean {
-    return Capacitor.isNativePlatform() || Capacitor.isPluginAvailable('CapacitorSQLite');
+    try {
+        return Boolean(
+            Capacitor.isNativePlatform() || Capacitor.isPluginAvailable('CapacitorSQLite'),
+        );
+    } catch {
+        return false;
+    }
 }
 
 /**
@@ -80,7 +88,16 @@ export function getSqliteConnection(): SQLiteConnection {
 }
 
 /**
+ * Permet d'injecter ou réinitialiser l'instance SQLiteConnection lors des tests unitaires.
+ */
+export function setSqliteConnectionForTests(conn: SQLiteConnection | null): void {
+    sqliteInstance = conn;
+    dbInstance = null;
+}
+
+/**
  * Ouvre ou crée la base SQLite locale et initialise le schéma de tables.
+ * En environnement Web / PWA, retourne null en 0ms sans exception.
  */
 export async function initSqliteDatabase(): Promise<SQLiteDBConnection | null> {
     if (!isSqliteAvailable()) {
@@ -94,13 +111,13 @@ export async function initSqliteDatabase(): Promise<SQLiteDBConnection | null> {
     try {
         const sqlite = getSqliteConnection();
         const retCC = await sqlite.checkConnectionsConsistency();
-        const isConn = (await sqlite.isConnection(DB_NAME, false)).result;
+        const isConn = (await sqlite.isConnection(SQLITE_DB_NAME, false)).result;
 
         if (retCC.result && isConn) {
-            dbInstance = await sqlite.retrieveConnection(DB_NAME, false);
+            dbInstance = await sqlite.retrieveConnection(SQLITE_DB_NAME, false);
         } else {
             dbInstance = await sqlite.createConnection(
-                DB_NAME,
+                SQLITE_DB_NAME,
                 false,
                 'no-encryption',
                 1,
@@ -112,18 +129,20 @@ export async function initSqliteDatabase(): Promise<SQLiteDBConnection | null> {
         await dbInstance.execute(BACKGAMMON_SQLITE_SCHEMA);
 
         return dbInstance;
-    } catch (err) {
-        console.warn('[SQLite] Impossible d’initialiser la base native SQLite:', err);
+    } catch (err: unknown) {
+        console.warn('[SQLite] Impossible d’initialiser la base native SQLite, bascule Web/IDB:', err);
+        dbInstance = null;
         return null;
     }
 }
 
 /**
- * Exécute une requête SQL avec paramètres sur la base locale.
+ * Exécute une requête SQL avec paramètres sur la base locale native.
+ * En environnement Web/PWA, retourne null immédiatement sans bloquer le thread principal.
  */
 export async function executeSql(
     statement: string,
-    values: any[] = [],
+    values: unknown[] = [],
 ): Promise<{ changes?: number } | null> {
     const db = await initSqliteDatabase();
     if (!db) return null;
@@ -131,18 +150,19 @@ export async function executeSql(
     try {
         const res = await db.run(statement, values);
         return { changes: res.changes?.changes };
-    } catch (err) {
-        console.error('[SQLite] Erreur d’exécution SQL:', err);
-        throw err;
+    } catch (err: unknown) {
+        console.warn('[SQLite] Erreur d’exécution SQL non bloquante:', err);
+        return null;
     }
 }
 
 /**
  * Interroge la base locale SQLite et retourne un tableau de lignes typées.
+ * En environnement Web/PWA, retourne un tableau vide immédiatement.
  */
-export async function querySql<T = Record<string, any>>(
+export async function querySql<T = Record<string, unknown>>(
     statement: string,
-    values: any[] = [],
+    values: unknown[] = [],
 ): Promise<T[]> {
     const db = await initSqliteDatabase();
     if (!db) return [];
@@ -150,9 +170,9 @@ export async function querySql<T = Record<string, any>>(
     try {
         const res = await db.query(statement, values);
         return (res.values ?? []) as T[];
-    } catch (err) {
-        console.error('[SQLite] Erreur de requête SQL:', err);
-        throw err;
+    } catch (err: unknown) {
+        console.warn('[SQLite] Erreur de requête SQL non bloquante:', err);
+        return [];
     }
 }
 
@@ -164,7 +184,7 @@ export async function closeSqliteDatabase(): Promise<void> {
         try {
             await dbInstance.close();
             const sqlite = getSqliteConnection();
-            await sqlite.closeConnection(DB_NAME, false);
+            await sqlite.closeConnection(SQLITE_DB_NAME, false);
         } catch {
             // Ignorer les erreurs de fermeture
         }

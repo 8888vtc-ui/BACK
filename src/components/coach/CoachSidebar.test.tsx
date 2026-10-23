@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import CoachSidebar from './CoachSidebar';
 
 describe('CoachSidebar Component', () => {
-    it('affiche la veille stratégique active quand aucun coach n\'est déclenché', () => {
+    it('affiche l’état « Coach prêt » quand aucun coach n\'est déclenché', () => {
         const html = renderToStaticMarkup(
             <CoachSidebar
                 coach={null}
@@ -14,12 +14,14 @@ describe('CoachSidebar Component', () => {
                 theme="midnight"
             />,
         );
-        expect(html).toContain('Coach IA &amp; Analyse');
-        expect(html).toContain('Veille Stratégique Active');
+        // `renderToStaticMarkup` échappe l'esperluette du titre en entité HTML.
+        expect(html).toContain('Coach IA');
+        expect(html).toContain('Analyse</h2>');
+        expect(html).toContain('Coach prêt');
         expect(html).toContain('Demander conseil au Coach');
     });
 
-    it('affiche la bannière prestige sous le thème snowie_classic', () => {
+    it('ne contient plus la veille stratégique ni la bannière prestige', () => {
         const html = renderToStaticMarkup(
             <CoachSidebar
                 coach={null}
@@ -29,7 +31,8 @@ describe('CoachSidebar Component', () => {
                 theme="snowie_classic"
             />,
         );
-        expect(html).toContain('data-testid="snowie-vintage-banner"');
-        expect(html).toContain('ÉDITION PRESTIGE');
+        expect(html).not.toContain('Veille Stratégique Active');
+        expect(html).not.toContain('snowie-vintage-banner');
+        expect(html).not.toContain('ÉDITION PRESTIGE');
     });
 });

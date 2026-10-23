@@ -21,15 +21,23 @@
 
 import React, { useCallback, useMemo } from 'react';
 import type { ThemeName } from '../board/boardThemes';
+import type { Player } from '../../engine/backgammonEngine';
 import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
 import { pipCount } from '../../engine/backgammonEngine';
 import MatchHud from './MatchHud';
-import MatchTurnBar from './MatchTurnBar';
 import { soundEngine } from '../../lib/sound/soundEngine';
 import { impactHeavy, impactMedium } from '../../lib/capacitor/haptics';
 import { toast } from '../toast/ToastContext';
 import { analyzeCubeDecision } from '../../features/coach/cubeCoach';
 import { formatStandardMoveSequence } from '../../features/coach/coachMoveNotation';
+
+export interface MatchHeaderMultiplayerAdapter {
+    broadcastDoubleOffered: (cubeVal: number) => void;
+    broadcastDiceRolled: (dice: [number, number]) => void;
+    broadcastDoubleAccepted: (cubeVal: number) => void;
+    broadcastDoublePassed: (winner: Player) => void;
+    matchInfo?: { localRole?: Player } | null;
+}
 
 export interface MatchHeaderProps {
     t: (key: string) => string;
@@ -37,7 +45,7 @@ export interface MatchHeaderProps {
     onToggleTheme: () => void;
     game: UseBackgammonGameReturn;
     isMultiplayerActive: boolean;
-    multiplayer: any;
+    multiplayer: MatchHeaderMultiplayerAdapter;
     onOpenExportImport: () => void;
     onTriggerCoach: () => void;
     /** Nombre de tours de jeu déjà terminés */
@@ -48,6 +56,8 @@ export interface MatchHeaderProps {
     prO?: number | null;
     /** Retour au lobby */
     onBackToLobby?: () => void;
+    /** Couleur jouée par l'humain (défaut : X = Blanc). */
+    playerColor?: Player;
 }
 
 const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
@@ -63,10 +73,9 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
     prX,
     prO,
     onBackToLobby,
+    playerColor,
 }) => {
-    const canDoubleAllowed =
-        (turnsCount === undefined || turnsCount > 0) &&
-        game.canDouble;
+    const canDoubleAllowed = game.canDouble;
 
     // Pip counts des deux joueurs (calcul pur, aucune mutation d'état).
     const pips = useMemo(() => pipCount(game.state.board), [game.state.board]);
@@ -105,12 +114,16 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
         }
     }, [game, isMultiplayerActive, multiplayer]);
 
-    // Dernier coup adverse en notation standard (24 → 1 du point de vue du joueur).
+    // Dernier coup adverse en notation standard avec dés associés (ex. [5-5] 16/11 13/8 13/8 11/6).
     const lastOpponentEntry =
         game.matchLog && game.matchLog.length > 0
             ? game.matchLog[game.matchLog.length - 1]
             : null;
-    const lastMoveNotation =
+    const lastOpponentDice =
+        lastOpponentEntry && lastOpponentEntry.dice
+            ? `[${lastOpponentEntry.dice[0]}-${lastOpponentEntry.dice[1]}] `
+            : '';
+    const rawMoveNotation =
         lastOpponentEntry && lastOpponentEntry.player === 'O' && lastOpponentEntry.movePlayed.length > 0
             ? formatStandardMoveSequence(
                 [...lastOpponentEntry.movePlayed],
@@ -118,6 +131,7 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                 lastOpponentEntry.boardBefore,
             )
             : null;
+    const lastMoveNotation = rawMoveNotation ? `${lastOpponentDice}${rawMoveNotation}` : null;
 
     return (
         <>
@@ -134,8 +148,8 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                 </a>
             </nav>
 
-            <header className="w-full max-w-7xl mx-auto shrink-0 z-30 flex flex-col gap-1 px-1 pt-0.5 pb-1 min-w-0 overflow-hidden">
-                {/* Barre supérieure UNIQUE (h-14) */}
+            <header className="relative w-full max-w-7xl mx-auto shrink-0 z-50 flex flex-col gap-1 px-1 pt-0.5 pb-1 min-w-0 overflow-visible">
+                {/* Barre supérieure UNIQUE (sans bandeau parasite dessous : le videau vit sur le plateau) */}
                 <MatchHud
                     matchLength={game.state.matchLength}
                     scoreX={game.state.scoreX}
@@ -151,6 +165,7 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                     onDoubleCube={handleDouble}
                     onRollDice={handleRoll}
                     onResetGame={game.resetMatch}
+                    onResign={game.resignGame}
                     onOpenExportImport={onOpenExportImport}
                     onTriggerCoach={onTriggerCoach}
                     canDouble={canDoubleAllowed}
@@ -162,49 +177,9 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                     pipO={pips.O}
                     lastMoveNotation={lastMoveNotation}
                     onBackToLobby={onBackToLobby}
-                />
-
-                {/* Contrôles du videau : uniquement quand un double est proposé */}
-                <MatchTurnBar
-                    phase={game.phase}
-                    cubeValue={game.state.cubeValue}
-                    cubeOwner={game.state.cubeOwner}
-                    crawford={game.state.crawford}
-                    doublingOfferedBy={game.doublingOfferedBy}
-                    currentTurn={game.state.turn}
-                    canDouble={canDoubleAllowed}
-                    onOfferDouble={handleDouble}
-                    onTakeDouble={() => {
-                        soundEngine.playCubeOffer();
-                        game.takeDouble();
-                        if (isMultiplayerActive) multiplayer.broadcastDoubleAccepted(game.state.cubeValue);
-
-                        const cube = analyzeCubeDecision(game.state, 'take');
-                        if (cube.verdict === 'optimal') {
-                            toast.success(cube.explanation, 'Videau : Optimal');
-                        } else if (cube.verdict === 'blunder') {
-                            toast.warning(`${cube.explanation} ${cube.advice}`, 'Videau : Blunder');
-                        } else {
-                            toast.info(`${cube.explanation} ${cube.advice}`, 'Videau');
-                        }
-                    }}
-                    onPassDouble={() => {
-                        soundEngine.playCubeOffer();
-                        game.passDouble();
-                        if (isMultiplayerActive && multiplayer.matchInfo) {
-                            const winner = multiplayer.matchInfo.localRole === 'X' ? 'O' : 'X';
-                            multiplayer.broadcastDoublePassed(winner);
-                        }
-
-                        const cube = analyzeCubeDecision(game.state, 'pass');
-                        if (cube.verdict === 'optimal') {
-                            toast.success(cube.explanation, 'Videau : Optimal');
-                        } else if (cube.verdict === 'blunder') {
-                            toast.warning(`${cube.explanation} ${cube.advice}`, 'Videau : Blunder');
-                        } else {
-                            toast.info(`${cube.explanation} ${cube.advice}`, 'Videau');
-                        }
-                    }}
+                    playerColor={playerColor}
+                    isGameActive={game.phase !== 'GAME_OVER'}
+                    boardState={game.state}
                 />
             </header>
         </>

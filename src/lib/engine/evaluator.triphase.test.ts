@@ -97,12 +97,11 @@ describe('Moteur tri-phase — validation en conditions réelles', () => {
             expect(classifyMoveEquity(-0.09)).toBe('blunder');
         });
 
-        it('calcule un PR crédible (entre 2 et 15) pour une erreur moyenne de 0.040', () => {
-            // 10 décisions, perte totale 0.4 -> errorRate 0.04 -> PR = 4.8
+        it('calcule le PR officiel (formule ×500) pour une erreur moyenne de 0.040', () => {
+            // 10 décisions, perte totale 0.4 -> errorRate 0.04 -> PR = 0.04 × 500 = 20
             const pr = calculatePR(0.4, 10);
             expect(pr).toBeGreaterThanOrEqual(2);
-            expect(pr).toBeLessThanOrEqual(15);
-            expect(pr).toBeCloseTo(4.8, 1);
+            expect(pr).toBeCloseTo(20, 1);
         });
 
         it('calcule une précision entre 65% et 99% (jamais 0.1%)', () => {

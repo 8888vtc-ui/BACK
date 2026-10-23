@@ -5,16 +5,17 @@
  *
  * Superpose des flèches SVG entre `from` et `to` pour :
  *   - le coup joué (rouge),
- *   - le coup optimal (vert).
+ *   - le coup optimal (vert),
+ *   - le coup de l'adversaire IA (cyan).
  *
- * Composant isolé : ne dépend que de ses props, aucune logique métier.
- * Pour le retirer, supprimer ce fichier et son usage dans `Board.tsx`.
- * Mémoïsé (`React.memo`).
+ * Synchronise automatiquement les abscisses sur les centres DOM réels des flèches
+ * (`ResizeObserver`) tout en conservant `pointLayout` en repli synchrone/SSR.
  */
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { Move } from '../../engine/backgammonEngine';
 import { pointLayout, VB_W, VB_H, TOP_APEX, BOT_APEX, POINT_W } from './boardGeometry';
+import type { BoardOrientation } from './boardOrientation';
 
 export interface CoachArrowsProps {
     /** Coups joués (rouge). */
@@ -23,147 +24,199 @@ export interface CoachArrowsProps {
     optimal?: Move[];
     /** Coups de l'adversaire IA (indigo/cyan). */
     opponent?: { from: number; to: number }[];
+    /** Orientation du plateau (normal ou inverted). */
+    orientation?: BoardOrientation;
 }
 
-/** Coordonnées d'une flèche (départ → arrivée) dans le viewBox SVG. */
-interface ArrowCoords {
+/** Coordonnées et tracé d'une flèche (départ → arrivée) dans le viewBox SVG. */
+export interface ArrowCoords {
     x1: number;
     y1: number;
     x2: number;
     y2: number;
+    path: string;
 }
 
 /**
- * Calcule les coordonnées d'une flèche entre deux points.
- *
- * @param from - Point de départ (1..24, ou barre 0/25).
- * @param to - Point d'arrivée (1..24, ou bear-off 0/25).
- * @returns Coordonnées SVG de la flèche.
+ * Calcule un tracé de Bézier courbé en arche vers le centre du plateau pour éviter les piles de pions.
  */
-export function computeArrowCoords(from: number, to: number): ArrowCoords {
-    const fromLayout = pointLayout(from);
-    const toLayout = pointLayout(to);
+export function computeCurvedArrowPath(x1: number, y1: number, x2: number, y2: number): string {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 1) return `M ${x1} ${y1} L ${x2} ${y2}`;
 
-    // Centre horizontal du point (base du triangle).
-    const fromX = fromLayout.x + POINT_W / 2;
-    const toX = toLayout.x + POINT_W / 2;
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2;
 
-    // Position verticale : sur les triangles vers la rivière, bien dégagée des numéros de bordure.
+    const curveAmount = Math.min(48, Math.max(18, dist * 0.14));
+    const toCenterSign = my < VB_H / 2 ? 1 : -1;
+
+    const cx = Math.abs(dy) > Math.abs(dx) * 1.5 ? mx + 20 : mx;
+    const cy = my + curveAmount * toCenterSign;
+
+    return `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
+}
+
+/**
+ * Calcule les coordonnées d'une flèche entre deux points selon l'orientation.
+ */
+export function computeArrowCoords(
+    from: number,
+    to: number,
+    orientation: BoardOrientation = 'normal',
+    domCenters?: Readonly<Record<string, number>> | null,
+): ArrowCoords {
+    const isToOff = to === 0 || to === 25;
+    const fromLayout = pointLayout(from, orientation, false);
+    const toLayout = pointLayout(to, orientation, isToOff);
+
+    const fromKey = from === 0 || from === 25 ? 'bar' : `pt-${from}`;
+    const toKey = isToOff ? 'off' : `pt-${to}`;
+
+    const fromX = domCenters?.[fromKey] ?? (fromLayout.x + POINT_W / 2);
+    const toX = domCenters?.[toKey] ?? (toLayout.x + POINT_W / 2);
+
     const fromY = fromLayout.top ? TOP_APEX - 40 : BOT_APEX + 40;
     const toY = toLayout.top ? TOP_APEX - 40 : BOT_APEX + 40;
 
-    return { x1: fromX, y1: fromY, x2: toX, y2: toY };
+    const path = computeCurvedArrowPath(fromX, fromY, toX, toY);
+
+    return { x1: fromX, y1: fromY, x2: toX, y2: toY, path };
 }
 
 const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
     played = [],
     optimal = [],
     opponent = [],
+    orientation = 'normal',
 }) => {
+    const svgRef = useRef<SVGSVGElement | null>(null);
+    const [domCenters, setDomCenters] = useState<Record<string, number> | null>(null);
+
+    useEffect(() => {
+        const svgEl = svgRef.current;
+        if (!svgEl || typeof window === 'undefined') return;
+        const boardRoot = svgEl.parentElement;
+        if (!boardRoot) return;
+
+        const measure = () => {
+            const svgRect = svgEl.getBoundingClientRect();
+            if (svgRect.width <= 0) return;
+            const next: Record<string, number> = {};
+            for (let pt = 1; pt <= 24; pt++) {
+                const el = boardRoot.querySelector(`[data-testid="point-triangle-${pt}"]`);
+                if (el) {
+                    const r = el.getBoundingClientRect();
+                    next[`pt-${pt}`] = ((r.left + r.width / 2 - svgRect.left) / svgRect.width) * VB_W;
+                }
+            }
+            const barEl = boardRoot.querySelector('[data-testid="central-bar"]');
+            if (barEl) {
+                const r = barEl.getBoundingClientRect();
+                next.bar = ((r.left + r.width / 2 - svgRect.left) / svgRect.width) * VB_W;
+            }
+            const offEl = boardRoot.querySelector('[data-testid^="off-tray-"]');
+            if (offEl) {
+                const r = offEl.getBoundingClientRect();
+                next.off = ((r.left + r.width / 2 - svgRect.left) / svgRect.width) * VB_W;
+            }
+            setDomCenters(next);
+        };
+
+        measure();
+        const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+        ro?.observe(svgEl);
+        return () => ro?.disconnect();
+    }, [orientation, played.length, optimal.length, opponent.length]);
+
     const playedArrows = useMemo(
-        () => played.map((m) => computeArrowCoords(m.from, m.to)),
-        [played],
+        () => played.map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
+        [played, orientation, domCenters],
     );
     const optimalArrows = useMemo(
-        () => optimal.map((m) => computeArrowCoords(m.from, m.to)),
-        [optimal],
+        () => optimal.map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
+        [optimal, orientation, domCenters],
     );
     const opponentArrows = useMemo(
-        () => opponent.map((m) => computeArrowCoords(m.from, m.to)),
-        [opponent],
+        () => opponent.map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
+        [opponent, orientation, domCenters],
     );
 
     return (
         <svg
+            ref={svgRef}
             viewBox={`0 0 ${VB_W} ${VB_H}`}
-            className="absolute inset-0 w-full h-full pointer-events-none"
+            preserveAspectRatio="none"
+            className="absolute inset-0 w-full h-full pointer-events-none z-20"
             data-testid="coach-arrows"
         >
             <defs>
-                <marker
-                    id="arrowhead-red"
-                    markerWidth="10"
-                    markerHeight="7"
-                    refX="9"
-                    refY="3.5"
-                    orient="auto"
-                >
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
+                <filter id="glow-green" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#22c55e" floodOpacity="0.6" />
+                </filter>
+                <filter id="glow-red" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#ef4444" floodOpacity="0.6" />
+                </filter>
+                <marker id="arrowhead-red" markerWidth="11" markerHeight="8" refX="9.5" refY="4" orient="auto">
+                    <polygon points="0 0, 11 4, 0 8, 3 4" fill="#ef4444" />
                 </marker>
-                <marker
-                    id="arrowhead-green"
-                    markerWidth="10"
-                    markerHeight="7"
-                    refX="9"
-                    refY="3.5"
-                    orient="auto"
-                >
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+                <marker id="arrowhead-green" markerWidth="11" markerHeight="8" refX="9.5" refY="4" orient="auto">
+                    <polygon points="0 0, 11 4, 0 8, 3 4" fill="#22c55e" />
                 </marker>
-                <marker
-                    id="arrowhead-opponent"
-                    markerWidth="10"
-                    markerHeight="7"
-                    refX="9"
-                    refY="3.5"
-                    orient="auto"
-                >
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#818cf8" />
+                <marker id="arrowhead-opponent" markerWidth="11" markerHeight="8" refX="9.5" refY="4" orient="auto">
+                    <polygon points="0 0, 11 4, 0 8, 3 4" fill="#38bdf8" />
                 </marker>
             </defs>
 
-            {/* Coups adversaire IA (indigo fluide avec point d'origine) */}
             {opponentArrows.map((a, i) => (
                 <g key={`opp-${i}`} className="transition-opacity duration-300">
-                    <line
-                        x1={a.x1}
-                        y1={a.y1}
-                        x2={a.x2}
-                        y2={a.y2}
-                        stroke="#818cf8"
-                        strokeWidth="4"
+                    <path
+                        d={a.path}
+                        fill="none"
+                        stroke="#38bdf8"
+                        strokeWidth="2.75"
+                        strokeLinecap="round"
                         markerEnd="url(#arrowhead-opponent)"
                         opacity="0.9"
                     />
-                    <circle cx={a.x1} cy={a.y1} r="5" fill="#818cf8" opacity="0.9" />
+                    <circle cx={a.x1} cy={a.y1} r="3.5" fill="#38bdf8" opacity="0.9" />
                 </g>
             ))}
 
-            {/* Coups joués (rouge) */}
             {playedArrows.map((a, i) => (
-                <line
-                    key={`played-${i}`}
-                    x1={a.x1}
-                    y1={a.y1}
-                    x2={a.x2}
-                    y2={a.y2}
-                    stroke="#ef4444"
-                    strokeWidth="4"
-                    strokeDasharray="8 4"
-                    markerEnd="url(#arrowhead-red)"
-                    opacity="0.85"
-                />
+                <g key={`played-${i}`} filter="url(#glow-red)">
+                    <path
+                        d={a.path}
+                        fill="none"
+                        stroke="#ef4444"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeDasharray="8 5"
+                        markerEnd="url(#arrowhead-red)"
+                        opacity="0.95"
+                    />
+                    <circle cx={a.x1} cy={a.y1} r="4" fill="#ef4444" opacity="0.95" />
+                </g>
             ))}
 
-            {/* Coups optimaux (vert) */}
             {optimalArrows.map((a, i) => (
-                <line
-                    key={`optimal-${i}`}
-                    x1={a.x1}
-                    y1={a.y1}
-                    x2={a.x2}
-                    y2={a.y2}
-                    stroke="#22c55e"
-                    strokeWidth="4"
-                    markerEnd="url(#arrowhead-green)"
-                    opacity="0.85"
-                />
+                <g key={`optimal-${i}`} filter="url(#glow-green)">
+                    <path
+                        d={a.path}
+                        fill="none"
+                        stroke="#22c55e"
+                        strokeWidth="3.25"
+                        strokeLinecap="round"
+                        markerEnd="url(#arrowhead-green)"
+                        opacity="0.98"
+                    />
+                    <circle cx={a.x1} cy={a.y1} r="4.5" fill="#22c55e" opacity="0.98" />
+                </g>
             ))}
         </svg>
     );
 };
 
-/** Composant mémoïsé : ne re-rend que si ses props changent. */
 export const CoachArrows = React.memo(CoachArrowsComponent);
-
 export default CoachArrows;

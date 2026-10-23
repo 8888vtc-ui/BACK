@@ -22,7 +22,7 @@ describe('ConceptsHeatmap', () => {
 
         const html = renderToStaticMarkup(<ConceptsHeatmap cells={mockCells} />);
         expect(html).toContain('data-testid="concepts-heatmap"');
-        expect(html).toContain('Heatmap des Concepts Faibles');
+        expect(html).toContain('Blunder Heatmap — Phases × Thèmes Tactiques');
         expect(html).toContain('Ouverture');
         expect(html).toContain('Milieu de jeu');
         expect(html).toContain('Sortie / Course');

@@ -11,7 +11,7 @@ import {
 import { createInitialState } from '../../engine/backgammonEngine';
 import { WorkerRequest, WorkerResponse } from './types';
 
-const SAMPLE_XGID = 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10';
+const SAMPLE_XGID = 'XGID=-b----E-C---eE---c-e----B-:1:0:0:42:0:1:0:0:0:10';
 
 describe('GnubgEngineClient & API JSON', () => {
     beforeEach(() => {
@@ -186,7 +186,7 @@ describe('GnubgEngineClient & API JSON', () => {
                     }, 5);
                 }
 
-                terminate() {}
+                terminate() { }
             }
 
             const clientWithWorker = new GnubgEngineClient({
@@ -209,8 +209,8 @@ describe('GnubgEngineClient & API JSON', () => {
             class HangingWorker {
                 onmessage: any = null;
                 onerror: any = null;
-                postMessage() {}
-                terminate() {}
+                postMessage() { }
+                terminate() { }
             }
 
             const hangingClient = new GnubgEngineClient({
@@ -244,7 +244,7 @@ describe('GnubgEngineClient & API JSON', () => {
                         }
                     }, 5);
                 }
-                terminate() {}
+                terminate() { }
             }
 
             const errorClient = new GnubgEngineClient({

@@ -1,17 +1,23 @@
 {
-  "name": "Backgammon Tournament & Grand-Maître Coach",
-  "short_name": "Backgammon",
-  "description": "Plateau de Backgammon Tournament Grade avec analyse IA en temps réel, mode offline et suivi de progression.",
+  "name": "Backgammon Tour — Cercle Monte-Carlo & Gammon Academy",
+  "short_name": "Backgammon Tour",
+  "description": "Salon officiel Backgammon Tour & Gammon Academy : plateau Tournament-Grade, Coach IA Open Sage 3-Ply en temps réel, Drills, Puzzles et mode 100 % hors-ligne.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#0b1220",
-  "theme_color": "#0f172a",
+  "background_color": "#06090f",
+  "theme_color": "#090d16",
   "lang": "fr",
   "categories": ["games", "strategy", "education"],
   "icons": [
+    {
+      "src": "/icons/logo-crest.svg",
+      "sizes": "256x256",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
     {
       "src": "/icons/icon-192.svg",
       "sizes": "192x192",

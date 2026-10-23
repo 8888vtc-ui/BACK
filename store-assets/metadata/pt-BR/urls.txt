@@ -1,0 +1,3 @@
+privacy_url=https://backgammontour.com/privacy
+support_url=https://backgammontour.com/support
+marketing_url=https://backgammontour.com/?lang=pt

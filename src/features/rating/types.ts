@@ -2,9 +2,11 @@
  * Types pour l'estimation du Rating / Performance Rating (PR) sur une partie complète.
  *
  * Repose sur les standards officiels de Snowie / GNU Backgammon / eXtreme Gammon :
- * - Perte d'équité (Equity Loss) par décision non forcée
- * - Error Rate = Perte totale / Décisions non forcées
+ * - Perte d'équité (Equity Loss) par décision non forcée (EMG)
+ * - Error Rate (XG) = (CheckerLoss + CubeLoss) / (UnforcedCheckerMoves + CloseCubeDecisions)
+ * - Snowie Error Rate = Perte totale / Total des tours joués
  * - PR = Error Rate * 500
+ * - Luck-Adjusted PR & MWC (%) via la table Kazaross-XG2
  * - Estimated Rating (Elo) = 2150 - (PR * 52)
  */
 
@@ -27,16 +29,26 @@ export interface EvaluatedTurn {
     player: Player;
     /** Jet de dés utilisé [d1, d2] */
     dice: [number, number];
-    /** État du plateau avant le coup (28 entiers) */
+    /** État du plateau avant le coup (26-28 entiers) */
     boardBefore: number[];
-    /** État du plateau après le coup (28 entiers) */
+    /** État du plateau après le coup (26-28 entiers) */
     boardAfter: number[];
     /** Notation standard du coup joué (ex: "24/20 13/11") */
     playedNotation: string;
     /** Notation standard du coup optimal certifié (ex: "24/18") */
     optimalNotation: string;
-    /** Perte d'équité subie (négative ou nulle, ex: -0.045) */
+    /** Perte d'équité subie (négative ou nulle, ex: -0.045 EMG) */
     equityLoss: number;
+    /** Équité EMG optimale avant/avec le jet (ex: +0.240) */
+    equityBefore?: number;
+    /** Équité EMG après le coup joué (ex: +0.195) */
+    equityAfter?: number;
+    /** Probabilité de gain du match MWC (%) avant le coup (0 à 100) */
+    mwcBefore?: number;
+    /** Probabilité de gain du match MWC (%) après le coup (0 à 100) */
+    mwcAfter?: number;
+    /** Chance du jet de dés en EMG (Luck = Equity(Roll) - AvgEquity) */
+    luck?: number;
     /** Qualification du coup */
     verdict: MoveVerdict;
     /** Décision non forcée (plus d'un choix légal possible) */
@@ -47,6 +59,10 @@ export interface EvaluatedTurn {
     explanation?: string;
     /** Concept stratégique associé si blunder ou douteux */
     conceptId?: string;
+    /** Perte d'équité éventuelle sur décision de videau (Cube) lors de ce tour */
+    cubeEquityLoss?: number;
+    /** Indique si le tour comportait une décision de videau serrée (Close Cube Decision) */
+    isCloseCubeDecision?: boolean;
 }
 
 export interface MoveBreakdown {
@@ -86,14 +102,30 @@ export interface CompleteGameAnalysis {
     totalMovesCount: number;
     /** Nombre de décisions prises */
     decisionsCount: number;
-    /** Nombre de décisions non forcées considérées dans le calcul */
+    /** Nombre de décisions non forcées considérées dans le calcul (Checker + Close Cube) */
     unforcedDecisionsCount: number;
-    /** Perte d'équité totale accumulée */
+    /** Nombre de décisions de videau serrées (Close Cube Decisions) */
+    closeCubeDecisionsCount?: number;
+    /** Perte d'équité totale accumulée (EMG : Checker + Cube) */
     totalEquityLoss: number;
-    /** Taux d'erreur moyen par décision non forcée */
+    /** Perte d'équité spécifique au videau (EMG) */
+    cubeEquityLoss?: number;
+    /** PR spécifique au jeu de pions (Checker Play PR) */
+    checkerPR?: number;
+    /** PR spécifique au videau (Cube Play PR) */
+    cubePR?: number;
+    /** Taux d'erreur moyen par décision non forcée (XG Error Rate) */
     errorRate: number;
-    /** Performance Rating officiel (GNU / XG) */
+    /** Taux d'erreur non pondéré Snowie (Perte totale / Total des tours) */
+    snowieErrorRate?: number;
+    /** Performance Rating officiel combiné (GNU / XG : ((CheckerLoss + CubeLoss) / (UnforcedChecker + CloseCube)) * 500) */
     performanceRating: number;
+    /** Chance totale des dés cumulée sur la partie (EMG) */
+    totalLuck?: number;
+    /** Chance moyenne par jet de dés (EMG / tour) */
+    luckRate?: number;
+    /** Performance Rating ajusté à la chance (Luck-Adjusted PR) */
+    luckAdjustedPR?: number;
     /** Estimation du niveau Elo dérivée du PR */
     estimatedRating: number;
     /** Catégorie de PR */
@@ -104,6 +136,15 @@ export interface CompleteGameAnalysis {
     evaluatedMoves: EvaluatedTurn[];
 }
 
+export interface RawCubeTurnDecision {
+    /** Action choisie sur le videau ('no_double' | 'double' | 'take' | 'pass') */
+    action: 'no_double' | 'double' | 'take' | 'pass';
+    /** Indique explicitement s'il s'agissait d'une décision de videau serrée (Close Cube Decision) */
+    isCloseDecision?: boolean;
+    /** Perte d'équité subie sur la décision de videau (EMG, ex: 0.065) */
+    cubeEquityLoss?: number;
+}
+
 export interface RawGameTurn {
     turnNumber: number;
     player: Player;
@@ -111,6 +152,10 @@ export interface RawGameTurn {
     boardBefore: number[];
     boardAfter: number[];
     moves: Move[];
+    cubeValue?: number;
+    cubeOwner?: Player | null;
+    crawford?: boolean;
+    cubeDecision?: RawCubeTurnDecision;
 }
 
 export interface RatingHistoryPoint {

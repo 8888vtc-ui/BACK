@@ -59,6 +59,26 @@ describe('ExplanationCache', () => {
             expect(key1).not.toBe(key2);
             expect(key1).not.toBe(key3);
         });
+
+        it('évite toute collision entre deux positions ayant des dés, un videau ou un statut Crawford différents', () => {
+            const base = {
+                positionKey: 'XGID=-b----E-C---eE---c-e----B-',
+                playedMove: '8/5 6/5',
+                optimalMove: '8/5 6/5',
+                matchLength: 7,
+                scoreX: 6,
+                scoreO: 5,
+            };
+
+            const keyNormal = computeExplanationCacheKey({ ...base, dice: [3, 1], cubeValue: 1, crawford: false });
+            const keyCrawford = computeExplanationCacheKey({ ...base, dice: [3, 1], cubeValue: 1, crawford: true });
+            const keyCube2 = computeExplanationCacheKey({ ...base, dice: [3, 1], cubeValue: 2, cubeOwner: 'X', crawford: false });
+            const keyOtherDice = computeExplanationCacheKey({ ...base, dice: [4, 2], cubeValue: 1, crawford: false });
+
+            expect(keyNormal).not.toBe(keyCrawford);
+            expect(keyNormal).not.toBe(keyCube2);
+            expect(keyNormal).not.toBe(keyOtherDice);
+        });
     });
 
     describe('Gestion du cache en mémoire', () => {

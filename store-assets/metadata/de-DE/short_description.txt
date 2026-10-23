@@ -1,0 +1,1 @@
+Backgammon im Monte-Carlo-Stil mit 3-Ply-KI, Dopplungswürfel, Eröffnungen und Akademie.

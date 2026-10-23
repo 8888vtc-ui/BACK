@@ -2,11 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
     DISMISS_KEY,
     DISMISS_DURATION_MS,
+    OFFLINE_CORE_ASSETS,
+    SW_BEFORE_RELOAD_EVENT,
     isStandaloneMode,
     isIosDevice,
     isPromptTemporarilyDismissed,
     savePromptDismissal,
     clearPromptDismissal,
+    checkWasmCached,
 } from './usePWA';
 
 describe('usePWA - Helpers & PWA Logic', () => {
@@ -32,27 +35,33 @@ describe('usePWA - Helpers & PWA Logic', () => {
         vi.clearAllMocks();
     });
 
-    it('isStandaloneMode détecte display-mode: standalone ou navigator.standalone', () => {
-        // Mode classique (navigateur web)
+    it('isStandaloneMode détecte display-mode: standalone ou navigator.standalone et gère les erreurs matchMedia', () => {
+        expect(SW_BEFORE_RELOAD_EVENT).toBe('backgammon:before-sw-reload');
+
         const webWindow = {
             matchMedia: (q: string) => ({ matches: q.includes('standalone') ? false : true }),
             navigator: { standalone: false },
         };
         expect(isStandaloneMode(webWindow)).toBe(false);
 
-        // Mode autonome (PWA installée)
         const pwaWindow = {
             matchMedia: (q: string) => ({ matches: q.includes('standalone') ? true : false }),
             navigator: { standalone: false },
         };
         expect(isStandaloneMode(pwaWindow)).toBe(true);
 
-        // Mode autonome Safari iOS (navigator.standalone = true)
         const iosStandaloneWindow = {
             matchMedia: () => ({ matches: false }),
             navigator: { standalone: true },
         };
         expect(isStandaloneMode(iosStandaloneWindow)).toBe(true);
+
+        const throwingWindow = {
+            matchMedia: () => {
+                throw new Error('matchMedia unsupported');
+            },
+        };
+        expect(isStandaloneMode(throwingWindow)).toBe(false);
     });
 
     it('isIosDevice détecte les iPhone, iPad et iPod', () => {
@@ -65,20 +74,15 @@ describe('usePWA - Helpers & PWA Logic', () => {
     it('gère l’exclusion temporaire du prompt d’installation avec savePromptDismissal et isPromptTemporarilyDismissed', () => {
         const now = 1000000;
 
-        // Initialement : pas d'exclusion
         expect(isPromptTemporarilyDismissed(storageAdapter, now)).toBe(false);
 
-        // Sauvegarde de l'exclusion pour 7 jours
         savePromptDismissal(storageAdapter, DISMISS_DURATION_MS, now);
         expect(storageAdapter.setItem).toHaveBeenCalledWith(
             DISMISS_KEY,
             (now + DISMISS_DURATION_MS).toString(),
         );
 
-        // Pendant la période : le prompt est masqué
         expect(isPromptTemporarilyDismissed(storageAdapter, now + 1000)).toBe(true);
-
-        // Après l'expiration : le prompt peut réapparaître
         expect(isPromptTemporarilyDismissed(storageAdapter, now + DISMISS_DURATION_MS + 1)).toBe(false);
     });
 
@@ -89,5 +93,21 @@ describe('usePWA - Helpers & PWA Logic', () => {
         clearPromptDismissal(storageAdapter);
         expect(storageAdapter.removeItem).toHaveBeenCalledWith(DISMISS_KEY);
         expect(isPromptTemporarilyDismissed(storageAdapter)).toBe(false);
+    });
+
+    it('checkWasmCached vérifie la présence du binaire WildBG WASM dans CacheStorage', async () => {
+        expect(OFFLINE_CORE_ASSETS).toContain('/engine/wildbg.wasm');
+        expect(await checkWasmCached(undefined)).toBe(false);
+
+        const mockCachesHit = {
+            match: vi.fn().mockResolvedValue(new Response('wasm-binary')),
+        } as unknown as CacheStorage;
+        expect(await checkWasmCached(mockCachesHit)).toBe(true);
+        expect(mockCachesHit.match).toHaveBeenCalledWith('/engine/wildbg.wasm');
+
+        const mockCachesMiss = {
+            match: vi.fn().mockResolvedValue(undefined),
+        } as unknown as CacheStorage;
+        expect(await checkWasmCached(mockCachesMiss)).toBe(false);
     });
 });

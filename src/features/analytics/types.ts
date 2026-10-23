@@ -1,6 +1,7 @@
 /**
  * Types pour le module Analytics du Backgammon :
  * - Error rate par type de coup (Phase / Tactique)
+ * - Blunder Heatmap Tactique (Opening / Midgame / Bearing off × Slotting / Priming / Blitz / Holding / Racing)
  * - Heatmap des concepts faibles
  * - Courbe de progression temporelle
  */
@@ -30,6 +31,26 @@ export interface MoveTypeMetric {
 
 export type GamePhase = 'opening' | 'middle_game' | 'endgame';
 
+export type TacticalTheme =
+    | 'slotting'
+    | 'priming'
+    | 'blitz'
+    | 'holding'
+    | 'racing';
+
+export interface TacticalHeatmapCell {
+    theme: TacticalTheme;
+    themeLabel: string;
+    themeDescription: string;
+    phase: GamePhase;
+    phaseLabel: string;
+    decisionsCount: number;
+    errorCount: number;
+    blunderCount: number;
+    totalEquityLoss: number;
+    intensity: number; // 0 (parfait) à 1 (critique)
+}
+
 export interface HeatmapCell {
     conceptId: string;
     conceptName: string;
@@ -58,6 +79,7 @@ export interface AnalyticsSummary {
     totalDecisions: number;
     moveTypeMetrics: MoveTypeMetric[];
     heatmapCells: HeatmapCell[];
+    tacticalHeatmapCells: TacticalHeatmapCell[];
     progressionPoints: ProgressionDataPoint[];
     overallMastery: number;
 }

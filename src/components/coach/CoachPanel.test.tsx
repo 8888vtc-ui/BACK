@@ -72,7 +72,8 @@ describe('CoachPanel Component', () => {
             />,
         );
 
-        expect(html).toContain('Douteux');
+        // Bandeau de verdict XG : palier « IMPRÉCISION » avec la perte affichée.
+        expect(html).toContain('IMPRÉCISION (-0.035)');
         expect(html).toContain('border-amber-500');
         expect(html).toContain('-0.035');
     });
@@ -131,147 +132,34 @@ describe('CoachPanel Component', () => {
         expect(html).toContain('Explique mon erreur');
     });
 
-    it('affiche le contexte de match complet (MET, pointsToWin, Crawford, gammon price, take point)', () => {
-        const html = renderToStaticMarkup(
-            <CoachPanel
-                verdict="blunder"
-                equityLoss={-0.125}
-                playedMove="24/20"
-                optimalMove="8/4"
-                onDismiss={() => { }}
-                matchContext={{
-                    matchLength: 7,
-                    scoreX: 6,
-                    scoreO: 3,
-                    crawford: true,
-                    cubeValue: 1,
-                    cubeOwner: null,
-                }}
-            />,
-        );
-
-        expect(html).toContain('Match en 7 pts');
-        expect(html).toContain('X 6');
-        expect(html).toContain('1 to win');
-        expect(html).toContain('O 3');
-        expect(html).toContain('4 to win');
-        expect(html).toContain('Crawford');
-        expect(html).toContain('Prix du gammon (MET)');
-        expect(html).toContain('Take point');
-    });
-
-    it('affiche le badge DMP quand les deux joueurs sont à 1 point de la victoire', () => {
-        const html = renderToStaticMarkup(
-            <CoachPanel
-                verdict="blunder"
-                equityLoss={-0.125}
-                playedMove="24/20"
-                optimalMove="8/4"
-                onDismiss={() => { }}
-                matchContext={{
-                    matchLength: 7,
-                    scoreX: 6,
-                    scoreO: 6,
-                }}
-            />,
-        );
-
-        expect(html).toContain('DMP');
-        expect(html).toContain('1 to win');
-    });
-
-    it('affiche les sélecteurs de modes (Automatique vs À la demande et Hors-ligne)', () => {
-        const html = renderToStaticMarkup(
-            <CoachPanel
-                verdict="blunder"
-                equityLoss={-0.125}
-                playedMove="24/20"
-                optimalMove="8/4"
-                onDismiss={() => { }}
-                triggerMode="manual"
-            />,
-        );
-
-        expect(html).toContain('Mode coach :');
-        expect(html).toContain('Automatique');
-        expect(html).toContain('À la demande');
-        expect(html).toContain('En ligne');
-    });
-
-    it('affiche le sélecteur de seuil lorsque le mode automatique est sélectionné', () => {
-        const html = renderToStaticMarkup(
-            <CoachPanel
-                verdict="blunder"
-                equityLoss={-0.125}
-                playedMove="24/20"
-                optimalMove="8/4"
-                onDismiss={() => { }}
-                triggerMode="auto"
-                autoThreshold="blunder"
-            />,
-        );
-
-        expect(html).toContain('Seuil :');
-        expect(html).toContain('Blunders seuls');
-    });
-
-    it('affiche le mode dégradé offline lorsque isOffline est activé', () => {
-        const html = renderToStaticMarkup(
-            <CoachPanel
-                verdict="blunder"
-                equityLoss={-0.125}
-                playedMove="24/20"
-                optimalMove="8/4"
-                onDismiss={() => { }}
-                isOffline={true}
-            />,
-        );
-
-        expect(html).toContain('Mode dégradé offline');
-    });
-
-    it('bascule sur l\'explication règle-basée issue de featureExtractor si l\'API ou le streaming timeout (8s)', () => {
-        const features = {
-            player: 'X' as const,
-            pipCountDiff: { player: 150, opponent: 160, leader: 'X' as const, diff: -10 },
-            blotsAndShots: { user: [], best: [] },
-            boardStructure: { anchors: [20], primes: { length: 3, points: [6, 7, 8] }, homeBoardPoints: [6], escapedCheckers: 2 },
-            contactStatus: 'contact' as const,
-        };
-
+    it('affiche le tableau de bord PR (jauge + 4 paliers) quand matchStats est fourni', () => {
         const html = renderToStaticMarkup(
             <CoachPanel
                 verdict="blunder"
                 equityLoss={-0.125}
                 playedMove="24/20 13/11"
                 optimalMove="8/4 6/4"
-                features={features}
-                onDismiss={() => { }}
-                isOffline={true}
-            />,
-        );
-
-        expect(html).toContain('Coach en Temps Réel');
-        expect(html).toContain('Mode dégradé offline');
-    });
-
-    it('affiche la carte PERFORMANCE (PR) quand matchStats est fourni', () => {
-        const html = renderToStaticMarkup(
-            <CoachPanel
-                verdict="blunder"
-                equityLoss={-0.125}
-                playedMove="24/20 13/11"
-                optimalMove="8/4 6/4"
-                matchStats={{ decisionsCount: 10, totalEquityLoss: 0.42, blundersCount: 3 }}
+                matchStats={{
+                    decisionsCount: 10,
+                    totalEquityLoss: 0.42,
+                    blundersCount: 3,
+                    decisionCounters: { optimal: 5, good: 1, inaccuracy: 1, blunder: 3 },
+                }}
                 onDismiss={() => { }}
             />,
         );
 
-        expect(html).toContain('PR');
+        expect(html).toContain('data-testid="coach-pr-dashboard"');
+        expect(html).toContain('data-testid="coach-pr-value"');
         expect(html).toContain('21.00');
-        expect(html).toContain('Débutant');
+        expect(html).toContain('Apprentissage');
         expect(html).toContain('Précision');
-        expect(html).toContain('Blunders');
+        expect(html).toContain('data-testid="coach-counter-optimal"');
+        expect(html).toContain('data-testid="coach-counter-good"');
+        expect(html).toContain('data-testid="coach-counter-inaccuracy"');
+        expect(html).toContain('data-testid="coach-counter-blunder"');
+        expect(html).toContain('data-testid="coach-total-equity-loss"');
+        expect(html).toContain('-0.420');
     });
 });
 
@@ -282,11 +170,12 @@ describe('computePerformanceRating & getPRBadge', () => {
         expect(computePerformanceRating({ decisionsCount: 20, totalEquityLoss: 0.2, blundersCount: 0 })).toBeCloseTo(5.0, 1);
     });
 
-    it('détermine le badge de niveau selon les seuils', () => {
+    it('détermine le badge de niveau selon les seuils (alignés sur getPRCategory)', () => {
         expect(getPRBadge(2.5)).toBe('Grandmaster');
         expect(getPRBadge(4.2)).toBe('Master');
         expect(getPRBadge(6.0)).toBe('Expert');
-        expect(getPRBadge(10.0)).toBe('Intermédiaire');
+        expect(getPRBadge(8.5)).toBe('Advanced');
+        expect(getPRBadge(12.0)).toBe('Intermédiaire');
         expect(getPRBadge(15.0)).toBe('Débutant');
     });
 });

@@ -10,14 +10,16 @@
 
 ## 1. Vue d'ensemble (30 secondes)
 
-**Backgammon Coach IA** — application web Next.js 15 (React 19, Tailwind 3) de
-backgammon avec coach IA temps réel, portée sur mobile via Capacitor.
+**Backgammon Tour — Cercle Monte-Carlo & Gammon Academy** (`backgammontour.com` / `gammonacademy.com`) — application web Next.js 15 (React 19, Tailwind 3) de
+backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.backgammontour.app`).
 
 - **Moteur de règles** : `src/engine/` (TypeScript pur, déterministe).
-- **Moteur IA** : GNU Backgammon en WebAssembly (`src/workers/`) + backend Python (`backend-engine/`).
-- **Coach** : LLM pluggable via Route Handlers (`src/app/api/`).
-- **Persistance** : Supabase (Postgres + Auth + RLS).
-- **Tests** : Vitest (unitaire) + Playwright (e2e).
+- **Moteur IA cloud (principal)** : Open Sage (`bgsage-service/`, PR 0.23, 4 niveaux de bot + videau Double/Take/Pass) via `src/lib/engine/bgsageClient.ts`.
+- **Moteur IA local (repli offline)** : évaluateur tri-phase TypeScript + table Bear-Off exacte 54 264 états + Keith Count (`src/lib/engine/evaluator.ts`).
+- **Moteur legacy** : backend Python GNUBG (`backend-engine/`, rollouts profonds uniquement).
+- **Coach** : Pipeline log-driven (`src/features/coach/logAnalyzer.ts`) + LLM pluggable via Route Handlers (`src/app/api/`).
+- **Persistance** : Supabase (Postgres + Auth + RLS) + persistance locale IndexedDB/SQLite Capacitor.
+- **Tests** : Vitest (870 tests unitaires sur 153 fichiers) + Playwright (e2e) + pytest (`bgsage-service/`).
 
 ---
 
@@ -27,46 +29,62 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor.
 | Fichier | Rôle |
 |---|---|
 | `backgammonEngine.ts` | Règles du jeu : plateau (26 entiers), coups légaux, bear-off, videau, XGID, pip count. **Source de vérité.** |
-| `aiHeuristics.ts` | Évaluation de position IA : `evaluateWin`, `scoreBoardForOpponent`, `scoreBoard0PlyNoisy`, `scoreBoard1Ply`, `scoreBoard2PlyForOpponent`, `selectBestOpponentSequence`. |
+| `aiHeuristics.ts` | Évaluation de position IA de secours : `evaluateWin`, `scoreBoardForOpponent`, `scoreBoard0PlyNoisy`, `scoreBoard1Ply`, `scoreBoard2PlyForOpponent`. |
+
+### `src/actions/` — Micro-programmes atomiques (Doctrine "1 Bouton = 1 Micro-Programme")
+| Fichier | Rôle |
+|---|---|
+| `types.ts` | `GamePhase` (6 états), `MatchLogEntry` immuable, signatures pures |
+| `commitHumanMoveAction.ts` | Commit du tour humain + log immuable + analyse coach |
+| `runAiTurnAction.ts` | Tour IA en 3 paliers temporels + `try/finally` |
+| `replayFromLogAction.ts` | Replay depuis la Feuille de Match |
+| `index.ts` | Point d'entrée de l'architecture atomique |
 
 ### `src/features/` — Logique métier par domaine (pur, testable)
 | Dossier | Rôle |
 |---|---|
-| `coach/` | Extracteur de concepts, classificateur de blunders, prompts LLM |
+| `coach/` | Extracteur de concepts, classificateur de blunders, prompts LLM, **`logAnalyzer.ts` (pipeline log-driven + verdicts 4 paliers)** |
 | `drills/` | Moteur d'exercices (blunders) |
 | `multiplayer/` | Validation d'actions, Elo, matchmaking, rooms temps réel |
 | `puzzles/` | Puzzles quotidiens |
 | `rating/` | Analyse de partie, calcul de PR |
 | `openings/` | Base d'ouvertures |
-| `export/` | Sérialisation XGID/SGF, partage |
+| `export/` | Sérialisation XGID/SGF/MAT, partage |
 | `knowledge/` | Base de connaissances pédagogiques |
 
 ### `src/components/` — Composants React (présentation)
 | Dossier | Rôle |
 |---|---|
-| `board/` | Plateau (Board.tsx actif, BackgammonBoard.tsx legacy, géométrie, thèmes) |
-| `coach/` | Panneau coach |
-| `hud/` | HUD de match, sélecteur de difficulté |
-| `multiplayer/` | Modales multijoueur |
-| `rating/` | Review de partie, courbes |
-| `stats/` | Dashboard progression |
-| `auth/`, `common/`, `toast/`, `providers/`, `pwa/` | Infra UI |
+| `board/` | Plateau (`Board.tsx`, `GameScreenView.tsx`, `GameBoardArea.tsx`, géométrie, thèmes) |
+| `lobby/` | Lobby principal (`LobbyScreen.tsx`, `AppScreenViews.tsx`) |
+| `coach/` | Panneau coach (`CoachPanel.tsx`, `CoachSidebar.tsx`, `CoachMobileDrawer.tsx`) |
+| `hud/` | HUD de match (`MatchHud.tsx`, `MatchHeader.tsx`, `MatchTurnBar.tsx`, sélecteurs) |
+| `multiplayer/` | Bannière et composants multijoueur |
+| `rating/` | Review de partie, courbes, cours IA (`GameReviewCourse.tsx`) |
+| `stats/` | Dashboard progression, erreurs récurrentes (`RecurringErrorsCard.tsx`) |
+| `summary/` | Rapport de fin de match |
+| `auth/`, `common/`, `toast/`, `providers/`, `modals/` | Infra UI |
 
 ### `src/hooks/` — Hooks React (état + effets)
 | Fichier | Rôle |
 |---|---|
 | `useBackgammonGame.ts` | Machine à états de partie (lancer, déplacer, videau, IA) |
+| `useCoach.ts` | Orchestration de l'analyse Coach IA log-driven |
+| `useCheckerInteractions.ts` | Interactions pions et dés (clic, double-clic, drag-and-drop) |
+| `usePlatformControlsRouter.ts` | Routage des contrôles Desktop vs Mobile Tactile |
+| `useGamePersistence.ts` | Persistance locale/cloud et analyse de fin de partie |
+| `useGameModals.ts` | Gestion centralisée des modales de jeu |
+| `useOpeningAssistant.ts` | Détection et application des coups d'ouverture certifiés |
 | `useMultiplayerGame.ts` | Partie multijoueur temps réel |
 | `useBoardTheme.tsx` | Thème du plateau (contexte) |
-| `usePWA.ts`, `useSyncQueue.ts` | PWA, file de sync offline |
 
 ### `src/lib/` — Services (I/O, intégrations)
 | Dossier | Rôle |
 |---|---|
-| `supabase/` | Client Supabase, auth, types |
+| `supabase/` | Client Supabase, auth, types, erreurs récurrentes |
 | `i18n/` | Internationalisation (fr/en) |
 | `offline/` | Persistance locale (IndexedDB), sync |
-| `engine/` | Client moteur (worker), évaluateur, rollouts |
+| `engine/` | **`bgsageClient.ts` (client Open Sage Cloud Run)**, évaluateur tri-phase local (`evaluator.ts`), rollouts |
 | `monitoring/` | Sentry, logs, alertes |
 | `security/` | Rate limiting, schémas Zod |
 | `capacitor/` | Haptique, partage, SQLite natif |
@@ -75,78 +93,39 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor.
 ### `src/app/` — App Router (pages + API)
 | Chemin | Rôle |
 |---|---|
-| `page.tsx` | Écran principal de jeu |
+| `page.tsx` | Orchestrateur principal (293 lignes, conforme R1 < 300 lignes) à 3 vues exclusives (`LOBBY`, `GAME`, `SUMMARY`) |
 | `drills/`, `puzzles/`, `progression/` | Pages secondaires |
 | `api/coach/`, `api/evaluate/`, `api/rollout/`, `api/health/` | Route Handlers serveur |
 
 ### `src/workers/` — Web Workers
 | Fichier | Rôle |
 |---|---|
-| `xgEngine.worker.ts` | Exécute le moteur Grand-Maître XG-Web 2-Ply WASM SIMD |
-| `gnubg.worker.ts` | Exécute l'évaluateur tri-phase fallback hors thread principal |
+| `gnubg.worker.ts` | Exécute l'évaluateur tri-phase local de repli hors thread principal |
 
 ---
 
-## 2bis. Anatomie de `page.tsx` (le composant principal, ~1738 lignes)
+## 2bis. Anatomie de `page.tsx` (293 lignes — découpé en hooks et vues dédiés)
 
-> ⚠️ **Fichier monolithique en cours de découpage.** Voici sa structure interne pour
-> savoir exactement ce qui s'y passe en un clic.
+> ✅ **Conforme à la règle R1 (< 300 lignes).** Le rendu est gouverné par un état maître
+> `appScreen` (`'LOBBY' | 'GAME' | 'SUMMARY'`) garantissant qu'une seule vue est montée à la fois.
 
-### États (`useState`)
-| État | Rôle |
+| Hook / Vue délégué | Responsabilité extraite |
 |---|---|
-| `coach`, `coachHighlight` | Analyse du coach (verdict, explication, surbrillance) |
-| `matchStats`, `optimalStreak`, `brilliantMove` | Statistiques de session (PR, streak, coup de maître) |
-| `isBoardLoading`, `isAnalyzing` | États de chargement |
-| `isMatchmakingModalOpen`, `isGameReviewModalOpen`, `isOpeningBookModalOpen`, `isExportImportModalOpen`, `isKnowledgeModalOpen`, `isMobileDrawerOpen` | Ouverture des modales |
-| `latestGameAnalysis` | Analyse complète post-partie |
-| `preferredDie` | Dé préféré (0 ou 1) |
-
-### Handlers de jeu (délégation au hook `useBackgammonGame`)
-| Handler | Rôle |
-|---|---|
-| `handlePlayMove(from, to, die)` | Joue un coup (drag-and-drop) |
-| `handleSelectDie(die)` | Sélectionne un dé (auto-move intelligent) |
-| `handleDieDoubleClick(die)` | Double-clic dé (auto-move le plus sûr) |
-| `handleCheckerClick(point)` | Clic pion (auto-move Snowie/TMG) |
-| `handleCheckerDoubleClick(point)` | Double-clic pion (somme des dés) |
-| `handleCheckerRightClick(point)` | Clic droit (second dé) |
-| `handleDestinationClick(dest)` | Clic destination légale |
-| `handleDeselect()` | Désélection |
-
-### Effets (`useEffect`)
-| Effet | Rôle |
-|---|---|
-| Multijoueur | Écoute les actions distantes, synchronise le match |
-| Offline | Enregistre la partie (persistance offline-first) |
-| Raccourcis clavier | Espace (lancer), Tab (inverser dés), D (doubler) |
-| Auto-play | Joue le coup forcé unique après 600ms |
-| Coach | Détecte les blunders et déclenche l'analyse |
-
-### Logique coach
-| Bloc | Rôle |
-|---|---|
-| `handleTriggerCoach()` | Analyse le coup joué (moteur + LLM) |
-| `dismissCoach()` | Ferme l'analyse |
-| `handleReplayMove()` | Rejoue le coup erroné |
-
-### Logique opening book
-| Bloc | Rôle |
-|---|---|
-| `openingEntry` | Détecte le coup d'ouverture certifié |
-| `handleApplyOpeningMove(moves)` | Applique le coup book en un clic |
-
-### Rendu JSX
-1. **HUD fixe** (MatchHud, bandeau streak, sélecteur difficulté)
-2. **Plateau** (`Board`)
-3. **Panneau coach** (CoachPanel)
-4. **~10 modales** (matchmaking, review, opening book, export, knowledge, etc.)
+| `LobbyView` (`AppScreenViews.tsx`) | Écran d'accueil et configuration de match |
+| `GameScreenView` (`GameScreenView.tsx`) | Écran de jeu complet (HUD + Plateau + Coach + Modales) |
+| `SummaryView` (`AppScreenViews.tsx`) | Bilan de fin de match |
+| `useBackgammonGame` | Machine à états du jeu et adversaire IA Open Sage |
+| `useCoach` | Analyse log-driven des coups humains et calcul PR |
+| `useCheckerInteractions` | Gestion des clics/double-clics sur pions et dés |
+| `usePlatformControlsRouter` | Adaptation automatique Desktop (clavier/souris) vs Mobile (tactile) |
+| `useGamePersistence` | Sauvegarde offline-first et historique des tours |
+| `useGameModals` | Ouverture/fermeture des modales et tiroir mobile |
 
 ---
 
 ## 3. Conventions (à respecter impérativement)
 
-Voir [`SCALABILITY.md`](SCALABILITY.md) pour les règles complètes. Résumé :
+Voir [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md) pour les règles complètes. Résumé :
 
 1. **Un fichier = une responsabilité.** Composant ≤ 300 lignes, hook ≤ 200, logique ≤ 400.
 2. **Un composant = un fichier**, auto-documenté (JSDoc : rôle, dépendances, comment retirer).
@@ -160,9 +139,9 @@ Voir [`SCALABILITY.md`](SCALABILITY.md) pour les règles complètes. Résumé :
 ## 4. Comment ajouter une fonction (2 minutes)
 
 ### Cas A — Ajouter un composant UI
-1. Créer `src/components/<domaine>/MonComposant.tsx` (template ci-dessous).
-2. L'importer et l'utiliser dans la page/le parent.
-3. Vérifier : `npx tsc --noEmit` + `npx vitest run`.
+1. Créer `src/components/<domaine>/MonComposant.tsx`.
+2. L'importer et l'utiliser dans la vue ou le parent.
+3. Vérifier : `npm run typecheck` + `npm test`.
 
 ### Cas B — Ajouter une logique métier
 1. Créer `src/features/<domaine>/maFonction.ts` (fonction pure).
@@ -174,34 +153,6 @@ Voir [`SCALABILITY.md`](SCALABILITY.md) pour les règles complètes. Résumé :
 2. Valider l'entrée avec Zod (`src/lib/security/schemas.ts`).
 3. Ajouter le rate limiting (`src/lib/security/rateLimit.ts`).
 
-### Template de composant
-
-```tsx
-'use client';
-
-/**
- * [Rôle du composant].
- *
- * Composant isolé : ne dépend que de ses props, aucune logique métier.
- * Pour le retirer, supprimer ce fichier et son usage dans [parent].
- * Mémoïsé (`React.memo`).
- */
-
-import React from 'react';
-
-export interface MonComposantProps {
-    /** [Description de la prop]. */
-    maProp: string;
-}
-
-const MonComposantComponent: React.FC<MonComposantProps> = ({ maProp }) => (
-    <div>{maProp}</div>
-);
-
-export const MonComposant = React.memo(MonComposantComponent);
-export default MonComposant;
-```
-
 ---
 
 ## 5. Points d'entrée clés (pour naviguer vite)
@@ -209,32 +160,20 @@ export default MonComposant;
 | Question | Réponse |
 |---|---|
 | Où sont les règles du jeu ? | [`src/engine/backgammonEngine.ts`](src/engine/backgammonEngine.ts) |
+| Où est le moteur IA unifié ? | [`DOCS_ENGINE.md`](DOCS_ENGINE.md) + [`src/lib/engine/bgsageClient.ts`](src/lib/engine/bgsageClient.ts) + [`src/lib/engine/evaluator.ts`](src/lib/engine/evaluator.ts) |
 | Où est le plateau ? | [`src/components/board/Board.tsx`](src/components/board/Board.tsx) |
 | Où est la logique de partie ? | [`src/hooks/useBackgammonGame.ts`](src/hooks/useBackgammonGame.ts) |
 | Où est le coach IA ? | [`src/features/coach/`](src/features/coach/) + [`src/app/api/coach/route.ts`](src/app/api/coach/route.ts) |
-| Où est le moteur GNUBG ? | [`src/workers/gnubg.worker.ts`](src/workers/gnubg.worker.ts) + [`backend-engine/`](backend-engine/) |
 | Où sont les types Supabase ? | [`src/lib/supabase/types.ts`](src/lib/supabase/types.ts) |
 | Où sont les règles de scalabilité ? | [`SCALABILITY.md`](SCALABILITY.md) |
 | Où est l'architecture détaillée ? | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 
 ---
 
-## 6. Code mort / redondant identifié (audit 2026-10)
+## 6. Statut de la documentation et archives (audit 2026-10)
 
-> Ces fichiers ne sont **importés nulle part** dans le code de production (seulement
-> par leurs propres tests). À confirmer avant suppression : certains peuvent être
-> destinés à une fonctionnalité future.
-
-| Fichier | Statut | Action suggérée |
+| Catégorie | Fichiers de référence actifs | Archives historiques (remplacées) |
 |---|---|---|
-| [`src/components/board/BackgammonBoard.tsx`](src/components/board/BackgammonBoard.tsx) | Legacy (plus importé par les vues, mais référencé par ses 6 tests + `useBoardTheme`) | À supprimer après migration complète vers `Board.tsx` |
-
-### Redondance connue
-
-| Redondance | Détail |
-|---|---|
-| `BackgammonBoard.tsx` vs `Board.tsx` | Deux rendus de plateau coexistent (SVG legacy vs HTML/Tailwind actif) |
-| `boardGeometry.ts` vs constantes internes de `BackgammonBoard.tsx` | La géométrie est dupliquée (le legacy garde ses propres constantes) |
-
-> **Règle** : ne rien supprimer sans confirmation. Cette section sert à **voir** ce qui
-> est mort/redondant avant de décider.
+| **Moteur IA** | [`DOCS_ENGINE.md`](DOCS_ENGINE.md), [`bgsage-service/README.md`](bgsage-service/README.md) | `docs/INTEGRATION_WILDBG.md`, `docs/REFERENCE_WILDBG.md`, `docs/TECHNIQUE_XG.md`, `docs/PLAN_AMELIORATION_XG.md` |
+| **Architecture & Règles** | [`PROJECT_MAP.md`](PROJECT_MAP.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCALABILITY.md`](SCALABILITY.md), [`GOVERNANCE.md`](GOVERNANCE.md) | `docs/AUDIT_FRONTEND_COMPLET.md`, `docs/FRONTEND_REFACTOR_PLAN.md` |
+| **Feuille de route** | [`plans/plan-action-consolide.md`](plans/plan-action-consolide.md), [`plans/erh-error-rate-humain.md`](plans/erh-error-rate-humain.md) | Audits unitaires dans `plans/audit-*.md` consolidés dans `plan-action-consolide.md` |
