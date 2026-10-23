@@ -6,6 +6,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
 import {
     OPENING_ROLLS_15,
     type OpeningCategory,
@@ -110,10 +111,21 @@ const OpeningRollsTableComponent: React.FC<OpeningRollsTableProps> = ({ content,
                                     className="hover:bg-white/[0.03] transition"
                                 >
                                     <td className="py-3 px-3.5 font-mono font-black text-base text-[#f5cf70] whitespace-nowrap">
-                                        🎲 {entry.roll}
+                                        <Link
+                                            href={`/academy/openings/${entry.roll}`}
+                                            className="hover:underline hover:text-amber-200 inline-flex items-center gap-1"
+                                        >
+                                            <span>🎲 {entry.roll}</span>
+                                            <span className="text-[10px] text-amber-300/80">↗</span>
+                                        </Link>
                                     </td>
                                     <td className="py-3 px-3.5 font-serif font-bold text-[#fdf8eb]">
-                                        {entry.nickname[locale] ?? entry.nickname.en}
+                                        <Link
+                                            href={`/academy/openings/${entry.roll}`}
+                                            className="hover:text-[#f5cf70] transition"
+                                        >
+                                            {entry.nickname[locale] ?? entry.nickname.en}
+                                        </Link>
                                     </td>
                                     <td className="py-3 px-3.5 font-mono font-extrabold text-emerald-300 whitespace-nowrap">
                                         {entry.optimalMove}

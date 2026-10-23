@@ -48,12 +48,12 @@ Principes directeurs :
 | Langage | **TypeScript strict** |
 | Style | **Tailwind CSS 3** |
 | Moteur de jeu | **Open Sage (bgsage-service sur Google Cloud Run) + repli local tri-phase TypeScript** (point d'entrée unifié côté client) |
-| Moteur serveur | **Open Sage** (`bgsage-service/`) : FastAPI + moteur neuronal `bgsage` (PR 0.23, 4 niveaux de bot + videau Double/Take/Pass) |
-| Moteur serveur (legacy) | **Backend Python** (`backend-engine/`) : FastAPI + client GNUBG (rollouts profonds uniquement) |
-| Coach IA | **LLM pluggable** (interface OpenAI-compatible) |
-| Persistance | **Supabase** (Postgres + Auth + RLS) |
-| Mobile | **Capacitor 8** |
-| Tests | **Vitest** (unitaire) + **Playwright** (e2e) |
+| Moteur serveur | **Open Sage** (`bgsage-service/`) : FastAPI + moteur neuronal `bgsage` (PR 0.23, 4 niveaux de bot + videau Double/Take/Pass) sur Google Cloud Run |
+| Moteur serveur (legacy) | **Backend Python** (archivé sous `archive/backend_engine_gnubg_legacy/`) : FastAPI + client GNUBG |
+| Coach IA | **Google Gemini `gemini-2.5-flash`** via streaming SSE + Market Window + Cache L2 Supabase (`coach_explanations`) |
+| Persistance | **Supabase** (Postgres + Auth + RLS + Cache Coach L2 + Erreurs Récurrentes) |
+| Mobile & PWA | **Capacitor 8** (iOS/Android) + **PWA Web installable** (Desktop & Mobile) |
+| Tests | **Vitest** (1 105 tests unitaires sur 197 fichiers) + **Playwright** (e2e) |
 
 ---
 

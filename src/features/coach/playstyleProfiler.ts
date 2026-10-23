@@ -14,7 +14,7 @@
 
 import type { CompleteGameAnalysis, EvaluatedTurn } from '../rating/types';
 
-export type PlaystyleLocale = 'en' | 'fr' | 'es' | 'de' | 'ja';
+export type PlaystyleLocale = 'en' | 'fr' | 'es' | 'pt' | 'de' | 'ar' | 'ja';
 
 export type PlaystyleArchetype =
     | 'aggressive_blitzer'
@@ -56,12 +56,26 @@ const ARCHETYPE_LABELS: Record<PlaystyleLocale, Record<PlaystyleArchetype, strin
         racing_specialist: 'Especialista en Carrera',
         balanced_all_rounder: 'Polivalente Equilibrado',
     },
+    pt: {
+        aggressive_blitzer: 'Atacante Blitz Agressivo',
+        conservative_builder: 'Construtor Conservador',
+        tactical_priming: 'Arquiteto de Primes Tático',
+        racing_specialist: 'Especialista em Corrida',
+        balanced_all_rounder: 'Polivalente Equilibrado',
+    },
     de: {
         aggressive_blitzer: 'Aggressiver Blitz-Angreifer',
         conservative_builder: 'Konservativer Aufbauer',
         tactical_priming: 'Taktischer Prime-Architekt',
         racing_specialist: 'Renn-Spezialist',
         balanced_all_rounder: 'Ausgewogener Allrounder',
+    },
+    ar: {
+        aggressive_blitzer: 'مهاجم خاطف شرس (Blitz)',
+        conservative_builder: 'بنّاء استراتيجي محافظ',
+        tactical_priming: 'مهندس حواجز تكتيكي (Prime)',
+        racing_specialist: 'متخصص في السباق الخالص',
+        balanced_all_rounder: 'لاعب شامل متوازن',
     },
     ja: {
         aggressive_blitzer: 'アグレッシブ・ブリッツァー',
@@ -97,12 +111,26 @@ const WEAKNESS_MESSAGES: Record<
         racing_leaks: 'Ruptura de contacto subóptima y desperdicio de pips en la carrera y el bear-off.',
         none: 'Sin debilidades recurrentes críticas; mantén la precisión en decisiones ajustadas.',
     },
+    pt: {
+        blot_exposure: 'Exposição excessiva de blots a tiros diretos contra um tabuleiro interno adversário forte.',
+        missed_key_points: 'Oportunidades perdidas de fechar pontos-chave (Ponto de Ouro 5 e Ponto da Barra 7).',
+        prime_handling: 'Quebra prematura ou falta de extensão de primes contra pedras adversárias presas.',
+        racing_leaks: 'Quebra de contato subótima e desperdício de pips na corrida e retirada (bear-off).',
+        none: 'Nenhuma fraqueza recorrente crítica detectada; mantenha a disciplina nas decisões ajustadas.',
+    },
     de: {
         blot_exposure: 'Zu viele ungedeckte Steine (Blots) mit direkten Trefferchancen gegen ein starkes Heimfeld.',
         missed_key_points: 'Verpasste Gelegenheiten, Schlüsselpunkte (5er Golden Point und 7er Bar Point) zu sichern.',
         prime_handling: 'Vorzeitiges Auflösen oder Nichterweitern von Primes gegen eingeschlossene gegnerische Steine.',
         racing_leaks: 'Suboptimales Kontaktauflösen und Pip-Verlust im reinen Laufspiel und Bear-off.',
         none: 'Keine kritische wiederkehrende Schwäche erkannt; halte die Disziplin bei knappen Entscheidungen.',
+    },
+    ar: {
+        blot_exposure: 'ترك أحجار مكشوفة (Blots) معرضة للضرب المباشر أمام بيت داخلي قوي للخصم.',
+        missed_key_points: 'تفويت فرص إغلاق النقاط الاستراتيجية (النقطة الذهبية 5 ونقطة البار 7).',
+        prime_handling: 'كسر مبكر للحواجز (Primes) أو عدم مدّها لحصار أحجار الخصم الخلفية.',
+        racing_leaks: 'إهدار للنقاط (Pips) أثناء الانتقال إلى السباق الخالص وإخراج الأحجار (Bear-off).',
+        none: 'لم يتم رصد نقطة ضعف متكررة حرجة؛ حافظ على انضباطك في القرارات الدقيقة.',
     },
     ja: {
         blot_exposure: '相手のインナーボードが強力な状況で、直接ショットを許すブロットを晒しすぎています。',
@@ -236,9 +264,13 @@ export function analyzePlaystyle(
             ? `Style ${archetypeLabel} (Agressivité ${aggressionIndex}/100, Solidité positionnelle ${positionalSolidness}/100, Course ${racingAccuracy}/100).`
             : lang === 'es'
               ? `Estilo ${archetypeLabel} (Agresividad ${aggressionIndex}/100, Solidez posicional ${positionalSolidness}/100, Carrera ${racingAccuracy}/100).`
-              : lang === 'de'
-                ? `Spielstil ${archetypeLabel} (Aggressivität ${aggressionIndex}/100, Positionsstärke ${positionalSolidness}/100, Rennen ${racingAccuracy}/100).`
-                : lang === 'ja'
+              : lang === 'pt'
+                ? `Estilo ${archetypeLabel} (Agressividade ${aggressionIndex}/100, Solidez posicional ${positionalSolidness}/100, Corrida ${racingAccuracy}/100).`
+                : lang === 'de'
+                  ? `Spielstil ${archetypeLabel} (Aggressivität ${aggressionIndex}/100, Positionsstärke ${positionalSolidness}/100, Rennen ${racingAccuracy}/100).`
+                  : lang === 'ar'
+                    ? `أسلوب اللعب: ${archetypeLabel} (الجرأة الهجومية ${aggressionIndex}/100، الصلابة الموقفية ${positionalSolidness}/100، دقة السباق ${racingAccuracy}/100).`
+                    : lang === 'ja'
                   ? `プレイスタイル: ${archetypeLabel} (攻撃性 ${aggressionIndex}/100, ポジション堅牢度 ${positionalSolidness}/100, レース精度 ${racingAccuracy}/100)。`
                   : `${archetypeLabel} style (Aggression ${aggressionIndex}/100, Positional Solidness ${positionalSolidness}/100, Racing ${racingAccuracy}/100).`;
 

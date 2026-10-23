@@ -4,42 +4,23 @@
  * Vue principale du Hub SEO "Gammon Academy" (`/academy`).
  *
  * Contient :
- * 1. Guide interactif des 15 Rouleaux d'Ouverture (`OpeningRollsTable`)
+ * 1. Guide interactif des 15 Rouleaux d'Ouverture (`OpeningRollsTable`) avec liens profonds `/academy/openings/[roll]`
  * 2. Guide de Maîtrise du Videau (Take Point 21.5% / 25%, Crawford, Jacoby, MET Kazaross-XG2)
- * 3. Plans de Jeu Grand-Maître, Keith Count & Échelle PR Open Sage 3-Ply
- * 4. Matrice Terminologique Multilingue (FR, EN, ES, PT, DE, AR)
- * 5. Foire Aux Questions (FAQ SEO) & Maillage interne vers Salon, Drills et Puzzles
- * Loi de Scalabilité : strictement 0 any, < 300 lignes.
+ * 3. Calculateur Interactif d'Équité de Match (MET), Take Point & Course de Keith (`MatchEquityCalculator`)
+ * 4. Plans de Jeu Grand-Maître, Keith Count & Échelle PR Open Sage 3-Ply
+ * 5. Grille des 21 Concepts Stratégiques (`/academy/concepts/[slug]`) & Matrice Terminologique 6 langues (`AcademyKnowledgeGrid`)
+ * 6. Foire Aux Questions (FAQ SEO) & Maillage interne vers Salon, Drills et Puzzles
+ * Loi de Scalabilité : strictement 0 any, < 250 lignes.
  */
 
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import AppNavbar from '../nav/AppNavbar';
 import OpeningRollsTable from './OpeningRollsTable';
+import MatchEquityCalculator from './MatchEquityCalculator';
+import AcademyKnowledgeGrid from './AcademyKnowledgeGrid';
 import { getAcademyContent } from '../../features/academy/academyTranslations';
-import {
-    useTranslation,
-    BACKGAMMON_TERMINOLOGY_MATRIX,
-    type BackgammonTermKey,
-    type PrimaryLocale,
-} from '../../i18n';
-
-const FEATURED_TERM_KEYS: readonly BackgammonTermKey[] = [
-    'doublingCube',
-    'goldenPoint',
-    'barPoint',
-    'pipCount',
-    'prime',
-    'blot',
-    'bearOff',
-    'crawfordRule',
-    'doubleMatchPoint',
-    'takePoint',
-    'gammonPrice',
-    'performanceRating',
-    'blunder',
-    'fischerIncrement',
-] as const;
+import { useTranslation, type PrimaryLocale } from '../../i18n';
 
 const GammonAcademyViewComponent: React.FC = () => {
     const { locale, dir } = useTranslation();
@@ -81,8 +62,14 @@ const GammonAcademyViewComponent: React.FC = () => {
                         <a href="#doubling-cube-guide" className="rounded-full border border-[#d4af37]/35 bg-[#0b101b] px-3.5 py-1.5 text-xs font-bold text-amber-200 hover:border-[#f3c65f] transition">
                             {content.navCube}
                         </a>
+                        <a href="#interactive-calculator" className="rounded-full border border-[#d4af37]/35 bg-[#0b101b] px-3.5 py-1.5 text-xs font-bold text-emerald-300 hover:border-emerald-400 transition">
+                            🧮 MET & Keith Calculator
+                        </a>
                         <a href="#grandmaster-strategy" className="rounded-full border border-[#d4af37]/35 bg-[#0b101b] px-3.5 py-1.5 text-xs font-bold text-amber-200 hover:border-[#f3c65f] transition">
                             {content.navStrategy}
+                        </a>
+                        <a href="#concepts-library" className="rounded-full border border-[#d4af37]/35 bg-[#0b101b] px-3.5 py-1.5 text-xs font-bold text-amber-200 hover:border-[#f3c65f] transition">
+                            21 Concepts GM
                         </a>
                         <a href="#lexicon-matrix" className="rounded-full border border-[#d4af37]/35 bg-[#0b101b] px-3.5 py-1.5 text-xs font-bold text-amber-200 hover:border-[#f3c65f] transition">
                             {content.navGlossary}
@@ -111,10 +98,7 @@ const GammonAcademyViewComponent: React.FC = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {content.cubePillars.map((pillar, idx) => (
-                            <article
-                                key={idx}
-                                className="rounded-2xl border border-[#d4af37]/30 bg-[#080c15]/90 p-5 space-y-3"
-                            >
+                            <article key={idx} className="rounded-2xl border border-[#d4af37]/30 bg-[#080c15]/90 p-5 space-y-3">
                                 <span className="inline-block rounded-full border border-[#d4af37]/40 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-[#f3c65f]">
                                     {pillar.badge}
                                 </span>
@@ -133,6 +117,9 @@ const GammonAcademyViewComponent: React.FC = () => {
                     </div>
                 </section>
 
+                {/* SECTION II-bis : Calculateur Interactif MET Kazaross-XG2 & Course de Keith */}
+                <MatchEquityCalculator locale={safeLocale} />
+
                 {/* SECTION III : Plans de Jeu Grand-Maître, Keith Count & Performance Rating (PR) */}
                 <section
                     id="grandmaster-strategy"
@@ -148,10 +135,7 @@ const GammonAcademyViewComponent: React.FC = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {content.strategyPillars.map((pillar, idx) => (
-                            <article
-                                key={idx}
-                                className="rounded-2xl border border-[#d4af37]/30 bg-[#080c15]/90 p-5 space-y-3"
-                            >
+                            <article key={idx} className="rounded-2xl border border-[#d4af37]/30 bg-[#080c15]/90 p-5 space-y-3">
                                 <span className="inline-block rounded-full border border-[#d4af37]/40 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-emerald-300">
                                     {pillar.badge}
                                 </span>
@@ -170,49 +154,8 @@ const GammonAcademyViewComponent: React.FC = () => {
                     </div>
                 </section>
 
-                {/* SECTION IV : Matrice Terminologique Internationale (6 Langues) */}
-                <section
-                    id="lexicon-matrix"
-                    aria-labelledby="glossary-heading"
-                    data-testid="academy-glossary-section"
-                    className="rounded-3xl border border-[#d4af37]/35 bg-gradient-to-b from-[#131926]/95 to-[#090d16]/95 p-5 sm:p-7 shadow-xl space-y-4"
-                >
-                    <div className="space-y-1">
-                        <h2 id="glossary-heading" className="font-serif text-xl sm:text-2xl font-black tracking-wide text-[#f5cf70]">
-                            {content.glossarySectionTitle}
-                        </h2>
-                        <p className="text-xs sm:text-sm text-slate-300">{content.glossarySectionDesc}</p>
-                    </div>
-                    <div className="overflow-x-auto rounded-2xl border border-[#d4af37]/25 bg-[#070a11]/90">
-                        <table className="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr className="border-b border-[#d4af37]/30 bg-[#101624] font-extrabold uppercase tracking-wider text-[#e5c158]">
-                                    <th className="py-2.5 px-3">🇫🇷 FR</th>
-                                    <th className="py-2.5 px-3">🇬🇧 EN</th>
-                                    <th className="py-2.5 px-3">🇪🇸 ES</th>
-                                    <th className="py-2.5 px-3">🇵🇹 PT</th>
-                                    <th className="py-2.5 px-3">🇩🇪 DE</th>
-                                    <th className="py-2.5 px-3">🇸🇦 AR</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/10">
-                                {FEATURED_TERM_KEYS.map((termKey) => {
-                                    const row = BACKGAMMON_TERMINOLOGY_MATRIX[termKey];
-                                    return (
-                                        <tr key={termKey} className="hover:bg-white/[0.03]">
-                                            <td className="py-2.5 px-3 font-semibold text-amber-100">{row.fr}</td>
-                                            <td className="py-2.5 px-3 font-semibold text-slate-200">{row.en}</td>
-                                            <td className="py-2.5 px-3 text-slate-300">{row.es}</td>
-                                            <td className="py-2.5 px-3 text-slate-300">{row.pt}</td>
-                                            <td className="py-2.5 px-3 text-slate-300">{row.de}</td>
-                                            <td className="py-2.5 px-3 text-amber-200" dir="rtl">{row.ar}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+                {/* SECTION IV : 21 Concepts Grand-Maître & Matrice Terminologique (6 Langues) */}
+                <AcademyKnowledgeGrid content={content} locale={safeLocale} />
 
                 {/* SECTION V : FAQ SEO Officielle */}
                 <section

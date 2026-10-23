@@ -1,16 +1,21 @@
 /**
- * Constructeurs purs de données structurées Schema.org (JSON-LD `@graph`) pour le SEO international.
+ * Constructeurs purs de données structurées Schema.org (JSON-LD `@graph`) pour le SEO & GEO international.
  *
- * Génère les schémas :
+ * Génère les 9 schémas interconnectés :
  * - `WebSite` (6 langues : FR, EN, ES, PT, DE, AR)
  * - `VideoGame` & `SoftwareApplication` (Backgammon Tour & Open Sage 3-Ply)
  * - `Course` (Gammon Academy — Les 15 Ouvertures, Videau & Stratégie 3-Ply)
  * - `FAQPage` (Questions/Réponses stratégiques à fort volume de recherche)
  * - `BreadcrumbList` (Arborescence canonique du site)
+ * - `ItemList` (Classement ordonné des 15 Rouleaux d'Ouverture par équité 3-Ply)
+ * - `DefinedTermSet` (Glossaire officiel des termes techniques XG / WBGF)
+ * - `HowTo` (Guide pas-à-pas du calcul du Keith Count et de la décision de Videau)
  * Strictement 0 any.
  */
 
 import { ACADEMY_CONTENT } from '../../features/academy/academyTranslations';
+import { OPENING_ROLLS_15 } from '../../features/academy/academyData';
+import { BACKGAMMON_TERMINOLOGY_MATRIX, type BackgammonTermKey } from '../i18n/terminologyMatrix';
 
 export const DEFAULT_SITE_URL = 'https://backgammontour.com';
 
@@ -21,6 +26,21 @@ export const SUPPORTED_HREFLANGS: ReadonlyArray<{ readonly lang: string; readonl
     { lang: 'pt', urlSuffix: '?lang=pt' },
     { lang: 'de', urlSuffix: '?lang=de' },
     { lang: 'ar', urlSuffix: '?lang=ar' },
+] as const;
+
+const GLOSSARY_SCHEMA_KEYS: readonly BackgammonTermKey[] = [
+    'doublingCube',
+    'goldenPoint',
+    'barPoint',
+    'pipCount',
+    'prime',
+    'blot',
+    'bearOff',
+    'crawfordRule',
+    'doubleMatchPoint',
+    'takePoint',
+    'gammonPrice',
+    'performanceRating',
 ] as const;
 
 export function buildGlobalStructuredData(siteUrl: string = DEFAULT_SITE_URL): Record<string, unknown> {
@@ -43,6 +63,24 @@ export function buildGlobalStructuredData(siteUrl: string = DEFAULT_SITE_URL): R
             },
         })),
     ];
+
+    const openingListItems = OPENING_ROLLS_15.map((entry, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        name: `Ouverture ${entry.roll} (${entry.optimalMove}) — ${entry.nickname.fr} (${entry.equity3Ply})`,
+        url: `${cleanUrl}/academy/openings/${entry.roll}`,
+    }));
+
+    const definedTerms = GLOSSARY_SCHEMA_KEYS.map((key) => {
+        const row = BACKGAMMON_TERMINOLOGY_MATRIX[key];
+        return {
+            '@type': 'DefinedTerm',
+            termCode: key,
+            name: `${row.fr} / ${row.en}`,
+            description: `FR: ${row.fr} | EN: ${row.en} | ES: ${row.es} | PT: ${row.pt} | DE: ${row.de} | AR: ${row.ar}`,
+            inDefinedTermSet: `${cleanUrl}/academy#lexicon-matrix`,
+        };
+    });
 
     return {
         '@context': 'https://schema.org',
@@ -95,6 +133,48 @@ export function buildGlobalStructuredData(siteUrl: string = DEFAULT_SITE_URL): R
                 url: `${cleanUrl}/academy`,
                 inLanguage: ['fr', 'en', 'es', 'pt', 'de', 'ar'],
                 educationalLevel: ['Beginner', 'Intermediate', 'Advanced', 'Grandmaster'],
+            },
+            {
+                '@type': 'ItemList',
+                '@id': `${cleanUrl}/academy#opening-rolls-list`,
+                name: 'Les 15 Rouleaux d’Ouverture au Backgammon (Équité 3-Ply Open Sage)',
+                itemListOrder: 'https://schema.org/ItemListOrderDescending',
+                numberOfItems: OPENING_ROLLS_15.length,
+                itemListElement: openingListItems,
+            },
+            {
+                '@type': 'DefinedTermSet',
+                '@id': `${cleanUrl}/academy#lexicon-matrix`,
+                name: 'Matrice Terminologique Officielle du Backgammon de Compétition (6 Langues)',
+                url: `${cleanUrl}/academy#lexicon-matrix`,
+                hasDefinedTerm: definedTerms,
+            },
+            {
+                '@type': 'HowTo',
+                '@id': `${cleanUrl}/academy#howto-keith-count`,
+                name: 'Comment calculer le Keith Count et prendre une décision de Videau en course au Backgammon',
+                description:
+                    'Méthode mathématique en 3 étapes pour décider quand doubler, redoubler ou accepter le videau dans une course pure au Backgammon.',
+                step: [
+                    {
+                        '@type': 'HowToStep',
+                        position: 1,
+                        name: 'Calculer le Pip Count corrigé (Keith Count)',
+                        text: 'Additionnez votre Pip Count brut et vos pénalités de structure (+1 par pion au-delà de 3 sur les portes 1 à 3, +1 par flèche vide sur les portes 4 à 6, +1 par pion au-delà de 1 hors du jan intérieur).',
+                    },
+                    {
+                        '@type': 'HowToStep',
+                        position: 2,
+                        name: 'Déterminer le seuil maximal de prise (Take Limit)',
+                        text: 'Multipliez votre Keith Count par 8, divisez par 7 (arrondi à l’entier inférieur), puis retranchez 3 pips : TakeLimit = floor(KeithX * 8 / 7) - 3.',
+                    },
+                    {
+                        '@type': 'HowToStep',
+                        position: 3,
+                        name: 'Appliquer le verdict Double / Redouble / Take / Pass',
+                        text: 'Doublez dès que le Keith Count adverse est supérieur ou égal à (TakeLimit - 4). L’adversaire doit accepter (Take) jusqu’à TakeLimit inclus, et passer (Drop) au-delà.',
+                    },
+                ],
             },
             {
                 '@type': 'FAQPage',

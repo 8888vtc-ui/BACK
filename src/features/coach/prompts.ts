@@ -23,7 +23,7 @@ export interface CoachPromptParams {
     optimalMove: string;
     features: StrategicFeatures;
     matchContext?: MatchContext;
-    playerLevel?: 'beginner' | 'intermediate' | 'expert';
+    playerLevel?: 'beginner' | 'intermediate' | 'expert' | 'grandmaster';
     language?: Locale;
 }
 

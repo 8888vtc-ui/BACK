@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:xhtml="http://www.w3.org/1999/xhtml"
->
-  <!-- 1. Salon Principal Backgammon Tour (6 Langues) -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- 1. Salon Privé Principal (Lobby & Jeu Live) -->
   <url>
     <loc>https://backgammontour.com/</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://backgammontour.com/" />
@@ -17,7 +15,7 @@
     <priority>1.0</priority>
   </url>
 
-  <!-- 2. Hub SEO Gammon Academy : 15 Ouvertures, Videau 21.5% & Stratégie 3-Ply (6 Langues) -->
+  <!-- 2. Hub SEO Gammon Academy (15 Ouvertures, Videau, Calculateur MET & Stratégie 3-Ply) -->
   <url>
     <loc>https://backgammontour.com/academy</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://backgammontour.com/academy" />
@@ -31,7 +29,7 @@
     <priority>0.95</priority>
   </url>
 
-  <!-- 3. Puzzles Quotidiens Certifiés Open Sage 3-Ply (6 Langues) -->
+  <!-- 3. Puzzles Tactiques Quotidiens -->
   <url>
     <loc>https://backgammontour.com/puzzles</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://backgammontour.com/puzzles" />
@@ -45,7 +43,7 @@
     <priority>0.9</priority>
   </url>
 
-  <!-- 4. Drills de Blunders & Rejeu des Erreurs (6 Langues) -->
+  <!-- 4. Drills d'Entraînement sur les Blunders -->
   <url>
     <loc>https://backgammontour.com/drills</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://backgammontour.com/drills" />
@@ -59,7 +57,7 @@
     <priority>0.9</priority>
   </url>
 
-  <!-- 5. Tableau de Progression & Performance Rating (PR) (6 Langues) -->
+  <!-- 5. Tableau de Progression & Performance Rating (PR) -->
   <url>
     <loc>https://backgammontour.com/progression</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://backgammontour.com/progression" />
@@ -72,4 +70,48 @@
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
+
+  <!-- 6. Les 15 Pages Programmatiques des Rouleaux d'Ouverture (/academy/openings/[roll]) -->
+  <url><loc>https://backgammontour.com/academy/openings/3-1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/4-2</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/6-1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/5-3</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/6-5</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/2-1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/4-3</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/5-2</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/5-4</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/6-2</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/6-3</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/6-4</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/3-2</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/4-1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/academy/openings/5-1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+
+  <!-- 7. Les 21 Pages Programmatiques des Concepts Stratégiques Grand-Maître (/academy/concepts/[slug]) -->
+  <url><loc>https://backgammontour.com/academy/concepts/golden-point</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/bar-point</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/advanced-anchor</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/duplication</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/pure-play</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/tempo-hit</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/running-game</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/holding-game</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/prime-vs-prime</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/blitz-attack</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/back-game</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/take-point</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/woolsey-law</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/market-loss</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/trice-epc</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/kazaross-8912</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/kazaross-xg-met</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/crawford-rule</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/dmp-strategy</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/opening-philosophy</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/mochy-golden-rules</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+
+  <!-- 8. Référentiels GEO (Generative Engine Optimization) pour ChatGPT / Perplexity / Claude / Gemini -->
+  <url><loc>https://backgammontour.com/llms.txt</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://backgammontour.com/llms-full.txt</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
 </urlset>

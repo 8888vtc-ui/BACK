@@ -117,13 +117,13 @@ export const MatchContextSchema = z.object({
 }).passthrough();
 
 export const CoachRequestSchema = z.object({
-    verdict: z.enum(['blunder', 'doubtful']).default('blunder'),
-    equityLoss: z.number().min(-2.0).max(2.0).default(-0.1),
+    verdict: z.enum(['blunder', 'doubtful', 'inaccuracy', 'good', 'optimal', 'acceptable']).default('blunder'),
+    equityLoss: z.number().min(-10.0).max(10.0).default(-0.1),
     playedMove: z.string().min(1, 'playedMove requis').max(100),
     optimalMove: z.string().min(1, 'optimalMove requis').max(100),
     features: PositionFeaturesSchema.optional(),
     matchContext: MatchContextSchema.optional(),
-    playerLevel: z.enum(['beginner', 'intermediate', 'expert']).default('intermediate'),
+    playerLevel: z.enum(['beginner', 'intermediate', 'expert', 'grandmaster']).default('intermediate'),
     language: z.enum(['fr', 'en', 'es', 'pt', 'de', 'ar', 'ja']).default('fr'),
 });
 

@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 /**
- * Tests des fonctions CRUD des erreurs récurrentes (recurring_errors).
+ * Tests des fonctions CRUD des erreurs récurrentes (recurring_errors)
+ * et du cache global partagé L2 (getSharedCoachExplanation).
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock du client Supabase avant l'import de db.ts
 const mockRpc = vi.fn();
 const mockFrom = vi.fn();
 
@@ -16,7 +16,11 @@ vi.mock('./client', () => ({
     },
 }));
 
-import { upsertRecurringError, getRecurringErrors } from './db';
+import {
+    upsertRecurringError,
+    getRecurringErrors,
+    getSharedCoachExplanation,
+} from './db';
 
 describe('upsertRecurringError', () => {
     beforeEach(() => {
@@ -50,7 +54,7 @@ describe('upsertRecurringError', () => {
         expect(result).toEqual(record);
     });
 
-    it('retourne null en cas d\'erreur RPC', async () => {
+    it("retourne null en cas d'erreur RPC", async () => {
         mockRpc.mockResolvedValue({ data: null, error: { message: 'boom' } });
 
         const result = await upsertRecurringError('user-1', 'x', 'X', 0.01);
@@ -87,7 +91,7 @@ describe('getRecurringErrors', () => {
         expect(result).toEqual(records);
     });
 
-    it('retourne un tableau vide en cas d\'erreur', async () => {
+    it("retourne un tableau vide en cas d'erreur", async () => {
         const chain = {
             select: vi.fn().mockReturnThis(),
             eq: vi.fn().mockReturnThis(),
@@ -99,5 +103,43 @@ describe('getRecurringErrors', () => {
         const result = await getRecurringErrors('user-1');
 
         expect(result).toEqual([]);
+    });
+});
+
+describe('getSharedCoachExplanation (Cache Global Partagé L2)', () => {
+    beforeEach(() => {
+        mockFrom.mockReset();
+    });
+
+    it('privilégie une explication issue du LLM sur un repli rule-based pour la même position_key', async () => {
+        const rows = [
+            {
+                id: 'exp-rb',
+                position_key: 'coach::pos[xgid1]',
+                explanation: 'Explication heuristique',
+                source: 'rule-based',
+                created_at: '2026-10-23T12:00:00Z',
+            },
+            {
+                id: 'exp-llm',
+                position_key: 'coach::pos[xgid1]',
+                explanation: 'Explication Grand-Maître LLM',
+                source: 'llm',
+                created_at: '2026-10-23T11:00:00Z',
+            },
+        ];
+
+        const chain = {
+            select: vi.fn().mockReturnThis(),
+            eq: vi.fn().mockReturnThis(),
+            order: vi.fn().mockReturnThis(),
+            limit: vi.fn().mockResolvedValue({ data: rows, error: null }),
+        };
+        mockFrom.mockReturnValue(chain);
+
+        const res = await getSharedCoachExplanation('coach::pos[xgid1]');
+        expect(mockFrom).toHaveBeenCalledWith('coach_explanations');
+        expect(chain.eq).toHaveBeenCalledWith('position_key', 'coach::pos[xgid1]');
+        expect(res?.id).toBe('exp-llm');
     });
 });

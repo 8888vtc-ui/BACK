@@ -110,12 +110,12 @@ describe('i18n Dictionary Parity & Interpolation (6 Primary Languages: FR, EN, E
 
         expect(Object.keys(BACKGAMMON_TERMINOLOGY_MATRIX).length).toBeGreaterThanOrEqual(25);
         const cubeRow = getTerminologyRow('doublingCube');
-        expect(cubeRow?.fr).toBe('Videau (Dé doubleur)');
+        expect(cubeRow?.fr).toBe('Videau');
         expect(cubeRow?.en).toBe('Doubling Cube');
-        expect(cubeRow?.es).toBe('Dado de doblaje');
+        expect(cubeRow?.es).toBe('Cubo de doblaje');
         expect(cubeRow?.pt).toBe('Dado de dobra (Cubo)');
         expect(cubeRow?.de).toBe('Dopplungswürfel');
-        expect(cubeRow?.ar).toBe('مكعب المضاعفة');
+        expect(cubeRow?.ar).toBe('مكعب المضاعفة (Doubling Cube)');
     });
 });
 

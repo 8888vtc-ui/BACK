@@ -212,6 +212,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                         className="group flex items-center gap-2 rounded-full border border-amber-500/30 bg-black/40 px-2.5 py-1 transition hover:border-amber-400/70 hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                     >
                         {profile?.avatar_url ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
                             <img src={profile.avatar_url} alt={displayName ?? 'Joueur'} className="h-7 w-7 rounded-full object-cover ring-1 ring-amber-400/60" />
                         ) : (
                             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 text-[11px] font-black text-slate-950 shadow-inner">

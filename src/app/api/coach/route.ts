@@ -90,8 +90,13 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
     try {
         const body = validation.data;
 
+        const normalizedVerdict: CoachPromptParams['verdict'] =
+            body.verdict === 'blunder' ? 'blunder' : 'doubtful';
+        const normalizedPlayerLevel: CoachPromptParams['playerLevel'] =
+            body.playerLevel === 'grandmaster' ? 'expert' : body.playerLevel;
+
         const params: CoachPromptParams = {
-            verdict: body.verdict,
+            verdict: normalizedVerdict,
             equityLoss: body.equityLoss,
             playedMove: body.playedMove,
             optimalMove: body.optimalMove,
@@ -117,7 +122,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                       cubeValue: body.matchContext.cubeValue,
                   })
                 : undefined,
-            playerLevel: body.playerLevel,
+            playerLevel: normalizedPlayerLevel,
             language: body.language,
         };
 

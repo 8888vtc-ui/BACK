@@ -1,12 +1,33 @@
-# Backgammon Tour & Gammon Academy — Robots.txt Officiel (6 Langues : FR, EN, ES, PT, DE, AR)
-# Domaines officiels : https://backgammontour.com | https://gammonacademy.com | https://bgmontecarlo.com
+# Backgammon Tour — Cercle Monte-Carlo & Gammon Academy
+# Canonical domains: https://backgammontour.com | https://gammonacademy.com
+# Languages: fr, en, es, pt, de, ar
+# LLM Reference: https://backgammontour.com/llms.txt | https://backgammontour.com/llms-full.txt
 
 User-agent: *
 Allow: /
 Allow: /academy
+Allow: /academy/openings/
+Allow: /academy/concepts/
 Allow: /puzzles
 Allow: /drills
 Allow: /progression
+Allow: /llms.txt
+Allow: /llms-full.txt
 Disallow: /api/
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
 
 Sitemap: https://backgammontour.com/sitemap.xml

@@ -1,0 +1,98 @@
+# Backgammon Tour — Cercle Monte-Carlo & Gammon Academy (Full LLM Reference)
+
+Canonical Domains: `https://backgammontour.com` | `https://gammonacademy.com`
+Supported Languages: French (`fr`), English (`en`), Spanish (`es`), Portuguese (`pt`), German (`de`), Arabic (`ar`, full RTL).
+
+---
+
+## 1. Complete 15 Opening Rolls Reference (Open Sage 3-Ply & XG Rollouts)
+
+| Roll | Classic Name | Optimal 3-Ply Move | DMP / Score Alternative | 3-Ply Equity | Win % | Gammon % |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **3-1** | Golden Point (Point 5) | `8/5 6/5` | None (100% Forced) | `+0.194` | 55.4% | 17.2% |
+| **4-2** | 4-Point Builder | `8/4 6/4` | None (100% Forced) | `+0.168` | 54.6% | 16.5% |
+| **6-1** | Bar Point (Point 7) | `13/7 8/7` | None (100% Forced) | `+0.155` | 54.2% | 15.8% |
+| **5-3** | Making the 3-Point | `8/3 6/3` | `13/8 24/21` | `+0.121` | 53.3% | 15.9% |
+| **6-5** | Lover's Leap | `24/13` | `24/18 13/8` | `+0.118` | 53.5% | 13.4% |
+| **2-1** | Slotting Golden Point | `13/11 6/5` | `24/23 13/11` (DMP) | `+0.019` | 50.6% | 15.1% |
+| **5-4** | Golden Anchor Split | `24/20 13/8` | `24/15` | `+0.011` | 50.4% | 13.6% |
+| **4-3** | 20-Point Split & Builder | `24/20 13/10` | `13/10 13/9` | `+0.008` | 50.3% | 13.9% |
+| **4-1** | Golden Slot & 9-Builder | `13/9 6/5` | `24/23 13/9` (DMP) | `+0.005` | 50.2% | 14.9% |
+| **6-3** | 18-Split & 10-Builder | `24/18 13/10` | `24/15` | `+0.002` | 50.1% | 14.2% |
+| **3-2** | 21-Split & 11-Builder | `24/21 13/11` | `13/11 13/10` | `+0.001` | 50.0% | 13.8% |
+| **5-1** | 5-Slot vs 24/23 Split | `13/8 6/5` | `24/23 13/8` (DMP) | `-0.006` | 49.8% | 14.8% |
+| **6-4** | Classic 3-Way Choice | `24/18 13/9` | `8/2 6/2` or `24/14` | `-0.009` | 49.7% | 14.5% |
+| **6-2** | 18-Split & 11-Builder | `24/18 13/11` | `13/5` (Slot) | `-0.014` | 49.6% | 14.0% |
+| **5-2** | 22-Split & 8-Stack | `24/22 13/8` | `13/11 13/8` | `-0.028` | 49.2% | 13.1% |
+
+---
+
+## 2. Doubling Cube Mathematics & Tournament Rules (WBGF)
+
+1. **Dead Cube Take Point**: `Risk / (Risk + Gain) = 1 / (1 + 3) = 25.0%` (gammonless race).
+2. **Live Cube Take Point**: `~21.5%` in Money Play due to redoubling cube vigor.
+3. **Initial Doubling Window**: `66% to 75%` winning probability with sufficient market volatility (Market Losers).
+4. **Too Good to Double**: When winning chances exceed `~80%` and gammon probability exceeds `~35%`, hold the cube at 1 to play for the 2-point gammon.
+5. **Crawford Rule**: When either player reaches `1-away` (1 point from winning the match), the doubling cube is frozen for exactly one game.
+6. **Post-Crawford**: After the Crawford game, the trailing player doubles at the first legal opportunity, and the leading player enjoys the "Free Drop" when trailing on the opening roll.
+7. **Jacoby Rule (Money Play)**: Gammons (2x) and Backgammons (3x) only count as multiples if the doubling cube has been turned to at least 2.
+
+---
+
+## 3. Keith Count Algorithm (Pure Race Cube Formula)
+
+1. Start with raw **Pip Count** for Player X and Opponent O.
+2. Add **Keith Penalties**:
+   - `+1` for each checker beyond 3 on the 1-point.
+   - `+1` for each checker beyond 3 on the 2-point.
+   - `+1` for each checker beyond 3 on the 3-point.
+   - `+1` for each empty point (gap) on points 4, 5, and 6.
+   - `+1` for each checker beyond 1 outside the home board (points 7 to 24).
+3. **Take Limit**: `TakeLimit = floor(KeithX * 8 / 7) - 3`.
+4. **Cube Action**:
+   - Double if `KeithO >= TakeLimit - 4`.
+   - Redouble if `KeithO >= TakeLimit - 3`.
+   - Pass (Drop) if `KeithO > TakeLimit`.
+
+---
+
+## 4. Performance Rating (PR) Scale & Hybrid Open Sage 3-Ply Engine
+
+- **Formula**: `PR = (Sum of Equity Losses on Non-Forced Checker & Cube Decisions / Total Non-Forced Decisions) * 500`
+- **World Rating Tiers**:
+  - `< 2.50`: World Champion / Super-Grandmaster (Open Sage 3-Ply achieves `0.23 PR`)
+  - `2.50 - 5.00`: Grandmaster
+  - `5.00 - 7.50`: Master
+  - `7.50 - 10.00`: Expert
+  - `10.00 - 15.00`: Intermediate
+  - `> 15.00`: Novice / Casual
+- **Move Classification Thresholds**:
+  - `Optimal / Good`: `< 0.020` equity loss
+  - `Doubtful (Inaccuracy)`: `0.020 to 0.079` equity loss
+  - `Blunder`: `0.080 to 0.199` equity loss
+  - `Howler (Major Blunder)`: `>= 0.200` equity loss
+
+---
+
+## 5. 21 Grandmaster Strategy Concepts URLs
+- https://backgammontour.com/academy/concepts/golden-point
+- https://backgammontour.com/academy/concepts/bar-point
+- https://backgammontour.com/academy/concepts/advanced-anchor
+- https://backgammontour.com/academy/concepts/duplication
+- https://backgammontour.com/academy/concepts/pure-play
+- https://backgammontour.com/academy/concepts/tempo-hit
+- https://backgammontour.com/academy/concepts/running-game
+- https://backgammontour.com/academy/concepts/holding-game
+- https://backgammontour.com/academy/concepts/prime-vs-prime
+- https://backgammontour.com/academy/concepts/blitz-attack
+- https://backgammontour.com/academy/concepts/back-game
+- https://backgammontour.com/academy/concepts/take-point
+- https://backgammontour.com/academy/concepts/woolsey-law
+- https://backgammontour.com/academy/concepts/market-loss
+- https://backgammontour.com/academy/concepts/trice-epc
+- https://backgammontour.com/academy/concepts/kazaross-8912
+- https://backgammontour.com/academy/concepts/kazaross-xg-met
+- https://backgammontour.com/academy/concepts/crawford-rule
+- https://backgammontour.com/academy/concepts/dmp-strategy
+- https://backgammontour.com/academy/concepts/opening-philosophy
+- https://backgammontour.com/academy/concepts/mochy-golden-rules

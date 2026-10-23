@@ -254,7 +254,13 @@ export function useBoardPointInteractions({
             if (next !== null && next !== pointNumber) {
                 e.preventDefault();
                 setFocusedPoint(next);
-                const target = document.querySelector(`[data-testid="point-triangle-${next}"]`) as HTMLElement | null;
+                const selector =
+                    next === 101
+                        ? '[data-testid="tray-zone-o"]'
+                        : next === 100
+                          ? '[data-testid="tray-zone-x"]'
+                          : `[data-testid="point-triangle-${next}"]`;
+                const target = document.querySelector(selector) as HTMLElement | null;
                 target?.focus();
             }
         },

@@ -1,7 +1,7 @@
 {
   "name": "Backgammon Tour — Cercle Monte-Carlo & Gammon Academy",
   "short_name": "Backgammon Tour",
-  "description": "Salon officiel Backgammon Tour & Gammon Academy : plateau Tournament-Grade, Coach IA Open Sage 3-Ply en temps réel, Drills, Puzzles et mode 100 % hors-ligne.",
+  "description": "Salon officiel Backgammon Tour & Gammon Academy : plateau Tournament-Grade, Coach IA Open Sage 3-Ply en 6 langues (FR, EN, ES, PT, DE, AR), Calculateur MET & Keith Count, Drills, Puzzles et mode 100 % hors-ligne.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -33,16 +33,37 @@
   ],
   "shortcuts": [
     {
-      "name": "Jouer une partie",
+      "name": "Jouer contre l'IA 3-Ply",
       "short_name": "Jouer",
-      "description": "Lancer une nouvelle manche de Backgammon",
+      "description": "Lancer une nouvelle manche de Backgammon au Salon Monte-Carlo",
       "url": "/",
       "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
     },
     {
-      "name": "Tableau de Progression",
+      "name": "Gammon Academy (Guides & 15 Ouvertures)",
+      "short_name": "Académie",
+      "description": "Encyclopédie 3-Ply des 15 ouvertures, Videau et Calculateur MET",
+      "url": "/academy",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Puzzles Tactiques Quotidiens",
+      "short_name": "Puzzles",
+      "description": "Résoudre les positions de tournoi certifiées 3-Ply",
+      "url": "/puzzles",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Drills de Blunders",
+      "short_name": "Drills",
+      "description": "Entraînement ciblé sur vos erreurs de pions et de videau",
+      "url": "/drills",
+      "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tableau de Progression & PR",
       "short_name": "Progression",
-      "description": "Consulter vos statistiques et votre Error Rate",
+      "description": "Consulter vos statistiques et votre Performance Rating (PR)",
       "url": "/progression",
       "icons": [{ "src": "/icons/icon-192.svg", "sizes": "192x192" }]
     }

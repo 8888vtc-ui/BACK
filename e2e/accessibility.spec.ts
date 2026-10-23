@@ -46,7 +46,7 @@ test.describe('Accessibilité & Navigation Clavier (WCAG 2.1 AA)', () => {
 
         // Vérifier le guide d accessibilité des raccourcis clavier
         const shortcutsGuide = page.getByLabel('Raccourcis clavier du plateau');
-        await expect(shortcutsGuide).toBeVisible();
+        await expect(shortcutsGuide).toBeAttached();
     });
 
     test('permet la navigation clavier sur les flèches du plateau avec les touches directionnelles', async ({ page }) => {

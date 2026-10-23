@@ -65,16 +65,21 @@ L'ensemble du référencement naturel est câblé nativement dans le projet et c
 
 1. **Métadonnées Centralisées ([`src/app/layout.tsx`](../src/app/layout.tsx))** :
    - `metadataBase` calé sur `https://backgammontour.com` (surchargeable via `NEXT_PUBLIC_SITE_URL`).
-   - Balises `title` avec `template: '%s | Backgammon Tour'`, `description` enrichie, `keywords` bilingues FR/EN, `alternates` (`canonical` + `hreflang` `fr-FR` / `en-US`), `openGraph` et `twitter`.
-2. **Données Structurées JSON-LD (`Schema.org`)** :
+   - Balises `title` avec `template: '%s | Backgammon Tour'`, `description` enrichie, `keywords` multilingues (FR/EN/ES/PT/DE/AR), `alternates` (`canonical` + `hreflang` 6 langues `fr-FR`, `en-US`, `es-ES`, `pt-BR`, `de-DE`, `ar-SA`), `openGraph` et `twitter`.
+2. **Données Structurées JSON-LD (`Schema.org`) ([`src/lib/seo/structuredData.ts`](../src/lib/seo/structuredData.ts))** :
    - Injectées dans [`src/app/layout.tsx`](../src/app/layout.tsx) sous forme de graphe `@graph` combinant :
-     - `@type: "WebSite"` (`Backgammon Tour`, `alternateName: ["Gammon Academy", "Cercle Monte-Carlo Backgammon"]`)
-     - `@type: ["VideoGame", "SoftwareApplication"]` avec propriété `sameAs: ["https://gammonacademy.com", "https://bgmontecarlo.com"]` pour relier sémantiquement vos domaines aux yeux de Google.
-3. **Indexation & Crawlabilité** :
-   - [`public/robots.txt`](../public/robots.txt) : autorise l'indexation de `/`, `/puzzles`, `/drills`, `/progression`, bloque `/api/` et déclare le sitemap canonique.
-   - [`public/sitemap.xml`](../public/sitemap.xml) : déclare les 4 routes majeures avec balises `xhtml:link` `hreflang="fr"`, `hreflang="en"` et `hreflang="x-default"`.
-4. **Fiches Stores Bilingues ([`store-assets/metadata/`](../store-assets/metadata/))** :
-   - Synchronisées en `fr-FR` et `en-US` avec l'URL officielle `https://backgammontour.com`.
+     - `@type: "WebSite"` (`Backgammon Tour — Cercle Monte-Carlo & Gammon Academy`)
+     - `@type: ["VideoGame", "SoftwareApplication"]` avec propriété `sameAs: ["https://gammonacademy.com", "https://bgmontecarlo.com"]`
+     - `@type: "Course"` pour le hub encyclopédique `/academy` (*Gammon Academy*)
+     - `@type: "FAQPage"` et `@type: "BreadcrumbList"`.
+3. **Hub Éditorial « Gammon Academy » ([`src/app/academy/page.tsx`](../src/app/academy/page.tsx))** :
+   - Encyclopédie stratégique en 6 langues : table interactive des **15 Rouleaux d'Ouverture** (équités 3-Ply Open Sage), guide mathématique du **Videau** (*Take Point* 21,5 %, Crawford, Jacoby, MET Kazaross-XG2), **Keith Count**, échelle **PR** et matrice terminologique.
+4. **Indexation & Crawlabilité** :
+   - [`public/robots.txt`](../public/robots.txt) : autorise l'indexation de `/`, `/academy`, `/puzzles`, `/drills`, `/progression`, bloque `/api/` et déclare le sitemap canonique.
+   - [`public/sitemap.xml`](../public/sitemap.xml) : déclare les 5 routes majeures avec balises `xhtml:link` `hreflang` pour `fr`, `en`, `es`, `pt`, `de`, `ar` et `x-default`.
+5. **Fiches Stores en 6 Langues ([`store-assets/metadata/`](../store-assets/metadata/))** :
+   - Synchronisées en `fr-FR`, `en-US`, `es-ES`, `pt-BR`, `de-DE` et `ar-SA` avec l'URL officielle `https://backgammontour.com` et `https://gammonacademy.com`.
+   - Voir [`docs/SEO_AND_I18N_MASTERPLAN.md`](SEO_AND_I18N_MASTERPLAN.md) pour la cartographie complète fichier par fichier.
 
 ---
 

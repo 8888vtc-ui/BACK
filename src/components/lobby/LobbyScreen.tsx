@@ -18,6 +18,7 @@ import AppNavbar from '../nav/AppNavbar';
 import PlayerProfileCard from './PlayerProfileCard';
 import RecentMatchesSummary from './RecentMatchesSummary';
 import LearningModulesGrid from './LearningModulesGrid';
+import CoachPreMatchBriefingCard from './CoachPreMatchBriefingCard';
 import {
     getSyncAcademySnapshot,
     loadPlayerHubData,
@@ -167,9 +168,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
 
                     <div className="flex items-center gap-3">
                         <span aria-hidden="true" className="h-[1px] w-10 sm:w-16 bg-gradient-to-r from-transparent to-[#d4af37]/70" />
-                        <p className="text-[10px] font-bold uppercase tracking-[0.36em] text-[#e5c158] drop-shadow">
-                            {ui.lobby.subtitle}
-                        </p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.36em] text-[#e5c158] drop-shadow">{ui.lobby.subtitle}</p>
                         <span aria-hidden="true" className="h-[1px] w-10 sm:w-16 bg-gradient-to-l from-transparent to-[#d4af37]/70" />
                     </div>
                 </header>
@@ -183,6 +182,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                     puzzleStreak={snapshot.puzzleStreak}
                     onOpenReview={() => onOpenModule?.('stats')}
                 />
+
+                <CoachPreMatchBriefingCard onOpenDrills={() => onOpenModule?.('drills')} />
 
                 <section aria-label="Modes de jeu" className="grid w-full grid-cols-1 gap-3.5 sm:grid-cols-3">
                     {mainCards.map((card) => {
@@ -310,24 +311,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                         aria-label={ui.pwa.installAppAria}
                         className="group flex items-center gap-2 rounded-full border border-[#d4af37]/45 bg-[#0e1422]/90 px-4 py-1.5 text-xs font-bold text-amber-200 shadow-[0_4px_14px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,245,205,0.2)] transition hover:border-[#f3c65f] hover:bg-[#161f33] hover:text-[#fff4d0] active:scale-95"
                     >
-                        <svg
-                            aria-hidden="true"
-                            viewBox="0 0 24 24"
-                            className="h-3.5 w-3.5 text-[#f3c65f] transition-transform duration-200 group-hover:translate-y-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
                         <span>{ui.pwa.installApp}</span>
-                        <span className="rounded-full bg-[#f3c65f]/15 px-1.5 py-0.5 text-[9px] font-mono font-bold text-[#f3c65f]">
-                            PWA
-                        </span>
+                        <span className="rounded-full bg-[#f3c65f]/15 px-1.5 py-0.5 text-[9px] font-mono font-bold text-[#f3c65f]">PWA</span>
                     </button>
                 )}
 

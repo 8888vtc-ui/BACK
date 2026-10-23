@@ -156,6 +156,7 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
                     onClick={offTray.onOffClick}
                     onRightClick={offTray.onOffRightClick}
                     swapColors={swapColors}
+                    isFocused={focusedPoint === (offTray.offPoint === 0 ? 100 : 101)}
                 />
             </div>
         </div>

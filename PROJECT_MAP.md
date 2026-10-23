@@ -16,10 +16,10 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 - **Moteur de règles** : `src/engine/` (TypeScript pur, déterministe).
 - **Moteur IA cloud (principal)** : Open Sage (`bgsage-service/`, PR 0.23, 4 niveaux de bot + videau Double/Take/Pass) via `src/lib/engine/bgsageClient.ts`.
 - **Moteur IA local (repli offline)** : évaluateur tri-phase TypeScript + table Bear-Off exacte 54 264 états + Keith Count (`src/lib/engine/evaluator.ts`).
-- **Moteur legacy** : backend Python GNUBG (`backend-engine/`, rollouts profonds uniquement).
-- **Coach** : Pipeline log-driven (`src/features/coach/logAnalyzer.ts`) + LLM pluggable via Route Handlers (`src/app/api/`).
-- **Persistance** : Supabase (Postgres + Auth + RLS) + persistance locale IndexedDB/SQLite Capacitor.
-- **Tests** : Vitest (870 tests unitaires sur 153 fichiers) + Playwright (e2e) + pytest (`bgsage-service/`).
+- **Moteur legacy** : backend Python GNUBG (archivé sous `archive/backend_engine_gnubg_legacy/`, rollouts historiques).
+- **Coach** : Pipeline log-driven (`src/features/coach/logAnalyzer.ts`) + Google Gemini `gemini-2.5-flash` via SSE (`src/app/api/coach/`) avec Cache L2 Supabase (`coach_explanations`).
+- **Persistance** : Supabase (Postgres + Auth + RLS + Cache Coach L2) + persistance locale IndexedDB/SQLite Capacitor.
+- **Tests** : Vitest (1 105 tests unitaires sur 197 fichiers, 0 échec) + Playwright (e2e) + pytest (`bgsage-service/`).
 
 ---
 
@@ -49,6 +49,7 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | `puzzles/` | Puzzles quotidiens |
 | `rating/` | Analyse de partie, calcul de PR |
 | `openings/` | Base d'ouvertures |
+| `academy/` | Données encyclopédiques 3-Ply des 15 ouvertures (`academyData.ts`) et guides stratégiques 6 langues (`academyTranslations.ts`) |
 | `export/` | Sérialisation XGID/SGF/MAT, partage |
 | `knowledge/` | Base de connaissances pédagogiques |
 
@@ -56,7 +57,9 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | Dossier | Rôle |
 |---|---|
 | `board/` | Plateau (`Board.tsx`, `GameScreenView.tsx`, `GameBoardArea.tsx`, géométrie, thèmes) |
-| `lobby/` | Lobby principal (`LobbyScreen.tsx`, `AppScreenViews.tsx`) |
+| `lobby/` | Lobby principal (`LobbyScreen.tsx`, `LearningModulesGrid.tsx`, `AppScreenViews.tsx`) |
+| `nav/` | Barre de navigation horlogère (`AppNavbar.tsx`) et sélecteur 6 langues (`LanguageSelector.tsx`) |
+| `academy/` | Hub SEO Gammon Academy (`GammonAcademyView.tsx`, `OpeningRollsTable.tsx`, `MatchEquityCalculator.tsx`, `AcademyKnowledgeGrid.tsx`, `OpeningRollDetailView.tsx`, `ConceptDetailView.tsx`) |
 | `coach/` | Panneau coach (`CoachPanel.tsx`, `CoachSidebar.tsx`, `CoachMobileDrawer.tsx`) |
 | `hud/` | HUD de match (`MatchHud.tsx`, `MatchHeader.tsx`, `MatchTurnBar.tsx`, sélecteurs) |
 | `multiplayer/` | Bannière et composants multijoueur |
@@ -82,7 +85,8 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | Dossier | Rôle |
 |---|---|
 | `supabase/` | Client Supabase, auth, types, erreurs récurrentes |
-| `i18n/` | Internationalisation (fr/en) |
+| `i18n/` | Internationalisation complète 6 langues (`fr`, `en`, `es`, `pt`, `de`, `ar` + `ja`), support RTL Arabe, matrice terminologique 25 termes XG (couplé à `src/i18n/`) |
+| `seo/` | Graphe JSON-LD Schema.org (`structuredData.ts` : `WebSite`, `VideoGame`, `Course`, `FAQPage`, `BreadcrumbList`) |
 | `offline/` | Persistance locale (IndexedDB), sync |
 | `engine/` | **`bgsageClient.ts` (client Open Sage Cloud Run)**, évaluateur tri-phase local (`evaluator.ts`), rollouts |
 | `monitoring/` | Sentry, logs, alertes |
@@ -94,7 +98,7 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | Chemin | Rôle |
 |---|---|
 | `page.tsx` | Orchestrateur principal (293 lignes, conforme R1 < 300 lignes) à 3 vues exclusives (`LOBBY`, `GAME`, `SUMMARY`) |
-| `drills/`, `puzzles/`, `progression/` | Pages secondaires |
+| `academy/`, `drills/`, `puzzles/`, `progression/` | Hub SEO Gammon Academy (`/academy`, `/academy/openings/[roll]`, `/academy/concepts/[slug]`) et pages secondaires d'entraînement |
 | `api/coach/`, `api/evaluate/`, `api/rollout/`, `api/health/` | Route Handlers serveur |
 
 ### `src/workers/` — Web Workers
@@ -176,4 +180,5 @@ Voir [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md) pour
 |---|---|---|
 | **Moteur IA** | [`DOCS_ENGINE.md`](DOCS_ENGINE.md), [`bgsage-service/README.md`](bgsage-service/README.md) | `docs/INTEGRATION_WILDBG.md`, `docs/REFERENCE_WILDBG.md`, `docs/TECHNIQUE_XG.md`, `docs/PLAN_AMELIORATION_XG.md` |
 | **Architecture & Règles** | [`PROJECT_MAP.md`](PROJECT_MAP.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCALABILITY.md`](SCALABILITY.md), [`GOVERNANCE.md`](GOVERNANCE.md) | `docs/AUDIT_FRONTEND_COMPLET.md`, `docs/FRONTEND_REFACTOR_PLAN.md` |
+| **Marque, SEO & i18n (6 Langues)** | [`docs/SEO_AND_I18N_MASTERPLAN.md`](docs/SEO_AND_I18N_MASTERPLAN.md), [`docs/BRAND_AND_SEO.md`](docs/BRAND_AND_SEO.md) | — |
 | **Feuille de route** | [`plans/plan-action-consolide.md`](plans/plan-action-consolide.md), [`plans/erh-error-rate-humain.md`](plans/erh-error-rate-humain.md) | Audits unitaires dans `plans/audit-*.md` consolidés dans `plan-action-consolide.md` |

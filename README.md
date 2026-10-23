@@ -56,7 +56,7 @@ docker compose up --build -d
 
 ### 1. Tests Unitaires & Composants (Vitest)
 
-870 tests unitaires et d'intégration (153 fichiers de test) couvrant le moteur de règles, le benchmark Open Sage (4 niveaux de bots + videau), la notation bijective (4 000 parties), la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
+1 105 tests unitaires et d'intégration (197 fichiers de test, 0 échec) couvrant le moteur de règles, le benchmark Open Sage (4 niveaux de bots + videau), la priorité au dé le plus élevé, le coach IA Gemini 2.5 Flash, la notation bijective (4 000 parties), la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
 
 ```bash
 npm test

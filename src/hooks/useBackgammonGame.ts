@@ -1288,9 +1288,11 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
 
     const opponentTurnInProgressRef = useRef(false);
     const opponentTimersRef = useRef<NodeJS.Timeout[]>([]);
+    const opponentTurnTokenRef = useRef<number>(0);
     const humanTimersRef = useRef<NodeJS.Timeout[]>([]);
 
     const clearOpponentTimers = useCallback(() => {
+        opponentTurnTokenRef.current += 1;
         opponentTimersRef.current.forEach(clearTimeout);
         opponentTimersRef.current = [];
     }, []);
@@ -1423,7 +1425,12 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
             });
         }
 
+        const currentTurnToken = opponentTurnTokenRef.current;
+        const isTurnAborted = () =>
+            !opponentTurnInProgressRef.current || opponentTurnTokenRef.current !== currentTurnToken;
+
         const runOpponentTurn = async (yieldOffsetMs: number) => {
+            if (isTurnAborted()) return;
             // Vérification asynchrone du videau via Open Sage (bgsage-service sur Google Cloud Run)
             // Uniquement si l'évaluation rapide locale indique un avantage réel (>= +0.30) pour éviter tout appel réseau inutile.
             if (canIADouble && !forcedOpponentDice && !isCustomTestTiming && !isInitialBoardPosition(boardStateRef.current.board)) {
@@ -1436,6 +1443,7 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
                     const localPreCheck = evaluateBoard(iaCubeState, 1);
                     if (localPreCheck.cubelessEquity >= 0.30) {
                         const sageCube = await evaluateBotCubeWithBgsage(iaCubeState, difficulty, 1400);
+                        if (isTurnAborted()) return;
                         const shouldBotDouble = sageCube
                             ? sageCube.shouldDouble
                             : shouldOfferDouble(localPreCheck.cubelessEquity);
@@ -1448,8 +1456,11 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
                     }
                 } catch {
                     // Repli silencieux si bgsage est indisponible
+                    if (isTurnAborted()) return;
                 }
             }
+
+            if (isTurnAborted()) return;
 
             const T1_PREPARE_MS = isCustomTestTiming ? 0 : Math.max(0, 400 - yieldOffsetMs);
             const T2_DICE_DISPLAY_MS = isCustomTestTiming ? 0 : 1000;
@@ -1532,10 +1543,12 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
                         difficulty,
                         2200,
                     );
+                    if (isTurnAborted()) return;
                     if (sageChoice?.sequence) {
                         best = sageChoice.sequence;
                     }
                 }
+                if (isTurnAborted()) return;
                 if (!best && (difficulty === 'expert' || difficulty === 'grandmaster')) {
                     const unified = findBestBoardMove(stateWithDice, rolledDice, 2);
                     if (unified?.sequence) {
@@ -1545,6 +1558,7 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
             } catch {
                 best = null;
             }
+            if (isTurnAborted()) return;
             if (!best) {
                 try {
                     best = selectBestOpponentSequence(legalSeqs, 'O', difficulty);

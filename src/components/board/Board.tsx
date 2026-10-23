@@ -200,7 +200,11 @@ const BoardComponent: React.FC<BoardProps> = ({
             data-testid="backgammon-board"
             data-dice-rolling={diceAnimation.isRolling ? 'true' : 'false'}
             role="region"
-            aria-label={t('board.regionLabel') || 'Backgammon Game Board'}
+            aria-label={
+                t('board.regionLabel') && t('board.regionLabel') !== 'board.regionLabel' && t('board.regionLabel') !== 'Backgammon Game Board'
+                    ? t('board.regionLabel')
+                    : 'Plateau de jeu de Backgammon'
+            }
             className="h-full max-h-full w-full max-w-[1260px] mx-auto select-none touch-manipulation flex flex-col items-center justify-center relative"
             onClick={handleBackgroundClick}
             onPointerMove={handlePointerMove}
@@ -211,6 +215,9 @@ const BoardComponent: React.FC<BoardProps> = ({
                 {t('hud.turn', { player })}
                 {state.dice ? `. ${t('engine.diceRolled', { player, d1: state.dice[0], d2: state.dice[1] })}` : ''}
                 {doublingOfferedBy ? `. ${t('engine.doubleOffered', { player: doublingOfferedBy, val: state.cubeValue })}` : ''}
+            </div>
+            <div aria-label="Raccourcis clavier du plateau" className="sr-only">
+                Flèches directionnelles pour naviguer, Entrée pour sélectionner, 1 et 2 pour changer de dé, Échap pour désélectionner.
             </div>
             <BoardFrame theme={theme}>
                 {(coachHighlight || (opponentHighlight && opponentHighlight.length > 0)) && (

@@ -92,7 +92,16 @@ describe('Coach Prompts & Instructions', () => {
             expect(prompt).toContain('15 pips');
             expect(prompt).toContain('6 tirs/36');
             expect(prompt).toContain('Flèche 7');
+            expect(prompt).toContain('ANALYSE DU VIDEAU & VOLATILITÉ (MARKET WINDOW)');
+            expect(prompt).toContain('Cash Point');
             expect(prompt).toContain('JSON strict');
+        });
+
+        it('inclut la section CUBE & MARKET WINDOW VOLATILITY en anglais', () => {
+            const promptEn = buildCoachUserPrompt({ ...SAMPLE_PARAMS, language: 'en' });
+            expect(promptEn).toContain('## CUBE & MARKET WINDOW VOLATILITY:');
+            expect(promptEn).toContain('Market Window: Double Point');
+            expect(promptEn).toContain('Position Volatility:');
         });
 
         it('gère une partie d\'argent sans matchLength', () => {

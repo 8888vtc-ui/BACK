@@ -63,10 +63,10 @@ describe('Coach Prompts & Explanations i18n (6 Languages: FR, EN, ES, PT, DE, AR
         });
 
         it('adapte la directive linguistique du Coach pour ES, PT, DE et AR', () => {
-            expect(getCoachSystemPrompt('es')).toContain('Spanish (Español)');
-            expect(getCoachSystemPrompt('pt')).toContain('Portuguese (Português)');
-            expect(getCoachSystemPrompt('de')).toContain('German (Deutsch)');
-            expect(getCoachSystemPrompt('ar')).toContain('Arabic (العربية)');
+            expect(getCoachSystemPrompt('es')).toContain('ESPAÑOL (ES)');
+            expect(getCoachSystemPrompt('pt')).toContain('PORTUGUÊS (PT)');
+            expect(getCoachSystemPrompt('de')).toContain('DEUTSCH (DE)');
+            expect(getCoachSystemPrompt('ar')).toContain('العربية (AR)');
         });
     });
 
@@ -119,7 +119,7 @@ describe('Coach Prompts & Explanations i18n (6 Languages: FR, EN, ES, PT, DE, AR
             expect(ptExp.explanation).toContain('8/4 6/4');
 
             const deExp = generateRuleBasedExplanation({ ...SAMPLE_PARAMS, language: 'de' });
-            expect(deExp.keyConcept).toBe('Schussminimierung');
+            expect(deExp.keyConcept).toBe('Treffer-Minimierung');
             expect(deExp.explanation).toContain('13/7');
 
             const arExp = generateRuleBasedExplanation({ ...SAMPLE_PARAMS, language: 'ar' });

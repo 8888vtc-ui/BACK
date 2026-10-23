@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// La clé LLM (DEEPSEEK_API_KEY) est désormais configurée.
+// La clé LLM (GEMINI_API_KEY) est désormais configurée.
 test.describe('E2E : Déclenchement et Analyse du Coach Grand-Maître', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');

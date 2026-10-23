@@ -134,21 +134,19 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
     const lastMoveNotation = rawMoveNotation ? `${lastOpponentDice}${rawMoveNotation}` : null;
 
     return (
-        <>
+        <header className="relative w-full max-w-7xl mx-auto shrink-0 z-50 flex flex-col gap-1 px-1 pt-0.5 pb-1 min-w-0 overflow-visible">
             {/* Liens d'évitement (Skip links) pour accessibilité clavier */}
-            <nav aria-label={t('board.skipToBoard')} className="fixed top-0 left-0 z-50 pointer-events-none">
+            <nav aria-label="Liens d'évitement" className="fixed top-0 left-0 z-50 pointer-events-none">
                 <a href="#backgammon-board" className="sr-only focus:not-sr-only focus:pointer-events-auto focus:inline-block focus:m-4 rounded-lg bg-sky-600 px-4 py-2 font-bold text-white shadow-xl outline-none ring-2 ring-white hover:bg-sky-500">
-                    {t('board.skipToBoard')}
+                    Aller au plateau de jeu
                 </a>
                 <a href="#match-hud" className="sr-only focus:not-sr-only focus:pointer-events-auto focus:inline-block focus:m-4 rounded-lg bg-sky-600 px-4 py-2 font-bold text-white shadow-xl outline-none ring-2 ring-white hover:bg-sky-500">
-                    {t('board.skipToHud')}
+                    Aller au tableau de score (HUD)
                 </a>
                 <a href="#coach-panel" className="sr-only focus:not-sr-only focus:pointer-events-auto focus:inline-block focus:m-4 rounded-lg bg-sky-600 px-4 py-2 font-bold text-white shadow-xl outline-none ring-2 ring-white hover:bg-sky-500">
-                    {t('board.skipToCoach')}
+                    Aller au coach
                 </a>
             </nav>
-
-            <header className="relative w-full max-w-7xl mx-auto shrink-0 z-50 flex flex-col gap-1 px-1 pt-0.5 pb-1 min-w-0 overflow-visible">
                 {/* Barre supérieure UNIQUE (sans bandeau parasite dessous : le videau vit sur le plateau) */}
                 <MatchHud
                     matchLength={game.state.matchLength}
@@ -181,8 +179,7 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                     isGameActive={game.phase !== 'GAME_OVER'}
                     boardState={game.state}
                 />
-            </header>
-        </>
+        </header>
     );
 };
 

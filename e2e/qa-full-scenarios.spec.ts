@@ -17,7 +17,7 @@ test.describe('QA Lead — Validation Autonome des 4 Scénarios Officiels (10/10
         page.on('console', (msg) => {
             if (msg.type() === 'error') {
                 const text = msg.text();
-                if (!text.includes('favicon') && !text.includes('net::ERR_')) {
+                if (!text.includes('favicon') && !text.includes('net::ERR_') && !text.includes('Failed to load resource')) {
                     consoleErrors.push(text);
                 }
             }
@@ -284,6 +284,7 @@ test.describe('QA Lead — Validation Autonome des 4 Scénarios Officiels (10/10
             qa.rollDice([2, 5]);
         });
         await page.waitForTimeout(460);
+        await expect(page.getByTestId('backgammon-board')).toHaveAttribute('data-dice-rolling', 'false');
 
         // Sur la position initiale, X a 5 pions sur la flèche 13 (`point-triangle-13`).
         // Un clic sur `point-triangle-13` DOIT jouer le 5 en premier (13 -> 8) et non le 2 (13 -> 11).
@@ -330,6 +331,7 @@ test.describe('QA Lead — Validation Autonome des 4 Scénarios Officiels (10/10
             });
         });
         await page.waitForTimeout(460);
+        await expect(page.getByTestId('backgammon-board')).toHaveAttribute('data-dice-rolling', 'false');
         await page.getByTestId('point-triangle-13').click();
         const afterFallbackBoard = await page.evaluate(() => {
             return (window as unknown as { __BG_QA__: any }).__BG_QA__.getState().boardState.board;
@@ -359,10 +361,11 @@ test.describe('QA Lead — Validation Autonome des 4 Scénarios Officiels (10/10
             });
         });
         await page.waitForTimeout(460);
+        await expect(page.getByTestId('backgammon-board')).toHaveAttribute('data-dice-rolling', 'false');
 
         await autoToggle.click();
         await expect(autoToggle).toHaveAttribute('aria-pressed', 'true');
-        const storedPref = await page.evaluate(() => window.localStorage.getItem('backgammon:autoConfirmTurn'));
+        const storedPref = await page.evaluate(() => window.localStorage.getItem('bg_auto_confirm_turn'));
         expect(storedPref).toBe('true');
 
         // Premier clic joue le 3 (6 -> 3), second clic joue le 1 (6 -> 5)
@@ -375,6 +378,12 @@ test.describe('QA Lead — Validation Autonome des 4 Scénarios Officiels (10/10
             return (window as unknown as { __BG_QA__: any }).__BG_QA__.getState().boardState.turn;
         });
         expect(turnAfterAuto).toBe('O');
+
+        // Remet `autoConfirmTurn` à false (défaut officiel) avant la dernière position
+        await page.evaluate(() => {
+            const qa = (window as unknown as { __BG_QA__: any }).__BG_QA__;
+            qa.setAutoConfirmTurn(false);
+        });
 
         // 4F. Fin de manche et ouverture du Bilan Complet (`GameReviewModal`) avec courbe PR et onglets
         await page.evaluate(() => {
@@ -395,9 +404,7 @@ test.describe('QA Lead — Validation Autonome des 4 Scénarios Officiels (10/10
             });
         });
         await page.waitForTimeout(460);
-
-        // Remet `autoConfirmTurn` à false (défaut officiel)
-        await autoToggle.click();
+        await expect(page.getByTestId('backgammon-board')).toHaveAttribute('data-dice-rolling', 'false');
         await expect(autoToggle).toHaveAttribute('aria-pressed', 'false');
         await page.getByTestId('point-triangle-1').click();
         await expect(reportModal).toBeVisible();

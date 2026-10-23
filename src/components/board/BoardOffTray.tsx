@@ -37,6 +37,8 @@ export interface BoardOffTrayProps {
     onRightClick?: (offPoint: number) => void;
     /** Inverse le rendu Blanc/Noir (l'humain a choisi les Noirs). */
     swapColors?: boolean;
+    /** Indique si le sabot a le focus clavier actif. */
+    isFocused?: boolean;
 }
 
 const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
@@ -50,6 +52,7 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
     onClick,
     onRightClick,
     swapColors = false,
+    isFocused = false,
 }) => {
     const isWhiteTray = (offPoint === 0) !== swapColors;
     const clampedCount = Math.max(0, Math.min(MAX_CHECKERS_PER_PLAYER, count));
@@ -66,7 +69,7 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
             role="button"
             tabIndex={0}
             aria-label={getTrayAriaLabel(board, player, isTarget)}
-            className={`flex-1 w-full min-w-[44px] min-h-[72px] flex flex-col items-center justify-between rounded-xl px-1.5 py-2 transition-all duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] select-none touch-manipulation ${
+            className={`relative flex-1 w-full min-w-[44px] min-h-[72px] flex flex-col items-center justify-between rounded-xl px-1.5 py-2 transition-all duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] select-none touch-manipulation ${
                 isTarget
                     ? 'border-2 border-emerald-400 bg-emerald-950/60 shadow-[0_0_20px_rgba(52,211,153,0.6)] cursor-pointer hover:scale-[1.02]'
                     : isOpponentToOff
@@ -117,6 +120,12 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
                 }
             }}
         >
+            {isFocused && (
+                <div
+                    data-testid={`keyboard-focus-indicator-tray-${trayKey}`}
+                    className="absolute inset-0 z-30 rounded-xl ring-2 ring-amber-400/90 pointer-events-none"
+                />
+            )}
             <span className="text-[10px] font-bold uppercase tracking-widest text-amber-200/75 drop-shadow">
                 Sortie
             </span>
