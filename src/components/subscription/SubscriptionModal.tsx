@@ -19,7 +19,7 @@ import {
     STRIPE_PLANS,
     EXCLUSIVE_COACH_BENEFITS_FR,
     EXCLUSIVE_COACH_BENEFITS_EN,
-} from '../../lib/stripe/stripeClient';
+} from '../../lib/stripe/stripePlans';
 
 export interface SubscriptionModalProps {
     /** Contrôle l'affichage de la modale (ignoré si `inlineMode` est true). */
