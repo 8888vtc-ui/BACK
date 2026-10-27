@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { handleRequest, loadWasmAndWeights } from './gnubg.worker';
 import { createInitialState } from '../engine/backgammonEngine';
-import { WorkerRequest } from '../lib/engine/types';
+import { WorkerRequest, EvaluateResult, AnalyzeMovesResult, CubeDecisionResult, BestMoveResult } from '../lib/engine/types';
 
 describe('gnubg.worker', () => {
     beforeEach(() => {
@@ -14,7 +14,7 @@ describe('gnubg.worker', () => {
             type: 'init',
             payload: { wasmUrl: '/engine/gnubg.wasm' },
         };
-        const res = await handleRequest(req);
+        const res = await handleRequest(req) as { initialized: boolean };
         expect(res).toBeDefined();
         expect(res.initialized).toBe(true);
     });
@@ -26,7 +26,7 @@ describe('gnubg.worker', () => {
             type: 'evaluate',
             payload: { position: state, ply: 2 },
         };
-        const res = await handleRequest(req);
+        const res = await handleRequest(req) as EvaluateResult;
         expect(res).toBeDefined();
         expect(res.xgid).toContain('XGID=');
         expect(res.probabilities.win).toBeGreaterThan(0.4);
@@ -39,7 +39,7 @@ describe('gnubg.worker', () => {
             type: 'analyzeMoves',
             payload: { position: state, dice: [3, 1], maxMoves: 3 },
         };
-        const res = await handleRequest(req);
+        const res = await handleRequest(req) as AnalyzeMovesResult;
         expect(res.moves.length).toBeLessThanOrEqual(3);
         expect(res.moves[0].rank).toBe(1);
         expect(res.moves[0].equityLoss).toBe(0.0);
@@ -52,7 +52,7 @@ describe('gnubg.worker', () => {
             type: 'analyzeCube',
             payload: { position: state },
         };
-        const res = await handleRequest(req);
+        const res = await handleRequest(req) as CubeDecisionResult;
         expect(res.optimalAction).toBeTruthy();
         expect(typeof res.noDouble).toBe('number');
     });
@@ -64,7 +64,7 @@ describe('gnubg.worker', () => {
             type: 'bestMove',
             payload: { position: state, dice: [6, 1] },
         };
-        const res = await handleRequest(req);
+        const res = await handleRequest(req) as BestMoveResult;
         expect(res).not.toBeNull();
         expect(res.rank).toBe(1);
         expect(res.notation).toBeTruthy();

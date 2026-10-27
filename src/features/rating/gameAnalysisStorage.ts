@@ -50,8 +50,8 @@ export function createBenchmarkGameAnalyses(): CompleteGameAnalysis[] {
                     moveNumber: 1,
                     player: 'X',
                     dice: [3, 1],
-                    boardBefore: new Array(28).fill(0),
-                    boardAfter: new Array(28).fill(0),
+                    boardBefore: new Array(26).fill(0),
+                    boardAfter: new Array(26).fill(0),
                     playedNotation: '8/5 6/5',
                     optimalNotation: '8/5 6/5',
                     equityLoss: 0,
@@ -63,8 +63,8 @@ export function createBenchmarkGameAnalyses(): CompleteGameAnalysis[] {
                     moveNumber: 2,
                     player: 'X',
                     dice: [5, 2],
-                    boardBefore: new Array(28).fill(0),
-                    boardAfter: new Array(28).fill(0),
+                    boardBefore: new Array(26).fill(0),
+                    boardAfter: new Array(26).fill(0),
                     playedNotation: '13/8 13/11',
                     optimalNotation: '13/8 13/11',
                     equityLoss: 0,
@@ -76,8 +76,8 @@ export function createBenchmarkGameAnalyses(): CompleteGameAnalysis[] {
                     moveNumber: 3,
                     player: 'X',
                     dice: [4, 3],
-                    boardBefore: new Array(28).fill(0),
-                    boardAfter: new Array(28).fill(0),
+                    boardBefore: new Array(26).fill(0),
+                    boardAfter: new Array(26).fill(0),
                     playedNotation: '24/20 13/10',
                     optimalNotation: '24/20 13/10',
                     equityLoss: -0.012,
@@ -89,8 +89,8 @@ export function createBenchmarkGameAnalyses(): CompleteGameAnalysis[] {
                     moveNumber: 4,
                     player: 'X',
                     dice: [6, 2],
-                    boardBefore: new Array(28).fill(0),
-                    boardAfter: new Array(28).fill(0),
+                    boardBefore: new Array(26).fill(0),
+                    boardAfter: new Array(26).fill(0),
                     playedNotation: '24/18 13/11',
                     optimalNotation: '13/7 13/11',
                     equityLoss: -0.092,
@@ -135,8 +135,8 @@ export function createBenchmarkGameAnalyses(): CompleteGameAnalysis[] {
                     moveNumber: 1,
                     player: 'X',
                     dice: [4, 2],
-                    boardBefore: new Array(28).fill(0),
-                    boardAfter: new Array(28).fill(0),
+                    boardBefore: new Array(26).fill(0),
+                    boardAfter: new Array(26).fill(0),
                     playedNotation: '8/4 6/4',
                     optimalNotation: '8/4 6/4',
                     equityLoss: 0,
@@ -148,8 +148,8 @@ export function createBenchmarkGameAnalyses(): CompleteGameAnalysis[] {
                     moveNumber: 2,
                     player: 'X',
                     dice: [6, 1],
-                    boardBefore: new Array(28).fill(0),
-                    boardAfter: new Array(28).fill(0),
+                    boardBefore: new Array(26).fill(0),
+                    boardAfter: new Array(26).fill(0),
                     playedNotation: '13/7 8/7',
                     optimalNotation: '13/7 8/7',
                     equityLoss: 0,
@@ -192,8 +192,8 @@ export function createBenchmarkGameAnalyses(): CompleteGameAnalysis[] {
                     moveNumber: 1,
                     player: 'X',
                     dice: [3, 1],
-                    boardBefore: new Array(28).fill(0),
-                    boardAfter: new Array(28).fill(0),
+                    boardBefore: new Array(26).fill(0),
+                    boardAfter: new Array(26).fill(0),
                     playedNotation: '8/5 6/5',
                     optimalNotation: '8/5 6/5',
                     equityLoss: 0,
@@ -212,7 +212,7 @@ export function createBenchmarkGameAnalyses(): CompleteGameAnalysis[] {
 export function getAllGameAnalyses(): CompleteGameAnalysis[] {
     if (typeof window === 'undefined' || !window.localStorage) {
         if (!memoryAnalysesStore) {
-            memoryAnalysesStore = createBenchmarkGameAnalyses();
+            memoryAnalysesStore = [];
         }
         return memoryAnalysesStore;
     }
@@ -220,21 +220,17 @@ export function getAllGameAnalyses(): CompleteGameAnalysis[] {
     try {
         const raw = window.localStorage.getItem(GAME_ANALYSES_STORAGE_KEY);
         if (!raw) {
-            const defaults = createBenchmarkGameAnalyses();
-            window.localStorage.setItem(GAME_ANALYSES_STORAGE_KEY, JSON.stringify(defaults));
-            return defaults;
+            return [];
         }
 
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
             return parsed;
         }
 
-        const defaults = createBenchmarkGameAnalyses();
-        window.localStorage.setItem(GAME_ANALYSES_STORAGE_KEY, JSON.stringify(defaults));
-        return defaults;
+        return [];
     } catch {
-        return createBenchmarkGameAnalyses();
+        return [];
     }
 }
 
@@ -299,9 +295,8 @@ export function getRatingHistory(): RatingHistoryPoint[] {
  * Vide le stockage et restaure les parties de référence.
  */
 export function clearGameAnalyses(): void {
-    const defaults = createBenchmarkGameAnalyses();
-    memoryAnalysesStore = defaults;
+    memoryAnalysesStore = [];
     if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem(GAME_ANALYSES_STORAGE_KEY, JSON.stringify(defaults));
+        window.localStorage.setItem(GAME_ANALYSES_STORAGE_KEY, JSON.stringify([]));
     }
 }

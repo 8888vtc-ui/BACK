@@ -1,0 +1,149 @@
+import { useEffect, type MutableRefObject } from 'react';
+import type { BoardState } from '../../engine/backgammonEngine';
+import { formatCoachMoveSequence, movesFromBoardDiff } from '../../features/coach/coachMoveNotation';
+import { soundEngine } from '../../lib/sound/soundEngine';
+import { analyzeHumanMoveFromLogWithBgsage, type CoachVerdict } from '../../features/coach/logAnalyzer';
+import { shouldNotify, type CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
+import {
+    buildCoachStateFromLogResult,
+    type CoachAnalysisHistoryEntry,
+    type CoachState,
+    type LastMoveFeedback,
+} from '../useCoachHelpers';
+import type { CoachHighlight } from '../../components/board/boardThemes';
+import type { MatchLogEntry } from '../../actions/types';
+import { mapGameCubeAction, type CubeActionType, type CubeAction } from '../../features/coach/cubeCoach';
+
+export interface UseCoachLogAnalyzerParams {
+    matchLog?: ReadonlyArray<MatchLogEntry>;
+    gameState: BoardState;
+    lastPlayerEvalRef: MutableRefObject<string | null>;
+    analysisRequestIdRef: MutableRefObject<number>;
+    cancelActiveOperation: () => { requestId: number; controller: AbortController };
+    evaluateCubeAction: (action: CubeActionType | CubeAction, stateOverride?: BoardState) => void;
+    recordDecisionStats: (verdict: CoachVerdict, rawEquityLoss: number, playedMove: string, optimalMove: string) => void;
+    setBrilliantMove: (brilliant: boolean) => void;
+    setLastMoveFeedback: (feedback: LastMoveFeedback) => void;
+    setCoachHistory: (updater: (prev: CoachAnalysisHistoryEntry[]) => CoachAnalysisHistoryEntry[]) => void;
+    setSelectedCoachHistoryIndex: (index: number | null) => void;
+    notificationLevel: CoachNotificationLevel;
+    setCoach: (coach: CoachState | null | ((prev: CoachState | null) => CoachState | null)) => void;
+    setCoachHighlight: (highlight: CoachHighlight | null) => void;
+    speakCoachVoice: (text: string) => void;
+    onCoachTriggered?: () => void;
+}
+
+export function useCoachLogAnalyzer({
+    matchLog,
+    gameState,
+    lastPlayerEvalRef,
+    analysisRequestIdRef,
+    cancelActiveOperation,
+    evaluateCubeAction,
+    recordDecisionStats,
+    setBrilliantMove,
+    setLastMoveFeedback,
+    setCoachHistory,
+    setSelectedCoachHistoryIndex,
+    notificationLevel,
+    setCoach,
+    setCoachHighlight,
+    speakCoachVoice,
+    onCoachTriggered,
+}: UseCoachLogAnalyzerParams): void {
+    useEffect(() => {
+        const log = matchLog ?? [];
+        if (log.length === 0) return;
+
+        const lastEntry = log[log.length - 1];
+        if (lastEntry.player !== 'X') return;
+        const entryKey = `${lastEntry.turnIndex}:${lastEntry.dice[0]}-${lastEntry.dice[1]}`;
+        if (lastPlayerEvalRef.current === entryKey) return;
+        lastPlayerEvalRef.current = entryKey;
+
+        const cubeNotationAction = mapGameCubeAction(lastEntry.notation);
+        if (cubeNotationAction) {
+            evaluateCubeAction(cubeNotationAction, { ...gameState, board: [...lastEntry.boardBefore], turn: 'X' });
+            return;
+        }
+
+        const { requestId, controller } = cancelActiveOperation();
+        const isStale = () => controller.signal.aborted || analysisRequestIdRef.current !== requestId;
+
+        void (async () => {
+            try {
+                const result = await analyzeHumanMoveFromLogWithBgsage({
+                    logEntry: lastEntry,
+                    localPlayer: 'X',
+                    cubeValue: gameState.cubeValue,
+                    cubeOwner: gameState.cubeOwner,
+                    crawford: gameState.crawford,
+                    matchLength: gameState.matchLength,
+                    scoreX: gameState.scoreX,
+                    scoreO: gameState.scoreO,
+                    ply: 2,
+                    signal: controller.signal,
+                });
+                if (isStale() || !result) return;
+
+                const { verdict, equityLoss, isUnforced, candidateMoves } = result;
+                const loggedMoves = [...lastEntry.movePlayed];
+                const playedMoves =
+                    loggedMoves.length > 0 ? loggedMoves : movesFromBoardDiff(lastEntry.boardBefore, lastEntry.boardAfter, 'X');
+                const playedNotation = formatCoachMoveSequence(playedMoves, 'X', lastEntry.boardBefore);
+
+                if (isUnforced) {
+                    recordDecisionStats(verdict, equityLoss, playedNotation, result.optimalNotation);
+                    const secondBest = candidateMoves[1];
+                    setBrilliantMove(
+                        Math.abs(equityLoss) < 0.0001 && secondBest !== undefined && Math.abs(secondBest.equityLoss) > 0.06,
+                    );
+                }
+                if (isStale()) return;
+
+                setLastMoveFeedback({ verdict, equityLoss, playedMove: playedNotation, timestamp: Date.now() });
+
+                const { coachState, highlight } = buildCoachStateFromLogResult({
+                    lastEntry,
+                    result,
+                    playedMoves,
+                    playedNotation,
+                    gameState,
+                });
+                if (isStale()) return;
+
+                setCoachHistory((prev) => [
+                    ...prev,
+                    {
+                        turnIndex: lastEntry.turnIndex,
+                        dice: [lastEntry.dice[0], lastEntry.dice[1]],
+                        coachState,
+                        highlight,
+                        boardBefore: [...lastEntry.boardBefore],
+                        boardAfter: [...lastEntry.boardAfter],
+                        timestamp: Date.now(),
+                    },
+                ]);
+                setSelectedCoachHistoryIndex(null);
+
+                if (shouldNotify(verdict, notificationLevel)) {
+                    setCoach(coachState);
+                    setCoachHighlight(highlight);
+                    if (verdict === 'blunder') {
+                        try { soundEngine.playBlunderAlert(); } catch { /* ignore audio errors */ }
+                        const summaryText = coachState.summary || coachState.tacticalSummary || coachState.explanation || '';
+                        if (summaryText) speakCoachVoice(summaryText);
+                    }
+                    if (verdict !== 'optimal') {
+                        onCoachTriggered?.();
+                    }
+                } else {
+                    setCoach((prev) => (prev !== null ? coachState : null));
+                    setCoachHighlight(null);
+                }
+            } catch (err) {
+                if (!isStale()) console.warn('[Coach] Erreur évaluation log-driven tour X :', err);
+            }
+        })();
+    }, [matchLog, gameState, onCoachTriggered, notificationLevel, recordDecisionStats, evaluateCubeAction, cancelActiveOperation, speakCoachVoice, lastPlayerEvalRef, analysisRequestIdRef, setBrilliantMove, setLastMoveFeedback, setCoachHistory, setSelectedCoachHistoryIndex, setCoach, setCoachHighlight]);
+}

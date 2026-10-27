@@ -28,7 +28,7 @@ describe('forcedMoveDetector — Détection Mathématique des Coups Forcés (Aud
         });
         expect(result.highlightOrigin).toBe(24);
         expect(result.highlightDestination).toBe(21);
-        expect(FORCED_MOVE_AUTO_PLAY_DELAY_MS).toBe(300);
+        expect(FORCED_MOVE_AUTO_PLAY_DELAY_MS).toBe(250);
     });
 
     it('déduplique mathématiquement les paires (from -> to) lors d’un double (ex: [4, 4] où seul 10 -> 6 est légal)', () => {

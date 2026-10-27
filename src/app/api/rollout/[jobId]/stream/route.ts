@@ -12,7 +12,7 @@ const BACKEND_URL = process.env.GNUBG_BACKEND_URL || 'http://localhost:8000';
 
 export const dynamic = 'force-dynamic';
 
-function formatSseEvent(data: Record<string, any>): string {
+function formatSseEvent(data: unknown): string {
     return `data: ${JSON.stringify(data)}\n\n`;
 }
 
@@ -60,7 +60,7 @@ export async function GET(
                         setTimeout(() => {
                             try {
                                 controller.close();
-                            } catch {}
+                            } catch { }
                         }, 20);
                     }
                 } catch {

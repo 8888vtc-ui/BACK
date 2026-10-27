@@ -25,7 +25,7 @@ export interface RolloutHeaderProps {
     /** Statut courant du job. */
     status: 'idle' | 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
     /** Traducteur i18n. */
-    t: (key: string, vars?: Record<string, any>) => string;
+    t: (key: string, vars?: Record<string, string | number>) => string;
 }
 
 const RolloutHeaderComponent: React.FC<RolloutHeaderProps> = ({ poolStats, status, t }) => {

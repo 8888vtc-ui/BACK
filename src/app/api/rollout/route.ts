@@ -89,9 +89,10 @@ export async function POST(req: NextRequest) {
             },
             { status: 202 }
         );
-    } catch (err: any) {
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Erreur interne lors de la soumission du rollout';
         return NextResponse.json(
-            { error: err?.message || 'Erreur interne lors de la soumission du rollout' },
+            { error: message },
             { status: 500 }
         );
     }

@@ -31,7 +31,7 @@ export interface RolloutResultsTableProps {
     /** Relance le rollout. */
     onRerun: () => void;
     /** Traducteur i18n. */
-    t: (key: string, vars?: Record<string, any>) => string;
+    t: (key: string, vars?: Record<string, string | number>) => string;
 }
 
 const RolloutResultsTableComponent: React.FC<RolloutResultsTableProps> = ({

@@ -15,28 +15,24 @@ import {
 } from './rolloutClient';
 import { evaluateWithBgsage, type BgsageEvaluateResponse } from './bgsageClient';
 
+type RolloutListener = (
+    data:
+        | RolloutJobResponse
+        | RolloutProgress
+        | { status: string; error?: string }
+        | { status: string; progress: RolloutProgress; result: RolloutResult },
+) => void;
+
 interface SimulatedJobState {
     job: RolloutJobResponse;
     request: RolloutRequest;
     isCancelled: boolean;
-    listeners: Set<(data: any) => void>;
+    listeners: Set<RolloutListener>;
     timer?: ReturnType<typeof setInterval>;
     sagePromise?: Promise<BgsageEvaluateResponse | null>;
 }
 
-/**
- * Calcule l'erreur standard stratifiée (Quasi-Random / Variance-Reduced) et l'IC à 95%.
- */
-export function computeStratifiedConfidenceInterval(
-    totalTrials: number,
-    rankIndex: number = 0,
-): { standardError: number; confidenceInterval95: number } {
-    const safeTrials = Math.max(36, totalTrials || 1296);
-    const baseSigma = 0.38 + Math.min(0.08, rankIndex * 0.02);
-    const standardError = parseFloat((baseSigma / Math.sqrt(safeTrials)).toFixed(4));
-    const confidenceInterval95 = parseFloat((1.96 * standardError).toFixed(3));
-    return { standardError, confidenceInterval95 };
-}
+let simJobCounter = 0;
 
 class SimulatedRolloutManager {
     private jobs = new Map<string, SimulatedJobState>();
@@ -60,7 +56,7 @@ class SimulatedRolloutManager {
     }
 
     createJob(request: RolloutRequest): RolloutJobResponse {
-        const jobId = `sim-job-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+        const jobId = `sim-job-${Date.now()}-${typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : ++simJobCounter}`;
         const totalTrials = request.trials ?? 1296;
         const initialProgress: RolloutProgress = {
             jobId,
@@ -68,7 +64,7 @@ class SimulatedRolloutManager {
             progress: 0.0,
             trialsDone: 0,
             totalTrials,
-            currentMove: request.candidateMoves[0] || '8/5 6/5',
+            currentMove: request.candidateMoves[0] ?? '',
             etaSeconds: 4.5,
         };
 
@@ -131,11 +127,11 @@ class SimulatedRolloutManager {
         return true;
     }
 
-    subscribe(jobId: string, listener: (data: any) => void): () => void {
+    subscribe(jobId: string, listener: RolloutListener): () => void {
         const state = this.jobs.get(jobId);
         if (!state) {
             listener({ status: 'failed', error: 'Job introuvable' });
-            return () => {};
+            return () => { };
         }
 
         state.listeners.add(listener);
@@ -157,7 +153,7 @@ class SimulatedRolloutManager {
         const candidateMoves =
             state.request.candidateMoves.length > 0
                 ? state.request.candidateMoves
-                : ['8/5 6/5', '24/20 13/10'];
+                : [];
 
         let currentStep = 0;
         const totalSteps = 10;
@@ -201,14 +197,12 @@ class SimulatedRolloutManager {
         const state = this.jobs.get(jobId);
         if (!state || state.isCancelled) return;
 
-        // Récupération non-bloquante du résultat Open Sage (avec timeout court pour ne pas retarder la fin du job)
+        // Récupération du résultat Open Sage. Aucun timeout artificiel : on attend la
+        // promesse déjà lancée dans createJob (timeout 1800 ms côté bgsageClient).
         let sageEval: BgsageEvaluateResponse | null = null;
         if (state.sagePromise) {
             try {
-                sageEval = await Promise.race([
-                    state.sagePromise,
-                    new Promise<null>((resolve) => setTimeout(() => resolve(null), 150)),
-                ]);
+                sageEval = await state.sagePromise;
             } catch {
                 sageEval = null;
             }
@@ -216,91 +210,65 @@ class SimulatedRolloutManager {
 
         if (state.isCancelled) return;
 
-        let moves: RolloutMoveResult[];
+        // Règle 2 (GOVERNANCE.md) : ZÉRO donnée factice. Si Open Sage n'a pas fourni
+        // de coups valides, on marque le job comme `failed` au lieu d'inventer des équités.
+        if (!sageEval || !sageEval.chequerPlay || sageEval.chequerPlay.length === 0) {
+            state.job.status = 'failed';
+            state.job.progress.status = 'failed';
+            state.job.progress.progress = 100;
+            state.job.progress.trialsDone = 0;
+            state.job.progress.etaSeconds = 0;
+            state.job.error =
+                'Rollout indisponible : le moteur Open Sage n’a pas répondu. Aucun résultat calculé.';
+            state.job.completedAt = Date.now();
 
-        if (sageEval && sageEval.chequerPlay && sageEval.chequerPlay.length > 0) {
-            const topSage = sageEval.chequerPlay.slice(0, Math.max(1, candidateMoves.length));
-            moves = topSage.map((sm, idx) => {
-                const { standardError, confidenceInterval95 } = computeStratifiedConfidenceInterval(
-                    totalTrials,
-                    idx,
-                );
-                return {
-                    rank: idx + 1,
-                    notation: candidateMoves[idx] || sm.notation || '8/5 6/5',
-                    equity: Number(sm.equity.toFixed(3)),
-                    standardError,
-                    confidenceInterval: confidenceInterval95,
-                    probabilities: sm.probabilities
-                        ? {
-                              win: Number(sm.probabilities.win.toFixed(3)),
-                              winGammon: Number(sm.probabilities.winGammon.toFixed(3)),
-                              winBackgammon: Number(sm.probabilities.winBackgammon.toFixed(3)),
-                              loseWin: Number(sm.probabilities.loseWin.toFixed(3)),
-                              loseGammon: Number(sm.probabilities.loseGammon.toFixed(3)),
-                              loseBackgammon: Number(sm.probabilities.loseBackgammon.toFixed(3)),
-                          }
-                        : {
-                              win: 0.54,
-                              winGammon: 0.162,
-                              winBackgammon: 0.006,
-                              loseWin: 0.46,
-                              loseGammon: 0.122,
-                              loseBackgammon: 0.004,
-                          },
-                    isConfirmed: idx === 0,
-                    trials: totalTrials,
-                };
-            });
-        } else {
-            const ci1 = computeStratifiedConfidenceInterval(totalTrials, 0);
-            const ci2 = computeStratifiedConfidenceInterval(totalTrials, 1);
-
-            const move1: RolloutMoveResult = {
-                rank: 1,
-                notation: candidateMoves[0] || '8/5 6/5',
-                equity: 0.158,
-                standardError: ci1.standardError,
-                confidenceInterval: ci1.confidenceInterval95,
-                probabilities: {
-                    win: 0.54,
-                    winGammon: 0.162,
-                    winBackgammon: 0.006,
-                    loseWin: 0.46,
-                    loseGammon: 0.122,
-                    loseBackgammon: 0.004,
-                },
-                isConfirmed: true,
-                trials: totalTrials,
+            const failurePayload = {
+                status: 'failed',
+                progress: state.job.progress,
+                error: state.job.error,
             };
 
-            const move2: RolloutMoveResult = {
-                rank: 2,
-                notation: candidateMoves[1] || '24/20 13/10',
-                equity: 0.072,
-                standardError: ci2.standardError,
-                confidenceInterval: ci2.confidenceInterval95,
-                probabilities: {
-                    win: 0.518,
-                    winGammon: 0.144,
-                    winBackgammon: 0.005,
-                    loseWin: 0.482,
-                    loseGammon: 0.133,
-                    loseBackgammon: 0.005,
-                },
-                isConfirmed: false,
-                trials: totalTrials,
-            };
-
-            moves = candidateMoves.length === 1 ? [move1] : [move1, move2];
+            for (const listener of state.listeners) {
+                listener(failurePayload);
+            }
+            return;
         }
+
+        // Open Sage a répondu : on restitue ses coups réels (équités calculées, pas de constantes).
+        const topSage = sageEval.chequerPlay.slice(0, Math.max(1, candidateMoves.length));
+        const moves: RolloutMoveResult[] = topSage.map((sm, idx) => ({
+            rank: idx + 1,
+            notation: sm.notation || candidateMoves[idx] || '',
+            equity: Number(sm.equity.toFixed(3)),
+            standardError: 0,
+            confidenceInterval: 0,
+            probabilities: sm.probabilities
+                ? {
+                    win: Number(sm.probabilities.win.toFixed(3)),
+                    winGammon: Number(sm.probabilities.winGammon.toFixed(3)),
+                    winBackgammon: Number(sm.probabilities.winBackgammon.toFixed(3)),
+                    loseWin: Number(sm.probabilities.loseWin.toFixed(3)),
+                    loseGammon: Number(sm.probabilities.loseGammon.toFixed(3)),
+                    loseBackgammon: Number(sm.probabilities.loseBackgammon.toFixed(3)),
+                }
+                : {
+                    win: 0,
+                    winGammon: 0,
+                    winBackgammon: 0,
+                    loseWin: 0,
+                    loseGammon: 0,
+                    loseBackgammon: 0,
+                },
+            isConfirmed: idx === 0,
+            trials: totalTrials,
+        }));
 
         const result: RolloutResult = {
             jobId,
             xgid: state.request.xgid,
             trials: totalTrials,
             ply: state.request.ply ?? 3,
-            durationSeconds: 0.45,
+            durationSeconds: 0,
             moves,
             confirmedBestMove: moves[0].notation,
             equityDifference:

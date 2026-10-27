@@ -54,7 +54,7 @@ export async function loadWasmAndWeights(_config: EngineInitConfig = {}): Promis
 /**
  * Traite une requête individuelle.
  */
-export async function handleRequest(request: WorkerRequest): Promise<any> {
+export async function handleRequest(request: WorkerRequest): Promise<unknown> {
     switch (request.type) {
         case 'init': {
             return {
@@ -121,7 +121,7 @@ export async function handleRequest(request: WorkerRequest): Promise<any> {
         }
 
         default:
-            throw new Error(`Type de requête GNUBG inconnu : "${(request as any).type}"`);
+            throw new Error(`Type de requête GNUBG inconnu : "${(request as { type?: unknown }).type}"`);
     }
 }
 
@@ -159,7 +159,7 @@ async function processQueue(): Promise<void> {
                 if (typeof self !== 'undefined' && typeof self.postMessage === 'function') {
                     self.postMessage(response);
                 }
-            } catch (err: any) {
+            } catch (err: unknown) {
                 const response: WorkerResponse = {
                     id: request.id,
                     type: 'error',

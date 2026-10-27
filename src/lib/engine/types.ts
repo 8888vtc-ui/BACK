@@ -11,14 +11,14 @@ export type WorkerRequestType = 'init' | 'evaluate' | 'analyzeMoves' | 'analyzeC
 
 export type RequestPriority = 'high' | 'normal' | 'low';
 
-export interface WorkerRequest<T = any> {
+export interface WorkerRequest<T = unknown> {
     id: string;
     type: WorkerRequestType;
     payload: T;
     priority?: RequestPriority;
 }
 
-export interface WorkerResponse<T = any> {
+export interface WorkerResponse<T = unknown> {
     id: string;
     type: 'success' | 'error';
     data?: T;

@@ -37,7 +37,11 @@ import {
     parseCoachNotationMoves,
 } from './coachMoveNotation';
 import type { BgsageMoveMetrics, BgsageStrategicInsights } from './featureExtractor';
-import { getOpening, isInitialBoardPosition } from '../openings/openingDatabase';
+import {
+    detectOpeningScoreRegime,
+    getOpeningForScore,
+    isInitialBoardPosition,
+} from '../openings/openingDatabase';
 import { estimateOffListEquityLoss } from './offListEquity';
 
 /**
@@ -149,6 +153,7 @@ export interface AnalyzeHumanMoveFromLogParams {
     readonly scoreX?: number;
     readonly scoreO?: number;
     readonly ply?: number;
+    readonly signal?: AbortSignal;
 }
 
 /**
@@ -318,9 +323,19 @@ export function analyzeHumanMoveFromLog(
     const canonicalMoves = movesFromBoardDiff(boardBefore, effectiveBoardAfter, logEntry.player);
     const canonicalNotation = formatCoachMoveSequence(canonicalMoves, logEntry.player, boardBefore);
 
-    // Vérification prioritaire : livre d'ouvertures de grand maître pour la position initiale
+    // Vérification prioritaire : livre d'ouvertures de grand maître pour la position initiale (adapté au score)
     const isOpening = isInitialBoardPosition(boardBefore) && dice[0] !== dice[1] && logEntry.player === 'X';
-    const opening = isOpening ? getOpening(dice[0], dice[1]) : null;
+    const openingRegime = isOpening
+        ? detectOpeningScoreRegime({
+            matchLength: params.matchLength,
+            scoreX: params.scoreX,
+            scoreO: params.scoreO,
+            player: logEntry.player,
+            cubeValue: params.cubeValue,
+            crawford: params.crawford,
+        })
+        : 'NORMAL';
+    const opening = isOpening ? getOpeningForScore(dice[0], dice[1], openingRegime) : null;
     if (opening) {
         let openingBestBoard = [...boardBefore];
         for (const m of opening.bestMoves) {
@@ -564,7 +579,20 @@ export async function analyzeHumanMoveFromLogWithBgsage(
         isInitialBoardPosition(boardBefore) &&
         dice[0] !== dice[1] &&
         logEntry.player === 'X';
-    const openingBookEntry = isOpeningTurn ? getOpening(dice[0], dice[1]) : null;
+    const openingBookEntry = isOpeningTurn
+        ? getOpeningForScore(
+            dice[0],
+            dice[1],
+            detectOpeningScoreRegime({
+                matchLength: params.matchLength,
+                scoreX: params.scoreX,
+                scoreO: params.scoreO,
+                player: logEntry.player,
+                cubeValue: params.cubeValue,
+                crawford: params.crawford,
+            }),
+        )
+        : null;
     if (openingBookEntry) {
         const openingResult = analyzeHumanMoveFromLog(params);
         if (openingResult) {
@@ -619,13 +647,19 @@ export async function analyzeHumanMoveFromLogWithBgsage(
     };
 
     // 1. Tentative via le bgsage-service (réseau de neurones Open Sage).
+    if (params.signal?.aborted) {
+        return null;
+    }
     try {
         const bgsageResult = await evaluateWithBgsage(xgid, params.ply ?? 2, 3000);
+        if (params.signal?.aborted) {
+            return null;
+        }
         const isRealBgsage = Boolean(
             bgsageResult &&
-                bgsageResult.chequerPlay.length > 0 &&
-                bgsageResult.source !== 'typescript-tri-phase' &&
-                bgsageResult.source !== 'local',
+            bgsageResult.chequerPlay.length > 0 &&
+            bgsageResult.source !== 'typescript-tri-phase' &&
+            bgsageResult.source !== 'local',
         );
 
         if (isRealBgsage && bgsageResult && bgsageResult.chequerPlay.length > 0) {

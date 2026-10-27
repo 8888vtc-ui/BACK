@@ -34,12 +34,9 @@ describe('gameAnalysisStorage Module', () => {
         clearGameAnalyses();
     });
 
-    it('initialise automatiquement les 3 parties de référence si le stockage est vide', () => {
+    it('retourne un tableau vide si le stockage est vide', () => {
         const list = getAllGameAnalyses();
-        expect(list.length).toBe(3);
-        expect(list[0].id).toBe('analysis_bench_01');
-        expect(list[1].performanceRating).toBe(6.4);
-        expect(list[2].performanceRating).toBe(4.2);
+        expect(list.length).toBe(0);
     });
 
     it('enregistre une nouvelle analyse de partie sans écraser les autres', () => {
@@ -67,7 +64,7 @@ describe('gameAnalysisStorage Module', () => {
         saveGameAnalysis(dummy);
 
         const all = getAllGameAnalyses();
-        expect(all.length).toBe(4);
+        expect(all.length).toBe(1);
         expect(all[0].id).toBe('analysis_new_01');
 
         const fetched = getGameAnalysisById('analysis_new_01');
@@ -97,7 +94,7 @@ describe('gameAnalysisStorage Module', () => {
         };
 
         saveGameAnalysis(dummy);
-        expect(getAllGameAnalyses().length).toBe(4);
+        expect(getAllGameAnalyses().length).toBe(1);
 
         // Mise à jour avec nouveau PR
         saveGameAnalysis({
@@ -106,13 +103,34 @@ describe('gameAnalysisStorage Module', () => {
         });
 
         const all = getAllGameAnalyses();
-        expect(all.length).toBe(4);
+        expect(all.length).toBe(1);
         expect(getGameAnalysisById('game_same_id')?.performanceRating).toBe(8.5);
     });
 
     it('fournit les points d’historique chronologiques via getRatingHistory', () => {
+        const dummy: CompleteGameAnalysis = {
+            id: 'analysis_dup_1',
+            gameId: 'game_same_id',
+            date: new Date().toISOString(),
+            player: 'X',
+            opponentType: 'ai',
+            scoreX: 1,
+            scoreO: 0,
+            matchLength: 5,
+            totalMovesCount: 10,
+            decisionsCount: 10,
+            unforcedDecisionsCount: 10,
+            totalEquityLoss: 0.2,
+            errorRate: 0.02,
+            performanceRating: 10.0,
+            estimatedRating: 1630,
+            prCategory: 'Intermédiaire',
+            breakdown: { optimal: 7, acceptable: 2, doubtful: 1, blunder: 0, howler: 0 },
+            evaluatedMoves: [],
+        };
+        saveGameAnalysis(dummy);
         const history = getRatingHistory();
-        expect(history.length).toBe(3);
+        expect(history.length).toBe(1);
         // Doit être ordonné par date croissante
         for (let i = 0; i < history.length - 1; i++) {
             const t1 = new Date(history[i].date).getTime();

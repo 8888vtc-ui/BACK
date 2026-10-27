@@ -33,15 +33,15 @@ export interface PushActionParams {
     roomId: string;
     player: 'X' | 'O';
     actionType:
-        | 'ROLL_DICE'
-        | 'MOVE_CHECKER'
-        | 'OFFER_DOUBLE'
-        | 'ACCEPT_DOUBLE'
-        | 'PASS_DOUBLE'
-        | 'END_TURN'
-        | 'RESIGN'
-        | 'TIMEOUT'
-        | 'SYNC_SNAPSHOT';
+    | 'ROLL_DICE'
+    | 'MOVE_CHECKER'
+    | 'OFFER_DOUBLE'
+    | 'ACCEPT_DOUBLE'
+    | 'PASS_DOUBLE'
+    | 'END_TURN'
+    | 'RESIGN'
+    | 'TIMEOUT'
+    | 'SYNC_SNAPSHOT';
     boardAfter: number[];
     dice?: [number, number] | null;
     moveFrom?: number | null;
@@ -61,6 +61,8 @@ export interface RoomSubscriptionCallbacks {
 const mockRoomsRegistry = new Map<string, GameRoomRecord>();
 const mockActionsRegistry = new Map<string, RoomActionRecord[]>();
 
+let roomCounter = 0;
+
 /**
  * Crée une nouvelle salle de jeu multijoueur.
  */
@@ -71,7 +73,7 @@ export async function createGameRoom(params: CreateRoomParams): Promise<GameRoom
     const now = new Date().toISOString();
 
     const newRoom: GameRoomRecord = {
-        id: `room_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        id: `room_${Date.now()}_${typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : ++roomCounter}`,
         code,
         room_type: roomType,
         status: 'waiting',
@@ -146,17 +148,18 @@ export async function createGameRoom(params: CreateRoomParams): Promise<GameRoom
             .single();
 
         if (error || !data) {
-            console.warn('[RoomService] Échec insertion Supabase, repli local :', error?.message);
-            mockRoomsRegistry.set(newRoom.id, newRoom);
-            mockRoomsRegistry.set(code.toUpperCase(), newRoom);
-            return newRoom;
+            throw new Error(
+                `Impossible de créer la salle : ${error?.message ?? 'réponse vide de Supabase.'}`,
+            );
         }
 
         return data;
-    } catch {
-        mockRoomsRegistry.set(newRoom.id, newRoom);
-        mockRoomsRegistry.set(code.toUpperCase(), newRoom);
-        return newRoom;
+    } catch (err) {
+        // Aucun repli silencieux : l'échec d'insertion Supabase doit remonter à l'appelant.
+        // Le joueur ne doit jamais croire qu'il est connecté alors que la salle n'existe pas.
+        throw new Error(
+            `Impossible de créer la salle : ${err instanceof Error ? err.message : 'erreur inconnue.'}`,
+        );
     }
 }
 
@@ -335,7 +338,7 @@ export function subscribeToGameRoom(
     callbacks: RoomSubscriptionCallbacks,
 ): { unsubscribe: () => void } {
     if (!isSupabaseConfigured() || typeof window === 'undefined') {
-        return { unsubscribe: () => {} };
+        return { unsubscribe: () => { } };
     }
 
     const channelName = `realtime_room_${roomId}`;
@@ -397,7 +400,7 @@ export function subscribeToGameRoom(
 
     return {
         unsubscribe: () => {
-            supabase.removeChannel(channel).catch(() => {});
+            supabase.removeChannel(channel).catch(() => { });
         },
     };
 }

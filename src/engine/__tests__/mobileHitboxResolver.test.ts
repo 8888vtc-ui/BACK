@@ -122,19 +122,19 @@ describe('mobileHitboxResolver — Loi de Fitts, Magnétisme Voronoï & Ghost Ch
         expect(bubbles[1]?.isBlotHit).toBe(true);
     });
 
-    it('active le compteur numérique dès ×3 / ×4 / ×5 en mode compactMobile sans déborder', () => {
+    it('active le compteur numérique dès 3 / 4 / 5 en mode compactMobile sans déborder', () => {
         const mobileStack3 = computeCheckerStackLayout(3, false, true);
         expect(mobileStack3.isCompressed).toBe(true);
         expect(mobileStack3.badgeCount).toBe(3);
-        expect(mobileStack3.badgeText).toBe('×3');
+        expect(mobileStack3.badgeText).toBe('3');
 
         const mobileStack4 = computeCheckerStackLayout(4, true, true);
         expect(mobileStack4.badgeCount).toBe(4);
-        expect(mobileStack4.badgeText).toBe('×4');
+        expect(mobileStack4.badgeText).toBe('4');
 
         const mobileStack5 = computeCheckerStackLayout(5, false, true);
         expect(mobileStack5.badgeCount).toBe(5);
-        expect(mobileStack5.badgeText).toBe('×5');
+        expect(mobileStack5.badgeText).toBe('5');
         expect(mobileStack5.overlapPx).toBeGreaterThan(1);
     });
 });

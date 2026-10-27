@@ -202,8 +202,8 @@ export function subscribeRolloutProgress(
                 } else {
                     callbacks.onProgress?.(payload);
                 }
-            } catch (err: any) {
-                callbacks.onError?.(err);
+            } catch (err: unknown) {
+                callbacks.onError?.(err instanceof Error ? err : new Error(String(err)));
             }
         };
 
@@ -218,7 +218,7 @@ export function subscribeRolloutProgress(
                         callbacks.onError?.(new Error(job.error || 'Échec du rollout'));
                     }
                 })
-                .catch(() => {})
+                .catch(() => { })
                 .finally(() => {
                     es.close();
                 });

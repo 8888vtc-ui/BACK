@@ -14,7 +14,6 @@
  */
 
 import { useCallback } from 'react';
-import { useRollOff } from './useRollOff';
 import { toast } from '../components/toast/ToastContext';
 import { soundEngine } from '../lib/sound/soundEngine';
 import type { Player } from '../engine/backgammonEngine';
@@ -31,12 +30,6 @@ export interface RemoteStatePatch {
     cubeOwner?: Player | null;
 }
 
-export interface RollOffState {
-    xDie: number | null;
-    oDie: number | null;
-    winner: Player | null;
-}
-
 /** Sous-ensemble du jeu nécessaire à l'amorçage du match. */
 export interface MatchBootstrapGame {
     state: { board: number[] };
@@ -49,49 +42,10 @@ export interface MatchBootstrapGame {
 }
 
 export interface UseMatchBootstrapResult {
-    rollOff: RollOffState;
-    rollOffDone: boolean;
-    handleRollOff: () => void;
     handleRemoteAction: (action: RealtimeBroadcastAction) => void;
 }
 
 export function useMatchBootstrap(game: MatchBootstrapGame): UseMatchBootstrapResult {
-    // Tirage au sort initial (Roll-off) connecté au moteur de jeu.
-    const handleRollOffSuccess = useCallback(
-        (winner: Player, dice: [number, number]) => {
-            if (winner === 'X') {
-                game.applyRemoteState({
-                    board: game.state.board,
-                    dice,
-                    turn: 'X',
-                    usedDice: [false, false],
-                    phase: 'PLAYING_MOVES',
-                });
-                toast.success(
-                    `Vous commencez la manche avec les dés [${dice[0]}, ${dice[1]}] !`,
-                    'Tirage au sort',
-                );
-                soundEngine.playDiceRoll();
-            } else {
-                game.applyRemoteState({
-                    board: game.state.board,
-                    dice,
-                    turn: 'O',
-                    usedDice: [false, false],
-                    phase: game.autoOpponent ? 'OPPONENT_THINKING' : 'PLAYING_MOVES',
-                });
-                toast.info(
-                    `L'ordinateur commence la manche avec les dés [${dice[1]}, ${dice[0]}].`,
-                    'Tirage au sort',
-                );
-                soundEngine.playDiceRoll();
-            }
-        },
-        [game],
-    );
-
-    const { rollOff, rollOffDone, handleRollOff } = useRollOff({ onSuccess: handleRollOffSuccess });
-
     // Écouteur des actions distantes multijoueur.
     const handleRemoteAction = useCallback(
         (action: RealtimeBroadcastAction) => {
@@ -134,5 +88,5 @@ export function useMatchBootstrap(game: MatchBootstrapGame): UseMatchBootstrapRe
         [game],
     );
 
-    return { rollOff, rollOffDone, handleRollOff, handleRemoteAction };
+    return { handleRemoteAction };
 }

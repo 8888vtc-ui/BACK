@@ -1,14 +1,17 @@
 'use client';
 
 /**
- * Hook d'interactions clavier/souris/tactile des flèches du plateau (0 any, < 300 lignes).
+ * Hook d'interactions clavier/souris/tactile des flèches du plateau (0 any, <= 200 lignes).
  */
 import { useCallback, useState } from 'react';
-import { getSafestDestination } from '../engine/backgammonEngine';
-import { TOP_ROW_NAV, BOT_ROW_NAV } from '../components/board/boardAria';
-import { findPortMove, findDirectMoveToDestination } from '../engine/checkerMoveHelpers';
 import { resolveDeterministicBearOffMove, selectBestBearOffSourceForTargets } from '../engine/bearOffRules';
-import { resolveDestinationClick, type SubMove } from '../engine/smartClickResolver';
+import type { SubMove } from '../engine/smartClickResolver';
+import {
+    computeKeyboardNavTarget,
+    executeBarRightClick,
+    executeBoardPointClick,
+    keyboardNavSelector,
+} from './boardPointClickHelpers';
 
 export interface UseBoardPointInteractionsParams {
     board: number[];
@@ -86,98 +89,14 @@ export function useBoardPointInteractions({
         (pointNumber: number, e: React.MouseEvent) => {
             e.stopPropagation();
             setFocusedPoint(null);
-            const count = board[pointNumber];
-            const hasPlayerChecker = isX ? count > 0 : count < 0;
-            const ownBarCount = isX ? bar.X : bar.O;
-            const ownBarPoint = isX ? xBarPoint : oBarPoint;
-
-            if (ownBarCount > 0) {
-                if (leftDieTargets && rightDieTargets && onPlayMove) {
-                    const barEntry = findDirectMoveToDestination(pointNumber, player, leftDieTargets, rightDieTargets, preferredDie);
-                    if (barEntry && barEntry.from === ownBarPoint) {
-                        onPlayMove(ownBarPoint, pointNumber, barEntry.die);
-                        return;
-                    }
-                }
-                if (ghostDestinations.has(pointNumber)) {
-                    onDestinationClick(pointNumber);
-                    return;
-                }
-                if (hasPlayerChecker) {
-                    onCheckerClick(ownBarPoint);
-                    return;
-                }
-                return;
-            }
-
-            if (ghostDestinations.has(pointNumber)) {
-                if (selectedPoint === null && leftDieTargets && rightDieTargets && onPlayMove) {
-                    const direct = findDirectMoveToDestination(pointNumber, player, leftDieTargets, rightDieTargets, preferredDie);
-                    if (direct) {
-                        onPlayMove(direct.from, pointNumber, direct.die);
-                        return;
-                    }
-                }
-                onDestinationClick(pointNumber);
-                return;
-            }
-
-            const playCombined = (selectedSource: number | null): boolean => {
-                if (!legalSequences || legalSequences.length === 0 || !onPlayMove) return false;
-                const res = resolveDestinationClick(
-                    { legalSequences, board, player, selectedSource, higherDieFirst: true },
-                    pointNumber,
-                );
-                if (res.kind !== 'combined') return false;
-                res.moves.forEach((m) => onPlayMove(m.from, m.to));
-                return true;
-            };
-
-            // Pion sélectionné + clic sur une case à d1+d2 de ce pion : coup combiné enchainé.
-            if (selectedPoint !== null && selectedPoint !== pointNumber && playCombined(selectedPoint)) {
-                return;
-            }
-
-            const isMovableSource = (leftDieTargets?.has(pointNumber) ?? false) || (rightDieTargets?.has(pointNumber) ?? false);
-            if (hasPlayerChecker && (isMovableSource || !onPlayMove || !leftDieTargets || !rightDieTargets)) {
-                onCheckerClick(pointNumber);
-                return;
-            }
-
-            if (!hasPlayerChecker && leftDieTargets && rightDieTargets && onPlayMove && dice) {
-                const port = findPortMove(pointNumber, dice, board, player, leftDieTargets, rightDieTargets);
-                if (port) {
-                    onPlayMove(port.from1, pointNumber, port.die1);
-                    onPlayMove(port.from2, pointNumber, port.die2);
-                    return;
-                }
-            }
-
-            if (leftDieTargets && rightDieTargets && onPlayMove) {
-                const direct = findDirectMoveToDestination(pointNumber, player, leftDieTargets, rightDieTargets, preferredDie);
-                if (direct) {
-                    onPlayMove(direct.from, pointNumber, direct.die);
-                    return;
-                }
-            }
-
-            // Destination-First combinée : un seul pion atteint la case avec la somme des dés
-            // (les cases portant un de mes pions jouables ont déjà été traitées en Source-First).
-            if (playCombined(null)) {
-                return;
-            }
-
-            if (hasPlayerChecker) {
-                onCheckerClick(pointNumber);
-                return;
-            }
-
-            if (ghostDestinations.size > 0 && (ghostDestinations.has(pointNumber - 1) || ghostDestinations.has(pointNumber + 1))) {
-                return;
-            }
-            onDeselect?.();
+            executeBoardPointClick({
+                pointNumber, board, isX, player, bar, xBarPoint, oBarPoint,
+                ghostDestinations, selectedPoint, leftDieTargets, rightDieTargets,
+                dice, preferredDie, legalSequences,
+                onCheckerClick, onDestinationClick, onPlayMove, onDeselect,
+            });
         },
-        [board, isX, bar.X, bar.O, xBarPoint, oBarPoint, ghostDestinations, selectedPoint, leftDieTargets, rightDieTargets, dice, player, preferredDie, legalSequences, onDestinationClick, onCheckerClick, onPlayMove, onDeselect],
+        [board, isX, bar, xBarPoint, oBarPoint, ghostDestinations, selectedPoint, leftDieTargets, rightDieTargets, dice, player, preferredDie, legalSequences, onDestinationClick, onCheckerClick, onPlayMove, onDeselect],
     );
 
     const handlePointRightClick = useCallback(
@@ -201,32 +120,10 @@ export function useBoardPointInteractions({
 
     const handleBarRightClick = useCallback(
         (barPoint: number) => {
-            const hasBarChecker = barPoint === xBarPoint ? bar.X > 0 : bar.O > 0;
-            if (!hasBarChecker) {
-                onDeselect?.();
-                return;
-            }
-
-            if (leftDieTargets && rightDieTargets && onPlayMove) {
-                const secondaryDie: 0 | 1 = (1 - preferredDie) as 0 | 1;
-                const secondaryTargets = secondaryDie === 0 ? leftDieTargets : rightDieTargets;
-                const primaryTargets = preferredDie === 0 ? leftDieTargets : rightDieTargets;
-                const secondaryDests = secondaryTargets.get(barPoint) ?? [];
-                const primaryDests = primaryTargets.get(barPoint) ?? [];
-
-                if (secondaryDests.length > 0) {
-                    const dest = getSafestDestination(barPoint, secondaryDests, board, player);
-                    onPlayMove(barPoint, dest, secondaryDie);
-                    return;
-                }
-                if (primaryDests.length > 0) {
-                    const dest = getSafestDestination(barPoint, primaryDests, board, player);
-                    onPlayMove(barPoint, dest, preferredDie);
-                    return;
-                }
-            }
-
-            onCheckerRightClick(barPoint);
+            executeBarRightClick({
+                barPoint, xBarPoint, bar, preferredDie, leftDieTargets, rightDieTargets,
+                board, player, onPlayMove, onCheckerRightClick, onDeselect,
+            });
         },
         [bar, xBarPoint, preferredDie, leftDieTargets, rightDieTargets, onPlayMove, board, player, onCheckerRightClick, onDeselect],
     );
@@ -261,16 +158,7 @@ export function useBoardPointInteractions({
 
     const handlePointKeyDown = useCallback(
         (pointNumber: number, e: React.KeyboardEvent) => {
-            const navRow = pointNumber >= 13 ? TOP_ROW_NAV : BOT_ROW_NAV;
-            const idx = navRow.indexOf(pointNumber);
-            if (idx === -1) return;
-
-            let next: number | null = null;
-            if (e.key === 'ArrowLeft') next = navRow[Math.max(0, idx - 1)];
-            else if (e.key === 'ArrowRight') next = navRow[Math.min(navRow.length - 1, idx + 1)];
-            else if (e.key === 'Home') next = navRow[0];
-            else if (e.key === 'End') next = navRow[navRow.length - 1];
-            else if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 const ownBarCount = isX ? bar.X : bar.O;
                 const ownBarPoint = isX ? xBarPoint : oBarPoint;
@@ -280,16 +168,11 @@ export function useBoardPointInteractions({
                 return;
             }
 
+            const next = computeKeyboardNavTarget(pointNumber, e.key);
             if (next !== null && next !== pointNumber) {
                 e.preventDefault();
                 setFocusedPoint(next);
-                const selector =
-                    next === 101
-                        ? '[data-testid="tray-zone-o"]'
-                        : next === 100
-                          ? '[data-testid="tray-zone-x"]'
-                          : `[data-testid="point-triangle-${next}"]`;
-                const target = document.querySelector(selector) as HTMLElement | null;
+                const target = document.querySelector(keyboardNavSelector(next)) as HTMLElement | null;
                 target?.focus();
             }
         },

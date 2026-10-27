@@ -42,38 +42,38 @@ export interface BaseRealtimePayload {
 
 export type SequencedActionPayload =
     | {
-          type: 'ROLL_DICE';
-          dice: [number, number];
-          board: number[];
-      }
+        type: 'ROLL_DICE';
+        dice: [number, number];
+        board: number[];
+    }
     | {
-          type: 'MOVE_CHECKER';
-          move: Move;
-          board: number[];
-          usedDice: [boolean, boolean] | boolean[];
-      }
+        type: 'MOVE_CHECKER';
+        move: Move;
+        board: number[];
+        usedDice: [boolean, boolean] | boolean[];
+    }
     | {
-          type: 'END_TURN';
-          nextTurn: Player;
-          board: number[];
-      }
+        type: 'END_TURN';
+        nextTurn: Player;
+        board: number[];
+    }
     | {
-          type: 'OFFER_DOUBLE';
-          cubeValue: number;
-      }
+        type: 'OFFER_DOUBLE';
+        cubeValue: number;
+    }
     | {
-          type: 'ACCEPT_DOUBLE';
-          cubeValue: number;
-      }
+        type: 'ACCEPT_DOUBLE';
+        cubeValue: number;
+    }
     | {
-          type: 'PASS_DOUBLE';
-          winner: Player;
-      }
+        type: 'PASS_DOUBLE';
+        winner: Player;
+    }
     | {
-          type: 'RESIGN';
-          reason: 'surrender' | 'timeout' | 'disconnect';
-          winner: Player;
-      };
+        type: 'RESIGN';
+        reason: 'surrender' | 'timeout' | 'disconnect';
+        winner: Player;
+    };
 
 export interface RealtimeBroadcastMessage extends BaseRealtimePayload {
     action: SequencedActionPayload;
@@ -184,14 +184,36 @@ export class RoomSequenceManager {
 
 /**
  * Génère un code de salon d'invitation court et facile à dicter (ex: 'BG-8492').
+ *
+ * Utilise un CSPRNG (`crypto.getRandomValues`) avec rejet du biais de modulo :
+ * les valeurs aléatoires >= `limit` sont rejetées pour garantir une distribution
+ * uniforme sur l'alphabet (aucun caractère n'est sur-représenté).
  */
 export function generateRoomCode(prefix = 'BG'): string {
     const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-    let code = '';
-    for (let i = 0; i < 4; i++) {
-        const idx = Math.floor(Math.random() * chars.length);
-        code += chars[idx];
+    const cryptoObj =
+        typeof globalThis !== 'undefined' && globalThis.crypto
+            ? globalThis.crypto
+            : undefined;
+
+    if (!cryptoObj || typeof cryptoObj.getRandomValues !== 'function') {
+        throw new Error(
+            'CSPRNG indisponible : impossible de générer un code de salon sécurisé.',
+        );
     }
+
+    const limit = 256 - (256 % chars.length);
+    const buffer = new Uint8Array(1);
+    let code = '';
+
+    while (code.length < 4) {
+        cryptoObj.getRandomValues(buffer);
+        const value = buffer[0];
+        // Rejet du biais de modulo : on ignore les valeurs >= limit.
+        if (value >= limit) continue;
+        code += chars[value % chars.length];
+    }
+
     return `${prefix}-${code}`;
 }
 

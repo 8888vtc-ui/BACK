@@ -34,7 +34,7 @@ export interface RolloutProgressPanelProps {
     /** Annule le rollout. */
     onCancel: () => void;
     /** Traducteur i18n. */
-    t: (key: string, vars?: Record<string, any>) => string;
+    t: (key: string, vars?: Record<string, string | number>) => string;
     /** Locale active. */
     locale: string;
 }

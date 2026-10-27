@@ -37,8 +37,8 @@ export interface EngineClientOptions {
 }
 
 interface PendingRequest {
-    resolve: (value: any) => void;
-    reject: (reason?: any) => void;
+    resolve: (value: unknown) => void;
+    reject: (reason?: unknown) => void;
     timeoutId: ReturnType<typeof setTimeout>;
 }
 
@@ -117,7 +117,7 @@ export class GnubgEngineClient {
      */
     private async sendRequest<TResult>(
         type: WorkerRequestType,
-        payload: any,
+        payload: unknown,
         priority: RequestPriority = 'normal',
         timeoutMs?: number,
     ): Promise<TResult> {
@@ -141,7 +141,7 @@ export class GnubgEngineClient {
                     reject(new Error(`Timeout de la requête moteur GNUBG "${type}" après ${timeout}ms`));
                 }, timeout);
 
-                this.pendingRequests.set(id, { resolve, reject, timeoutId });
+                this.pendingRequests.set(id, { resolve: resolve as (value: unknown) => void, reject, timeoutId });
                 worker.postMessage(request);
             });
         }
