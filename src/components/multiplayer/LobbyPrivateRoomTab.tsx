@@ -20,6 +20,7 @@ export const LobbyPrivateRoomTab: React.FC<LobbyPrivateRoomTabProps> = ({
 }) => {
     const [inputCode, setInputCode] = useState<string>('');
     const [joinError, setJoinError] = useState<string | null>(null);
+    const [createError, setCreateError] = useState<string | null>(null);
     const [isJoining, setIsJoining] = useState<boolean>(false);
     const [copiedCode, setCopiedCode] = useState<boolean>(false);
     const [copiedLink, setCopiedLink] = useState<boolean>(false);
@@ -64,10 +65,13 @@ export const LobbyPrivateRoomTab: React.FC<LobbyPrivateRoomTabProps> = ({
     };
 
     const handleCreateRoom = async () => {
+        setCreateError(null);
         try {
             await onCreatePrivateRoom(selectedLength);
-        } catch {
-            // ignore
+        } catch (err: unknown) {
+            setCreateError(
+                err instanceof Error ? err.message : 'Impossible de créer le salon.',
+            );
         }
     };
 
@@ -166,6 +170,9 @@ export const LobbyPrivateRoomTab: React.FC<LobbyPrivateRoomTabProps> = ({
                         >
                             Générer un code
                         </button>
+                        {createError && (
+                            <div className="text-xs text-rose-400">{createError}</div>
+                        )}
                     </div>
 
                     {/* Rejoindre */}

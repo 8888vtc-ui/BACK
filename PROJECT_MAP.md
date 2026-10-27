@@ -58,34 +58,44 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 ### `src/components/` — Composants React (présentation)
 | Dossier | Rôle |
 |---|---|
-| `board/` | Plateau (`Board.tsx`, `GameScreenView.tsx`, `GameBoardArea.tsx`, géométrie, thèmes) |
+| `board/` | Plateau (`Board.tsx`, `GameScreenView.tsx`, `GameBoardArea.tsx`, `MobileThumbDock.tsx`, `PipCountBadge.tsx`, `MatchClockBadge.tsx`, géométrie, thèmes) |
 | `lobby/` | Lobby principal (`LobbyScreen.tsx`, `LearningModulesGrid.tsx`, `AppScreenViews.tsx`) |
 | `nav/` | Barre de navigation horlogère (`AppNavbar.tsx`) et sélecteur 6 langues (`LanguageSelector.tsx`) |
-| `academy/` | Hub SEO Gammon Academy (`GammonAcademyView.tsx`, `OpeningRollsTable.tsx`, `MatchEquityCalculator.tsx`, `AcademyKnowledgeGrid.tsx`, `OpeningRollDetailView.tsx`, `ConceptDetailView.tsx`) |
-| `coach/` | Panneau coach (`CoachPanel.tsx`, `CoachSidebar.tsx`, `CoachMobileDrawer.tsx`) |
-| `hud/` | HUD de match (`MatchHud.tsx`, `MatchHeader.tsx`, `MatchTurnBar.tsx`, sélecteurs) |
-| `multiplayer/` | Bannière et composants multijoueur |
+| `academy/` | Hub SEO Gammon Academy (`GammonAcademyView.tsx`, `OpeningRollsTable.tsx`, `MatchEquityCalculator.tsx`, `KeithRaceCalculatorCard.tsx`, `matchEquityCalculatorData.ts`, `AcademyKnowledgeGrid.tsx`) |
+| `coach/` | Panneau coach (`CoachPanel.tsx`, `CoachSidebar.tsx`, `CoachMobileDrawer.tsx`, `CoachPanelView.tsx`, `CoachMoveComparisonCard.tsx`) |
+| `hud/` | HUD de match (`MatchHud.tsx`, `MatchHeader.tsx`, `HudScoreboard.tsx`, `FischerClockBadge.tsx`, `MatchTurnBar.tsx`, sélecteurs) |
+| `multiplayer/` | Bannière et composants multijoueur (`MultiplayerBanner.tsx`, `PrivateRoomModal.tsx`) |
 | `rating/` | Review de partie, courbes, cours IA (`GameReviewCourse.tsx`) |
-| `stats/` | Dashboard progression, erreurs récurrentes (`RecurringErrorsCard.tsx`) |
-| `summary/` | Rapport de fin de match (`PostMatchTrainingReport.tsx`, `PostMatchAiSynthesis.tsx` avec Soft Paywall et bouton Audit Dés SHA-256) |
-| `dice/` | Modale d'audit cryptographique des dés (`DiceAuditModal.tsx` — vérification HMAC-SHA256 et graines client) |
-| `subscription/` | Modale Soft Paywall VIP 3 paliers (`SubscriptionModal.tsx`), tunnel de rétention 3 étapes (`CancelFlowModal.tsx`) et bannière de gestion (`ManageSubscriptionBanner.tsx`) |
+| `stats/` | Dashboard progression (`ProgressionDashboard.tsx`, `ProgressionHeroStats.tsx`, `ProgressionConceptsSection.tsx`, `ProgressionMatchesHistory.tsx`, `RecurringErrorsCard.tsx`) |
+| `analytics/` | Analyses graphiques (`ConceptsHeatmap.tsx`, `ConceptsHeatmapDetailCard.tsx`, `ConceptsHeatmapTableBody.tsx`, `ProgressionCurve.tsx`) |
+| `summary/` | Rapport de fin de match (`PostMatchTrainingReport.tsx`, `PostMatchAiSynthesis.tsx` avec Soft Paywall et bouton Audit Dés SHA-256, `BlunderReviewCard.tsx`) |
+| `dice/` | Modale d'audit cryptographique des dés (`DiceAuditModal.tsx`, `DiceAuditRollsTable.tsx`, `DiceAuditSeedsSection.tsx`, `useDiceAuditSubtle.ts`) |
+| `subscription/` | Modale Soft Paywall VIP 3 paliers (`SubscriptionModal.tsx`, `SubscriptionPlanCards.tsx`, `SubscriptionTrialAndBenefits.tsx`), tunnel de rétention 3 étapes (`CancelFlowModal.tsx`) |
+| `openings/` | Assistant d'ouvertures (`OpeningBookModal.tsx`, `OpeningDetailView.tsx`, `OpeningAssistantBanner.tsx`) |
+| `knowledge/` | Base de connaissances pédagogiques (`KnowledgeBaseModal.tsx`, `KnowledgeConceptDetail.tsx`) |
+| `drills/` | Entraînement sur blunders (`BlunderDrillView.tsx`, `BlunderDrillHeader.tsx`, `BlunderDrillFeedbackCard.tsx`) |
 | `puzzle/` | Composants V2 du Puzzle du Jour (`DailyPuzzleBoard.tsx`, `DailyPuzzleResultCard.tsx`, `DailyStreakBadge.tsx`) |
+| `share/` | Partage social viral HD Canvas (`ShareBlunderButton.tsx`) |
 | `auth/`, `common/`, `toast/`, `providers/`, `modals/` | Infra UI (`GameModalsContainer.tsx`, `UserAccountMenu.tsx`) |
 
-### `src/hooks/` — Hooks React (état + effets)
-| Fichier | Rôle |
+### `src/hooks/` — Hooks React & Sous-modules découplés (Règle R1 : Hook $\le 200$, Logic $\le 400$)
+| Hook / Dossier | Rôle |
 |---|---|
 | `useBackgammonGame.ts` | Machine à états de partie (lancer, déplacer, videau, IA, session Provably Fair) |
-| `useCoach.ts` | Orchestration de l'analyse Coach IA log-driven |
+| `gameStateReducer.ts` & `reducers/` | Réducteur pur de jeu découpé par domaine : `rollActions.ts`, `cubeActions.ts`, `humanMoveActions.ts`, `humanMoveExecutor.ts`, `opponentMoveActions.ts`, `moveActions.ts`, `matchActions.ts`, `gameStateTypes.ts` |
+| `useOpponentTurnOrchestrator.ts` & `orchestrators/` | Orchestration du tour adverse découpée : `opponentCubeDecision.ts`, `opponentMoveCalculator.ts`, `opponentAnimationRunner.ts`, `opponentTurnExecution.ts` |
+| `useCheckerFlights.ts` & `flights/` | Physique et keyframes de vols des pions : `checkerMoveDeltaDetector.ts`, `checkerCoordinateResolver.ts`, `checkerFlightBuilder.ts` |
+| `useCheckerDragAndDrop.ts` & `dnd/` | Interaction gestuelle et tactile : `checkerSnappingPhysics.ts`, `checkerDragTypes.ts`, `checkerTargetHitbox.ts`, `checkerGestureHandlers.ts` |
+| `useCoach.ts`, `useCoachHelpers.ts` & `coach/` | Analyse log-driven et coach IA neuro-symbolique : `coachCubeEvaluator.ts`, `useCoachCubeEvaluator.ts`, `useCoachLogAnalyzer.ts`, `coachManualTrigger.ts`, `useCoachMatchStats.ts`, `useCoachHistoryState.ts`, `useCoachRoundWatcher.ts`, `useCoachReplay.ts`, `coachTypes.ts`, `coachStateBuilders.ts` |
+| `useDailyPuzzle.ts` & `puzzles/` | Gestion du puzzle du jour : `useDailyPuzzleIntro.ts`, `useDailyPuzzleEvaluation.ts`, `useDailyPuzzleMoveInput.ts` |
+| `useGamePersistence.ts` & `persistence/` | Persistance locale/cloud et crash recovery atomique : `gamePersistenceTypes.ts`, `useEmergencyPersistence.ts`, `useTurnHistoryRecorder.ts`, `useGameOverAnalysis.ts` |
 | `useCoachQuota.ts` | Suivi temps réel du quota gratuit de 3 analyses Coach IA / 24h et statut VIP |
-| `useCheckerInteractions.ts` | Interactions pions et dés (Smart Click 1 clic, clic droit = petit dé, drag-and-drop ; plus de double-clic natif) |
+| `useCheckerInteractions.ts` | Interactions pions et dés (Smart Click 1 clic, clic droit = petit dé, drag-and-drop) |
 | `usePlatformControlsRouter.ts` | Routage des contrôles Desktop vs Mobile Tactile |
-| `useGamePersistence.ts` | Persistance locale/cloud et analyse de fin de partie |
-| `useGameModals.ts` | Gestion centralisée des modales de jeu (incluant `DiceAuditModal` et `SubscriptionModal`) |
+| `useGameModals.ts` | Gestion centralisée des modales de jeu (`DiceAuditModal`, `SubscriptionModal`, `OpeningBookModal`, etc.) |
 | `useOpeningAssistant.ts` | Détection et application des coups d'ouverture certifiés |
-| `useMultiplayerGame.ts` | Partie multijoueur temps réel |
-| `useBoardTheme.tsx` | Thème du plateau (contexte) |
+| `useMultiplayerGame.ts` | Partie multijoueur temps réel (Salons Privés `BG-XXXX`) |
+| `useBoardTheme.tsx` | Thème du plateau (contexte et classes CSS) |
 
 ### `src/lib/` — Services (I/O, intégrations)
 | Dossier | Rôle |

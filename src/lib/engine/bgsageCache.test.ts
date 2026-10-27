@@ -106,7 +106,7 @@ describe('Cache LRU des évaluations Open Sage', () => {
             expect(res2).toEqual(res1);
         });
 
-        it('c) Invariance linéaire du videau en Money Game (matchLength = 0, cube >= 2)', async () => {
+        it('c) La valeur du cube n\'est PAS normalisée : cube 2 et cube 4 produisent des clés DIFFÉRENTES', async () => {
             const mockFetch = vi.fn().mockResolvedValue({ ok: true, json: async () => SAMPLE });
             globalThis.fetch = mockFetch as unknown as typeof fetch;
 
@@ -117,7 +117,8 @@ describe('Cache LRU des évaluations Open Sage', () => {
             const res1 = await evaluateWithBgsage(xgidCube2, 2);
             const res2 = await evaluateWithBgsage(xgidCube4, 2);
 
-            expect(mockFetch).toHaveBeenCalledTimes(1);
+            // L'équité cubeful dépend de la valeur du cube : deux appels réseau distincts.
+            expect(mockFetch).toHaveBeenCalledTimes(2);
             expect(res2).toEqual(res1);
         });
     });

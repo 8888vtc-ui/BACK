@@ -5,199 +5,26 @@
  * Prix du Gammon & Calculateur de Course de Keith (Keith Count Race Cube Action).
  *
  * Outil SEO "Link Magnet" gratuit en 6 langues (FR, EN, ES, PT, DE, AR).
- * Loi de Scalabilité : strictement 0 any, < 280 lignes.
+ * Conforme à SCALABILITY.md (< 300 lignes, 0 any, Dumb UI pure).
  */
 
 import React, { useMemo, useState } from 'react';
 import { buildMatchContext } from '../../features/coach/matchContext';
 import type { PrimaryLocale } from '../../lib/i18n/types';
 import { trackSaasLifecycleEvent } from '../../lib/subscription/retentionEngine';
+import {
+    CALC_LABELS,
+    evaluateKeithRaceDecision,
+    type CalcLabels,
+    type KeithDecision,
+} from './matchEquityCalculatorData';
+import KeithRaceCalculatorCard from './KeithRaceCalculatorCard';
+
+export { evaluateKeithRaceDecision };
+export type { CalcLabels, KeithDecision };
 
 export interface MatchEquityCalculatorProps {
     readonly locale: PrimaryLocale;
-}
-
-interface CalcLabels {
-    readonly badge: string;
-    readonly title: string;
-    readonly subtitle: string;
-    readonly matchLengthLabel: string;
-    readonly moneyGameLabel: string;
-    readonly pointsToWinX: string;
-    readonly pointsToWinO: string;
-    readonly crawfordToggle: string;
-    readonly mwcLabel: string;
-    readonly takePointDeadLabel: string;
-    readonly takePointLiveLabel: string;
-    readonly gammonPriceLabel: string;
-    readonly keithTitle: string;
-    readonly pipsXLabel: string;
-    readonly pipsOLabel: string;
-    readonly penaltyXLabel: string;
-    readonly penaltyOLabel: string;
-    readonly keithVerdictLabel: string;
-    readonly copyXgidBtn: string;
-    readonly copiedXgidMsg: string;
-}
-
-const CALC_LABELS: Record<PrimaryLocale, CalcLabels> = {
-    fr: {
-        badge: 'OUTIL INTERACTIF GRATUIT · KAZAROSS-XG2 & KEITH COUNT',
-        title: 'Calculateur d’Équité de Match (MET), Take Point & Course de Keith',
-        subtitle: 'Simulez n’importe quel score de tournoi (ou Money Game) pour obtenir instantanément votre probabilité de gain (MWC %), votre seuil de prise exact (Take Point), le prix du Gammon et la décision de videau en course.',
-        matchLengthLabel: 'Format du Match',
-        moneyGameLabel: 'Money Game (Illimité)',
-        pointsToWinX: 'Votre Score (Points acquis)',
-        pointsToWinO: 'Score Adversaire',
-        crawfordToggle: 'Manche de Crawford active',
-        mwcLabel: 'Probabilité de Gain Match (MWC)',
-        takePointDeadLabel: 'Take Point (Cube Mort)',
-        takePointLiveLabel: 'Take Point Réel (Cube Vivant)',
-        gammonPriceLabel: 'Prix du Gammon (Gammon Price)',
-        keithTitle: 'Calculateur Rapide de Course (Algorithme de Keith)',
-        pipsXLabel: 'Votre Pip Count',
-        pipsOLabel: 'Pip Count Adverse',
-        penaltyXLabel: 'Vos Pénalités Keith',
-        penaltyOLabel: 'Pénalités Adverses',
-        keithVerdictLabel: 'Décision Videau Recommandée (3-Ply / Keith)',
-        copyXgidBtn: '🔗 Copier un Permalien d’Analyse XGID',
-        copiedXgidMsg: '✓ Permalien XGID copié dans le presse-papiers !',
-    },
-    en: {
-        badge: 'FREE INTERACTIVE TOOL · KAZAROSS-XG2 & KEITH COUNT',
-        title: 'Match Equity (MET), Take Point & Keith Count Race Calculator',
-        subtitle: 'Simulate any tournament match score (or Money Game) to instantly compute your Match Winning Chance (MWC %), exact Take Point, Gammon Price, and pure-race cube action.',
-        matchLengthLabel: 'Match Format',
-        moneyGameLabel: 'Money Play (Unlimited)',
-        pointsToWinX: 'Your Score (Points won)',
-        pointsToWinO: 'Opponent Score',
-        crawfordToggle: 'Crawford Game Active',
-        mwcLabel: 'Match Winning Chance (MWC)',
-        takePointDeadLabel: 'Dead Cube Take Point',
-        takePointLiveLabel: 'Live Cube Take Point (~Est.)',
-        gammonPriceLabel: 'Gammon Price',
-        keithTitle: 'Pure Race Cube Calculator (Keith Count Algorithm)',
-        pipsXLabel: 'Your Pip Count',
-        pipsOLabel: 'Opponent Pip Count',
-        penaltyXLabel: 'Your Keith Penalties',
-        penaltyOLabel: 'Opponent Penalties',
-        keithVerdictLabel: 'Recommended Cube Action (3-Ply / Keith)',
-        copyXgidBtn: '🔗 Copy Shareable XGID Analysis Link',
-        copiedXgidMsg: '✓ Shareable XGID link copied to clipboard!',
-    },
-    es: {
-        badge: 'HERRAMIENTA INTERACTIVA · KAZAROSS-XG2 & KEITH COUNT',
-        title: 'Calculadora de Equidad de Partido (MET), Take Point y Conteo Keith',
-        subtitle: 'Simula cualquier marcador de torneo para obtener al instante tu probabilidad de ganar el partido (MWC %), el Take Point exacto, el precio del Gammon y la decisión de cubo en carrera.',
-        matchLengthLabel: 'Formato del Partido',
-        moneyGameLabel: 'Money Game (Libre)',
-        pointsToWinX: 'Tu Puntuación',
-        pointsToWinO: 'Puntuación Rival',
-        crawfordToggle: 'Juego Crawford activo',
-        mwcLabel: 'Probabilidad de Ganar (MWC)',
-        takePointDeadLabel: 'Take Point (Cubo Muerto)',
-        takePointLiveLabel: 'Take Point Real (Cubo Vivo)',
-        gammonPriceLabel: 'Precio del Gammon',
-        keithTitle: 'Calculadora de Carrera Pura (Algoritmo de Keith)',
-        pipsXLabel: 'Tus Pips',
-        pipsOLabel: 'Pips del Rival',
-        penaltyXLabel: 'Tus Penalizaciones Keith',
-        penaltyOLabel: 'Penalizaciones Rival',
-        keithVerdictLabel: 'Decisión de Cubo Recomendada (Keith)',
-        copyXgidBtn: '🔗 Copiar Enlace de Posición XGID',
-        copiedXgidMsg: '✓ ¡Enlace XGID copiado!',
-    },
-    pt: {
-        badge: 'FERRAMENTA INTERATIVA · KAZAROSS-XG2 & KEITH COUNT',
-        title: 'Calculadora de Equidade de Partida (MET), Take Point e Contagem Keith',
-        subtitle: 'Simule qualquer placar de torneio para calcular instantaneamente sua chance de vitória (MWC %), Take Point exato, preço do Gammon e decisão do cubo na corrida.',
-        matchLengthLabel: 'Formato da Partida',
-        moneyGameLabel: 'Money Game (Livre)',
-        pointsToWinX: 'Sua Pontuação',
-        pointsToWinO: 'Pontuação Adversário',
-        crawfordToggle: 'Partida Crawford ativa',
-        mwcLabel: 'Chance de Vitória na Partida (MWC)',
-        takePointDeadLabel: 'Take Point (Cubo Morto)',
-        takePointLiveLabel: 'Take Point Real (Cubo Vivo)',
-        gammonPriceLabel: 'Preço do Gammon',
-        keithTitle: 'Calculadora de Corrida Pura (Algoritmo de Keith)',
-        pipsXLabel: 'Seus Pips',
-        pipsOLabel: 'Pips do Adversário',
-        penaltyXLabel: 'Suas Penalidades Keith',
-        penaltyOLabel: 'Penalidades Adversário',
-        keithVerdictLabel: 'Decisão do Cubo Recomendada (Keith)',
-        copyXgidBtn: '🔗 Copiar Link Compartilhável XGID',
-        copiedXgidMsg: '✓ Link XGID copiado!',
-    },
-    de: {
-        badge: 'INTERAKTIVES TOOL · KAZAROSS-XG2 & KEITH COUNT',
-        title: 'Match-Equity-Rechner (MET), Take Point & Keith-Count-Rennrechner',
-        subtitle: 'Simulieren Sie jeden Turnierspielstand für exakte Match-Gewinnwahrscheinlichkeit (MWC %), Take Point, Gammon-Preis und Dopplungswürfel-Entscheidung im Rennen.',
-        matchLengthLabel: 'Match-Format',
-        moneyGameLabel: 'Money Game (Unbegrenzt)',
-        pointsToWinX: 'Ihr Punktestand',
-        pointsToWinO: 'Gegner-Punktestand',
-        crawfordToggle: 'Crawford-Spiel aktiv',
-        mwcLabel: 'Match-Gewinnchance (MWC)',
-        takePointDeadLabel: 'Dead Cube Take Point',
-        takePointLiveLabel: 'Live Cube Take Point',
-        gammonPriceLabel: 'Gammon-Preis',
-        keithTitle: 'Renn-Würfelrechner (Keith-Count-Algorithmus)',
-        pipsXLabel: 'Ihr Pip-Count',
-        pipsOLabel: 'Gegner Pip-Count',
-        penaltyXLabel: 'Ihre Keith-Strafen',
-        penaltyOLabel: 'Gegner-Strafen',
-        keithVerdictLabel: 'Empfohlene Würfel-Entscheidung (Keith)',
-        copyXgidBtn: '🔗 Teilbaren XGID-Analyse-Link kopieren',
-        copiedXgidMsg: '✓ XGID-Link kopiert!',
-    },
-    ar: {
-        badge: 'أداة تفاعلية مجانية · KAZAROSS-XG2 و KEITH COUNT',
-        title: 'حاسبة احتمالية الفوز بالمباراة (MET) ونقطة القبول وحساب كيث للسباق',
-        subtitle: 'قم بمحاكاة أي نتيجة في البطولة لمعرفة نسبة الفوز بالمباراة (MWC %)، ونقطة قبول المضاعفة (Take Point)، وسعر الغامون، وقرار المكعب في السباق الخالص.',
-        matchLengthLabel: 'نظام المباراة',
-        moneyGameLabel: 'لعب حر (Money Game)',
-        pointsToWinX: 'نقاطك الحالية',
-        pointsToWinO: 'نقاط الخصم',
-        crawfordToggle: 'جولة كروفورد نشطة',
-        mwcLabel: 'احتمالية الفوز بالمباراة (MWC)',
-        takePointDeadLabel: 'نقطة القبول (مكعب ميت)',
-        takePointLiveLabel: 'نقطة القبول الفعلية (مكعب حي)',
-        gammonPriceLabel: 'سعر الغامون (Gammon Price)',
-        keithTitle: 'حاسبة السباق الخالص (خوارزمية كيث Keith Count)',
-        pipsXLabel: 'نقاطك (Pip Count)',
-        pipsOLabel: 'نقاط الخصم (Pip Count)',
-        penaltyXLabel: 'عقوبات كيث الخاصة بك',
-        penaltyOLabel: 'عقوبات الخصم',
-        keithVerdictLabel: 'قرار المكعب الموصى به (Keith)',
-        copyXgidBtn: '🔗 نسخ رابط تحليل الوضعية (XGID)',
-        copiedXgidMsg: '✓ تم نسخ رابط الوضعية XGID بنجاح!',
-    },
-};
-
-export function evaluateKeithRaceDecision(
-    pipsX: number,
-    pipsO: number,
-    penX: number,
-    penO: number,
-): { readonly keithX: number; readonly keithO: number; readonly thresholdTake: number; readonly actionCode: 'NO_DOUBLE' | 'DOUBLE_TAKE' | 'REDOUBLE_TAKE' | 'DOUBLE_PASS' } {
-    const keithX = Math.max(1, pipsX + penX);
-    const keithO = Math.max(1, pipsO + penO);
-    const thresholdTake = Math.floor((keithX * 8) / 7) - 3;
-    const diff = thresholdTake - keithO;
-
-    let actionCode: 'NO_DOUBLE' | 'DOUBLE_TAKE' | 'REDOUBLE_TAKE' | 'DOUBLE_PASS' = 'NO_DOUBLE';
-    if (diff > 4) {
-        actionCode = 'NO_DOUBLE';
-    } else if (diff === 4) {
-        actionCode = 'DOUBLE_TAKE';
-    } else if (diff >= 0 && diff <= 3) {
-        actionCode = 'REDOUBLE_TAKE';
-    } else {
-        actionCode = 'DOUBLE_PASS';
-    }
-
-    return { keithX, keithO, thresholdTake, actionCode };
 }
 
 const MatchEquityCalculatorComponent: React.FC<MatchEquityCalculatorProps> = ({ locale }) => {
@@ -369,80 +196,20 @@ const MatchEquityCalculatorComponent: React.FC<MatchEquityCalculatorProps> = ({ 
             </div>
 
             {/* Calculateur de Course de Keith */}
-            <div className="rounded-2xl border border-white/10 bg-[#080c15]/90 p-4 space-y-3">
-                <h3 className="font-serif text-sm sm:text-base font-bold text-[#fdf8eb]">{labels.keithTitle}</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs sm:text-sm">
-                    <label htmlFor="calc-pips-x" className="space-y-1">
-                        <span className="text-slate-300">{labels.pipsXLabel}</span>
-                        <input
-                            id="calc-pips-x"
-                            name="pipsX"
-                            type="number"
-                            min={1}
-                            max={250}
-                            value={pipsX}
-                            onChange={(e) => setPipsX(Number(e.target.value))}
-                            className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-1.5 font-mono text-xs sm:text-sm text-slate-100"
-                        />
-                    </label>
-                    <label htmlFor="calc-pen-x" className="space-y-1">
-                        <span className="text-slate-300">{labels.penaltyXLabel}</span>
-                        <input
-                            id="calc-pen-x"
-                            name="penX"
-                            type="number"
-                            min={0}
-                            max={30}
-                            value={penX}
-                            onChange={(e) => setPenX(Number(e.target.value))}
-                            className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-1.5 font-mono text-xs sm:text-sm text-slate-100"
-                        />
-                    </label>
-                    <label htmlFor="calc-pips-o" className="space-y-1">
-                        <span className="text-slate-300">{labels.pipsOLabel}</span>
-                        <input
-                            id="calc-pips-o"
-                            name="pipsO"
-                            type="number"
-                            min={1}
-                            max={250}
-                            value={pipsO}
-                            onChange={(e) => setPipsO(Number(e.target.value))}
-                            className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-1.5 font-mono text-xs sm:text-sm text-slate-100"
-                        />
-                    </label>
-                    <label htmlFor="calc-pen-o" className="space-y-1">
-                        <span className="text-slate-300">{labels.penaltyOLabel}</span>
-                        <input
-                            id="calc-pen-o"
-                            name="penO"
-                            type="number"
-                            min={0}
-                            max={30}
-                            value={penO}
-                            onChange={(e) => setPenO(Number(e.target.value))}
-                            className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-1.5 font-mono text-xs sm:text-sm text-slate-100"
-                        />
-                    </label>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10">
-                    <div className="text-xs sm:text-sm font-mono text-slate-200">
-                        <span className="text-amber-200 font-bold">{labels.keithVerdictLabel} : </span>
-                        <span data-testid="keith-verdict-badge" className="rounded-lg border border-white/10 bg-emerald-500/15 px-2.5 py-1 font-extrabold text-emerald-300">
-                            {keithResult.actionCode.replace('_', ' / ')} (Keith: {keithResult.keithX} vs {keithResult.keithO}, Max Take: {keithResult.thresholdTake})
-                        </span>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={handleCopyXgid}
-                        className="rounded-xl border border-white/10 bg-[#121929] px-3.5 py-1.5 text-xs sm:text-sm font-bold text-[#f3c65f] hover:border-[#f3c65f] transition"
-                    >
-                        {copied ? labels.copiedXgidMsg : labels.copyXgidBtn}
-                    </button>
-                </div>
-            </div>
+            <KeithRaceCalculatorCard
+                labels={labels}
+                pipsX={pipsX}
+                setPipsX={setPipsX}
+                pipsO={pipsO}
+                setPipsO={setPipsO}
+                penX={penX}
+                setPenX={setPenX}
+                penO={penO}
+                setPenO={setPenO}
+                keithResult={keithResult}
+                copied={copied}
+                onCopyXgid={handleCopyXgid}
+            />
         </section>
     );
 };

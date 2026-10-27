@@ -5,20 +5,25 @@
  * les alternatives avec leur perte d'équité (ΔEq) et l'analyse stratégique issue des rollouts.
  */
 
-import type { OpeningEntry } from './types';
+import type { OpeningEntry, OpeningScoreRegime } from './types';
 import { applyMove, type MoveSequence, type Move } from '../../engine/backgammonEngine';
+import {
+    SCORE_VARIANTS_BY_OPENING_ID,
+    applyScoreRegimeToOpening,
+    detectOpeningScoreRegime,
+    type DetectOpeningScoreRegimeParams,
+} from './openingScoreVariants';
 
-export const OPENING_BOOK: OpeningEntry[] = [
+export { detectOpeningScoreRegime, type DetectOpeningScoreRegimeParams, type OpeningScoreRegime };
+
+const RAW_OPENING_BOOK: OpeningEntry[] = [
     {
         id: 'opening_3_1',
         dice: [3, 1],
         name: 'Le Point d’Or (Golden Point)',
         category: 'Faire une porte',
         bestMoveNotation: '8/5 6/5',
-        bestMoves: [
-            { from: 8, to: 5 },
-            { from: 6, to: 5 },
-        ],
+        bestMoves: [{ from: 8, to: 5 }, { from: 6, to: 5 }],
         equity: 0.165,
         winPercentage: 58.2,
         gammonPercentage: 17.5,
@@ -53,10 +58,7 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'La Porte 4 (Inner Home Door)',
         category: 'Faire une porte',
         bestMoveNotation: '8/4 6/4',
-        bestMoves: [
-            { from: 8, to: 4 },
-            { from: 6, to: 4 },
-        ],
+        bestMoves: [{ from: 8, to: 4 }, { from: 6, to: 4 }],
         equity: 0.138,
         winPercentage: 56.9,
         gammonPercentage: 16.2,
@@ -85,10 +87,7 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'La Porte Bar (Point 7)',
         category: 'Faire une porte',
         bestMoveNotation: '13/7 8/7',
-        bestMoves: [
-            { from: 13, to: 7 },
-            { from: 8, to: 7 },
-        ],
+        bestMoves: [{ from: 13, to: 7 }, { from: 8, to: 7 }],
         equity: 0.125,
         winPercentage: 56.4,
         gammonPercentage: 14.8,
@@ -124,7 +123,7 @@ export const OPENING_BOOK: OpeningEntry[] = [
         loseGammonPercentage: 9.9,
         explanation:
             'Coup légendaire surnommé "Lover’s Leap". Échappe un pion arriéré depuis le point 24 jusqu’au point médian 13 en toute sécurité, prenant une nette avance à la course (+11 pips).',
-        keyRule: 'Fuyez le fond du court en toute sécurité vers le point 13.',
+        keyRule: 'Fuyez le fond du court en toute sécurité vers le point 13 (sauf en Gammon Go où 24/18 13/8 cherche le gammon).',
         masterQuote: {
             author: 'Maître Kenji Sato',
             book: 'Masterclass Monte-Carlo',
@@ -136,7 +135,7 @@ export const OPENING_BOOK: OpeningEntry[] = [
                 notation: '24/18 13/8',
                 equityLoss: -0.098,
                 style: 'Agressif',
-                description: 'Laisse un blot sur le point 18 alors que 24/13 était totalement sûr.',
+                description: 'Laisse un blot sur le point 18 en jeu normal, mais devient l’arme offensive de référence en Gammon Go.',
             },
         ],
     },
@@ -146,10 +145,7 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'La Porte 3 (3-Point Maker)',
         category: 'Faire une porte',
         bestMoveNotation: '8/3 6/3',
-        bestMoves: [
-            { from: 8, to: 3 },
-            { from: 6, to: 3 },
-        ],
+        bestMoves: [{ from: 8, to: 3 }, { from: 6, to: 3 }],
         equity: 0.095,
         winPercentage: 54.8,
         gammonPercentage: 14.2,
@@ -172,10 +168,7 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'Le Grand Coureur (Runner & Builder)',
         category: 'Échappée & Course',
         bestMoveNotation: '24/18 13/10',
-        bestMoves: [
-            { from: 24, to: 18 },
-            { from: 13, to: 10 },
-        ],
+        bestMoves: [{ from: 24, to: 18 }, { from: 13, to: 10 }],
         equity: 0.052,
         winPercentage: 52.8,
         gammonPercentage: 13.5,
@@ -198,10 +191,7 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'Split & Constructeur 11',
         category: 'Échappée & Course',
         bestMoveNotation: '24/18 13/11',
-        bestMoves: [
-            { from: 24, to: 18 },
-            { from: 13, to: 11 },
-        ],
+        bestMoves: [{ from: 24, to: 18 }, { from: 13, to: 11 }],
         equity: 0.038,
         winPercentage: 52.2,
         gammonPercentage: 13.1,
@@ -236,20 +226,20 @@ export const OPENING_BOOK: OpeningEntry[] = [
         gammonPercentage: 12.8,
         loseGammonPercentage: 12.1,
         explanation:
-            'Consensus moderne des rollouts Monte-Carlo 3-Ply : 24/14 échappe le pion de 10 flèches. Bien qu’il soit sous le tir direct de 3 et indirect de 6 adverse, la prime de course et la pression imposée surpassent la porte 2.',
-        keyRule: '24/14 est le coup moderne favori des rollouts profonds.',
+            'Consensus moderne des rollouts Monte-Carlo 3T : 24/14 et 24/18 13/9 sont quasi ex-æquo en jeu normal, 24/14 domine en DMP et 8/2 6/2 domine en Gammon Go.',
+        keyRule: '24/14 en Normal/DMP, 24/18 13/9 en Gammon Save, et 8/2 6/2 en Gammon Go.',
         alternatives: [
             {
                 notation: '24/18 13/9',
-                equityLoss: -0.008,
+                equityLoss: -0.003,
                 style: 'Moderne',
-                description: 'Variante quasiment équivalente qui splitte au 18 et descend sur le 9.',
+                description: 'Variante quasi ex-æquo (ΔE = -0.003) qui splitte au 18 et descend sur le 9, idéale en Gammon Save.',
             },
             {
                 notation: '8/2 6/2',
                 equityLoss: -0.028,
                 style: 'Classique',
-                description: 'Ancien coup traditionnel : fait la porte 2 mais enterre deux pions trop profondément trop tôt.',
+                description: 'Fait la porte 2 : inférieur en jeu normal mais devient le coup n°1 en Gammon Go (+0.042 en valeur de gammon).',
             },
         ],
     },
@@ -259,23 +249,20 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'Le Split & Rapatriement',
         category: 'Split & Slot',
         bestMoveNotation: '24/23 13/8',
-        bestMoves: [
-            { from: 24, to: 23 },
-            { from: 13, to: 8 },
-        ],
+        bestMoves: [{ from: 24, to: 23 }, { from: 13, to: 8 }],
         equity: 0.015,
         winPercentage: 51.1,
         gammonPercentage: 12.4,
         loseGammonPercentage: 12.5,
         explanation:
-            'Le consensus moderne Monte-Carlo 3-Ply préfère le split 24/23 accompagné du rapatriement 13/8. Le slot 13/8 6/5, autrefois populaire, concède trop de frappes destructrices pour un gain insuffisant.',
-        keyRule: 'Splittez doucement au 23 et sécurisez un pion sur le point 8.',
+            'Le consensus moderne préfère le split 24/23 accompagné du rapatriement 13/8 en Normal et Gammon Save, tandis que le slot 13/8 6/5 redevient optimal en Gammon Go.',
+        keyRule: 'Splittez au 23 en Normal/GS, mais slottez 13/8 6/5 en Gammon Go.',
         alternatives: [
             {
                 notation: '13/8 6/5',
                 equityLoss: -0.026,
                 style: 'Agressif',
-                description: 'Slot sur la porte 5 : très agressif mais offre 15 jets gagnants à l’adversaire.',
+                description: 'Slot sur la porte 5 : trop risqué en Normal (-0.026), mais optimal en Gammon Go.',
             },
         ],
     },
@@ -285,49 +272,43 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'Split & Constructeur 9',
         category: 'Split & Slot',
         bestMoveNotation: '24/23 13/9',
-        bestMoves: [
-            { from: 24, to: 23 },
-            { from: 13, to: 9 },
-        ],
+        bestMoves: [{ from: 24, to: 23 }, { from: 13, to: 9 }],
         equity: 0.018,
         winPercentage: 51.2,
         gammonPercentage: 12.5,
         loseGammonPercentage: 12.3,
         explanation:
-            'Splitte au point 23 pour menacer l’ancre avancée adverse tout en posant un constructeur stratégique sur le point 9, à distance idéale de 4 et 5 pips du jan intérieur.',
-        keyRule: 'Prépare l’attaque de la porte 5 tout en contestant le jan adverse.',
+            'Splitte au point 23 pour menacer l’ancre avancée adverse tout en posant un constructeur sur le point 9. En Gammon Go et DMP, le slot 13/9 6/5 prend la tête.',
+        keyRule: '24/23 13/9 en Normal et Gammon Save ; 13/9 6/5 en Gammon Go et DMP.',
         alternatives: [
             {
                 notation: '13/9 6/5',
-                equityLoss: -0.028,
+                equityLoss: -0.007,
                 style: 'Agressif',
-                description: 'Slot sur la porte 5 avec constructeur au 9.',
+                description: 'Slot sur la porte 5 avec constructeur au 9 : optimal en Gammon Go et DMP.',
             },
         ],
     },
     {
         id: 'opening_2_1',
         dice: [2, 1],
-        name: 'Le Petit Split',
+        name: 'Le Petit Split / Slot du Point 5',
         category: 'Split & Slot',
         bestMoveNotation: '24/23 13/11',
-        bestMoves: [
-            { from: 24, to: 23 },
-            { from: 13, to: 11 },
-        ],
+        bestMoves: [{ from: 24, to: 23 }, { from: 13, to: 11 }],
         equity: -0.022,
         winPercentage: 48.9,
         gammonPercentage: 11.8,
         loseGammonPercentage: 13.9,
         explanation:
-            'Le 2-1 est l’un des jets les plus faibles de l’ouverture. Le consensus moderne recommande le split 24/23 et la descente 13/11 pour maximiser la flexibilité.',
-        keyRule: 'Limitez les dégâts d’un petit jet avec le split 24/23 13/11.',
+            'Sur 2-1, le split 24/23 13/11 et le slot 13/11 6/5 se tiennent dans un mouchoir de poche (ΔE < 0.005). Le slot 13/11 6/5 domine en Gammon Go (et légèrement en Money), tandis que le split 24/23 13/11 domine en DMP et Gammon Save.',
+        keyRule: '24/23 13/11 en DMP et Gammon Save ; 13/11 6/5 en Gammon Go.',
         alternatives: [
             {
                 notation: '13/11 6/5',
-                equityLoss: -0.018,
+                equityLoss: -0.004,
                 style: 'Agressif',
-                description: 'Variante de slot agressive souvent employée à DMP (Double Match Point).',
+                description: 'Slot du Point 5 quasi ex-æquo en Money/Normal (ΔE = -0.004) et optimal en Gammon Go.',
             },
         ],
     },
@@ -337,23 +318,20 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'Double Développement 24/21 13/11',
         category: 'Développement',
         bestMoveNotation: '24/21 13/11',
-        bestMoves: [
-            { from: 24, to: 21 },
-            { from: 13, to: 11 },
-        ],
+        bestMoves: [{ from: 24, to: 21 }, { from: 13, to: 11 }],
         equity: 0.012,
         winPercentage: 50.8,
         gammonPercentage: 12.6,
         loseGammonPercentage: 12.8,
         explanation:
-            'Splitte au point 21 pour disputer le point 4 adverse et descend un constructeur sur le point 11. Excellente coordination bilatérale.',
-        keyRule: 'Occupe le point 21 adverse et amène du renfort au point 11.',
+            'Splitte au point 21 pour disputer le point 4 adverse et descend un constructeur sur le point 11. En Gammon Go, la double descente 13/11 13/10 passe devant.',
+        keyRule: 'Occupe le point 21 en Normal/DMP/GS, ou descend 13/11 13/10 en Gammon Go.',
         alternatives: [
             {
                 notation: '13/10 13/11',
-                equityLoss: -0.019,
-                style: 'Défensif',
-                description: 'Double descente depuis le point médian sans splitter les pions arrière.',
+                equityLoss: -0.003,
+                style: 'Agressif',
+                description: 'Double descente de constructeurs : quasi ex-æquo en Normal et optimale en Gammon Go.',
             },
             {
                 notation: '24/22 13/10',
@@ -369,29 +347,26 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'Ancre Avancée & Constructeur',
         category: 'Développement',
         bestMoveNotation: '24/20 13/10',
-        bestMoves: [
-            { from: 24, to: 20 },
-            { from: 13, to: 10 },
-        ],
+        bestMoves: [{ from: 24, to: 20 }, { from: 13, to: 10 }],
         equity: 0.025,
         winPercentage: 51.5,
         gammonPercentage: 12.9,
         loseGammonPercentage: 12.4,
         explanation:
-            'Splitte sur le point 20 (le précieux point 5 adverse !) tout en descendant un constructeur sur le point 10. Ce coup conteste agressivement le point d’or adverse.',
-        keyRule: 'Le point 20 adverse est la cible n°1 de l’ancrage.',
+            'Le tirage quadri-modal par excellence : 24/20 13/10 en Normal, 24/21 13/9 en DMP, 13/10 13/9 en Gammon Go, et 24/21 24/20 en Gammon Save.',
+        keyRule: 'Adaptez le 4-3 au score : 24/20 13/10 (Normal), 24/21 13/9 (DMP), 13/10 13/9 (GG), 24/21 24/20 (GS).',
         alternatives: [
             {
                 notation: '24/21 13/9',
-                equityLoss: -0.015,
+                equityLoss: -0.004,
                 style: 'Moderne',
-                description: 'Split au 21 et descente sur le 9.',
+                description: 'Split au 21 et descente sur le 9 : quasi ex-æquo en Normal et optimal en DMP.',
             },
             {
                 notation: '13/10 13/9',
-                equityLoss: -0.022,
-                style: 'Défensif',
-                description: 'Double descente depuis le point 13 sans split arrière.',
+                equityLoss: -0.005,
+                style: 'Agressif',
+                description: 'Double descente depuis le point 13 : optimal en Gammon Go.',
             },
         ],
     },
@@ -401,23 +376,20 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'Split au 22 & Sécurité 13/8',
         category: 'Développement',
         bestMoveNotation: '24/22 13/8',
-        bestMoves: [
-            { from: 24, to: 22 },
-            { from: 13, to: 8 },
-        ],
+        bestMoves: [{ from: 24, to: 22 }, { from: 13, to: 8 }],
         equity: 0.008,
         winPercentage: 50.5,
         gammonPercentage: 12.1,
         loseGammonPercentage: 12.9,
         explanation:
-            'Le 5 rapatrie un pion au point 8 pour renforcer la porte maîtresse tandis que le 2 splitte au point 22 (point 3 adverse).',
-        keyRule: 'Rapatriez au 8 et préparez l’ancre défensive sur le 22.',
+            'Le 5 rapatrie un pion au point 8 tandis que le 2 splitte au point 22. En Gammon Go, les deux constructeurs 13/11 13/8 reprennent l’avantage.',
+        keyRule: '24/22 13/8 en Normal/DMP/GS ; 13/11 13/8 en Gammon Go.',
         alternatives: [
             {
                 notation: '13/8 13/11',
                 equityLoss: -0.014,
-                style: 'Défensif',
-                description: 'Ne splitte pas et rapatrie deux pions depuis le point 13.',
+                style: 'Agressif',
+                description: 'Ne splitte pas et descend deux constructeurs : optimal en Gammon Go.',
             },
         ],
     },
@@ -427,118 +399,88 @@ export const OPENING_BOOK: OpeningEntry[] = [
         name: 'Split au 20 & Descente au 8',
         category: 'Développement',
         bestMoveNotation: '24/20 13/8',
-        bestMoves: [
-            { from: 24, to: 20 },
-            { from: 13, to: 8 },
-        ],
+        bestMoves: [{ from: 24, to: 20 }, { from: 13, to: 8 }],
         equity: 0.019,
         winPercentage: 51.2,
         gammonPercentage: 12.7,
         loseGammonPercentage: 12.6,
         explanation:
-            'Splitte directement au point 20 pour contester le point d’or de l’adversaire et utilise le 5 pour sécuriser un pion sur le point 8.',
-        keyRule: 'Prenez pied sur le point 20 adverse et gardez le point 8 solide.',
+            'Splitte directement au point 20 pour contester le point d’or adverse et sécurise un pion sur le point 8. En Gammon Go, 13/9 13/8 domine.',
+        keyRule: '24/20 13/8 en Normal/DMP/GS ; 13/9 13/8 en Gammon Go.',
         alternatives: [
             {
                 notation: '13/9 13/8',
                 equityLoss: -0.022,
-                style: 'Défensif',
-                description: 'Joue la sécurité pure sans contester le jan intérieur adverse.',
+                style: 'Agressif',
+                description: 'Descend deux constructeurs pour l’attaque : optimal en Gammon Go.',
             },
         ],
     },
 ];
 
-/**
- * Recherche l'ouverture correspondant à un jet de dés (insensible à l'ordre).
- */
+export const OPENING_BOOK: OpeningEntry[] = RAW_OPENING_BOOK.map((entry) => ({
+    ...entry,
+    scoreVariants: SCORE_VARIANTS_BY_OPENING_ID[entry.id],
+}));
+
+/** Recherche l'ouverture correspondant à un jet de dés (insensible à l'ordre). */
 export function getOpening(d1: number, d2: number): OpeningEntry | null {
-    if (d1 === d2) return null; // Les doubles ne peuvent survenir lors du jet d'ouverture
+    if (d1 === d2) return null;
     const high = Math.max(d1, d2);
     const low = Math.min(d1, d2);
     return OPENING_BOOK.find((o) => o.dice[0] === high && o.dice[1] === low) || null;
 }
 
-/**
- * Retourne l'ensemble des 15 ouvertures cataloguées.
- */
+/** Recherche l'ouverture adaptée au régime de score Match Play (`NORMAL`, `DMP`, `GAMMON_GO`, `GAMMON_SAVE`). */
+export function getOpeningForScore(d1: number, d2: number, regime: OpeningScoreRegime = 'NORMAL'): OpeningEntry | null {
+    const base = getOpening(d1, d2);
+    return base ? applyScoreRegimeToOpening(base, regime) : null;
+}
+
+/** Retourne l'ensemble des 15 ouvertures cataloguées. */
 export function getAllOpenings(): OpeningEntry[] {
     return OPENING_BOOK;
 }
 
-/**
- * Vérifie si le plateau correspond exactement à la position initiale de début de partie.
- */
+/** Vérifie si le plateau correspond exactement à la position initiale de début de partie. */
 export function isInitialBoardPosition(board: number[]): boolean {
     if (!board || board.length < 26) return false;
     return (
-        board[1] === -2 &&
-        board[6] === 5 &&
-        board[8] === 3 &&
-        board[12] === -5 &&
-        board[13] === 5 &&
-        board[17] === -3 &&
-        board[19] === -5 &&
-        board[24] === 2 &&
-        (board[0] || 0) === 0 &&
-        (board[25] || 0) === 0
+        board[1] === -2 && board[6] === 5 && board[8] === 3 && board[12] === -5 &&
+        board[13] === 5 && board[17] === -3 && board[19] === -5 && board[24] === 2 &&
+        (board[0] || 0) === 0 && (board[25] || 0) === 0
     );
 }
 
-/**
- * Vérifie si les 15 pions du joueur X sont encore dans leur configuration initiale d'ouverture.
- */
+/** Vérifie si les 15 pions du joueur X sont encore dans leur configuration initiale d'ouverture. */
 export function isPlayerXInitialSetup(board: number[]): boolean {
     if (!board || board.length < 26) return false;
-    return (
-        board[6] === 5 &&
-        board[8] === 3 &&
-        board[13] === 5 &&
-        board[24] === 2 &&
-        (board[0] || 0) === 0
-    );
+    return board[6] === 5 && board[8] === 3 && board[13] === 5 && board[24] === 2 && (board[0] || 0) === 0;
 }
 
-/**
- * Détermine si le contexte actuel correspond à un coup d'ouverture pour le joueur X.
- */
-export function isOpeningSituation(
-    board: number[],
-    dice: [number, number] | null,
-    turnCount: number,
-): boolean {
-    if (!dice) return false;
-    if (dice[0] === dice[1]) return false; // Pas un coup d'ouverture standard
-    if (!isPlayerXInitialSetup(board)) return false;
-    if (turnCount <= 1) return true;
-    return isInitialBoardPosition(board);
+/** Détermine si le contexte actuel correspond à un coup d'ouverture pour le joueur X. */
+export function isOpeningSituation(board: number[], dice: [number, number] | null, turnCount: number): boolean {
+    if (!dice || dice[0] === dice[1] || !isPlayerXInitialSetup(board)) return false;
+    return turnCount <= 1 || isInitialBoardPosition(board);
 }
 
-/**
- * Trouve la séquence légale correspondant au coup d'ouverture optimal pour l'adversaire (O).
- * Convertit les coordonnées du livre (du point de vue de X) vers celles de O (25 - point).
- */
+/** Trouve la séquence légale correspondant au coup d'ouverture optimal pour l'adversaire (O). */
 export function findOpeningBookSequenceForOpponent(
     board: number[],
     dice: [number, number],
     legalSeqs: MoveSequence[],
+    regime: OpeningScoreRegime = 'NORMAL',
 ): MoveSequence | null {
     if (!isInitialBoardPosition(board) || legalSeqs.length === 0) return null;
-    const opening = getOpening(dice[0], dice[1]);
+    const opening = getOpeningForScore(dice[0], dice[1], regime);
     if (!opening || opening.bestMoves.length === 0) return null;
 
     let targetBoard = board.slice();
     for (const m of opening.bestMoves) {
-        const oMove: Move = {
-            from: 25 - m.from,
-            to: 25 - m.to,
-        };
+        const oMove: Move = { from: 25 - m.from, to: 25 - m.to };
         targetBoard = applyMove(targetBoard, oMove, 'O');
     }
-
-    const match = legalSeqs.find((seq) =>
-        seq.board.every((val, idx) => val === targetBoard[idx])
-    );
-    return match ?? null;
+    return legalSeqs.find((seq) => seq.board.every((val, idx) => val === targetBoard[idx])) ?? null;
 }
+
 

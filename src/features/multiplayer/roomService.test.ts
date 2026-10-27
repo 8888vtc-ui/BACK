@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
     createGameRoom,
     joinGameRoomByCode,
@@ -6,6 +7,18 @@ import {
     concludeGameRoom,
 } from './roomService';
 import type { PlayerEloProfile } from './types';
+import { supabase } from '../../lib/supabase/client';
+
+// Mock du module client Supabase : `isSupabaseConfigured` est contrôlable par test.
+vi.mock('../../lib/supabase/client', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('../../lib/supabase/client')>();
+    return {
+        ...actual,
+        isSupabaseConfigured: vi.fn(() => false),
+    };
+});
+
+import { isSupabaseConfigured } from '../../lib/supabase/client';
 
 describe('RoomService (Rooms, États & Synchronisation)', () => {
     const hostUser: PlayerEloProfile = {
@@ -118,5 +131,32 @@ describe('RoomService (Rooms, États & Synchronisation)', () => {
         expect(conclusion.deltaRatingO).toBeLessThan(0);
         expect(conclusion.glicko2Result.compositeScoreX.matchWeight).toBeCloseTo(7 / 11, 4);
         expect(conclusion.glicko2Result.compositeScoreX.prWeight).toBeCloseTo(4 / 11, 4);
+    });
+
+    describe('Échec Supabase (aucun repli silencieux)', () => {
+        beforeEach(() => {
+            vi.mocked(isSupabaseConfigured).mockReturnValue(true);
+        });
+
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it('lève une erreur explicite quand l\'insertion Supabase échoue (pas de mock silencieux)', async () => {
+            // Simule un échec d'insertion : la chaîne .from().insert().select().single() renvoie une erreur.
+            const insertChain = {
+                select: vi.fn().mockReturnValue({
+                    single: vi.fn().mockResolvedValue({
+                        data: null,
+                        error: { message: 'connexion refusée' },
+                    }),
+                }),
+            };
+            vi.spyOn(supabase, 'from').mockReturnValue(insertChain as never);
+
+            await expect(
+                createGameRoom({ host: hostUser, matchLength: 5 }),
+            ).rejects.toThrow('Impossible de créer la salle');
+        });
     });
 });

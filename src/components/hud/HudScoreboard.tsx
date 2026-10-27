@@ -125,7 +125,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
             <span
                 data-testid={`${testId}-pr`}
                 title={`Performance Rating (PR) : ${pr !== null && pr !== undefined ? pr.toFixed(1) : '--'} — Niveau : ${prCategory} (plus bas = meilleur)`}
-                className={`hidden sm:inline-block ml-0.5 shrink-0 whitespace-nowrap rounded border px-1 py-0.5 font-mono text-[11px] font-bold transition-shadow duration-300 ${prBadgeClass(pr)}`}
+                className={`hidden sm:inline-block ml-0.5 shrink-0 whitespace-nowrap rounded border px-1 py-0.5 font-mono text-[11px] font-bold tabular-nums transition-shadow duration-300 ${prBadgeClass(pr)}`}
             >
                 PR {pr !== null && pr !== undefined ? pr.toFixed(1) : '--'}
             </span>
@@ -185,13 +185,13 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
         <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 shrink-0">
             <div className="hidden lg:flex flex-col shrink-0 rounded-lg border border-white/10 bg-[#0d0703]/85 px-2 py-0.5 text-[11px] leading-tight text-amber-100/80 shadow-inner">
                 <div className="flex items-center gap-1 whitespace-nowrap">
-                    <span data-testid="hud-match-format" className="font-serif font-bold text-[#f5d78e]">
+                    <span data-testid="hud-match-format" className="font-serif font-bold text-[#f5d78e] tabular-nums">
                         {matchLength > 0 ? `Match ${matchLength} pts` : 'Money Game'}
                     </span>
                     {effectiveCube > 1 && !crawford && (
                         <span
                             data-testid="hud-cube-badge"
-                            className="rounded bg-amber-500/20 border border-white/10 px-1 text-[11px] font-black text-[#f3c65f]"
+                            className="rounded bg-amber-500/20 border border-white/10 px-1 text-[11px] font-black text-[#f3c65f] tabular-nums"
                             title={cubeOwnershipTitle}
                         >
                             Cube {effectiveCube}×{cubeOwner === 'X' ? ' (Vous)' : cubeOwner === 'O' ? ' (IA)' : ''}
@@ -201,13 +201,13 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                 {crawford ? (
                     <span
                         data-testid="hud-crawford-badge"
-                        className="mt-0.5 w-max rounded bg-amber-500/20 px-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-300 ring-1 ring-amber-500/40"
+                        className="mt-0.5 w-max rounded bg-amber-500/20 px-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-300 ring-1 ring-amber-500/40 tabular-nums"
                     >
                         Crawford
                     </span>
                 ) : (
                     <span
-                        className="text-[11px] text-amber-200/75 whitespace-nowrap font-medium cursor-help"
+                        className="text-[11px] text-amber-200/75 whitespace-nowrap font-medium tabular-nums cursor-help"
                         title={cubeOwnershipTitle}
                     >
                         {cubeStakeLabel}

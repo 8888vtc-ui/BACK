@@ -24,8 +24,11 @@ function cloneResponse(resp: BgsageEvaluateResponse): BgsageEvaluateResponse {
 /**
  * Canonise algébriquement une chaîne XGID pour maximiser les hits de cache :
  * a) Symétrie des dés : ordonne d1 >= d2 (ex. "13" -> "31")
- * b) Invariance linéaire du videau en Money Game (matchLength === 0) : normalise cube >= 2 à 2
- * c) Scores en distance away en Match Play (matchLength > 0) : normalise (scoreX, scoreO, matchLength) en (awayX, awayO)
+ * b) Scores en distance away en Match Play (matchLength > 0) : normalise (scoreX, scoreO, matchLength) en (awayX, awayO)
+ *
+ * NOTE : la valeur du cube n'est PAS normalisée. L'équité cubeful (`cubeDecision`)
+ * dépend de la valeur du cube (take point, risque de gammon) : deux positions à
+ * cube 2 et cube 4 ne sont pas équivalentes et ne doivent pas partager de clé.
  */
 export function canonicalizeXgidForCache(safeXgid: string): string {
     const raw = safeXgid.startsWith('XGID=') ? safeXgid.slice(5) : safeXgid;
@@ -45,14 +48,8 @@ export function canonicalizeXgidForCache(safeXgid: string): string {
         }
 
         const matchLength = Number(parts[8]) || 0;
-        const cubeExp = Number(parts[1]) || 0;
 
-        if (matchLength === 0) {
-            // Money game : si cube >= 2 (cubeExp >= 1), normalise à cube=2 (cubeExp=1)
-            if (cubeExp >= 1) {
-                parts[1] = '1';
-            }
-        } else {
+        if (matchLength > 0) {
             // Match play : normalise scores en away
             const scoreX = Number(parts[5]) || 0;
             const scoreO = Number(parts[6]) || 0;
@@ -76,14 +73,8 @@ export function canonicalizeXgidForCache(safeXgid: string): string {
         }
 
         const matchLength = Number(parts[10]) || 0;
-        const cube = Number(parts[6]) || 1;
 
-        if (matchLength === 0) {
-            // Money game : si cube >= 2, normalise à cube = 2
-            if (cube >= 2) {
-                parts[6] = '2';
-            }
-        } else {
+        if (matchLength > 0) {
             // Match play : normalise scores en away
             const scoreX = Number(parts[2]) || 0;
             const scoreO = Number(parts[3]) || 0;

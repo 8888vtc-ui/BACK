@@ -6,7 +6,12 @@ import {
     extractHomeCounts,
     calculateEffectivePipCount,
     evaluateRaceCube,
+    evaluateIsightRace,
+    computeTriceNormalWinProbability,
+    MEAN_PIPS_PER_ROLL,
+    VAR_PIPS_PER_ROLL,
 } from './effectivePipCount';
+import { computeJanowskiCubeEvaluation, detectJanowskiPhase } from './janowskiCube';
 
 describe('effectivePipCount — Détection de course et calcul EPC', () => {
     it('isPureRace détecte correctement le contact ou la course pure', () => {
@@ -130,5 +135,56 @@ describe('effectivePipCount — Détection de course et calcul EPC', () => {
         tiedBoard[23] = -6; // 25 - 23 = 2 pips par pion
         const evalTied = evaluateRaceCube(tiedBoard, 'X', false);
         expect(evalTied.action).toBe('No double, take');
+    });
+
+    it('utilise les constantes exactes de renouvellement (49/6 pips/lancer et 665/36 variance)', () => {
+        expect(MEAN_PIPS_PER_ROLL).toBeCloseTo(8.1667, 4);
+        expect(VAR_PIPS_PER_ROLL).toBeCloseTo(18.4722, 4);
+
+        const evenRace = computeTriceNormalWinProbability({
+            rollerEPC: 70,
+            opponentEPC: 70,
+            rollerRawPips: 62,
+            opponentRawPips: 62,
+        });
+        // Le joueur au trait a +49/12 pips d'avance grâce au trait -> P(Win) > 0.55
+        expect(evenRace.winProb).toBeGreaterThan(0.55);
+        expect(evenRace.winProb).toBeLessThan(0.65);
+    });
+
+    it('evaluateIsightRace calcule les seuils d’Axel Reichert (l + l/6, Double/Take/Pass)', () => {
+        const board = new Array<number>(26).fill(0);
+        // X : 10 pions sur la flèche 6 (60 pips)
+        board[6] = 10;
+        // O : 11 pions sur la flèche 19 (66 pips du point de vue de O)
+        board[19] = -11;
+
+        const isight = evaluateIsightRace(board, 'X');
+        expect(isight.rollerRawPips).toBe(60);
+        expect(isight.opponentRawPips).toBe(66);
+        expect(isight.criteriaTotal).toBe(70); // 60 + 60/6 = 70
+        expect(isight.pointOfLastTake).toBe(68);
+        expect(isight.initialDoubleThreshold).toBe(64);
+        expect(['DOUBLE_TAKE', 'REDOUBLE_TAKE']).toContain(isight.moneyDecision);
+        expect(isight.cpwPiecewisePercent).toBeGreaterThan(70);
+    });
+
+    it('computeJanowskiCubeEvaluation différencie la Cube Efficiency par phase (Course vs Blitz)', () => {
+        const probs = {
+            win: 0.72,
+            winGammon: 0.18,
+            winBackgammon: 0.01,
+            loseWin: 0.28,
+            loseGammon: 0.04,
+            loseBackgammon: 0.0,
+        };
+        const raceEval = computeJanowskiCubeEvaluation(probs, 'PURE_RACE');
+        const blitzEval = computeJanowskiCubeEvaluation(probs, 'BLITZ');
+        expect(blitzEval.efficiency.x1).toBeGreaterThan(raceEval.efficiency.x1);
+        expect(raceEval.takePointLive).toBeCloseTo(0.22, 1);
+        expect(raceEval.doublePoint).toBeLessThan(raceEval.cashPoint);
+
+        const initial = createInitialState();
+        expect(['HOLDING_GAME', 'CONTACT']).toContain(detectJanowskiPhase(initial.board, 'X'));
     });
 });

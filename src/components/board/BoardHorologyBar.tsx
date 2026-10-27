@@ -223,7 +223,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                 {metrics.optimalStreak >= 1 && (
                     <span
                         data-testid="dopamine-combo-badge"
-                        className={`inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 font-mono text-[10px] font-extrabold ${
+                        className={`inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 font-mono text-[10px] font-extrabold tabular-nums ${
                             metrics.optimalStreak >= 3 ? 'border-amber-300/85 bg-gradient-to-r from-amber-600/35 to-emerald-600/35 text-amber-100' : 'border-emerald-500/50 bg-emerald-950/75 text-emerald-200'
                         }`}
                     >
@@ -235,7 +235,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                 {isHighStakes && (
                     <span
                         data-testid="dopamine-cube-stakes"
-                        className={`inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+                        className={`inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums ${
                             doublingOfferedBy !== null ? 'border-rose-400/90 bg-rose-950/90 text-rose-100 animate-pulse' : 'border-amber-400/75 bg-amber-950/80 text-amber-200'
                         }`}
                     >
@@ -248,7 +248,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                     <button
                         type="button" data-testid="dopamine-ghost-challenge-btn" onClick={() => onTriggerGhostChallenge(worstBlunder.turnIndex)}
                         title={`Revenir au Tour #${worstBlunder.turnIndex} (-${Math.abs(worstBlunder.coachState.equityLoss).toFixed(3)} Eq) pour battre votre fantôme`}
-                        className="inline-flex items-center gap-1 rounded-lg border border-purple-400/75 bg-purple-950/90 px-1.5 py-0.5 font-mono text-[10px] font-extrabold text-purple-100 hover:border-purple-300 hover:text-white transition active:scale-95"
+                        className="inline-flex items-center gap-1 rounded-lg border border-purple-400/75 bg-purple-950/90 px-1.5 py-0.5 font-mono text-[10px] font-extrabold tabular-nums text-purple-100 hover:border-purple-300 hover:text-white transition active:scale-95"
                     >
                         <span>👻</span><span>Ghost #{worstBlunder.turnIndex}</span>
                     </button>

@@ -13,6 +13,18 @@ export type OpeningCategory =
     | 'Split & Slot'
     | 'Développement';
 
+/** Régime de score Match Play gouvernant les bascules du Livre d'Ouvertures (3T / XG Roller++). */
+export type OpeningScoreRegime = 'NORMAL' | 'DMP' | 'GAMMON_GO' | 'GAMMON_SAVE';
+
+export interface OpeningScoreVariant {
+    /** Notation standard du coup optimal dans ce régime de score */
+    bestMoveNotation: string;
+    /** Séquence de déplacements du coup optimal dans ce régime */
+    bestMoves: Move[];
+    /** Justification stratégique issue des rollouts 3T / XG Roller++ */
+    explanation: string;
+}
+
 export interface OpeningAlternative {
     /** Notation du coup alternatif (ex: "24/23 13/11") */
     notation: string;
@@ -58,4 +70,6 @@ export interface OpeningEntry {
         proverb: string;
         buyUrl: string;
     };
+    /** Variantes optimales selon le régime de score Match Play (DMP, Gammon Go, Gammon Save) */
+    scoreVariants?: Partial<Record<OpeningScoreRegime, OpeningScoreVariant>>;
 }

@@ -163,18 +163,26 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
         });
 
     const volLabelFr = mw.volatility === 'high' ? 'Élevée' : mw.volatility === 'medium' ? 'Modérée' : 'Faible';
+    const sigmaSuffixEn =
+        mw.equityVolatilitySigma !== undefined
+            ? ` | Sigma_Eq=${mw.equityVolatilitySigma.toFixed(3)}, Overshoot=${(mw.expectedOvershootLoss ?? 0).toFixed(3)}`
+            : '';
+    const sigmaSuffixFr =
+        mw.equityVolatilitySigma !== undefined
+            ? ` | Sigma_Eq=${mw.equityVolatilitySigma.toFixed(3)}, Overshoot=${(mw.expectedOvershootLoss ?? 0).toFixed(3)}`
+            : '';
     const marketSectionEn = [
         '',
         '## CUBE & MARKET WINDOW VOLATILITY:',
         `- Market Window: Double Point ${(mw.doublePoint * 100).toFixed(1)}% → Cash Point ${(mw.cashPoint * 100).toFixed(1)}% (In window: ${mw.inMarketWindow ? 'Yes' : 'No'})`,
-        `- Position Volatility: ${mw.volatility.toUpperCase()} (~${mw.estimatedMarketLosers}/36 market-losing sequences)`,
+        `- Position Volatility: ${mw.volatility.toUpperCase()} (~${mw.estimatedMarketLosers}/36 market-losing sequences${sigmaSuffixEn})`,
     ].join('\n');
 
     const marketSectionFr = [
         '',
         '## ANALYSE DU VIDEAU & VOLATILITÉ (MARKET WINDOW) :',
         `- Fenêtre de marché (Market Window) : Seuil de double ${(mw.doublePoint * 100).toFixed(1)}% → Cash Point ${(mw.cashPoint * 100).toFixed(1)}% (Dans la fenêtre : ${mw.inMarketWindow ? 'Oui' : 'Non'})`,
-        `- Volatilité de la position : ${volLabelFr} (~${mw.estimatedMarketLosers}/36 séquences de perte de marché / Market Loss)`,
+        `- Volatilité de la position : ${volLabelFr} (~${mw.estimatedMarketLosers}/36 séquences de perte de marché / Market Loss${sigmaSuffixFr})`,
     ].join('\n');
 
     const bgsage = features.bgsage;

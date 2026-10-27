@@ -103,6 +103,30 @@ describe('computeMarketWindowMetrics', () => {
 
         expect(metrics.cashPoint).toBe(0.75);
         expect(metrics.estimatedMarketLosers).toBe(36);
+        expect(metrics.equityVolatilitySigma).toBeDefined();
+        expect(metrics.expectedOvershootLoss).toBeGreaterThan(0);
+    });
+
+    it('calcule sigma_Eq et L_overshoot sur une position volatile avec répliques adverses variées', () => {
+        const init = createInitialState();
+        const bestEndState = makeState(init.board.slice(), 'O');
+        const metrics = computeMarketWindowMetrics({
+            contactStatus: 'contact',
+            boardStructure: {
+                innerBoardPoints: 1,
+                advancedAnchor: false,
+                goldenPoint: false,
+                barPoint: false,
+                longestPrime: 1,
+            },
+            blotsAndShots: { user: [], best: [] },
+            pipCountDiff: { player: 167, opponent: 167, leader: 'tie', diff: 0 },
+            bestEndState,
+            player: 'X',
+        });
+
+        expect(metrics.equityVolatilitySigma).toBeGreaterThanOrEqual(0);
+        expect(metrics.expectedOvershootLoss).toBeGreaterThanOrEqual(0);
     });
 
     it('utilise le repli heuristique propre quand bestEndState est absent', () => {

@@ -1,10 +1,17 @@
 'use client';
 
+/**
+ * Modale de la Bibliothèque d'Ouvertures de Backgammon (15 Jets Officiels).
+ *
+ * Conforme à SCALABILITY.md (< 300 lignes, 0 any, Dumb UI pure).
+ */
+
 import React, { useState, useMemo } from 'react';
 import { getAllOpenings } from '../../features/openings/openingDatabase';
 import type { OpeningEntry, OpeningCategory } from '../../features/openings/types';
 import type { Move } from '../../engine/backgammonEngine';
 import type { ThemeName } from '../../hooks/useBoardTheme';
+import OpeningDetailView from './OpeningDetailView';
 
 export interface OpeningBookModalProps {
     isOpen: boolean;
@@ -60,14 +67,14 @@ export function OpeningBookModal({
 
             const diceStr = `${op.dice[0]}-${op.dice[1]}`;
             const diceRev = `${op.dice[1]}-${op.dice[0]}`;
-            const matchesSearch =
-                op.name.toLowerCase().includes(query) ||
-                op.bestMoveNotation.toLowerCase().includes(query) ||
-                diceStr.includes(query) ||
-                diceRev.includes(query) ||
-                op.category.toLowerCase().includes(query);
-
-            return matchesCat && matchesSearch;
+            return (
+                matchesCat &&
+                (op.name.toLowerCase().includes(query) ||
+                    op.bestMoveNotation.toLowerCase().includes(query) ||
+                    diceStr.includes(query) ||
+                    diceRev.includes(query) ||
+                    op.category.toLowerCase().includes(query))
+            );
         });
     }, [allOpenings, selectedCategory, searchQuery]);
 
@@ -89,7 +96,7 @@ export function OpeningBookModal({
             }}
         >
             <div className="relative flex h-[90vh] w-full max-w-5xl flex-col rounded-3xl border border-white/10 bg-gradient-to-b from-[#17110b]/98 via-[#0d121d]/98 to-[#070a10]/98 shadow-[0_28px_80px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,245,205,0.2)] overflow-hidden backdrop-blur-2xl transition-all">
-                {/* 1. Header du Modal */}
+                {/* Header */}
                 <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-[#24160b]/95 via-[#140d07]/95 to-[#1f1309]/95 px-5 py-4">
                     <div className="flex items-center gap-3.5">
                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-b from-[#33230f] to-[#140d05] text-xl shadow-inner">
@@ -119,7 +126,7 @@ export function OpeningBookModal({
                     </button>
                 </div>
 
-                {/* 2. Barre de filtres & recherche */}
+                {/* Filtres & recherche */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-white/10 bg-[#090d16]/90 px-5 py-3">
                     <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
                         {CATEGORIES.map((cat) => {
@@ -165,9 +172,8 @@ export function OpeningBookModal({
                     </div>
                 </div>
 
-                {/* 3. Contenu principal (Grille des lancers à gauche + Fiche détaillée à droite) */}
+                {/* Contenu principal */}
                 <div className="grid flex-1 grid-cols-1 md:grid-cols-12 overflow-hidden">
-                    {/* Colonne gauche : Grille lisible des lancers d'ouverture */}
                     <div className="md:col-span-5 border-r border-white/10 overflow-y-auto p-3.5 sm:p-4 max-h-[42vh] md:max-h-full bg-[#080c14]/70">
                         {filteredOpenings.length === 0 ? (
                             <div className="p-8 text-center text-sm text-slate-400">
@@ -233,220 +239,16 @@ export function OpeningBookModal({
                         )}
                     </div>
 
-                    {/* Colonne droite : Fiche détaillée de l'ouverture sélectionnée */}
-                    <div className="md:col-span-7 overflow-y-auto p-4 sm:p-6 space-y-4 bg-[#0b101b]/80">
-                        {/* En-tête de la fiche */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <span className="rounded-lg bg-[#281c0b] px-2.5 py-0.5 font-mono text-xs sm:text-sm font-bold text-[#f3c65f] border border-white/10">
-                                        Jet [{selectedOpening.dice[0]}-{selectedOpening.dice[1]}]
-                                    </span>
-                                    <span className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs sm:text-sm font-semibold text-slate-300">
-                                        {selectedOpening.category}
-                                    </span>
-                                </div>
-                                <h3 className="font-serif mt-1.5 text-xl sm:text-2xl font-black text-[#fdf8eb]">
-                                    {selectedOpening.name}
-                                </h3>
-                            </div>
-
-                            {isOpeningTurnActive && onApplyMove && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        onApplyMove(selectedOpening.bestMoves);
-                                        onClose();
-                                    }}
-                                    className="rounded-xl border border-[#fef08a]/80 bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] px-4 py-2 text-xs sm:text-sm font-black uppercase tracking-wider text-[#1c1004] shadow-md hover:brightness-105 transition"
-                                >
-                                    ✦ Appliquer en partie
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Coup optimal recommandé */}
-                        <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-[#24190a]/90 to-[#0e131f]/90 p-4 shadow-inner flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div>
-                                <div className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f3c65f]">
-                                    Coup Optimal Certifié (Rollout 4-Ply)
-                                </div>
-                                <div className="text-2xl sm:text-3xl font-black tracking-wide text-[#fdf8eb] mt-0.5 font-mono">
-                                    {selectedOpening.bestMoveNotation}
-                                </div>
-                                <div className="text-xs text-slate-300 mt-1.5 flex flex-wrap gap-2">
-                                    {selectedOpening.bestMoves.map((m, idx) => (
-                                        <span
-                                            key={idx}
-                                            className="rounded-md border border-white/10 bg-black/40 px-2.5 py-0.5 text-xs text-amber-100 font-mono"
-                                        >
-                                            Flèche {m.from} ➔ Flèche {m.to}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="text-right">
-                                <div className="text-xs uppercase tracking-wider text-slate-300">Équité nette</div>
-                                <div className="font-mono text-xl font-black text-emerald-400">
-                                    {selectedOpening.equity >= 0 ? `+${selectedOpening.equity.toFixed(3)}` : selectedOpening.equity.toFixed(3)}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Barres statistiques Rollout */}
-                        <div className="grid grid-cols-3 gap-2.5">
-                            <div className="rounded-xl border border-white/10 bg-slate-950/70 p-3.5 text-center">
-                                <div className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-                                    Victoire Totale
-                                </div>
-                                <div className="text-lg sm:text-xl font-black text-amber-400 mt-0.5">
-                                    {selectedOpening.winPercentage}%
-                                </div>
-                                <div className="h-1.5 w-full bg-slate-800 rounded-full mt-2 overflow-hidden">
-                                    <div
-                                        className="h-full bg-amber-400 rounded-full"
-                                        style={{ width: `${selectedOpening.winPercentage}%` }}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="rounded-xl border border-white/10 bg-slate-950/70 p-3.5 text-center">
-                                <div className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-                                    Gammon Gagné
-                                </div>
-                                <div className="text-lg sm:text-xl font-black text-emerald-400 mt-0.5">
-                                    {selectedOpening.gammonPercentage}%
-                                </div>
-                                <div className="h-1.5 w-full bg-slate-800 rounded-full mt-2 overflow-hidden">
-                                    <div
-                                        className="h-full bg-emerald-500 rounded-full"
-                                        style={{ width: `${selectedOpening.gammonPercentage * 2.5}%` }}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="rounded-xl border border-white/10 bg-slate-950/70 p-3.5 text-center">
-                                <div className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-                                    Gammon Concédé
-                                </div>
-                                <div className="text-lg sm:text-xl font-black text-rose-400 mt-0.5">
-                                    {selectedOpening.loseGammonPercentage}%
-                                </div>
-                                <div className="h-1.5 w-full bg-slate-800 rounded-full mt-2 overflow-hidden">
-                                    <div
-                                        className="h-full bg-rose-500 rounded-full"
-                                        style={{ width: `${selectedOpening.loseGammonPercentage * 2.5}%` }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Explication & Règle Pédagogique */}
-                        <div className="space-y-2">
-                            <h4 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#f3c65f] flex items-center gap-1.5">
-                                <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🧠</span>
-                                <span>Explication Tactique</span>
-                            </h4>
-                            <p className="text-sm leading-relaxed text-[#e2d2b5] bg-[#090b10]/90 p-4 rounded-xl border border-white/10">
-                                {selectedOpening.explanation}
-                            </p>
-                        </div>
-
-                        {/* Boîte Principe Clé */}
-                        <div className="rounded-xl border border-white/10 bg-gradient-to-r from-[#24160b]/90 to-[#0e131f]/80 p-4 flex items-start gap-3">
-                            <span className="text-xl [filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">💡</span>
-                            <div>
-                                <div className="text-xs sm:text-sm font-extrabold text-[#f3c65f] uppercase tracking-wide">
-                                    Principe Fondamental
-                                </div>
-                                <div className="text-sm font-medium text-[#fdf8eb] mt-0.5 leading-relaxed">
-                                    {selectedOpening.keyRule}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Encart Proverbe du Maître & Livre Recommandé */}
-                        {selectedOpening.masterQuote && (
-                            <div
-                                className="rounded-xl border border-white/10 bg-gradient-to-r from-[#1c1008]/95 via-[#0e121b] to-[#180c06]/90 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-inner"
-                                data-testid="opening-master-quote"
-                            >
-                                <div className="space-y-1">
-                                    <div className="text-xs font-black uppercase tracking-wider text-[#f3c65f] flex items-center gap-1.5">
-                                        <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">📚</span>
-                                        <span>Enseignement du Maître — {selectedOpening.masterQuote.author}</span>
-                                    </div>
-                                    <div className="text-sm font-semibold text-[#fdf8eb] italic leading-relaxed">
-                                        {selectedOpening.masterQuote.proverb}
-                                    </div>
-                                    <div className="text-xs text-[#a5b0c4]">
-                                        Extrait de : <strong className="text-[#e2d2b5]">{selectedOpening.masterQuote.book}</strong>
-                                    </div>
-                                </div>
-                                <a
-                                    href={selectedOpening.masterQuote.buyUrl}
-                                    className="shrink-0 rounded-xl border border-[#fef08a]/70 bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] px-3.5 py-2 text-xs font-black uppercase tracking-wider text-[#1c1004] transition shadow hover:brightness-105 active:scale-95 flex items-center gap-1"
-                                >
-                                    <span>Ouvrir la fiche Académie</span>
-                                    <span>↗</span>
-                                </a>
-                            </div>
-                        )}
-
-                        {/* Tableau comparatif des alternatives & blunders */}
-                        <div className="space-y-2">
-                            <h4 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
-                                <span>⚖️</span>
-                                <span>Alternatives &amp; Pertes d’Équité (ΔEq)</span>
-                            </h4>
-
-                            <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-950/50">
-                                <table className="w-full text-left text-xs sm:text-sm">
-                                    <thead className="bg-slate-900/90 text-slate-300 border-b border-white/10">
-                                        <tr>
-                                            <th className="py-2.5 px-3.5">Coup</th>
-                                            <th className="py-2.5 px-3.5">Style</th>
-                                            <th className="py-2.5 px-3.5 text-right">Perte ΔEq</th>
-                                            <th className="py-2.5 px-3.5">Analyse</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-white/10">
-                                        <tr className="bg-emerald-950/20">
-                                            <td className="py-2.5 px-3.5 font-mono font-bold text-emerald-300">
-                                                {selectedOpening.bestMoveNotation} (Optimal)
-                                            </td>
-                                            <td className="py-2.5 px-3.5 text-emerald-400">Optimal</td>
-                                            <td className="py-2.5 px-3.5 text-right font-mono font-bold text-emerald-400">
-                                                0.000
-                                            </td>
-                                            <td className="py-2.5 px-3.5 text-slate-300 text-xs sm:text-sm">
-                                                Coup de référence standard
-                                            </td>
-                                        </tr>
-                                        {selectedOpening.alternatives.map((alt, index) => (
-                                            <tr key={index} className="hover:bg-slate-900/40">
-                                                <td className="py-2.5 px-3.5 font-mono font-semibold text-white">
-                                                    {alt.notation}
-                                                </td>
-                                                <td className="py-2.5 px-3.5 text-slate-300 text-xs sm:text-sm">
-                                                    {alt.style}
-                                                </td>
-                                                <td className="py-2.5 px-3.5 text-right font-mono font-bold text-rose-400">
-                                                    {alt.equityLoss.toFixed(3)}
-                                                </td>
-                                                <td className="py-2.5 px-3.5 text-slate-300 text-xs sm:text-sm">
-                                                    {alt.description}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <OpeningDetailView
+                        opening={selectedOpening}
+                        isOpeningTurnActive={isOpeningTurnActive}
+                        onApplyMove={onApplyMove}
+                        onClose={onClose}
+                    />
                 </div>
             </div>
         </div>
     );
 }
+
+export default OpeningBookModal;

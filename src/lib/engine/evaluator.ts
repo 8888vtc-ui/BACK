@@ -30,16 +30,44 @@ import {
     BestMoveResult,
 } from './types';
 import { bearoffExpectedRolls } from './bearoffTable';
-import { computeKeithCount, evaluateKeithCube } from './keithCount';
+import { evaluateKeithCube } from './keithCount';
 import { countShotsExact } from './shotCounter';
-export {
+import {
     calculateEffectivePipCount,
     evaluateRaceCube,
+    evaluateIsightRace,
+    computeTriceNormalWinProbability,
+    MEAN_PIPS_PER_ROLL,
     isPureRace,
     isBearOffPhase,
     type EffectivePipResult,
     type RaceCubeEvaluation,
+    type IsightRaceEvaluation,
 } from './effectivePipCount';
+import {
+    computeJanowskiCubeEvaluation,
+    detectJanowskiPhase,
+    getCalibratedCubeEfficiency,
+    type JanowskiCubeEvaluation,
+    type JanowskiPositionPhase,
+} from './janowskiCube';
+export {
+    calculateEffectivePipCount,
+    evaluateRaceCube,
+    evaluateIsightRace,
+    computeTriceNormalWinProbability,
+    MEAN_PIPS_PER_ROLL,
+    isPureRace,
+    isBearOffPhase,
+    computeJanowskiCubeEvaluation,
+    detectJanowskiPhase,
+    getCalibratedCubeEfficiency,
+    type EffectivePipResult,
+    type RaceCubeEvaluation,
+    type IsightRaceEvaluation,
+    type JanowskiCubeEvaluation,
+    type JanowskiPositionPhase,
+};
 export type { Probabilities } from './types';
 import { refineTopCandidatesExpectiminimax2Ply } from './expectiminimax';
 
@@ -311,13 +339,15 @@ function evaluateRace(
             winProb = clamp(1 / (1 + Math.exp(-2.2 * z)), 0.0001, 0.9999);
         }
     } else {
-        // Course pure générale : Keith Count officiel avec pénalités
-        const keithP = computeKeithCount(state.board, player).total;
-        const keithO = computeKeithCount(state.board, opponent).total;
-        const ep = keithP - Math.floor(keithP / 7);
-        const eo = keithO;
-        const z = (eo - ep) / (Math.sqrt(ep + eo) * 1.65);
-        winProb = clamp(1 / (1 + Math.exp(-1.7 * z)), 0.001, 0.999);
+        // Course pure générale : Probabilité normale de Walter Trice corrigée de la variance
+        const epcP = calculateEffectivePipCount(state.board, player);
+        const epcO = calculateEffectivePipCount(state.board, opponent);
+        winProb = computeTriceNormalWinProbability({
+            rollerEPC: epcP.epc,
+            opponentEPC: epcO.epc,
+            rollerRawPips: epcP.rawPips,
+            opponentRawPips: epcO.rawPips,
+        }).winProb;
     }
 
     const loseProb = 1 - winProb;
@@ -724,16 +754,19 @@ export function evaluateBoard(
         probabilities = contact.probabilities;
     }
 
-    // Ajustement cubeful (borné entre -1 et +1).
-    let cubefulEquity = cubelessEquity;
-    if (state.cubeOwner === null) {
-        cubefulEquity = cubelessEquity * 1.05;
-    } else if (state.cubeOwner === player) {
-        cubefulEquity = cubelessEquity + 0.08 * (1 - Math.abs(cubelessEquity));
-    } else {
-        cubefulEquity = cubelessEquity - 0.08 * (1 - Math.abs(cubelessEquity));
-    }
-    cubefulEquity = Number(clamp(cubefulEquity, -1.0, 1.0).toFixed(4));
+    // Modèle de videau de Janowski raffiné par phase (interpolation linéaire par morceaux)
+    const janowskiPhase = detectJanowskiPhase(state.board, player);
+    const janowskiEval = computeJanowskiCubeEvaluation(probabilities, janowskiPhase, {
+        cubeOwner:
+            state.cubeOwner === null
+                ? 'CENTERED'
+                : state.cubeOwner === player
+                  ? 'PLAYER'
+                  : 'OPPONENT',
+        board: state.board,
+        player,
+    });
+    const cubefulEquity = Number(clamp(janowskiEval.cubefulEquity, -1.0, 1.0).toFixed(4));
     cubelessEquity = Number(clamp(cubelessEquity, -1.0, 1.0).toFixed(4));
 
     return {
@@ -815,9 +848,17 @@ export function analyzeBoardMoves(
         });
     }
 
-    // Alignement prioritaire avec le Livre d'Ouvertures (Opening Book) en position initiale
+    // Alignement prioritaire avec le Livre d'Ouvertures (Opening Book) selon le score de match
     if (isInitialBoardPosition(state.board) && dice[0] !== dice[1]) {
-        const opening = getOpening(dice[0], dice[1]);
+        const openingRegime = detectOpeningScoreRegime({
+            matchLength: state.matchLength,
+            scoreX: state.scoreX,
+            scoreO: state.scoreO,
+            player,
+            cubeValue: state.cubeValue,
+            crawford: state.crawford,
+        });
+        const opening = getOpeningForScore(dice[0], dice[1], openingRegime) ?? getOpening(dice[0], dice[1]);
         if (opening) {
             let bestTargetBoard = state.board.slice();
             for (const m of opening.bestMoves) {
@@ -892,7 +933,12 @@ export function analyzeBoardMoves(
 }
 
 import { calculateTakePoint } from '../../features/coach/matchContext';
-import { getOpening, isInitialBoardPosition } from '../../features/openings/openingDatabase';
+import {
+    detectOpeningScoreRegime,
+    getOpening,
+    getOpeningForScore,
+    isInitialBoardPosition,
+} from '../../features/openings/openingDatabase';
 
 /**
  * Analyse la décision de videau pour la position donnée.

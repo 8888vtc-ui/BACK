@@ -169,7 +169,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                     aria-label={`Videau x${nextCubeValue}`}
                     className="relative flex flex-col items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-2xl border border-white/10 bg-gradient-to-b from-[#3d150e] to-[#1a0704] text-[#fce8b2] shadow-[inset_0_1px_0_rgba(255,230,180,0.25),0_4px_10px_rgba(0,0,0,0.65)] transition-transform duration-100 active:scale-90 disabled:opacity-35 touch-manipulation"
                 >
-                    <span className="rounded px-1 py-0.2 font-mono text-[11px] font-black leading-tight bg-gradient-to-b from-[#f3c65f] to-[#b88218] text-[#1a0e04]">
+                    <span className="rounded px-1 py-0.2 font-mono text-[11px] font-black leading-tight bg-gradient-to-b from-[#f3c65f] to-[#b88218] text-[#1a0e04] tabular-nums">
                         ×{nextCubeValue}
                     </span>
                     <span className="mt-0.5 text-[11px] font-extrabold uppercase tracking-tighter text-amber-100/90">
@@ -197,7 +197,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                         </span>
                         <span
                             data-testid="thumb-dock-coach-badge"
-                            className={`rounded px-1 py-0.2 font-mono text-[11px] font-black leading-none ${
+                            className={`rounded px-1 py-0.2 font-mono text-[11px] font-black leading-none tabular-nums ${
                                 isAnalyzingCoach
                                     ? 'bg-emerald-500/30 text-emerald-200 border border-emerald-400/60 animate-pulse'
                                     : isVip
@@ -225,7 +225,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                                 void impactHeavy();
                                 onTakeDouble();
                             }}
-                            className="flex-1 h-14 min-w-[48px] min-h-[52px] rounded-2xl border border-emerald-300/75 bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800 px-2 font-serif text-xs font-black uppercase tracking-wider text-white shadow-lg active:scale-95 touch-manipulation"
+                            className="flex-1 h-14 min-w-[48px] min-h-[52px] rounded-2xl border border-emerald-300/75 bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800 px-2 font-serif text-xs font-black uppercase tracking-wider text-white shadow-lg active:scale-95 touch-manipulation tabular-nums"
                         >
                             ✓ Prendre ×{nextCubeValue}
                         </button>

@@ -3,6 +3,8 @@ import {
     OPENING_BOOK,
     getAllOpenings,
     getOpening,
+    getOpeningForScore,
+    detectOpeningScoreRegime,
     isInitialBoardPosition,
     isOpeningSituation,
     findOpeningBookSequenceForOpponent,
@@ -171,6 +173,37 @@ describe('Opening Database', () => {
             const legalSeqs = generateLegalMoves(state, dice);
 
             expect(findOpeningBookSequenceForOpponent(modified, dice, legalSeqs)).toBeNull();
+        });
+    });
+
+    describe('detectOpeningScoreRegime & getOpeningForScore (3T / XG Roller++)', () => {
+        it('identifie correctement les 4 régimes de score (NORMAL, DMP, GAMMON_GO, GAMMON_SAVE)', () => {
+            expect(detectOpeningScoreRegime({ matchLength: 0 })).toBe('NORMAL');
+            expect(detectOpeningScoreRegime({ matchLength: 7, scoreX: 0, scoreO: 0, player: 'X' })).toBe('NORMAL');
+            expect(detectOpeningScoreRegime({ matchLength: 7, scoreX: 6, scoreO: 6, player: 'X' })).toBe('DMP');
+            // 2-away, 4-away pour X => GAMMON_GO
+            expect(detectOpeningScoreRegime({ matchLength: 7, scoreX: 5, scoreO: 3, player: 'X' })).toBe('GAMMON_GO');
+            // 4-away, 2-away pour X => GAMMON_SAVE
+            expect(detectOpeningScoreRegime({ matchLength: 7, scoreX: 3, scoreO: 5, player: 'X' })).toBe('GAMMON_SAVE');
+        });
+
+        it('bascule les ouvertures selon le score tout en gardant les 4 Point Makers invariants', () => {
+            // Point Makers (3-1, 4-2, 6-1, 5-3) invariants
+            expect(getOpeningForScore(3, 1, 'GAMMON_GO')?.bestMoveNotation).toBe('8/5 6/5');
+            expect(getOpeningForScore(4, 2, 'GAMMON_SAVE')?.bestMoveNotation).toBe('8/4 6/4');
+            expect(getOpeningForScore(6, 1, 'DMP')?.bestMoveNotation).toBe('13/7 8/7');
+            expect(getOpeningForScore(5, 3, 'GAMMON_GO')?.bestMoveNotation).toBe('8/3 6/3');
+
+            // Bascules certifiées :
+            expect(getOpeningForScore(2, 1, 'GAMMON_GO')?.bestMoveNotation).toBe('13/11 6/5');
+            expect(getOpeningForScore(2, 1, 'DMP')?.bestMoveNotation).toBe('24/23 13/11');
+            expect(getOpeningForScore(6, 4, 'GAMMON_GO')?.bestMoveNotation).toBe('8/2 6/2');
+            expect(getOpeningForScore(6, 4, 'GAMMON_SAVE')?.bestMoveNotation).toBe('24/18 13/9');
+            expect(getOpeningForScore(5, 1, 'GAMMON_GO')?.bestMoveNotation).toBe('13/8 6/5');
+            expect(getOpeningForScore(5, 1, 'DMP')?.bestMoveNotation).toBe('24/18');
+            expect(getOpeningForScore(4, 3, 'GAMMON_GO')?.bestMoveNotation).toBe('13/10 13/9');
+            expect(getOpeningForScore(4, 3, 'GAMMON_SAVE')?.bestMoveNotation).toBe('24/21 24/20');
+            expect(getOpeningForScore(4, 3, 'DMP')?.bestMoveNotation).toBe('24/21 13/9');
         });
     });
 });

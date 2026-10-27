@@ -13,6 +13,7 @@ __pycache__/
 .pytest_cache/
 screenshot_*.png
 debug-*.png
+docs/debug/
 e2e/_shot-*.png
 *.exe
 vendor/

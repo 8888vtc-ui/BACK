@@ -13,6 +13,10 @@ except ImportError:  # Permet l'import du module pour les tests unitaires sans b
 from .models import (
     AnalyzeRequest,
     AnalyzeResponse,
+    BatchMatchEvaluationRequest,
+    BatchMatchEvaluationResponse,
+    BatchMatchPositionInput,
+    BatchPositionEvaluationResult,
     CubeDecision,
     EvaluateBoardRequest,
     EvaluateRequest,
@@ -403,3 +407,240 @@ def selfplay(req: SelfPlayRequest):
         "games": req.games,
         "results": results,
     }
+
+
+def _resolve_batch_position(
+    pos: BatchMatchPositionInput,
+) -> tuple[list[int], tuple[int, int], int, str, int, int]:
+    """Résout le plateau bgsage et les métadonnées (dés, videau, scores away) d'une position de lot."""
+    if pos.xgid:
+        board = xgid_to_board(pos.xgid)
+        dice, cube_value, cube_owner, away1, away2 = _extract_xgid_metadata(pos.xgid)
+        if pos.dice is not None:
+            dice = (pos.dice[0], pos.dice[1])
+        return board, dice, cube_value, cube_owner, away1, away2
+    if pos.board is not None:
+        if pos.cube_owner not in ("centered", "player", "opponent"):
+            raise ValueError("cube_owner doit être 'centered', 'player' ou 'opponent'")
+        board = gnubg_board_to_bgsage(pos.board)
+        dice = (pos.dice[0], pos.dice[1]) if pos.dice else (0, 0)
+        return board, dice, pos.cube_value, pos.cube_owner, pos.away1, pos.away2
+    raise ValueError("Chaque position doit fournir 'xgid' ou 'board'")
+
+
+def _find_played_move(
+    before_board: list[int],
+    moves: list,
+    played_board: list[int] | None,
+    played_notation: str | None,
+):
+    """Identifie le coup joué parmi les coups légaux retournés par bgsage."""
+    if not moves:
+        return None
+    converted_played = gnubg_board_to_bgsage(played_board) if played_board is not None else None
+    for m in moves:
+        after_b = list(m.board)
+        if played_board is not None and (after_b == played_board or after_b == converted_played):
+            return m
+        if played_notation is not None and board_to_notation(before_board, after_b) == played_notation:
+            return m
+    return moves[0]
+
+
+def _serialize_legacy_moves(before_board: list[int], moves: list) -> list[LegacyMoveAnalysis]:
+    """Convertit la liste des coups bgsage au format LegacyMoveAnalysis."""
+    out: list[LegacyMoveAnalysis] = []
+    for i, m in enumerate(moves):
+        after_board = list(m.board)
+        probs = m.probs
+        legacy_probs = LegacyProbabilities(
+            win=probs.win,
+            winGammon=probs.gammon_win,
+            winBackgammon=probs.backgammon_win,
+            loseWin=1.0 - probs.win,
+            loseGammon=probs.gammon_loss,
+            loseBackgammon=probs.backgammon_loss,
+            winGammonCumulative=probs.gammon_win,
+            loseGammonCumulative=probs.gammon_loss,
+            winGammonExclusive=probs.gammon_win - probs.backgammon_win,
+            loseGammonExclusive=probs.gammon_loss - probs.backgammon_loss,
+            winSingle=probs.win - probs.gammon_win,
+            loseSingle=(1.0 - probs.win) - probs.gammon_loss,
+        )
+        out.append(
+            LegacyMoveAnalysis(
+                rank=i + 1,
+                notation=board_to_notation(before_board, after_board),
+                equity=m.equity,
+                equityLoss=m.equity_diff,
+                probabilities=legacy_probs,
+                board=after_board,
+                playerGamePlan=getattr(m, "player_game_plan", None),
+                opponentGamePlan=getattr(m, "opponent_game_plan", None),
+                cubelessEquity=getattr(m, "cubeless_equity", None),
+                evalLevel=getattr(m, "eval_level", None),
+            )
+        )
+    return out
+
+
+@app.post("/api/evaluate-match-batch", response_model=BatchMatchEvaluationResponse)
+def evaluate_match_batch(req: BatchMatchEvaluationRequest):
+    """Pipeline d'analyse post-match adaptatif en 2 passes (1P -> 3P) en un seul appel HTTP."""
+    resolved_inputs: list[tuple[BatchMatchPositionInput, list[int], tuple[int, int], int, str, int, int]] = []
+    for pos in req.positions:
+        try:
+            board, dice, cube_value, cube_owner, away1, away2 = _resolve_batch_position(pos)
+            resolved_inputs.append((pos, board, dice, cube_value, cube_owner, away1, away2))
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc))
+
+    try:
+        analyzer_1p = _get_analyzer(1)
+        analyzer_3p = _get_analyzer(3)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Erreur d'initialisation bgsage : {exc}")
+
+    results_by_turn: list[BatchPositionEvaluationResult] = []
+    settled_1p_count = 0
+    escalated_3p_count = 0
+    total_equity_loss = 0.0
+    non_forced_decisions = 0
+
+    for pos, board, (die1, die2), cube_value, cube_owner, away1, away2 in resolved_inputs:
+        try:
+            optimal_cube_action: str | None = None
+            if pos.evaluate_cube or die1 <= 0 or die2 <= 0:
+                cube_1p = analyzer_1p.cube_action(board, cube_value, cube_owner, away1=away1, away2=away2)
+                margin_nd_dt = abs(cube_1p.equity_nd - cube_1p.equity_dt)
+                if margin_nd_dt < 0.060:
+                    cube_3p = analyzer_3p.cube_action(board, cube_value, cube_owner, away1=away1, away2=away2)
+                    optimal_cube_action = cube_3p.optimal_action
+                else:
+                    optimal_cube_action = cube_1p.optimal_action
+
+            if die1 <= 0 or die2 <= 0:
+                settled_1p_count += 1
+                results_by_turn.append(
+                    BatchPositionEvaluationResult(
+                        turn_index=pos.turn_index,
+                        settled_at_level="1ply",
+                        best_move_notation=None,
+                        best_move_equity=0.0,
+                        played_move_equity=0.0,
+                        equity_loss=0.0,
+                        is_blunder=False,
+                        is_forced_move=True,
+                        optimal_cube_action=optimal_cube_action,
+                        chequer_play=[],
+                    )
+                )
+                continue
+
+            # Passe 1 : Criblage rapide 1-ply
+            res_1p = analyzer_1p.checker_play(
+                board,
+                die1,
+                die2,
+                cube_value=cube_value,
+                cube_owner=cube_owner,
+                away1=away1,
+                away2=away2,
+                include_game_plans=False,
+            )
+            moves_1p = list(res_1p.moves)
+            if not moves_1p:
+                settled_1p_count += 1
+                results_by_turn.append(
+                    BatchPositionEvaluationResult(
+                        turn_index=pos.turn_index,
+                        settled_at_level="1ply",
+                        best_move_notation="Pass",
+                        best_move_equity=0.0,
+                        played_move_equity=0.0,
+                        equity_loss=0.0,
+                        is_blunder=False,
+                        is_forced_move=True,
+                        optimal_cube_action=optimal_cube_action,
+                        chequer_play=[],
+                    )
+                )
+                continue
+
+            is_forced = len(moves_1p) == 1
+            best_1p = moves_1p[0]
+            delta_top2 = abs(best_1p.equity - moves_1p[1].equity) if len(moves_1p) >= 2 else 999.0
+            played_1p = _find_played_move(board, moves_1p, pos.played_board, pos.played_notation)
+            loss_1p = abs(best_1p.equity - played_1p.equity) if played_1p is not None else 0.0
+
+            # Critère de filtrage 1P : coup forcé OU coup optimal évident (marge > 0.050) effectivement joué
+            if is_forced or (delta_top2 > 0.050 and loss_1p < 1e-6):
+                settled_1p_count += 1
+                if not is_forced:
+                    non_forced_decisions += 1
+                best_notation = board_to_notation(board, list(best_1p.board))
+                results_by_turn.append(
+                    BatchPositionEvaluationResult(
+                        turn_index=pos.turn_index,
+                        settled_at_level="1ply",
+                        best_move_notation=best_notation,
+                        best_move_equity=round(float(best_1p.equity), 4),
+                        played_move_equity=round(float(played_1p.equity if played_1p else best_1p.equity), 4),
+                        equity_loss=0.0,
+                        is_blunder=False,
+                        is_forced_move=is_forced,
+                        optimal_cube_action=optimal_cube_action,
+                        chequer_play=_serialize_legacy_moves(board, moves_1p[:5]),
+                    )
+                )
+                continue
+
+            # Passe 2 : Escalade profonde 3-ply sur les décisions litigieuses ou erreurs
+            escalated_3p_count += 1
+            non_forced_decisions += 1
+            res_3p = analyzer_3p.checker_play(
+                board,
+                die1,
+                die2,
+                cube_value=cube_value,
+                cube_owner=cube_owner,
+                away1=away1,
+                away2=away2,
+                include_game_plans=True,
+            )
+            moves_3p = list(res_3p.moves)
+            best_3p = moves_3p[0]
+            played_3p = _find_played_move(board, moves_3p, pos.played_board, pos.played_notation)
+            loss_3p = max(0.0, float(best_3p.equity - (played_3p.equity if played_3p else best_3p.equity)))
+            total_equity_loss += loss_3p
+
+            results_by_turn.append(
+                BatchPositionEvaluationResult(
+                    turn_index=pos.turn_index,
+                    settled_at_level="3ply",
+                    best_move_notation=board_to_notation(board, list(best_3p.board)),
+                    best_move_equity=round(float(best_3p.equity), 4),
+                    played_move_equity=round(float(played_3p.equity if played_3p else best_3p.equity), 4),
+                    equity_loss=round(loss_3p, 4),
+                    is_blunder=loss_3p >= req.blunder_threshold,
+                    is_forced_move=False,
+                    optimal_cube_action=optimal_cube_action,
+                    chequer_play=_serialize_legacy_moves(board, moves_3p[:5]),
+                )
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"Erreur batch bgsage au tour {pos.turn_index} : {exc}")
+
+    avg_loss = (total_equity_loss / non_forced_decisions) if non_forced_decisions > 0 else 0.0
+    pr = round(500.0 * avg_loss, 2)
+
+    return BatchMatchEvaluationResponse(
+        match_id=req.match_id,
+        total_positions=len(results_by_turn),
+        settled_at_1p_count=settled_1p_count,
+        escalated_to_3p_count=escalated_3p_count,
+        total_equity_loss=round(total_equity_loss, 4),
+        performance_rating_pr=pr,
+        positions=results_by_turn,
+    )
+

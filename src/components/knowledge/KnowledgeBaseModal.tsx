@@ -1,5 +1,11 @@
 'use client';
 
+/**
+ * Modale de la Base de Connaissances Backgammon Grand-Maître.
+ *
+ * Conforme à SCALABILITY.md (< 300 lignes, 0 any, Dumb UI pure).
+ */
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
     KNOWLEDGE_BASE_CONCEPTS,
@@ -10,6 +16,7 @@ import {
 } from '../../features/knowledge';
 import { useBoardTheme, getModalThemeClasses, type ThemeName } from '../../hooks/useBoardTheme';
 import { useI18n } from '../../lib/i18n';
+import KnowledgeConceptDetail from './KnowledgeConceptDetail';
 
 export interface KnowledgeBaseModalProps {
     isOpen: boolean;
@@ -127,7 +134,7 @@ export function KnowledgeBaseModal({
             <div
                 className={`relative flex h-[94vh] w-full max-w-6xl flex-col rounded-3xl shadow-2xl overflow-hidden border border-white/10 backdrop-blur-2xl transition-all ${modalClasses.container}`}
             >
-                {/* 1. Header du Modal */}
+                {/* Header */}
                 <div className={`flex items-center justify-between border-b border-white/10 px-5 py-4 ${modalClasses.header}`}>
                     <div className="flex items-center gap-3">
                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 text-2xl shadow-lg shadow-indigo-950">
@@ -160,7 +167,7 @@ export function KnowledgeBaseModal({
                     </button>
                 </div>
 
-                {/* 2. Barre de Recherche et Sélecteur de Catégories */}
+                {/* Recherche & Catégories */}
                 <div className="border-b border-white/10 bg-slate-950/60 px-5 py-3 space-y-3">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <div className="relative flex-1">
@@ -210,9 +217,8 @@ export function KnowledgeBaseModal({
                     </div>
                 </div>
 
-                {/* 3. Contenu Principal : Disposition Responsive (Empilée Mobile / Split Desktop) */}
+                {/* Contenu : Liste gauche + Fiche droite */}
                 <div className="flex flex-col sm:flex-row flex-1 overflow-hidden">
-                    {/* Colonne Gauche : Liste des Concepts */}
                     <div className="w-full sm:w-2/5 md:w-1/3 max-h-[36vh] sm:max-h-full border-b sm:border-b-0 sm:border-r border-white/10 overflow-y-auto bg-slate-950/30 p-3 space-y-2">
                         {filteredConcepts.length === 0 ? (
                             <div className="p-8 text-center text-slate-400 text-sm">
@@ -255,152 +261,11 @@ export function KnowledgeBaseModal({
                         )}
                     </div>
 
-                    {/* Colonne Droite : Fiche Théorique Détaillée (accessible sur mobile & desktop) */}
-                    <div
-                        ref={detailContainerRef}
-                        className="flex-1 sm:w-3/5 md:w-2/3 overflow-y-auto p-4 sm:p-6 space-y-6 bg-slate-950/50"
-                    >
-                        {activeConcept ? (
-                            <div className="space-y-6 max-w-3xl">
-                                <div>
-                                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                                        <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-300 border border-white/10">
-                                            👤 {activeConcept.author}
-                                        </span>
-                                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${DIFFICULTY_MAP[activeConcept.difficulty].color}`}>
-                                            {isEn ? DIFFICULTY_MAP[activeConcept.difficulty].labelEn : DIFFICULTY_MAP[activeConcept.difficulty].labelFr}
-                                        </span>
-                                    </div>
-
-                                    <h1
-                                        data-testid="kb-detail-title"
-                                        className="text-xl sm:text-2xl font-black tracking-tight text-white"
-                                    >
-                                        {isEn ? activeConcept.title.en : activeConcept.title.fr}
-                                    </h1>
-
-                                    <div className="mt-2 flex flex-wrap gap-1.5">
-                                        {activeConcept.tags.map((tag) => (
-                                            <span key={tag} className="text-xs font-semibold text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-md border border-white/10">
-                                                #{tag}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="rounded-2xl bg-gradient-to-br from-blue-950/40 via-indigo-950/30 to-purple-950/40 border border-white/10 p-4 space-y-2 shadow-inner">
-                                    <h3 className="text-xs font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
-                                        <span>💡</span> {isEn ? 'Key Takeaway' : 'À Retenir Absolument'}
-                                    </h3>
-                                    <p className="text-sm font-semibold text-white leading-relaxed">
-                                        {isEn ? activeConcept.keyTakeaway.en : activeConcept.keyTakeaway.fr}
-                                    </p>
-                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pt-1 border-t border-white/10">
-                                        {isEn ? activeConcept.summary.en : activeConcept.summary.fr}
-                                    </p>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                                        <span>🧠</span> {isEn ? 'Theoretical Foundation' : 'Fondements Théoriques'}
-                                    </h3>
-                                    <div className="space-y-2 text-sm text-slate-200 leading-relaxed">
-                                        {(isEn ? activeConcept.explanation.en : activeConcept.explanation.fr).map((paragraph, idx) => (
-                                            <p key={idx}>{paragraph}</p>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {activeConcept.formulaOrRule && (
-                                    <div className="rounded-2xl bg-slate-900/90 border border-white/10 p-4 space-y-2 shadow-md">
-                                        <div className="flex items-center justify-between">
-                                            <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
-                                                <span>📐</span> {activeConcept.formulaOrRule.name}
-                                            </h4>
-                                        </div>
-                                        {activeConcept.formulaOrRule.formula && (
-                                            <div className="rounded-xl bg-slate-950 p-3 font-mono text-sm font-black text-amber-300 border border-white/10">
-                                                {activeConcept.formulaOrRule.formula}
-                                            </div>
-                                        )}
-                                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                            {isEn
-                                                ? activeConcept.formulaOrRule.explanation.en
-                                                : activeConcept.formulaOrRule.explanation.fr}
-                                        </p>
-                                    </div>
-                                )}
-
-                                {activeConcept.practicalExamples.length > 0 && (
-                                    <div className="space-y-3">
-                                        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                                            <span>🎯</span> {isEn ? 'Practical Examples & Key Positions' : 'Exemples Pratiques & Positions Types'}
-                                        </h3>
-                                        <div className="space-y-3">
-                                            {activeConcept.practicalExamples.map((ex, idx) => (
-                                                <div key={idx} className="rounded-2xl bg-slate-900/60 border border-white/10 p-3.5 space-y-2">
-                                                    <div className="flex items-center justify-between gap-2">
-                                                        <span className="text-xs sm:text-sm font-semibold text-slate-200">
-                                                            {isEn ? ex.positionDesc.en : ex.positionDesc.fr}
-                                                        </span>
-                                                        <span className="font-mono text-xs font-black text-emerald-300 bg-emerald-950/60 px-2.5 py-0.5 rounded-lg border border-white/10 shrink-0">
-                                                            ✓ {ex.bestPlay}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                                        <strong className="text-slate-200">{isEn ? 'Reasoning:' : 'Raisonnement :'}</strong>{' '}
-                                                        {isEn ? ex.reasoning.en : ex.reasoning.fr}
-                                                    </p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="rounded-2xl bg-amber-950/20 border border-white/10 p-4 space-y-1">
-                                    <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
-                                        <span>🏆</span> {isEn ? 'Grandmaster Golden Rule' : "Règle d'Or de Grand-Maître"}
-                                    </h4>
-                                    <p className="text-sm font-bold text-amber-200 italic leading-relaxed">
-                                        « {isEn ? activeConcept.goldenRule.en : activeConcept.goldenRule.fr} »
-                                    </p>
-                                </div>
-
-                                <div className="border-t border-white/10 pt-4 space-y-2">
-                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                                        <span>🌐</span> {isEn ? 'Authoritative Sources & Data References' : 'Sources Fiables & Références Documentaires'}
-                                    </h4>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                        {activeConcept.sources.map((src, idx) => (
-                                            <div
-                                                key={idx}
-                                                className="rounded-xl bg-slate-900/40 border border-white/10 p-3 text-xs flex flex-col justify-between"
-                                            >
-                                                <div>
-                                                    <span className="text-xs uppercase font-bold text-blue-300 block">
-                                                        [{src.type}] {src.author}
-                                                    </span>
-                                                    <strong className="text-white block mt-0.5 text-sm">{src.title}</strong>
-                                                    {src.details && <p className="text-slate-300 text-xs mt-0.5">{src.details}</p>}
-                                                </div>
-                                                {src.url && (
-                                                    <a
-                                                        href={src.url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="mt-2 text-blue-300 hover:text-blue-200 inline-flex items-center gap-1 text-xs font-semibold"
-                                                    >
-                                                        <span>{isEn ? 'Read on Backgammon Galore' : 'Consulter sur Backgammon Galore'}</span>
-                                                        <span>↗</span>
-                                                    </a>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        ) : null}
-                    </div>
+                    <KnowledgeConceptDetail
+                        concept={activeConcept}
+                        isEn={isEn}
+                        containerRef={detailContainerRef}
+                    />
                 </div>
             </div>
         </div>

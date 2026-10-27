@@ -14,7 +14,11 @@ import {
     type Player,
 } from '../../engine/backgammonEngine';
 import { DISTINCT_DICE_ROLLS_21 } from '../../lib/engine/expectiminimax';
-import { evaluateBoard } from '../../lib/engine/evaluator';
+import {
+    evaluateBoard,
+    computeJanowskiCubeEvaluation,
+    detectJanowskiPhase,
+} from '../../lib/engine/evaluator';
 import type {
     BlotsAndShots,
     BoardStructure,
@@ -37,6 +41,10 @@ export interface MarketWindowMetrics {
     estimatedMarketLosers: number;
     /** Indique si la position se situe dans la fenêtre de marché (Market Window). */
     inMarketWindow: boolean;
+    /** Écart-type pondéré des équités sur les 21 tirages (sigma_Eq, seuils < 0.06 low, > 0.14 high). */
+    equityVolatilitySigma?: number;
+    /** Perte moyenne d'équité par dépassement du Cash Point (L_overshoot). */
+    expectedOvershootLoss?: number;
 }
 
 export interface MarketWindowParams {
@@ -53,28 +61,31 @@ export interface MarketWindowParams {
 }
 
 /**
- * Calcule le nombre exact de séquences de dés (sur 36) qui font perdre le marché
- * (Market Losers) au tour suivant.
- *
- * Pour chaque tirage parmi les 21 lancers possibles pondérés sur 36 :
- * On simule la meilleure réplique adverse selon l'évaluateur statique.
- * Si l'équité résultante du joueur dépasse le seuil de Cash Point adverse,
- * l'adversaire passera tout double au tour suivant : le marché est perdu.
+ * Analyse exacte de la distribution des 21 tirages pondérés sur 36 :
+ * - Market Losers exacts (sur 36)
+ * - Volatilité exacte d'équité sigma_Eq (écart-type pondéré des équités)
+ * - Perte d'overshoot attendue L_overshoot au-delà du Cash Point
  */
-export function countExactMarketLosers(
+export function analyzeExactMarketDistribution(
     bestEndState: BoardState,
     player: Player,
     cashPoint: number,
     gammonPrice: number = 0.5,
-): number {
+): {
+    marketLosersCount: number;
+    equityVolatilitySigma: number;
+    expectedOvershootLoss: number;
+} {
     const oppPlayer = bestEndState.turn;
     let marketLosersCount = 0;
+    let weightedMeanEq = 0;
+    let weightedOvershoot = 0;
+    const rollEquities: Array<{ eq: number; weight: number }> = [];
 
     for (const roll of DISTINCT_DICE_ROLLS_21) {
         const oppLegalMoves = generateLegalMoves(bestEndState, roll.dice);
 
         if (oppLegalMoves.length === 0) {
-            // Adversaire bloqué (ex: sur la barre ou aucun coup possible)
             const stateAfterPass: BoardState = {
                 ...bestEndState,
                 turn: player,
@@ -84,12 +95,16 @@ export function countExactMarketLosers(
             const effWin = playerEval.probabilities.win + gammonPrice * playerEval.probabilities.winGammon * 0.5;
             if (effWin >= cashPoint || playerEval.cubelessEquity >= 0.50) {
                 marketLosersCount += roll.weight;
+                weightedOvershoot += (roll.weight / 36) * Math.max(0, effWin - cashPoint);
             }
+            const eq = playerEval.cubefulEquity;
+            weightedMeanEq += (roll.weight / 36) * eq;
+            rollEquities.push({ eq, weight: roll.weight });
             continue;
         }
 
-        // L'adversaire choisit sa meilleure réplique statique (maximisant son équité)
         let bestOppEquity = -Infinity;
+        let bestOppCubelessEquity = -Infinity;
         let bestOppProbs = {
             win: 0.5,
             winGammon: 0.1,
@@ -109,22 +124,48 @@ export function countExactMarketLosers(
             const oppEval = evaluateBoard(stateAfterMove, 0);
             if (oppEval.cubefulEquity > bestOppEquity) {
                 bestOppEquity = oppEval.cubefulEquity;
+                bestOppCubelessEquity = oppEval.cubelessEquity;
                 bestOppProbs = oppEval.probabilities;
             }
         }
 
-        // Du point de vue du joueur actif (player) :
         const playerWinProb = bestOppProbs.loseWin;
         const playerGammonProb = bestOppProbs.loseGammon;
         const playerEffectiveWin = playerWinProb + gammonPrice * playerGammonProb * 0.5;
+        const playerEq = -bestOppEquity;
 
-        // Seuil de cash point ou équité nette de gain au-delà du Take Point adverse
-        if (playerEffectiveWin >= cashPoint || -bestOppEquity >= 0.50) {
+        if (playerEffectiveWin >= cashPoint || -bestOppCubelessEquity >= 0.50) {
             marketLosersCount += roll.weight;
+            weightedOvershoot += (roll.weight / 36) * Math.max(0, playerEffectiveWin - cashPoint);
         }
+        weightedMeanEq += (roll.weight / 36) * playerEq;
+        rollEquities.push({ eq: playerEq, weight: roll.weight });
     }
 
-    return Math.max(0, Math.min(36, marketLosersCount));
+    let variance = 0;
+    for (const item of rollEquities) {
+        const diff = item.eq - weightedMeanEq;
+        variance += (item.weight / 36) * diff * diff;
+    }
+
+    return {
+        marketLosersCount: Math.max(0, Math.min(36, marketLosersCount)),
+        equityVolatilitySigma: Number(Math.sqrt(Math.max(0, variance)).toFixed(4)),
+        expectedOvershootLoss: Number(weightedOvershoot.toFixed(4)),
+    };
+}
+
+/**
+ * Calcule le nombre exact de séquences de dés (sur 36) qui font perdre le marché
+ * (Market Losers) au tour suivant.
+ */
+export function countExactMarketLosers(
+    bestEndState: BoardState,
+    player: Player,
+    cashPoint: number,
+    gammonPrice: number = 0.5,
+): number {
+    return analyzeExactMarketDistribution(bestEndState, player, cashPoint, gammonPrice).marketLosersCount;
 }
 
 /**
@@ -139,7 +180,7 @@ export function computeMarketWindowMetrics(params: MarketWindowParams): MarketWi
         boardStructure,
         blotsAndShots,
         pipCountDiff,
-        opponentTakePoint = 0.25,
+        opponentTakePoint,
         gammonPrice = 0.5,
         bgsage,
         shotExposure,
@@ -147,7 +188,19 @@ export function computeMarketWindowMetrics(params: MarketWindowParams): MarketWi
         player,
     } = params;
 
-    const cashPoint = Number(Math.max(0.55, Math.min(0.95, 1 - opponentTakePoint)).toFixed(3));
+    let cashPoint = Number(Math.max(0.55, Math.min(0.95, 1 - (opponentTakePoint ?? 0.25))).toFixed(3));
+    let janowskiDoublePoint: number | undefined;
+    if (opponentTakePoint === undefined && bestEndState && player) {
+        const evalRes = evaluateBoard({ ...bestEndState, turn: player }, 0);
+        const phase = detectJanowskiPhase(bestEndState.board, player);
+        const jan = computeJanowskiCubeEvaluation(evalRes.probabilities, phase, {
+            board: bestEndState.board,
+            player,
+        });
+        cashPoint = Number(Math.max(0.55, Math.min(0.95, jan.cashPoint)).toFixed(3));
+        janowskiDoublePoint = jan.doublePoint;
+    }
+
     const userShotsTotal =
         shotExposure?.user.totalRolls ?? Math.min(36, blotsAndShots.user.reduce((s, b) => s + b.totalShots, 0));
     const bestShotsTotal =
@@ -166,19 +219,32 @@ export function computeMarketWindowMetrics(params: MarketWindowParams): MarketWi
         volatility = 'high';
     }
 
-    const windowWidth = volatility === 'high' ? 0.13 : volatility === 'medium' ? 0.10 : 0.08;
-    const doublePoint = Number(Math.max(0.50, cashPoint - windowWidth).toFixed(3));
-
-    // Calcul exact si bestEndState et player sont disponibles
     let marketLosers: number;
+    let equityVolatilitySigma: number | undefined;
+    let expectedOvershootLoss: number | undefined;
+
     if (bestEndState && player) {
-        marketLosers = countExactMarketLosers(bestEndState, player, cashPoint, gammonPrice);
+        const dist = analyzeExactMarketDistribution(bestEndState, player, cashPoint, gammonPrice);
+        marketLosers = dist.marketLosersCount;
+        equityVolatilitySigma = dist.equityVolatilitySigma;
+        expectedOvershootLoss = dist.expectedOvershootLoss;
+        if (equityVolatilitySigma > 0.14) {
+            volatility = 'high';
+        } else if (equityVolatilitySigma < 0.06 && contactStatus === 'pureRace') {
+            volatility = 'low';
+        }
     } else {
         marketLosers =
             contactStatus === 'pureRace'
                 ? Math.max(2, Math.min(12, Math.round((12 - Math.min(12, Math.abs(pipCountDiff.diff))) * 0.8)))
                 : Math.min(36, Math.max(userShotsTotal, bestShotsTotal) + boardStructure.innerBoardPoints * 2);
     }
+
+    const windowWidth = volatility === 'high' ? 0.13 : volatility === 'medium' ? 0.10 : 0.08;
+    const doublePoint =
+        janowskiDoublePoint !== undefined
+            ? Number(Math.max(0.50, Math.min(cashPoint - 0.04, janowskiDoublePoint)).toFixed(3))
+            : Number(Math.max(0.50, cashPoint - windowWidth).toFixed(3));
 
     const optWin = bgsage?.optimalMetrics?.winProb;
     const optGammon = bgsage?.optimalMetrics?.winGammonProb ?? 0;
@@ -195,5 +261,7 @@ export function computeMarketWindowMetrics(params: MarketWindowParams): MarketWi
         volatility,
         estimatedMarketLosers: Math.max(0, Math.min(36, marketLosers)),
         inMarketWindow,
+        equityVolatilitySigma,
+        expectedOvershootLoss,
     };
 }

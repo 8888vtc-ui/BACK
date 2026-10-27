@@ -83,7 +83,7 @@ export default function MultiplayerBanner({
                     <span className="flex items-center gap-2 font-medium">
                         ⚠️ Adversaire temporairement déconnecté...
                     </span>
-                    <span className="font-mono font-bold text-amber-400">
+                    <span className="font-mono font-bold text-amber-400 tabular-nums">
                         Forfait dans {disconnectCountdown}s
                     </span>
                 </div>
@@ -116,12 +116,12 @@ export default function MultiplayerBanner({
                             <span>{localProfile.displayName} (Vous)</span>
                             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" title="Connecté" />
                         </div>
-                        <div className="text-[11px] font-mono text-amber-400">
+                        <div className="text-[11px] font-mono text-amber-400 tabular-nums">
                             {localProfile.rating} Elo
                         </div>
                         {clockState && (
                             <div
-                                className={`mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-mono font-bold ${
+                                className={`mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-mono font-bold tabular-nums ${
                                     clockState.activePlayer === matchInfo.localRole
                                         ? 'bg-amber-500/20 text-amber-300 border border-[#f3c65f]/60 animate-pulse'
                                         : 'border border-white/10 bg-white/5 text-slate-300'
@@ -153,7 +153,7 @@ export default function MultiplayerBanner({
                         </span>
 
                         <span
-                            className={`font-mono text-xs font-bold ${
+                            className={`font-mono text-xs font-bold tabular-nums ${
                                 isTimerCritical ? 'text-rose-400 animate-ping' : 'text-slate-300'
                             }`}
                         >
@@ -184,12 +184,12 @@ export default function MultiplayerBanner({
                             />
                             <span>{opponentProfile.displayName}</span>
                         </div>
-                        <div className="text-[11px] font-mono text-amber-400">
+                        <div className="text-[11px] font-mono text-amber-400 tabular-nums">
                             {opponentProfile.rating} Elo
                         </div>
                         {clockState && (
                             <div
-                                className={`mt-1 inline-flex items-center justify-end gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-mono font-bold ${
+                                className={`mt-1 inline-flex items-center justify-end gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-mono font-bold tabular-nums ${
                                     clockState.activePlayer === opponentRole
                                         ? 'bg-amber-500/20 text-amber-300 border border-[#f3c65f]/60 animate-pulse'
                                         : 'border border-white/10 bg-white/5 text-slate-300'

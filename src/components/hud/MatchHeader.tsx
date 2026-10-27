@@ -134,9 +134,21 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
         soundEngine.playDiceRoll();
         if (isMultiplayerActive) {
             const pf = game.provablyFair;
-            const d: [number, number] = pf
-                ? generateProvablyFairRoll(pf.serverSeed, pf.clientSeed, pf.nonce, pf.nonce === 0)
-                : [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
+            if (!pf) {
+                // En multijoueur, le protocole Commit-Play-Reveal est obligatoire.
+                // Aucun repli Math.random() : un état sans provablyFair est invalide.
+                toast.error(
+                    'Dés indisponibles : le protocole Provably Fair n’est pas initialisé.',
+                    'Lancer impossible',
+                );
+                return;
+            }
+            const d: [number, number] = generateProvablyFairRoll(
+                pf.serverSeed,
+                pf.clientSeed,
+                pf.nonce,
+                pf.nonce === 0,
+            );
             game.rollDice(d);
             multiplayer.broadcastDiceRolled(d);
         } else {
@@ -177,49 +189,49 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                     {t('board.skipToCoach')}
                 </a>
             </nav>
-                {/* Barre supérieure UNIQUE (sans bandeau parasite dessous : le videau vit sur le plateau) */}
-                <MatchHud
-                    matchLength={game.state.matchLength}
-                    scoreX={game.state.scoreX}
-                    scoreO={game.state.scoreO}
-                    turn={game.state.turn}
-                    crawford={game.state.crawford}
-                    dice={game.dice}
-                    usedDice={game.usedDice}
-                    cubeValue={game.state.cubeValue}
-                    cubeOwner={game.state.cubeOwner}
-                    theme={theme}
-                    onThemeToggle={onToggleTheme}
-                    onDoubleCube={handleDouble}
-                    onRollDice={handleRoll}
-                    onResetGame={game.resetMatch}
-                    onResign={game.resignGame}
-                    onOpenExportImport={onOpenExportImport}
-                    onTriggerCoach={onTriggerCoach}
-                    canDouble={canDoubleAllowed}
-                    prX={prX}
-                    prO={prO}
-                    isAiThinking={game.phase === 'OPPONENT_THINKING' || game.state.turn === 'O'}
-                    difficulty={game.difficulty}
-                    pipX={pips.X}
-                    pipO={pips.O}
-                    lastMoveNotation={lastMoveNotation}
-                    onBackToLobby={onBackToLobby}
-                    playerColor={playerColor}
-                    isGameActive={game.phase !== 'GAME_OVER'}
-                    boardState={game.state}
-                    serverSeedHash={game.serverSeedHash}
-                    onOpenDiceAudit={onOpenDiceAudit}
-                    lastMoveFeedback={lastMoveFeedback}
-                    notificationLevel={notificationLevel}
-                    onChangeNotificationLevel={onChangeNotificationLevel}
-                    coachQuotaBadge={effectiveBadge}
-                    isVip={effectiveIsVip}
-                    autoConfirmMode={game.autoConfirmMode}
-                    onSelectAutoConfirmMode={game.setAutoConfirmMode}
-                    gameSpeed={game.gameSpeed}
-                    onSelectGameSpeed={game.setGameSpeed}
-                />
+            {/* Barre supérieure UNIQUE (sans bandeau parasite dessous : le videau vit sur le plateau) */}
+            <MatchHud
+                matchLength={game.state.matchLength}
+                scoreX={game.state.scoreX}
+                scoreO={game.state.scoreO}
+                turn={game.state.turn}
+                crawford={game.state.crawford}
+                dice={game.dice}
+                usedDice={game.usedDice}
+                cubeValue={game.state.cubeValue}
+                cubeOwner={game.state.cubeOwner}
+                theme={theme}
+                onThemeToggle={onToggleTheme}
+                onDoubleCube={handleDouble}
+                onRollDice={handleRoll}
+                onResetGame={game.resetMatch}
+                onResign={game.resignGame}
+                onOpenExportImport={onOpenExportImport}
+                onTriggerCoach={onTriggerCoach}
+                canDouble={canDoubleAllowed}
+                prX={prX}
+                prO={prO}
+                isAiThinking={game.phase === 'OPPONENT_THINKING' || game.state.turn === 'O'}
+                difficulty={game.difficulty}
+                pipX={pips.X}
+                pipO={pips.O}
+                lastMoveNotation={lastMoveNotation}
+                onBackToLobby={onBackToLobby}
+                playerColor={playerColor}
+                isGameActive={game.phase !== 'GAME_OVER'}
+                boardState={game.state}
+                serverSeedHash={game.serverSeedHash}
+                onOpenDiceAudit={onOpenDiceAudit}
+                lastMoveFeedback={lastMoveFeedback}
+                notificationLevel={notificationLevel}
+                onChangeNotificationLevel={onChangeNotificationLevel}
+                coachQuotaBadge={effectiveBadge}
+                isVip={effectiveIsVip}
+                autoConfirmMode={game.autoConfirmMode}
+                onSelectAutoConfirmMode={game.setAutoConfirmMode}
+                gameSpeed={game.gameSpeed}
+                onSelectGameSpeed={game.setGameSpeed}
+            />
         </header>
     );
 };
