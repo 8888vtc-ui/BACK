@@ -119,7 +119,7 @@ export function computeCheckerStackLayout(
     const apexIndex = isTopRow ? Math.max(0, visibleCheckers - 1) : 0;
     const showBadge = safeCount > MAX_VISIBLE || (compactMobile && safeCount >= 3);
     const badgeCount = showBadge ? safeCount : undefined;
-    const badgeText = showBadge ? `×${safeCount}` : null;
+    const badgeText = showBadge ? `${safeCount}` : null;
 
     return {
         visibleCheckers,

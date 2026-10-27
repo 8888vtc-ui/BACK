@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -116,6 +117,38 @@ describe('CoachMobileDrawer Component', () => {
         expect(html).not.toContain('translate-y-full');
         expect(html).toContain('data-testid="coach-drawer-backdrop"');
         expect(html).toContain('data-testid="coach-live-ai-radar"');
+        expect(html).toContain('46dvh');
+        expect(html).toContain('data-snap-state="half"');
+        expect(html).toContain('data-testid="coach-drawer-snap-toggle"');
+    });
+
+    it('Étape 5 : normalise les 3 crans (fermé 0px / demi-écran 46dvh / plein écran 90dvh)', async () => {
+        const { render, fireEvent } = await import('@testing-library/react');
+        const { getByTestId } = render(
+            <CoachMobileDrawer
+                isOpen={true}
+                onOpen={vi.fn()}
+                onClose={vi.fn()}
+                coach={{ verdict: 'blunder', equityLoss: -0.12 } as any}
+                isAnalyzing={false}
+                onDismiss={vi.fn()}
+            />,
+        );
+
+        const drawer = getByTestId('coach-drawer-mobile');
+        expect(drawer.getAttribute('data-snap-state')).toBe('half');
+        expect(drawer.innerHTML).toContain('46dvh');
+
+        const toggleBtn = getByTestId('coach-drawer-snap-toggle');
+        // Clic sur agrandir (passe à 90dvh)
+        fireEvent.click(toggleBtn);
+        expect(drawer.getAttribute('data-snap-state')).toBe('full');
+        expect(drawer.innerHTML).toContain('90dvh');
+
+        // Clic sur réduire (revient à 46dvh)
+        fireEvent.click(toggleBtn);
+        expect(drawer.getAttribute('data-snap-state')).toBe('half');
+        expect(drawer.innerHTML).toContain('46dvh');
     });
 });
 

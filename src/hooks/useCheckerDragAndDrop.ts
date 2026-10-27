@@ -47,7 +47,12 @@ export const MAGNETIC_ATTRACTION_STRENGTH = 0.26;
 
 export function getBiomechanicalDragThresholdPx(pointerType?: string | null): number {
     const kind = toPointerKind(pointerType);
-    if (kind === 'touch') return TOUCH_DRAG_THRESHOLD_PX;
+    if (kind === 'touch') {
+        if (typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)')?.matches) {
+            return 24;
+        }
+        return TOUCH_DRAG_THRESHOLD_PX;
+    }
     if (kind === 'pen') return PEN_DRAG_THRESHOLD_PX;
     return MOUSE_DRAG_THRESHOLD_PX;
 }

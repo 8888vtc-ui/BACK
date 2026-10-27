@@ -255,11 +255,11 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                 />
             </svg>
 
-            {/* Badge numérique pour pile ≥ 2 pions (ex: ×6 — Audit 14 / 20) */}
+            {/* Badge numérique pour pile ≥ 2 pions (6 à 15 en Cap-at-5 — tabular-nums, contraste or/obsidienne) */}
             {countBadge !== undefined && countBadge >= BADGE_MIN_COUNT && (
                 <span
                     data-testid="checker-count-badge"
-                    className={`absolute flex items-center justify-center min-w-[22px] h-[20px] rounded-full px-1 text-[11px] font-black leading-none shadow-xl border ${isWhite
+                    className={`absolute flex items-center justify-center min-w-[22px] h-[20px] rounded-full px-1 text-[11px] font-black leading-none shadow-xl border tabular-nums select-none ${isWhite
                         ? 'bg-amber-950 text-amber-100 border-amber-400/80 shadow-black/70'
                         : 'bg-amber-400 text-slate-950 border-amber-200/90 shadow-black/80'
                         }`}
@@ -267,7 +267,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                         boxShadow: '0 2px 5px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3)',
                     }}
                 >
-                    {`×${countBadge}`}
+                    {countBadge}
                 </span>
             )}
         </div>

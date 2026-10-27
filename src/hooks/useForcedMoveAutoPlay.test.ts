@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe('useForcedMoveAutoPlay hook & Board Forced Move Pulsation (Audit 13 / 20)', () => {
-    it('exécute automatiquement le coup forcé unique après 300ms lorsque autoPlayEnabled est actif', () => {
+    it('exécute automatiquement le coup forcé unique après 250ms lorsque autoPlayEnabled est actif', () => {
         vi.useFakeTimers();
         const onPlayMove = vi.fn();
 
@@ -32,7 +32,7 @@ describe('useForcedMoveAutoPlay hook & Board Forced Move Pulsation (Audit 13 / 2
         expect(result.current.highlightDestination).toBe(21);
         expect(onPlayMove).not.toHaveBeenCalled();
 
-        vi.advanceTimersByTime(300);
+        vi.advanceTimersByTime(250);
         expect(onPlayMove).toHaveBeenCalledWith(24, 21, 0);
 
         vi.useRealTimers();

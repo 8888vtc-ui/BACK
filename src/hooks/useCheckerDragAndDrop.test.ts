@@ -29,6 +29,19 @@ describe('useCheckerDragAndDrop (Chantier 2 — Zéro Re-Render & Magnétisme)',
         expect(getBiomechanicalDragThresholdPx('mouse')).toBe(5);
         expect(getBiomechanicalDragThresholdPx('touch')).toBe(12);
 
+        // Sur écran tactile (pointer: coarse), le seuil biomécanique est élevé à 24px pour éviter tout fantôme sous le pouce
+        window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+            matches: query.includes('coarse'),
+            media: query,
+            onchange: null,
+            addListener: vi.fn(),
+            removeListener: vi.fn(),
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            dispatchEvent: vi.fn(),
+        }));
+        expect(getBiomechanicalDragThresholdPx('touch')).toBe(24);
+
         const onDropMove = vi.fn();
         const { result } = renderHook(() =>
             useCheckerDragAndDrop({

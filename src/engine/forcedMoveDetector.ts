@@ -12,7 +12,7 @@
  * Strictement 0 `any`, module pur < 300 lignes.
  */
 
-export const FORCED_MOVE_AUTO_PLAY_DELAY_MS = 300;
+export const FORCED_MOVE_AUTO_PLAY_DELAY_MS = 250;
 export const FORCED_MOVE_STORAGE_KEY = 'bg_auto_play_forced_moves';
 
 export interface ForcedMoveDescriptor {

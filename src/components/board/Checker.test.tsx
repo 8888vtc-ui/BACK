@@ -19,11 +19,11 @@ describe('Checker & High Stack Readability (Audit 14 / 20)', () => {
         expect(html).toContain('2');
     });
 
-    it('affiche le badge numérique (×7) pour une grande pile', () => {
+    it('affiche le badge numérique (7) pour une grande pile', () => {
         const html = renderToStaticMarkup(
             <Checker color="black" countBadge={7} />,
         );
-        expect(html).toContain('×7');
+        expect(html).toContain('7');
     });
 
     it('n\'affiche pas de badge quand countBadge est absent', () => {
@@ -55,17 +55,17 @@ describe('Checker & High Stack Readability (Audit 14 / 20)', () => {
         expect(stack6Top.visibleCheckers).toBe(5);
         expect(stack6Top.overlapPx).toBeGreaterThan(1);
         expect(stack6Top.badgeCount).toBe(6);
-        expect(stack6Top.badgeText).toBe('×6');
+        expect(stack6Top.badgeText).toBe('6');
         expect(stack6Top.apexIndex).toBe(4);
 
         const stack10Bottom = computeCheckerStackLayout(10, false);
         expect(stack10Bottom.isCompressed).toBe(true);
         expect(stack10Bottom.overlapPx).toBeGreaterThan(stack6Top.overlapPx);
-        expect(stack10Bottom.badgeText).toBe('×10');
+        expect(stack10Bottom.badgeText).toBe('10');
         expect(stack10Bottom.apexIndex).toBe(0);
     });
 
-    it('rend une pile haute (6 pions) sur le jan inférieur avec badge ×6 au sommet et zéro débordement', () => {
+    it('rend une pile haute (6 pions) sur le jan inférieur avec badge 6 au sommet et zéro débordement', () => {
         const { getByTestId } = render(
             <BoardPoint
                 pointNumber={6}
@@ -82,9 +82,9 @@ describe('Checker & High Stack Readability (Audit 14 / 20)', () => {
         expect(stack.className).toContain('max-h-full');
         expect(stack.className).toContain('overflow-hidden');
 
-        // Le badge ×6 est affiché exactement une fois sur l'apex (checker-p6-0 pour isTopRow=false)
+        // Le badge 6 est affiché exactement une fois sur l'apex (checker-p6-0 pour isTopRow=false)
         const apexChecker = getByTestId('checker-p6-0');
-        expect(apexChecker.textContent).toBe('×6');
+        expect(apexChecker.textContent).toBe('6');
         expect((apexChecker as HTMLElement).style.zIndex).toBe('5');
     });
 });

@@ -114,11 +114,11 @@ Pour sanctuariser **85 % de la hauteur d'écran pour le tablier de jeu pur**, l'
 - [x] **Étape 1 : Verrouillage Système & Viewport 100dvh Strict**
   - Méta-tags `viewportFit: cover`, `userScalable: false`.
   - CSS global `overscroll-behavior: none`, `touch-action: none`.
-- [ ] **Étape 2 : Budget Spatial « 85% Pure Play » & HUD Minimaliste (15%)**
+- [x] **Étape 2 : Budget Spatial « 85% Pure Play » & HUD Minimaliste (15%)**
   - Refonte compacte de `MatchHeader` et `MobileThumbDock`.
-- [ ] **Étape 3 : Géométrie Portrait & Empilement Condensé « Cap-at-5 »**
-  - Badge numérique `6..15` sur le 5ᵉ pion dans `BoardPoint.tsx` et `boardGeometry.ts`.
-- [ ] **Étape 4 : Moteur Tactile Purement « Tap-to-Move »**
-  - Désactivation du D&D sur mobile / écrans tactiles, hitbox de flèche unifiée.
-- [ ] **Étape 5 : Bottom Sheet d'Analyse IA 3-Positions (Half/Full)**
-  - Normalisation de `CoachMobileDrawer` à `46dvh` avec navigation d'erreurs en un tap.
+- [x] **Étape 3 : Géométrie Portrait & Empilement Condensé « Cap-at-5 »**
+  - Badge numérique `6..15` (`tabular-nums`, or/obsidienne) sur le 5ᵉ pion dans `BoardPoint.tsx` et `boardGeometry.ts`.
+- [x] **Étape 4 : Moteur Tactile Purement « Tap-to-Move »**
+  - Seuil biomécanique anti-fantôme sous le pouce (`pointer: coarse`), auto-move sur coup forcé fluide à 250 ms.
+- [x] **Étape 5 : Bottom Sheet d'Analyse IA 3-Positions (Half/Full)**
+  - Normalisation de `CoachMobileDrawer` à 3 crans (`0px` / `46dvh` / `90dvh`) avec navigation temporelle et vue continue du tablier.
