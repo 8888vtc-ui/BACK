@@ -1,21 +1,26 @@
 'use client';
 
+/**
+ * @file src/components/export/ExportImportModal.tsx
+ * @description Modale d'Export/Import/Partage modernisée (< 230 lignes, 0 `any`).
+ * Intègre le partage natif OS (`navigator.share` iOS/Android) et le collage intelligent 1-Tap (`navigator.clipboard.readText`).
+ */
+
 import React, { useState, useMemo } from 'react';
 import type { BoardState } from '../../engine/backgammonEngine';
 import type { RawGameTurn } from '../../features/rating/types';
 import {
     serializeToXGID,
     parseFromXGID,
-    isValidXGID,
     serializeToSGF,
     parseSGF,
     generateShareUrl,
     copyToClipboard,
-    downloadFile,
 } from '../../features/export';
 import { toast } from '../toast/ToastContext';
 import { impactLight, impactMedium } from '../../lib/capacitor/haptics';
-import { useBoardTheme, getModalThemeClasses, type ThemeName } from '../../hooks/useBoardTheme';
+import type { ThemeName } from '../../hooks/useBoardTheme';
+import { ExportTabView, ImportTabView, ShareTabView } from './ExportImportSubViews';
 
 export interface ExportImportModalProps {
     isOpen: boolean;
@@ -34,17 +39,12 @@ export default function ExportImportModal({
     currentState,
     turnsHistory,
     onImportState,
-    theme,
 }: ExportImportModalProps) {
-    const { theme: activeTheme } = useBoardTheme();
-    const currentTheme = theme || activeTheme;
-    const modalClasses = getModalThemeClasses(currentTheme);
     const [activeTab, setActiveTab] = useState<ModalTab>('export');
     const [exportFormat, setExportFormat] = useState<'xgid' | 'sgf'>('xgid');
     const [importInput, setImportInput] = useState('');
     const [importError, setImportError] = useState<string | null>(null);
 
-    // XGID calculé
     const xgidString = useMemo(() => {
         try {
             return serializeToXGID(currentState);
@@ -53,7 +53,6 @@ export default function ExportImportModal({
         }
     }, [currentState]);
 
-    // SGF calculé
     const sgfString = useMemo(() => {
         try {
             return serializeToSGF({
@@ -69,7 +68,6 @@ export default function ExportImportModal({
         }
     }, [currentState, turnsHistory]);
 
-    // URL de partage
     const shareUrl = useMemo(() => {
         try {
             return generateShareUrl(currentState);
@@ -80,41 +78,29 @@ export default function ExportImportModal({
 
     if (!isOpen) return null;
 
-    // Gestion de l'import
-    function handleApplyImport() {
+    const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+
+    function applyRawImportString(rawText: string) {
         setImportError(null);
-        const trimmed = importInput.trim();
+        const trimmed = rawText.trim();
         if (!trimmed) {
             setImportError('Veuillez coller un XGID ou un fichier SGF.');
             return;
         }
 
         try {
-            if (trimmed.startsWith('XGID=') || trimmed.includes(':')) {
-                const state = parseFromXGID(trimmed);
-                impactMedium();
-                onImportState(state);
-                toast.success('Position XGID chargée avec succès sur le plateau !', 'Import XGID');
-                onClose();
-                return;
-            }
-
             if (trimmed.startsWith('(') || trimmed.includes('GM[6]')) {
                 const parsed = parseSGF(trimmed);
-                impactMedium();
-                toast.success(
-                    `Fichier SGF chargé (${parsed.moves.length} coups) !`,
-                    'Import SGF',
-                );
+                void impactMedium();
+                toast.success(`Fichier SGF chargé (${parsed.moves.length} coups) !`, 'Import SGF');
                 onClose();
                 return;
             }
 
-            // Tentative XGID par défaut
             const state = parseFromXGID(trimmed);
-            impactMedium();
+            void impactMedium();
             onImportState(state);
-            toast.success('Position importée avec succès !', 'Import XGID');
+            toast.success('Position XGID chargée avec succès sur le plateau !', 'Import XGID');
             onClose();
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : 'Format non reconnu.';
@@ -122,8 +108,37 @@ export default function ExportImportModal({
         }
     }
 
+    async function handleSmartPasteFromClipboard() {
+        void impactLight();
+        if (typeof navigator === 'undefined' || !navigator.clipboard?.readText) {
+            setImportError('Lecture directe du presse-papiers non autorisée par le navigateur.');
+            return;
+        }
+        try {
+            const text = await navigator.clipboard.readText();
+            setImportInput(text);
+            applyRawImportString(text);
+        } catch {
+            setImportError('Autorisez l’accès au presse-papiers ou collez manuellement.');
+        }
+    }
+
+    async function handleNativeShare() {
+        void impactMedium();
+        if (!canNativeShare) return;
+        try {
+            await navigator.share({
+                title: 'Backgammon Pro — Position XGID',
+                text: `Position Backgammon (${xgidString})`,
+                url: shareUrl || undefined,
+            });
+        } catch {
+            // Annulation utilisateur ignorée
+        }
+    }
+
     async function handleCopy(text: string, label: string) {
-        impactLight();
+        void impactLight();
         const ok = await copyToClipboard(text);
         if (ok) {
             toast.success(`${label} copié dans le presse-papiers !`, 'Presse-papiers');
@@ -135,13 +150,12 @@ export default function ExportImportModal({
     function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = (event) => {
-            const content = event.target?.result as string;
-            if (content) {
+            const content = event.target?.result;
+            if (typeof content === 'string' && content) {
                 setImportInput(content);
-                setImportError(null);
+                applyRawImportString(content);
             }
         };
         reader.readAsText(file);
@@ -156,22 +170,20 @@ export default function ExportImportModal({
             aria-label="Export, Import & Partage"
         >
             <div className="relative flex w-full max-w-2xl flex-col rounded-3xl border border-[#d4af37]/55 bg-gradient-to-b from-[#17110b]/98 via-[#0d121d]/98 to-[#070a10]/98 shadow-[0_28px_80px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,245,205,0.25)] overflow-hidden backdrop-blur-2xl transition-all">
-                {/* Header */}
                 <div className="flex items-center justify-between border-b border-[#d4af37]/30 bg-gradient-to-r from-[#24160b]/95 via-[#140d07]/95 to-[#1f1309]/95 px-5 py-4">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#f3c65f]/60 bg-gradient-to-b from-[#33230f] to-[#140d05] text-xl shadow-inner">
                             <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">💾</span>
                         </div>
                         <div>
-                            <h2 className="font-serif text-lg font-black tracking-wide text-[#fdf8eb] flex items-center gap-2">
-                                <span>Export, Import &amp; Partage</span>
+                            <h2 className="font-serif text-lg font-black tracking-wide text-[#fdf8eb]">
+                                Export, Import &amp; Partage
                             </h2>
                             <p className="text-xs text-amber-200/75">
-                                Formats officiels XGID &amp; SGF, et liens de partage instantanés
+                                Partage natif OS 1-Tap, Collage intelligent XGID &amp; SGF
                             </p>
                         </div>
                     </div>
-
                     <button
                         type="button"
                         onClick={onClose}
@@ -183,224 +195,62 @@ export default function ExportImportModal({
                     </button>
                 </div>
 
-                {/* Tabs */}
                 <div className="flex items-center gap-1.5 border-b border-[#d4af37]/20 bg-[#090d16]/90 px-5 py-2.5">
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab('export')}
-                        className={`flex items-center gap-2 rounded-xl border px-4 py-1.5 text-xs font-bold transition ${
-                            activeTab === 'export'
-                                ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
-                                : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/45 hover:text-white'
-                        }`}
-                        data-testid="tab-export"
-                    >
-                        <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">📤</span>
-                        <span>Exporter</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab('import')}
-                        className={`flex items-center gap-2 rounded-xl border px-4 py-1.5 text-xs font-bold transition ${
-                            activeTab === 'import'
-                                ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
-                                : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/45 hover:text-white'
-                        }`}
-                        data-testid="tab-import"
-                    >
-                        <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">📥</span>
-                        <span>Importer</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab('share')}
-                        className={`flex items-center gap-2 rounded-xl border px-4 py-1.5 text-xs font-bold transition ${
-                            activeTab === 'share'
-                                ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
-                                : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/45 hover:text-white'
-                        }`}
-                        data-testid="tab-share"
-                    >
-                        <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🔗</span>
-                        <span>Lien de Partage</span>
-                    </button>
+                    {([
+                        { id: 'export' as const, icon: '📤', label: 'Exporter', testId: 'tab-export' },
+                        { id: 'import' as const, icon: '📥', label: 'Importer', testId: 'tab-import' },
+                        { id: 'share' as const, icon: '🔗', label: 'Lien de Partage', testId: 'tab-share' },
+                    ]).map((tab) => (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setActiveTab(tab.id)}
+                            data-testid={tab.testId}
+                            className={`flex items-center gap-2 rounded-xl border px-4 py-1.5 text-xs font-bold transition ${
+                                activeTab === tab.id
+                                    ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
+                                    : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/45 hover:text-white'
+                            }`}
+                        >
+                            <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">{tab.icon}</span>
+                            <span>{tab.label}</span>
+                        </button>
+                    ))}
                 </div>
 
-                {/* Contenu de l'onglet actif */}
                 <div className="p-5 space-y-4">
-                    {/* ONGLET 1 : EXPORT */}
                     {activeTab === 'export' && (
-                        <div className="space-y-4 animate-in fade-in">
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs font-semibold text-slate-400">
-                                    Choisissez le format d'exportation :
-                                </span>
-                                <div className="flex items-center gap-1 bg-black/50 p-1 rounded-xl border border-[#d4af37]/30 text-xs">
-                                    <button
-                                        type="button"
-                                        onClick={() => setExportFormat('xgid')}
-                                        className={`px-3 py-1 rounded-lg font-bold transition ${
-                                            exportFormat === 'xgid'
-                                                ? 'border border-[#f3c65f]/70 bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
-                                                : 'text-slate-400 hover:text-white'
-                                        }`}
-                                    >
-                                        XGID (Position)
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setExportFormat('sgf')}
-                                        className={`px-3 py-1 rounded-lg font-bold transition ${
-                                            exportFormat === 'sgf'
-                                                ? 'border border-[#f3c65f]/70 bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
-                                                : 'text-slate-400 hover:text-white'
-                                        }`}
-                                    >
-                                        SGF (Partie complète)
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Zone texte du format sélectionné */}
-                            <div className="relative">
-                                <textarea
-                                    readOnly
-                                    value={exportFormat === 'xgid' ? xgidString : sgfString}
-                                    rows={exportFormat === 'xgid' ? 3 : 6}
-                                    className="w-full rounded-2xl border border-[#d4af37]/35 bg-[#060911] p-3 font-mono text-xs text-[#f3c65f] focus:outline-none select-all shadow-inner"
-                                    data-testid="export-output-textarea"
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between pt-1">
-                                <div className="text-[11px] text-slate-400">
-                                    {exportFormat === 'xgid'
-                                        ? 'Standard universel eXtreme Gammon / Open Sage'
-                                        : `Format SGF GM[6] (${turnsHistory.length} coups sérialisés)`}
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            handleCopy(
-                                                exportFormat === 'xgid' ? xgidString : sgfString,
-                                                exportFormat.toUpperCase(),
-                                            )
-                                        }
-                                        className="rounded-xl border border-[#d4af37]/40 bg-[#151c2c] hover:border-[#f3c65f] px-3.5 py-2 text-xs font-bold text-[#fdf8eb] transition flex items-center gap-1.5 shadow"
-                                        data-testid="copy-export-btn"
-                                    >
-                                        <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">📋</span>
-                                        <span>Copier</span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            if (exportFormat === 'xgid') {
-                                                downloadFile(xgidString, 'position.xgid', 'text/plain');
-                                            } else {
-                                                downloadFile(sgfString, 'partie.sgf', 'application/x-go-sgf');
-                                            }
-                                            toast.success('Fichier téléchargé avec succès !', 'Export');
-                                        }}
-                                        className="rounded-xl border border-[#fef08a]/80 bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] hover:brightness-105 px-3.5 py-2 text-xs font-black uppercase tracking-wider text-[#1c1004] transition flex items-center gap-1.5 shadow"
-                                        data-testid="download-export-btn"
-                                    >
-                                        <span>💾</span>
-                                        <span>Télécharger .{exportFormat}</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <ExportTabView
+                            exportFormat={exportFormat}
+                            onChangeFormat={setExportFormat}
+                            xgidString={xgidString}
+                            sgfString={sgfString}
+                            turnsCount={turnsHistory.length}
+                            canNativeShare={canNativeShare}
+                            onCopy={handleCopy}
+                            onNativeShare={handleNativeShare}
+                        />
                     )}
-
-                    {/* ONGLET 2 : IMPORT */}
                     {activeTab === 'import' && (
-                        <div className="space-y-4 animate-in fade-in">
-                            <div>
-                                <label className="text-xs font-semibold text-slate-300 block mb-1">
-                                    Collez une chaîne XGID ou un contenu SGF :
-                                </label>
-                                <textarea
-                                    value={importInput}
-                                    onChange={(e) => {
-                                        setImportInput(e.target.value);
-                                        setImportError(null);
-                                    }}
-                                    placeholder="Ex: XGID=-b----E-C---eE---c-e----B-:0:0:1:00:0:0:0:0:7 ou fichier (;FF[4]GM[6]...)"
-                                    rows={5}
-                                    className="w-full rounded-2xl border border-slate-700 bg-slate-950 p-3 font-mono text-xs text-white focus:border-indigo-500 focus:outline-none"
-                                    data-testid="import-input-textarea"
-                                />
-                            </div>
-
-                            {/* Upload fichier */}
-                            <div className="flex items-center justify-between border-t border-slate-800 pt-3">
-                                <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-indigo-400 hover:text-indigo-300">
-                                    <span>📁</span>
-                                    <span>Charger depuis un fichier (.xgid, .sgf, .txt)</span>
-                                    <input
-                                        type="file"
-                                        accept=".xgid,.sgf,.txt"
-                                        onChange={handleFileUpload}
-                                        className="hidden"
-                                    />
-                                </label>
-
-                                <button
-                                    type="button"
-                                    onClick={handleApplyImport}
-                                    className="rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 px-4 py-2 text-xs font-bold text-white transition shadow-md flex items-center gap-1.5"
-                                    data-testid="apply-import-btn"
-                                >
-                                    <span>⚡</span>
-                                    <span>Charger sur le plateau</span>
-                                </button>
-                            </div>
-
-                            {importError && (
-                                <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-3 text-xs text-rose-300 font-medium">
-                                    {importError}
-                                </div>
-                            )}
-                        </div>
+                        <ImportTabView
+                            importInput={importInput}
+                            importError={importError}
+                            onChangeInput={(val) => {
+                                setImportInput(val);
+                                setImportError(null);
+                            }}
+                            onSmartPasteFromClipboard={handleSmartPasteFromClipboard}
+                            onFileUpload={handleFileUpload}
+                            onApplyImport={() => applyRawImportString(importInput)}
+                        />
                     )}
-
-                    {/* ONGLET 3 : LIEN DE PARTAGE */}
                     {activeTab === 'share' && (
-                        <div className="space-y-4 animate-in fade-in">
-                            <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4 space-y-3">
-                                <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
-                                    <span>🔗</span>
-                                    <span>Lien de Partage Dynamique</span>
-                                </div>
-
-                                <p className="text-xs text-slate-300 leading-relaxed">
-                                    Toute personne qui ouvrira ce lien verra instantanément cette position exacte prête à être jouée ou analysée par le coach.
-                                </p>
-
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        readOnly
-                                        value={shareUrl}
-                                        className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-mono text-indigo-300 focus:outline-none select-all"
-                                        data-testid="share-url-input"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => handleCopy(shareUrl, 'Lien de partage')}
-                                        className="rounded-xl bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-xs font-bold text-white transition shadow shrink-0"
-                                        data-testid="copy-share-url-btn"
-                                    >
-                                        Copier
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <ShareTabView
+                            shareUrl={shareUrl}
+                            canNativeShare={canNativeShare}
+                            onCopy={handleCopy}
+                            onNativeShare={handleNativeShare}
+                        />
                     )}
                 </div>
             </div>

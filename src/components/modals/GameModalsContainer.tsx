@@ -19,13 +19,14 @@ import type { ThemeName } from '../board/boardThemes';
 import type { CompleteGameAnalysis, RawGameTurn } from '../../features/rating';
 import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
 import type { useGameModals } from '../../hooks/useGameModals';
+import type { useMultiplayerGame } from '../../hooks/useMultiplayerGame';
 import type { OpeningEntry } from '../../features/openings';
 import PostMatchTrainingReport from '../summary/PostMatchTrainingReport';
 import GameReviewModal from '../rating/GameReviewModal';
 import MultiplayerLobbyModal from '../multiplayer/MultiplayerLobbyModal';
 import MultiplayerResultModal from '../multiplayer/MultiplayerResultModal';
 import { OpeningBookModal } from '../openings/OpeningBookModal';
-import ExportImportModal from '../export/ExportImportModal';
+import MatchImportExportModal from './MatchImportExportModal';
 import KnowledgeBaseModal from '../knowledge/KnowledgeBaseModal';
 import DiceAuditModal from '../dice/DiceAuditModal';
 import SubscriptionModal from '../subscription/SubscriptionModal';
@@ -35,7 +36,7 @@ export interface GameModalsContainerProps {
     theme: ThemeName;
     modals: ReturnType<typeof useGameModals>;
     game: UseBackgammonGameReturn;
-    multiplayer: any;
+    multiplayer: ReturnType<typeof useMultiplayerGame>;
     isMultiplayerActive: boolean;
     latestGameAnalysis: CompleteGameAnalysis | null;
     turnsHistory: RawGameTurn[];
@@ -43,7 +44,19 @@ export interface GameModalsContainerProps {
     onApplyOpeningMove?: () => void;
     onResetGameHistory: () => void;
     onBackToLobby?: () => void;
+    prO?: number | null;
+    locale?: string;
 }
+
+const BOT_DIFFICULTY_PR_MAP: Record<string, { pr: number; fr: string; en: string }> = {
+    beginner: { pr: 14.5, fr: 'Débutant', en: 'Beginner' },
+    easy: { pr: 12.0, fr: 'Amateur', en: 'Casual' },
+    intermediate: { pr: 8.2, fr: 'Intermédiaire', en: 'Intermediate' },
+    medium: { pr: 8.2, fr: 'Intermédiaire', en: 'Intermediate' },
+    hard: { pr: 4.5, fr: 'Expert', en: 'Expert' },
+    expert: { pr: 3.6, fr: 'Maître', en: 'Master' },
+    grandmaster: { pr: 1.8, fr: 'Grand-Maître', en: 'Grandmaster' },
+};
 
 const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
     theme,
@@ -57,7 +70,13 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
     onApplyOpeningMove,
     onResetGameHistory,
     onBackToLobby,
+    prO = null,
+    locale = 'fr',
 }) => {
+    const isEn = Boolean(locale && locale !== 'fr');
+    const botDiffKey = (latestGameAnalysis?.opponentDifficulty ?? game.difficulty ?? 'intermediate').toLowerCase();
+    const botMeta = BOT_DIFFICULTY_PR_MAP[botDiffKey] ?? BOT_DIFFICULTY_PR_MAP.intermediate;
+
     return (
         <>
             {/* 1. Rapport de Formation Post-Match (si manche terminée en mode Solo et que le modal Bilan détaillé n'est pas ouvert) */}
@@ -72,16 +91,19 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                     matchLength={game.state.matchLength}
                     isMatchOver={game.isMatchOver}
                     gameId={latestGameAnalysis?.gameId ?? `game_${game.state.scoreX}_${game.state.scoreO}`}
+                    botPr={prO ?? botMeta.pr}
+                    botCategory={isEn ? botMeta.en : botMeta.fr}
                     onNextGame={() => {
                         onResetGameHistory();
                         if (game.isMatchOver) game.resetMatch();
                         else game.startNewGame();
                     }}
                     onOpenReview={modals.openGameReview}
-                    onBackToLobby={onBackToLobby ?? modals.openGameReview}
+                    onBackToLobby={onBackToLobby ?? onResetGameHistory}
                     onTrainBlunders={modals.openGameCourse}
                     onOpenDiceAudit={modals.openDiceAudit}
-                    locale="fr"
+                    onOpenExportImport={modals.openExportImport}
+                    locale={locale}
                 />
             )}
 
@@ -92,6 +114,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                 onClose={modals.closeGameReview}
                 theme={theme}
                 initialTab={modals.reviewInitialTab}
+                locale={locale === 'en' ? 'en' : 'fr'}
             />
 
             {/* 3. Modals Multijoueur */}
@@ -109,7 +132,12 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                     multiplayer.cancelMatchmaking();
                     modals.closeMatchmaking();
                 }}
-                onClose={modals.closeMatchmaking}
+                onClose={() => {
+                    if (multiplayer.status === 'searching') {
+                        multiplayer.cancelMatchmaking();
+                    }
+                    modals.closeMatchmaking();
+                }}
                 theme={theme}
             />
 
@@ -121,6 +149,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                     opponentProfile={multiplayer.opponentProfile}
                     eloResult={multiplayer.eloResult}
                     onRematch={() => multiplayer.startMatchmaking(multiplayer.matchInfo?.matchLength || 7)}
+                    onOpenReview={modals.openGameReview}
                     onClose={() => {
                         multiplayer.leaveMatch();
                         game.resetMatch();
@@ -140,11 +169,18 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
             />
 
             {/* 5. Modal Export / Import & Lien de Partage */}
-            <ExportImportModal
+            <MatchImportExportModal
                 isOpen={modals.isExportImportModalOpen}
                 onClose={modals.closeExportImport}
                 currentState={game.state}
                 turnsHistory={turnsHistory}
+                playerX="Joueur X"
+                playerO={latestGameAnalysis?.opponentDifficulty ? `Bot (${latestGameAnalysis.opponentDifficulty})` : 'Joueur O'}
+                matchLength={game.state.matchLength}
+                scoreX={game.state.scoreX}
+                scoreO={game.state.scoreO}
+                winner={game.gameResult?.winner}
+                pointsWon={game.gameResult?.pointsWon}
                 onImportState={(importedState) => {
                     game.applyRemoteState({
                         board: importedState.board,
@@ -155,9 +191,23 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                         phase: importedState.dice ? 'PLAYING_MOVES' : 'WAITING_FOR_ROLL',
                         usedDice: [false, false],
                     });
-                    toast.success('Position ou match importé avec succès !', 'Import réussi');
+                    toast.success('Position importée avec succès !', 'Import réussi');
                 }}
-                theme={theme}
+                onImportMatch={(importedMatch) => {
+                    if (importedMatch.finalBoard) {
+                        game.applyRemoteState({
+                            board: importedMatch.finalBoard.slice(),
+                            dice: null,
+                            turn: 'X',
+                            cubeValue: 1,
+                            cubeOwner: null,
+                            phase: 'WAITING_FOR_ROLL',
+                            usedDice: [false, false],
+                        });
+                    }
+                    toast.success(`Match ${importedMatch.playerX} vs ${importedMatch.playerO} importé !`, 'Import réussi');
+                }}
+                locale={locale}
             />
 
             {/* 6. Modal Base de Connaissances & Encyclopédie */}
@@ -180,7 +230,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
             <SubscriptionModal
                 isOpen={modals.isSubscriptionModalOpen}
                 onClose={modals.closeSubscriptionModal}
-                locale="fr"
+                locale={locale}
             />
         </>
     );

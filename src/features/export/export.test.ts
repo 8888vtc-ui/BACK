@@ -6,6 +6,7 @@ import {
     parseFromXGID,
     isValidXGID,
     generateShareUrl,
+    formatViralShareWatermark,
 } from './index';
 import { createInitialState } from '../../engine/backgammonEngine';
 import type { MatchExportData } from './types';
@@ -151,6 +152,16 @@ describe('Export / Import Feature', () => {
             const xgidParam = urlObj.searchParams.get('xgid');
             expect(xgidParam).toBeDefined();
             expect(isValidXGID(xgidParam!)).toBe(true);
+        });
+
+        it('injecte le filigrane viral cliquable (utm_source=viral_watermark) sur les partages gratuits et le retire pour les VIP', () => {
+            const url = generateShareUrl(initialState, 'https://backgammontour.com');
+            const freeWatermark = formatViralShareWatermark({ shareUrl: url, isVip: false, locale: 'fr' });
+            expect(freeWatermark).toContain('utm_source=viral_watermark');
+            expect(freeWatermark).toContain('Monte-Carlo 3-Ply');
+
+            const vipClean = formatViralShareWatermark({ shareUrl: url, isVip: true, locale: 'fr' });
+            expect(vipClean).toBe(url);
         });
     });
 });

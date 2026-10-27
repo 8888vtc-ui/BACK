@@ -13,6 +13,26 @@ export function generateShareUrl(state: BoardState, customOrigin?: string): stri
     return `${origin}/?xgid=${encodeURIComponent(xgid)}`;
 }
 
+/**
+ * Génère le filigrane viral cliquable (Watermark Section 5 du Blueprint SaaS) pour les partages gratuits.
+ * Les abonnés VIP bénéficient d'un export sans filigrane publicitaire.
+ */
+export function formatViralShareWatermark(params: {
+    readonly shareUrl: string;
+    readonly isVip?: boolean;
+    readonly locale?: 'fr' | 'en';
+}): string {
+    if (params.isVip) {
+        return params.shareUrl;
+    }
+    const separator = params.shareUrl.includes('?') ? '&' : '?';
+    const attributedUrl = `${params.shareUrl}${separator}utm_source=viral_watermark`;
+    if (params.locale === 'en') {
+        return `Analyzed with Monte-Carlo 3-Ply (0.23 PR) on Backgammon Tour — Analyze your position for free: ${attributedUrl}`;
+    }
+    return `Analysé avec Monte-Carlo 3-Ply (PR 0.23) sur Backgammon Tour — Analysez votre position gratuitement : ${attributedUrl}`;
+}
+
 export async function copyToClipboard(text: string): Promise<boolean> {
     try {
         if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
