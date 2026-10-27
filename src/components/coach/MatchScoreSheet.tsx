@@ -106,11 +106,6 @@ const MatchScoreSheetComponent: React.FC<MatchScoreSheetProps> = ({
         }
     }, [turnsHistory.length, replay.isLive]);
 
-    const latestEvalTurn = useMemo(() => {
-        const evals = matchStats?.evaluatedMoves;
-        return Array.isArray(evals) && evals.length > 0 ? evals[evals.length - 1] : null;
-    }, [matchStats?.evaluatedMoves]);
-
     return (
         <div
             data-testid="match-score-sheet"
@@ -227,23 +222,6 @@ const MatchScoreSheetComponent: React.FC<MatchScoreSheetProps> = ({
                 </div>
             </div>
 
-            {latestEvalTurn && (
-                <div
-                    data-testid="scoresheet-quality-badge"
-                    className="flex items-center justify-between px-2.5 py-1 rounded-lg bg-slate-950/80 border border-slate-800 text-xs"
-                >
-                    <span className="text-[11px] font-semibold text-slate-300">Qualité dernier coup Blanc :</span>
-                    {(() => {
-                        const style = getBadgeStyle(latestEvalTurn.verdict, latestEvalTurn.equityLoss);
-                        return (
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border font-mono ${style.classes}`}>
-                                {style.label} ({latestEvalTurn.equityLoss >= 0 ? '±0.000' : latestEvalTurn.equityLoss.toFixed(3)})
-                            </span>
-                        );
-                    })()}
-                </div>
-            )}
-
             {/* 4. Transcription interactive des coups en notation officielle */}
             <div className="flex-1 overflow-y-auto max-h-[220px] space-y-1.5 pr-1 text-xs">
                 {annotatedTurns.length === 0 ? (
@@ -291,7 +269,7 @@ const MatchScoreSheetComponent: React.FC<MatchScoreSheetProps> = ({
                                     {evalTurn && (
                                         <span
                                             title={`Perte d'équité : ${evalTurn.equityLoss.toFixed(3)}`}
-                                            className={`text-[9px] font-bold px-1.5 py-0.2 rounded font-mono border ${getBadgeStyle(evalTurn.verdict, evalTurn.equityLoss).classes}`}
+                                            className={`text-[11px] font-bold px-1.5 py-0.2 rounded font-mono border ${getBadgeStyle(evalTurn.verdict, evalTurn.equityLoss).classes}`}
                                         >
                                             {getBadgeStyle(evalTurn.verdict, evalTurn.equityLoss).label.split(' ')[0]}
                                         </span>

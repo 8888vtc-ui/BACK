@@ -1,8 +1,10 @@
+// @vitest-environment jsdom
 import React from 'react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import BlunderDrillView from './BlunderDrillView';
-import { clearBlunderBank } from '../../features/drills/blunderBank';
+import { clearBlunderBank, getBlunderBankStats } from '../../features/drills/blunderBank';
 
 // Mock Capacitor Haptics
 vi.mock('../../lib/capacitor/haptics', () => ({
@@ -39,11 +41,16 @@ describe('BlunderDrillView Component', () => {
             }),
         };
 
-        vi.stubGlobal('window', {
-            localStorage: mockLocalStorage,
+        Object.defineProperty(window, 'localStorage', {
+            value: mockLocalStorage,
+            writable: true,
         });
 
         clearBlunderBank();
+    });
+
+    afterEach(() => {
+        cleanup();
     });
 
     it('affiche l’en-tête, les compteurs de maîtrise et le premier blunder à travailler (trié par perte d’équité)', () => {
@@ -54,10 +61,14 @@ describe('BlunderDrillView Component', () => {
         expect(html).toContain('data-testid="mastered-count"');
         expect(html).toContain('0 / 5');
 
-        // Vérifie la mention du coup passé du blunder prioritaire (blot_safety, perte 0.215)
+        // Vérifie la mise en valeur de la position à rejouer et du coup passé (blot_safety, perte 0.215)
+        expect(html).toContain('data-testid="drill-position-card"');
+        expect(html).toContain('Jet à rejouer');
         expect(html).toContain('Votre coup passé :');
         expect(html).toContain('13/9 13/11');
         expect(html).toContain('-0.215 ΔEq');
+        expect(html).not.toContain('text-[8px]');
+        expect(html).not.toContain('text-[9px]');
     });
 
     it('affiche les boutons de contrôle : Indice, Réinitialiser et le sélecteur de concept', () => {
@@ -85,5 +96,26 @@ describe('BlunderDrillView Component', () => {
 
         expect(html).toContain('svg');
         expect(html).toContain('data-testid="board-die-0"');
+    });
+
+    it('ouvre et masque le panneau d’indice au clic sur le bouton Indice', () => {
+        render(<BlunderDrillView />);
+
+        expect(screen.queryByTestId('drill-hint-box')).toBeNull();
+        fireEvent.click(screen.getByTestId('drill-hint-toggle'));
+        expect(screen.getByTestId('drill-hint-box')).toBeDefined();
+
+        fireEvent.click(screen.getByTestId('drill-hint-toggle'));
+        expect(screen.queryByTestId('drill-hint-box')).toBeNull();
+    });
+
+    it('permet de filtrer les erreurs par concept via le sélecteur et de réinitialiser la maîtrise', () => {
+        render(<BlunderDrillView />);
+
+        const select = screen.getByTestId('concept-filter') as HTMLSelectElement;
+        fireEvent.change(select, { target: { value: 'golden_point' } });
+        expect(select.value).toBe('golden_point');
+        expect(screen.getByTestId('drill-position-card').textContent).toContain('24/21 13/12');
+        expect(getBlunderBankStats().totalBlunders).toBe(5);
     });
 });

@@ -179,6 +179,75 @@ describe('CoachPanel Component', () => {
         expect(html).toContain('data-testid="coach-voice-replay-btn"');
         expect(html).toContain('Réécouter');
     });
+
+    it('place CoachMoveComparisonCard avant CoachDiagnosticBox et CoachPrDashboard, sans dupliquer whyFailed/whyOptimal ni le bouton Fiche Théorique', () => {
+        const html = renderToStaticMarkup(
+            <CoachPanel
+                verdict="blunder"
+                equityLoss={-0.125}
+                playedMove="24/20 13/11"
+                optimalMove="8/4 6/4"
+                whyFailed="Cause unique erreur"
+                whyOptimal="Raison unique optimal"
+                summary="Résumé unique"
+                tacticalSummary="Diagnostic tactique"
+                explanation={JSON.stringify({
+                    explanation: 'Explication détaillée',
+                    keyConcept: 'Golden Point',
+                    conceptId: 'golden_point',
+                })}
+                onOpenKnowledgeConcept={vi.fn()}
+                onDismiss={() => { }}
+            />,
+        );
+
+        const idxComparison = html.indexOf('data-testid="coach-move-comparison-card"');
+        const idxDiagnostic = html.indexOf('data-testid="coach-diagnostic-box"');
+        const idxPr = html.indexOf('data-testid="coach-pr-dashboard"');
+
+        expect(idxComparison).toBeGreaterThan(-1);
+        expect(idxDiagnostic).toBeGreaterThan(idxComparison);
+        expect(idxPr).toBeGreaterThan(idxDiagnostic);
+
+        // whyFailed, whyOptimal et summary ne doivent apparaître qu'une seule fois (dans CoachMoveComparisonCard)
+        expect(html.split('Cause unique erreur').length - 1).toBe(1);
+        expect(html.split('Raison unique optimal').length - 1).toBe(1);
+        expect(html.split('Résumé unique').length - 1).toBe(1);
+
+        // Un seul bouton Fiche Théorique (celui du badge keyConcept dans CoachDiagnosticBox)
+        expect(html).toContain('data-testid="coach-concept-badge-btn"');
+        expect(html).not.toContain('data-testid="coach-open-kb-btn"');
+    });
+
+    it('Bug 4 : donne la priorité à l\'explication LLM Gemini (parsed.whyFailed / whyOptimal / summary) sur les props locales pour ne jamais écraser le flux SSE', () => {
+        const html = renderToStaticMarkup(
+            <CoachPanel
+                verdict="blunder"
+                equityLoss={-0.125}
+                playedMove="24/20 13/11"
+                optimalMove="8/5 6/5"
+                whyFailed="Texte local whyFailed obsolète"
+                whyOptimal="Texte local whyOptimal obsolète"
+                summary="Résumé local obsolète"
+                explanation={JSON.stringify({
+                    summary: 'Résumé Gemini LLM prioritaire',
+                    whyFailed: 'Diagnostic Gemini whyFailed prioritaire',
+                    whyOptimal: 'Diagnostic Gemini whyOptimal prioritaire',
+                    explanation: 'Analyse complète Grand-Maître Gemini 3.8 Flash.',
+                    keyConcept: 'Contrôle du Golden Point',
+                    conceptId: 'golden-point',
+                })}
+                onDismiss={() => { }}
+            />,
+        );
+
+        expect(html).toContain('Résumé Gemini LLM prioritaire');
+        expect(html).toContain('Diagnostic Gemini whyFailed prioritaire');
+        expect(html).toContain('Diagnostic Gemini whyOptimal prioritaire');
+        expect(html).not.toContain('Texte local whyFailed obsolète');
+        expect(html).not.toContain('Texte local whyOptimal obsolète');
+        expect(html).not.toContain('Résumé local obsolète');
+    });
 });
 
 describe('computePerformanceRating & getPRBadge', () => {

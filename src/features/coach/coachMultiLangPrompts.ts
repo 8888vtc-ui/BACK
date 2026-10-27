@@ -34,14 +34,12 @@ export function localizeOfflineExplanation(
     const played = params.playedMove || 'Move';
     const optimal = params.optimalMove || 'Optimal';
     const loss = Math.abs(params.equityLoss ?? 0.05).toFixed(3);
-    const userShots = Math.min(
-        36,
-        (params.features?.blotsAndShots?.user ?? []).reduce((a, b) => a + b.totalShots, 0),
-    );
-    const bestShots = Math.min(
-        36,
-        (params.features?.blotsAndShots?.best ?? []).reduce((a, b) => a + b.totalShots, 0),
-    );
+    const userShots =
+        params.features?.shotExposure?.user.totalRolls ??
+        Math.min(36, (params.features?.blotsAndShots?.user ?? []).reduce((a, b) => a + b.totalShots, 0));
+    const bestShots =
+        params.features?.shotExposure?.best.totalRolls ??
+        Math.min(36, (params.features?.blotsAndShots?.best ?? []).reduce((a, b) => a + b.totalShots, 0));
 
     if (lang === 'es') {
         const hasShotDiff = userShots > bestShots;

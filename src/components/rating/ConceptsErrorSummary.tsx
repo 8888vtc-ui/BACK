@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import Link from 'next/link';
 import type { EvaluatedTurn } from '../../features/rating/types';
 import {
     STRATEGIC_CONCEPTS_CATALOG,
@@ -100,7 +101,7 @@ export default function ConceptsErrorSummary({
                 <div className="text-3xl">🏆</div>
                 <h4 className="text-base font-black text-white">Exécution Stratégique Impeccable !</h4>
                 <p className="text-xs text-slate-300 max-w-md mx-auto">
-                    Aucun concept en erreur n'a été relevé sur cette partie. Vos décisions sont en parfaite adéquation avec la théorie moderne GNUBG.
+                    Aucun concept en erreur n'a été relevé sur cette partie. Vos décisions sont en parfaite adéquation avec la théorie moderne Monte-Carlo 3-Ply.
                 </p>
             </div>
         );
@@ -119,13 +120,13 @@ export default function ConceptsErrorSummary({
                     </p>
                 </div>
 
-                <a
+                <Link
                     href="/drills"
                     className="flex items-center gap-1.5 rounded-xl border border-amber-500/60 bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition shadow-sm"
                 >
                     <span>🎯</span>
                     <span>Accéder aux Drills</span>
-                </a>
+                </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
@@ -133,7 +134,7 @@ export default function ConceptsErrorSummary({
                     return (
                         <div
                             key={group.conceptId}
-                            className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 shadow-lg flex flex-col justify-between hover:border-slate-700 transition"
+                            className="rounded-2xl border border-white/10 bg-[#140b06]/90 p-4 space-y-3 shadow-lg flex flex-col justify-between hover:border-[#d4af37]/40 transition"
                             data-testid={`concept-card-${group.conceptId}`}
                         >
                             <div>
@@ -184,13 +185,13 @@ export default function ConceptsErrorSummary({
                                         ))}
                                     </div>
 
-                                    <a
+                                    <Link
                                         href="/drills"
                                         className="text-xs font-bold text-amber-400 hover:text-amber-300 hover:underline flex items-center gap-1 shrink-0"
                                     >
                                         <span>Entraîner</span>
                                         <span>→</span>
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

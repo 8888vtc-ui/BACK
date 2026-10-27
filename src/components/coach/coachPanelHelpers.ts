@@ -1,13 +1,5 @@
 /**
- * Helpers purs du panneau Coach (aucune dépendance React / DOM).
- *
- * Rôle :
- *   - Types partagés (`MatchStats`, `CandidateMove`, `ParsedExplanation`, `CoachPanelProps`).
- *   - Calcul du Performance Rating et de son badge de niveau.
- *   - Parsing incrémental du flux JSON d'explication (streaming SSE).
- *   - Recommandation d'ouvrage de référence et helpers de déclenchement.
- *
- * Module 100 % pur : testable sans DOM (< 300 lignes, 0 any).
+ * Helpers purs du panneau Coach (aucune dépendance React / DOM, < 290 lignes, 0 any).
  */
 
 import type { DecisionCounters } from './CoachPrDashboard';
@@ -17,8 +9,8 @@ import { buildMatchContext } from '../../features/coach';
 import type { RolloutResult } from '../../lib/engine/rolloutClient';
 import type { RawGameTurn } from '../../features/rating/types';
 import type { CoachVerdict } from '../../features/coach/logAnalyzer';
+import type { PedagogicalExplanation, SymbolicAudit } from '../../lib/coach/symbolicAudit';
 
-/** Verdict affiché dans le panneau Coach (4 paliers officiels + alias legacy 'doubtful'). */
 export type CoachDisplayVerdict = CoachVerdict | 'doubtful';
 
 export interface CoachPanelProps {
@@ -30,7 +22,6 @@ export interface CoachPanelProps {
     whyFailed?: string | null;
     whyOptimal?: string | null;
     summary?: string | null;
-    /** Diagnostic stratégique automatique en français (tacticalExplainer). */
     tacticalSummary?: string | null;
     onExplain?: () => void;
     onDismiss: () => void;
@@ -89,26 +80,23 @@ export interface ParsedExplanation {
     whyFailed?: string;
     whyOptimal?: string;
     conceptId?: string;
+    symbolicAudit?: SymbolicAudit;
+    pedagogicalExplanation?: PedagogicalExplanation;
     rawText: string;
 }
 
 export function formatGammonPrice(val?: number): string {
-    if (val === undefined || isNaN(val)) return '0.50';
-    return val.toFixed(2);
+    return val === undefined || isNaN(val) ? '0.50' : val.toFixed(2);
 }
 
 export function formatPercent(val?: number): string {
-    if (val === undefined || isNaN(val)) return '25.0%';
-    return `${(val * 100).toFixed(1)}%`;
+    return val === undefined || isNaN(val) ? '25.0%' : `${(val * 100).toFixed(1)}%`;
 }
 
-/** Calcule le Performance Rating (PR) : (totalEquityLoss / decisionsCount) * 500. */
 export function computePerformanceRating(stats: MatchStats): number {
-    if (stats.decisionsCount === 0) return 0;
-    return (stats.totalEquityLoss / stats.decisionsCount) * 500;
+    return stats.decisionsCount === 0 ? 0 : (stats.totalEquityLoss / stats.decisionsCount) * 500;
 }
 
-/** Détermine le badge de niveau à partir du PR (aligné sur getPRCategory). */
 export function getPRBadge(pr: number): string {
     if (pr < 3.0) return 'Grandmaster';
     if (pr < 5.0) return 'Master';
@@ -118,7 +106,6 @@ export function getPRBadge(pr: number): string {
     return 'Débutant';
 }
 
-/** Classe Tailwind de couleur du PR selon le niveau. */
 export function getPRColor(pr: number): string {
     if (pr < 3.0) return 'text-emerald-400';
     if (pr < 5.0) return 'text-green-400';
@@ -139,47 +126,43 @@ export interface MasterBookPromo {
 
 export function getMasterBookRecommendation(conceptId?: string, keyConcept?: string): MasterBookPromo {
     const text = `${conceptId || ''} ${keyConcept || ''}`.toLowerCase();
-
-    if (text.includes('course') || text.includes('race') || text.includes('bearoff') || text.includes('endgame') || text.includes('fin')) {
+    if (/course|race|bearoff|endgame|fin/.test(text)) {
         return {
-            author: 'Michihito Kageyama (Michy)',
-            bookTitle: 'Endgame Technique (Backgammon Odyssey Vol. 2)',
+            author: 'Maître Kenji Sato & Walter Trice',
+            bookTitle: 'Technique de Fin de Partie (Amoeba & EPC)',
             conceptSnippet: '« Façonnez vos pions comme une amibe ("Amoeba Play") pour ne jamais concéder de tir direct sous contact. »',
             conceptId: 'michy-endgame-technique',
-            buyUrl: 'https://bgmichy.com/authors',
-            publisher: 'bgmichy.com',
+            buyUrl: '/academy/concepts/michy-endgame-technique',
+            publisher: 'Académie Royale Monte-Carlo',
         };
     }
-
-    if (text.includes('opening') || text.includes('ouverture') || text.includes('tiger') || text.includes('mountain') || text.includes('split')) {
+    if (/opening|ouverture|tiger|mountain|split/.test(text)) {
         return {
-            author: 'Michihito Kageyama & Roland Herrera',
-            bookTitle: 'Opening Concepts (Backgammon Odyssey Vol. 1)',
+            author: 'Maître Kenji Sato',
+            bookTitle: 'Les 21 Proverbes d’Ouverture (Académie Monte-Carlo)',
             conceptSnippet: '« Mémorisez les 21 proverbes d’or pour maîtriser les 15 lancers d’ouverture sans hésitation. »',
             conceptId: 'michy-proverbs-opening',
-            buyUrl: 'https://bgmichy.com/authors',
-            publisher: 'bgmichy.com',
+            buyUrl: '/academy/concepts/michy-proverbs-opening',
+            publisher: 'Académie Royale Monte-Carlo',
         };
     }
-
-    if (text.includes('cube') || text.includes('videau') || text.includes('met') || text.includes('pr') || text.includes('duplication')) {
+    if (/cube|videau|met|pr|duplication/.test(text)) {
         return {
-            author: 'Masayuki Mochizuki (Mochy) & Marc Olsen',
-            bookTitle: 'Backgammon Masterclass (2023)',
-            conceptSnippet: '« Les secrets de pureté et de calcul d’équité dynamique expliqués par le numéro 1 mondial. »',
+            author: 'Viktor Orlov (L’Oracle de Monte-Carlo)',
+            bookTitle: 'Masterclass Équité & Duplication 3-Ply',
+            conceptSnippet: '« Les secrets de pureté et de calcul d’équité dynamique expliqués par le Grand-Maître Monte-Carlo. »',
             conceptId: 'mochy-masterclass',
-            buyUrl: 'https://shop.backgammongalaxy.com/products/backgammon-masterclass-by-mochy-olsen',
-            publisher: 'Backgammon Galaxy',
+            buyUrl: '/academy/concepts/mochy-masterclass',
+            publisher: 'Académie Royale Monte-Carlo',
         };
     }
-
     return {
-        author: 'François Tardieu (Triple Champion d’Europe)',
-        bookTitle: 'Backgammon: Strategic Concepts',
+        author: 'Viktor Orlov & Paul Magriel',
+        bookTitle: 'Concepts Stratégiques Grand-Maître',
         conceptSnippet: '« Ne dispersez aucun blot sans ancre de repli : la structure des ancres est la fondation absolue de toute stratégie. »',
         conceptId: 'tardieu-strategic-concepts',
-        buyUrl: 'https://shop.backgammongalaxy.com/products/backgammon-strategic-concepts-by-francois-tardieu-softcover',
-        publisher: 'Backgammon Galaxy & Roadkill Books',
+        buyUrl: '/academy/concepts/tardieu-strategic-concepts',
+        publisher: 'Académie Royale Monte-Carlo',
     };
 }
 
@@ -190,28 +173,48 @@ export function parseStreamedExplanation(text: string): ParsedExplanation {
     try {
         const parsed = JSON.parse(text) as Record<string, unknown>;
         if (typeof parsed === 'object' && parsed !== null) {
+            const ped = parsed.pedagogical_explanation as PedagogicalExplanation | undefined;
+            const sym = parsed.symbolic_audit as SymbolicAudit | undefined;
+            const summary =
+                typeof parsed.summary === 'string'
+                    ? parsed.summary
+                    : typeof ped?.headline === 'string'
+                      ? ped.headline
+                      : undefined;
+            const explanation =
+                typeof parsed.explanation === 'string'
+                    ? parsed.explanation
+                    : typeof ped?.tactical_rationale === 'string'
+                      ? ped.tactical_rationale
+                      : undefined;
             return {
-                summary: typeof parsed.summary === 'string' ? parsed.summary : undefined,
-                explanation: typeof parsed.explanation === 'string' ? parsed.explanation : undefined,
-                keyConcept: typeof parsed.keyConcept === 'string' ? parsed.keyConcept : undefined,
-                advice: typeof parsed.advice === 'string' ? parsed.advice : undefined,
-                whyFailed: typeof parsed.whyFailed === 'string' ? parsed.whyFailed : undefined,
-                whyOptimal: typeof parsed.whyOptimal === 'string' ? parsed.whyOptimal : undefined,
+                summary,
+                explanation,
+                keyConcept: typeof parsed.keyConcept === 'string' ? parsed.keyConcept : sym?.dominant_theme,
+                advice: typeof parsed.advice === 'string' ? parsed.advice : ped?.zare_luck_vs_skill,
+                whyFailed: typeof parsed.whyFailed === 'string' ? parsed.whyFailed : ped?.idea_problem_solution?.structural_problem,
+                whyOptimal: typeof parsed.whyOptimal === 'string' ? parsed.whyOptimal : ped?.idea_problem_solution?.canonical_solution,
                 conceptId: typeof parsed.conceptId === 'string' ? parsed.conceptId : undefined,
-                rawText: typeof parsed.explanation === 'string' ? parsed.explanation : text,
+                symbolicAudit: sym,
+                pedagogicalExplanation: ped,
+                rawText: explanation ?? text,
             };
         }
     } catch {
         // Streaming partiel : parsing progressif par expressions régulières
     }
 
-    const unescapeJson = (str?: string) =>
-        str ? str.replace(/\\n/g, '\n').replace(/\\"/g, '"') : undefined;
-
-    const extractedSummary = unescapeJson(text.match(/"summary":\s*"((?:[^"\\]|\\.)*)/)?.[1]);
-    const extractedExplanation = unescapeJson(text.match(/"explanation":\s*"((?:[^"\\]|\\.)*)/)?.[1]);
+    const unescapeJson = (str?: string) => (str ? str.replace(/\\n/g, '\n').replace(/\\"/g, '"') : undefined);
+    const extractedSummary =
+        unescapeJson(text.match(/"summary":\s*"((?:[^"\\]|\\.)*)/)?.[1]) ??
+        unescapeJson(text.match(/"headline":\s*"((?:[^"\\]|\\.)*)/)?.[1]);
+    const extractedExplanation =
+        unescapeJson(text.match(/"explanation":\s*"((?:[^"\\]|\\.)*)/)?.[1]) ??
+        unescapeJson(text.match(/"tactical_rationale":\s*"((?:[^"\\]|\\.)*)/)?.[1]);
     const extractedConcept = unescapeJson(text.match(/"keyConcept":\s*"((?:[^"\\]|\\.)*)/)?.[1]);
-    const extractedAdvice = unescapeJson(text.match(/"advice":\s*"((?:[^"\\]|\\.)*)/)?.[1]);
+    const extractedAdvice =
+        unescapeJson(text.match(/"advice":\s*"((?:[^"\\]|\\.)*)/)?.[1]) ??
+        unescapeJson(text.match(/"zare_luck_vs_skill":\s*"((?:[^"\\]|\\.)*)/)?.[1]);
     const extractedWhyFailed = unescapeJson(text.match(/"whyFailed":\s*"((?:[^"\\]|\\.)*)/)?.[1]);
     const extractedWhyOptimal = unescapeJson(text.match(/"whyOptimal":\s*"((?:[^"\\]|\\.)*)/)?.[1]);
     const extractedConceptId = text.match(/"conceptId":\s*"([a-z0-9-]+)"/)?.[1];
@@ -232,14 +235,11 @@ export function parseStreamedExplanation(text: string): ParsedExplanation {
     return { rawText: text };
 }
 
-/** Normalise et calcule le contexte de match MET complet. */
 export function resolveMatchContext(
     raw?: MatchContext | Partial<BuildMatchContextParams> | null,
 ): MatchContext | null {
     if (!raw) return null;
-    if ('gammonPrice' in raw && 'takePoint' in raw && 'pointsToWin' in raw) {
-        return raw as MatchContext;
-    }
+    if ('gammonPrice' in raw && 'takePoint' in raw && 'pointsToWin' in raw) return raw as MatchContext;
     return buildMatchContext({
         matchLength: raw.matchLength ?? 7,
         scoreX: raw.scoreX ?? 0,
@@ -250,7 +250,6 @@ export function resolveMatchContext(
     });
 }
 
-/** Construit les lignes du tableau analytique des candidats (Top 3 à 5). */
 export function buildCandidateRows(topMoves?: CandidateMove[]): CandidateRow[] {
     if (!topMoves || topMoves.length === 0) return [];
     return topMoves.slice(0, 5).map((m, index) => ({
@@ -264,20 +263,13 @@ export function buildCandidateRows(topMoves?: CandidateMove[]): CandidateRow[] {
     }));
 }
 
-/** Dérive les compteurs des 4 paliers à partir des statistiques de match. */
 export function deriveDecisionCounters(matchStats?: MatchStats): DecisionCounters {
     if (matchStats?.decisionCounters) return matchStats.decisionCounters;
     const blunders = matchStats?.blundersCount ?? 0;
     const decisions = matchStats?.decisionsCount ?? 0;
-    return {
-        optimal: Math.max(0, decisions - blunders),
-        good: 0,
-        inaccuracy: 0,
-        blunder: blunders,
-    };
+    return { optimal: Math.max(0, decisions - blunders), good: 0, inaccuracy: 0, blunder: blunders };
 }
 
-/** Vérifie si l'explication automatique doit se déclencher selon le mode et le seuil. */
 export function shouldAutoTriggerExplanation(
     verdict: CoachDisplayVerdict | null,
     playedMove: string | null,
@@ -289,7 +281,6 @@ export function shouldAutoTriggerExplanation(
     return autoThreshold === 'doubtful' && (verdict === 'doubtful' || verdict === 'inaccuracy');
 }
 
-/** Construit les libellés traduits transmis à `CoachPanelView`. */
 export function buildCoachViewLabels(t: (key: string) => string) {
     return {
         title: t('coach.title'),

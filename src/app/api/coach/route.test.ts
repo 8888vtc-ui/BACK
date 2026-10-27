@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { POST } from './route';
 import { rateLimiter } from '../../../lib/security/rateLimit';
+import { getSharedCoachExplanation, saveCoachExplanationRecord } from '../../../lib/supabase/db';
+
+vi.mock('../../../lib/supabase/db', () => ({
+    getSharedCoachExplanation: vi.fn().mockResolvedValue(null),
+    saveCoachExplanationRecord: vi.fn().mockResolvedValue(null),
+}));
 
 const MOCK_REQUEST_BODY = {
     verdict: 'blunder',
@@ -53,6 +59,8 @@ describe('POST /api/coach (Streaming SSE Route)', () => {
         rateLimiter.reset();
         process.env = { ...originalEnv };
         vi.restoreAllMocks();
+        vi.mocked(getSharedCoachExplanation).mockResolvedValue(null);
+        vi.mocked(saveCoachExplanationRecord).mockResolvedValue(null);
     });
 
     afterEach(() => {
@@ -234,5 +242,90 @@ describe('POST /api/coach (Streaming SSE Route)', () => {
         const streamedText = await readStreamToString(res.body!);
         expect(streamedText).toContain('rule-based-fallback');
         expect(streamedText).toContain('data: [DONE]');
+    });
+
+    it('renvoie immédiatement le flux SSE en cas de HIT dans le cache partagé Supabase (0 ms)', async () => {
+        vi.mocked(getSharedCoachExplanation).mockResolvedValueOnce({
+            id: 'mock-cache-id',
+            position_key: 'mock-pos-key',
+            summary: 'Blunder critique en ancre',
+            explanation: 'Vous avez laissé un pion exposé au tir direct.',
+            key_concept: 'Sécurité du blot',
+            advice: 'Consolidez le point 5 au lieu de fendre.',
+            played_move: '13/7',
+            optimal_move: '8/4 6/4',
+            verdict: 'blunder',
+            equity_loss: -0.125,
+            source: 'llm',
+            user_id: null,
+            game_id: null,
+            move_id: null,
+            created_at: new Date().toISOString(),
+        });
+
+        const fetchSpy = vi.fn();
+        globalThis.fetch = fetchSpy;
+
+        const req = new Request('http://localhost:3000/api/coach', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(MOCK_REQUEST_BODY),
+        });
+
+        const res = await POST(req);
+        expect(res.status).toBe(200);
+        // Aucun appel réseau externe LLM en cas de cache HIT
+        expect(fetchSpy).not.toHaveBeenCalled();
+
+        const streamedText = await readStreamToString(res.body!);
+        expect(streamedText).toContain('source":"cache"');
+        expect(streamedText).toContain('Blunder critique en ancre');
+        expect(streamedText).toContain('data: [DONE]');
+    });
+
+    it('sauvegarde l\'explication validée dans public.coach_explanations en cas de MISS LLM', async () => {
+        vi.mocked(getSharedCoachExplanation).mockResolvedValueOnce(null);
+        process.env.OPENAI_API_KEY = 'test-mock-key';
+        process.env.OPENAI_BASE_URL = 'https://api.openai.test/v1';
+
+        const mockUpstreamSse =
+            'data: {"choices":[{"delta":{"content":"{\\"summary\\":\\"Erreur de slot\\",\\"explanation\\":\\"Avance risquée sans ancrage\\"}"}}]}\n\n' +
+            'data: [DONE]\n\n';
+
+        const encoder = new TextEncoder();
+        const upstreamStream = new ReadableStream({
+            start(controller) {
+                controller.enqueue(encoder.encode(mockUpstreamSse));
+                controller.close();
+            },
+        });
+
+        globalThis.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            status: 200,
+            body: upstreamStream,
+        });
+
+        const req = new Request('http://localhost:3000/api/coach', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(MOCK_REQUEST_BODY),
+        });
+
+        const res = await POST(req);
+        expect(res.status).toBe(200);
+
+        const streamedText = await readStreamToString(res.body!);
+        expect(streamedText).toContain('data: [DONE]');
+
+        // Vérification de la persistance L2
+        expect(saveCoachExplanationRecord).toHaveBeenCalledWith(
+            expect.objectContaining({
+                played_move: '13/7',
+                optimal_move: '8/4 6/4',
+                verdict: 'blunder',
+                source: 'llm',
+            }),
+        );
     });
 });

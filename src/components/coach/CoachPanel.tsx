@@ -33,6 +33,7 @@ import {
 import { useI18n } from '../../lib/i18n';
 import { soundEngine } from '../../lib/sound/soundEngine';
 import { useCoachVoice } from '../../hooks/useCoachVoice';
+import { useTiltDetector } from '../../hooks/useTiltDetector';
 
 // Ré-exports pour compatibilité ascendante (tests et consommateurs existants).
 export {
@@ -98,6 +99,16 @@ export default function CoachPanel({
 }: CoachPanelProps) {
     const { t, locale } = useI18n();
     const { isVoiceEnabled, isSpeaking, speak, stop, toggleVoice } = useCoachVoice();
+    const { evaluation: tiltEvaluation, showTiltAlert, recordDecision, dismissTiltAlert } = useTiltDetector();
+
+    const lastRecordedTiltKeyRef = useRef<string | null>(null);
+    useEffect(() => {
+        if (!verdict || !playedMove) return;
+        const key = `${positionKey ?? ''}::${playedMove}::${verdict}`;
+        if (lastRecordedTiltKeyRef.current === key) return;
+        lastRecordedTiltKeyRef.current = key;
+        recordDecision({ equityLoss: Math.abs(equityLoss ?? 0) });
+    }, [positionKey, playedMove, verdict, equityLoss, recordDecision]);
 
     const { triggerMode, autoThreshold, isOffline } = useCoachPreferences({
         triggerMode: propTriggerMode,
@@ -230,6 +241,7 @@ export default function CoachPanel({
             onCandidateHover={onCandidateHover}
             turnsHistory={turnsHistory}
             board={board}
+            dice={dice}
             xgid={xgid}
             candidateMoves={candidateMoves}
             onRolloutCompleted={onRolloutCompleted}
@@ -237,6 +249,9 @@ export default function CoachPanel({
             isSpeaking={isSpeaking}
             onToggleVoice={toggleVoice}
             onReplayVoice={speechText ? handleReplayVoice : undefined}
+            tiltEvaluation={tiltEvaluation}
+            showTiltAlert={showTiltAlert}
+            onDismissTiltAlert={dismissTiltAlert}
             locale={locale}
             labels={buildCoachViewLabels(t)}
         />

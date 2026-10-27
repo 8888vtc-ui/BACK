@@ -30,7 +30,7 @@ import {
     type MatchSummaryPayload,
 } from '../components/summary/postMatchReportHelpers';
 
-const UPSTREAM_GEMINI_TIMEOUT_MS = 3000;
+const UPSTREAM_GEMINI_TIMEOUT_MS = 6000;
 
 export interface CoachQuotaGuardInput {
     readonly userId?: string | null;
@@ -258,7 +258,7 @@ export async function generateProtectedCoachSynthesisAction(
         process.env.OPENAI_MODEL ||
         process.env.GEMINI_MODEL ||
         process.env.LLM_MODEL ||
-        'gemini-2.5-flash';
+        'gemini-3.8-flash';
 
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), UPSTREAM_GEMINI_TIMEOUT_MS);

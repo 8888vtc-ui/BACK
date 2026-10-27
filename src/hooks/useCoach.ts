@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { type BoardState, type Player, serializeXGID } from '../engine/backgammonEngine';
 import { analyzeCubeDecision, mapGameCubeAction, type CubeAction, type CubeActionType, type CubeCoachResult } from '../features/coach/cubeCoach';
+import { getTheoryConceptById } from '../features/knowledge/knowledgeBaseData';
 import { buildCubeNotification } from '../features/coach/cubeNotification';
 import { formatCoachMoveSequence, movesFromBoardDiff } from '../features/coach/coachMoveNotation';
 import { soundEngine } from '../lib/sound/soundEngine';
@@ -14,12 +15,18 @@ import { useCoachVoice } from './useCoachVoice';
 import { toast } from '../components/toast/ToastContext';
 import type { CoachHighlight } from '../components/board/boardThemes';
 import { analyzeHumanMoveFromLogWithBgsage, type CoachVerdict } from '../features/coach/logAnalyzer';
-import { shouldNotify, type CoachNotificationLevel } from '../features/coach/coachNotificationSettings';
+import {
+    shouldNotify,
+    readStoredNotificationLevel,
+    writeStoredNotificationLevel,
+    type CoachNotificationLevel,
+} from '../features/coach/coachNotificationSettings';
 import {
     appendDecisionToMatchStats,
     buildCoachStateFromLogResult,
     buildFallbackTriggerCoachState,
     CUBE_PLAYED_LABEL,
+    type CoachAnalysisHistoryEntry,
     type CoachMoveHistoryItem,
     type CoachState,
     type EvaluatedMove,
@@ -30,7 +37,7 @@ import {
 } from './useCoachHelpers';
 import { detectPlayerCubeDecision, runManualTriggerAnalysis } from './useCoachTrigger';
 
-export type { CoachState, EvaluatedMove, MatchStats, LastMoveFeedback, CoachMoveHistoryItem, UseCoachDeps, UseCoachResult };
+export type { CoachState, EvaluatedMove, MatchStats, LastMoveFeedback, CoachAnalysisHistoryEntry, CoachMoveHistoryItem, UseCoachDeps, UseCoachResult };
 
 const INITIAL_MATCH_STATS: MatchStats = {
     decisionsCount: 0,
@@ -48,6 +55,8 @@ export function useCoach({
 }: UseCoachDeps): UseCoachResult {
     const [coach, setCoach] = useState<CoachState | null>(null);
     const [coachHighlight, setCoachHighlight] = useState<CoachHighlight | null>(null);
+    const [coachHistory, setCoachHistory] = useState<CoachAnalysisHistoryEntry[]>([]);
+    const [selectedCoachHistoryIndex, setSelectedCoachHistoryIndex] = useState<number | null>(null);
     const [matchStats, setMatchStats] = useState<MatchStats>(INITIAL_MATCH_STATS);
     const [matchStatsO] = useState<MatchStats>(INITIAL_MATCH_STATS);
 
@@ -55,15 +64,44 @@ export function useCoach({
     const lastCubeEvalKeyRef = useRef<string | null>(null);
     const prevDoublingOfferedByRef = useRef<Player | null>(null);
     const stateBeforeCubeOfferRef = useRef<BoardState | null>(null);
+    const prevHumanRollKeyRef = useRef<string>('');
     const analysisRequestIdRef = useRef(0);
     const activeAbortRef = useRef<AbortController | null>(null);
 
     const [optimalStreak, setOptimalStreak] = useState(0);
     const [brilliantMove, setBrilliantMove] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [notificationLevel, setNotificationLevel] = useState<CoachNotificationLevel>('blunder');
+    const [notificationLevel, setNotificationLevelState] = useState<CoachNotificationLevel>(() =>
+        readStoredNotificationLevel('all'),
+    );
     const [lastMoveFeedback, setLastMoveFeedback] = useState<LastMoveFeedback | null>(null);
     const { speak: speakCoachVoice, stop: stopCoachVoice } = useCoachVoice();
+
+    const setNotificationLevel = useCallback((level: CoachNotificationLevel) => {
+        setNotificationLevelState(level);
+        writeStoredNotificationLevel(level);
+    }, []);
+
+    const selectCoachHistoryIndex = useCallback(
+        (index: number | null) => {
+            if (index === null || index < 0 || index >= coachHistory.length) {
+                setSelectedCoachHistoryIndex(null);
+                const latest = coachHistory[coachHistory.length - 1];
+                if (latest) {
+                    setCoach(latest.coachState);
+                    setCoachHighlight(latest.highlight);
+                }
+                return;
+            }
+            setSelectedCoachHistoryIndex(index);
+            const entry = coachHistory[index];
+            if (entry) {
+                setCoach(entry.coachState);
+                setCoachHighlight(entry.highlight);
+            }
+        },
+        [coachHistory],
+    );
 
     const cancelActiveOperation = useCallback((): { requestId: number; controller: AbortController } => {
         activeAbortRef.current?.abort();
@@ -105,31 +143,64 @@ export function useCoach({
                 else toast.info(notif.message, notif.title);
             }
 
-            if (cubeRes.verdict !== 'optimal' && shouldNotify(cubeRes.verdict, notificationLevel)) {
+            const kbCubeId = evalState.crawford
+                ? 'crawford-rule'
+                : (evalState.matchLength ?? 0) === 0
+                  ? 'jacoby-beaver-money'
+                  : normalizedAction === 'double'
+                    ? 'woolsey-law'
+                    : 'janowski-cube-model';
+            const kbCube = getTheoryConceptById(kbCubeId);
+            const kbText = kbCube
+                ? `\n\n📚 Théorie (${kbCube.title.fr} — ${kbCube.author}) : ${kbCube.keyTakeaway.fr} ${kbCube.goldenRule.fr}`
+                : '';
+
+            const cubeCoachState: CoachState = {
+                verdict: cubeRes.verdict,
+                equityLoss: rawLoss,
+                playedMove: playedLabel,
+                optimalMove: cubeRes.optimalAction,
+                explanation: `${cubeRes.explanation} ${cubeRes.advice}${kbText}`.trim(),
+                whyFailed: cubeRes.verdict !== 'optimal' ? cubeRes.explanation : undefined,
+                whyOptimal: `${cubeRes.optimalAction} — ${cubeRes.advice}`,
+                summary: cubeRes.explanation,
+                tacticalSummary: cubeRes.advice,
+                positionKey: serializeXGID(evalState),
+                boardBefore: [...evalState.board],
+            };
+            setCoachHistory((prev) => [
+                ...prev,
+                {
+                    turnIndex: prev.length + 1,
+                    dice: null,
+                    coachState: cubeCoachState,
+                    highlight: null,
+                    boardBefore: [...evalState.board],
+                    boardAfter: [...evalState.board],
+                    timestamp: Date.now(),
+                },
+            ]);
+            setSelectedCoachHistoryIndex(null);
+
+            if (shouldNotify(cubeRes.verdict, notificationLevel)) {
+                setCoach(cubeCoachState);
+                setCoachHighlight(null);
                 if (cubeRes.verdict === 'blunder') {
-                    soundEngine.playBlunderAlert();
+                    try { soundEngine.playBlunderAlert(); } catch { /* ignore audio errors */ }
                     speakCoachVoice(cubeRes.explanation || cubeRes.advice);
                 }
-                setCoach({
-                    verdict: cubeRes.verdict,
-                    equityLoss: rawLoss,
-                    playedMove: playedLabel,
-                    optimalMove: cubeRes.optimalAction,
-                    explanation: `${cubeRes.explanation} ${cubeRes.advice}`.trim(),
-                    summary: cubeRes.explanation,
-                    tacticalSummary: cubeRes.advice,
-                    positionKey: serializeXGID(evalState),
-                    boardBefore: [...evalState.board],
-                });
-                setCoachHighlight(null);
-                onCoachTriggered?.();
+                if (cubeRes.verdict !== 'optimal') {
+                    onCoachTriggered?.();
+                }
+            } else {
+                setCoach((prev) => (prev !== null ? cubeCoachState : null));
             }
             return cubeRes;
         },
         [cancelActiveOperation, game.state, notificationLevel, onCoachTriggered, recordDecisionStats, speakCoachVoice],
     );
 
-    // 1. Autorité unifiée de réinitialisation du Coach (nouvelle manche OU nouveau lancer de dés par X)
+    // 1. Autorité de réinitialisation : seule une nouvelle manche efface coach ; un nouveau lancer efface uniquement les flèches
     useEffect(() => {
         const isNewRound =
             Boolean(game.moveHistory && game.moveHistory.length === 0) &&
@@ -137,14 +208,23 @@ export function useCoach({
             currentTurnMovesRef.current.length === 0 &&
             !game.doublingOfferedBy &&
             game.phase !== 'DOUBLING_OFFERED';
-        const isNewHumanRoll = game.state.turn === 'X' && game.dice !== null;
+        const rollKey = game.state.turn === 'X' && game.dice !== null ? `X:${game.dice[0]}-${game.dice[1]}` : '';
+        const isNewHumanRoll = rollKey !== '' && rollKey !== prevHumanRollKeyRef.current;
+        prevHumanRollKeyRef.current = rollKey;
 
-        if (isNewRound || isNewHumanRoll) {
+        if (isNewRound) {
             cancelActiveOperation();
+            lastPlayerEvalRef.current = null;
+            lastCubeEvalKeyRef.current = null;
             setCoach(null);
             setCoachHighlight(null);
+            setCoachHistory((prev) => (prev.length === 0 ? prev : []));
+            setSelectedCoachHistoryIndex(null);
+        } else if (isNewHumanRoll) {
+            setCoachHighlight(null);
+            setSelectedCoachHistoryIndex(null);
         }
-    }, [game.moveHistory, game.matchLog, game.doublingOfferedBy, game.phase, game.state.turn, game.dice, currentTurnMovesRef, cancelActiveOperation]);
+    }, [game.moveHistory, game.matchLog, game.doublingOfferedBy, game.phase, game.state.turn, game.dice, cancelActiveOperation, currentTurnMovesRef]);
 
     // 2. Interception des décisions de videau du joueur (`OFFER_DOUBLE`, `TAKE_DOUBLE`, `PASS_DOUBLE`)
     useEffect(() => {
@@ -192,6 +272,8 @@ export function useCoach({
                     logEntry: lastEntry,
                     localPlayer: 'X',
                     cubeValue: game.state.cubeValue,
+                    cubeOwner: game.state.cubeOwner,
+                    crawford: game.state.crawford,
                     matchLength: game.state.matchLength,
                     scoreX: game.state.scoreX,
                     scoreO: game.state.scoreO,
@@ -216,25 +298,42 @@ export function useCoach({
 
                 setLastMoveFeedback({ verdict, equityLoss, playedMove: playedNotation, timestamp: Date.now() });
 
-                if (verdict !== 'optimal' && shouldNotify(verdict, notificationLevel)) {
-                    if (verdict === 'blunder') soundEngine.playBlunderAlert();
-                    const { coachState, highlight } = buildCoachStateFromLogResult({
-                        lastEntry,
-                        result,
-                        playedMoves,
-                        playedNotation,
-                        gameState: game.state,
-                    });
-                    if (isStale()) return;
+                const { coachState, highlight } = buildCoachStateFromLogResult({
+                    lastEntry,
+                    result,
+                    playedMoves,
+                    playedNotation,
+                    gameState: game.state,
+                });
+                if (isStale()) return;
+
+                setCoachHistory((prev) => [
+                    ...prev,
+                    {
+                        turnIndex: lastEntry.turnIndex,
+                        dice: [lastEntry.dice[0], lastEntry.dice[1]],
+                        coachState,
+                        highlight,
+                        boardBefore: [...lastEntry.boardBefore],
+                        boardAfter: [...lastEntry.boardAfter],
+                        timestamp: Date.now(),
+                    },
+                ]);
+                setSelectedCoachHistoryIndex(null);
+
+                if (shouldNotify(verdict, notificationLevel)) {
                     setCoach(coachState);
                     setCoachHighlight(highlight);
                     if (verdict === 'blunder') {
+                        try { soundEngine.playBlunderAlert(); } catch { /* ignore audio errors */ }
                         const summaryText = coachState.summary || coachState.tacticalSummary || coachState.explanation || '';
                         if (summaryText) speakCoachVoice(summaryText);
                     }
-                    onCoachTriggered?.();
+                    if (verdict !== 'optimal') {
+                        onCoachTriggered?.();
+                    }
                 } else {
-                    setCoach(null);
+                    setCoach((prev) => (prev !== null ? coachState : null));
                     setCoachHighlight(null);
                 }
             } catch (err) {
@@ -247,15 +346,28 @@ export function useCoach({
         cancelActiveOperation();
         setCoach(null);
         setCoachHighlight(null);
+        setSelectedCoachHistoryIndex(null);
         setIsAnalyzing(false);
     }, [cancelActiveOperation]);
 
     const replayMove = useCallback(() => {
         cancelActiveOperation();
-        game.undoMove();
+        const selectedEntry =
+            selectedCoachHistoryIndex !== null ? coachHistory[selectedCoachHistoryIndex] : undefined;
+        const targetTurnIndex = selectedEntry?.turnIndex ?? coach?.turnIndex;
+        if (game.rewindToLogTurn) {
+            game.rewindToLogTurn(targetTurnIndex);
+        } else {
+            game.undoMove();
+        }
+        lastPlayerEvalRef.current = null;
+        if (targetTurnIndex !== undefined) {
+            setCoachHistory((prev) => prev.filter((h) => h.turnIndex < targetTurnIndex));
+        }
+        setSelectedCoachHistoryIndex(null);
         setCoach(null);
         setCoachHighlight(null);
-    }, [cancelActiveOperation, game]);
+    }, [cancelActiveOperation, coach?.turnIndex, coachHistory, game, selectedCoachHistoryIndex]);
 
     const triggerCoach = useCallback(async () => {
         const { requestId, controller } = cancelActiveOperation();
@@ -266,6 +378,9 @@ export function useCoach({
 
         const evalDice: [number, number] = currentTurnDiceRef.current ?? game.dice ?? [3, 1];
         const firstHistBoard = game.moveHistory?.[0]?.board;
+        const hasPendingMoves =
+            Boolean(game.dice) &&
+            ((game.moveHistory && game.moveHistory.length > 0) || currentTurnMovesRef.current.length > 0);
         const boardToEval =
             game.dice && firstHistBoard && firstHistBoard.length === 26
                 ? [...firstHistBoard]
@@ -274,12 +389,26 @@ export function useCoach({
                   : [...game.state.board];
         const stateToEval: BoardState = { ...game.state, board: boardToEval, dice: evalDice, turn: 'X' };
 
+        const pendingMoves = hasPendingMoves ? movesFromBoardDiff(boardToEval, game.state.board, 'X') : [];
+        const pendingEntry =
+            hasPendingMoves && pendingMoves.length > 0
+                ? {
+                      turnIndex: (game.matchLog?.length ?? 0) + 1,
+                      player: 'X' as const,
+                      dice: [evalDice[0], evalDice[1]] as const,
+                      boardBefore: boardToEval,
+                      movePlayed: pendingMoves,
+                      boardAfter: [...game.state.board],
+                  }
+                : undefined;
+
         try {
             const { coachState, highlight } = await runManualTriggerAnalysis(
                 stateToEval,
                 evalDice,
                 game.matchLog,
                 Boolean(game.dice),
+                pendingEntry,
             );
             if (isStale()) return;
             setCoach(coachState);
@@ -295,9 +424,14 @@ export function useCoach({
         }
     }, [cancelActiveOperation, currentTurnDiceRef, currentTurnMovesRef, game.dice, game.matchLog, game.moveHistory, game.state, onCoachTriggered, speakCoachVoice, turnBoardBeforeRef]);
 
+
+
     return {
         coach,
         coachHighlight,
+        coachHistory,
+        selectedCoachHistoryIndex,
+        selectCoachHistoryIndex,
         matchStats,
         matchStatsX: matchStats,
         matchStatsO,

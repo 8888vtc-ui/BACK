@@ -16,7 +16,7 @@ import { GameReviewRequestSchema, validateJsonBody } from '../../../../lib/secur
 
 export const dynamic = 'force-dynamic';
 
-const UPSTREAM_LLM_TIMEOUT_MS = 3000;
+const UPSTREAM_LLM_TIMEOUT_MS = 6000;
 
 const SSE_HEADERS: Record<string, string> = {
     'Content-Type': 'text/event-stream',
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             process.env.OPENAI_MODEL ||
             process.env.GEMINI_MODEL ||
             process.env.LLM_MODEL ||
-            'gemini-2.5-flash';
+            'gemini-3.8-flash';
 
         const encoder = new TextEncoder();
 
@@ -142,7 +142,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                 signal: abortController.signal,
             });
 
-            // Repli automatique si le modèle est obsolète / déprécié (ex: gemini-2.5-flash -> gemini-3.8-flash)
+            // Repli automatique vers gemini-3.8-flash si l'identifiant du modèle retourne 404
             if (llmResponse.status === 404 && model.includes('gemini')) {
                 model = 'gemini-3.8-flash';
                 requestPayload.model = model;

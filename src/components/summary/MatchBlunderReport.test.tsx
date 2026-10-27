@@ -7,6 +7,7 @@ import React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { MatchBlunderReport } from './MatchBlunderReport';
+import { PostMatchTrainingReport } from './PostMatchTrainingReport';
 import { createInitialState } from '../../engine/backgammonEngine';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
 
@@ -180,5 +181,72 @@ describe('MatchBlunderReport Component', () => {
         expect(screen.getByTestId('coach-pillar-diagnostic').textContent).toBeTruthy();
         expect(screen.getByTestId('coach-pillar-key-concept').textContent).toBeTruthy();
         expect(screen.getByTestId('coach-pillar-training-plan').textContent).toBeTruthy();
+    });
+
+    it('positionne la barre d’actions sous PostMatchHeader sans empiler PostMatchBlundersGallery ni PostMatchAiSynthesis', () => {
+        const analysis = buildSampleAnalysis();
+        const onNextGame = vi.fn();
+        const onOpenReview = vi.fn();
+        const onTrainBlunders = vi.fn();
+        const onOpenDiceAudit = vi.fn();
+        const onBackToLobby = vi.fn();
+
+        render(
+            <PostMatchTrainingReport
+                analysis={analysis}
+                winner="X"
+                winType="single"
+                pointsWon={1}
+                scoreX={5}
+                scoreO={3}
+                matchLength={7}
+                isMatchOver={false}
+                gameId="game-gm-1"
+                botPr={5.2}
+                botCategory="Maître"
+                isOffline={true}
+                onNextGame={onNextGame}
+                onOpenReview={onOpenReview}
+                onTrainBlunders={onTrainBlunders}
+                onOpenDiceAudit={onOpenDiceAudit}
+                onBackToLobby={onBackToLobby}
+                locale="fr"
+            />,
+        );
+
+        const header = screen.getByTestId('post-match-header');
+        const nextBtn = screen.getByTestId('post-match-next-game-btn');
+        const reviewBtn = screen.getByTestId('open-game-review-btn');
+        const trainBtn = screen.getByTestId('post-match-train-blunders-btn');
+        const diceBtn = screen.getByTestId('post-match-dice-audit-btn');
+        const lobbyBtn = screen.getByTestId('post-match-back-lobby-btn');
+        const report = screen.getByTestId('match-blunder-report');
+
+        // La barre d'actions est immédiatement après PostMatchHeader et avant MatchBlunderReport
+        expect(header.compareDocumentPosition(nextBtn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(nextBtn.compareDocumentPosition(report) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(reviewBtn).toBeTruthy();
+        expect(trainBtn).toBeTruthy();
+        expect(diceBtn).toBeTruthy();
+        expect(lobbyBtn).toBeTruthy();
+
+        // Aucun empilement redondant (ni galerie/synthèse dupliquée, ni double bannière PR)
+        expect(screen.queryByTestId('post-match-blunders-gallery')).toBeNull();
+        expect(screen.queryByTestId('post-match-ai-synthesis')).toBeNull();
+        expect(screen.queryByTestId('match-blunder-banner')).toBeNull();
+        expect(screen.getByTestId('post-match-accuracy').textContent).toContain('%');
+
+        // Bordures apaisées border-white/10 et aucun texte 8px/9px
+        expect(header.className).toContain('border-white/10');
+        expect(screen.getByTestId('post-match-pr-player').className).toContain('border-white/10');
+        expect(screen.getByTestId('post-match-pr-bot').className).toContain('border-white/10');
+        expect(header.innerHTML).not.toContain('text-[8px]');
+        expect(header.innerHTML).not.toContain('text-[9px]');
+        expect(report.innerHTML).not.toContain('text-[8px]');
+        expect(report.innerHTML).not.toContain('text-[9px]');
+
+        // Raccourci clavier Échap -> retour au lobby
+        fireEvent.keyDown(window, { key: 'Escape' });
+        expect(onBackToLobby).toHaveBeenCalledTimes(1);
     });
 });

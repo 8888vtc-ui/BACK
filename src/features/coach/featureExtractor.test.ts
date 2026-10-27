@@ -125,3 +125,50 @@ describe('extractStrategicFeatures — contactStatus', () => {
         expect(features.contactStatus).toBe('contact');
     });
 });
+
+describe('extractStrategicFeatures - bestBoardStructure & tacticalDelta', () => {
+    it('calcule la comparaison géométrique et tactique entre coup joué et coup optimal', () => {
+        const initialState = makeState(makeBoard({ 6: 2, 5: 2, 13: 11 }, { 2: 1, 12: 14 }), 'X');
+        const userEndState = makeState(makeBoard({ 6: 2, 5: 2, 13: 9, 11: 2 }, { 2: 1, 12: 14 }), 'O');
+        const bestEndState = makeState(makeBoard({ 6: 2, 5: 2, 4: 2, 13: 9 }, { 12: 14 }, 0, 1), 'O');
+
+        const features = extractStrategicFeatures(initialState, userEndState, bestEndState);
+        expect(features.bestBoardStructure?.innerBoardPoints).toBe(3);
+        expect(features.boardStructure.innerBoardPoints).toBe(2);
+        expect(features.tacticalDelta).toEqual({
+            userOpponentHitCount: 0,
+            bestOpponentHitCount: 1,
+            homePointsDelta: 1,
+            primeLengthDelta: 1,
+        });
+    });
+
+    it('Bug 6 : compare boardBefore, userEndState et bestEndState pour détecter la création réelle du Golden Point (>= 2 pions) vs un simple split 24/20', () => {
+        const initialState = createInitialState();
+        // Coup joué : X joue 24/20 13/11 (1 seul pion en 20, 0 pion en 5)
+        const userEndState = makeState(
+            makeBoard({ 24: 1, 20: 1, 13: 4, 11: 1, 8: 3, 6: 5 }, { 1: 2, 12: 5, 17: 3, 19: 5 }),
+            'O',
+        );
+        // Coup optimal sur 3-1 : X joue 8/5 6/5 (2 pions sur le point 5 = vraie porte créée)
+        const bestEndState = makeState(
+            makeBoard({ 24: 2, 13: 5, 8: 2, 6: 4, 5: 2 }, { 1: 2, 12: 5, 17: 3, 19: 5 }),
+            'O',
+        );
+
+        const featuresGolden = extractStrategicFeatures(initialState, userEndState, bestEndState);
+        expect(featuresGolden.beforeBoardStructure?.goldenPoint).toBe(false);
+        expect(featuresGolden.boardStructure.goldenPoint).toBe(false);
+        expect(featuresGolden.bestBoardStructure?.goldenPoint).toBe(true);
+        expect(featuresGolden.tacticalDiff?.goldenPointCreatedByBest).toBe(true);
+
+        // Si le meilleur coup est un simple split 24/20 13/8 (sur 4-5), 0 porte sur 5 ni 20
+        const splitBestState = makeState(
+            makeBoard({ 24: 1, 20: 1, 13: 4, 8: 4, 6: 5 }, { 1: 2, 12: 5, 17: 3, 19: 5 }),
+            'O',
+        );
+        const featuresSplit = extractStrategicFeatures(initialState, userEndState, splitBestState);
+        expect(featuresSplit.tacticalDiff?.goldenPointCreatedByBest).toBe(false);
+        expect(featuresSplit.tacticalDiff?.barPointCreatedByBest).toBe(false);
+    });
+});

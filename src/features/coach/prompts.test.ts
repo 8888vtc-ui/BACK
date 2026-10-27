@@ -58,10 +58,12 @@ describe('Coach Prompts & Instructions', () => {
             expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('STRICTEMENT sur les métriques');
         });
 
-        it('impose une contrainte de longueur stricte (2 phrases, 30 mots)', () => {
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('CONTRAINTE DE LONGUEUR ABSOLUE');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('2 phrases courtes');
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('30 mots');
+        it('impose une profondeur analytique de Grand-Maître (100 à 180 mots) sans la bride de 30 mots', () => {
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('PROFONDEUR ANALYTIQUE DE GRAND-MAÎTRE (100 À 180 MOTS)');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('100 à 180 mots');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Point d\'Or');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Compte de Keith');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).not.toContain('30 mots');
         });
 
         it('exige un format de réponse JSON strict avec schéma défini', () => {
@@ -118,6 +120,81 @@ describe('Coach Prompts & Instructions', () => {
             const prompt = buildCoachUserPrompt(moneyParams);
             expect(prompt).toContain('Partie d\'argent');
         });
+
+        it("utilise l'union exacte des tirs et la duplication quand shotExposure est fourni", () => {
+            const prompt = buildCoachUserPrompt({
+                ...SAMPLE_PARAMS,
+                features: {
+                    ...SAMPLE_PARAMS.features,
+                    blotsAndShots: {
+                        user: [
+                            { point: 5, directShots: 11, indirectShots: 2, totalShots: 13 },
+                            { point: 6, directShots: 11, indirectShots: 3, totalShots: 14 },
+                        ],
+                        best: [],
+                    },
+                    shotExposure: {
+                        user: {
+                            totalRolls: 23,
+                            directRolls: 20,
+                            indirectRolls: 3,
+                            hittingNumbers: [3, 4],
+                            duplicatedNumbers: [{ die: 3, blots: [5, 6] }],
+                        },
+                        best: { totalRolls: 0, directRolls: 0, indirectRolls: 0, hittingNumbers: [], duplicatedNumbers: [] },
+                    },
+                },
+            });
+            expect(prompt).toContain('23 tirs/36 distincts');
+            expect(prompt).not.toContain('27 tirs/36');
+            expect(prompt).toContain('le 3 frappe les flèches 5 et 6');
+        });
+
+        it('signale un majorant (≤) sans shotExposure et plusieurs blots', () => {
+            const prompt = buildCoachUserPrompt({
+                ...SAMPLE_PARAMS,
+                features: {
+                    ...SAMPLE_PARAMS.features,
+                    blotsAndShots: {
+                        user: [
+                            { point: 5, directShots: 11, indirectShots: 2, totalShots: 13 },
+                            { point: 6, directShots: 11, indirectShots: 3, totalShots: 14 },
+                        ],
+                        best: [],
+                    },
+                },
+            });
+            expect(prompt).toContain('≤ 27 tirs/36');
+        });
+
+        it('affiche le Keith Count en course pure et les écarts de probabilités', () => {
+            const prompt = buildCoachUserPrompt({
+                ...SAMPLE_PARAMS,
+                features: {
+                    ...SAMPLE_PARAMS.features,
+                    contactStatus: 'pureRace',
+                    keithCount: { player: 70, opponent: 78, diff: -8 },
+                    bgsage: {
+                        isRace: true,
+                        playerGamePlan: 'race',
+                        opponentGamePlan: 'race',
+                        evalLevel: '3ply',
+                        optimalMetrics: {
+                            equity: 0.3, cubelessEquity: 0.3, winProb: 0.7, winGammonProb: 0.1,
+                            winBackgammonProb: 0, loseGammonProb: 0.02, loseBackgammonProb: 0,
+                            playerGamePlan: 'race', opponentGamePlan: 'race',
+                        },
+                        playedMetrics: {
+                            equity: 0.2, cubelessEquity: 0.2, winProb: 0.65, winGammonProb: 0.1,
+                            winBackgammonProb: 0, loseGammonProb: 0.05, loseBackgammonProb: 0,
+                            playerGamePlan: 'race', opponentGamePlan: 'race',
+                        },
+                    },
+                },
+            });
+            expect(prompt).toContain('Compte de Keith (après le coup joué) : Joueur 70, Adversaire 78 (écart -8)');
+            expect(prompt).toContain('Gain +5.0, Gammon 0.0, Risque de gammon adverse -3.0');
+        });
     });
 
     describe('generateRuleBasedExplanation (repli heuristique)', () => {
@@ -133,6 +210,102 @@ describe('Coach Prompts & Instructions', () => {
             expect(res.whyFailed).toBeTruthy();
             expect(res.whyOptimal).toBeTruthy();
             expect(res.advice).toBeTruthy();
+        });
+
+        it('Bug 6 : ne parle PAS du Golden Point sur un simple split 24/20 (1 seul pion) et ne donne PAS le faux conseil de rompre le contact en début/milieu de partie', () => {
+            const res = generateRuleBasedExplanation({
+                verdict: 'doubtful',
+                equityLoss: -0.045,
+                playedMove: '13/9 13/8',
+                optimalMove: '24/20 13/8',
+                features: {
+                    player: 'X',
+                    pipCountDiff: {
+                        player: 148,
+                        opponent: 162,
+                        leader: 'X',
+                        diff: -14, // En avance de 14 pips mais en début/milieu de partie (148 pips)
+                    },
+                    blotsAndShots: {
+                        user: [],
+                        best: [],
+                    },
+                    boardStructure: {
+                        innerBoardPoints: 2,
+                        advancedAnchor: false,
+                        goldenPoint: false,
+                        barPoint: false,
+                        longestPrime: 2,
+                    },
+                    beforeBoardStructure: {
+                        innerBoardPoints: 2,
+                        advancedAnchor: false,
+                        goldenPoint: false,
+                        barPoint: false,
+                        longestPrime: 2,
+                    },
+                    bestBoardStructure: {
+                        innerBoardPoints: 2,
+                        advancedAnchor: false,
+                        goldenPoint: false,
+                        barPoint: false,
+                        longestPrime: 2,
+                    },
+                    contactStatus: 'contact',
+                },
+            });
+
+            expect(res.conceptId).not.toBe('golden-point');
+            expect(res.conceptId).not.toBe('running-game');
+            expect(res.summary).not.toContain('rompre le contact');
+            expect(res.whyOptimal).not.toContain('Golden Point');
+        });
+
+        it('Bug 6 : identifie le Golden Point uniquement quand une porte (>= 2 pions) est réellement créée sur le point 5 (X) ou 20 (O)', () => {
+            const res = generateRuleBasedExplanation({
+                verdict: 'blunder',
+                equityLoss: -0.12,
+                playedMove: '24/21 13/12',
+                optimalMove: '8/5 6/5',
+                features: {
+                    player: 'X',
+                    pipCountDiff: {
+                        player: 163,
+                        opponent: 167,
+                        leader: 'X',
+                        diff: -4,
+                    },
+                    blotsAndShots: {
+                        user: [],
+                        best: [],
+                    },
+                    beforeBoardStructure: {
+                        innerBoardPoints: 1,
+                        advancedAnchor: false,
+                        goldenPoint: false,
+                        barPoint: false,
+                        longestPrime: 1,
+                    },
+                    boardStructure: {
+                        innerBoardPoints: 1,
+                        advancedAnchor: false,
+                        goldenPoint: false,
+                        barPoint: false,
+                        longestPrime: 1,
+                    },
+                    bestBoardStructure: {
+                        innerBoardPoints: 2,
+                        advancedAnchor: false,
+                        goldenPoint: true,
+                        barPoint: false,
+                        longestPrime: 2,
+                    },
+                    contactStatus: 'contact',
+                },
+            });
+
+            expect(res.conceptId).toBe('golden-point');
+            expect(res.keyConcept).toBe('Contrôle du Golden Point');
         });
     });
 });

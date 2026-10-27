@@ -23,7 +23,7 @@ describe('DeepRolloutSection', () => {
             />
         );
 
-        expect(screen.getByText('Rollout Profond GNUBG')).toBeDefined();
+        expect(screen.getByText('Rollout Profond Monte-Carlo')).toBeDefined();
         expect(screen.getByText('8/5 6/5')).toBeDefined();
         expect(screen.getByText('24/20 13/10')).toBeDefined();
         expect(screen.getByTestId('trial-opt-324')).toBeDefined();

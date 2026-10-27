@@ -57,4 +57,65 @@ describe('CoachMobileDrawer Component', () => {
         );
         expect(html).not.toContain('data-testid="coach-mobile-summary-bar"');
     });
+
+    it('affiche les contrôles de navigation temporelle des coups quand coachHistory est fourni', () => {
+        const mockHistory = [
+            {
+                turnIndex: 1,
+                coachState: { verdict: 'blunder', equityLoss: -0.142 } as any,
+                highlight: null,
+                boardBefore: new Array(26).fill(0),
+                boardAfter: new Array(26).fill(0),
+                dice: [3, 1] as [number, number],
+                timestamp: 1000,
+            },
+            {
+                turnIndex: 2,
+                coachState: { verdict: 'optimal', equityLoss: 0 } as any,
+                highlight: null,
+                boardBefore: new Array(26).fill(0),
+                boardAfter: new Array(26).fill(0),
+                dice: [4, 2] as [number, number],
+                timestamp: 2000,
+            },
+        ];
+
+        const html = renderToStaticMarkup(
+            <CoachMobileDrawer
+                isOpen={true}
+                onOpen={vi.fn()}
+                onClose={vi.fn()}
+                coach={mockHistory[1].coachState}
+                isAnalyzing={false}
+                onDismiss={vi.fn()}
+                coachHistory={mockHistory}
+                selectedCoachHistoryIndex={1}
+                onSelectCoachHistoryIndex={vi.fn()}
+            />,
+        );
+
+        expect(html).toContain('Coup #2 (2/2)');
+        expect(html).toContain('Préc.');
+        expect(html).toContain('Suiv.');
+        expect(html).toContain('Direct');
+    });
+
+    it('s\'ouvre correctement (sans deadlock) même quand coach est null et affiche le Radar IA en direct', () => {
+        const html = renderToStaticMarkup(
+            <CoachMobileDrawer
+                isOpen={true}
+                onOpen={vi.fn()}
+                onClose={vi.fn()}
+                coach={null}
+                isAnalyzing={false}
+                onDismiss={vi.fn()}
+            />,
+        );
+
+        expect(html).toContain('translate-y-0');
+        expect(html).not.toContain('translate-y-full');
+        expect(html).toContain('data-testid="coach-drawer-backdrop"');
+        expect(html).toContain('data-testid="coach-live-ai-radar"');
+    });
 });
+

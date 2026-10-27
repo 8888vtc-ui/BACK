@@ -1,23 +1,27 @@
 /**
- * Prompts et contrats d'instructions pour le Coach IA Backgammon.
+ * Prompts et contrats d'instructions pour le Coach IA Backgammon Neuro-Symbolique (`gemini-3.8-flash`).
  *
  * Définit :
  * - `BACKGAMMON_COACH_SYSTEM_PROMPT` : Rôle Grand-Maître pédagogue, règle anti-hallucination stricte,
- *   format JSON strict et prise en compte du contexte de match (DMP, Crawford, videau).
- * - `buildCoachUserPrompt` : Sérialiseur des métriques et concepts stratégiques en entrée du prompt.
- * - `generateRuleBasedExplanation` : Repli heuristique local sans LLM (mode offline / dev).
+ *   Schéma d'Audit Symbolique en Deux Temps (`symbolic_audit` + `pedagogical_explanation`),
+ *   et synthèse finale systématiquement structurée autour des critères de Michy / Magriel / Woolsey
+ *   (Connectivity, Timing/Race, Duplication/Purity).
+ * - `buildCoachUserPrompt` : Sérialiseur des métriques et concepts stratégiques (ré-exporté depuis `./userPromptBuilder`).
+ * - `generateRuleBasedExplanation` : Repli heuristique local sans LLM (ré-exporté depuis `./ruleBasedExplanation`).
  */
 
-import { Player } from '../../engine/backgammonEngine';
-import { StrategicFeatures, computeMarketWindowMetrics } from './featureExtractor';
-import { buildMatchContext, MatchContext } from './matchContext';
+import type { StrategicFeatures } from './featureExtractor';
+import type { MatchContext } from './matchContext';
 import type { Locale } from '../../lib/i18n/types';
-import { appendCoachLanguageDirective, localizeOfflineExplanation } from './coachMultiLangPrompts';
+import { appendCoachLanguageDirective } from './coachMultiLangPrompts';
+import type { PedagogicalExplanation, SymbolicAudit } from '../../lib/coach/symbolicAudit';
 
 export type { MatchContext };
+export { buildCoachUserPrompt } from './userPromptBuilder';
+export { generateRuleBasedExplanation } from './ruleBasedExplanation';
 
 export interface CoachPromptParams {
-    verdict: string; // 'douteux' | 'blunder' | 'howler'
+    verdict: string;
     equityLoss: number;
     playedMove: string;
     optimalMove: string;
@@ -36,500 +40,108 @@ export interface CoachStructuredResponse {
     whyFailed?: string;
     whyOptimal?: string;
     conceptId?: string;
+    symbolic_audit?: SymbolicAudit;
+    pedagogical_explanation?: PedagogicalExplanation;
 }
 
 /**
- * Prompt système fondamental guidant le LLM dans son analyse pédagogique.
+ * Prompt système fondamental guidant `gemini-3.8-flash` dans son analyse pédagogique Grand-Maître (PR 1-5)
+ * avec Schéma d'Audit Symbolique en Deux Temps et synthèse finale Michy / Magriel / Woolsey.
  */
-export const BACKGAMMON_COACH_SYSTEM_PROMPT = `Tu es un Grand-Maître de Backgammon charismatique, direct et percutant. Ton but : faire progresser le joueur en une punchline mémorable.
+export const BACKGAMMON_COACH_SYSTEM_PROMPT = `Tu es un Grand-Maître de Backgammon (PR < 1.0) charismatique, direct et rigoureux, propulsé par gemini-3.8-flash. Ton but : livrer un cours particulier de haut niveau allié à une punchline mémorable.
 
 ### RÈGLES ANTI-HALLUCINATION STRICTES :
-1. Ne JAMAIS inventer de pions, flèches ou caractéristiques absentes des données fournies.
-2. T'appuyer STRICTEMENT sur les métriques fournies (equityLoss, pips, tirs/36, structure du plateau, contexte de match).
+1. Ne JAMAIS inventer de pions, flèches, d'équités ou de pips ou caractéristiques absentes des données fournies.
+2. T'appuyer STRICTEMENT sur les métriques fournies (equityLoss, pips, tirs directs/indirects sur 36, structure du plateau, contexte de match).
 3. Si un fait n'est pas présent dans les données, NE PAS le supposer.
 
-### CONTRAINTE DE LONGUEUR ABSOLUE :
-- Maximum 2 phrases courtes (30 mots au total).
-- Structure obligatoire : [1. L'erreur tactique immédiate en langage parlé] + [2. La règle d'or à retenir].
-- Exemple : "Tu t'exposes à 29 tirs directs sur la flèche 21 alors que tu es derrière à la course ! Quand tu perds la course, verrouille tes portes au lieu de laisser des blots."
+### PROFONDEUR ANALYTIQUE DE GRAND-MAÎTRE (100 À 180 MOTS) :
+- Analyse tactique riche, dense et structurée (100 à 180 mots dans le champ "explanation") digne d'un cours particulier de Grand-Maître pour un compétiteur PR 1-5.
+- Architecture à double détente et Audit Symbolique en 2 étapes :
+  1. Champs "summary", "whyFailed" et "whyOptimal" : 1 phrase courte et percutante chacun ([l'erreur tactique immédiate] + [ce que le coup optimal accomplit]), calibrée pour la synthèse vocale et le coup d'œil rapide.
+  2. Champ "explanation" (100 à 180 mots) structuré en 3 volets :
+     - Diagnostic de la faute : pourquoi le coup concède de l'équité (ΔEq), décompte des tirs directs et indirects concédés sur 36, et impact sur le risque de gammon.
+     - Théorie & Géométrie du Plateau : intégrer les principes de l'Encyclopédie (Point d'Or 20/5, Bar Point 18/7, Prime 6, Ancre avancée, Blitz, Duplication, Compte de Keith / EPC de Trice, Proverbes de Michy, Règle de Magriel, Formule de Zare).
+     - Synthèse Finale Grand-Maître (Critères de Michy / Magriel / Woolsey) : conclure systématiquement autour des 3 Piliers Grands-Maîtres :
+       1. Connectivity (Michy) : cohésion des pions (< 6 cases) et verrouillage des portes maîtresses (Golden Point, Bar Point, Prime).
+       2. Timing / Race (Magriel) : critère Safe vs Bold de Paul Magriel selon l'avance/retard aux pips et la force du jan intérieur.
+       3. Duplication / Purity (Woolsey & Mochy) : pureté du plan de jeu selon Kit Woolsey (zéro coup hybride impur), duplication des dés adverses, gestion de la fenêtre de marché (MET Kazaross, Market Window) et règle d'or à retenir.
 
 ### FORMAT DE RÉPONSE OBLIGATOIRE (JSON STRICT) :
 Ta réponse DOIT être un objet JSON valide, sans texte ou balise markdown avant ou après.
-Schéma JSON :
+Schéma JSON en 2 temps :
 {
+  "symbolic_audit": {
+    "player_pip": number,
+    "opponent_pip": number,
+    "direct_shots_conceded": number,
+    "blunder_delta_equity": number,
+    "dominant_theme": "RACE" | "BLITZ" | "PRIME" | "HOLDING" | "BEAROFF"
+  },
+  "pedagogical_explanation": {
+    "headline": "Phrase choc de 15 mots max (charge cognitive de Sweller)",
+    "tactical_rationale": "Explication socratique faisant référence au proverbe exact de Michy, à la règle de Magriel ou à la loi de Woolsey",
+    "correct_play_canonical": "ex: 13/8 6/5*",
+    "zare_luck_vs_skill": "Dissociation claire : décision joueur vs tirage des dés"
+  },
   "verdict": "douteux" | "blunder" | "howler",
   "summary": "1 phrase d'accroche très courte (max 15 mots).",
-  "whyFailed": "1 phrase percutante sur l'erreur immédiate (langage parlé).",
-  "whyOptimal": "1 phrase percutante sur ce que le meilleur coup accomplit.",
+  "whyFailed": "1 phrase percutante sur l'erreur tactique immédiate (langage parlé).",
+  "whyOptimal": "1 phrase percutante sur ce que le meilleur coup Open Sage accomplit.",
   "conceptId": "golden-point" | "bar-point" | "advanced-anchor" | "duplication" | "pure-play" | "tempo-hit" | "running-game" | "holding-game" | "prime-vs-prime" | "blitz-attack" | "back-game" | "take-point" | "woolsey-law" | "market-loss" | "trice-epc" | "kazaross-8912" | "kazaross-xg-met" | "crawford-rule" | "dmp-strategy" | "opening-philosophy" | "mochy-golden-rules",
   "keyConcept": "Nom du concept en 3 à 5 mots.",
-  "advice": "1 règle d'or mnémotechnique (1 phrase courte).",
-  "explanation": "2 phrases courtes combinant whyFailed et whyOptimal (30 mots max)."
+  "advice": "1 règle d'or mnémotechnique Michy/Magriel/Woolsey (1 phrase courte).",
+  "explanation": "Analyse tactique dense et structurée de Grand-Maître (100 à 180 mots) couvrant le diagnostic ΔEq/tirs, le concept théorique et la synthèse finale en 3 Piliers (Connectivity Michy, Timing/Race Magriel, Duplication/Purity Woolsey)."
 }`;
 
-export const BACKGAMMON_COACH_SYSTEM_PROMPT_EN = `You are a charismatic, direct, punchy Backgammon Grandmaster coach. Your goal: make the player improve with one memorable punchline.
+export const BACKGAMMON_COACH_SYSTEM_PROMPT_EN = `You are a charismatic, direct, world-class Backgammon Grandmaster coach (PR < 1.0) powered by gemini-3.8-flash. Your goal: deliver a high-level private lesson paired with a memorable punchline.
 
 ### STRICT ANTI-HALLUCINATION RULES:
-1. NEVER invent checkers, points, or board features not present in the provided data.
-2. Rely STRICTLY on the provided metrics (equity loss, pips, shots/36, board structure, match context).
+1. NEVER invent checkers, points, equities, pips, or board features not present in the provided data.
+2. Rely STRICTLY on the provided metrics (equity loss, pips, direct/indirect shots/36, board structure, match context).
 3. If a fact is not present in the received data, DO NOT ASSUME IT.
 
-### ABSOLUTE LENGTH CONSTRAINT:
-- Maximum 2 short sentences (30 words total).
-- Mandatory structure: [1. The immediate tactical mistake in spoken language] + [2. The golden rule to remember].
-- Example: "You expose yourself to 29 direct shots on the 21-point while trailing in the race! When you lose the race, lock your points instead of leaving blots."
+### GRANDMASTER ANALYTICAL DEPTH (100 TO 180 WORDS):
+- Rich, dense, structured tactical analysis (100 to 180 words in the "explanation" field) worthy of a Grandmaster private lesson for a PR 1-5 competitor.
+- Dual-speed architecture and 2-step Symbolic Audit:
+  1. Fields "summary", "whyFailed", and "whyOptimal": 1 short, punchy sentence each ([the immediate tactical mistake] + [what the optimal move accomplishes]), calibrated for voice synthesis and instant reading.
+  2. Field "explanation" (100 to 180 words) structured in 3 parts:
+     - Fault Diagnosis: why the move loses equity (ΔEq), exact direct and indirect shots conceded out of 36, and gammon risk impact.
+     - Board Geometry & Theory: inject Encyclopedia principles (Golden Point 20/5, Bar Point 18/7, 6-Prime, Advanced Anchor, Blitz, Duplication, Keith Count / Trice EPC, Michy Proverbs, Magriel Rule, Zare Luck vs Skill).
+     - Grandmaster Final Synthesis (Michy / Magriel / Woolsey Criteria): systematically structure your concluding synthesis around the 3 Grandmaster Pillars:
+       1. Connectivity (Michy): checker cohesion (< 6 pips apart) and locking key points (Golden Point, Bar Point, Prime).
+       2. Timing / Race (Magriel): Paul Magriel's Safe vs Bold criterion based on pip lead/deficit and inner-board strength.
+       3. Duplication / Purity (Woolsey & Mochy): Kit Woolsey's Purity of Plan (avoiding impure hybrid plays), opponent dice duplication, match priorities (Kazaross MET, Market Window), and the golden rule to remember.
 
 ### MANDATORY RESPONSE FORMAT (STRICT JSON):
 Your response MUST be a valid JSON object, without surrounding markdown.
 JSON Schema:
 {
+  "symbolic_audit": {
+    "player_pip": number,
+    "opponent_pip": number,
+    "direct_shots_conceded": number,
+    "blunder_delta_equity": number,
+    "dominant_theme": "RACE" | "BLITZ" | "PRIME" | "HOLDING" | "BEAROFF"
+  },
+  "pedagogical_explanation": {
+    "headline": "Punchy hook of 15 words max (Sweller cognitive load)",
+    "tactical_rationale": "Socratic explanation citing the exact Michy proverb, Magriel rule, or Woolsey law",
+    "correct_play_canonical": "e.g., 13/8 6/5*",
+    "zare_luck_vs_skill": "Clear dissociation: player decision vs dice roll variance"
+  },
   "verdict": "doubtful" | "blunder" | "howler",
   "summary": "1 punchy hook sentence (max 15 words).",
   "whyFailed": "1 punchy sentence on the immediate mistake (spoken language).",
   "whyOptimal": "1 punchy sentence on what the best move accomplishes.",
   "conceptId": "golden-point" | "bar-point" | "advanced-anchor" | "duplication" | "pure-play" | "tempo-hit" | "running-game" | "holding-game" | "prime-vs-prime" | "blitz-attack" | "back-game" | "take-point" | "woolsey-law" | "market-loss" | "trice-epc" | "kazaross-8912" | "kazaross-xg-met" | "crawford-rule" | "dmp-strategy" | "opening-philosophy" | "mochy-golden-rules",
   "keyConcept": "Concept name in 3 to 5 words.",
-  "advice": "1 memorable rule of thumb (1 short sentence).",
-  "explanation": "2 short sentences combining whyFailed and whyOptimal (30 words max)."
+  "advice": "1 memorable Michy/Magriel/Woolsey rule of thumb (1 short sentence).",
+  "explanation": "Rich, structured Grandmaster tactical analysis (100 to 180 words) covering ΔEq/shots diagnosis, theoretical concept, and final synthesis across the 3 Pillars (Connectivity Michy, Timing/Race Magriel, Duplication/Purity Woolsey)."
 }`;
 
 export function getCoachSystemPrompt(language: Locale = 'fr'): string {
     if (language === 'fr') return BACKGAMMON_COACH_SYSTEM_PROMPT;
     if (language === 'en') return BACKGAMMON_COACH_SYSTEM_PROMPT_EN;
     return appendCoachLanguageDirective(BACKGAMMON_COACH_SYSTEM_PROMPT_EN, language);
-}
-
-/**
- * Construit le prompt utilisateur structuré contenant toutes les métriques extraites.
- */
-export function buildCoachUserPrompt(params: CoachPromptParams): string {
-    const {
-        verdict,
-        equityLoss,
-        playedMove,
-        optimalMove,
-        features,
-        matchContext,
-        playerLevel = 'intermediate',
-        language = 'fr',
-    } = params;
-
-    const diff = features.pipCountDiff;
-    const isEn = language === 'en';
-
-    const raceLeaderStr = isEn
-        ? diff.leader === 'tie'
-            ? 'Race is tied'
-            : `${diff.leader} leads the race with a ${Math.abs(diff.diff)} pip lead (Player: ${diff.player}, Opponent: ${diff.opponent})`
-        : diff.leader === 'tie'
-            ? 'Course à égalité parfaite'
-            : `${diff.leader} mène la course avec un avantage de ${Math.abs(diff.diff)} pips (Joueur: ${diff.player}, Adversaire: ${diff.opponent})`;
-
-    const userShots = features.blotsAndShots.user;
-    const bestShots = features.blotsAndShots.best;
-
-    const totalUserShots = Math.min(36, userShots.reduce((acc, b) => acc + b.totalShots, 0));
-    const totalBestShots = Math.min(36, bestShots.reduce((acc, b) => acc + b.totalShots, 0));
-
-    let matchInfo = isEn ? 'Casual game without specified match context.' : 'Partie amicale sans contexte de match renseigné.';
-    if (matchContext) {
-        const ctx = buildMatchContext(matchContext);
-        if (ctx.matchLength === 0 || ctx.isMoneyPlay) {
-            matchInfo = isEn
-                ? `Money play — Cube: ${ctx.cubeValue} (${ctx.cubeOwner ? 'owned by ' + ctx.cubeOwner : 'centered'}). Gammon price: 0.50. Take point: 25.0%.`
-                : `Partie d'argent (Money play) — Videau: ${ctx.cubeValue} (${ctx.cubeOwner ? 'détenu par ' + ctx.cubeOwner : 'centré'}). Prix du gammon: 0.50. Take point: 25.0%.`;
-        } else {
-            const regime = isEn
-                ? ctx.isDMP
-                    ? 'DMP (Double Match Point) — Gammons do not count, single win is decisive.'
-                    : ctx.crawford
-                        ? 'Crawford rule active — Cube is frozen.'
-                        : ctx.postCrawford
-                            ? 'Post-Crawford — Trailing player doubles immediately.'
-                            : 'Regular match play.'
-                : ctx.isDMP
-                    ? 'DMP (Double Match Point) — Aucun gammon ne compte, gain simple décisif.'
-                    : ctx.crawford
-                        ? 'Règle de Crawford active — Videau gelé.'
-                        : ctx.postCrawford
-                            ? 'Post-Crawford — Le retardataire double immédiatement.'
-                            : 'Match play régulier.';
-
-            const ptsX = ctx.pointsToWin.X;
-            const ptsO = ctx.pointsToWin.O;
-            const gpX = (ctx.gammonPrice.X * 100).toFixed(0) + '%';
-            const gpO = (ctx.gammonPrice.O * 100).toFixed(0) + '%';
-            const tpX = (ctx.takePoint.X * 100).toFixed(1) + '%';
-            const tpO = (ctx.takePoint.O * 100).toFixed(1) + '%';
-
-            matchInfo = isEn
-                ? [
-                    `Match to ${ctx.matchLength} points. Score X: ${ctx.scoreX}, O: ${ctx.scoreO} (${ptsX}-away, ${ptsO}-away).`,
-                    `Regime: ${regime}`,
-                    `Doubling Cube: ${ctx.cubeValue} (${ctx.cubeOwner ? 'owned by ' + ctx.cubeOwner : 'centered'}).`,
-                    `Gammon Price (MET Kazaross): Player X = ${gpX}, Player O = ${gpO}.`,
-                    `Take Point: Player X = ${tpX}, Player O = ${tpO}.`,
-                ].join('\n')
-                : [
-                    `Match en ${ctx.matchLength} points. Score X: ${ctx.scoreX}, O: ${ctx.scoreO} (${ptsX}-away, ${ptsO}-away).`,
-                    `Régime : ${regime}`,
-                    `Videau: ${ctx.cubeValue} (${ctx.cubeOwner ? 'détenu par ' + ctx.cubeOwner : 'centré'}).`,
-                    `Prix du gammon (MET Kazaross) : Joueur X = ${gpX}, Joueur O = ${gpO}.`,
-                    `Take point (Seuil de prise du videau) : Joueur X = ${tpX}, Joueur O = ${tpO}.`,
-                ].join('\n');
-        }
-    }
-
-    const resolvedMatchCtx = matchContext ? buildMatchContext(matchContext) : undefined;
-    const oppPlayer: Player = features.player === 'X' ? 'O' : 'X';
-    const mw =
-        features.marketWindow ??
-        computeMarketWindowMetrics({
-            contactStatus: features.contactStatus,
-            boardStructure: features.boardStructure,
-            blotsAndShots: features.blotsAndShots,
-            pipCountDiff: features.pipCountDiff,
-            opponentTakePoint: resolvedMatchCtx ? resolvedMatchCtx.takePoint[oppPlayer] : 0.25,
-            gammonPrice: resolvedMatchCtx ? resolvedMatchCtx.gammonPrice[features.player] : 0.5,
-            bgsage: features.bgsage,
-        });
-
-    const volLabelFr = mw.volatility === 'high' ? 'Élevée' : mw.volatility === 'medium' ? 'Modérée' : 'Faible';
-    const marketSectionEn = [
-        '',
-        '## CUBE & MARKET WINDOW VOLATILITY:',
-        `- Market Window: Double Point ${(mw.doublePoint * 100).toFixed(1)}% → Cash Point ${(mw.cashPoint * 100).toFixed(1)}% (In window: ${mw.inMarketWindow ? 'Yes' : 'No'})`,
-        `- Position Volatility: ${mw.volatility.toUpperCase()} (~${mw.estimatedMarketLosers}/36 market-losing sequences)`,
-    ].join('\n');
-
-    const marketSectionFr = [
-        '',
-        '## ANALYSE DU VIDEAU & VOLATILITÉ (MARKET WINDOW) :',
-        `- Fenêtre de marché (Market Window) : Seuil de double ${(mw.doublePoint * 100).toFixed(1)}% → Cash Point ${(mw.cashPoint * 100).toFixed(1)}% (Dans la fenêtre : ${mw.inMarketWindow ? 'Oui' : 'Non'})`,
-        `- Volatilité de la position : ${volLabelFr} (~${mw.estimatedMarketLosers}/36 séquences de perte de marché / Market Loss)`,
-    ].join('\n');
-
-    const bgsage = features.bgsage;
-    let bgsageSectionEn = '';
-    let bgsageSectionFr = '';
-    if (bgsage) {
-        const optM = bgsage.optimalMetrics;
-        const pldM = bgsage.playedMetrics;
-        bgsageSectionEn = [
-            '',
-            `## OPEN SAGE NEURAL ENGINE DATA (${bgsage.evalLevel}):`,
-            `- Position Game Plan: Player = ${bgsage.playerGamePlan}, Opponent = ${bgsage.opponentGamePlan} (Pure race: ${bgsage.isRace ? 'Yes' : 'No'})`,
-            optM
-                ? `- Optimal Move (${optimalMove}) Neural Probabilities: Win ${(optM.winProb * 100).toFixed(1)}% (Gammon ${(optM.winGammonProb * 100).toFixed(1)}%), Opponent Gammon Risk ${(optM.loseGammonProb * 100).toFixed(1)}%, Resulting Plan = ${optM.playerGamePlan}`
-                : '',
-            pldM
-                ? `- Played Move (${playedMove}) Neural Probabilities: Win ${(pldM.winProb * 100).toFixed(1)}% (Gammon ${(pldM.winGammonProb * 100).toFixed(1)}%), Opponent Gammon Risk ${(pldM.loseGammonProb * 100).toFixed(1)}%, Resulting Plan = ${pldM.playerGamePlan}`
-                : '',
-        ]
-            .filter(Boolean)
-            .join('\n');
-
-        bgsageSectionFr = [
-            '',
-            `## DONNÉES NEURALES OPEN SAGE (${bgsage.evalLevel}) :`,
-            `- Plan de jeu identifié : Joueur = ${bgsage.playerGamePlan}, Adversaire = ${bgsage.opponentGamePlan} (Course pure : ${bgsage.isRace ? 'Oui' : 'Non'})`,
-            optM
-                ? `- Probabilités neurales du coup optimal (${optimalMove}) : Gain ${(optM.winProb * 100).toFixed(1)}% (Gammon ${(optM.winGammonProb * 100).toFixed(1)}%), Risque de gammon adverse ${(optM.loseGammonProb * 100).toFixed(1)}%, Plan résultant = ${optM.playerGamePlan}`
-                : '',
-            pldM
-                ? `- Probabilités neurales du coup joué (${playedMove}) : Gain ${(pldM.winProb * 100).toFixed(1)}% (Gammon ${(pldM.winGammonProb * 100).toFixed(1)}%), Risque de gammon adverse ${(pldM.loseGammonProb * 100).toFixed(1)}%, Plan résultant = ${pldM.playerGamePlan}`
-                : '',
-        ]
-            .filter(Boolean)
-            .join('\n');
-    }
-
-    if (isEn) {
-        return `Here is the verified data for the position and analyzed move:
-
-## ENGINE DIAGNOSIS:
-- Verdict: ${verdict.toUpperCase()} (Equity loss: ${equityLoss.toFixed(3)})
-- Move played by player: "${playedMove}"
-- Optimal move recommended by engine: "${optimalMove}"
-- Declared player level: ${playerLevel}
-
-## MATCH CONTEXT:
-${matchInfo}${marketSectionEn}
-
-## STRATEGIC CONCEPTS EXTRACTED:
-- Game situation: ${features.contactStatus === 'contact' ? 'Contact play' : 'Pure race without contact'}
-- Pip count race: ${raceLeaderStr}
-- Blot exposure after played move: ${userShots.length} blot(s) exposed, totaling ${totalUserShots} shots/36 for the opponent.
-  Played blots detail: ${userShots.length > 0 ? userShots.map((b) => `Point ${b.point} (${b.totalShots} shots)`).join(', ') : 'None'}
-- Blot exposure after optimal move: ${bestShots.length} blot(s), totaling ${totalBestShots} shots/36.
-  Optimal blots detail: ${bestShots.length > 0 ? bestShots.map((b) => `Point ${b.point} (${b.totalShots} shots)`).join(', ') : 'None'}
-- Home board structure: ${features.boardStructure.innerBoardPoints} closed home board point(s).
-- Key points control:
-  - Golden Point (Point 5): ${features.boardStructure.goldenPoint ? 'Controlled' : 'Not controlled'}
-  - Bar Point (Point 7): ${features.boardStructure.barPoint ? 'Controlled' : 'Not controlled'}
-  - Advanced anchor: ${features.boardStructure.advancedAnchor ? 'Yes' : 'No'}
-  - Longest consecutive prime: ${features.boardStructure.longestPrime} points${bgsageSectionEn}
-
-Write your explanation in the requested strict JSON format.`;
-    }
-
-    return `Voici les données vérifiées de la position et du coup analysé :
-
-## DIAGNOSTIC DU MOTEUR :
-- Verdict : ${verdict.toUpperCase()} (Perte d'équité : ${equityLoss.toFixed(3)})
-- Coup joué par le joueur : "${playedMove}"
-- Coup optimal recommandé par le moteur : "${optimalMove}"
-- Niveau déclaré du joueur : ${playerLevel}
-
-## CONTEXTE DE MATCH :
-${matchInfo}${marketSectionFr}
-
-## CONCEPTS STRATÉGIQUES EXTRAITS :
-- Situation de jeu : ${features.contactStatus === 'contact' ? 'Jeu avec contact' : 'Course pure sans contact'}
-- Course aux pips : ${raceLeaderStr}
-- Exposition des blots après le coup joué : ${userShots.length} blot(s) exposé(s), totalisant ${totalUserShots} tirs/36 favorables à l'adversaire.
-  Détail des blots joués : ${userShots.length > 0 ? userShots.map((b) => `Flèche ${b.point} (${b.totalShots} tirs)`).join(', ') : 'Aucun'}
-- Exposition des blots après le coup optimal : ${bestShots.length} blot(s), totalisant ${totalBestShots} tirs/36.
-  Détail des blots optimaux : ${bestShots.length > 0 ? bestShots.map((b) => `Flèche ${b.point} (${b.totalShots} tirs)`).join(', ') : 'Aucun'}
-- Structure du jan intérieur : ${features.boardStructure.innerBoardPoints} porte(s) fermée(s) dans le jan intérieur.
-- Contrôle des points clés :
-  - Golden Point (Point 5) : ${features.boardStructure.goldenPoint ? 'Contrôlé' : 'Non contrôlé'}
-  - Bar Point (Point 7) : ${features.boardStructure.barPoint ? 'Contrôlé' : 'Non contrôlé'}
-  - Ancre avancée : ${features.boardStructure.advancedAnchor ? 'Oui' : 'Non'}
-  - Plus longue prime consécutive : ${features.boardStructure.longestPrime} portes consécutives${bgsageSectionFr}
-
-Rédige ton explication au format JSON strict demandé.`;
-}
-
-/**
- * Générateur d'explication heuristique de repli sans appel LLM (offline / mode dégradé / secours).
- * Produit une explication pédagogique règle-basée directement depuis les concepts stratégiques extraits.
- */
-export function generateRuleBasedExplanation(params: CoachPromptParams): CoachStructuredResponse {
-    const {
-        verdict = 'douteux',
-        equityLoss = -0.05,
-        playedMove = 'Coup joué',
-        optimalMove = 'Coup optimal',
-        features,
-        matchContext,
-        language = 'fr',
-    } = params;
-
-    const isEn = language === 'en';
-
-    const diff = features?.pipCountDiff ?? {
-        player: 150,
-        opponent: 150,
-        leader: 'tie',
-        diff: 0,
-    };
-    const player = features?.player ?? 'X';
-    const isLeadingRace = diff.leader === player;
-    const userBlots = features?.blotsAndShots?.user ?? [];
-    const bestBlots = features?.blotsAndShots?.best ?? [];
-
-    const userShots = Math.min(36, userBlots.reduce((acc, b) => acc + b.totalShots, 0));
-    const bestShots = Math.min(36, bestBlots.reduce((acc, b) => acc + b.totalShots, 0));
-
-    const board = features?.boardStructure ?? {
-        innerBoardPoints: 2,
-        advancedAnchor: false,
-        goldenPoint: false,
-        barPoint: false,
-        longestPrime: 2,
-    };
-    const contactStatus = features?.contactStatus ?? 'contact';
-
-    let summary = isEn
-        ? `Your move ${playedMove} is a ${verdict} (-${Math.abs(equityLoss).toFixed(3)} equity) compared to ${optimalMove}.`
-        : `Votre coup ${playedMove} est ${verdict} (-${Math.abs(equityLoss).toFixed(3)} d'équité) par rapport à ${optimalMove}.`;
-    let explanation = '';
-    let keyConcept = isEn ? 'Safety & Racing' : 'Sécurité & Course';
-    let advice = isEn
-        ? 'Always assess the number of opponent shots conceded before dispersing your checkers.'
-        : 'Évaluez toujours le nombre de tirs concédés avant de disperser vos pions.';
-    let whyFailed = '';
-    let whyOptimal = '';
-    let conceptId = 'pure-play';
-
-    if (userShots > bestShots && userBlots.length > 0) {
-        summary = isEn
-            ? `The move concedes ${userShots} direct shots compared to only ${bestShots} for the best move.`
-            : `Le coup concède ${userShots} tirs directs contre seulement ${bestShots} pour le meilleur coup.`;
-        whyFailed = isEn
-            ? `By playing ${playedMove}, you leave a vulnerable blot giving the opponent ${userShots} rolls out of 36 to hit.`
-            : `En jouant ${playedMove}, vous laissez un blot vulnérable offrant à l'adversaire ${userShots} chances sur 36 de frapper.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} reduces this exposure to ${bestShots} shots while securing structure.`
-            : `Le coup optimal ${optimalMove} réduit cette exposition à ${bestShots} tirs tout en consolidant votre structure.`;
-        explanation = `${whyFailed} ${whyOptimal}`;
-        keyConcept = isEn ? 'Shot Minimization' : 'Minimisation des tirs';
-        advice = isEn
-            ? 'When your opponent has a strong home board, every blot left is a major gammon risk.'
-            : 'Quand votre adversaire a un jan intérieur solide, chaque blot concédé est un risque majeur de gammon.';
-        conceptId = 'duplication';
-    } else if (isLeadingRace && contactStatus === 'contact' && Math.abs(diff.diff) >= 8) {
-        summary = isEn
-            ? `You lead the race by ${Math.abs(diff.diff)} pips: breaking contact safely is the absolute priority.`
-            : `Vous menez la course de ${Math.abs(diff.diff)} pips : la priorité absolue est de rompre le contact sans risque.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} unnecessarily complicates the game while holding a ${Math.abs(diff.diff)} pip lead.`
-            : `Jouer ${playedMove} complique inutilement le jeu alors que vous menez de ${Math.abs(diff.diff)} pips.`;
-        whyOptimal = isEn
-            ? `The move ${optimalMove} cleanly breaks contact to steer straight towards the bear-off race.`
-            : `Le coup ${optimalMove} rompt proprement le contact pour filer droit vers la course de sortie.`;
-        explanation = `${whyFailed} ${whyOptimal}`;
-        keyConcept = isEn ? 'Racing Lead Rule' : 'Règle de course en avance';
-        advice = isEn
-            ? 'When ahead in the race, avoid contact and do not look for confrontation.'
-            : 'En avance à la course, fuyez le contact et ne cherchez pas la confrontation.';
-        conceptId = 'running-game';
-    } else if (board.longestPrime >= 4) {
-        summary = isEn
-            ? `A prime of ${board.longestPrime} consecutive points offers a decisive strategic lock.`
-            : `Une prime de ${board.longestPrime} portes consécutives offre un verrouillage stratégique décisif.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} weakens or dismantles your ${board.longestPrime}-point prime barricade.`
-            : `Jouer ${playedMove} affaiblit ou disloque votre mur de prime de ${board.longestPrime} portes.`;
-        whyOptimal = isEn
-            ? `Playing ${optimalMove} preserves or extends the prime to completely paralyze opponent escape.`
-            : `Le coup ${optimalMove} consolide ou prolonge la prime pour paralyser totalement l'évasion adverse.`;
-        explanation = `${whyFailed} ${whyOptimal}`;
-        keyConcept = isEn ? 'Prime Construction' : 'Construction de Prime';
-        advice = isEn
-            ? 'Against trapped opponent checkers, extending your prime always trumps racing.'
-            : 'Face à des pions adverses piégés, étendre votre prime prime toujours sur la course.';
-        conceptId = 'prime-vs-prime';
-    } else if (board.goldenPoint || optimalMove.includes('/5') || optimalMove.includes('/20')) {
-        summary = isEn
-            ? `The 5-point (Golden Point) is the single most valuable strategic point on the entire backgammon board.`
-            : `Faire la porte du 5 (Golden Point) est le coup le plus précieux et fondamental du Backgammon.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} completely misses securing the master 5-point, leaving an uncoordinated structure.`
-            : `Jouer ${playedMove} passe à côté de la création du Golden Point et disperse vos pions sans rien construire.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} constructs the 5-point, immediately blocking opponent escapes and establishing dominance.`
-            : `Le coup optimal ${optimalMove} verrouille la porte du 5 : il bloque la sortie adverse et installe une forteresse imprenable.`;
-        explanation = `${whyFailed} ${whyOptimal}`;
-        keyConcept = isEn ? 'Golden Point Control' : 'Contrôle du Golden Point';
-        advice = isEn
-            ? 'The 5-point is the cornerstone of both offense and defense: secure it whenever the dice allow!'
-            : 'Le Point 5 est la clé de voûte de toute attaque et défense : sécurisez-le dès que les dés le permettent !';
-        conceptId = 'golden-point';
-    } else if (board.barPoint || optimalMove.includes('/7') || optimalMove.includes('/18')) {
-        summary = isEn
-            ? `Securing the 7-point (Bar Point) establishes a dominant block against opponent rear checkers.`
-            : `Faire la porte du 7 (Bar Point) bloque la fuite des pions adverses et amorce une prime.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} misses constructing the crucial 7-point barricade.`
-            : `Jouer ${playedMove} néglige de verrouiller la barricade du 7.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} locks down the 7-point to restrict opponent escapes by 6s.`
-            : `Le coup optimal ${optimalMove} verrouille le point 7 pour interdire les fuites par un 6.`;
-        explanation = `${whyFailed} ${whyOptimal}`;
-        keyConcept = isEn ? 'Bar Point Control' : 'Contrôle du Bar Point';
-        advice = isEn
-            ? 'The bar point bridges your home board and outfield to contain opposing checkers.'
-            : 'La porte du Bar (7) fait le pont et piège les pions adverses à 6 cases.';
-        conceptId = 'pure-play';
-    } else if (optimalMove.includes('/4') || optimalMove.includes('/3')) {
-        summary = isEn
-            ? `Closing gates in the home board increases hitting threats and restricts opponent reentry.`
-            : `Fermer une porte intérieure renforce votre jan et complique la réentrée adverse.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} fails to close a defensive home gate.`
-            : `Jouer ${playedMove} disperse vos pions au lieu de fermer une porte protectrice.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} builds a solid home board gate.`
-            : `Le coup optimal ${optimalMove} construit une solide porte dans votre jan intérieur.`;
-        explanation = `${whyFailed} ${whyOptimal}`;
-        keyConcept = isEn ? 'Home Board Gate' : 'Porte Intérieure';
-        advice = isEn
-            ? 'Making home board gates protects against hits and sets up gammon pressure.'
-            : 'Fermer des portes dans son jan intérieur protège vos pions et prépare le verrouillage.';
-        conceptId = 'pure-play';
-    } else if (board.advancedAnchor) {
-        summary = isEn
-            ? `The advanced anchor guarantees safety and restricts your opponent.`
-            : `L'ancre avancée assure votre sécurité et bride l'adversaire.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} gives up or neglects the advanced anchor without overwhelming compensation.`
-            : `Jouer ${playedMove} délaisse l'ancre avancée sans compensation majeure immédiate.`;
-        whyOptimal = isEn
-            ? `Playing ${optimalMove} maintains strong anchor connectivity and outfield control.`
-            : `Jouer ${optimalMove} maintient l'ancre avancée et le contrôle du jan adverse.`;
-        explanation = `${whyFailed} ${whyOptimal}`;
-        keyConcept = isEn ? 'Advanced Anchor' : 'Ancre avancée';
-        advice = isEn
-            ? 'Never dismantle an advanced anchor without overwhelming immediate compensation.'
-            : 'Ne démontez jamais une ancre avancée sans une compensation immédiate écrasante.';
-        conceptId = 'advanced-anchor';
-    } else {
-        whyFailed = isEn
-            ? `Playing ${playedMove} weakens your tactical coordination without securing key points or escaping rear checkers.`
-            : `Le coup joué ${playedMove} disperse vos pions sans construire de porte protectrice et affaiblit votre position.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} consolidates your structure and maximizes connectivity between your checkers.`
-            : `Le coup optimal ${optimalMove} consolide votre structure et maximise la sécurité et l'efficacité de vos pions.`;
-        explanation = `${whyFailed} ${whyOptimal}`;
-        conceptId = 'pure-play';
-    }
-
-    // Complément neuronal Open Sage (probabilités exactes et plan de jeu Grand-Maître)
-    if (features?.bgsage?.optimalMetrics && features?.bgsage?.playedMetrics) {
-        const opt = features.bgsage.optimalMetrics;
-        const pld = features.bgsage.playedMetrics;
-        const winDrop = ((opt.winProb - pld.winProb) * 100).toFixed(1);
-        const plan = features.bgsage.playerGamePlan;
-        explanation += isEn
-            ? ` (Open Sage ${features.bgsage.evalLevel}: Win probability drops by ${winDrop}% [${(opt.winProb * 100).toFixed(1)}% → ${(pld.winProb * 100).toFixed(1)}%], plan: ${plan}).`
-            : ` (Open Sage ${features.bgsage.evalLevel} : vos chances de gain chutent de ${winDrop}% [${(opt.winProb * 100).toFixed(1)}% → ${(pld.winProb * 100).toFixed(1)}%], plan : ${plan}).`;
-    }
-
-    // Complément sur la volatilité du videau (Market Window / Market Loss)
-    if (features?.marketWindow?.inMarketWindow && features.marketWindow.volatility === 'high') {
-        const mw = features.marketWindow;
-        explanation += isEn
-            ? ` [Market Window: High volatility (~${mw.estimatedMarketLosers}/36 market losers, cash point ${(mw.cashPoint * 100).toFixed(1)}%)].`
-            : ` [Fenêtre de marché : Volatilité élevée (~${mw.estimatedMarketLosers}/36 séquences de perte de marché, cash point ${(mw.cashPoint * 100).toFixed(1)}%)].`;
-        if (conceptId === 'pure-play') {
-            conceptId = 'market-loss';
-        }
-    }
-
-    // Complément contextuel selon la situation du match
-    if (matchContext) {
-        const ctx = buildMatchContext(matchContext);
-        if (ctx.isDMP) {
-            explanation += isEn
-                ? `\n\n🎯 DMP Context: 1 point to win, gammons do not count.`
-                : `\n\n🎯 Contexte DMP : À 1 point de la victoire, les gammons ne comptent pas.`;
-        } else if (ctx.crawford) {
-            explanation += isEn
-                ? `\n\n🛡️ Crawford Rule: Doubling cube is frozen.`
-                : `\n\n🛡️ Règle de Crawford : Videau gelé pour cette manche.`;
-        } else if (ctx.gammonPrice && ctx.gammonPrice.X > 0.6) {
-            explanation += isEn
-                ? `\n\n⚠️ Match Context: High gammon price (${(ctx.gammonPrice.X * 100).toFixed(0)}%). Extreme safety required.`
-                : `\n\n⚠️ Contexte de match : Prix du gammon très élevé (${(ctx.gammonPrice.X * 100).toFixed(0)}%). Prudence maximale.`;
-        }
-    }
-
-    const baseResult: CoachStructuredResponse = {
-        verdict,
-        summary,
-        explanation,
-        keyConcept,
-        advice,
-        whyFailed,
-        whyOptimal,
-        conceptId,
-    };
-
-    if (language !== 'fr' && language !== 'en') {
-        return localizeOfflineExplanation(baseResult, params);
-    }
-
-    return baseResult;
 }

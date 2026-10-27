@@ -270,4 +270,68 @@ describe('useCoach hook', () => {
         expect(result.current.coach?.optimalMove).toBe('Opt-50');
         expect(result.current.matchStats.decisionsCount).toBe(1);
     });
+
+    it('persiste le panneau coach lors d’un nouveau lancer humain tout en effaçant coachHighlight et en alimentant coachHistory', async () => {
+        const initial = createInitialState(7);
+        vi.spyOn(logAnalyzer, 'analyzeHumanMoveFromLogWithBgsage').mockResolvedValueOnce({
+            turnIndex: 1,
+            player: 'X',
+            verdict: 'blunder',
+            equityLoss: -0.18,
+            playedNotation: '24/23 24/22',
+            optimalNotation: '8/5 6/5',
+            optimalMoves: [{ from: 8, to: 5 }, { from: 6, to: 5 }],
+            isBlunder: true,
+            isUnforced: true,
+            playedEquity: -0.05,
+            bestEquity: 0.13,
+            source: 'bgsage',
+            candidateMoves: [{ notation: '8/5 6/5', equity: 0.13, equityLoss: 0 }],
+        });
+
+        const baseGame = {
+            state: { ...initial, turn: 'O' as 'X' | 'O' },
+            dice: null as [number, number] | null,
+            undoMove: vi.fn(),
+            difficulty: 'expert' as const,
+            moveHistory: [{ player: 'X' as const, moves: [{ from: 24, to: 23 }] }],
+            matchLog: [
+                {
+                    turnIndex: 1,
+                    player: 'X' as const,
+                    dice: [3, 1] as const,
+                    boardBefore: initial.board,
+                    movePlayed: [{ from: 24, to: 23 }, { from: 24, to: 22 }],
+                    boardAfter: initial.board,
+                },
+            ],
+        };
+
+        const { result, rerender } = renderHook(
+            ({ g }) => useCoach({ game: g, ...createEmptyRefs() }),
+            { initialProps: { g: baseGame } },
+        );
+
+        await waitFor(() => expect(result.current.coach).not.toBeNull());
+        expect(result.current.coachHighlight).not.toBeNull();
+        expect(result.current.coachHistory).toHaveLength(1);
+
+        // Nouveau lancer humain : coach reste affiché, mais coachHighlight est effacé du plateau actif
+        rerender({
+            g: {
+                ...baseGame,
+                state: { ...initial, turn: 'X' },
+                dice: [5, 2],
+            },
+        });
+
+        expect(result.current.coach).not.toBeNull();
+        expect(result.current.coach?.optimalMove).toBe('8/5 6/5');
+        expect(result.current.coachHighlight).toBeNull();
+
+        // Sélection dans coachHistory restaure l'analyse et ses flèches
+        act(() => result.current.selectCoachHistoryIndex(0));
+        expect(result.current.selectedCoachHistoryIndex).toBe(0);
+        expect(result.current.coachHighlight).not.toBeNull();
+    });
 });

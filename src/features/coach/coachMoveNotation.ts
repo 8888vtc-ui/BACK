@@ -130,7 +130,7 @@ export function formatStandardMoveSequence(
  *
  * Algorithme déterministe :
  *   1. Collecte les sources (pions retirés) et destinations (pions ajoutés).
- *   2. Apparie les entrées de barre en priorité (`bar/x`).
+ *   2. Apparie les entrées de barre en premier (`bar/x`).
  *   3. Apparie les sorties (`x/off`) en dernier.
  *   4. Apparie le reste par distance croissante (heuristique stable).
  *
@@ -150,7 +150,6 @@ export function movesFromBoardDiff(
     const before = [...boardBefore];
     const after = [...boardAfter];
 
-    const isMine = (v: number) => (player === 'X' ? v > 0 : v < 0);
     const myCount = (v: number) => (player === 'X' ? Math.max(0, v) : Math.max(0, -v));
 
     const barIndex = player === 'X' ? X_BAR : O_BAR;
@@ -191,9 +190,9 @@ export function movesFromBoardDiff(
     const offDests = destinations.filter((d) => d === offIndex);
     const pointDests = destinations.filter((d) => d !== offIndex);
 
-    // Appariement barre → flèche : la destination la plus proche du jan du joueur.
+    // Appariement barre → flèche : X entre en 24..19 (décroissant), O entre en 1..6 (croissant).
     const sortedPointDests = [...pointDests].sort((a, b) =>
-        player === 'X' ? a - b : b - a,
+        player === 'X' ? b - a : a - b,
     );
     for (const _ of barSources) {
         const dst = sortedPointDests.shift();
@@ -201,19 +200,23 @@ export function movesFromBoardDiff(
         moves.push({ from: barIndex, to: dst });
     }
 
-    // Appariement flèche → flèche : sources les plus avancées d'abord.
+    // Appariement flèche → flèche : sources les plus reculées d'abord (24→1 pour X, 1→24 pour O).
     const sortedSources = [...otherSources].sort((a, b) =>
-        player === 'X' ? a - b : b - a,
+        player === 'X' ? b - a : a - b,
     );
+    const remainingSources: number[] = [];
     for (const src of sortedSources) {
         const dst = sortedPointDests.shift();
-        if (dst === undefined) break;
-        moves.push({ from: src, to: dst });
+        if (dst !== undefined) {
+            moves.push({ from: src, to: dst });
+        } else {
+            remainingSources.push(src);
+        }
     }
 
     // Appariement flèche → sortie.
     for (const _ of offDests) {
-        const src = sortedSources.shift();
+        const src = remainingSources.shift();
         if (src === undefined) break;
         moves.push({ from: src, to: offIndex });
     }
@@ -258,8 +261,8 @@ export function formatCoachMoveSequenceFromBoard(
 }
 
 /**
- * Normalise une notation pour comparaison insensible à l'ordre et aux astérisques.
- * Exemple : `"13/11 8/5"` ≡ `"8/5 13/11"`.
+ * Normalise une notation pour comparaison insensible à l'ordre, aux astérisques et aux multiplicateurs.
+ * Exemple : `"13/11 8/5"` ≡ `"8/5 13/11"`, `"8/5(2)"` ≡ `"8/5 8/5"`.
  */
 export function normalizeCoachNotation(notation: string): string {
     if (!notation) return '';
@@ -269,6 +272,12 @@ export function normalizeCoachNotation(notation: string): string {
         .toLowerCase()
         .split(/\s+/)
         .filter(Boolean)
+        .flatMap((token) => {
+            const m = token.match(/^(.+)\((\d+)\)$/);
+            if (!m) return [token];
+            const count = Math.max(1, Math.min(4, Number(m[2])));
+            return Array.from({ length: count }, () => m[1]);
+        })
         .sort()
         .join(' ');
 }
@@ -288,12 +297,12 @@ export function relativeNotationToAbsolute(notation: string, player: Player): st
         .split(/\s+/)
         .filter(Boolean)
         .map((token) => {
-            const match = token.match(/^(bar|\d+)\/(off|\d+)(\*?)$/);
+            const match = token.match(/^(bar|\d+)\/(off|\d+)(\*?)(\(\d+\))?$/i);
             if (!match) return token;
-            const [, fromStr, toStr, star] = match;
-            const from = fromStr === 'bar' ? O_BAR : 25 - Number(fromStr);
-            const to = toStr === 'off' ? O_OFF : 25 - Number(toStr);
-            return `${formatCoachPoint(from, false)}/${formatCoachPoint(to, true)}${star ?? ''}`;
+            const [, fromStr, toStr, star, mult] = match;
+            const from = fromStr.toLowerCase() === 'bar' ? O_BAR : 25 - Number(fromStr);
+            const to = toStr.toLowerCase() === 'off' ? O_OFF : 25 - Number(toStr);
+            return `${formatCoachPoint(from, false)}/${formatCoachPoint(to, true)}${star ?? ''}${mult ?? ''}`;
         })
         .join(' ');
 }
@@ -317,4 +326,3 @@ export function parseCoachNotationMoves(notation: string, player: Player = 'X'):
             return Array.from({ length: count }, () => ({ from, to }));
         });
 }
-

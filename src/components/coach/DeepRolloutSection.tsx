@@ -28,7 +28,7 @@ export interface DeepRolloutSectionProps {
 
 export const TRIAL_OPTIONS = [
     { value: 324, label: '324 parties', speed: 'Rapide (~1s)' },
-    { value: 1296, label: '1296 parties', speed: 'Standard GNUBG (~4s)' },
+    { value: 1296, label: '1296 parties', speed: 'Standard Monte-Carlo (~4s)' },
     { value: 2592, label: '2592 parties', speed: 'Haute précision (~8s)' },
 ];
 
@@ -80,7 +80,7 @@ export default function DeepRolloutSection({
     // Position XGID par défaut si non fournie
     const activeXgid = xgid || 'XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:0:10';
 
-    // Chargement périodique des stats du pool de workers
+    // Chargement des stats du pool de workers (au montage, puis périodiquement uniquement si un calcul est actif)
     useEffect(() => {
         let mounted = true;
         const fetchStats = async () => {
@@ -92,13 +92,18 @@ export default function DeepRolloutSection({
             }
         };
 
-        fetchStats();
+        void fetchStats();
+        if (status !== 'running' && status !== 'queued') {
+            return () => {
+                mounted = false;
+            };
+        }
         const interval = setInterval(fetchStats, 6000);
         return () => {
             mounted = false;
             clearInterval(interval);
         };
-    }, [apiBase]);
+    }, [apiBase, status]);
 
     // Nettoyage de l'abonnement SSE lors du démontage
     useEffect(() => {
@@ -127,28 +132,15 @@ export default function DeepRolloutSection({
         });
 
         try {
-            const { jobId } = await submitRollout(
-                {
-                    xgid: activeXgid,
-                    trials,
-                    ply: 2,
-                    candidateMoves,
-                },
-                apiBase
-            );
-
+            const { jobId } = await submitRollout({ xgid: activeXgid, trials, ply: 2, candidateMoves }, apiBase);
             setCurrentJobId(jobId);
             setStatus('running');
-
-            // Abonnement au flux SSE temps réel
             unsubscribeRef.current = subscribeRolloutProgress(
                 jobId,
                 {
                     onProgress: (prog) => {
                         setProgress(prog);
-                        if (prog.status === 'running') {
-                            setStatus('running');
-                        }
+                        if (prog.status === 'running') setStatus('running');
                     },
                     onComplete: (rolloutResult) => {
                         setStatus('completed');
@@ -162,11 +154,11 @@ export default function DeepRolloutSection({
                         }
                     },
                 },
-                apiBase
+                apiBase,
             );
-        } catch (err: any) {
+        } catch (err: unknown) {
             setStatus('failed');
-            setErrorMessage(err?.message || 'Impossible de contacter le pool de workers.');
+            setErrorMessage(err instanceof Error && err.message ? err.message : 'Impossible de contacter le pool de workers.');
         }
     };
 
@@ -175,10 +167,8 @@ export default function DeepRolloutSection({
         setIsCancelling(true);
         try {
             await cancelRollout(currentJobId, apiBase);
-            if (unsubscribeRef.current) {
-                unsubscribeRef.current();
-                unsubscribeRef.current = null;
-            }
+            unsubscribeRef.current?.();
+            unsubscribeRef.current = null;
             setStatus('cancelled');
             setErrorMessage('Rollout annulé par l’utilisateur.');
         } catch {
@@ -190,64 +180,47 @@ export default function DeepRolloutSection({
 
     return (
         <section
-            aria-label={t('rollout.title')}
-            data-testid="deep-rollout-section"
+            aria-label={t('rollout.title')} data-testid="deep-rollout-section"
             className={`rounded-xl border border-slate-700/80 bg-slate-900/95 p-4 text-slate-100 shadow-xl backdrop-blur-md ${className}`}
         >
-            {/* Entête avec badge du pool de workers */}
             <RolloutHeader poolStats={poolStats} status={status} t={t} />
 
             {/* Coups comparés */}
             <div className="mt-3 rounded-lg bg-slate-800/40 p-2.5 border border-slate-800">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">
-                    {t('rollout.candidateMoves')}
-                </span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">{t('rollout.candidateMoves')}</span>
                 <div className="flex flex-wrap items-center gap-2">
                     {candidateMoves.map((m, idx) => (
                         <div
                             key={m}
-                            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-mono font-medium ${idx === 0
-                                ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60'
-                                : 'bg-slate-800 text-slate-200 border border-slate-700'
-                                }`}
+                            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-mono font-medium ${
+                                idx === 0 ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60' : 'bg-slate-800 text-slate-200 border border-slate-700'
+                            }`}
                         >
-                            <span className="text-[10px] font-bold text-slate-400">#{idx + 1}</span>
+                            <span className="text-[11px] font-bold text-slate-400">#{idx + 1}</span>
                             <span>{m}</span>
-                            {idx === 0 && (
-                                <span className="rounded bg-emerald-800/80 px-1 text-[9px] font-semibold text-emerald-200">
-                                    optimal
-                                </span>
-                            )}
-                            {idx === 1 && playedMove && m === playedMove && (
-                                <span className="rounded bg-amber-800/80 px-1 text-[9px] font-semibold text-amber-200">
-                                    joué
-                                </span>
-                            )}
+                            {idx === 0 && <span className="rounded bg-emerald-800/80 px-1 text-[11px] font-semibold text-emerald-200">optimal</span>}
+                            {idx === 1 && playedMove && m === playedMove && <span className="rounded bg-amber-800/80 px-1 text-[11px] font-semibold text-amber-200">joué</span>}
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Sélecteur de trials (lorsqu'aucun calcul n'est en cours) */}
+            {/* Sélecteur de trials */}
             {status !== 'running' && status !== 'queued' && (
                 <div className="mt-3">
-                    <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">
-                        {t('rollout.precisionLabel')}
-                    </label>
+                    <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">{t('rollout.precisionLabel')}</label>
                     <div className="grid grid-cols-3 gap-2">
                         {trialOptions.map((opt) => (
                             <button
-                                key={opt.value}
-                                type="button"
-                                data-testid={`trial-opt-${opt.value}`}
-                                onClick={() => setTrials(opt.value)}
-                                className={`flex flex-col items-center justify-center rounded-lg p-2 text-center transition-all ${trials === opt.value
-                                    ? 'bg-blue-600/30 border-2 border-blue-500 text-white shadow-sm shadow-blue-500/20'
-                                    : 'bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-                                    }`}
+                                key={opt.value} type="button" data-testid={`trial-opt-${opt.value}`} onClick={() => setTrials(opt.value)}
+                                className={`flex flex-col items-center justify-center rounded-lg p-2 text-center transition-all ${
+                                    trials === opt.value
+                                        ? 'bg-blue-600/30 border-2 border-blue-500 text-white shadow-sm shadow-blue-500/20'
+                                        : 'bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                                }`}
                             >
                                 <span className="text-xs font-bold">{opt.label}</span>
-                                <span className="text-[10px] text-slate-400 mt-0.5">{opt.speed}</span>
+                                <span className="text-[11px] text-slate-400 mt-0.5">{opt.speed}</span>
                             </button>
                         ))}
                     </div>

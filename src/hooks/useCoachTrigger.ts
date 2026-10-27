@@ -9,6 +9,8 @@ import {
     generateRuleBasedExplanation,
     buildMatchContext,
 } from '../features/coach';
+import { detectLocale } from '../lib/i18n/I18nContext';
+import type { Locale } from '../lib/i18n/types';
 import { mapGameCubeAction, type CubeAction, type CubeActionType } from '../features/coach/cubeCoach';
 import { analyzeBoardMoves } from '../lib/engine/evaluator';
 import { evaluatePosition } from '../lib/analysisService';
@@ -114,25 +116,29 @@ export async function runManualTriggerAnalysis(
     evalDice: [number, number],
     matchLog?: ReadonlyArray<MatchLogEntry>,
     hasActiveDice: boolean = false,
+    pendingEntry?: MatchLogEntry,
 ): Promise<{ coachState: CoachState; highlight: CoachHighlight }> {
-    const lastHumanEntry = !hasActiveDice && matchLog ? [...matchLog].reverse().find((e) => e.player === 'X') : undefined;
-    if (lastHumanEntry) {
+    const entryToAnalyze =
+        pendingEntry ?? (!hasActiveDice && matchLog ? [...matchLog].reverse().find((e) => e.player === 'X') : undefined);
+    if (entryToAnalyze) {
         const result = await analyzeHumanMoveFromLogWithBgsage({
-            logEntry: lastHumanEntry,
+            logEntry: entryToAnalyze,
             localPlayer: 'X',
             cubeValue: stateToEval.cubeValue,
+            cubeOwner: stateToEval.cubeOwner,
+            crawford: stateToEval.crawford,
             matchLength: stateToEval.matchLength,
             scoreX: stateToEval.scoreX,
             scoreO: stateToEval.scoreO,
             ply: 2,
         });
         if (result) {
-            const loggedMoves = [...lastHumanEntry.movePlayed];
+            const loggedMoves = [...entryToAnalyze.movePlayed];
             const playedMoves =
-                loggedMoves.length > 0 ? loggedMoves : movesFromBoardDiff(lastHumanEntry.boardBefore, lastHumanEntry.boardAfter, 'X');
-            const playedNotation = formatCoachMoveSequence(playedMoves, 'X', lastHumanEntry.boardBefore);
+                loggedMoves.length > 0 ? loggedMoves : movesFromBoardDiff(entryToAnalyze.boardBefore, entryToAnalyze.boardAfter, 'X');
+            const playedNotation = formatCoachMoveSequence(playedMoves, 'X', entryToAnalyze.boardBefore);
             return buildCoachStateFromLogResult({
-                lastEntry: lastHumanEntry,
+                lastEntry: entryToAnalyze,
                 result,
                 playedMoves,
                 playedNotation,
@@ -186,7 +192,7 @@ export async function runManualTriggerAnalysis(
             cubeOwner: stateToEval.cubeOwner,
             crawford: stateToEval.crawford,
         }),
-        language: 'fr',
+        language: typeof window !== 'undefined' ? detectLocale() : 'fr',
     });
 
     return {
@@ -198,7 +204,7 @@ export async function runManualTriggerAnalysis(
             explanation: ruleBased.explanation,
             whyFailed: undefined,
             whyOptimal: ruleBased.whyOptimal,
-            summary: `Recommandation Open Sage sur [${evalDice[0]}-${evalDice[1]}] : ${absoluteBestNotation}`,
+            summary: `Recommandation Coach Monte-Carlo sur [${evalDice[0]}-${evalDice[1]}] : ${absoluteBestNotation}`,
             features,
             positionKey: serializeXGID(stateToEval),
             candidateMoves: candidates.slice(0, 5).map((m, idx) => {

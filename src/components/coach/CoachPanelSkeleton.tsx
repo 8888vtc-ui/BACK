@@ -12,11 +12,11 @@ export default function CoachPanelSkeleton({ message }: { message?: string }) {
     const effectiveMessage = message ?? t('coach.explaining');
 
     return (
-        <aside
+        <div
             role="status"
             aria-live="polite"
             aria-label={effectiveMessage}
-            className="w-full max-w-5xl animate-pulse rounded-2xl border border-[#d4af37]/45 bg-gradient-to-b from-[#1a130b]/95 to-[#0b0f18]/95 p-4 shadow-xl backdrop-blur-sm"
+            className="w-full max-w-5xl animate-pulse rounded-xl border border-[#d4af37]/45 bg-gradient-to-b from-[#1a130b]/95 to-[#0b0f18]/95 p-2.5 shadow-xl backdrop-blur-sm"
         >
             {/* Header avec radar / spinner discret */}
             <div className="flex items-center justify-between border-b border-[#d4af37]/25 pb-3">
@@ -59,6 +59,6 @@ export default function CoachPanelSkeleton({ message }: { message?: string }) {
                 <div className="h-9 w-44 rounded-md bg-slate-700/70" />
                 <div className="h-3 w-32 rounded bg-slate-700/40" />
             </div>
-        </aside>
+        </div>
     );
 }

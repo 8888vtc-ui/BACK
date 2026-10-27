@@ -91,7 +91,7 @@ describe('CoachMoveComparisonCard', () => {
         );
         expect(html).toContain('Blanc (X)');
         expect(html).toContain('Votre coup joué');
-        expect(html).toContain('Meilleur coup Open Sage');
+        expect(html).toContain('Meilleur coup Monte-Carlo');
     });
 });
 

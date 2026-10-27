@@ -1,28 +1,17 @@
 'use client';
 
 /**
- * Barre résumée du Coach sur mobile (< lg).
+ * Barre résumée du Coach sur tablette / fenêtre réduite (md..lg).
  *
  * Rôle :
- *   Affiche en bas de l'écran une barre compacte toujours visible :
+ *   Affiche une pilule flottante en haut à droite sous le MatchHeader :
  *     `PR actuel | Dernier verdict | [Ouvrir l'analyse]`
- *   Le toucher du bouton déplie le Bottom Sheet (`CoachMobileDrawer`).
- *
- *   La barre n'apparaît que si une analyse existe ou si le Coach est en cours
- *   d'analyse, afin de ne pas encombrer l'écran de jeu.
- *
- * Composant 100 % muet (LOI 5).
- *
- * Dépendances :
- *   Aucune (présentation pure).
- *
- * Retrait :
- *   Supprimer ce fichier et son usage dans `CoachMobileDrawer.tsx`.
+ *   Sans jamais entrer en collision avec le MobileThumbDock (< md) ni avec
+ *   la MoveTimelineBar en bas du plateau.
  */
 
 import React from 'react';
 import { classifyDecisionTier, getTierStyle } from './CoachMoveComparisonCard';
-
 import type { CoachDisplayVerdict } from './coachPanelHelpers';
 
 export interface CoachMobileSummaryBarProps {
@@ -48,9 +37,8 @@ const CoachMobileSummaryBarComponent: React.FC<CoachMobileSummaryBarProps> = ({
     onOpen,
     locale = 'fr',
 }) => {
-    const isEn = locale === 'en';
+    const isEn = Boolean(locale && locale !== 'fr');
 
-    // Rien à résumer : ni analyse, ni calcul en cours.
     if (!verdict && !isAnalyzing) return null;
 
     const tier = classifyDecisionTier(equityLoss);
@@ -63,35 +51,34 @@ const CoachMobileSummaryBarComponent: React.FC<CoachMobileSummaryBarProps> = ({
     return (
         <div
             data-testid="coach-mobile-summary-bar"
-            className="lg:hidden fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-indigo-500/50 bg-slate-950/95 px-3 py-2 backdrop-blur-xl shadow-2xl"
-            style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
+            className="hidden md:flex lg:hidden fixed top-14 right-3 z-30 max-w-md items-center gap-2 rounded-2xl border border-[#d4af37]/50 bg-[#120b06]/95 px-3 py-1.5 text-[#fdf8eb] backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.85)]"
         >
             {/* PR actuel */}
             <div className="flex flex-col items-center leading-none shrink-0">
                 <span
                     data-testid="coach-mobile-pr"
-                    className="font-mono text-sm font-black text-white"
+                    className="font-mono text-sm font-black text-[#f3c65f]"
                 >
                     {pr !== null && Number.isFinite(pr) ? pr.toFixed(2) : '--'}
                 </span>
-                <span className="text-[8px] font-bold uppercase tracking-wider text-slate-500">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     PR
                 </span>
             </div>
 
-            <div className="h-7 w-px bg-slate-700 shrink-0" aria-hidden="true" />
+            <div className="h-6 w-px bg-[#d4af37]/30 shrink-0" aria-hidden="true" />
 
             {/* Dernier verdict */}
             <div className="flex min-w-0 flex-1 items-center gap-1.5">
                 {isAnalyzing ? (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-indigo-300">
-                        <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-400" />
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#f3c65f]">
+                        <span className="h-2 w-2 animate-pulse rounded-full bg-[#f3c65f]" />
                         {isEn ? 'Analyzing…' : 'Analyse en cours…'}
                     </span>
                 ) : (
                     <span
                         data-testid="coach-mobile-verdict"
-                        className={`inline-flex min-w-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${style.bannerClass} ${style.textClass}`}
+                        className={`inline-flex min-w-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold ${style.bannerClass} ${style.textClass}`}
                     >
                         <span aria-hidden="true">{style.icon}</span>
                         <span className="truncate">
@@ -107,7 +94,7 @@ const CoachMobileSummaryBarComponent: React.FC<CoachMobileSummaryBarProps> = ({
                 type="button"
                 onClick={onOpen}
                 data-testid="coach-mobile-open-btn"
-                className="shrink-0 inline-flex min-h-[44px] items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 px-3 text-xs font-bold text-white shadow-md transition active:scale-95"
+                className="shrink-0 inline-flex min-h-[36px] items-center gap-1.5 rounded-xl border border-[#e5c158]/55 bg-gradient-to-b from-[#33230f] to-[#1a1106] px-2.5 text-xs font-bold text-[#fce8b2] shadow-md transition active:scale-95 hover:border-[#f3c65f]"
             >
                 <span aria-hidden="true">🎓</span>
                 <span>{isEn ? 'Open analysis' : "Ouvrir l'analyse"}</span>
@@ -116,6 +103,5 @@ const CoachMobileSummaryBarComponent: React.FC<CoachMobileSummaryBarProps> = ({
     );
 };
 
-/** Composant mémoïsé : ne re-rend que si ses props changent. */
 export const CoachMobileSummaryBar = React.memo(CoachMobileSummaryBarComponent);
 export default CoachMobileSummaryBar;

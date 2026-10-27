@@ -67,4 +67,47 @@ describe('ReviewBoardPreview', () => {
         expect(html).toContain('Faute préc.');
         expect(html).toContain('Faute suiv.');
     });
+
+    it('affiche les pions sur la BAR et masque le coup joué dans l’en-tête pendant le Quiz Drill', () => {
+        const boardWithBar = new Array(28).fill(0);
+        boardWithBar[25] = 2; // 2 pions X sur la barre
+        boardWithBar[0] = -1; // 1 pion O sur la barre
+
+        const mockTurn: EvaluatedTurn = {
+            moveNumber: 5,
+            player: 'X',
+            dice: [4, 1],
+            boardBefore: boardWithBar,
+            boardAfter: new Array(28).fill(0),
+            playedNotation: 'bar/21 24/23',
+            optimalNotation: 'bar/21 6/5',
+            equityLoss: -0.112,
+            verdict: 'blunder',
+            isUnforced: true,
+            candidateCount: 5,
+        };
+
+        const html = renderToStaticMarkup(
+            <ReviewBoardPreview
+                turn={mockTurn}
+                currentIndex={4}
+                totalTurns={10}
+                onPrev={vi.fn()}
+                onNext={vi.fn()}
+                onFirst={vi.fn()}
+                onLast={vi.fn()}
+                onPrevMistake={vi.fn()}
+                onNextMistake={vi.fn()}
+                hasPrevMistake={true}
+                hasNextMistake={false}
+                onSelectIndex={vi.fn()}
+                initialDrillMode={true}
+            />,
+        );
+
+        expect(html).toContain('data-testid="review-bar-x-count"');
+        expect(html).toContain('data-testid="review-bar-o-count"');
+        expect(html).toContain('data-testid="blunder-training-panel"');
+        expect(html).toContain('??? (Quiz actif)');
+    });
 });

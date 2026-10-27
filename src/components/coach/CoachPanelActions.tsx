@@ -10,12 +10,6 @@
  *     « Consulter la Fiche Théorique ».
  *
  * Composant 100 % muet (LOI 5).
- *
- * Dépendances :
- *   Aucune (présentation pure).
- *
- * Retrait :
- *   Supprimer ce fichier et réintégrer le bloc dans CoachPanel.tsx.
  */
 
 import React from 'react';
@@ -51,6 +45,11 @@ const CoachPanelActionsComponent: React.FC<CoachPanelActionsProps> = ({
     labels,
 }) => {
     const isEn = locale === 'en';
+    const showActionButtons = !hasContent || Boolean(onOpenKnowledgeConcept);
+
+    if (!explanationSource && !streamError && !showActionButtons) {
+        return null;
+    }
 
     return (
         <div className="mt-2 space-y-2">
@@ -86,38 +85,40 @@ const CoachPanelActionsComponent: React.FC<CoachPanelActionsProps> = ({
                 </div>
             )}
 
-            <div className="flex flex-wrap items-center gap-2">
-                {!hasContent && (
-                    <button
-                        onClick={onExplainClick}
-                        disabled={isStreaming}
-                        data-testid="coach-explain-btn"
-                        className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-blue-900/30 transition hover:bg-blue-500 active:scale-95 disabled:opacity-50"
-                    >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M13 10V3L4 14h7v7l9-11h-7z"
-                            />
-                        </svg>
-                        {labels.explainError}
-                    </button>
-                )}
-                {onOpenKnowledgeConcept && (
-                    <button
-                        type="button"
-                        onClick={() => onOpenKnowledgeConcept(conceptId || 'fundamentals')}
-                        data-testid="coach-open-kb-btn"
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-500/50 bg-indigo-600/30 px-3 py-2 text-xs font-bold text-indigo-300 shadow-sm transition hover:bg-indigo-600/60 hover:text-white active:scale-95"
-                    >
-                        <span aria-hidden="true">📖</span>
-                        <span>{isEn ? 'Read Theory Sheet' : 'Consulter la Fiche Théorique'}</span>
-                        <span aria-hidden="true">↗</span>
-                    </button>
-                )}
-            </div>
+            {showActionButtons && (
+                <div className="flex flex-wrap items-center gap-2">
+                    {!hasContent && (
+                        <button
+                            onClick={onExplainClick}
+                            disabled={isStreaming}
+                            data-testid="coach-explain-btn"
+                            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-blue-900/30 transition hover:bg-blue-500 active:scale-95 disabled:opacity-50"
+                        >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                                />
+                            </svg>
+                            {labels.explainError}
+                        </button>
+                    )}
+                    {onOpenKnowledgeConcept && (
+                        <button
+                            type="button"
+                            onClick={() => onOpenKnowledgeConcept(conceptId || 'fundamentals')}
+                            data-testid="coach-open-kb-btn"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-500/50 bg-indigo-600/30 px-3 py-2 text-xs font-bold text-indigo-300 shadow-sm transition hover:bg-indigo-600/60 hover:text-white active:scale-95"
+                        >
+                            <span aria-hidden="true">📖</span>
+                            <span>{isEn ? 'Read Theory Sheet' : 'Consulter la Fiche Théorique'}</span>
+                            <span aria-hidden="true">↗</span>
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

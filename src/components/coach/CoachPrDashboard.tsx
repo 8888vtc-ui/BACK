@@ -4,20 +4,14 @@
  * Tableau de bord PR du Coach — jauge visuelle + compteurs de décisions.
  *
  * Rôle :
- *   Affiche en haut du panneau Coach :
- *   - le Performance Rating (PR) courant et le % de précision ;
- *   - une jauge graduée avec badge de niveau (Snowie / XG) ;
- *   - la grille des 4 paliers de décisions (Optimal / Bon / Imprécision / Blunder) ;
+ *   Affiche en bas du panneau Coach sous forme ultra-compacte :
+ *   - le Performance Rating (PR) courant, le badge de niveau et le % de précision ;
+ *   - une jauge graduée fine ;
+ *   - la grille en ligne des 4 paliers de décisions (Optimal / Bon / Imprécision / Blunder) ;
  *   - la perte d'équité cumulée du match.
  *
  * Composant 100 % muet (LOI 5) : tous les compteurs sont calculés par le parent
  * (`useCoach`) et transmis prêts à afficher.
- *
- * Dépendances :
- *   Aucune (composant de présentation pur).
- *
- * Retrait :
- *   Supprimer ce fichier et son usage dans `CoachPanel.tsx`.
  */
 
 import React from 'react';
@@ -133,90 +127,103 @@ const CoachPrDashboardComponent: React.FC<CoachPrDashboardProps> = ({
         className: string;
         onClick?: () => void;
     }> = [
-            {
-                key: 'optimal',
-                icon: '✅',
-                label: 'Optimaux',
-                className: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
-            },
-            {
-                key: 'good',
-                icon: '👍',
-                label: 'Bons',
-                className: 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300',
-            },
-            {
-                key: 'inaccuracy',
-                icon: '⚠️',
-                label: 'Imprécisions',
-                className: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-            },
-            {
-                key: 'blunder',
-                icon: '❌',
-                label: 'Blunders',
-                className: 'border-rose-500/50 bg-rose-500/15 text-rose-300',
-                onClick: onBlunderClick,
-            },
-        ];
+        {
+            key: 'optimal',
+            icon: '✅',
+            label: 'Optimaux',
+            className: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
+        },
+        {
+            key: 'good',
+            icon: '👍',
+            label: 'Bons',
+            className: 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300',
+        },
+        {
+            key: 'inaccuracy',
+            icon: '⚠️',
+            label: 'Imprécisions',
+            className: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+        },
+        {
+            key: 'blunder',
+            icon: '❌',
+            label: 'Blunders',
+            className: 'border-rose-500/50 bg-rose-500/15 text-rose-300',
+            onClick: onBlunderClick,
+        },
+    ];
 
     return (
         <section
             data-testid="coach-pr-dashboard"
             aria-label="Tableau de bord Performance Rating"
-            className="rounded-xl border border-slate-800/80 bg-slate-950/70 p-3"
+            className="rounded-xl border border-slate-800/80 bg-slate-950/70 p-2.5 space-y-2"
         >
-            {/* 1. PR + précision + badge de niveau */}
-            <div className="flex items-end justify-between gap-2">
-                <div className="flex items-baseline gap-2">
-                    <span
-                        data-testid="coach-pr-value"
-                        className="font-mono text-2xl font-black leading-none text-white"
-                    >
-                        {decisionsCount > 0 ? pr.toFixed(2) : '--'}
-                    </span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                        PR
-                    </span>
-                </div>
-                <div className="flex flex-col items-end leading-none">
-                    <span
-                        data-testid="coach-accuracy-value"
-                        className="font-mono text-sm font-bold text-slate-200"
-                    >
-                        {decisionsCount > 0 ? `${accuracy.toFixed(1)}%` : '--'}
-                    </span>
-                    <span className="text-[9px] uppercase tracking-wider text-slate-500">
-                        Précision
-                    </span>
-                </div>
-            </div>
-
-            {/* Jauge graduée */}
-            <div className="mt-2">
-                <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
-                    <div
-                        data-testid="coach-pr-gauge"
-                        className={`h-full rounded-full transition-all duration-500 ${level.barClass}`}
-                        style={{ width: `${fillPercent}%` }}
-                    />
-                </div>
-                <div className="mt-1.5 flex items-center justify-between gap-2">
+            {/* 1. Bandeau compact : PR + Badge de niveau + Précision + Total ΔEq */}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    <div className="flex items-baseline gap-1">
+                        <span
+                            data-testid="coach-pr-value"
+                            className="font-mono text-lg font-black leading-none text-white"
+                        >
+                            {decisionsCount > 0 ? pr.toFixed(2) : '--'}
+                        </span>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            PR
+                        </span>
+                    </div>
                     <span
                         data-testid="coach-pr-level"
-                        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${level.badgeClass}`}
+                        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold ${level.badgeClass}`}
                     >
                         <span aria-hidden="true">{level.icon}</span>
                         <span>{level.label}</span>
                     </span>
-                    <span className="font-mono text-[9px] text-slate-500">
-                        {decisionsCount} décision{decisionsCount > 1 ? 's' : ''}
+                </div>
+
+                <div className="flex items-center gap-2.5 text-[11px]">
+                    <div className="flex items-baseline gap-1">
+                        <span className="text-[11px] uppercase tracking-wider text-slate-500">
+                            Précision
+                        </span>
+                        <span
+                            data-testid="coach-accuracy-value"
+                            className="font-mono font-bold text-slate-200"
+                        >
+                            {decisionsCount > 0 ? `${accuracy.toFixed(1)}%` : '--'}
+                        </span>
+                    </div>
+                    <span className="text-slate-700">·</span>
+                    <div className="flex items-baseline gap-1">
+                        <span className="text-[11px] uppercase tracking-wider text-slate-500">
+                            ΔEq
+                        </span>
+                        <span
+                            data-testid="coach-total-equity-loss"
+                            className="font-mono font-bold text-rose-300"
+                        >
+                            -{totalEquityLoss.toFixed(3)}
+                        </span>
+                    </div>
+                    <span className="font-mono text-[11px] text-slate-500">
+                        ({decisionsCount} déc.)
                     </span>
                 </div>
             </div>
 
-            {/* 2. Grille des 4 paliers */}
-            <div className="mt-3 grid grid-cols-4 gap-1.5">
+            {/* Jauge graduée fine */}
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                <div
+                    data-testid="coach-pr-gauge"
+                    className={`h-full rounded-full transition-all duration-500 ${level.barClass}`}
+                    style={{ width: `${fillPercent}%` }}
+                />
+            </div>
+
+            {/* 2. Grille compacte en ligne des 4 paliers */}
+            <div className="grid grid-cols-4 gap-1">
                 {cells.map((cell) => {
                     const value = counters[cell.key];
                     const isClickable = Boolean(cell.onClick) && value > 0;
@@ -226,40 +233,30 @@ const CoachPrDashboardComponent: React.FC<CoachPrDashboardProps> = ({
                             key={cell.key}
                             {...(isClickable
                                 ? {
-                                    type: 'button' as const,
-                                    onClick: cell.onClick,
-                                    title: `Voir les ${cell.label.toLowerCase()} (${value})`,
-                                }
+                                      type: 'button' as const,
+                                      onClick: cell.onClick,
+                                      title: `Voir les ${cell.label.toLowerCase()} (${value})`,
+                                  }
                                 : {})}
                             data-testid={`coach-counter-${cell.key}`}
-                            className={`flex flex-col items-center rounded-lg border px-1 py-1.5 transition ${cell.className} ${isClickable ? 'cursor-pointer hover:brightness-125 active:scale-95' : ''
-                                }`}
+                            className={`flex items-center justify-between rounded-lg border px-1.5 py-1 transition ${cell.className} ${
+                                isClickable ? 'cursor-pointer hover:brightness-125 active:scale-95' : ''
+                            }`}
                         >
-                            <span aria-hidden="true" className="text-[11px] leading-none">
-                                {cell.icon}
+                            <span className="inline-flex items-center gap-1 min-w-0">
+                                <span aria-hidden="true" className="text-[11px] leading-none shrink-0">
+                                    {cell.icon}
+                                </span>
+                                <span className="truncate text-[11px] font-semibold uppercase tracking-wide opacity-85">
+                                    {cell.label}
+                                </span>
                             </span>
-                            <span className="mt-0.5 font-mono text-sm font-black leading-none">
+                            <span className="font-mono text-xs font-black leading-none ml-1">
                                 {value}
-                            </span>
-                            <span className="mt-0.5 text-[8px] font-semibold uppercase tracking-wide opacity-80">
-                                {cell.label}
                             </span>
                         </Tag>
                     );
                 })}
-            </div>
-
-            {/* 3. Perte d'équité cumulée */}
-            <div className="mt-2 flex items-center justify-between border-t border-slate-800/80 pt-1.5">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-                    Total ΔEq
-                </span>
-                <span
-                    data-testid="coach-total-equity-loss"
-                    className="font-mono text-xs font-bold text-rose-300"
-                >
-                    -{totalEquityLoss.toFixed(3)}
-                </span>
             </div>
         </section>
     );

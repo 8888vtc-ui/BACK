@@ -36,6 +36,8 @@ import {
 import type { MatchLogEntry } from '../actions/types';
 import { explainTacticalDifference } from '../features/coach/tacticalExplainer';
 import type { CoachNotificationLevel } from '../features/coach/coachNotificationSettings';
+import { detectLocale } from '../lib/i18n/I18nContext';
+import type { Locale } from '../lib/i18n/types';
 
 export interface CoachState {
     verdict: 'optimal' | 'good' | 'inaccuracy' | 'blunder';
@@ -58,7 +60,15 @@ export interface CoachState {
         gammonProbability?: number;
         backgammonProbability?: number;
     }[];
+    candidates?: {
+        rank?: number;
+        notation?: string;
+        equity?: number;
+        equityLoss: number;
+    }[];
     boardBefore?: number[];
+    boardAfter?: number[];
+    turnIndex?: number;
 }
 
 export interface EvaluatedMove {
@@ -73,7 +83,13 @@ export interface MatchStats {
 }
 
 export interface LastMoveFeedback {
-    verdict: CoachVerdict; equityLoss: number; playedMove: string; timestamp: number;
+    verdict: CoachVerdict; equityLoss: number; playedMove?: string; optimalMove?: string; turnIndex?: number; timestamp?: number;
+}
+
+export interface CoachAnalysisHistoryEntry {
+    readonly turnIndex: number; readonly dice: [number, number] | null;
+    readonly coachState: CoachState; readonly highlight: CoachHighlight | null;
+    readonly boardBefore: number[]; readonly boardAfter: number[]; readonly timestamp: number;
 }
 
 export interface CoachMoveHistoryItem {
@@ -84,6 +100,7 @@ export interface CoachMoveHistoryItem {
 export interface UseCoachDeps {
     game: {
         state: BoardState; dice: [number, number] | null; undoMove: () => void;
+        rewindToLogTurn?: (turnIndex?: number) => boolean;
         difficulty?: AIDifficulty | string; phase?: string; doublingOfferedBy?: Player | null;
         gameResult?: GameResult | null; lastOpponentDice?: [number, number] | null;
         lastOpponentMoves?: { from: number; to: number }[] | null;
@@ -97,6 +114,9 @@ export interface UseCoachDeps {
 
 export interface UseCoachResult {
     coach: CoachState | null; coachHighlight: CoachHighlight | null;
+    coachHistory: ReadonlyArray<CoachAnalysisHistoryEntry>;
+    selectedCoachHistoryIndex: number | null;
+    selectCoachHistoryIndex: (index: number | null) => void;
     matchStats: MatchStats; matchStatsX: MatchStats; matchStatsO: MatchStats;
     optimalStreak: number; brilliantMove: boolean; isAnalyzing: boolean;
     lastMoveFeedback: LastMoveFeedback | null; notificationLevel: CoachNotificationLevel;
@@ -166,6 +186,7 @@ export function buildCoachStateFromLogResult(params: {
     playedMoves: Move[];
     playedNotation: string;
     gameState: BoardState;
+    language?: Locale;
 }): { coachState: CoachState; highlight: CoachHighlight } {
     const { lastEntry, result, playedMoves, playedNotation, gameState } = params;
     const { verdict, equityLoss, candidateMoves, optimalNotation } = result;
@@ -212,14 +233,35 @@ export function buildCoachStateFromLogResult(params: {
         player: 'X',
     });
 
+    const effectiveLang = params.language || (typeof window !== 'undefined' ? detectLocale() : 'fr');
+    const ruleBased = generateRuleBasedExplanation({
+        verdict,
+        equityLoss: -Math.abs(equityLoss),
+        playedMove: playedNotation,
+        optimalMove: absoluteOptimalNotation,
+        features,
+        matchContext: buildMatchContext({
+            matchLength: gameState.matchLength,
+            scoreX: gameState.scoreX,
+            scoreO: gameState.scoreO,
+            cubeValue: gameState.cubeValue,
+            cubeOwner: gameState.cubeOwner,
+            crawford: gameState.crawford,
+        }),
+        language: effectiveLang,
+    });
+
     return {
         coachState: {
             verdict,
             equityLoss: -Math.abs(equityLoss),
             playedMove: playedNotation,
             optimalMove: absoluteOptimalNotation,
-            explanation: null,
-            tacticalSummary: tactical.summary,
+            explanation: ruleBased.explanation,
+            whyFailed: ruleBased.whyFailed || undefined,
+            whyOptimal: ruleBased.whyOptimal || undefined,
+            summary: ruleBased.summary,
+            tacticalSummary: verdict === 'optimal' ? undefined : tactical.summary,
             features,
             positionKey: serializeXGID(evalState),
             candidateMoves: candidateMoves.slice(0, 5).map(
@@ -244,12 +286,17 @@ export function buildCoachStateFromLogResult(params: {
                 }),
             ),
             boardBefore,
+            boardAfter: [...lastEntry.boardAfter],
+            turnIndex: lastEntry.turnIndex,
         },
         highlight: { played: playedMoves, optimal: optimalHighlightMoves },
     };
 }
 
-export function buildFallbackTriggerCoachState(gameState: BoardState): CoachState {
+export function buildFallbackTriggerCoachState(
+    gameState: BoardState,
+    language?: Locale,
+): CoachState {
     const pips = pipCount(gameState.board);
     const structure = analyzeBoardStructure(gameState.board, 'X');
     const userBlots = analyzeBlots(gameState.board, 'X');
@@ -273,14 +320,15 @@ export function buildFallbackTriggerCoachState(gameState: BoardState): CoachStat
         cubeOwner: gameState.cubeOwner,
         crawford: gameState.crawford,
     });
+    const effectiveLang = language || (typeof window !== 'undefined' ? detectLocale() : 'fr');
     const fallbackRuleBased = generateRuleBasedExplanation({
         verdict: 'douteux',
         equityLoss: -0.06,
-        playedMove: 'Position actuelle',
-        optimalMove: 'Consolidation structurelle',
+        playedMove: effectiveLang === 'en' ? 'Current position' : 'Position actuelle',
+        optimalMove: effectiveLang === 'en' ? 'Structural consolidation' : 'Consolidation structurelle',
         features: fallbackFeatures,
         matchContext: fallbackMatchCtx,
-        language: 'fr',
+        language: effectiveLang,
     });
     return {
         verdict: 'inaccuracy',

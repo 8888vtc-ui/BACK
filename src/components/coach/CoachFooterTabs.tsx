@@ -1,22 +1,24 @@
 'use client';
 
 /**
- * Pied du panneau Coach — onglets repliables (< 140 lignes, 0 any).
+ * Pied du panneau Coach — onglets repliables (< 145 lignes, 0 any).
  *
  * Rôle :
- *   Regroupe les outils secondaires du Coach dans deux onglets dépliables :
- *     - Feuille de Match (composant MatchScoreSheet)
- *     - Rollout Profond (composant DeepRolloutSection)
+ *   Regroupe les outils analytiques du Coach dans trois onglets dépliables :
+ *     - 🎲 Grille 36 (Matrice 6x6 des tirs de l'IA au prochain tour)
+ *     - 📜 Feuille de Match (MatchScoreSheet)
+ *     - 🔬 Rollout Profond (DeepRolloutSection)
  */
 
 import React, { useState } from 'react';
 import MatchScoreSheet from './MatchScoreSheet';
 import DeepRolloutSection from './DeepRolloutSection';
+import CoachDiceMatrix36 from './CoachDiceMatrix36';
 import type { RawGameTurn } from '../../features/rating';
 import type { RolloutResult } from '../../lib/engine/rolloutClient';
 import type { MatchStats } from './coachPanelHelpers';
 
-type FooterTab = 'scoresheet' | 'rollout';
+type FooterTab = 'matrix36' | 'scoresheet' | 'rollout';
 
 export interface CoachFooterTabsProps {
     turnsHistory?: RawGameTurn[] | unknown[];
@@ -47,6 +49,7 @@ const CoachFooterTabsComponent: React.FC<CoachFooterTabsProps> = ({
     const [activeTab, setActiveTab] = useState<FooterTab | null>(null);
 
     const tabs: Array<{ id: FooterTab; icon: string; label: string }> = [
+        { id: 'matrix36', icon: '🎲', label: isEn ? '36-Roll Grid' : 'Grille 36' },
         { id: 'scoresheet', icon: '📜', label: isEn ? 'Match sheet' : 'Feuille de Match' },
         { id: 'rollout', icon: '🔬', label: isEn ? 'Deep rollout' : 'Rollout Profond' },
     ];
@@ -71,20 +74,27 @@ const CoachFooterTabsComponent: React.FC<CoachFooterTabsProps> = ({
                             aria-expanded={isActive}
                             data-testid={`coach-footer-tab-${tab.id}`}
                             onClick={() => toggle(tab.id)}
-                            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-bold transition ${isActive
-                                ? 'bg-indigo-600/30 text-indigo-200 ring-1 ring-inset ring-indigo-500/60'
-                                : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
-                                }`}
+                            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-bold transition ${
+                                isActive
+                                    ? 'bg-indigo-600/30 text-indigo-200 ring-1 ring-inset ring-indigo-500/60'
+                                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
+                            }`}
                         >
                             <span aria-hidden="true">{tab.icon}</span>
                             <span>{tab.label}</span>
-                            <span aria-hidden="true" className="text-[9px] opacity-70">
+                            <span aria-hidden="true" className="text-[11px] opacity-70">
                                 {isActive ? '▾' : '▸'}
                             </span>
                         </button>
                     );
                 })}
             </div>
+
+            {activeTab === 'matrix36' && (
+                <div className="border-t border-slate-800/80 p-2" data-testid="coach-footer-panel-matrix36">
+                    <CoachDiceMatrix36 board={board} locale={locale} />
+                </div>
+            )}
 
             {activeTab === 'scoresheet' && (
                 <div className="border-t border-slate-800/80 p-2" data-testid="coach-footer-panel-scoresheet">

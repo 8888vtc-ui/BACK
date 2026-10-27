@@ -21,6 +21,10 @@
 
 import { BoardState, Player, pipCount, X_BAR, O_BAR } from '../../engine/backgammonEngine';
 import { countShotsExact } from '../../lib/engine/shotCounter';
+import { computeShotExposure, ShotExposure } from '../../lib/engine/shotExposure';
+import { computeKeithCount } from '../../lib/engine/keithCount';
+
+export type { ShotExposure } from '../../lib/engine/shotExposure';
 
 export type ContactStatus = 'contact' | 'pureRace';
 
@@ -53,6 +57,20 @@ export interface BlotsAndShots {
     best: BlotAnalysis[];
 }
 
+/** Exposition globale exacte (union des 36 lancers) après chaque coup. */
+export interface ShotExposureComparison {
+    user: ShotExposure;
+    best: ShotExposure;
+}
+
+/** Keith Count après le coup du joueur (pertinent en course pure). */
+export interface KeithCountDiff {
+    player: number;
+    opponent: number;
+    /** player - opponent : négatif = le joueur est en avance. */
+    diff: number;
+}
+
 export interface BoardStructure {
     /** Nombre de portes (points faits) dans le jan intérieur du joueur. */
     innerBoardPoints: number;
@@ -64,6 +82,36 @@ export interface BoardStructure {
     barPoint: boolean;
     /** Longueur de la plus grande prime (suite de portes consécutives). */
     longestPrime: number;
+}
+
+export interface TacticalBoardDiff {
+    /** Porte du 5 (Golden Point : 5 pour X, 20 pour O) réellement créée (>= 2 pions) par le coup optimal. */
+    goldenPointCreatedByBest: boolean;
+    /** Porte du 7 (Bar Point : 7 pour X, 18 pour O) réellement créée (>= 2 pions) par le coup optimal. */
+    barPointCreatedByBest: boolean;
+    /** Porte intérieure (1..6 pour X, 19..24 pour O) réellement créée (>= 2 pions) par le coup optimal. */
+    homeGateCreatedByBest: boolean;
+    /** Prime (>= 4 portes consécutives) construite ou préservée par le coup optimal mais pas par le coup joué. */
+    primeExtendedByBest: boolean;
+    /** Ancre avancée (>= 2 pions sur 20..22 pour X, 3..5 pour O) créée ou préservée par le coup optimal. */
+    anchorCreatedOrKeptByBest: boolean;
+    /** Pion arrière (23..24 pour X, 1..2 pour O) évadé ou splitté par le coup optimal mais pas par le coup joué. */
+    rearCheckerEscapedByBest: boolean;
+    /** Frappe d'un blot adverse réalisée par le coup optimal mais pas par le coup joué. */
+    hitMadeByBest: boolean;
+    /** Rupture effective du contact (passage de 'contact' à 'pureRace' en fin de partie <= 100 pips) par le coup optimal. */
+    contactBrokenByBest: boolean;
+}
+
+export interface TacticalDelta {
+    /** Nombre de pions adverses mis à la barre par le coup joué. */
+    userOpponentHitCount: number;
+    /** Nombre de pions adverses mis à la barre par le meilleur coup. */
+    bestOpponentHitCount: number;
+    /** Différence de portes fermées dans le jan intérieur (meilleur - joué). */
+    homePointsDelta: number;
+    /** Différence de longueur de prime consécutive (meilleur - joué). */
+    primeLengthDelta: number;
 }
 
 export interface BgsageMoveMetrics {
@@ -108,7 +156,19 @@ export interface StrategicFeatures {
     player: Player;
     pipCountDiff: PipCountDiff;
     blotsAndShots: BlotsAndShots;
+    /** Union exacte des lancers frappants + duplication (absent si features construites à la main). */
+    shotExposure?: ShotExposureComparison;
+    /** Keith Count des deux joueurs après le coup joué. */
+    keithCount?: KeithCountDiff;
     boardStructure: BoardStructure;
+    /** Structure du plateau avant le coup (initialState). */
+    beforeBoardStructure?: BoardStructure;
+    /** Structure du plateau après le meilleur coup recommandé (bestEndState). */
+    bestBoardStructure?: BoardStructure;
+    /** Différentiel tactique (frappes à la barre, portes créées, prime). */
+    tacticalDelta?: TacticalDelta;
+    /** Comparaison tactique vérifiée entre boardBefore, userEndState et bestEndState. */
+    tacticalDiff?: TacticalBoardDiff;
     contactStatus: ContactStatus;
     /** Analyse de la fenêtre de marché (Market Window) et volatilité du videau. */
     marketWindow?: MarketWindowMetrics;
@@ -219,6 +279,7 @@ export function computeMarketWindowMetrics(params: {
     opponentTakePoint?: number;
     gammonPrice?: number;
     bgsage?: BgsageStrategicInsights;
+    shotExposure?: ShotExposureComparison;
 }): MarketWindowMetrics {
     const {
         contactStatus,
@@ -228,11 +289,14 @@ export function computeMarketWindowMetrics(params: {
         opponentTakePoint = 0.25,
         gammonPrice = 0.5,
         bgsage,
+        shotExposure,
     } = params;
 
     const cashPoint = Number(Math.max(0.55, Math.min(0.95, 1 - opponentTakePoint)).toFixed(3));
-    const userShotsTotal = Math.min(36, blotsAndShots.user.reduce((s, b) => s + b.totalShots, 0));
-    const bestShotsTotal = Math.min(36, blotsAndShots.best.reduce((s, b) => s + b.totalShots, 0));
+    const userShotsTotal =
+        shotExposure?.user.totalRolls ?? Math.min(36, blotsAndShots.user.reduce((s, b) => s + b.totalShots, 0));
+    const bestShotsTotal =
+        shotExposure?.best.totalRolls ?? Math.min(36, blotsAndShots.best.reduce((s, b) => s + b.totalShots, 0));
     const gammonThreat = bgsage?.optimalMetrics?.winGammonProb ?? (boardStructure.innerBoardPoints >= 4 ? 0.22 : 0.1);
 
     let volatility: VolatilityLevel = 'medium';
@@ -296,20 +360,92 @@ export function extractStrategicFeatures(
         user: analyzeBlots(userEndState.board, player),
         best: analyzeBlots(bestEndState.board, player),
     };
+    const shotExposure: ShotExposureComparison = {
+        user: computeShotExposure(userEndState.board, player),
+        best: computeShotExposure(bestEndState.board, player),
+    };
+    const keithPlayer = computeKeithCount(userEndState.board, player).total;
+    const keithOpponent = computeKeithCount(userEndState.board, opponent).total;
+    const keithCount: KeithCountDiff = {
+        player: keithPlayer,
+        opponent: keithOpponent,
+        diff: keithPlayer - keithOpponent,
+    };
+    const beforeBoardStructure = analyzeBoardStructure(initialState.board, player);
     const boardStructure = analyzeBoardStructure(userEndState.board, player);
+    const bestBoardStructure = analyzeBoardStructure(bestEndState.board, player);
+
+    // Calcul des pions adverses envoyés à la barre
+    const oppBarIdx = player === 'X' ? O_BAR : X_BAR;
+    const oppBarSign = player === 'X' ? -1 : 1;
+    const initOppOnBar = Math.max(0, (initialState.board[oppBarIdx] ?? 0) * oppBarSign);
+    const userOppOnBar = Math.max(0, (userEndState.board[oppBarIdx] ?? 0) * oppBarSign);
+    const bestOppOnBar = Math.max(0, (bestEndState.board[oppBarIdx] ?? 0) * oppBarSign);
+
+    const tacticalDelta: TacticalDelta = {
+        userOpponentHitCount: Math.max(0, userOppOnBar - initOppOnBar),
+        bestOpponentHitCount: Math.max(0, bestOppOnBar - initOppOnBar),
+        homePointsDelta: bestBoardStructure.innerBoardPoints - boardStructure.innerBoardPoints,
+        primeLengthDelta: bestBoardStructure.longestPrime - boardStructure.longestPrime,
+    };
+
+    const countRearCheckers = (board: number[], p: Player): number => {
+        const rearPts = p === 'X' ? [23, 24] : [1, 2];
+        const sign = p === 'X' ? 1 : -1;
+        return rearPts.reduce((sum, pt) => sum + Math.max(0, (board[pt] ?? 0) * sign), 0);
+    };
+
+    const beforeRear = countRearCheckers(initialState.board, player);
+    const userRear = countRearCheckers(userEndState.board, player);
+    const bestRear = countRearCheckers(bestEndState.board, player);
+
+    const beforeContact = classifyContact(initialState.board);
     const contactStatus = classifyContact(userEndState.board);
+    const bestContact = classifyContact(bestEndState.board);
+
+    const tacticalDiff: TacticalBoardDiff = {
+        goldenPointCreatedByBest:
+            !beforeBoardStructure.goldenPoint && bestBoardStructure.goldenPoint && !boardStructure.goldenPoint,
+        barPointCreatedByBest:
+            !beforeBoardStructure.barPoint && bestBoardStructure.barPoint && !boardStructure.barPoint,
+        homeGateCreatedByBest:
+            bestBoardStructure.innerBoardPoints > beforeBoardStructure.innerBoardPoints &&
+            bestBoardStructure.innerBoardPoints > boardStructure.innerBoardPoints,
+        primeExtendedByBest:
+            bestBoardStructure.longestPrime >= 4 &&
+            bestBoardStructure.longestPrime > boardStructure.longestPrime,
+        anchorCreatedOrKeptByBest:
+            bestBoardStructure.advancedAnchor && !boardStructure.advancedAnchor,
+        rearCheckerEscapedByBest:
+            bestRear < beforeRear && bestRear < userRear,
+        hitMadeByBest:
+            bestOppOnBar > initOppOnBar && bestOppOnBar > userOppOnBar,
+        contactBrokenByBest:
+            beforeContact === 'contact' &&
+            bestContact === 'pureRace' &&
+            contactStatus === 'contact' &&
+            playerPips <= 100,
+    };
+
     const marketWindow = computeMarketWindowMetrics({
         contactStatus,
         boardStructure,
         blotsAndShots,
         pipCountDiff,
+        shotExposure,
     });
 
     return {
         player,
         pipCountDiff,
         blotsAndShots,
+        shotExposure,
+        keithCount,
         boardStructure,
+        beforeBoardStructure,
+        bestBoardStructure,
+        tacticalDelta,
+        tacticalDiff,
         contactStatus,
         marketWindow,
     };

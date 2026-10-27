@@ -45,6 +45,8 @@ export interface PostMatchHeaderProps {
     counters: DecisionCountersSummary;
     /** Perte d'équité totale. */
     totalEquityLoss: number;
+    /** Taux de précision global (0–100 %, optionnel). */
+    accuracyPercent?: number;
     /** Langue d'affichage. */
     locale?: string;
 }
@@ -98,24 +100,25 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
     botCategory,
     counters,
     totalEquityLoss,
+    accuracyPercent,
     locale = 'fr',
 }) => {
-    const isEn = locale === 'en';
+    const isEn = Boolean(locale && locale !== 'fr');
     const isPlayerWinner = winner === 'X';
     const winInfo = winType ? WIN_TYPE_LABELS[winType] : null;
 
     const cells: Array<{ key: keyof DecisionCountersSummary; icon: string; label: string; className: string }> = [
-        { key: 'optimal', icon: '✅', label: isEn ? 'Optimal' : 'Optimaux', className: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' },
-        { key: 'good', icon: '👍', label: isEn ? 'Good' : 'Bons', className: 'border-[#d4af37]/40 bg-[#d4af37]/10 text-[#fce8b2]' },
-        { key: 'inaccuracy', icon: '⚠️', label: isEn ? 'Inaccuracies' : 'Imprécisions', className: 'border-amber-500/40 bg-amber-500/10 text-amber-300' },
-        { key: 'blunder', icon: '❌', label: isEn ? 'Blunders' : 'Blunders', className: 'border-rose-500/50 bg-rose-500/15 text-rose-300' },
+        { key: 'optimal', icon: '✅', label: isEn ? 'Optimal' : 'Optimaux', className: 'border-white/10 bg-emerald-500/10 text-emerald-300' },
+        { key: 'good', icon: '👍', label: isEn ? 'Good' : 'Bons', className: 'border-white/10 bg-[#d4af37]/10 text-[#fce8b2]' },
+        { key: 'inaccuracy', icon: '⚠️', label: isEn ? 'Inaccuracies' : 'Imprécisions', className: 'border-white/10 bg-amber-500/10 text-amber-300' },
+        { key: 'blunder', icon: '❌', label: isEn ? 'Blunders' : 'Blunders', className: 'border-white/10 bg-rose-500/15 text-rose-300' },
     ];
 
     return (
         <section
             data-testid="post-match-header"
             aria-label={isEn ? 'Result and PR comparison' : 'Résultat et comparatif PR'}
-            className="rounded-2xl border border-[#d4af37]/30 bg-[#0d0704]/90 p-4 space-y-3 shadow-[inset_0_1px_0_rgba(255,245,205,0.08)]"
+            className="rounded-2xl border border-white/10 bg-[#0d0704]/90 p-4 space-y-3 shadow-[inset_0_1px_0_rgba(255,245,205,0.08)]"
         >
             {/* Score final + type de victoire */}
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -129,7 +132,7 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                                 ? isEn ? 'You won this game!' : 'Manche remportée !'
                                 : isEn ? 'Game lost' : 'Manche perdue'}
                         </h2>
-                        <p className="text-[11px] text-[#e8dcc6]/70">
+                        <p className="text-xs text-[#e8dcc6]/70">
                             {isEn ? 'Final score' : 'Score final'} :{' '}
                             <span className="font-mono font-bold text-[#f3c65f]">
                                 {scoreX} – {scoreO}
@@ -147,7 +150,7 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                     {winInfo && (
                         <span
                             data-testid="post-match-win-type"
-                            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${winInfo.className}`}
+                            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ${winInfo.className}`}
                         >
                             <span aria-hidden="true">{winInfo.icon}</span>
                             <span>{isEn ? winInfo.en : winInfo.fr}</span>
@@ -155,7 +158,7 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                     )}
                     <span
                         data-testid="post-match-points-won"
-                        className="rounded-full border border-[#d4af37]/45 bg-[#1e120a] px-2.5 py-1 font-mono text-[10px] font-bold text-[#f3c65f]"
+                        className="rounded-full border border-white/10 bg-[#1e120a] px-2.5 py-1 font-mono text-[11px] font-bold text-[#f3c65f]"
                     >
                         +{pointsWon} {pointsWon > 1 ? 'pts' : 'pt'}
                     </span>
@@ -166,16 +169,16 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
             <div className="grid grid-cols-2 gap-2">
                 <div
                     data-testid="post-match-pr-player"
-                    className="rounded-xl border border-[#d4af37]/40 bg-[#1c1008]/90 p-2.5"
+                    className="rounded-xl border border-white/10 bg-[#1c1008]/90 p-2.5"
                 >
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-[#f3c65f]">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
                         {isEn ? 'Your PR' : 'Votre PR'}
                     </span>
                     <div className="mt-0.5 flex items-baseline gap-1.5">
                         <span className={`font-mono text-xl font-black ${prColor(playerPr)}`}>
                             {playerPr.toFixed(2)}
                         </span>
-                        <span className="truncate text-[10px] font-semibold text-[#e8dcc6]/75">
+                        <span className="truncate text-xs font-semibold text-[#e8dcc6]/85">
                             {playerCategory}
                         </span>
                     </div>
@@ -183,9 +186,9 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
 
                 <div
                     data-testid="post-match-pr-bot"
-                    className="rounded-xl border border-[#d4af37]/25 bg-[#140b06]/80 p-2.5"
+                    className="rounded-xl border border-white/10 bg-[#140b06]/80 p-2.5"
                 >
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-[#e8dcc6]/65">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#e8dcc6]/70">
                         {isEn ? 'Bot PR' : 'PR du Bot'}
                     </span>
                     <div className="mt-0.5 flex items-baseline gap-1.5">
@@ -193,7 +196,7 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                             {botPr !== null && Number.isFinite(botPr) ? botPr.toFixed(2) : '--'}
                         </span>
                         {botCategory && (
-                            <span className="truncate text-[10px] font-semibold text-[#e8dcc6]/55">
+                            <span className="truncate text-xs font-semibold text-[#e8dcc6]/65">
                                 {botCategory}
                             </span>
                         )}
@@ -207,32 +210,44 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                     <div
                         key={cell.key}
                         data-testid={`post-match-counter-${cell.key}`}
-                        className={`flex flex-col items-center rounded-lg border px-1 py-1.5 ${cell.className}`}
+                        className={`flex flex-col items-center rounded-lg border px-1.5 py-1.5 ${cell.className}`}
                     >
-                        <span aria-hidden="true" className="text-[11px] leading-none">
+                        <span aria-hidden="true" className="text-xs leading-none">
                             {cell.icon}
                         </span>
                         <span className="mt-0.5 font-mono text-sm font-black leading-none">
                             {counters[cell.key]}
                         </span>
-                        <span className="mt-0.5 text-[8px] font-semibold uppercase tracking-wide opacity-80">
+                        <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide opacity-90">
                             {cell.label}
                         </span>
                     </div>
                 ))}
             </div>
 
-            {/* Perte d'équité totale */}
-            <div className="flex items-center justify-between border-t border-[#d4af37]/20 pt-1.5">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#e8dcc6]/60">
-                    {isEn ? 'Total equity lost' : 'Perte d’équité totale'}
-                </span>
-                <span
-                    data-testid="post-match-total-equity-loss"
-                    className="font-mono text-xs font-bold text-rose-300"
-                >
-                    -{totalEquityLoss.toFixed(3)}
-                </span>
+            {/* Perte d'équité totale & Précision */}
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-1.5">
+                <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#e8dcc6]/70">
+                        {isEn ? 'Total equity lost' : 'Perte d’équité totale'}
+                    </span>
+                    <span
+                        data-testid="post-match-total-equity-loss"
+                        className="font-mono text-xs font-bold text-rose-300"
+                    >
+                        -{totalEquityLoss.toFixed(3)}
+                    </span>
+                </div>
+                {accuracyPercent !== undefined && (
+                    <div className="flex items-center gap-1.5" data-testid="post-match-accuracy">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-[#e8dcc6]/70">
+                            {isEn ? 'Accuracy' : 'Précision'}
+                        </span>
+                        <span className="font-mono text-xs font-black text-emerald-300">
+                            {accuracyPercent.toFixed(1)}%
+                        </span>
+                    </div>
+                )}
             </div>
         </section>
     );

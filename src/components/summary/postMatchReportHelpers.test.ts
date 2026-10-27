@@ -13,56 +13,29 @@ import {
     identifyRecurringThemes,
     summarizeDecisionCounters,
     MAJOR_BLUNDER_THRESHOLD,
+    type MajorBlunder,
 } from './postMatchReportHelpers';
 import type { CompleteGameAnalysis, EvaluatedTurn } from '../../features/rating/types';
 
 /** Plateau vide (28 entiers). */
-function emptyBoard(): number[] {
-    return new Array(28).fill(0);
-}
+const emptyBoard = (): number[] => new Array(28).fill(0);
 
 /** Construit un coup évalué minimal. */
-function makeMove(overrides: Partial<EvaluatedTurn>): EvaluatedTurn {
-    return {
-        moveNumber: 1,
-        player: 'X',
-        dice: [3, 1],
-        boardBefore: emptyBoard(),
-        boardAfter: emptyBoard(),
-        playedNotation: '13/10 13/12',
-        optimalNotation: '8/5 6/5',
-        equityLoss: 0,
-        verdict: 'optimal',
-        isUnforced: true,
-        candidateCount: 5,
-        ...overrides,
-    };
-}
+const makeMove = (overrides: Partial<EvaluatedTurn>): EvaluatedTurn => ({
+    moveNumber: 1, player: 'X', dice: [3, 1], boardBefore: emptyBoard(), boardAfter: emptyBoard(),
+    playedNotation: '13/10 13/12', optimalNotation: '8/5 6/5', equityLoss: 0,
+    verdict: 'optimal', isUnforced: true, candidateCount: 5, ...overrides,
+});
 
 /** Analyse complète minimale. */
-function makeAnalysis(overrides: Partial<CompleteGameAnalysis> = {}): CompleteGameAnalysis {
-    return {
-        id: 'a1',
-        gameId: 'g1',
-        date: new Date().toISOString(),
-        player: 'X',
-        opponentType: 'ai',
-        scoreX: 3,
-        scoreO: 2,
-        matchLength: 7,
-        totalMovesCount: 20,
-        decisionsCount: 10,
-        unforcedDecisionsCount: 10,
-        totalEquityLoss: 0.34,
-        errorRate: 0.034,
-        performanceRating: 5.42,
-        estimatedRating: 1868,
-        prCategory: 'Expert',
-        breakdown: { optimal: 5, acceptable: 2, doubtful: 1, blunder: 2, howler: 0 },
-        evaluatedMoves: [],
-        ...overrides,
-    };
-}
+const makeAnalysis = (overrides: Partial<CompleteGameAnalysis> = {}): CompleteGameAnalysis => ({
+    id: 'a1', gameId: 'g1', date: new Date().toISOString(), player: 'X', opponentType: 'ai',
+    scoreX: 3, scoreO: 2, matchLength: 7, totalMovesCount: 20, decisionsCount: 10,
+    unforcedDecisionsCount: 10, totalEquityLoss: 0.34, errorRate: 0.034, performanceRating: 5.42,
+    estimatedRating: 1868, prCategory: 'Expert',
+    breakdown: { optimal: 5, acceptable: 2, doubtful: 1, blunder: 2, howler: 0 },
+    evaluatedMoves: [], ...overrides,
+});
 
 describe('detectGamePhase', () => {
     it('détecte le bear-off quand tous les pions sont dans le jan intérieur', () => {
@@ -217,12 +190,17 @@ describe('summarizeDecisionCounters', () => {
     });
 });
 
+const makeBlunder = (overrides: Partial<MajorBlunder>): MajorBlunder => ({
+    turnNumber: 1, dice: [3, 1], playedNotation: '13/10 13/12', optimalNotation: '8/5 6/5',
+    equityLoss: 0.1, boardBefore: emptyBoard(), phase: 'contact', ...overrides,
+});
+
 describe('countBlundersByPhase & identifyRecurringThemes', () => {
     it('compte les erreurs par phase', () => {
         const counts = countBlundersByPhase([
-            { phase: 'contact' } as any,
-            { phase: 'contact' } as any,
-            { phase: 'bearoff' } as any,
+            makeBlunder({ phase: 'contact' }),
+            makeBlunder({ phase: 'contact' }),
+            makeBlunder({ phase: 'bearoff' }),
         ]);
         expect(counts.contact).toBe(2);
         expect(counts.bearoff).toBe(1);
@@ -231,8 +209,8 @@ describe('countBlundersByPhase & identifyRecurringThemes', () => {
 
     it('identifie les thèmes récurrents selon les phases et erreurs de videau', () => {
         const themes = identifyRecurringThemes([
-            { phase: 'race', category: 'mistake' } as any,
-            { phase: 'opening', category: 'cube_blunder' } as any,
+            makeBlunder({ phase: 'race', category: 'mistake' }),
+            makeBlunder({ phase: 'opening', category: 'cube_blunder' }),
         ]);
         expect(themes).toContain('Sécurité excessive en course');
         expect(themes).toContain('Ouverture trop agressive');

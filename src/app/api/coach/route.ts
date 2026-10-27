@@ -1,12 +1,13 @@
 /**
- * Route Handler Next.js App Router — Explication de coach & Synthèse Post-Match en streaming SSE (< 275 lignes, 0 any).
+ * Route Handler Next.js App Router — Explication de coach & Synthèse Post-Match en streaming SSE (< 230 lignes, 0 any).
  *
  * Endpoint : POST /api/coach
  * Comportement :
  * 1. Valide le rate limit et le schéma Zod (ou le mode `post-match-synthesis`).
- * 2. Appelle le fournisseur LLM (Gemini / OpenAI-compatible) avec timeout strict de 3 s.
+ * 2. Appelle le fournisseur LLM (Gemini / OpenAI-compatible) avec timeout strict.
  * 3. En l'absence de clé ou en cas de timeout / erreur HTTP, streame immédiatement
- *    l'explication déterministe sans bloquer le client.
+ *    l'explication déterministe avec `symbolic_audit` et `pedagogical_explanation` sans bloquer le client.
+ * 4. Verrou anti-hallucination : valide l'audit symbolique accumulé en fin de flux SSE.
  */
 
 import { NextRequest } from 'next/server';
@@ -14,74 +15,30 @@ import {
     getCoachSystemPrompt,
     buildCoachUserPrompt,
     generateRuleBasedExplanation,
-    type CoachPromptParams,
 } from '../../../features/coach/prompts';
-import {
-    getGameReviewSystemPrompt,
-    buildPostMatchSummaryUserPrompt,
-} from '../../../features/coach/gameReviewPrompts';
-import {
-    buildRuleBasedSynthesis,
-    type MatchSummaryPayload,
-} from '../../../components/summary/postMatchReportHelpers';
-import { buildMatchContext } from '../../../features/coach/matchContext';
+import type { MatchSummaryPayload } from '../../../components/summary/postMatchReportHelpers';
 import { checkRateLimit, RATE_LIMIT_PROFILES } from '../../../lib/security/rateLimit';
 import { CoachRequestSchema, validateJsonBody } from '../../../lib/security/schemas';
 import { verifyCoachApiQuotaGuard } from '../../../actions/coach';
+import { computeExplanationCacheKey } from '../../../features/coach/explanationCache';
+import { getSharedCoachExplanation, saveCoachExplanationRecord } from '../../../lib/supabase/db';
+import {
+    SSE_HEADERS,
+    UPSTREAM_LLM_TIMEOUT_MS,
+    buildCoachPromptParams,
+    buildGroundTruthNeuroSymbolicAudit,
+    createCachedExplanationStream,
+    createJsonFallbackStream,
+    formatSseEvent,
+    handlePostMatchSynthesisStream,
+    resolveLlmEndpointConfig,
+    verifyAccumulatedLlmAudit,
+} from '../../../lib/coach/coachRouteHelpers';
 
 export const dynamic = 'force-dynamic';
 
-const UPSTREAM_LLM_TIMEOUT_MS = 3000;
-
-const SSE_HEADERS: Record<string, string> = {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache, no-transform',
-    Connection: 'keep-alive',
-};
-
 export async function GET() {
     return Response.json({ status: 'online', service: 'coach-sse' });
-}
-
-function formatSseEvent(data: Record<string, unknown> | string): string {
-    const payload = typeof data === 'string' ? data : JSON.stringify(data);
-    return `data: ${payload}\n\n`;
-}
-
-function createJsonFallbackStream(payloadObj: unknown, encoder: TextEncoder): Response {
-    const stream = new ReadableStream({
-        start(controller) {
-            const fullJson = JSON.stringify(payloadObj, null, 2);
-            const chunkSize = 24;
-            let offset = 0;
-
-            const interval = setInterval(() => {
-                try {
-                    if (offset < fullJson.length) {
-                        const chunk = fullJson.slice(offset, offset + chunkSize);
-                        offset += chunkSize;
-                        controller.enqueue(
-                            encoder.encode(
-                                formatSseEvent({
-                                    token: chunk,
-                                    content: chunk,
-                                    source: 'rule-based-fallback',
-                                }),
-                            ),
-                        );
-                    } else {
-                        clearInterval(interval);
-                        controller.enqueue(encoder.encode(formatSseEvent({ done: true, full: payloadObj })));
-                        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-                        controller.close();
-                    }
-                } catch {
-                    clearInterval(interval);
-                }
-            }, 12);
-        },
-    });
-    return new Response(stream, { headers: SSE_HEADERS });
 }
 
 export async function POST(req: NextRequest | Request): Promise<Response> {
@@ -110,54 +67,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
         if (rawBody && rawBody.mode === 'post-match-synthesis' && rawBody.summary && typeof rawBody.summary === 'object') {
             const summary = rawBody.summary as MatchSummaryPayload;
             const lang = rawBody.language === 'en' ? 'en' : 'fr';
-            const fallbackSynthesis = buildRuleBasedSynthesis(summary, lang);
-            const apiKey = process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY || process.env.LLM_API_KEY || '';
-            if (!apiKey) {
-                return createJsonFallbackStream(fallbackSynthesis, encoder);
-            }
-            const baseUrl = (
-                process.env.OPENAI_BASE_URL ||
-                process.env.GEMINI_BASE_URL ||
-                process.env.LLM_BASE_URL ||
-                'https://generativelanguage.googleapis.com/v1beta/openai/'
-            ).replace(/\/+$/, '');
-            const model =
-                process.env.COACH_MODEL ||
-                process.env.OPENAI_MODEL ||
-                process.env.GEMINI_MODEL ||
-                process.env.LLM_MODEL ||
-                'gemini-2.5-flash';
-
-            const abortController = new AbortController();
-            const timeoutId = setTimeout(() => abortController.abort(), UPSTREAM_LLM_TIMEOUT_MS);
-            try {
-                const resp = await fetch(`${baseUrl}/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-                    body: JSON.stringify({
-                        model,
-                        messages: [
-                            { role: 'system', content: getGameReviewSystemPrompt(lang) },
-                            { role: 'user', content: buildPostMatchSummaryUserPrompt(summary, lang) },
-                        ],
-                        temperature: 0.3,
-                        stream: false,
-                        response_format: { type: 'json_object' },
-                    }),
-                    signal: abortController.signal,
-                });
-                clearTimeout(timeoutId);
-                if (resp.ok) {
-                    const data = (await resp.json()) as { choices?: Array<{ message?: { content?: string } }> };
-                    const content = data.choices?.[0]?.message?.content;
-                    if (content) {
-                        return createJsonFallbackStream(JSON.parse(content), encoder);
-                    }
-                }
-            } catch {
-                clearTimeout(timeoutId);
-            }
-            return createJsonFallbackStream(fallbackSynthesis, encoder);
+            return handlePostMatchSynthesisStream(summary, lang, encoder);
         }
     } catch {
         // Corps non-JSON ou standard : délégué à validateJsonBody ci-dessous
@@ -171,66 +81,42 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
     try {
         const body = validation.data;
 
-        const normalizedVerdict: CoachPromptParams['verdict'] =
-            body.verdict === 'blunder' ? 'blunder' : 'doubtful';
-        const normalizedPlayerLevel: CoachPromptParams['playerLevel'] =
-            body.playerLevel === 'grandmaster' ? 'expert' : body.playerLevel;
+        const params = buildCoachPromptParams(body, req.headers.get('accept-language'));
 
-        const params: CoachPromptParams = {
-            verdict: normalizedVerdict,
-            equityLoss: body.equityLoss,
+        const { apiKey, baseUrl, model: initialModel } = resolveLlmEndpointConfig();
+        let model = initialModel;
+
+        const cacheKey = computeExplanationCacheKey({
+            positionKey: body.positionKey,
+            xgid: body.xgid,
+            board: body.board,
+            dice: body.dice,
             playedMove: body.playedMove,
             optimalMove: body.optimalMove,
-            features: (body.features as unknown as CoachPromptParams['features']) ?? {
-                player: 'X',
-                pipCountDiff: { player: 167, opponent: 167, leader: 'tie', diff: 0 },
-                blotsAndShots: { user: [], best: [] },
-                boardStructure: {
-                    innerBoardPoints: 0,
-                    advancedAnchor: false,
-                    goldenPoint: false,
-                    barPoint: false,
-                    longestPrime: 0,
-                },
-                contactStatus: 'contact',
-            },
-            matchContext: body.matchContext
-                ? buildMatchContext({
-                      matchLength: body.matchContext.matchLength,
-                      scoreX: body.matchContext.scoreX,
-                      scoreO: body.matchContext.scoreO,
-                      crawford: body.matchContext.crawford,
-                      cubeValue: body.matchContext.cubeValue,
-                  })
-                : undefined,
-            playerLevel: normalizedPlayerLevel,
-            language: body.language,
-        };
+            verdict: params.verdict,
+            matchLength: body.matchContext?.matchLength,
+            scoreX: body.matchContext?.scoreX,
+            scoreO: body.matchContext?.scoreO,
+            cubeValue: body.matchContext?.cubeValue,
+            cubeOwner: (body.matchContext as { cubeOwner?: 'X' | 'O' | null })?.cubeOwner,
+            crawford: body.matchContext?.crawford,
+        });
 
-        const apiKey =
-            process.env.GEMINI_API_KEY ||
-            process.env.OPENAI_API_KEY ||
-            process.env.LLM_API_KEY ||
-            '';
-
-        const rawBaseUrl =
-            process.env.OPENAI_BASE_URL ||
-            process.env.GEMINI_BASE_URL ||
-            process.env.LLM_BASE_URL ||
-            'https://generativelanguage.googleapis.com/v1beta/openai/';
-
-        const baseUrl = rawBaseUrl.replace(/\/+$/, '');
-        let model =
-            process.env.COACH_MODEL ||
-            process.env.OPENAI_MODEL ||
-            process.env.GEMINI_MODEL ||
-            process.env.LLM_MODEL ||
-            'gemini-2.5-flash';
+        // 1. Vérification du cache partagé L2 Supabase (0 ms)
+        try {
+            const sharedHit = await getSharedCoachExplanation(cacheKey);
+            if (sharedHit && (sharedHit.explanation || sharedHit.summary)) {
+                return createCachedExplanationStream(sharedHit, encoder);
+            }
+        } catch (cacheErr) {
+            console.warn('[Coach API] Erreur lecture cache L2 coach_explanations :', cacheErr);
+        }
 
         if (!apiKey) {
             return createJsonFallbackStream(generateRuleBasedExplanation(params), encoder);
         }
 
+        const groundTruthAudit = buildGroundTruthNeuroSymbolicAudit(params);
         const userPrompt = buildCoachUserPrompt(params);
         const requestPayload: Record<string, unknown> = {
             model,
@@ -276,7 +162,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             }
         } catch (fetchErr: unknown) {
             clearTimeout(timeoutId);
-            console.warn('[Coach API] Timeout (3s) ou erreur réseau LLM, repli heuristique :', fetchErr);
+            console.warn('[Coach API] Timeout ou erreur réseau LLM, repli heuristique :', fetchErr);
             return createJsonFallbackStream(generateRuleBasedExplanation(params), encoder);
         } finally {
             clearTimeout(timeoutId);
@@ -293,6 +179,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
         const stream = new ReadableStream({
             async start(controller) {
                 let buffer = '';
+                let accumulatedJson = '';
                 try {
                     while (true) {
                         const { done, value } = await upstreamReader.read();
@@ -316,6 +203,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                                 };
                                 const token = parsed.choices?.[0]?.delta?.content ?? '';
                                 if (token) {
+                                    accumulatedJson += token;
                                     controller.enqueue(
                                         encoder.encode(
                                             formatSseEvent({
@@ -334,9 +222,31 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                 } catch (streamErr: unknown) {
                     console.error('[Coach API] Erreur pendant la lecture du flux LLM :', streamErr);
                 } finally {
-                    controller.enqueue(encoder.encode(formatSseEvent({ done: true })));
+                    const verifiedAudit = verifyAccumulatedLlmAudit(accumulatedJson, groundTruthAudit);
+                    controller.enqueue(
+                        encoder.encode(formatSseEvent({ done: true, verifiedAudit })),
+                    );
                     controller.enqueue(encoder.encode('data: [DONE]\n\n'));
                     controller.close();
+
+                    if (accumulatedJson.trim()) {
+                        void Promise.resolve(
+                            saveCoachExplanationRecord({
+                                position_key: cacheKey,
+                                played_move: body.playedMove,
+                                optimal_move: body.optimalMove,
+                                verdict: params.verdict,
+                                equity_loss: body.equityLoss,
+                                summary: verifiedAudit.pedagogical_explanation.headline,
+                                explanation: verifiedAudit.pedagogical_explanation.tactical_rationale,
+                                key_concept: verifiedAudit.symbolic_audit.dominant_theme,
+                                advice: verifiedAudit.pedagogical_explanation.zare_luck_vs_skill,
+                                source: 'llm',
+                            }),
+                        ).catch((err) => {
+                            console.warn('[Coach API] Erreur sauvegarde L2 cache coach_explanations :', err);
+                        });
+                    }
                 }
             },
         });

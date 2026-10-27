@@ -1,25 +1,15 @@
 'use client';
 
 /**
- * Cours explicatif de fin de partie (IA) & Mode "Galaxy Mistake Review" Fluide.
- *
- * Rôle :
- *   1. Consomme `POST /api/coach/review` (streaming SSE) pour générer un cours structuré.
- *   2. Intègre le navigateur interactif "Galaxy Mistake Review" avec raccourcis clavier :
- *      - Flèche droite (`ArrowRight`) : Prochaine erreur (Inaccuracy / Doubtful / Blunder / Howler)
- *      - Flèche gauche (`ArrowLeft`) : Erreur précédente
- *      - Espace (` `) : Afficher la solution du Grand Maître et les flèches tactiques
- *   3. Synchronise automatiquement chaque blunder dans la table Supabase `recurring_errors`
- *      et expose le bouton direct « S'entraîner sur mes points faibles ».
+ * Cours explicatif de fin de partie (IA) & Mode "Galaxy Mistake Review" Fluide (< 300 lignes, 0 any).
  */
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
-import type { GameReviewCourseData } from '../../features/coach/gameReviewPrompts';
 import { analyzePlaystyle } from '../../features/coach/playstyleProfiler';
-import { upsertRecurringError } from '../../lib/supabase/db';
-import { getCurrentUser } from '../../lib/supabase/auth';
 import MiniBoardDiagram from '../board/MiniBoardDiagram';
+import { useGameReviewCourseStream } from './useGameReviewCourseStream';
 
 export interface GameReviewCourseProps {
     analysis: CompleteGameAnalysis;
@@ -27,13 +17,8 @@ export interface GameReviewCourseProps {
 }
 
 export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourseProps) {
-    const [course, setCourse] = useState<GameReviewCourseData | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [hasRequested, setHasRequested] = useState<boolean>(false);
     const [mistakeIdx, setMistakeIdx] = useState<number>(0);
     const [showGrandmasterSolution, setShowGrandmasterSolution] = useState<boolean>(false);
-    const abortRef = useRef<AbortController | null>(null);
 
     const mistakes = useMemo(
         () =>
@@ -43,40 +28,24 @@ export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourse
         [analysis.evaluatedMoves],
     );
 
+    const { course, isLoading, error, generate } = useGameReviewCourseStream(analysis, mistakes, language);
     const activeMistake = mistakes[mistakeIdx] ?? null;
-
-    // Synchronisation automatique des blunders vers la table Supabase `recurring_errors`
-    useEffect(() => {
-        if (mistakes.length === 0) return;
-        let cancelled = false;
-        (async () => {
-            try {
-                const user = await getCurrentUser();
-                if (!user || cancelled) return;
-                for (const m of mistakes) {
-                    if (m.verdict === 'blunder' || m.verdict === 'howler') {
-                        const concept = m.conceptId || 'positional';
-                        await upsertRecurringError(
-                            user.id,
-                            concept,
-                            concept,
-                            Math.abs(m.equityLoss),
-                        );
-                    }
-                }
-            } catch {
-                // Repli silencieux hors-ligne
-            }
-        })();
-        return () => {
-            cancelled = true;
-        };
-    }, [mistakes]);
 
     // Navigation clavier fluide Galaxy Mistake Review (ArrowRight, ArrowLeft, Space)
     useEffect(() => {
         if (mistakes.length === 0) return;
         const onKeyDown = (e: KeyboardEvent) => {
+            const target = e.target as HTMLElement | null;
+            if (
+                target &&
+                (target.tagName === 'INPUT' ||
+                    target.tagName === 'TEXTAREA' ||
+                    target.tagName === 'SELECT' ||
+                    target.tagName === 'BUTTON' ||
+                    target.isContentEditable)
+            ) {
+                return;
+            }
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
                 setMistakeIdx((prev) => Math.min(mistakes.length - 1, prev + 1));
@@ -93,86 +62,6 @@ export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourse
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
     }, [mistakes.length]);
-
-    const generate = useCallback(async () => {
-        setIsLoading(true);
-        setError(null);
-        setCourse(null);
-
-        const controller = new AbortController();
-        abortRef.current = controller;
-
-        try {
-            const response = await fetch('/api/coach/review', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
-                body: JSON.stringify({ analysis, language }),
-                signal: controller.signal,
-            });
-
-            if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let buffer = '';
-            let accumulated = '';
-            let receivedFull = false;
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split('\n');
-                buffer = lines.pop() ?? '';
-
-                for (const line of lines) {
-                    const trimmed = line.trim();
-                    if (!trimmed || !trimmed.startsWith('data:')) continue;
-                    const dataStr = trimmed.replace(/^data:\s*/, '');
-                    if (dataStr === '[DONE]') continue;
-
-                    try {
-                        const parsed = JSON.parse(dataStr);
-                        if (parsed.full) {
-                            receivedFull = true;
-                            setCourse(parsed.full as GameReviewCourseData);
-                        } else if (parsed.content) {
-                            accumulated += parsed.content;
-                        }
-                    } catch {
-                        // Ligne partielle ignorée
-                    }
-                }
-            }
-
-            if (!receivedFull && accumulated.trim()) {
-                try {
-                    setCourse(JSON.parse(accumulated.trim()) as GameReviewCourseData);
-                } catch {
-                    setError(language === 'en' ? 'Could not parse lesson.' : 'Impossible de lire le cours généré.');
-                }
-            }
-        } catch (err) {
-            if ((err as Error).name !== 'AbortError') {
-                setError(
-                    language === 'en'
-                        ? 'The lesson could not be generated. Please try again.'
-                        : 'Le cours n\'a pas pu être généré. Réessaie.',
-                );
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    }, [analysis, language]);
-
-    useEffect(() => {
-        if (!hasRequested) {
-            setHasRequested(true);
-            void generate();
-        }
-        return () => abortRef.current?.abort();
-    }, [hasRequested, generate]);
 
     const playstyle = useMemo(
         () => course?.playstyleProfile ?? analyzePlaystyle(analysis, language),
@@ -285,12 +174,9 @@ export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourse
                 </div>
             )}
 
-            {/* 3 Volets Gemini (Diagnostic / Concept Clé / Plan d'entraînement) */}
+            {/* 3 Volets Gemini (Diagnostic / Concept Clé) */}
             {(course.diagnostic || course.keyConcept) && (
-                <div
-                    data-testid="course-three-pillars"
-                    className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
-                >
+                <div data-testid="course-three-pillars" className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                     {course.diagnostic && (
                         <div className="rounded-xl border border-rose-500/40 bg-rose-950/20 p-3 text-xs text-rose-100">
                             <p className="font-bold uppercase tracking-wider text-rose-300">
@@ -376,13 +262,13 @@ export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourse
             )}
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                <a
+                <Link
                     href="/drills"
                     data-testid="train-weaknesses-btn"
                     className="rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-950 shadow-md hover:from-amber-300 hover:to-amber-400 transition"
                 >
                     🎯 {language === 'en' ? 'Train on my weak points' : "S'entraîner sur mes points faibles"}
-                </a>
+                </Link>
 
                 <button
                     type="button"

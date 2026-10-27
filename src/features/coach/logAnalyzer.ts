@@ -12,7 +12,13 @@
  */
 
 import type { Player, BoardState, Move } from '../../engine/backgammonEngine';
-import { createInitialState, applyMove, serializeXGID, generateLegalMoves } from '../../engine/backgammonEngine';
+import {
+    createInitialState,
+    applyMove,
+    serializeXGID,
+    serializeCanonicalXGID,
+    generateLegalMoves,
+} from '../../engine/backgammonEngine';
 import type { MatchLogEntry } from '../../actions/types';
 import { analyzeBoardMoves, evaluateBoard } from '../../lib/engine/evaluator';
 import {
@@ -65,14 +71,27 @@ export const VERDICT_THRESHOLDS = {
 } as const;
 
 /**
+ * Seuils stricts Grand Maître (PR 1–3) pour les joueurs d'élite.
+ */
+export const STRICT_VERDICT_THRESHOLDS = {
+    /** ≤ 0.005 → Optimal ✅ */
+    OPTIMAL: 0.005,
+    /** ≤ 0.015 → Bon 👍 */
+    GOOD: 0.015,
+    /** > 0.060 → Blunder ❌ */
+    BLUNDER: 0.06,
+} as const;
+
+/**
  * Classifie une perte d'équité en verdict à 4 paliers.
  * Centralise la logique pour éviter les seuils incohérents dispersés.
  */
-export function classifyVerdict(equityLoss: number): CoachVerdict {
+export function classifyVerdict(equityLoss: number, strictPr1 = false): CoachVerdict {
     const loss = Math.abs(equityLoss);
-    if (loss <= VERDICT_THRESHOLDS.OPTIMAL) return 'optimal';
-    if (loss <= VERDICT_THRESHOLDS.GOOD) return 'good';
-    if (loss > VERDICT_THRESHOLDS.BLUNDER) return 'blunder';
+    const thresholds = strictPr1 ? STRICT_VERDICT_THRESHOLDS : VERDICT_THRESHOLDS;
+    if (loss <= thresholds.OPTIMAL) return 'optimal';
+    if (loss <= thresholds.GOOD) return 'good';
+    if (loss > thresholds.BLUNDER) return 'blunder';
     return 'inaccuracy';
 }
 
@@ -124,6 +143,8 @@ export interface AnalyzeHumanMoveFromLogParams {
     readonly logEntry: MatchLogEntry;
     readonly localPlayer?: Player;
     readonly cubeValue?: number;
+    readonly cubeOwner?: Player | null;
+    readonly crawford?: boolean;
     readonly matchLength?: number;
     readonly scoreX?: number;
     readonly scoreO?: number;
@@ -154,8 +175,8 @@ function resolveEffectiveBoardAfter(logEntry: MatchLogEntry): number[] {
  * Fusionne les sous-mouvements chaînés d'un même pion (ex. 24/18 + 18/13 -> 24/13)
  * et développe les multiplicateurs (ex. 8/5(2) -> 8/5 8/5) pour une comparaison canonique.
  */
-function collapseParsedMovesKey(notation: string): string {
-    const moves = parseCoachNotationMoves(notation, 'X');
+function collapseParsedMovesKey(notation: string, player: Player = 'X'): string {
+    const moves = parseCoachNotationMoves(notation, player);
     if (moves.length === 0) return '';
     const list = moves.map((m) => ({ ...m }));
     let merged = true;
@@ -174,7 +195,11 @@ function collapseParsedMovesKey(notation: string): string {
         }
     }
     return list
-        .map((m) => `${m.from}>${m.to}`)
+        .map((m) => {
+            const fromKey = m.from === 0 || m.from === 25 ? 'bar' : String(m.from);
+            const toKey = m.to === 0 || m.to === 25 ? 'off' : String(m.to);
+            return `${fromKey}>${toKey}`;
+        })
         .sort()
         .join('|');
 }
@@ -183,7 +208,7 @@ function collapseParsedMovesKey(notation: string): string {
  * Vérifie si deux notations sont équivalentes même lorsque les sous-mouvements
  * ont été joués dans l'ordre inverse (ex: "8/7 13/7" vs "13/7 8/7") ou chaînés ("24/18 18/13" vs "24/13").
  */
-function notationsAreEquivalent(a: string, b: string): boolean {
+function notationsAreEquivalent(a: string, b: string, player: Player = 'X'): boolean {
     const normA = normalizeCoachNotation(a);
     const normB = normalizeCoachNotation(b);
     if (!normA || !normB) return false;
@@ -191,8 +216,8 @@ function notationsAreEquivalent(a: string, b: string): boolean {
     const tokensA = normA.split(' ').filter(Boolean).sort().join(' ');
     const tokensB = normB.split(' ').filter(Boolean).sort().join(' ');
     if (tokensA === tokensB) return true;
-    const collapsedA = collapseParsedMovesKey(a);
-    const collapsedB = collapseParsedMovesKey(b);
+    const collapsedA = collapseParsedMovesKey(a, player);
+    const collapsedB = collapseParsedMovesKey(b, player);
     return Boolean(collapsedA && collapsedA === collapsedB);
 }
 
@@ -269,11 +294,11 @@ export function analyzeHumanMoveFromLog(
         turn: logEntry.player,
         dice,
         cubeValue: params.cubeValue ?? 1,
-        cubeOwner: null,
+        cubeOwner: params.cubeOwner ?? null,
         matchLength: params.matchLength ?? 7,
         scoreX: params.scoreX ?? 0,
         scoreO: params.scoreO ?? 0,
-        crawford: false,
+        crawford: params.crawford ?? false,
         doubled: false,
         resigned: 0,
     };
@@ -368,6 +393,50 @@ export function analyzeHumanMoveFromLog(
                 ],
             };
         }
+
+        // Coup d'ouverture hors-livre : le coup optimal reste impérativement celui du Livre d'Ouvertures
+        const opponent: Player = logEntry.player === 'X' ? 'O' : 'X';
+        const bestAfterEval = evaluateBoard(
+            { ...evalState, board: openingBestBoard, turn: opponent, dice: null },
+            Math.max(0, (params.ply ?? 2) - 1),
+        );
+        const playedAfterEval = evaluateBoard(
+            { ...evalState, board: effectiveBoardAfter, turn: opponent, dice: null },
+            Math.max(0, (params.ply ?? 2) - 1),
+        );
+        const minAltLoss =
+            opening.alternatives.length > 0
+                ? Math.max(...opening.alternatives.map((a) => Math.abs(a.equityLoss)))
+                : 0.04;
+        const rawDiff = Math.max(0, -bestAfterEval.cubelessEquity - -playedAfterEval.cubelessEquity);
+        const offBookLoss = Number(Math.max(minAltLoss, rawDiff).toFixed(4));
+        const offBookVerdict = classifyVerdict(offBookLoss);
+        return {
+            turnIndex: logEntry.turnIndex,
+            player: logEntry.player,
+            verdict: offBookVerdict,
+            equityLoss: offBookLoss,
+            playedNotation,
+            optimalNotation: opening.bestMoveNotation,
+            playedEquity: Number((opening.equity - offBookLoss).toFixed(4)),
+            bestEquity: opening.equity,
+            isUnforced: true,
+            isBlunder: offBookVerdict === 'blunder',
+            optimalMoves: opening.bestMoves,
+            candidateMoves: [
+                { notation: opening.bestMoveNotation, equity: opening.equity, equityLoss: 0 },
+                ...opening.alternatives.map((alt) => ({
+                    notation: alt.notation,
+                    equity: opening.equity + alt.equityLoss,
+                    equityLoss: Math.abs(alt.equityLoss),
+                })),
+                {
+                    notation: playedNotation,
+                    equity: Number((opening.equity - offBookLoss).toFixed(4)),
+                    equityLoss: offBookLoss,
+                },
+            ],
+        };
     }
 
     // Appariement du coup joué avec un candidat évalué :
@@ -472,27 +541,68 @@ export async function analyzeHumanMoveFromLogWithBgsage(
     const boardBefore = [...logEntry.boardBefore];
     const effectiveBoardAfter = resolveEffectiveBoardAfter(logEntry);
 
-    // Construction du XGID de la position avant le coup.
+    // Construction du XGID canonique 10 champs de la position avant le coup.
     const evalState: BoardState = {
         board: boardBefore,
         turn: logEntry.player,
         dice,
         cubeValue: params.cubeValue ?? 1,
-        cubeOwner: null,
+        cubeOwner: params.cubeOwner ?? null,
         matchLength: params.matchLength ?? 7,
         scoreX: params.scoreX ?? 0,
         scoreO: params.scoreO ?? 0,
-        crawford: false,
+        crawford: params.crawford ?? false,
         doubled: false,
         resigned: 0,
     };
-    const xgid = serializeXGID(evalState);
+    const xgid = serializeCanonicalXGID(evalState);
     const legalSeqs = generateLegalMoves(evalState, dice);
 
+    // 0. Vérification prioritaire du Livre d'Ouvertures au tour 1 (position initiale)
+    const isOpeningTurn =
+        (logEntry.turnIndex <= 1 || isInitialBoardPosition(boardBefore)) &&
+        isInitialBoardPosition(boardBefore) &&
+        dice[0] !== dice[1] &&
+        logEntry.player === 'X';
+    const openingBookEntry = isOpeningTurn ? getOpening(dice[0], dice[1]) : null;
+    if (openingBookEntry) {
+        const openingResult = analyzeHumanMoveFromLog(params);
+        if (openingResult) {
+            try {
+                const bgsageOpeningResp = await evaluateWithBgsage(xgid, params.ply ?? 2, 3000);
+                const isRealBgsageOpening = Boolean(
+                    bgsageOpeningResp &&
+                        bgsageOpeningResp.chequerPlay.length > 0 &&
+                        bgsageOpeningResp.source !== 'typescript-tri-phase' &&
+                        bgsageOpeningResp.source !== 'local',
+                );
+                if (isRealBgsageOpening && bgsageOpeningResp) {
+                    const topMove = bgsageOpeningResp.chequerPlay[0];
+                    return {
+                        ...openingResult,
+                        bgsageInsights: {
+                            isRace: Boolean(bgsageOpeningResp.isRace),
+                            playerGamePlan:
+                                bgsageOpeningResp.gamePlans?.player ?? topMove.playerGamePlan ?? 'contact',
+                            opponentGamePlan:
+                                bgsageOpeningResp.gamePlans?.opponent ?? topMove.opponentGamePlan ?? 'contact',
+                            evalLevel: topMove.evalLevel ?? `${params.ply ?? 2}-ply`,
+                            optimalMetrics: toBgsageMoveMetrics(topMove),
+                        },
+                        source: 'bgsage',
+                    };
+                }
+            } catch {
+                // Repli silencieux sur le Livre d'Ouvertures local
+            }
+            return { ...openingResult, source: 'local' };
+        }
+    }
+
     // Résout la séquence légale exacte (coups + notation avec frappes intermédiaires) pour un candidat bgsage
-    const resolveBgsageCandidateSeq = (m: BgsageMove) => {
+    const resolveBgsageCandidateSeq = (m: BgsageMove, source?: string | null) => {
         if (m.board && m.board.length === 26) {
-            const engineBoard = bgsageMoveBoardToProjectBoard(m.board, logEntry.player);
+            const engineBoard = bgsageMoveBoardToProjectBoard(m.board, logEntry.player, source);
             const matchedSeq =
                 legalSeqs.find((s) => boardsMatchOnPointsAndBar(s.board, engineBoard)) ??
                 legalSeqs.find((s) => boardsMatchOnPoints(s.board, engineBoard));
@@ -504,18 +614,48 @@ export async function analyzeHumanMoveFromLogWithBgsage(
                 };
             }
         }
+        if (m.moves && m.moves.length > 0) {
+            let simBoard = [...boardBefore];
+            for (const mv of m.moves) simBoard = applyMove(simBoard, mv, logEntry.player);
+            return {
+                moves: m.moves,
+                board: simBoard,
+                notation: formatCoachMoveSequence(m.moves, logEntry.player, boardBefore),
+            };
+        }
+        const absNotation = relativeNotationToAbsolute(m.notation, logEntry.player);
+        const matchedByNotation = legalSeqs.find((s) => {
+            const seqNotation = formatCoachMoveSequence(s.moves, logEntry.player, boardBefore);
+            return (
+                notationsAreEquivalent(seqNotation, absNotation, logEntry.player) ||
+                notationsAreEquivalent(seqNotation, m.notation, logEntry.player)
+            );
+        });
+        if (matchedByNotation) {
+            return {
+                moves: matchedByNotation.moves,
+                board: matchedByNotation.board,
+                notation: formatCoachMoveSequence(matchedByNotation.moves, logEntry.player, boardBefore),
+            };
+        }
         return {
             moves: [] as Move[],
             board: null as number[] | null,
-            notation: relativeNotationToAbsolute(m.notation, logEntry.player),
+            notation: absNotation,
         };
     };
 
     // 1. Tentative via le bgsage-service (réseau de neurones Open Sage).
     try {
         const bgsageResult = await evaluateWithBgsage(xgid, params.ply ?? 2, 3000);
+        const isRealBgsage = Boolean(
+            bgsageResult &&
+                bgsageResult.chequerPlay.length > 0 &&
+                bgsageResult.source !== 'typescript-tri-phase' &&
+                bgsageResult.source !== 'local',
+        );
 
-        if (bgsageResult && bgsageResult.chequerPlay.length > 0) {
+        if (isRealBgsage && bgsageResult && bgsageResult.chequerPlay.length > 0) {
             const playedMoves = resolvePlayedMoves(logEntry);
             const playedNotation = formatCoachMoveSequence(
                 [...playedMoves],
@@ -526,11 +666,15 @@ export async function analyzeHumanMoveFromLogWithBgsage(
             const canonicalNotation = formatCoachMoveSequence(canonicalMoves, logEntry.player, boardBefore);
 
             const bestMove = bgsageResult.chequerPlay[0];
-            const resolvedBest = resolveBgsageCandidateSeq(bestMove);
+            const resolvedBest = resolveBgsageCandidateSeq(bestMove, bgsageResult.source);
 
             const matched = bgsageResult.chequerPlay.find((m) => {
                 if (m.board && m.board.length === 26) {
-                    const engineBoard = bgsageMoveBoardToProjectBoard(m.board, logEntry.player);
+                    const engineBoard = bgsageMoveBoardToProjectBoard(
+                        m.board,
+                        logEntry.player,
+                        bgsageResult.source,
+                    );
                     if (
                         boardsMatchOnPointsAndBar(engineBoard, effectiveBoardAfter) ||
                         boardsMatchOnPoints(engineBoard, effectiveBoardAfter)
@@ -538,20 +682,28 @@ export async function analyzeHumanMoveFromLogWithBgsage(
                         return true;
                     }
                 }
-                const resolvedCand = resolveBgsageCandidateSeq(m);
+                const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
+                const absMoveNotation = relativeNotationToAbsolute(m.notation, logEntry.player);
                 if (
-                    notationsAreEquivalent(resolvedCand.notation, playedNotation) ||
-                    notationsAreEquivalent(resolvedCand.notation, canonicalNotation) ||
-                    notationsAreEquivalent(m.notation, playedNotation) ||
-                    notationsAreEquivalent(m.notation, canonicalNotation)
+                    notationsAreEquivalent(resolvedCand.notation, playedNotation, logEntry.player) ||
+                    notationsAreEquivalent(resolvedCand.notation, canonicalNotation, logEntry.player) ||
+                    notationsAreEquivalent(absMoveNotation, playedNotation, logEntry.player) ||
+                    notationsAreEquivalent(absMoveNotation, canonicalNotation, logEntry.player) ||
+                    notationsAreEquivalent(m.notation, playedNotation, logEntry.player) ||
+                    notationsAreEquivalent(m.notation, canonicalNotation, logEntry.player)
                 ) {
                     return true;
                 }
-                const parsed = parseCoachNotationMoves(m.notation);
+                const parsed = parseCoachNotationMoves(absMoveNotation, logEntry.player);
                 if (parsed.length > 0) {
                     let sim = [...boardBefore];
                     for (const mv of parsed) sim = applyMove(sim, mv, logEntry.player);
-                    if (boardsMatchOnPoints(sim, effectiveBoardAfter)) return true;
+                    if (
+                        boardsMatchOnPointsAndBar(sim, effectiveBoardAfter) ||
+                        boardsMatchOnPoints(sim, effectiveBoardAfter)
+                    ) {
+                        return true;
+                    }
                 }
                 return false;
             });
@@ -580,7 +732,7 @@ export async function analyzeHumanMoveFromLogWithBgsage(
             const verdict = classifyVerdict(equityLoss);
 
             const candidateMoves = bgsageResult.chequerPlay.map((m) => {
-                const resolvedCand = resolveBgsageCandidateSeq(m);
+                const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
                 const isMatch = m === matched;
                 return {
                     notation: isMatch ? playedNotation : resolvedCand.notation,
@@ -592,7 +744,7 @@ export async function analyzeHumanMoveFromLogWithBgsage(
                 };
             });
 
-            if (!matched && !candidateMoves.some((m) => notationsAreEquivalent(m.notation, playedNotation))) {
+            if (!matched && !candidateMoves.some((m) => notationsAreEquivalent(m.notation, playedNotation, logEntry.player))) {
                 candidateMoves.push({
                     notation: playedNotation,
                     equity: playedEquity,

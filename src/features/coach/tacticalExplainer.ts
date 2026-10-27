@@ -158,6 +158,15 @@ export function explainTacticalDifference(
         reasons.push('le coup optimal sort davantage de pions (optimisation du bear-off)');
     }
 
+    // 5. Évasion des pions arrières & préservation du Midpoint
+    const rearIdx = player === 'X' ? 24 : 1;
+    const optRear = player === 'X' ? Math.max(0, boardOptimal[rearIdx] ?? 0) : Math.max(0, -(boardOptimal[rearIdx] ?? 0));
+    const playedRear = player === 'X' ? Math.max(0, boardPlayed[rearIdx] ?? 0) : Math.max(0, -(boardPlayed[rearIdx] ?? 0));
+    if (optRear < playedRear) {
+        concepts.push('Évasion');
+        reasons.push('le coup optimal évade un pion arrière du camp adverse avant d’être bloqué');
+    }
+
     let summary: string;
     if (reasons.length === 0) {
         summary =

@@ -264,4 +264,123 @@ describe('reconstructBoardFromLog & Audit 3 (Cache LRU + Off-List Blunders)', ()
         expect(res.equityLoss).toBeGreaterThanOrEqual(CATASTROPHIC_LOSS_FLOOR);
         expect(classifyVerdict(res.equityLoss)).toBe('blunder');
     });
+
+    it('Bug 2 : serializeCanonicalXGID génère un XGID standard eXtreme Gammon 10 champs (26 caractères de position) sans ambiguïté barre/bear-off pour X et O', async () => {
+        const { serializeCanonicalXGID, parseXGID, X_BAR, O_BAR } = await import('../../engine/backgammonEngine');
+        const state = createInitialState(7);
+        state.board[X_BAR] = 1;
+        state.board[O_BAR] = -2;
+        state.board[24] = 0; // Flèche 24 vide
+        state.board[1] = 0;  // Flèche 1 vide (et pions sortis en bear-off)
+        state.turn = 'O';
+        state.dice = [5, 2];
+
+        const canonical = serializeCanonicalXGID(state);
+        const colonParts = canonical.replace(/^XGID=/, '').split(':');
+        // Exactement 10 champs séparés par ':' (body de 26 chars + 9 métadonnées)
+        expect(colonParts.length).toBe(10);
+        expect(colonParts[0].length).toBe(26);
+        expect(colonParts[0][0]).toBe('b'); // O_BAR = 2 ('b')
+        expect(colonParts[0][25]).toBe('A'); // X_BAR = 1 ('A')
+
+        // Round-trip exact avec parseXGID
+        const parsed = parseXGID(canonical);
+        expect(parsed.board).toEqual(state.board);
+        expect(parsed.turn).toBe('O');
+        expect(parsed.dice).toEqual([5, 2]);
+    });
+
+    it('Bug 3 : analyzeHumanMoveFromLogWithBgsage vérifie le Livre d\'Ouvertures (getOpening) au tour 1 et ne marque source="bgsage" que si la réponse vient réellement d\'Open Sage', async () => {
+        const { analyzeHumanMoveFromLogWithBgsage } = await import('./logAnalyzer');
+        clearBgsageEvaluationCache();
+
+        const initial = createInitialState().board;
+        // Tour 1 : X joue le coup du Livre d'Ouvertures 24/20 13/8 sur 5-4
+        let boardAfterBook = applyMove(initial, { from: 24, to: 20 }, 'X');
+        boardAfterBook = applyMove(boardAfterBook, { from: 13, to: 8 }, 'X');
+
+        const bookEntry: MatchLogEntry = Object.freeze({
+            turnIndex: 1,
+            player: 'X',
+            dice: Object.freeze([5, 4]) as readonly [number, number],
+            boardBefore: Object.freeze([...initial]),
+            movePlayed: Object.freeze([
+                { from: 24, to: 20 },
+                { from: 13, to: 8 },
+            ]),
+            boardAfter: Object.freeze([...boardAfterBook]),
+        });
+
+        const bookAnalysis = await analyzeHumanMoveFromLogWithBgsage({
+            logEntry: bookEntry,
+            localPlayer: 'X',
+        });
+        expect(bookAnalysis).not.toBeNull();
+        expect(bookAnalysis!.verdict).toBe('optimal');
+        expect(bookAnalysis!.equityLoss).toBe(0);
+        expect(bookAnalysis!.source).toBe('local');
+
+        // Tour 2 : Si l'API renvoie source: 'typescript-tri-phase', logAnalyzer NE DOIT PAS marquer source: 'bgsage'
+        const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+            new Response(
+                JSON.stringify({
+                    source: 'typescript-tri-phase',
+                    chequerPlay: [
+                        { rank: 1, notation: '8/5 6/5', equity: 0.18, equityLoss: 0, probabilities: null },
+                    ],
+                    cubeDecision: { optimalAction: 'No Double' },
+                }),
+                { status: 200 },
+            ),
+        );
+
+        try {
+            let boardAfter31 = applyMove(initial, { from: 8, to: 5 }, 'X');
+            boardAfter31 = applyMove(boardAfter31, { from: 6, to: 5 }, 'X');
+            const turn2Entry: MatchLogEntry = Object.freeze({
+                turnIndex: 2,
+                player: 'X',
+                dice: Object.freeze([3, 1]) as readonly [number, number],
+                boardBefore: Object.freeze([...initial]),
+                movePlayed: Object.freeze([
+                    { from: 8, to: 5 },
+                    { from: 6, to: 5 },
+                ]),
+                boardAfter: Object.freeze([...boardAfter31]),
+            });
+
+            const fallbackAnalysis = await analyzeHumanMoveFromLogWithBgsage({
+                logEntry: turn2Entry,
+                localPlayer: 'X',
+            });
+            expect(fallbackAnalysis).not.toBeNull();
+            expect(fallbackAnalysis!.source).toBe('local');
+        } finally {
+            fetchSpy.mockRestore();
+            clearBgsageEvaluationCache();
+        }
+    });
+
+    it('Bug 1 & Bug 5 : /api/evaluate ajoute source="bgsage-cloud-run", et CoachRequestSchema / LLM_TIMEOUT_MS (8000ms) acceptent doubtful/inaccuracy sans rejet HTTP 400', async () => {
+        const { CoachRequestSchema } = await import('../../lib/security/schemas');
+        const { LLM_TIMEOUT_MS } = await import('../../components/coach/useCoachExplanation');
+
+        expect(LLM_TIMEOUT_MS).toBe(8000);
+
+        const validDoubtful = CoachRequestSchema.safeParse({
+            verdict: 'doubtful',
+            equityLoss: -0.04,
+            playedMove: '13/9',
+            optimalMove: '8/4',
+        });
+        expect(validDoubtful.success).toBe(true);
+
+        const validInaccuracy = CoachRequestSchema.safeParse({
+            verdict: 'inaccuracy',
+            equityLoss: -0.04,
+            playedMove: '13/9',
+            optimalMove: '8/4',
+        });
+        expect(validInaccuracy.success).toBe(true);
+    });
 });

@@ -6,9 +6,9 @@
  * Rôle :
  *   Assemble les sections du bilan Grandmaster Match Review & Blunder Report :
  *     1. `PostMatchHeader` — résultat + comparatif PR + bilan des paliers ;
- *     2. `MatchBlunderReport` — bannière PR/Accuracy %, carrousel/accordéon de `MiniBoardDiagram` avec flèches comparatives,
+ *     2. Barre d'actions principale — immédiatement accessible sans scroller ;
+ *     3. `MatchBlunderReport` — bannière PR/Accuracy %, carrousel/accordéon de `MiniBoardDiagram` avec flèches comparatives,
  *        voix du Coach, mode puzzle « Rejouer ce coup », et rapport Gemini en 3 volets (🎯 Diagnostic, 💡 Concept Clé, 🚀 Plan) ;
- *     3. `PostMatchBlundersGallery` & `PostMatchAiSynthesis` — vue détaillée complémentaire ;
  *     4. Persistance IndexedDB + Supabase (déclenchée une seule fois au montage).
  *
  *   Propose les actions : Manche Suivante / Rejouer, Bilan & Courbe PR, Entraîner mes Blunders, Retour au Lobby.
@@ -16,8 +16,6 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PostMatchHeader from './PostMatchHeader';
-import PostMatchBlundersGallery from './PostMatchBlundersGallery';
-import PostMatchAiSynthesis from './PostMatchAiSynthesis';
 import MatchBlunderReport from './MatchBlunderReport';
 import {
     buildMatchSummaryPayload,
@@ -30,21 +28,13 @@ import type { CompleteGameAnalysis } from '../../features/rating/types';
 export interface PostMatchTrainingReportProps {
     /** Analyse complète de la manche (null si indisponible). */
     analysis: CompleteGameAnalysis | null;
-    /** Vainqueur de la manche. */
     winner: 'X' | 'O' | null;
-    /** Type de victoire. */
     winType: 'single' | 'gammon' | 'backgammon' | 'pass' | null;
-    /** Points remportés. */
     pointsWon: number;
-    /** Score du joueur X. */
     scoreX: number;
-    /** Score du joueur O. */
     scoreO: number;
-    /** Longueur du match (0 = money game). */
     matchLength: number;
-    /** Le match est-il terminé ? */
     isMatchOver: boolean;
-    /** Identifiant de la partie. */
     gameId: string;
     /** PR du bot (optionnel). */
     botPr?: number | null;
@@ -64,6 +54,8 @@ export interface PostMatchTrainingReportProps {
     onTrainBlunders?: () => void;
     /** Ouvre l'auditeur cryptographique Provably Fair des dés en 1 clic. */
     onOpenDiceAudit?: () => void;
+    /** Ouvre la modale d'import/export horloger. */
+    onOpenExportImport?: () => void;
     /** Langue d'affichage. */
     locale?: string;
 }
@@ -87,11 +79,12 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
     onBackToLobby,
     onTrainBlunders,
     onOpenDiceAudit,
+    onOpenExportImport,
     locale = 'fr',
 }) => {
-    const isEn = locale === 'en';
+    const isEn = Boolean(locale && locale !== 'fr');
     const [persistStatus, setPersistStatus] = useState<'idle' | 'saved' | 'error'>('idle');
-    const persistedRef = useRef(false);
+    const persistedKeyRef = useRef<string | null>(null);
 
     // Erreurs majeures extraites des coups évalués.
     const blunders = useMemo(
@@ -108,10 +101,11 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
         [analysis, blunders, botPr],
     );
 
-    // Persistance unique (IndexedDB + Supabase) au montage.
+    // Persistance IndexedDB + Supabase (se relance si `analysis` arrive après le premier rendu).
     useEffect(() => {
-        if (persistedRef.current) return;
-        persistedRef.current = true;
+        const persistKey = `${gameId}:${analysis?.id ?? 'no_analysis'}`;
+        if (persistedKeyRef.current === persistKey) return;
+        persistedKeyRef.current = persistKey;
 
         void (async () => {
             try {
@@ -129,11 +123,26 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                 setPersistStatus('error');
             }
         })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [analysis, summaryPayload, blunders, gameId]);
 
     const playerPr = analysis?.performanceRating ?? 0;
     const playerCategory = analysis?.prCategory ?? 'Intermédiaire';
+
+    // Raccourcis clavier : Échap (retour Lobby), Entrée (manche suivante / nouveau match)
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement) return;
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                onBackToLobby();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                onNextGame();
+            }
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [onBackToLobby, onNextGame]);
 
     return (
         <div
@@ -159,7 +168,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                     </div>
                     <span
                         data-testid="post-match-persist-status"
-                        className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${
+                        className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${
                             persistStatus === 'saved'
                                 ? 'border-emerald-600/60 bg-emerald-950/60 text-emerald-300'
                                 : persistStatus === 'error'
@@ -168,16 +177,10 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                         }`}
                     >
                         {persistStatus === 'saved'
-                            ? isEn
-                                ? '💾 Saved'
-                                : '💾 Enregistré'
+                            ? (isEn ? '💾 Saved' : '💾 Enregistré')
                             : persistStatus === 'error'
-                              ? isEn
-                                  ? '⚠️ Local only'
-                                  : '⚠️ Local seul'
-                              : isEn
-                                ? '⏳ Saving…'
-                                : '⏳ Enregistrement…'}
+                              ? (isEn ? '⚠️ Local only' : '⚠️ Local seul')
+                              : (isEn ? '⏳ Saving…' : '⏳ Enregistrement…')}
                     </span>
                 </header>
 
@@ -195,32 +198,12 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                     botCategory={botCategory}
                     counters={counters}
                     totalEquityLoss={analysis?.totalEquityLoss ?? 0}
+                    accuracyPercent={summaryPayload.accuracyPercent}
                     locale={locale}
                 />
 
-                {/* Section 2 — Grandmaster Match Review & Blunder Report (MiniBoardDiagram + 3 volets Gemini + Rejouer ce coup) */}
-                <MatchBlunderReport
-                    analysis={analysis}
-                    opponentPr={botPr}
-                    isOffline={isOffline}
-                    apiUrl={apiUrl}
-                    locale={locale}
-                    onTrainBlunders={onTrainBlunders}
-                />
-
-                {/* Section 3 — Galerie synthétique des erreurs majeures */}
-                <PostMatchBlundersGallery blunders={blunders} locale={locale} />
-
-                {/* Section 4 — Synthèse pédagogique IA */}
-                <PostMatchAiSynthesis
-                    payload={summaryPayload}
-                    apiUrl={apiUrl}
-                    isOffline={isOffline}
-                    locale={locale}
-                />
-
-                {/* Section 5 — Actions */}
-                <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:flex-wrap">
+                {/* Section 2 — Barre d'actions principale (immédiatement visible sans scroller) */}
+                <div className="flex flex-col gap-2 pt-0.5 sm:flex-row sm:flex-wrap">
                     <button
                         type="button"
                         onClick={onNextGame}
@@ -228,15 +211,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                         className="flex-1 inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-[#f5d77f]/65 bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] px-4 py-2.5 text-sm font-black uppercase tracking-wider text-[#1a0f07] shadow-[0_8px_24px_rgba(212,175,55,0.28)] transition hover:brightness-105 active:scale-[0.98]"
                     >
                         <span aria-hidden="true">▶</span>
-                        <span>
-                            {isMatchOver
-                                ? isEn
-                                    ? 'New match'
-                                    : 'Nouveau match'
-                                : isEn
-                                  ? 'Next game'
-                                  : 'Manche suivante'}
-                        </span>
+                        <span>{isMatchOver ? (isEn ? 'New match' : 'Nouveau match') : (isEn ? 'Next game' : 'Manche suivante')}</span>
                     </button>
 
                     {(onOpenReview || analysis) && (
@@ -251,7 +226,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                         </button>
                     )}
 
-                    {onTrainBlunders && (
+                    {onTrainBlunders && (!analysis || blunders.length > 0) && (
                         <button
                             type="button"
                             onClick={onTrainBlunders}
@@ -263,19 +238,27 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                         </button>
                     )}
 
+                    {onOpenExportImport && (
+                        <button
+                            type="button"
+                            onClick={onOpenExportImport}
+                            data-testid="post-match-export-import-btn"
+                            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-[#d4af37]/45 bg-[#25180c] px-3.5 py-2.5 text-xs font-bold text-amber-200 transition hover:border-[#f3c65f] hover:text-white active:scale-95"
+                        >
+                            <span aria-hidden="true">⏱️</span>
+                            <span>{isEn ? 'Export / Import' : 'Exporter / Importer'}</span>
+                        </button>
+                    )}
+
                     {onOpenDiceAudit && (
                         <button
                             type="button"
                             onClick={onOpenDiceAudit}
                             data-testid="post-match-dice-audit-btn"
-                            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-emerald-400/60 bg-gradient-to-r from-[#0a2e20] via-[#0e3f2c] to-[#1a2915] px-4 py-2.5 text-xs font-bold text-emerald-200 shadow-[0_4px_16px_rgba(16,185,129,0.22),inset_0_1px_0_rgba(212,175,55,0.3)] transition hover:border-[#f3c65f] hover:text-white active:scale-95"
+                            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-emerald-400/50 bg-[#0a261a] px-3.5 py-2.5 text-xs font-bold text-emerald-200 transition hover:border-emerald-300 hover:text-white active:scale-95"
                         >
                             <span aria-hidden="true">🛡</span>
-                            <span>
-                                {isEn
-                                    ? 'Verify Dice in 1 Click (Provably Fair)'
-                                    : 'Vérifier les Dés en 1 Clic (Provably Fair)'}
-                            </span>
+                            <span>{isEn ? 'Verify Dice' : 'Vérifier les Dés'}</span>
                         </button>
                     )}
 
@@ -283,14 +266,23 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                         type="button"
                         onClick={onBackToLobby}
                         data-testid="post-match-back-lobby-btn"
-                        className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-[#d4af37]/30 bg-[#1a0f08] px-4 py-2.5 text-xs font-semibold text-[#e8dcc6]/85 transition hover:border-[#d4af37]/60 hover:text-[#fdf8eb] active:scale-95"
+                        className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-4 py-2.5 text-xs font-semibold text-[#e8dcc6]/90 transition hover:border-[#d4af37]/60 hover:text-[#fdf8eb] active:scale-95"
                     >
-                        <span aria-hidden="true" className="text-[#f3c65f]">
-                            ⚜
-                        </span>
+                        <span aria-hidden="true" className="text-[#f3c65f]">⚜</span>
                         <span>{isEn ? 'Back to lobby' : 'Retour au Lobby'}</span>
                     </button>
                 </div>
+
+                {/* Section 3 — Revue unifiée des erreurs et synthèse du Coach */}
+                <MatchBlunderReport
+                    analysis={analysis}
+                    opponentPr={botPr}
+                    isOffline={isOffline}
+                    apiUrl={apiUrl}
+                    locale={locale}
+                    onTrainBlunders={onTrainBlunders}
+                    hideSummaryBanner={true}
+                />
             </div>
         </div>
     );

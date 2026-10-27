@@ -10,8 +10,9 @@ import {
 } from '../../features/coach';
 import { parseStreamedExplanation, type CoachDisplayVerdict, type ParsedExplanation } from './coachPanelHelpers';
 import { persistExplanation, resolveL2CachedExplanation } from './coachExplanationPersistence';
+import type { Locale } from '../../lib/i18n/types';
 
-export const LLM_TIMEOUT_MS = 3000;
+export const LLM_TIMEOUT_MS = 8000;
 export type ExplanationSource = 'llm' | 'rule-based' | 'cache' | null;
 
 export interface UseCoachExplanationParams {
@@ -141,18 +142,33 @@ export function useCoachExplanation({
             boardStructure: { innerBoardPoints: 0, advancedAnchor: false, goldenPoint: false, barPoint: false, longestPrime: 0 },
             contactStatus: 'contact',
         };
+        const resolvedVerdict =
+            verdict === 'optimal'
+                ? 'optimal'
+                : verdict === 'good'
+                  ? 'good'
+                  : isBlunder
+                    ? 'blunder'
+                    : verdict === 'inaccuracy'
+                      ? 'inaccuracy'
+                      : 'doubtful';
         const ruleBased = generateRuleBasedExplanation({
-            verdict: isBlunder ? 'blunder' : 'douteux',
+            verdict: resolvedVerdict,
             equityLoss: -absLoss,
             playedMove: playedMove ?? (locale === 'en' ? 'Played move' : 'Coup joué'),
             optimalMove: optimalMove ?? (locale === 'en' ? 'Optimal move' : 'Coup optimal'),
             features: safeFeatures,
             matchContext: matchCtx ?? undefined,
             playerLevel,
-            language: locale === 'en' ? 'en' : 'fr',
+            language: (locale as Locale),
         });
-        return { ...ruleBased, rawText: ruleBased.explanation };
-    }, [isBlunder, absLoss, playedMove, optimalMove, features, matchCtx, playerLevel, locale]);
+        return {
+            ...ruleBased,
+            symbolicAudit: ruleBased.symbolic_audit,
+            pedagogicalExplanation: ruleBased.pedagogical_explanation,
+            rawText: ruleBased.explanation,
+        };
+    }, [verdict, isBlunder, absLoss, playedMove, optimalMove, features, matchCtx, playerLevel, locale]);
 
     const executeExplain = useCallback(
         async (_autoTriggered = false) => {
@@ -209,14 +225,23 @@ export function useCoachExplanation({
                 return;
             }
 
-            // Niveau 3 : Streaming SSE LLM Cloud Run avec timeout strict de 3 s
+            // Niveau 3 : Streaming SSE LLM Cloud Run avec timeout de 8 s
             const controller = new AbortController();
             abortControllerRef.current = controller;
             const timeoutId = setTimeout(() => controller.abort(), LLM_TIMEOUT_MS);
 
             try {
                 const payload = {
-                    verdict: isBlunder ? 'blunder' : 'douteux',
+                    verdict:
+                        verdict === 'optimal'
+                            ? 'optimal'
+                            : verdict === 'good'
+                              ? 'good'
+                              : isBlunder
+                                ? 'blunder'
+                                : verdict === 'inaccuracy'
+                                  ? 'inaccuracy'
+                                  : 'doubtful',
                     equityLoss: -absLoss,
                     playedMove: playedMove ?? (locale === 'en' ? 'Played move' : 'Coup joué'),
                     optimalMove: optimalMove ?? (locale === 'en' ? 'Optimal move' : 'Coup optimal'),
@@ -278,7 +303,7 @@ export function useCoachExplanation({
                 if (!isStale()) setIsStreaming(false);
             }
         },
-        [onExplain, cacheKey, isOffline, buildRuleBased, persist, isBlunder, absLoss, playedMove, optimalMove, features, matchCtx, playerLevel, locale, apiUrl, board, positionKey, xgid],
+        [onExplain, cacheKey, isOffline, buildRuleBased, persist, verdict, isBlunder, absLoss, playedMove, optimalMove, features, matchCtx, playerLevel, locale, apiUrl, board, positionKey, xgid],
     );
 
     return { streamedText, isStreaming, streamError, explanationSource, cachedExplanation, executeExplain, abort };

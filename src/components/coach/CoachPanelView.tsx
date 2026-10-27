@@ -1,8 +1,7 @@
 'use client';
 
 /**
- * Vue de présentation du panneau Coach (structure analytique XG / Snowie, < 240 lignes, 0 any).
- *
+ * Vue de présentation du panneau Coach (structure analytique XG / Snowie, < 275 lignes, 0 any).
  * Composant 100 % muet (LOI 5) : tout l'état vit dans `CoachPanel`.
  */
 
@@ -17,6 +16,7 @@ import type { ExplanationSource } from './useCoachExplanation';
 import type { CoachDisplayVerdict, MatchStats, ParsedExplanation } from './coachPanelHelpers';
 import type { RawGameTurn } from '../../features/rating';
 import type { RolloutResult } from '../../lib/engine/rolloutClient';
+import type { ZareTiltEvaluation } from '../../lib/coach/zareTiltEngine';
 
 export interface CoachPanelViewProps {
     verdict: CoachDisplayVerdict;
@@ -45,6 +45,7 @@ export interface CoachPanelViewProps {
     onCandidateHover?: (notation: string | null) => void;
     turnsHistory?: RawGameTurn[] | unknown[];
     board?: number[];
+    dice?: [number, number] | null;
     xgid?: string | null;
     candidateMoves?: string[];
     onRolloutCompleted?: (result: RolloutResult) => void;
@@ -52,6 +53,9 @@ export interface CoachPanelViewProps {
     isSpeaking?: boolean;
     onToggleVoice?: () => void;
     onReplayVoice?: () => void;
+    tiltEvaluation?: ZareTiltEvaluation;
+    showTiltAlert?: boolean;
+    onDismissTiltAlert?: () => void;
     locale: string;
     labels: {
         title: string;
@@ -91,6 +95,7 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
     onCandidateHover,
     turnsHistory,
     board,
+    dice,
     xgid,
     candidateMoves,
     onRolloutCompleted,
@@ -98,21 +103,20 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
     isSpeaking = false,
     onToggleVoice,
     onReplayVoice,
+    tiltEvaluation,
+    showTiltAlert = false,
+    onDismissTiltAlert,
     locale,
     labels,
 }) => {
     const isBlunder = verdict === 'blunder';
+    const isEn = Boolean(locale && locale !== 'fr');
     const accent = isBlunder
         ? 'border-rose-500/75 bg-gradient-to-b from-[#1e0b0f]/95 to-[#0b0e17]/95 text-rose-300 shadow-[0_12px_32px_rgba(0,0,0,0.8)]'
         : 'border-[#d4af37]/65 bg-gradient-to-b from-[#1c150b]/95 to-[#0b0e17]/95 text-[#f3c65f] shadow-[0_12px_32px_rgba(0,0,0,0.8)]';
 
     return (
-        <aside
-            role="region"
-            aria-live="polite"
-            className={`w-full max-w-5xl rounded-2xl border p-4 backdrop-blur-md transition-all ${accent}`}
-        >
-            {/* Barre de titre, contrôle vocal et bouton fermeture */}
+        <div role="region" aria-live="polite" className={`w-full max-w-5xl rounded-xl border p-2.5 backdrop-blur-md transition-all ${accent}`}>
             <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <span className="flex h-2.5 w-2.5 relative">
@@ -138,11 +142,7 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                         >
                             <span>{isVoiceEnabled ? '🔊 Voix Coach' : '🔇 Voix muette'}</span>
                             {isSpeaking && (
-                                <span
-                                    data-testid="coach-voice-wave"
-                                    aria-hidden="true"
-                                    className="inline-flex items-end gap-0.5 h-2.5 ml-0.5 animate-pulse"
-                                >
+                                <span data-testid="coach-voice-wave" aria-hidden="true" className="inline-flex items-end gap-0.5 h-2.5 ml-0.5 animate-pulse">
                                     <span className="w-0.5 h-1.5 bg-[#f3c65f] rounded-full animate-pulse" />
                                     <span className="w-0.5 h-2.5 bg-[#f3c65f] rounded-full animate-pulse" />
                                     <span className="w-0.5 h-1 bg-[#f3c65f] rounded-full animate-pulse" />
@@ -155,14 +155,14 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                             type="button"
                             onClick={onReplayVoice}
                             data-testid="coach-voice-replay-btn"
-                            aria-label={locale === 'en' ? 'Replay explanation' : "Réécouter l'explication"}
-                            title={locale === 'en' ? 'Listen to explanation' : "Réécouter l'explication à la demande"}
+                            aria-label={isEn ? 'Replay explanation' : "Réécouter l'explication"}
+                            title={isEn ? 'Listen to explanation' : "Réécouter l'explication à la demande"}
                             className={`inline-flex items-center gap-1 rounded-lg border border-indigo-400/40 bg-indigo-950/60 px-2 py-0.5 text-[11px] font-bold text-indigo-200 hover:border-indigo-300 hover:text-white transition active:scale-95 ${
                                 isSpeaking ? 'animate-pulse border-indigo-300 text-white' : ''
                             }`}
                         >
                             <span aria-hidden="true">🔈</span>
-                            <span>{locale === 'en' ? 'Listen' : 'Réécouter'}</span>
+                            <span>{isEn ? 'Listen' : 'Réécouter'}</span>
                         </button>
                     )}
                     <button
@@ -175,34 +175,80 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                 </div>
             </div>
 
-            {/* 0. Tableau de bord PR : jauge visuelle + compteurs des 4 paliers */}
-            <div className="mt-3">
-                <CoachPrDashboard
-                    pr={performanceRating}
-                    decisionsCount={matchStats?.decisionsCount ?? 0}
-                    totalEquityLoss={matchStats?.totalEquityLoss ?? 0}
-                    counters={decisionCounters}
-                    onBlunderClick={onBlunderClick}
-                />
-            </div>
+            {showTiltAlert && tiltEvaluation && (
+                <div
+                    data-testid="coach-tilt-alert-banner"
+                    role="alert"
+                    className="mt-2.5 flex items-center justify-between gap-2 rounded-xl border border-amber-400/50 bg-amber-950/60 px-3 py-2 text-xs text-amber-100"
+                >
+                    <span>
+                        🧘 <strong>{isEn ? 'Anti-Tilt Pause:' : 'Pause Anti-Tilt :'}</strong>{' '}
+                        {isEn ? tiltEvaluation.recommendationEn : tiltEvaluation.recommendationFr}
+                    </span>
+                    {onDismissTiltAlert && (
+                        <button type="button" onClick={onDismissTiltAlert} className="shrink-0 rounded border border-amber-400/40 px-1.5 py-0.5 text-[10px] font-bold hover:bg-amber-800/50">
+                            OK
+                        </button>
+                    )}
+                </div>
+            )}
 
-            {/* 1. Carte Verdict & Comparaison (bandeau 4 niveaux + coup joué vs meilleur coup) */}
+            {/* 1. PRIORITÉ N°1 : Verdict immédiat & Comparaison des coups tout en haut */}
             <div className="mt-3">
                 <CoachMoveComparisonCard
                     verdict={verdict}
                     equityLoss={equityLoss}
                     playedMove={playedMove}
                     optimalMove={optimalMove}
-                    whyFailed={propWhyFailed || parsed.whyFailed}
-                    whyOptimal={propWhyOptimal || parsed.whyOptimal}
-                    summary={propSummary || parsed.summary}
+                    whyFailed={parsed.whyFailed || propWhyFailed}
+                    whyOptimal={parsed.whyOptimal || propWhyOptimal}
+                    summary={parsed.summary || propSummary}
                     onReplayMove={onReplayMove}
-                    onClose={onDismiss}
+                    locale={locale}
+                    board={board}
+                    dice={dice}
+                    keyConcept={parsed.keyConcept}
+                />
+            </div>
+
+            {/* 2. Diagnostic pédagogique (sans répéter whyFailed / whyOptimal / summary déjà affichés dans la carte ci-dessus) */}
+            <div className="mt-3">
+                <CoachDiagnosticBox
+                    tacticalSummary={tacticalSummary}
+                    explanation={parsed.explanation || parsed.rawText}
+                    advice={parsed.advice}
+                    keyConcept={parsed.keyConcept}
+                    conceptId={parsed.conceptId}
+                    symbolicAudit={parsed.symbolicAudit}
+                    pedagogicalExplanation={parsed.pedagogicalExplanation}
+                    equityLoss={equityLoss}
+                    bestMoveNotation={optimalMove}
+                    playedMoveNotation={playedMove}
+                    onOpenKnowledgeConcept={onOpenKnowledgeConcept}
+                    isStreaming={isStreaming}
                     locale={locale}
                 />
             </div>
 
-            {/* 2. Tableau analytique des candidats (style Snowie / XG) */}
+            <CoachPanelActions
+                explanationSource={explanationSource}
+                streamError={streamError}
+                hasContent={hasContent}
+                isStreaming={isStreaming}
+                onExplainClick={onExplainClick}
+                onOpenKnowledgeConcept={parsed.keyConcept ? undefined : onOpenKnowledgeConcept}
+                conceptId={parsed.conceptId}
+                locale={locale}
+                labels={{
+                    sourceCache: labels.sourceCache,
+                    sourceRuleBased: labels.sourceRuleBased,
+                    sourceLlm: labels.sourceLlm,
+                    retry: labels.retry,
+                    explainError: labels.explainError,
+                }}
+            />
+
+            {/* 3. Classement des 5 meilleurs coups candidats */}
             {candidateRows.length > 0 && (
                 <div className="mt-3">
                     <CoachCandidatesTable
@@ -215,44 +261,18 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                 </div>
             )}
 
-            {/* 3. Diagnostic pédagogique du Grand-Maître */}
+            {/* 4. Bilan PR de la session & Outils avancés en bas de panneau */}
             <div className="mt-3">
-                <CoachDiagnosticBox
-                    tacticalSummary={tacticalSummary}
-                    explanation={parsed.explanation || parsed.rawText}
-                    summary={propSummary || parsed.summary}
-                    whyFailed={propWhyFailed || parsed.whyFailed}
-                    whyOptimal={propWhyOptimal || parsed.whyOptimal}
-                    advice={parsed.advice}
-                    keyConcept={parsed.keyConcept}
-                    conceptId={parsed.conceptId}
-                    onOpenKnowledgeConcept={onOpenKnowledgeConcept}
-                    isStreaming={isStreaming}
-                    locale={locale}
+                <CoachPrDashboard
+                    pr={performanceRating}
+                    decisionsCount={matchStats?.decisionsCount ?? 0}
+                    totalEquityLoss={matchStats?.totalEquityLoss ?? 0}
+                    counters={decisionCounters}
+                    onBlunderClick={onBlunderClick}
                 />
             </div>
 
-            {/* 3bis. Actions : explication LLM, fiche théorique, erreurs de flux */}
-            <CoachPanelActions
-                explanationSource={explanationSource}
-                streamError={streamError}
-                hasContent={hasContent}
-                isStreaming={isStreaming}
-                onExplainClick={onExplainClick}
-                onOpenKnowledgeConcept={onOpenKnowledgeConcept}
-                conceptId={parsed.conceptId}
-                locale={locale}
-                labels={{
-                    sourceCache: labels.sourceCache,
-                    sourceRuleBased: labels.sourceRuleBased,
-                    sourceLlm: labels.sourceLlm,
-                    retry: labels.retry,
-                    explainError: labels.explainError,
-                }}
-            />
-
-            {/* 4. Pied du Coach à onglets repliables */}
-            <div className="mt-3">
+            <div className="mt-2.5">
                 <CoachFooterTabs
                     turnsHistory={turnsHistory}
                     board={board}
@@ -266,7 +286,7 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                     locale={locale}
                 />
             </div>
-        </aside>
+        </div>
     );
 };
 
