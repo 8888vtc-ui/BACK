@@ -2,7 +2,7 @@
 import React from 'react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup, act, waitFor } from '@testing-library/react';
-import { DailyPuzzleScreen } from '../../app/daily-puzzle/page';
+import { DailyPuzzleScreen } from './DailyPuzzleScreen';
 import {
     STORAGE_KEY_PUZZLE_STREAK,
     STORAGE_KEY_LAST_PUZZLE_DATE,
@@ -131,5 +131,25 @@ describe('DailyPuzzleScreen & Composants (/daily-puzzle)', () => {
         expect(screen.getByTestId('fsrs-interval-pill-1')).toBeTruthy();
         expect(screen.getByTestId('fsrs-interval-pill-30')).toBeTruthy();
         expect(window.localStorage.getItem(STORAGE_KEY_FSRS_QUEUE)).toBeTruthy();
+    });
+
+    it('affiche l’objectif et le bouton de validation au premier coup d’œil avec border-white/10 et sans micro-textes (< 10px)', () => {
+        render(
+            <DailyPuzzleScreen
+                initialPuzzleId="sage_daily_01_prime_blitz_crossroad"
+                autoSkipIntro
+            />,
+        );
+
+        const objective = screen.getByTestId('daily-puzzle-objective');
+        const submitBtn = screen.getByTestId('daily-puzzle-submit-btn');
+        const header = screen.getByTestId('daily-puzzle-header');
+
+        expect(objective.textContent).toContain('Objectif :');
+        expect(submitBtn.textContent).toContain('Valider mon coup');
+        expect(header.className).toContain('border-white/10');
+        expect(header.innerHTML).not.toContain('text-[10px]');
+        expect(header.innerHTML).not.toContain('text-[9px]');
+        expect(header.innerHTML).not.toContain('text-[8px]');
     });
 });

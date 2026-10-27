@@ -11,6 +11,7 @@
 import React, { useMemo, useState } from 'react';
 import { buildMatchContext } from '../../features/coach/matchContext';
 import type { PrimaryLocale } from '../../lib/i18n/types';
+import { trackSaasLifecycleEvent } from '../../lib/subscription/retentionEngine';
 
 export interface MatchEquityCalculatorProps {
     readonly locale: PrimaryLocale;
@@ -235,7 +236,16 @@ const MatchEquityCalculatorComponent: React.FC<MatchEquityCalculatorProps> = ({ 
     const mwcPct = (matchCtx.matchEquity.X * 100).toFixed(1);
 
     const handleCopyXgid = () => {
-        const sampleUrl = `https://backgammontour.com/?xgid=-b----E-C---eE---c-e----B-:0:0:1:31:${scoreX}:${scoreO}:${crawford ? 1 : 0}:${matchLength}:10`;
+        const sampleUrl = `https://backgammontour.com/?xgid=-b----E-C---eE---c-e----B-:0:0:1:31:${scoreX}:${scoreO}:${crawford ? 1 : 0}:${matchLength}:10&utm_source=viral_watermark`;
+        const referrer =
+            typeof document !== 'undefined' && document.referrer ? document.referrer : 'direct';
+        trackSaasLifecycleEvent('pseo_tool_interacted', {
+            slug: 'academy-met-keith-calculator',
+            tool_type: 'met_and_keith_calculator',
+            referrer_source: referrer,
+            mwc_pct: mwcPct,
+            keith_action: keithResult.actionCode,
+        });
         if (typeof navigator !== 'undefined' && navigator.clipboard) {
             void navigator.clipboard.writeText(sampleUrl);
         }
@@ -248,27 +258,29 @@ const MatchEquityCalculatorComponent: React.FC<MatchEquityCalculatorProps> = ({ 
             id="interactive-calculator"
             aria-labelledby="calc-heading"
             data-testid="academy-met-calculator"
-            className="rounded-3xl border border-[#d4af37]/45 bg-gradient-to-b from-[#171e2e]/95 to-[#090d16]/95 p-5 sm:p-7 shadow-2xl space-y-6"
+            className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#171e2e]/95 to-[#090d16]/95 p-5 sm:p-7 shadow-2xl space-y-6"
         >
             <div className="space-y-2">
-                <span className="inline-block rounded-full border border-[#d4af37]/40 bg-amber-500/10 px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-[#f3c65f]">
+                <span className="inline-block rounded-full border border-white/10 bg-amber-500/10 px-3 py-0.5 text-xs font-extrabold uppercase tracking-widest text-[#f3c65f]">
                     🧮 {labels.badge}
                 </span>
                 <h2 id="calc-heading" className="font-serif text-xl sm:text-2xl font-black tracking-wide text-[#f5cf70]">
                     {labels.title}
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{labels.subtitle}</p>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed">{labels.subtitle}</p>
             </div>
 
             {/* Contrôles MET Kazaross-XG2 */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 rounded-2xl border border-[#d4af37]/25 bg-[#080c15]/90 p-4">
-                <label className="space-y-1 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 rounded-2xl border border-white/10 bg-[#080c15]/90 p-4">
+                <label htmlFor="calc-match-length" className="space-y-1 text-xs sm:text-sm">
                     <span className="font-bold text-amber-200">{labels.matchLengthLabel}</span>
                     <select
+                        id="calc-match-length"
+                        name="matchLength"
                         data-testid="calc-match-length"
                         value={matchLength}
                         onChange={(e) => setMatchLength(Number(e.target.value))}
-                        className="w-full rounded-xl border border-[#d4af37]/35 bg-[#0e1422] px-3 py-2 font-mono text-xs text-slate-100"
+                        className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-2 font-mono text-xs sm:text-sm text-slate-100"
                     >
                         <option value={0}>{labels.moneyGameLabel}</option>
                         <option value={3}>3 pts</option>
@@ -279,34 +291,40 @@ const MatchEquityCalculatorComponent: React.FC<MatchEquityCalculatorProps> = ({ 
                     </select>
                 </label>
 
-                <label className="space-y-1 text-xs">
+                <label htmlFor="calc-score-x" className="space-y-1 text-xs sm:text-sm">
                     <span className="font-bold text-amber-200">{labels.pointsToWinX}</span>
                     <input
+                        id="calc-score-x"
+                        name="scoreX"
                         type="number"
                         min={0}
                         max={Math.max(0, matchLength - 1)}
                         disabled={matchLength === 0}
                         value={matchLength === 0 ? 0 : scoreX}
                         onChange={(e) => setScoreX(Number(e.target.value))}
-                        className="w-full rounded-xl border border-[#d4af37]/35 bg-[#0e1422] px-3 py-2 font-mono text-xs text-slate-100 disabled:opacity-50"
+                        className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-2 font-mono text-xs sm:text-sm text-slate-100 disabled:opacity-50"
                     />
                 </label>
 
-                <label className="space-y-1 text-xs">
+                <label htmlFor="calc-score-o" className="space-y-1 text-xs sm:text-sm">
                     <span className="font-bold text-amber-200">{labels.pointsToWinO}</span>
                     <input
+                        id="calc-score-o"
+                        name="scoreO"
                         type="number"
                         min={0}
                         max={Math.max(0, matchLength - 1)}
                         disabled={matchLength === 0}
                         value={matchLength === 0 ? 0 : scoreO}
                         onChange={(e) => setScoreO(Number(e.target.value))}
-                        className="w-full rounded-xl border border-[#d4af37]/35 bg-[#0e1422] px-3 py-2 font-mono text-xs text-slate-100 disabled:opacity-50"
+                        className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-2 font-mono text-xs sm:text-sm text-slate-100 disabled:opacity-50"
                     />
                 </label>
 
-                <label className="flex items-center gap-2 pt-5 text-xs font-semibold text-slate-200 cursor-pointer">
+                <label htmlFor="calc-crawford" className="flex items-center gap-2 pt-5 text-xs sm:text-sm font-semibold text-slate-200 cursor-pointer">
                     <input
+                        id="calc-crawford"
+                        name="crawford"
                         type="checkbox"
                         checked={crawford}
                         disabled={matchLength === 0}
@@ -319,91 +337,99 @@ const MatchEquityCalculatorComponent: React.FC<MatchEquityCalculatorProps> = ({ 
 
             {/* Résultats Mathématiques MET */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="rounded-2xl border border-[#d4af37]/30 bg-black/50 p-3.5 text-center">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{labels.mwcLabel}</div>
+                <div className="rounded-2xl border border-white/10 bg-black/50 p-3.5 text-center">
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-300">{labels.mwcLabel}</div>
                     <div data-testid="calc-mwc-value" className="mt-1 font-mono text-xl font-black text-emerald-300">
                         {mwcPct}%
                     </div>
-                    <div className="text-[10px] text-slate-400 font-mono">
+                    <div className="text-xs text-slate-300 font-mono">
                         {matchLength > 0 ? `${matchCtx.pointsToWin.X}-away / ${matchCtx.pointsToWin.O}-away` : 'Money Play'}
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-[#d4af37]/30 bg-black/50 p-3.5 text-center">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{labels.takePointDeadLabel}</div>
+                <div className="rounded-2xl border border-white/10 bg-black/50 p-3.5 text-center">
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-300">{labels.takePointDeadLabel}</div>
                     <div className="mt-1 font-mono text-xl font-black text-amber-200">{deadTakePct}%</div>
-                    <div className="text-[10px] text-slate-400 font-mono">Dead Cube (Sans Gammon)</div>
+                    <div className="text-xs text-slate-300 font-mono">Dead Cube (Sans Gammon)</div>
                 </div>
 
-                <div className="rounded-2xl border border-[#d4af37]/30 bg-black/50 p-3.5 text-center">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{labels.takePointLiveLabel}</div>
+                <div className="rounded-2xl border border-white/10 bg-black/50 p-3.5 text-center">
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-300">{labels.takePointLiveLabel}</div>
                     <div className="mt-1 font-mono text-xl font-black text-[#f5cf70]">{liveTakePct}%</div>
-                    <div className="text-[10px] text-slate-400 font-mono">Cube Vigor Inclus</div>
+                    <div className="text-xs text-slate-300 font-mono">Cube Vigor Inclus</div>
                 </div>
 
-                <div className="rounded-2xl border border-[#d4af37]/30 bg-black/50 p-3.5 text-center">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{labels.gammonPriceLabel}</div>
+                <div className="rounded-2xl border border-white/10 bg-black/50 p-3.5 text-center">
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-300">{labels.gammonPriceLabel}</div>
                     <div className="mt-1 font-mono text-xl font-black text-sky-300">{matchCtx.gammonPrice.X.toFixed(2)}</div>
-                    <div className="text-[10px] text-slate-400 font-mono">
+                    <div className="text-xs text-slate-300 font-mono">
                         {matchCtx.isDMP ? 'DMP (Gammon = 0)' : 'Valeur relative 2 pts'}
                     </div>
                 </div>
             </div>
 
             {/* Calculateur de Course de Keith */}
-            <div className="rounded-2xl border border-[#d4af37]/25 bg-[#080c15]/90 p-4 space-y-3">
+            <div className="rounded-2xl border border-white/10 bg-[#080c15]/90 p-4 space-y-3">
                 <h3 className="font-serif text-sm sm:text-base font-bold text-[#fdf8eb]">{labels.keithTitle}</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                    <label className="space-y-1">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs sm:text-sm">
+                    <label htmlFor="calc-pips-x" className="space-y-1">
                         <span className="text-slate-300">{labels.pipsXLabel}</span>
                         <input
+                            id="calc-pips-x"
+                            name="pipsX"
                             type="number"
                             min={1}
                             max={250}
                             value={pipsX}
                             onChange={(e) => setPipsX(Number(e.target.value))}
-                            className="w-full rounded-xl border border-[#d4af37]/30 bg-[#0e1422] px-3 py-1.5 font-mono text-xs text-slate-100"
+                            className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-1.5 font-mono text-xs sm:text-sm text-slate-100"
                         />
                     </label>
-                    <label className="space-y-1">
+                    <label htmlFor="calc-pen-x" className="space-y-1">
                         <span className="text-slate-300">{labels.penaltyXLabel}</span>
                         <input
+                            id="calc-pen-x"
+                            name="penX"
                             type="number"
                             min={0}
                             max={30}
                             value={penX}
                             onChange={(e) => setPenX(Number(e.target.value))}
-                            className="w-full rounded-xl border border-[#d4af37]/30 bg-[#0e1422] px-3 py-1.5 font-mono text-xs text-slate-100"
+                            className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-1.5 font-mono text-xs sm:text-sm text-slate-100"
                         />
                     </label>
-                    <label className="space-y-1">
+                    <label htmlFor="calc-pips-o" className="space-y-1">
                         <span className="text-slate-300">{labels.pipsOLabel}</span>
                         <input
+                            id="calc-pips-o"
+                            name="pipsO"
                             type="number"
                             min={1}
                             max={250}
                             value={pipsO}
                             onChange={(e) => setPipsO(Number(e.target.value))}
-                            className="w-full rounded-xl border border-[#d4af37]/30 bg-[#0e1422] px-3 py-1.5 font-mono text-xs text-slate-100"
+                            className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-1.5 font-mono text-xs sm:text-sm text-slate-100"
                         />
                     </label>
-                    <label className="space-y-1">
+                    <label htmlFor="calc-pen-o" className="space-y-1">
                         <span className="text-slate-300">{labels.penaltyOLabel}</span>
                         <input
+                            id="calc-pen-o"
+                            name="penO"
                             type="number"
                             min={0}
                             max={30}
                             value={penO}
                             onChange={(e) => setPenO(Number(e.target.value))}
-                            className="w-full rounded-xl border border-[#d4af37]/30 bg-[#0e1422] px-3 py-1.5 font-mono text-xs text-slate-100"
+                            className="w-full rounded-xl border border-white/10 bg-[#0e1422] px-3 py-1.5 font-mono text-xs sm:text-sm text-slate-100"
                         />
                     </label>
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10">
-                    <div className="text-xs font-mono text-slate-200">
+                    <div className="text-xs sm:text-sm font-mono text-slate-200">
                         <span className="text-amber-200 font-bold">{labels.keithVerdictLabel} : </span>
-                        <span data-testid="keith-verdict-badge" className="rounded-lg border border-emerald-400/40 bg-emerald-500/15 px-2.5 py-1 font-extrabold text-emerald-300">
+                        <span data-testid="keith-verdict-badge" className="rounded-lg border border-white/10 bg-emerald-500/15 px-2.5 py-1 font-extrabold text-emerald-300">
                             {keithResult.actionCode.replace('_', ' / ')} (Keith: {keithResult.keithX} vs {keithResult.keithO}, Max Take: {keithResult.thresholdTake})
                         </span>
                     </div>
@@ -411,7 +437,7 @@ const MatchEquityCalculatorComponent: React.FC<MatchEquityCalculatorProps> = ({ 
                     <button
                         type="button"
                         onClick={handleCopyXgid}
-                        className="rounded-xl border border-[#d4af37]/45 bg-[#121929] px-3.5 py-1.5 text-xs font-bold text-[#f3c65f] hover:border-[#f3c65f] transition"
+                        className="rounded-xl border border-white/10 bg-[#121929] px-3.5 py-1.5 text-xs sm:text-sm font-bold text-[#f3c65f] hover:border-[#f3c65f] transition"
                     >
                         {copied ? labels.copiedXgidMsg : labels.copyXgidBtn}
                     </button>

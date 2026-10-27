@@ -65,14 +65,14 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
     return (
         <div
             data-testid="lobby-options-panel"
-            className="mt-2.5 rounded-2xl border border-[#d4af37]/45 bg-gradient-to-b from-[#131926]/95 via-[#0d121d]/95 to-[#070a10]/98 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,245,205,0.22)] backdrop-blur-xl"
+            className="mt-2.5 rounded-2xl border border-white/10 bg-[#0b101b]/95 p-4 shadow-2xl backdrop-blur-xl"
         >
             {/* Barre de titre du pupitre */}
-            <div className="mb-2.5 flex items-center justify-between border-b border-[#d4af37]/20 pb-2">
+            <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-2.5">
                 <div className="flex items-center gap-2">
                     <span aria-hidden="true" className="text-xs text-[#f3c65f]">⚜</span>
-                    <span className="font-serif text-[11px] font-bold uppercase tracking-[0.22em] text-[#fdf8eb]">
-                        Pupitre de Configuration · Table Privée
+                    <span className="font-serif text-xs font-bold uppercase tracking-[0.18em] text-[#fdf8eb]">
+                        Configuration de la Partie
                     </span>
                 </div>
                 {onClose && (
@@ -80,22 +80,21 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                         type="button"
                         onClick={onClose}
                         aria-label="Replier les paramètres de table"
-                        className="rounded-lg border border-[#d4af37]/30 bg-black/40 px-2 py-0.5 text-[10px] font-bold text-[#e5c158] transition hover:border-[#f3c65f] hover:text-white"
+                        className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-amber-200 transition hover:border-white/25 hover:text-white"
                     >
-                        Valider & Replier ▴
+                        Fermer ▴
                     </button>
                 )}
             </div>
 
-            {/* Grille compacte 2 colonnes pour maximiser la lisibilité sans scroller */}
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {/* Grille 2 colonnes aérée */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {/* COLONNE GAUCHE : Format du Match + Cadence Pendule */}
-                <div className="flex flex-col gap-2.5 rounded-xl border border-[#d4af37]/20 bg-[#080c14]/80 p-2.5">
+                <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-[#070a12]/80 p-3">
                     {/* 1. Format du Match */}
                     <fieldset>
-                        <legend className="mb-1.5 flex items-center justify-between w-full text-[9px] font-extrabold uppercase tracking-[0.2em] text-[#e5c158]">
-                            <span>1. Format du Match</span>
-                            <span className="font-mono text-[9px] font-normal text-slate-400">Règle de Crawford incluse</span>
+                        <legend className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#e5c158]">
+                            Format du Match
                         </legend>
                         <div className="grid grid-cols-5 gap-1.5">
                             {matchFormats.map((opt) => {
@@ -108,10 +107,10 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                                         aria-pressed={active}
                                         title={opt.hint}
                                         onClick={() => setMatchLength(opt.value)}
-                                        className={`rounded-lg border px-1.5 py-1.5 text-[11px] font-extrabold transition ${
+                                        className={`rounded-lg border px-2 py-2 text-xs font-bold transition ${
                                             active
-                                                ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-[0_0_12px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,245,205,0.35)]'
-                                                : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/45 hover:text-white'
+                                                ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
+                                                : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'
                                         }`}
                                     >
                                         {opt.label}
@@ -121,10 +120,10 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                         </div>
                     </fieldset>
 
-                    {/* 2. Cadence (Pendule Bronstein / Fischer) */}
+                    {/* 2. Cadence (Pendule Fischer / Bronstein) */}
                     <fieldset>
-                        <legend className="mb-1.5 text-[9px] font-extrabold uppercase tracking-[0.2em] text-[#e5c158]">
-                            2. Cadence (Pendule Fischer / Bronstein)
+                        <legend className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#e5c158]">
+                            Cadence (Pendule)
                         </legend>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                             {clockPresets.map((preset) => {
@@ -137,19 +136,19 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                                         aria-pressed={active}
                                         title={preset.hint}
                                         onClick={() => setClockPreset?.(preset.value)}
-                                        className={`flex flex-col items-start rounded-lg border px-2 py-1.5 text-left transition ${
+                                        className={`flex flex-col items-start rounded-lg border px-2.5 py-2 text-left transition ${
                                             active
-                                                ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-[0_0_12px_rgba(212,175,55,0.25),inset_0_1px_0_rgba(255,245,205,0.35)]'
-                                                : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/45 hover:text-white'
+                                                ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
+                                                : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'
                                         }`}
                                     >
-                                        <span className="flex items-center gap-1 text-[10px] font-bold">
+                                        <span className="flex items-center gap-1 text-xs font-bold">
                                             <span aria-hidden="true" className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">
                                                 {preset.icon}
                                             </span>
                                             <span>{preset.label}</span>
                                         </span>
-                                        <span className="font-mono text-[8px] text-amber-200/70">{preset.hint}</span>
+                                        <span className="font-mono text-[11px] text-slate-400">{preset.hint}</span>
                                     </button>
                                 );
                             })}
@@ -158,11 +157,11 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                 </div>
 
                 {/* COLONNE DROITE : Adversaire Open Sage + Coach & Couleur Pions */}
-                <div className="flex flex-col gap-2.5 rounded-xl border border-[#d4af37]/20 bg-[#080c14]/80 p-2.5">
+                <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-[#070a12]/80 p-3">
                     {/* 3. Niveau de l'Adversaire IA */}
                     <fieldset>
-                        <legend className="mb-1.5 text-[9px] font-extrabold uppercase tracking-[0.2em] text-[#e5c158]">
-                            3. Calibre de l’Adversaire (Moteur Open Sage)
+                        <legend className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#e5c158]">
+                            Niveau de l’IA
                         </legend>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                             {opponents.map((opt) => {
@@ -175,14 +174,14 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                                         aria-pressed={active}
                                         title={opt.hint}
                                         onClick={() => setDifficulty(opt.value)}
-                                        className={`flex flex-col items-start rounded-lg border px-2 py-1.5 text-left transition ${
+                                        className={`flex flex-col items-start rounded-lg border px-2.5 py-2 text-left transition ${
                                             active
-                                                ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-[0_0_12px_rgba(212,175,55,0.25),inset_0_1px_0_rgba(255,245,205,0.35)]'
-                                                : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/45 hover:text-white'
+                                                ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
+                                                : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'
                                         }`}
                                     >
-                                        <span className="text-[10px] font-bold truncate w-full">{opt.label}</span>
-                                        <span className="text-[8px] text-amber-200/70 truncate w-full">{opt.hint}</span>
+                                        <span className="text-xs font-bold truncate w-full">{opt.label}</span>
+                                        <span className="text-[11px] text-slate-400 truncate w-full">{opt.hint}</span>
                                     </button>
                                 );
                             })}
@@ -190,11 +189,11 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                     </fieldset>
 
                     {/* 4. Accompagnement Coach & Couleur des Pions côte à côte */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {/* Mode Coach */}
                         <fieldset>
-                            <legend className="mb-1.5 text-[9px] font-extrabold uppercase tracking-[0.2em] text-[#e5c158]">
-                                4. Arbitrage & Coach
+                            <legend className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#e5c158]">
+                                Mode d’Arbitrage
                             </legend>
                             <div className="grid grid-cols-2 gap-1.5">
                                 <button
@@ -202,10 +201,10 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                                     data-testid="lobby-mode-training"
                                     aria-pressed={coachEnabled}
                                     onClick={() => setCoachEnabled(true)}
-                                    className={`flex items-center justify-center gap-1 rounded-lg border px-2 py-1.5 text-[10px] font-bold transition ${
+                                    className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-bold transition ${
                                         coachEnabled
                                             ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
-                                            : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/40'
+                                            : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25'
                                     }`}
                                 >
                                     <span aria-hidden="true" className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🎓</span>
@@ -216,10 +215,10 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                                     data-testid="lobby-mode-tournament"
                                     aria-pressed={!coachEnabled}
                                     onClick={() => setCoachEnabled(false)}
-                                    className={`flex items-center justify-center gap-1 rounded-lg border px-2 py-1.5 text-[10px] font-bold transition ${
+                                    className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-bold transition ${
                                         !coachEnabled
                                             ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
-                                            : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/40'
+                                            : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25'
                                     }`}
                                 >
                                     <span aria-hidden="true" className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🏆</span>
@@ -230,8 +229,8 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
 
                         {/* Couleur des pions avec vrais médaillons 3D Ivoire / Ébène */}
                         <fieldset>
-                            <legend className="mb-1.5 text-[9px] font-extrabold uppercase tracking-[0.2em] text-[#e5c158]">
-                                5. Vos Pions (Trait Humain)
+                            <legend className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#e5c158]">
+                                Vos Pions
                             </legend>
                             <div className="grid grid-cols-2 gap-1.5">
                                 <button
@@ -239,15 +238,15 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                                     data-testid="lobby-color-x"
                                     aria-pressed={playerColor === 'X'}
                                     onClick={() => onSelectPlayerColor('X')}
-                                    className={`flex items-center justify-center gap-1.5 rounded-lg border px-2 py-1.5 text-[10px] font-bold transition ${
+                                    className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-bold transition ${
                                         playerColor === 'X'
                                             ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
-                                            : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/40'
+                                            : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25'
                                     }`}
                                 >
                                     <span
                                         aria-hidden="true"
-                                        className="h-3.5 w-3.5 shrink-0 rounded-full border border-[#c4a265] bg-gradient-to-br from-[#fffdf7] via-[#f3e6c8] to-[#b89b67] shadow-[0_1px_3px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.9)]"
+                                        className="h-3.5 w-3.5 shrink-0 rounded-full border border-white/20 bg-gradient-to-br from-[#fffdf7] via-[#f3e6c8] to-[#b89b67] shadow-sm"
                                     />
                                     <span>Blancs (X)</span>
                                 </button>
@@ -256,15 +255,15 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                                     data-testid="lobby-color-o"
                                     aria-pressed={playerColor === 'O'}
                                     onClick={() => onSelectPlayerColor('O')}
-                                    className={`flex items-center justify-center gap-1.5 rounded-lg border px-2 py-1.5 text-[10px] font-bold transition ${
+                                    className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-bold transition ${
                                         playerColor === 'O'
                                             ? 'border-[#f3c65f] bg-gradient-to-b from-[#3a2a10] to-[#1e1507] text-[#fff8e1] shadow-sm'
-                                            : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/40'
+                                            : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25'
                                     }`}
                                 >
                                     <span
                                         aria-hidden="true"
-                                        className="h-3.5 w-3.5 shrink-0 rounded-full border border-[#d4af37]/70 bg-gradient-to-br from-[#3a3f4d] via-[#181b24] to-[#06070a] shadow-[0_1px_3px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.25)]"
+                                        className="h-3.5 w-3.5 shrink-0 rounded-full border border-white/20 bg-gradient-to-br from-[#3a3f4d] via-[#181b24] to-[#06070a] shadow-sm"
                                     />
                                     <span>Noirs (O)</span>
                                 </button>

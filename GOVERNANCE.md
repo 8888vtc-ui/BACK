@@ -15,9 +15,9 @@ Le code est divisé en **3 couches étanches**. Il est formellement interdit de 
 - Gère exclusivement les règles du Backgammon : génération des coups légaux, réentrée depuis la barre, bear-off, doubles.
 - **Interdits** : code React, JSX, effets de bord (`localStorage`, `fetch`, `console.log` en production).
 
-### 2. Couche Évaluation & Coach — `src/lib/engine/`
-- Calcule l'équité, le Top 3 des coups, les verdicts et le PR.
-- S'appuie sur le moteur tri-phase local.
+### 2. Couche Évaluation & Coach — `src/lib/engine/`, `src/features/coach/`
+- Calcule l'équité, le Top 3 des coups, les verdicts (4 paliers `logAnalyzer.ts` / 6 paliers `moveClassifier.ts`) et le PR.
+- S'appuie en priorité sur le moteur neuronal **Open Sage (`bgsageClient.ts`)** sur Google Cloud Run, avec repli instantané hors-ligne sur le moteur tri-phase local (`evaluator.ts` + Bear-Off 54 264 états).
 - Renvoie des **structures de données typées**.
 - **Interdits** : interaction directe avec le DOM, modification de l'affichage.
 

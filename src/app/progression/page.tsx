@@ -5,9 +5,9 @@ import ProgressionDashboard from '../../components/stats/ProgressionDashboard';
 import { BackToLobbyButton } from '../../components/nav/PageTransition';
 
 export const metadata: Metadata = {
-    title: 'Progression & Performance Rating (PR) | Backgammon Tour',
+    title: 'Progression & Performance Rating (PR)',
     description:
-        'Analyse du Performance Rating (PR), taux d’erreur Open Sage 3-Ply et concepts stratégiques de backgammon à travailler.',
+        'Analyse du Performance Rating (PR), taux d’erreur Monte-Carlo 3-Ply et concepts stratégiques de backgammon à travailler.',
 };
 
 export default function ProgressionPage() {
@@ -19,21 +19,21 @@ export default function ProgressionPage() {
                 <div className="flex flex-wrap items-center gap-2">
                     <Link
                         href="/academy"
-                        className="flex items-center gap-1.5 rounded-xl border border-[#d4af37]/30 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-[#fdf8eb] transition shadow-sm"
+                        className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-[#fdf8eb] transition shadow-sm"
                     >
                         <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🏛️</span>
                         <span>Gammon Academy</span>
                     </Link>
                     <Link
                         href="/puzzles"
-                        className="flex items-center gap-1.5 rounded-xl border border-[#d4af37]/30 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-[#fdf8eb] transition shadow-sm"
+                        className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-[#fdf8eb] transition shadow-sm"
                     >
                         <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🧩</span>
                         <span>Puzzles Quotidiens</span>
                     </Link>
                     <Link
                         href="/drills"
-                        className="flex items-center gap-1.5 rounded-xl border border-[#d4af37]/30 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-[#fdf8eb] transition shadow-sm"
+                        className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#150c07]/90 px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-[#fdf8eb] transition shadow-sm"
                     >
                         <span className="[filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">🎯</span>
                         <span>Drills de Blunders</span>

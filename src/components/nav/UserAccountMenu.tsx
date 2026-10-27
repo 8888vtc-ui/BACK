@@ -187,7 +187,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
         return (
             <div
                 data-testid="user-account-loading"
-                className="flex items-center gap-2 rounded-full border border-[#d4af37]/40 bg-gradient-to-b from-[#1a150b] to-[#0e0b06] px-3.5 py-1.5 text-xs text-amber-100 shadow-[inset_0_1px_0_rgba(255,245,205,0.2)]"
+                className="flex items-center gap-2 rounded-full border border-white/10 bg-gradient-to-b from-[#1a150b] to-[#0e0b06] px-3.5 py-1.5 text-xs text-amber-100"
             >
                 <span className="h-2 w-2 rounded-full bg-[#f3c65f] animate-pulse" />
                 <span className="font-serif font-bold text-[11px] tracking-wide text-[#f3c65f]">Salon Privé</span>
@@ -209,11 +209,11 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                         aria-expanded={isDropdownOpen}
                         aria-haspopup="menu"
                         data-testid="user-profile-btn"
-                        className="group flex items-center gap-2 rounded-full border border-amber-500/30 bg-black/40 px-2.5 py-1 transition hover:border-amber-400/70 hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                        className="group flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-2.5 py-1 transition hover:border-white/25 hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                     >
                         {profile?.avatar_url ? (
                             /* eslint-disable-next-line @next/next/no-img-element */
-                            <img src={profile.avatar_url} alt={displayName ?? 'Joueur'} className="h-7 w-7 rounded-full object-cover ring-1 ring-amber-400/60" />
+                            <img src={profile.avatar_url} alt={displayName ?? 'Joueur'} className="h-7 w-7 rounded-full object-cover ring-1 ring-white/20" />
                         ) : (
                             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 text-[11px] font-black text-slate-950 shadow-inner">
                                 {(displayName ?? 'J').slice(0, 2).toUpperCase()}
@@ -222,18 +222,18 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                         <span className="hidden sm:inline text-xs font-semibold text-slate-100 group-hover:text-amber-300">
                             {displayName ?? 'Joueur'}
                         </span>
-                        <span data-testid="user-elo-badge" className="rounded-md border border-amber-400/40 bg-amber-500/15 px-1.5 py-0.5 font-mono text-[10px] font-black text-amber-300">
+                        <span data-testid="user-elo-badge" className="rounded-md border border-white/10 bg-amber-500/15 px-1.5 py-0.5 font-mono text-[11px] font-black text-amber-300">
                             {elo} ELO
                         </span>
-                        <span aria-hidden="true" className={`text-[10px] text-slate-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>▾</span>
+                        <span aria-hidden="true" className={`text-[11px] text-slate-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>▾</span>
                     </button>
 
                     {isDropdownOpen && (
-                        <div role="menu" data-testid="user-dropdown-menu" className="absolute right-0 top-full mt-2 z-50 w-64 rounded-2xl border border-amber-500/30 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl ring-1 ring-black/50 text-xs">
+                        <div role="menu" data-testid="user-dropdown-menu" className="absolute right-0 top-full mt-2 z-50 w-64 rounded-2xl border border-white/10 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl ring-1 ring-black/50 text-xs">
                             <div className="border-b border-white/10 px-3 py-2.5">
                                 <div className="flex items-center justify-between">
                                     <span className="font-bold text-slate-200 truncate">{displayName ?? 'Joueur'}</span>
-                                    <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-300">{rankTitle}</span>
+                                    <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-300">{rankTitle}</span>
                                 </div>
                                 <p className="mt-0.5 truncate text-[11px] text-slate-400">{user.email}</p>
                                 <div className="mt-2 flex items-center justify-between rounded-lg bg-white/5 px-2.5 py-1.5 text-xs">
@@ -255,7 +255,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                                     <span aria-hidden="true">🎯</span>
                                     <span>Entraînement / Drills</span>
                                 </Link>
-                                <Link href="/pricing" prefetch onClick={(e) => handleRouteAction(e, '/pricing')} data-testid="user-menu-pricing-link" className="flex w-full items-center gap-2 rounded-xl border border-[#d4af37]/30 bg-gradient-to-r from-[#2e1318]/60 to-[#180c07]/60 px-3 py-2 font-bold text-[#f3c65f] hover:border-[#f3c65f] hover:text-amber-100 transition">
+                                <Link href="/pricing" prefetch onClick={(e) => handleRouteAction(e, '/pricing')} data-testid="user-menu-pricing-link" className="flex w-full items-center gap-2 rounded-xl border border-white/10 bg-gradient-to-r from-[#2e1318]/60 to-[#180c07]/60 px-3 py-2 font-bold text-[#f3c65f] hover:border-white/25 hover:text-amber-100 transition">
                                     <span aria-hidden="true">⚜</span>
                                     <span>Coach Illimité VIP</span>
                                 </Link>
@@ -282,9 +282,9 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                         type="button"
                         onClick={handleOpenAuth}
                         data-testid="auth-login-trigger"
-                        className="group flex items-center gap-2 rounded-full border border-[#e5c158]/55 bg-gradient-to-b from-[#2c200d] via-[#1c1408] to-[#110c05] px-3.5 py-1.5 text-xs font-bold tracking-wide text-[#fce8b2] shadow-[0_4px_12px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,245,205,0.28)] transition hover:border-[#f3c65f] hover:text-white active:scale-[0.98]"
+                        className="group flex items-center gap-2 rounded-full border border-white/10 bg-gradient-to-b from-[#2c200d] via-[#1c1408] to-[#110c05] px-3.5 py-1.5 text-xs font-bold tracking-wide text-[#fce8b2] shadow-md transition hover:border-white/25 hover:text-white active:scale-[0.98]"
                     >
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[#e5c158]/40 bg-[#140e05] text-[11px] text-[#f3c65f]">{isOffline ? '⚜' : '👤'}</span>
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white/10 bg-[#140e05] text-[11px] text-[#f3c65f]">{isOffline ? '⚜' : '👤'}</span>
                         <span>{isOffline ? 'Membre Local' : 'Connexion'}</span>
                     </button>
                     {!onOpenAuthModal && <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}

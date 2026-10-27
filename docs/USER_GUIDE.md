@@ -75,7 +75,7 @@ Sur smartphone, le **sélecteur tactile de dé** (`mobile-dice-selector`) offre 
 
 ## 3. Le Coach Grand-Maître IA & Quotas VIP
 
-Le Coach Grand-Maître (propulsé par **Open Sage 3-ply** et **Gemini 2.5 Flash**) est votre tuteur interactif permanent.
+Le Coach Grand-Maître (propulsé par **Open Sage 3-ply** et l'API directe **Google Gemini `gemini-3.8-flash` / `gemini-3.6`**) est votre tuteur interactif permanent.
 
 ### 3.1 Détection des Blunders & Métriques
 - **Équité (Eq.)** : valeur mathématique espérée de la position.
@@ -85,10 +85,10 @@ Le Coach Grand-Maître (propulsé par **Open Sage 3-ply** et **Gemini 2.5 Flash*
   - `> 0.020` : **Imprécision ⚠️**
   - `> 0.080` : **Blunder ❌**
 
-### 3.2 Synthèse IA Post-Match, Quota Gratuit & Abonnement VIP (`/pricing`)
-- **Modèle Freemium Éthique** : le jeu solo, le multijoueur, le calcul du PR et les statistiques de dés sont **100 % gratuits et illimités**.
-- **Quota Coach IA** : chaque joueur bénéficie de **3 analyses Coach IA gratuites par tranche de 24h**.
-- **Passer VIP (`/pricing`)** : débloquez le Coach IA illimité (explications en direct + synthèse IA post-match complète) via l'offre Mensuelle (9,99 €/mois), Annuelle (79,99 €/an avec 7 jours d'essai gratuit) ou Club & Chouette (149,99 €/an).
+### 3.2 Synthèse IA Post-Match, Quota d'Onboarding & Abonnement Pro (`/pricing`)
+- **Évaluation Mathématique & Jeu** : le calcul du PR, le Pip Count, l'évaluation Open Sage, les Puzzles Quotidiens V2 (`/daily-puzzle`) et les Salons Privés (`BG-XXXX`) sont accessibles immédiatement.
+- **Quota Coach IA (Onboarding "Aha Moment")** : les joueurs non-abonnés bénéficient de **3 analyses socratiques complètes de Blunders** pour découvrir la puissance pédagogique du Coach IA.
+- **Passer Pro / Grandmaster (`/pricing`)** : débloquez le Coach IA illimité (explications en direct + synthèse IA post-match complète + banque personnelle d'entraînement `/drills`) via le **Plan Mensuel Pro (14.99 $/mois)** ou le **Plan Annuel Grandmaster (99.00 $/an, -45 %)**, ainsi que le **Pack Club & Chouette (149,99 €/an pour 5 sièges)**.
 
 ---
 
@@ -126,10 +126,10 @@ Dans un match en plusieurs points, dès qu'un joueur atteint le score à 1 point
 
 ---
 
-## 7. Le Mode Multijoueur, Glicko-2 & Audit Provably Fair (SHA-256)
+## 7. Le Salon Privé (`BG-XXXX`), Glicko-2 & Audit Provably Fair (SHA-256)
 
-1. **Matchmaking Glicko-2 Composite** : appariement en ligne pondérant le résultat du match et la qualité de jeu (PR) pour neutraliser la variance des dés sur les matchs courts.
-2. **Salons Privés & Horloge Fischer** : créez une salle avec un code à 6 caractères et jouez sous pendule officielle Fischer.
+1. **Exclusivité Salon Privé sur Code (`BG-XXXX`)** : créez un salon privé en 1 clic et partagez votre code à 4 chiffres (ex. `BG-8492`) avec un ami ou partenaire de club pour jouer instantanément sans aucune file d'attente, sous pendule officielle WBF/Fischer.
+2. **Classement Glicko-2 Composite** : évaluation pondérant le résultat du match et la qualité de jeu (PR) pour neutraliser la variance des dés sur les matchs courts.
 3. **Audit Cryptographique des Dés (Provably Fair SHA-256)** :
    - Avant chaque partie, l'empreinte `SHA-256(serverSeed)` est engagée (*Commit*).
    - Chaque jet de dés est dérivé par `HMAC-SHA256(serverSeed, clientSeed:nonce)` avec échantillonnage par rejet (`< 252`) garantissant zéro biais de modulo.

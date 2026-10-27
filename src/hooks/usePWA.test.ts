@@ -95,15 +95,15 @@ describe('usePWA - Helpers & PWA Logic', () => {
         expect(isPromptTemporarilyDismissed(storageAdapter)).toBe(false);
     });
 
-    it('checkWasmCached vérifie la présence du binaire WildBG WASM dans CacheStorage', async () => {
-        expect(OFFLINE_CORE_ASSETS).toContain('/engine/wildbg.wasm');
+    it('checkWasmCached vérifie la présence du binaire de fin de partie dans CacheStorage', async () => {
+        expect(OFFLINE_CORE_ASSETS).toContain('/data/bearoff.bin');
         expect(await checkWasmCached(undefined)).toBe(false);
 
         const mockCachesHit = {
-            match: vi.fn().mockResolvedValue(new Response('wasm-binary')),
+            match: vi.fn().mockResolvedValue(new Response('bearoff-binary')),
         } as unknown as CacheStorage;
         expect(await checkWasmCached(mockCachesHit)).toBe(true);
-        expect(mockCachesHit.match).toHaveBeenCalledWith('/engine/wildbg.wasm');
+        expect(mockCachesHit.match).toHaveBeenCalledWith('/data/bearoff.bin');
 
         const mockCachesMiss = {
             match: vi.fn().mockResolvedValue(undefined),

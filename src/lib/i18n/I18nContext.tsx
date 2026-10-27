@@ -185,14 +185,24 @@ export function detectLocale(): Locale {
     }
 
     try {
-        const navLang = (navigator.language || (navigator.languages && navigator.languages[0]) || '').toLowerCase();
-        if (navLang.startsWith('fr')) return 'fr';
-        if (navLang.startsWith('es')) return 'es';
-        if (navLang.startsWith('pt')) return 'pt';
-        if (navLang.startsWith('de')) return 'de';
-        if (navLang.startsWith('ar')) return 'ar';
-        if (navLang.startsWith('ja')) return 'ja';
-        if (navLang.startsWith('en')) return 'en';
+        const candidateLangs: string[] = [];
+        if (Array.isArray(navigator.languages)) {
+            candidateLangs.push(...navigator.languages);
+        }
+        if (navigator.language) {
+            candidateLangs.push(navigator.language);
+        }
+
+        for (const candidate of candidateLangs) {
+            const navLang = (candidate || '').toLowerCase().trim();
+            if (navLang.startsWith('fr')) return 'fr';
+            if (navLang.startsWith('es')) return 'es';
+            if (navLang.startsWith('pt')) return 'pt';
+            if (navLang.startsWith('de')) return 'de';
+            if (navLang.startsWith('ar')) return 'ar';
+            if (navLang.startsWith('ja')) return 'ja';
+            if (navLang.startsWith('en')) return 'en';
+        }
     } catch {
         // navigator indisponible
     }
@@ -218,12 +228,16 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
     const [locale, setLocaleState] = useState<Locale>(initialLocale || 'fr');
 
     useEffect(() => {
-        if (!initialLocale) {
-            const detected = detectLocale();
-            if (detected !== 'fr') {
-                setLocaleState(detected);
-            }
+        if (initialLocale) return;
+        const syncDeviceLocale = () => {
+            setLocaleState(detectLocale());
+        };
+        syncDeviceLocale();
+        if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+            window.addEventListener('languagechange', syncDeviceLocale);
+            return () => window.removeEventListener('languagechange', syncDeviceLocale);
         }
+        return undefined;
     }, [initialLocale]);
 
     const setLocale = (newLocale: Locale) => {

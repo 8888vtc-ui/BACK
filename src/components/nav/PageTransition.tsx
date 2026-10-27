@@ -67,7 +67,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
     }, [isTransitioning]);
 
     return (
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-dvh max-h-dvh overflow-hidden">
             {progress > 0 && (
                 <div
                     data-testid="spa-top-loading-bar"

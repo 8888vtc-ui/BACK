@@ -19,3 +19,6 @@ vendor/
 supabase/.temp/
 target/
 **/target/
+.agents/
+android/app/src/main/assets/public/
+ios/App/App/public/

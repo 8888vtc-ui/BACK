@@ -8,7 +8,7 @@ Ce document constitue la référence architecturale, mathématique et ergonomiqu
 1. [Pilier 1 : Matrice d'Interaction Zero-Friction & Cinématique FLIP/WAAPI](#1-matrice-dinteraction-zero-friction--cinématique-flipwaapi)
 2. [Pilier 2 : Matchmaking Glicko-2 Composite & Gamification Pédagogique](#2-matchmaking-glicko-2-composite--gamification-pédagogique)
 3. [Pilier 3 : Psychoacoustique Modale & Micro-Haptique d'Orfèvrerie](#3-psychoacoustique-modale--micro-haptique-dorfèvrerie)
-4. [Pilier 4 : Économie Freemium Éthique & Netcode Provably Fair (RNG Inviolable)](#4-économie-freemium-éthique--netcode-provably-fair-rng-inviolable)
+4. [Pilier 4 : Monétisation en 2 Temps (Hard Paywall + Clubs) & Netcode Provably Fair (RNG Inviolable)](#4-monétisation-en-2-temps-hard-paywall--clubs--netcode-provably-fair-rng-inviolable)
 
 ---
 
@@ -88,21 +88,27 @@ Dans les matchs courts (1 ou 3 pts), les dés créent un bruit stochastique qui 
 
 ---
 
-## 4. Économie Freemium Éthique & Netcode Provably Fair (RNG Inviolable)
+## 4. Monétisation en 2 Temps (Hard Paywall + Clubs) & Netcode Provably Fair (RNG Inviolable)
 
-### 4.1 Modèle Économique & Structure des Coûts Unitaires
-* **Philosophie** : Zéro pub, Zéro monnaie virtuelle ("Zero Ads, Zero Coins, Pure Skill"). Le jeu multijoueur et local est 100 % gratuit et illimité.
-* **Coût marginal d'une analyse complète de match** :
-  * Open Sage sur Google Cloud Run (scale-to-zero) : $0{,}000127\ \$$
-  * Gemini 2.0 / 2.5 Flash (5–8 moments clés filtrés) : $0{,}000520\ \$$
-  * **Coût total consolidé** : $0{,}000647\ \$$ ($\approx 0{,}000599\ \text{€}$).
-* **Grille Tarifaire Stripe Billing** :
-  * *Freemium* : 0 € (3 analyses complètes offertes / 24h, PR et stats dés illimités).
-  * *Coach IA Mensuel* : 9,99 € TTC / mois.
-  * *Coach IA Annuel (Cœur de cible)* : 79,99 € TTC / an (soit 6,67 € / mois, -33 %, essai 7 jours).
-  * *Pack Club & Chouette* : 149,99 € TTC / an (jusqu'à 5 comptes).
-* **Rentabilité** : Point mort d'infrastructure à seulement **9 abonnés payants**. À 1 000 abonnés : **74 681 € de bénéfice net annuel (marge opérationnelle de 97,9 %)**.
-* **Soft Paywall (Inspiration Chess.com)** : Au 4e match de la journée, valoriser les coups positifs du joueur (coups brillants, PR) avant d'inviter à débloquer le coach illimité.
+### 4.1 Modèle Économique en 2 Temps & Structure des Coûts Unitaires (Manifeste 2026)
+* **Positionnement** : Coach & Analyseur de Performance Grand-Maître (PR / Équité / Pédagogie Socratique). Marché mondial compétitif anglophone (`en`) par défaut + français (`fr`) et 4 langues additionnelles (`es`, `pt`, `de`, `ar`).
+* **Phase 1 (Court Terme — Architecture "Hard Paywall" sur l'IA)** :
+  * 3 blunders expliqués à vie (Aha Moment) lors de l'onboarding.
+  * Déclenchement strict du Paywall (HTTP 402 `DAILY_COACH_QUOTA_REACHED` + `SubscriptionModal.tsx`) dès le 4e blunder expliqué et sur la banque d'entraînement personnel `/drills`.
+* **Phase 2 (Moyen / Long Terme — Expansion B2B Clubs & Rétention Anti-Churn)** :
+  * *Pack Club & Chouette* (`club_chouette` à **149,99 € / an** pour 5 sièges avec salons privés `BG-XXXX` dédiés).
+  * *Downsell Anti-Churn* (`coach_downsell_monthly` à **9,99 € / mois** dans `CancelFlowModal.tsx`) et *Reverse Trial 7j* (`pro_reverse_trial`).
+* **Coût marginal et Marge Brute (> 85 %)** :
+  * Moteur mathématique local TypeScript / Open Sage Cloud Run (déterministe) : $0{,}00010\ \$$
+  * API directe Google Gemini `gemini-3.8-flash` (temps réel) & `gemini-3.6` (profond) en streaming SSE : $0{,}00015\ \$$
+  * Cache L2 Supabase (`public.coach_explanations` par clé `position_key` SHA-256) : $0{,}00000\ \$$ pour toute situation déjà rencontrée.
+  * **Coût moyen consolidé par explication** : $< 0{,}00020\ \$$ (Marge nette opérationnelle $> 92\,\%$).
+* **Grille Tarifaire Frontale Stripe Billing (USD / EUR)** :
+  * *Onboarding Free* : 3 blunders expliqués à vie (Aha Moment), puis blocage Pro sur le Coach IA et `/drills`.
+  * *Coach Pro Mensuel (`coach_monthly`)* : **14.99 $ / mois**.
+  * *Coach Grandmaster Annuel (`coach_yearly`, Recommandé, -45 %)* : **99.00 $ / an** (encaissement immédiat de la trésorerie).
+* **Garde-Fou de Consommation IA (`ai_margin_guardrail`)** :
+  * Si les coûts d'inférence d'un utilisateur dépassent 50 % de sa cotisation (`public.credit_usage_ledger`), bascule automatique vers `gemini-3.5` ou repli déterministe local sans surcoût.
 
 ### 4.2 Protocole Cryptographique Provably Fair (Zéro Biais de Modulo)
 * **Phase 1 (Commit)** : le serveur publie `serverSeedHash = SHA-256(serverSeed)` avant le match.

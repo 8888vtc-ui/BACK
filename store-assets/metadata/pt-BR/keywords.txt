@@ -1,1 +1,1 @@
-gamão,backgammon,dado de dobra,cubo,torneio,ia,coach,tabuleiro,estratégia,open sage,puzzles,drills
+gamão,backgammon,dado de dobra,cubo,torneio,ia,coach,tabuleiro,estratégia,monte-carlo,puzzles,drills

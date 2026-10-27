@@ -8,6 +8,8 @@
 
 export type GameSpeed = 'coach' | 'tournament' | 'blitz';
 
+export const GAME_SPEED_ORDER: readonly GameSpeed[] = ['coach', 'tournament', 'blitz'] as const;
+
 export interface SpeedPreset {
     /** Délai entre la fin du tour humain et le lancer des dés du bot. */
     readonly T0_TURN_HANDOFF_MS: number;

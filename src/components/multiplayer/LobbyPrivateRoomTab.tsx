@@ -60,34 +60,34 @@ export const LobbyPrivateRoomTab: React.FC<LobbyPrivateRoomTabProps> = ({
     };
 
     return (
-        <div className="space-y-5" data-testid="private-room-tab">
+        <div className="space-y-4" data-testid="private-room-tab">
             {privateRoomCode ? (
                 /* Code créé, en attente de l'ami */
-                <div className="rounded-2xl border border-amber-500/40 bg-amber-500/5 p-5 text-center space-y-4">
-                    <div className="text-xs uppercase font-bold tracking-wider text-amber-400">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-center space-y-4">
+                    <div className="text-xs uppercase font-bold tracking-wider text-amber-300">
                         Votre Salon Privé est ouvert
                     </div>
 
                     <div className="flex items-center justify-center gap-3">
-                        <span className="font-mono text-3xl font-black tracking-widest text-white bg-slate-800/90 border border-slate-700 px-5 py-2.5 rounded-2xl shadow-inner">
+                        <span className="font-mono text-3xl font-black tracking-widest text-white bg-slate-900/90 border border-white/10 px-5 py-2.5 rounded-2xl shadow-inner">
                             {privateRoomCode}
                         </span>
                         <button
                             type="button"
                             onClick={() => handleCopyCode(privateRoomCode)}
-                            className="rounded-xl bg-amber-500/20 border border-amber-500/40 px-3 py-2.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition-all"
+                            className="rounded-xl bg-[#f3c65f]/15 border border-[#f3c65f] px-3.5 py-2.5 text-xs font-bold text-[#f3c65f] hover:bg-[#f3c65f]/25 transition-all"
                         >
                             {copiedCode ? '✓ Copié !' : '📋 Copier'}
                         </button>
                     </div>
 
-                    <p className="text-xs text-slate-400">
-                        Partagez ce code à un ami pour qu'il rejoigne votre partie en direct.
+                    <p className="text-xs text-slate-300">
+                        Partagez ce code à un ami pour qu&apos;il rejoigne votre partie en direct.
                     </p>
 
-                    <div className="flex items-center justify-center gap-2 text-xs text-amber-300/80 animate-pulse">
+                    <div className="flex items-center justify-center gap-2 text-xs text-amber-300/90 animate-pulse">
                         <span className="h-2 w-2 rounded-full bg-amber-400" />
-                        <span>En attente de connexion de l'adversaire...</span>
+                        <span>En attente de connexion de l&apos;adversaire...</span>
                     </div>
 
                     <button
@@ -100,47 +100,52 @@ export const LobbyPrivateRoomTab: React.FC<LobbyPrivateRoomTabProps> = ({
                 </div>
             ) : (
                 /* Choix Créer ou Rejoindre */
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {/* Créer */}
-                    <div className="rounded-2xl border border-slate-800 bg-slate-800/40 p-4 space-y-3">
-                        <div className="flex items-center gap-2 text-sm font-bold text-white">
-                            <span>➕</span>
-                            <span>Créer un Salon</span>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex flex-col justify-between gap-3">
+                        <div className="space-y-1.5">
+                            <div className="flex items-center gap-2 text-sm font-bold text-white">
+                                <span>➕</span>
+                                <span>Créer un Salon</span>
+                            </div>
+                            <p className="text-xs text-slate-300 leading-relaxed">
+                                Générez un code unique et invitez un ami pour un duel sur mesure.
+                            </p>
                         </div>
-                        <p className="text-[11px] text-slate-400 leading-relaxed">
-                            Générez un code unique et invitez un adversaire pour un match personnalisé.
-                        </p>
                         <button
                             type="button"
                             onClick={handleCreateRoom}
-                            className="w-full rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 py-2.5 text-xs font-bold text-white transition-all shadow-sm"
+                            className="w-full rounded-xl border border-white/10 bg-white/10 hover:border-white/25 hover:bg-white/15 py-2.5 text-xs font-bold text-white transition-all"
                         >
                             Générer un code
                         </button>
                     </div>
 
                     {/* Rejoindre */}
-                    <div className="rounded-2xl border border-slate-800 bg-slate-800/40 p-4 space-y-3">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex flex-col justify-between gap-3">
                         <div className="flex items-center gap-2 text-sm font-bold text-white">
                             <span>🚪</span>
                             <span>Rejoindre par Code</span>
                         </div>
-                        <form onSubmit={handleJoinWithCode} className="space-y-2">
+                        <form onSubmit={handleJoinWithCode} className="space-y-2.5">
                             <input
+                                id="private-room-code-input"
+                                name="privateRoomCode"
+                                aria-label="Code du salon privé (ex: BG-8492)"
                                 type="text"
                                 value={inputCode}
                                 onChange={(e) => setInputCode(e.target.value.toUpperCase())}
                                 placeholder="Ex: BG-8492"
                                 maxLength={7}
-                                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-mono font-bold text-white uppercase placeholder-slate-500 focus:border-amber-500 focus:outline-none"
+                                className="w-full rounded-xl border border-white/10 bg-slate-900/90 px-3 py-2 text-xs font-mono font-bold text-white uppercase placeholder-slate-500 focus:border-[#f3c65f] focus:outline-none"
                             />
                             {joinError && (
-                                <div className="text-[10px] text-rose-400">{joinError}</div>
+                                <div className="text-xs text-rose-400">{joinError}</div>
                             )}
                             <button
                                 type="submit"
                                 disabled={isJoining || inputCode.length < 4}
-                                className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 py-2 text-xs font-bold text-slate-950 transition-all disabled:opacity-50"
+                                className="w-full rounded-xl border border-white/10 bg-amber-500 hover:bg-amber-400 py-2 text-xs font-bold text-slate-950 transition-all disabled:opacity-50"
                             >
                                 {isJoining ? 'Connexion...' : 'Rejoindre'}
                             </button>

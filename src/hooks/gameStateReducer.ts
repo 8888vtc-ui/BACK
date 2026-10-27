@@ -114,6 +114,12 @@ export interface UseBackgammonGameOptions {
     gameSpeed?: GameSpeed;
 }
 
+export interface MoveHistoryEntry {
+    board: number[];
+    usedDice: boolean[];
+    move?: Move;
+}
+
 export interface BackgammonGameState {
     boardState: BoardState;
     phase: GamePhase;
@@ -129,8 +135,9 @@ export interface BackgammonGameState {
     lastOpponentMoves: Move[] | null;
     opponentHighlight: OpponentMoveArrow[] | null;
     opponentStatusMessage: string | null;
-    moveHistory: { board: number[]; usedDice: boolean[]; move?: Move }[];
+    moveHistory: MoveHistoryEntry[];
     matchLog: ReadonlyArray<MatchLogEntry>;
+    opponentBoardBefore?: number[] | null;
     provablyFair?: ProvablyFairSessionState;
 }
 
@@ -164,6 +171,7 @@ export type GameAction =
         gameResult?: GameResult | null;
     }
     | { type: 'UNDO_MOVE' }
+    | { type: 'REWIND_TO_LOG_TURN'; turnIndex?: number }
     | { type: 'SET_DIFFICULTY'; difficulty: AIDifficulty }
     | { type: 'SET_CLIENT_SEEDS'; clientSeedA: string; clientSeedB?: string }
     | { type: 'START_NEW_GAME' }
@@ -748,8 +756,14 @@ export function backgammonGameReducer(
             if (state.difficulty !== 'beginner' && isInitialBoardPosition(state.boardState.board)) {
                 best = findOpeningBookSequenceForOpponent(state.boardState.board, rolledDice, legalSeqs);
             }
-            if (!best && state.difficulty === 'expert') {
+            if (!best && (state.difficulty === 'expert' || state.difficulty === 'grandmaster')) {
                 const unified = findBestBoardMove(stateWithDice, rolledDice, 2);
+                if (unified?.sequence) {
+                    best = unified.sequence;
+                }
+            }
+            if (!best && state.difficulty === 'intermediate') {
+                const unified = findBestBoardMove(stateWithDice, rolledDice, 1);
                 if (unified?.sequence) {
                     best = unified.sequence;
                 }
@@ -827,6 +841,7 @@ export function backgammonGameReducer(
                     turn: 'O',
                 },
                 phase: 'OPPONENT_THINKING',
+                opponentBoardBefore: [...state.boardState.board],
                 opponentHighlight: null,
                 lastOpponentDice: null,
                 opponentStatusMessage: action.statusMessage ?? "L'ordinateur lance les dés...",
@@ -845,6 +860,7 @@ export function backgammonGameReducer(
                     turn: 'O',
                 },
                 phase: 'OPPONENT_THINKING',
+                opponentBoardBefore: state.opponentBoardBefore ?? [...state.boardState.board],
                 usedDice: isDouble ? [false, false, false, false] : [false, false],
                 lastOpponentDice: action.dice,
                 opponentHighlight: null,
@@ -888,11 +904,12 @@ export function backgammonGameReducer(
 
         case 'OPPONENT_FINISH_TURN': {
             if (state.phase === 'GAME_OVER') return state;
+            const trueBoardBefore = state.opponentBoardBefore ?? state.boardState.board;
             const oLogEntry: MatchLogEntry = Object.freeze({
                 turnIndex: (state.matchLog?.length ?? 0) + 1,
                 player: 'O',
                 dice: Object.freeze([action.dice[0], action.dice[1]]) as readonly [number, number],
-                boardBefore: Object.freeze([...state.boardState.board]),
+                boardBefore: Object.freeze([...trueBoardBefore]),
                 movePlayed: Object.freeze(action.moves.map((m) => ({ ...m }))),
                 boardAfter: Object.freeze([...action.finalBoard]),
                 notation: formatMoveSequenceNotationAbsolute(action.moves, 'O'),
@@ -913,6 +930,7 @@ export function backgammonGameReducer(
                     },
                     phase: 'GAME_OVER',
                     gameResult: action.gameResult,
+                    opponentBoardBefore: null,
                     lastOpponentDice: action.dice,
                     lastOpponentMoves: action.moves,
                     opponentHighlight: action.moves && action.moves.length > 0 ? action.moves : state.opponentHighlight,
@@ -931,6 +949,7 @@ export function backgammonGameReducer(
                     turn: 'X',
                 },
                 phase: 'WAITING_FOR_ROLL',
+                opponentBoardBefore: null,
                 usedDice: [false, false],
                 selected: null,
                 lastOpponentDice: action.dice,
@@ -955,6 +974,88 @@ export function backgammonGameReducer(
                 usedDice: [...last.usedDice],
                 selected: null,
                 moveHistory: state.moveHistory.slice(0, -1),
+            };
+        }
+
+        case 'REWIND_TO_LOG_TURN': {
+            if (state.phase === 'PLAYING_MOVES' && state.moveHistory.length > 0 && action.turnIndex === undefined) {
+                const first = state.moveHistory[0];
+                return {
+                    ...state,
+                    boardState: {
+                        ...state.boardState,
+                        board: [...first.board],
+                    },
+                    usedDice: [...first.usedDice],
+                    selected: null,
+                    moveHistory: [],
+                };
+            }
+            const log = state.matchLog ?? [];
+            if (log.length === 0) return state;
+
+            let targetIdx = -1;
+            if (action.turnIndex !== undefined) {
+                targetIdx = log.findIndex((e) => e.turnIndex === action.turnIndex);
+            } else {
+                for (let i = log.length - 1; i >= 0; i--) {
+                    if (log[i].player === 'X' && log[i].dice[0] > 0 && log[i].dice[1] > 0) {
+                        targetIdx = i;
+                        break;
+                    }
+                }
+            }
+            if (targetIdx < 0) return state;
+
+            const targetEntry = log[targetIdx];
+            if (targetEntry.player === 'X' && targetEntry.dice[0] > 0 && targetEntry.dice[1] > 0) {
+                const d0 = targetEntry.dice[0];
+                const d1 = targetEntry.dice[1];
+                const isDouble = d0 === d1;
+                return {
+                    ...state,
+                    boardState: {
+                        ...state.boardState,
+                        board: [...targetEntry.boardBefore],
+                        dice: [d0, d1],
+                        turn: 'X',
+                        doubled: false,
+                        resigned: 0,
+                    },
+                    phase: 'PLAYING_MOVES',
+                    usedDice: isDouble ? [false, false, false, false] : [false, false],
+                    selected: null,
+                    doublingOfferedBy: null,
+                    gameResult: null,
+                    opponentBoardBefore: null,
+                    opponentHighlight: null,
+                    opponentStatusMessage: null,
+                    moveHistory: [],
+                    matchLog: Object.freeze(log.slice(0, targetIdx)),
+                };
+            }
+
+            // Si l'entrée ciblée est un tour IA (O), on reprend juste après ce tour (au début du tour X suivant)
+            return {
+                ...state,
+                boardState: {
+                    ...state.boardState,
+                    board: [...targetEntry.boardAfter],
+                    dice: null,
+                    turn: 'X',
+                    doubled: false,
+                    resigned: 0,
+                },
+                phase: 'WAITING_FOR_ROLL',
+                usedDice: [false, false],
+                selected: null,
+                doublingOfferedBy: null,
+                gameResult: null,
+                opponentBoardBefore: null,
+                opponentHighlight: null,
+                opponentStatusMessage: null,
+                moveHistory: [],
+                matchLog: Object.freeze(log.slice(0, targetIdx + 1)),
             };
         }
 

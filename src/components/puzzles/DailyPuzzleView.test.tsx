@@ -67,4 +67,24 @@ describe('DailyPuzzleView', () => {
         expect(html).toContain('data-testid="puzzle-card-puzzle_02_lovers_leap"');
         expect(html).toContain('data-testid="puzzle-card-puzzle_04_bearoff_safety"');
     });
+
+    it('épure les bordures en border-white/10 et place l’objectif et le bouton de validation avant le plateau sans micro-texte', () => {
+        const html = renderToStaticMarkup(<DailyPuzzleView />);
+
+        const objectiveIdx = html.indexOf('data-testid="puzzle-objective-description"');
+        const verifyIdx = html.indexOf('data-testid="puzzle-verify-button"');
+        const boardIdx = html.indexOf('board-adaptive-shell');
+
+        expect(html).toContain('border-white/10');
+        expect(objectiveIdx).toBeGreaterThan(-1);
+        expect(verifyIdx).toBeGreaterThan(-1);
+        expect(boardIdx).toBeGreaterThan(-1);
+        expect(objectiveIdx).toBeLessThan(boardIdx);
+        expect(verifyIdx).toBeLessThan(boardIdx);
+
+        const headerAndObjectiveHtml = html.slice(0, boardIdx);
+        expect(headerAndObjectiveHtml).not.toContain('text-[10px]');
+        expect(headerAndObjectiveHtml).not.toContain('text-[9px]');
+        expect(headerAndObjectiveHtml).not.toContain('text-[8px]');
+    });
 });

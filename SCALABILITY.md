@@ -12,7 +12,7 @@ Toute création ou modification de code sur ce projet doit respecter sans except
 
 ### LOI 1 — "1 Bouton / 1 Événement = 1 Micro-Programme Isolé" (`src/actions/`)
 - Chaque action utilisateur ou système DOIT être un fichier TypeScript pur, indépendant et testable isolément (< 120 lignes max).
-- Exemples canoniques : `rollHumanDiceAction.ts`, `smartClickCheckerAction.ts`, `swapDiceOrderAction.ts`, `commitHumanMoveAction.ts`, `undoMoveAction.ts`, `runAiTurnAction.ts`, `replayFromLogAction.ts`, `retryLastHumanTurnAction.ts`.
+- Exemples canoniques : `smartClickCheckerAction.ts`, `swapDiceOrderAction.ts`, `commitHumanMoveAction.ts`, `runAiTurnAction.ts`, `replayFromLogAction.ts`, `retryLastHumanTurnAction.ts`.
 - **Principe d'isolation stricte** : Toucher au programme d'un bouton ne doit JAMAIS pouvoir casser un autre bouton.
 
 #### Micro-programmes actuellement implémentés
@@ -28,11 +28,11 @@ Toute création ou modification de code sur ce projet doit respecter sans except
 ### LOI 2 — Machine à États Finis Unique (`gamePhase`)
 - **Interdiction formelle d'empiler des booléens contradictoires** (`isRolling`, `isAiThinking`, `canRoll`, `hasMoved`...).
 - Le cycle de jeu est gouverné par **UNE SEULE variable d'état stricte `gamePhase`** :
-  - `'HUMAN_WAITING_ROLL'` : Seul le micro-programme `rollHumanDiceAction` est autorisé.
-  - `'HUMAN_MOVING'` : Seuls les déplacements légaux de pions et `undoMoveAction` sont autorisés.
-  - `'HUMAN_READY_TO_COMMIT'` : Seul `commitHumanMoveAction` ou `undoMoveAction` est autorisé.
-  - `'AI_TURN_ROLLING'` : Affiche les dés de l'IA au centre pendant 700ms (tous boutons humains verrouillés).
-  - `'AI_TURN_SHOWING_ARROWS'` : Affiche les flèches de l'IA sur le plateau gelé avant mouvement pendant 800ms.
+  - `'HUMAN_WAITING_ROLL'` : Seul le lancer de dés humain est autorisé.
+  - `'HUMAN_MOVING'` : Seuls les déplacements légaux de pions (`smartClickCheckerAction`, `swapDiceOrderAction`) et l'annulation locale sont autorisés.
+  - `'HUMAN_READY_TO_COMMIT'` : Seuls `commitHumanMoveAction` ou l'annulation locale sont autorisés.
+  - `'AI_TURN_ROLLING'` : Affiche les dés de l'IA au centre selon la cadence active (`speedPresets.ts` : Coach / Tournoi / Blitz, tous boutons humains verrouillés).
+  - `'AI_TURN_SHOWING_ARROWS'` : Affiche les flèches de l'IA sur le plateau gelé avant mouvement selon la cadence active (`speedPresets.ts`).
   - `'GAME_OVER'` : Fin de manche / match.
 - **Cohérence mathématique garantie** : Le HUD, les bannières et les commandes lisent uniquement `gamePhase`. Il est impossible d'afficher deux textes contradictoires à l'écran.
 
@@ -67,7 +67,7 @@ Toute création ou modification de code sur ce projet doit respecter sans except
 ### Évaluation mathématique pure
 Sur la position reconstruite et avec les dés inscrits dans la log :
 1. Génère l'ensemble exhaustif des coups légaux via [`backgammonEngine.ts`](src/engine/backgammonEngine.ts).
-2. Évalue chaque coup candidat avec [`evaluator.ts`](src/lib/engine/evaluator.ts) (Bear-Off 54 264 états + Keith Count).
+2. Évalue chaque coup candidat en priorité via **Open Sage Cloud Run** ([`bgsageClient.ts`](src/lib/engine/bgsageClient.ts) / `analyzeHumanMoveFromLogWithBgsage`), avec repli instantané sur l'évaluateur tri-phase local [`evaluator.ts`](src/lib/engine/evaluator.ts) (Bear-Off 54 264 états + Keith Count).
 3. Extrait le meilleur coup mathématique et son équité.
 4. Compare avec le coup réellement joué pour calculer la perte d'équité exacte (`equityLoss = max(0, bestEquity - playedEquity)`).
 
@@ -226,13 +226,15 @@ export default MonComposant;
 
 ## 6. Dette technique connue (à résorber progressivement)
 
-Ces fichiers hérités violent la charte et DOIVENT être découpés :
+Ces fichiers hérités ont été résolus ou doivent être découpés sous les seuils R1/R5 :
 
-| Fichier | Lignes | Règle violée |
+| Fichier | Lignes | Statut / Règle |
 |---|---|---|
-| [`src/app/page.tsx`](src/app/page.tsx) | 293 | ✅ Résolu (découpé sous 300 lignes) |
-| [`src/hooks/useBackgammonGame.ts`](src/hooks/useBackgammonGame.ts) | ~1389 | R1, R5 |
-| [`src/features/knowledge/knowledgeBaseData.ts`](src/features/knowledge/knowledgeBaseData.ts) | ~1587 | R1 (données à externaliser) |
+| [`src/app/page.tsx`](src/app/page.tsx) | 274 | ✅ Résolu (conforme R1 < 300 lignes) |
+| [`src/components/board/Board.tsx`](src/components/board/Board.tsx) | 281 | ✅ Résolu (conforme R1 < 300 lignes) |
+| [`src/features/knowledge/knowledgeBaseData.ts`](src/features/knowledge/knowledgeBaseData.ts) | 47 | ✅ Résolu (externalisé dans `knowledgeBaseData.json`) |
+| [`src/hooks/useBackgammonGame.ts`](src/hooks/useBackgammonGame.ts) | 164 | ✅ Résolu (conforme R1 < 200 lignes) |
+| [`src/hooks/useMultiplayerGame.ts`](src/hooks/useMultiplayerGame.ts) | 144 | ✅ Résolu (conforme R1 < 200 lignes) |
 
 **Règle : aucun nouveau code ne doit s'ajouter à ces fichiers.** Toute modification
 doit passer par l'extraction d'un nouveau module conforme à la charte.

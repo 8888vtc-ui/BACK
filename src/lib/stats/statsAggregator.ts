@@ -138,8 +138,8 @@ export async function aggregateUserStats(): Promise<PlayerProgressionStats> {
     const explanations = await getAllRecords<LocalCoachExplanationRecord>('coach_explanations');
 
     // 1. Statistiques des parties
-    const totalGamesPlayed = games.length;
     const completedGames = games.filter((g) => g.status === 'completed');
+    const totalGamesPlayed = completedGames.length;
     const gamesWon = completedGames.filter((g) => g.winner === 'X');
     const winRate = completedGames.length > 0 ? (gamesWon.length / completedGames.length) * 100 : 50;
 

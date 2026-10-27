@@ -1,6 +1,6 @@
 Backgammon Tour — Círculo Monte-Carlo & Gammon Academy
 
-Domine o Gamão (Backgammon) de torneio com o motor neural Open Sage 3-Ply (PR 0.23) e um Coach de Grande Mestre em tempo real:
+Domine o Gamão (Backgammon) de torneio com o motor neural Monte-Carlo 3-Ply (PR 0.23) e um Coach de Grande Mestre em tempo real:
 - 🎲 Jogar contra a IA (4 níveis: Novato a Grande Mestre 3-Ply)
 - 🌐 Salão Oficial Multijogador com Relógio Fischer e ranking ELO
 - 🏛️ Gammon Academy: Guia das 15 Aberturas, Domínio do Dado de Dobra (Take Point 21,5%, Regra de Crawford, MET Kazaross-XG2)

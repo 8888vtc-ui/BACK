@@ -17,9 +17,11 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 - **Moteur IA cloud (principal)** : Open Sage (`bgsage-service/`, PR 0.23, 4 niveaux de bot + videau Double/Take/Pass) via `src/lib/engine/bgsageClient.ts`.
 - **Moteur IA local (repli offline)** : évaluateur tri-phase TypeScript + table Bear-Off exacte 54 264 états + Keith Count (`src/lib/engine/evaluator.ts`).
 - **Moteur legacy** : backend Python GNUBG (archivé sous `archive/backend_engine_gnubg_legacy/`, rollouts historiques).
-- **Coach** : Pipeline log-driven (`src/features/coach/logAnalyzer.ts`) + Google Gemini `gemini-2.5-flash` via SSE (`src/app/api/coach/`) avec Cache L2 Supabase (`coach_explanations`).
-- **Persistance** : Supabase (Postgres + Auth + RLS + Cache Coach L2) + persistance locale IndexedDB/SQLite Capacitor.
-- **Tests** : Vitest (1 253 tests unitaires sur 215 fichiers, 0 échec) + Playwright (e2e) + pytest (`bgsage-service/`).
+- **Coach** : Pipeline log-driven (`src/features/coach/logAnalyzer.ts`) + API directe Google Gemini (`gemini-3.8-flash` / `gemini-3.6` / repli `gemini-3.5`) via SSE (`src/app/api/coach/`) avec Cache L2 Supabase (`public.coach_explanations`, clé `position_key`).
+- **Doctrine Active (« Perfection Produit Max 70 % $\to$ 100 % »)** : Focus exclusif sur l'éradication de tous les bugs (zéro coup douteux du Bot, stabilité géométrique et esthétique Haute-Horlogerie Monte-Carlo, fluidité 60 FPS) avant l'activation commerciale. Voir [`SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md`](SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md).
+- **Modules Actifs Clés** : Jeu Solo vs Bot Open Sage (4 niveaux), Salon Privé sur code 4 chiffres (`BG-XXXX`), Puzzles Quotidiens V2 (`/daily-puzzle` & `/puzzles`), Drills (`/drills`) et Gammon Academy (`/academy`).
+- **Persistance** : Supabase (Postgres + Auth + RLS + Cache Coach L2 `coach_explanations` + Erreurs récurrentes `recurring_errors` + Profils `profiles`).
+- **Tests** : Vitest (1 310 tests unitaires sur 224 fichiers, 0 échec) + Playwright (e2e) + pytest (`bgsage-service/`).
 
 ---
 
@@ -44,8 +46,8 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | Dossier | Rôle |
 |---|---|
 | `coach/` | Extracteur de concepts, classificateur de blunders, prompts LLM, **`logAnalyzer.ts` (pipeline log-driven + verdicts 4 paliers)** |
-| `drills/` | Moteur d'exercices (blunders) |
-| `multiplayer/` | Validation d'actions, Elo, matchmaking, rooms temps réel |
+| `drills/` | Moteur d'exercices de répétition espacée sur blunders (réservé aux abonnés Pro) |
+| `multiplayer/` | Validation d'actions, Glicko-2, Salons Privés temps réel par code `BG-XXXX` |
 | `puzzles/` | Puzzles quotidiens |
 | `rating/` | Analyse de partie, calcul de PR |
 | `openings/` | Base d'ouvertures |
@@ -67,7 +69,7 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | `stats/` | Dashboard progression, erreurs récurrentes (`RecurringErrorsCard.tsx`) |
 | `summary/` | Rapport de fin de match (`PostMatchTrainingReport.tsx`, `PostMatchAiSynthesis.tsx` avec Soft Paywall et bouton Audit Dés SHA-256) |
 | `dice/` | Modale d'audit cryptographique des dés (`DiceAuditModal.tsx` — vérification HMAC-SHA256 et graines client) |
-| `subscription/` | Modale Soft Paywall VIP (`SubscriptionModal.tsx`) |
+| `subscription/` | Modale Soft Paywall VIP 3 paliers (`SubscriptionModal.tsx`), tunnel de rétention 3 étapes (`CancelFlowModal.tsx`) et bannière de gestion (`ManageSubscriptionBanner.tsx`) |
 | `puzzle/` | Composants V2 du Puzzle du Jour (`DailyPuzzleBoard.tsx`, `DailyPuzzleResultCard.tsx`, `DailyStreakBadge.tsx`) |
 | `auth/`, `common/`, `toast/`, `providers/`, `modals/` | Infra UI (`GameModalsContainer.tsx`, `UserAccountMenu.tsx`) |
 
@@ -89,12 +91,12 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | Dossier | Rôle |
 |---|---|
 | `supabase/` | Client Supabase, auth, types, erreurs récurrentes |
-| `i18n/` | Internationalisation complète 6 langues (`fr`, `en`, `es`, `pt`, `de`, `ar` + `ja`), support RTL Arabe, matrice terminologique 25 termes XG (couplé à `src/i18n/`) |
+| `i18n/` | Internationalisation complète 6 langues (`fr`, `en`, `es`, `pt`, `de`, `ar`), support RTL Arabe, matrice terminologique 25 termes XG (couplé à `src/i18n/`) |
 | `seo/` | Graphe JSON-LD Schema.org (`structuredData.ts` : `WebSite`, `VideoGame`, `Course`, `FAQPage`, `BreadcrumbList`) |
 | `offline/` | Persistance locale (IndexedDB), sync |
 | `engine/` | **`bgsageClient.ts` (client Open Sage Cloud Run)**, évaluateur tri-phase local (`evaluator.ts`), rollouts |
 | `crypto/` | **`provablyFairRng.ts` (RNG cryptographique HMAC-SHA256 Commit-Play-Reveal sans biais de modulo `< 252`)** |
-| `subscription/`, `stripe/` | **`quotaService.ts` (quota 3 analyses Coach IA / 24h), `plans.ts` & `stripeClient.ts` (Stripe Billing VIP)** |
+| `subscription/`, `stripe/` | **`quotaService.ts` (quota 3 analyses / 24h & Grace Period 30j), `retentionEngine.ts` (marge IA, Health Score, Cancel Flow, Dunning), `lifecycleEvents.ts` (9 événements Jour 1 & PQL), `stripePlans.ts` & `stripeClient.ts` (Stripe Billing VIP)** |
 | `puzzle/` | **`puzzleService.ts` (catalogue Daily Puzzle V2 certifié Open Sage 3-ply) & `fsrsScheduler.ts` (répétition espacée FSRS)** |
 | `rating/` | **`glicko2Service.ts` (classement Glicko-2 Composite pondéré par PR et longueur de match)** |
 | `telemetry/` | **`antiCheatDetector.ts` (profilage Ex-Gaussien 5POINT/Regan des temps de réflexion et pertes de focus)** |
@@ -110,8 +112,8 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 ### `src/app/` — App Router (pages + API)
 | Chemin | Rôle |
 |---|---|
-| `page.tsx` | Orchestrateur principal (293 lignes, conforme R1 < 300 lignes) à 3 vues exclusives (`LOBBY`, `GAME`, `SUMMARY`) |
-| `academy/`, `drills/`, `puzzles/`, `daily-puzzle/`, `progression/`, `pricing/` | Hub SEO Gammon Academy (`/academy`), Puzzles Quotidiens V2 unifiés (`/puzzles` & `/daily-puzzle`), Drills (`/drills`), Progression (`/progression`), Grille Tarifaire VIP (`/pricing`) |
+| `page.tsx` | Orchestrateur principal (274 lignes, conforme R1 < 300 lignes) à 3 vues exclusives (`LOBBY`, `GAME`, `SUMMARY`) |
+| `academy/`, `drills/`, `puzzles/`, `daily-puzzle/`, `progression/`, `pricing/` | Hub SEO Gammon Academy (`/academy`), Puzzles Quotidiens V2 unifiés (`/puzzles` & `/daily-puzzle`), Drills Pro (`/drills`), Progression (`/progression`), Grille Tarifaire VIP (`/pricing`) |
 | `api/coach/`, `api/evaluate/`, `api/rollout/`, `api/stripe/`, `api/multiplayer/`, `api/health/` | Route Handlers serveur (Coach SSE + quota 402, Open Sage, Rollouts, Stripe Checkout/Webhook, Validation multijoueur, Health) |
 
 ### `src/workers/` — Web Workers
@@ -121,7 +123,7 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 
 ---
 
-## 2bis. Anatomie de `page.tsx` (293 lignes — découpé en hooks et vues dédiés)
+## 2bis. Anatomie de `page.tsx` (274 lignes — découpé en hooks et vues dédiés)
 
 > ✅ **Conforme à la règle R1 (< 300 lignes).** Le rendu est gouverné par un état maître
 > `appScreen` (`'LOBBY' | 'GAME' | 'SUMMARY'`) garantissant qu'une seule vue est montée à la fois.
@@ -133,7 +135,7 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | `SummaryView` (`AppScreenViews.tsx`) | Bilan de fin de match |
 | `useBackgammonGame` | Machine à états du jeu et adversaire IA Open Sage |
 | `useCoach` | Analyse log-driven des coups humains et calcul PR |
-| `useCheckerInteractions` | Gestion des clics/double-clics sur pions et dés |
+| `useCheckerInteractions` | Gestion des interactions Smart Click (1 clic, clic droit = petit dé, drag-and-drop) sur pions et dés |
 | `usePlatformControlsRouter` | Adaptation automatique Desktop (clavier/souris) vs Mobile (tactile) |
 | `useGamePersistence` | Sauvegarde offline-first et historique des tours |
 | `useGameModals` | Ouverture/fermeture des modales et tiroir mobile |
@@ -193,10 +195,11 @@ Voir [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md) pour
 
 ## 6. Statut de la documentation et archives (audit 2026-10)
 
-| Catégorie | Fichiers de référence actifs | Archives historiques (remplacées) |
+| Catégorie | Fichiers de référence actifs | Archives historiques (`archive/docs_historiques/`) |
 |---|---|---|
+| **Manifeste & Stratégie Produit** | [`SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md`](SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md), [`docs/PLAN_ACTION_PRODUIT.md`](docs/PLAN_ACTION_PRODUIT.md) | `archive/docs_historiques/ROADMAP_PARITE_XG_GALAXY.md`, `archive/docs_historiques/AUDIT_SYSTEME_ET_PARITE_XG_GALAXY.md` |
 | **Excellence & Game Feel** | [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md) (Game Feel WAAPI, Glicko-2 Composite, Audio modal, Provably Fair) | — |
-| **Moteur IA** | [`DOCS_ENGINE.md`](DOCS_ENGINE.md), [`bgsage-service/README.md`](bgsage-service/README.md), [`docs/adr/0009-open-sage-cloud-run.md`](docs/adr/0009-open-sage-cloud-run.md) | `archive/projet_abandonne_bot_non_fiable/`, `docs/TECHNIQUE_XG.md`, `docs/PLAN_AMELIORATION_XG.md` |
-| **Architecture & Règles** | [`PROJECT_MAP.md`](PROJECT_MAP.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCALABILITY.md`](SCALABILITY.md), [`GOVERNANCE.md`](GOVERNANCE.md) | `docs/AUDIT_FRONTEND_COMPLET.md`, `docs/FRONTEND_REFACTOR_PLAN.md` |
+| **Moteur IA** | [`DOCS_ENGINE.md`](DOCS_ENGINE.md), [`bgsage-service/README.md`](bgsage-service/README.md), [`docs/adr/0009-open-sage-cloud-run.md`](docs/adr/0009-open-sage-cloud-run.md) | `archive/projet_abandonne_bot_non_fiable/`, `archive/docs_historiques/TECHNIQUE_XG.md`, `archive/docs_historiques/PLAN_AMELIORATION_XG.md` |
+| **Architecture & Règles** | [`PROJECT_MAP.md`](PROJECT_MAP.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCALABILITY.md`](SCALABILITY.md), [`GOVERNANCE.md`](GOVERNANCE.md) | `archive/docs_historiques/AUDIT_FRONTEND_COMPLET.md`, `archive/docs_historiques/FRONTEND_REFACTOR_PLAN.md` |
 | **Marque, SEO & i18n (6 Langues)** | [`docs/SEO_AND_I18N_MASTERPLAN.md`](docs/SEO_AND_I18N_MASTERPLAN.md), [`docs/BRAND_AND_SEO.md`](docs/BRAND_AND_SEO.md) | — |
-| **Feuille de route & Produit** | [`docs/PLAN_ACTION_PRODUIT.md`](docs/PLAN_ACTION_PRODUIT.md), [`docs/ROADMAP_PARITE_XG_GALAXY.md`](docs/ROADMAP_PARITE_XG_GALAXY.md) | — |
+| **Salon Privé `BG-XXXX` & Sécurité** | [`docs/MULTIPLAYER_REALTIME_SPEC.md`](docs/MULTIPLAYER_REALTIME_SPEC.md), [`docs/RLS_SECURITY_AUDIT.md`](docs/RLS_SECURITY_AUDIT.md), [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) | — |

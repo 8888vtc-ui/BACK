@@ -30,9 +30,7 @@ const STATIC_PRECACHE = [
     '/offline.html',
     '/icons/icon-192.svg',
     '/icons/icon-512.svg',
-    '/engine/wildbg.wasm',
     '/data/bearoff.bin',
-    '/wasm/wildbg_wasm_bg.wasm',
 ];
 
 // Installation : pré-mise en cache des ressources critiques et du moteur WASM (non-bloquante).
@@ -96,8 +94,8 @@ self.addEventListener('fetch', (event) => {
                     JSON.stringify({
                         error: 'offline',
                         offlineFallback: true,
-                        engine: 'local-wildbg-wasm',
-                        message: 'Mode Hors-Ligne actif : évaluation assurée par le moteur local WildBG WASM.',
+                        engine: 'local-montecarlo-triphase',
+                        message: 'Mode Hors-Ligne actif : évaluation assurée par le moteur local Monte-Carlo.',
                     }),
                     {
                         status: 503,

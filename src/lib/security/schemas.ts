@@ -88,6 +88,28 @@ const PipCountDiffSchema = z.object({
     diff: z.number().int().default(0),
 });
 
+const ShotExposureSideSchema = z.object({
+    totalRolls: z.number().int().min(0).max(36),
+    directRolls: z.number().int().min(0).max(36),
+    indirectRolls: z.number().int().min(0).max(36),
+    hittingNumbers: z.array(z.number().int().min(1).max(6)).max(6).default([]),
+    duplicatedNumbers: z
+        .array(
+            z.object({
+                die: z.number().int().min(1).max(6),
+                blots: z.array(z.number().int().min(1).max(24)).max(15),
+            }),
+        )
+        .max(6)
+        .default([]),
+});
+
+const KeithCountDiffSchema = z.object({
+    player: z.number().int().min(0).max(500),
+    opponent: z.number().int().min(0).max(500),
+    diff: z.number().int().min(-500).max(500),
+});
+
 export const PositionFeaturesSchema = z.object({
     player: z.enum(['X', 'O']).default('X'),
     pipCountDiff: PipCountDiffSchema.default({
@@ -97,6 +119,8 @@ export const PositionFeaturesSchema = z.object({
         diff: 0,
     }),
     blotsAndShots: BlotsAndShotsSchema.default({ user: [], best: [] }),
+    shotExposure: z.object({ user: ShotExposureSideSchema, best: ShotExposureSideSchema }).optional(),
+    keithCount: KeithCountDiffSchema.optional(),
     boardStructure: BoardStructureSchema.default({
         innerBoardPoints: 0,
         advancedAnchor: false,
@@ -117,7 +141,16 @@ export const MatchContextSchema = z.object({
 }).passthrough();
 
 export const CoachRequestSchema = z.object({
-    verdict: z.enum(['blunder', 'doubtful', 'inaccuracy', 'good', 'optimal', 'acceptable']).default('blunder'),
+    positionKey: z.string().optional(),
+    xgid: z.string().optional(),
+    board: z.array(z.number()).optional(),
+    dice: z.tuple([z.number(), z.number()]).optional(),
+    verdict: z
+        .preprocess(
+            (val) => (val === 'douteux' ? 'doubtful' : val),
+            z.enum(['blunder', 'doubtful', 'inaccuracy', 'good', 'optimal', 'acceptable']),
+        )
+        .default('blunder'),
     equityLoss: z.number().min(-10.0).max(10.0).default(-0.1),
     playedMove: z.string().min(1, 'playedMove requis').max(100),
     optimalMove: z.string().min(1, 'optimalMove requis').max(100),
@@ -125,7 +158,7 @@ export const CoachRequestSchema = z.object({
     matchContext: MatchContextSchema.optional(),
     playerLevel: z.enum(['beginner', 'intermediate', 'expert', 'grandmaster']).default('intermediate'),
     language: z.enum(['fr', 'en', 'es', 'pt', 'de', 'ar', 'ja']).default('fr'),
-});
+}).passthrough();
 
 export type CoachRequestInput = z.infer<typeof CoachRequestSchema>;
 

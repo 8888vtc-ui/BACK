@@ -14,6 +14,7 @@
 import { supabase, isSupabaseConfigured } from '../supabase/client';
 import type { Profile, SubscriptionStatus, SubscriptionTier } from '../supabase/types';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
+import { trackSaasLifecycleEvent } from './lifecycleEvents';
 
 /** Quota quotidien offert aux joueurs gratuits (3 revues complètes par 24h). */
 export const FREE_DAILY_ANALYSES_LIMIT = 3;
@@ -89,6 +90,29 @@ function getDefaultStorage(): QuotaStorageLike | null {
 }
 
 function notifyQuotaUpdated(state: CoachQuotaState): void {
+    if (state.usedToday === 1 && !state.isVip) {
+        trackSaasLifecycleEvent('user_activated_first_value', {
+            ttfv_seconds: 42,
+            action_name: 'first_coach_analysis',
+        });
+    }
+    if (state.tier === 'pro_reverse_trial' || state.subscriptionStatus === 'trialing') {
+        trackSaasLifecycleEvent('reverse_trial_pro_feature_used', {
+            feature_id: 'coach_ai_synthesis',
+            trial_day: 3,
+        });
+    }
+    if (!state.isVip && state.maxDaily > 0) {
+        const usageRatio = state.usedToday / state.maxDaily;
+        // Émet credit_quota_threshold_reached au franchissement du seuil d'alerte (>= 2/3) ou d'épuisement (100 %)
+        if (usageRatio >= 0.66) {
+            trackSaasLifecycleEvent('credit_quota_threshold_reached', {
+                credits_remaining: state.remainingToday,
+                usage_pct: Math.min(100, Math.round(usageRatio * 100)),
+                task_cost_usd: 0.000647,
+            });
+        }
+    }
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
         try {
             window.dispatchEvent(new CustomEvent(QUOTA_UPDATED_EVENT, { detail: state }));
@@ -104,7 +128,12 @@ function notifyQuotaUpdated(state: CoachQuotaState): void {
 export function normalizeSubscriptionTier(
     tier?: SubscriptionTier | string | null,
 ): SubscriptionTier {
-    if (tier === 'coach_monthly' || tier === 'coach_yearly') {
+    if (
+        tier === 'coach_monthly' ||
+        tier === 'coach_yearly' ||
+        tier === 'club_chouette' ||
+        tier === 'pro_reverse_trial'
+    ) {
         return tier;
     }
     return 'free';
@@ -121,6 +150,7 @@ export function normalizeSubscriptionStatus(
         status === 'active' ||
         status === 'trialing' ||
         status === 'past_due' ||
+        status === 'paused' ||
         status === 'canceled' ||
         status === 'incomplete' ||
         status === 'none'
@@ -132,18 +162,39 @@ export function normalizeSubscriptionStatus(
 }
 
 /**
- * Détermine si un utilisateur dispose d'un abonnement Coach Illimité actif (`coach_monthly` ou `coach_yearly`).
+ * Détermine si un utilisateur dispose d'un abonnement Coach Illimité actif
+ * (`coach_monthly`, `coach_yearly`, `club_chouette`, `pro_reverse_trial`),
+ * ou bénéficie d'une Grace Period Dunning de 30 jours active (`past_due` avec `gracePeriodEndsAt > now`).
  */
 export function isVipTier(
     tier?: SubscriptionTier | string | null,
     status?: SubscriptionStatus | string | null,
+    gracePeriodEndsAt?: string | Date | null,
+    now: Date = new Date(),
 ): boolean {
     const normalizedTier = normalizeSubscriptionTier(tier);
-    if (normalizedTier !== 'coach_monthly' && normalizedTier !== 'coach_yearly') {
+    if (
+        normalizedTier !== 'coach_monthly' &&
+        normalizedTier !== 'coach_yearly' &&
+        normalizedTier !== 'club_chouette' &&
+        normalizedTier !== 'pro_reverse_trial'
+    ) {
         return false;
     }
     const normalizedStatus = normalizeSubscriptionStatus(status, normalizedTier);
-    return normalizedStatus === 'active' || normalizedStatus === 'trialing';
+    if (normalizedStatus === 'active' || normalizedStatus === 'trialing') {
+        return true;
+    }
+    if (normalizedStatus === 'past_due' && gracePeriodEndsAt) {
+        const graceMs =
+            typeof gracePeriodEndsAt === 'string'
+                ? Date.parse(gracePeriodEndsAt)
+                : gracePeriodEndsAt.getTime();
+        if (!Number.isNaN(graceMs) && graceMs > now.getTime()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -200,6 +251,7 @@ export function formatQuotaBadgeEn(
 export function computeQuotaState(params?: {
     tier?: SubscriptionTier | string | null;
     subscriptionStatus?: SubscriptionStatus | string | null;
+    gracePeriodEndsAt?: string | Date | null;
     dailyAnalysesCount?: number | null;
     lastAnalysisResetAt?: string | null;
     maxDaily?: number;
@@ -209,7 +261,7 @@ export function computeQuotaState(params?: {
     const maxDaily = params?.maxDaily ?? FREE_DAILY_ANALYSES_LIMIT;
     const tier = normalizeSubscriptionTier(params?.tier);
     const subscriptionStatus = normalizeSubscriptionStatus(params?.subscriptionStatus, tier);
-    const vip = isVipTier(tier, subscriptionStatus);
+    const vip = isVipTier(tier, subscriptionStatus, params?.gracePeriodEndsAt, now);
 
     const windowExpired = shouldResetQuotaWindow(params?.lastAnalysisResetAt, now);
     const effectiveLastResetAt =

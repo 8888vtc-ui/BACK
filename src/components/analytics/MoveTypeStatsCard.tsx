@@ -81,12 +81,12 @@ export default function MoveTypeStatsCard({ metrics }: MoveTypeStatsCardProps) {
 
                                 <div className="grid grid-cols-3 gap-1 text-[11px] font-mono text-center">
                                     <div className="bg-slate-900/80 p-1.5 rounded-lg border border-slate-800/80">
-                                        <div className="text-[9px] text-slate-400 font-sans uppercase">Coups</div>
+                                        <div className="text-[11px] text-slate-400 font-sans uppercase">Coups</div>
                                         <div className="text-white font-bold">{metric.decisionsCount}</div>
                                     </div>
 
                                     <div className="bg-slate-900/80 p-1.5 rounded-lg border border-slate-800/80">
-                                        <div className="text-[9px] text-slate-400 font-sans uppercase">Taux ΔEq</div>
+                                        <div className="text-[11px] text-slate-400 font-sans uppercase">Taux ΔEq</div>
                                         <div
                                             className={`font-bold ${
                                                 metric.errorRate === 0
@@ -101,7 +101,7 @@ export default function MoveTypeStatsCard({ metrics }: MoveTypeStatsCardProps) {
                                     </div>
 
                                     <div className="bg-slate-900/80 p-1.5 rounded-lg border border-slate-800/80">
-                                        <div className="text-[9px] text-slate-400 font-sans uppercase">Blunders</div>
+                                        <div className="text-[11px] text-slate-400 font-sans uppercase">Blunders</div>
                                         <div
                                             className={`font-bold ${
                                                 metric.blunderCount > 0 ? 'text-rose-400' : 'text-slate-400'

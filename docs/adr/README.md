@@ -10,12 +10,12 @@ Chaque décision suit le format standardisé de Michael Nygard (Statut, Contexte
 
 | Référence | Titre | Statut | Date | Domaine |
 |---|---|---|---|---|
-| [**ADR-001**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/0001-hybrid-wasm-gnubg-engine.md) | Architecture Hybride Client WASM / Backend Neural GNUBG | **Accepté** | 2026-10-15 | Moteur & IA |
+| **ADR-001** *(archivé)* | Architecture Hybride Client WASM / Backend Neural GNUBG | **Remplacé** par ADR-009 | 2026-10-15 | Moteur & IA |
 | [**ADR-002**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/0002-nextjs-app-router-and-capacitor-export.md) | Next.js 15 App Router & Export Statique Capacitor | **Accepté** | 2026-10-15 | Frontend & Mobile |
 | [**ADR-003**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/0003-asynchronous-worker-pool-and-sse-rollouts.md) | Pool de Workers Asynchrones & Streaming SSE pour Rollouts | **Accepté** | 2026-10-16 | Backend & Concurrence |
 | [**ADR-004**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/0004-realtime-multiplayer-and-authoritative-validation.md) | Multijoueur Supabase Realtime & Validation Serveur Anti-Triche | **Accepté** | 2026-10-16 | Multijoueur & Sécurité |
 | [**ADR-005**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/0005-unified-observability-and-structured-logging.md) | Observabilité Unifiée (Sentry, Logs JSON & Alertes) | **Accepté** | 2026-10-17 | DevOps & Surveillance |
 | [**ADR-006**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/0006-local-first-offline-resilience.md) | Stratégie Local-First (IndexedDB, SQLite & SyncQueue) | **Accepté** | 2026-10-17 | Stockage & Hors-ligne |
-| [**ADR-007**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/0007-hybrid-xg-web-bearoff-wasm.md) | Déploiement Hybride XG-Web (Bear-Off 54k + WASM 2-Ply) | **Remplacé** par ADR-008 | 2026-10-18 | Moteur & IA Grand-Maître |
+| [**ADR-007**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/0007-hybrid-xg-web-bearoff-wasm.md) | Déploiement Hybride XG-Web (Bear-Off 54k conservé + WASM 2-Ply remplacé) | **Remplacé** par ADR-009 | 2026-10-18 | Moteur & IA Grand-Maître |
 | [**ADR-008**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/archive/projet_abandonne_bot_non_fiable/0008-wildbg-neural-engine.md) | Remplacement XG-Web par WildBG (moteur neuronal MIT/Apache-2.0) | **Remplacé** par ADR-009 | 2026-10-20 | Moteur & IA |
 | [**ADR-009**](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/adr/0009-open-sage-cloud-run.md) | Microservice Open Sage sur Google Cloud Run comme Moteur Unique | **Accepté** | 2026-10-22 | Moteur & IA Grand-Maître |

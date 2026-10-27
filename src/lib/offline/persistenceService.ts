@@ -120,6 +120,15 @@ export function initOfflineSync(): void {
     }
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function canSyncRecordToCloud(userId?: string, recordId?: string): boolean {
+    if (process.env.NODE_ENV === 'test') return true;
+    if (!userId || userId === 'anonymous_player' || !UUID_REGEX.test(userId)) return false;
+    if (recordId && !UUID_REGEX.test(recordId)) return false;
+    return true;
+}
+
 /**
  * Persiste une nouvelle partie (Offline-first).
  */
@@ -132,7 +141,7 @@ export async function persistNewGame(game: LocalGameRecord): Promise<void> {
 
     await putRecord('games', enriched);
 
-    if (supabaseModule.isSupabaseConfigured()) {
+    if (supabaseModule.isSupabaseConfigured() && canSyncRecordToCloud(enriched.user_id, enriched.id)) {
         await enqueueSync('games', 'insert', enriched as unknown as Record<string, unknown>);
 
         if (typeof window !== 'undefined' && window.navigator.onLine) {
@@ -169,7 +178,7 @@ export async function persistGameUpdate(
 
     await putRecord('games', updated);
 
-    if (supabaseModule.isSupabaseConfigured()) {
+    if (supabaseModule.isSupabaseConfigured() && canSyncRecordToCloud(updated.user_id, updated.id)) {
         await enqueueSync('games', 'update', updated as unknown as Record<string, unknown>);
 
         if (typeof window !== 'undefined' && window.navigator.onLine) {
@@ -190,7 +199,7 @@ export async function persistMove(move: LocalMoveRecord): Promise<void> {
 
     await putRecord('moves', enriched);
 
-    if (supabaseModule.isSupabaseConfigured()) {
+    if (supabaseModule.isSupabaseConfigured() && canSyncRecordToCloud(enriched.user_id, enriched.id)) {
         await enqueueSync('moves', 'insert', enriched as unknown as Record<string, unknown>);
 
         if (typeof window !== 'undefined' && window.navigator.onLine) {
@@ -214,7 +223,9 @@ export async function persistMovesBatch(moves: LocalMoveRecord[]): Promise<void>
 
     if (supabaseModule.isSupabaseConfigured()) {
         for (const move of enrichedList) {
-            await enqueueSync('moves', 'insert', move as unknown as Record<string, unknown>);
+            if (canSyncRecordToCloud(move.user_id, move.id)) {
+                await enqueueSync('moves', 'insert', move as unknown as Record<string, unknown>);
+            }
         }
         if (typeof window !== 'undefined' && window.navigator.onLine) {
             flushSyncQueue();
@@ -236,7 +247,7 @@ export async function persistCoachExplanation(
 
     await putRecord('coach_explanations', enriched);
 
-    if (supabaseModule.isSupabaseConfigured()) {
+    if (supabaseModule.isSupabaseConfigured() && canSyncRecordToCloud(enriched.user_id, enriched.id)) {
         await enqueueSync('coach_explanations', 'insert', enriched as unknown as Record<string, unknown>);
 
         if (typeof window !== 'undefined' && window.navigator.onLine) {

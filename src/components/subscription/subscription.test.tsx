@@ -11,6 +11,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import SoftPaywallCard from './SoftPaywallCard';
 import SubscriptionModal from './SubscriptionModal';
+import CancelFlowModal from './CancelFlowModal';
 import { generateProtectedCoachSynthesisAction } from '../../actions/coach';
 import type { MatchSummaryPayload } from '../summary/postMatchReportHelpers';
 
@@ -95,5 +96,47 @@ describe('SoftPaywallCard, SubscriptionModal & Action Serveur Coach', () => {
         expect(result.teaser.prDisplayFr).toBe('Performance Rating : 4.85 — Niveau Maître');
         // Aucun appel réseau vers Gemini ne doit avoir été déclenché
         expect(fetchSpy).not.toHaveBeenCalled();
+    });
+
+    it('affiche l’économie en % ET en valeur absolue (39,89 € / an), la frise d’essai Adapty, le 3e palier Club et la garantie 30 jours', () => {
+        render(<SubscriptionModal isOpen={true} initialPlan="coach_yearly" />);
+
+        expect(screen.getByTestId('annual-absolute-savings-label').textContent).toBe(
+            'Économisez 33 % — soit 39,89 € / an',
+        );
+        expect(screen.getByTestId('subscription-trial-timeline').textContent).toContain(
+            'Aujourd’hui (Jour 0)',
+        );
+        expect(screen.getByTestId('stripe-security-guarantee').textContent).toContain(
+            '30 jours sans condition',
+        );
+
+        // Sélection du 3e palier Pack Club & Chouette
+        fireEvent.click(screen.getByTestId('plan-card-club'));
+        expect(screen.getByTestId('stripe-checkout-submit-btn').textContent).toContain(
+            '149,99 € / an',
+        );
+    });
+
+    it('exécute le tunnel de rétention CancelFlowModal en 3 étapes (Enquête motif -> Pause 1-3 mois -> Confirmation)', () => {
+        const onAcceptSaveOffer = vi.fn();
+        render(<CancelFlowModal isOpen={true} onClose={vi.fn()} onAcceptSaveOffer={onAcceptSaveOffer} />);
+
+        // Étape 1 -> Étape 2
+        fireEvent.click(screen.getByTestId('cancel-flow-next-step-btn'));
+        expect(screen.getByTestId('cancel-save-offer-title').textContent).toContain(
+            'Mettre mon abonnement en pause',
+        );
+
+        // Choix d'une pause de 3 mois et validation
+        fireEvent.click(screen.getByTestId('pause-duration-3m'));
+        fireEvent.click(screen.getByTestId('cancel-accept-save-offer-btn'));
+
+        expect(onAcceptSaveOffer).toHaveBeenCalledWith({
+            reason: 'low_usage',
+            offerType: 'pause_1_to_3_months',
+            pauseMonths: 3,
+        });
+        expect(screen.getByTestId('cancel-flow-resolution-msg').textContent).toContain('3 mois');
     });
 });

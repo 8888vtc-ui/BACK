@@ -16,6 +16,7 @@
 import { useCallback, useState } from 'react';
 import { X_BAR, O_BAR, type BoardState } from '../engine/backgammonEngine';
 import { predictBestTapMove } from '../engine/tapToMovePredictor';
+import { impactMedium, selectionChangedHaptic } from '../lib/capacitor/haptics';
 
 export type MobileHandedness = 'right' | 'left';
 export const MOBILE_HANDEDNESS_STORAGE_KEY = 'bg_mobile_handedness';
@@ -212,11 +213,13 @@ export function useMobileTouchControls({
             });
 
             if (prediction.action === 'SELECT' && onSelectChecker) {
+                void selectionChangedHaptic();
                 onSelectChecker(effectiveSource);
                 return;
             }
 
             if (prediction.selectedTarget) {
+                void impactMedium();
                 onPlayMove(effectiveSource, prediction.selectedTarget.to, prediction.selectedTarget.die);
             }
         },

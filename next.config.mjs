@@ -38,7 +38,7 @@ const securityHeaders = [
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com data:",
             "img-src 'self' data: blob: https:",
-            "connect-src 'self' http://localhost:8000 ws://localhost:8000 https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com https://api.openai.com https://*.run.app",
+            "connect-src 'self' http://localhost:8000 ws://localhost:8000 https://*.supabase.co wss://*.supabase.co",
             "frame-ancestors 'none'",
             "base-uri 'self'",
             "form-action 'self'",
@@ -48,6 +48,7 @@ const securityHeaders = [
 
 const nextConfig = {
     devIndicators: false,
+    pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
     output: isMobileExport ? 'export' : undefined,
     images: {
         unoptimized: isMobileExport ? true : undefined,

@@ -3,7 +3,7 @@
  * Couvre :
  * - En-tête & Navigation de l'Académie
  * - Guide Mathématique du Videau (Doubling Cube, Take Point 21.5% / 25%, Jacoby, Crawford, MET Kazaross-XG2)
- * - Lexique & Stratégie Grand-Maître (Course/Keith Count, Blitz, Prime vs Prime, Holding/Back Game, PR & Open Sage 3-Ply)
+ * - Lexique & Stratégie Grand-Maître (Course/Keith Count, Blitz, Prime vs Prime, Holding/Back Game, PR & Monte-Carlo 3-Ply)
  * - Foire Aux Questions (FAQ SEO) ciblant les requêtes mondiales à fort volume.
  * Strictement 0 any, < 395 lignes.
  */
@@ -66,14 +66,14 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
     fr: {
         heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
         heroTitle: 'Gammon Academy — Encyclopédie Grand-Maître & Théorie 3-Ply',
-        heroSubtitle: 'Référentiel stratégique officiel : les 15 rouleaux d’ouverture certifiés Open Sage 3-Ply (PR 0.23), la mathématique du Videau (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2) et le calcul du Performance Rating.',
+        heroSubtitle: 'Référentiel stratégique officiel : les 15 rouleaux d’ouverture certifiés Monte-Carlo 3-Ply (PR 0.23), la mathématique du Videau (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2) et le calcul du Performance Rating.',
         navOpenings: '1. Les 15 Ouvertures',
         navCube: '2. Maîtrise du Videau',
         navStrategy: '3. Stratégie & PR 3-Ply',
         navGlossary: '4. Matrice Terminologique',
         navFaq: '5. FAQ Officielle Tournoi',
         openingsSectionTitle: 'I. Guide Complet des 15 Rouleaux d’Ouverture au Backgammon (Équité 3-Ply)',
-        openingsSectionDesc: 'Au premier tour, les doubles étant impossibles, il existe exactement 15 combinaisons de dés. Voici la table de vérité évaluée par notre moteur neuronal Open Sage 3-Ply et conforme aux rollouts eXtreme Gammon (XG).',
+        openingsSectionDesc: 'Au premier tour, les doubles étant impossibles, il existe exactement 15 combinaisons de dés. Voici la table de vérité évaluée par notre moteur neuronal Monte-Carlo 3-Ply et conforme aux rollouts eXtreme Gammon (XG).',
         colRoll: 'Jet',
         colName: 'Nom Classique',
         colOptimal: 'Coup Optimal (3-Ply)',
@@ -112,7 +112,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
         ],
         strategySectionTitle: 'III. Plans de Jeu Grand-Maître, Keith Count & Performance Rating (PR)',
-        strategySectionDesc: 'Comment les champions du monde et le moteur Open Sage 3-Ply (PR 0.23) évaluent une position en moins de 5 secondes.',
+        strategySectionDesc: 'Comment les champions du monde et le moteur Monte-Carlo 3-Ply (PR 0.23) évaluent une position en moins de 5 secondes.',
         strategyPillars: [
             {
                 badge: 'Plans de Jeu',
@@ -127,13 +127,13 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
             {
                 badge: 'Mesure de Niveau',
-                title: 'Performance Rating (PR) & Architecture Hybride Open Sage 3-Ply',
+                title: 'Performance Rating (PR) & Architecture Hybride Monte-Carlo 3-Ply',
                 summary: 'Le PR mesure votre perte moyenne d’équité par décision non-forcée multipliée par 500. Plus votre PR est proche de 0.00, plus votre jeu est parfait.',
                 formula: 'PR = (Somme des pertes d’équité sur coups + videau / Nombre de décisions réelles) × 500',
                 details: [
                     'Échelle mondiale : Super-GM (< 2.50) · Grand-Maître (2.50–5.00) · Maître (5.00–7.50) · Expert (7.50–10.00) · Intermédiaire (10.00–15.00).',
                     'Seuil de Blunder : une erreur ≥ 0.080 d’équité est un Blunder ; entre 0.020 et 0.080, une Imprécision (Doubtful) ; < 0.020, un coup Optimal/Bon.',
-                    'Moteur Hybride : Open Sage 3-Ply Cloud Run (PR 0.23) + Évaluateur local tri-phase (Contact / Crashed / Bear-off exact 54 264 états).',
+                    'Moteur Hybride : Monte-Carlo 3-Ply (PR 0.23) + Évaluateur local tri-phase (Contact / Crashed / Bear-off exact 54 264 états).',
                 ],
             },
         ],
@@ -144,7 +144,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         faqs: [
             {
                 question: 'Comment jouer au backgammon en ligne gratuitement avec un Coach IA ?',
-                answer: 'Sur Backgammon Tour (backgammontour.com), vous pouvez lancer instantanément une partie gratuite contre notre moteur neuronal Open Sage (4 niveaux de Novice à Grand-Maître 3-Ply) ou défier d’autres joueurs en multijoueur, avec analyse d’équité en temps réel et mode 100 % hors-ligne.',
+                answer: 'Sur Backgammon Tour (backgammontour.com), vous pouvez lancer instantanément une partie gratuite contre notre moteur neuronal Monte-Carlo (4 niveaux de Novice à Grand-Maître 3-Ply) ou défier d’autres joueurs en multijoueur, avec analyse d’équité en temps réel et mode 100 % hors-ligne.',
             },
             {
                 question: 'Quel est le meilleur coup d’ouverture au backgammon ?',
@@ -167,14 +167,14 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
     en: {
         heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
         heroTitle: 'Gammon Academy — Grandmaster Encyclopedia & 3-Ply Theory',
-        heroSubtitle: 'Official strategy reference: all 15 opening rolls certified by Open Sage 3-Ply (PR 0.23), Doubling Cube mathematics (21.5% Live Take Point, Crawford, Jacoby, Kazaross-XG2 MET), and Performance Rating mastery.',
+        heroSubtitle: 'Official strategy reference: all 15 opening rolls certified by Monte-Carlo 3-Ply (PR 0.23), Doubling Cube mathematics (21.5% Live Take Point, Crawford, Jacoby, Kazaross-XG2 MET), and Performance Rating mastery.',
         navOpenings: '1. The 15 Opening Rolls',
         navCube: '2. Doubling Cube Mastery',
         navStrategy: '3. Strategy & 3-Ply PR',
         navGlossary: '4. Terminology Matrix',
         navFaq: '5. Official Tournament FAQ',
         openingsSectionTitle: 'I. Complete Guide to the 15 Backgammon Opening Rolls (3-Ply Equity)',
-        openingsSectionDesc: 'Because doubles cannot be rolled on the opening turn, there are exactly 15 non-double opening rolls. Below is the ground-truth table certified by our Open Sage 3-Ply neural engine and XG rollouts.',
+        openingsSectionDesc: 'Because doubles cannot be rolled on the opening turn, there are exactly 15 non-double opening rolls. Below is the ground-truth table certified by our Monte-Carlo 3-Ply neural engine and XG rollouts.',
         colRoll: 'Roll',
         colName: 'Classic Name',
         colOptimal: 'Optimal Move (3-Ply)',
@@ -213,7 +213,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
         ],
         strategySectionTitle: 'III. Grandmaster Game Plans, Keith Count & Performance Rating (PR)',
-        strategySectionDesc: 'How World Champions and the Open Sage 3-Ply neural engine (PR 0.23) evaluate any board in under 5 seconds.',
+        strategySectionDesc: 'How World Champions and the Monte-Carlo 3-Ply neural engine (PR 0.23) evaluate any board in under 5 seconds.',
         strategyPillars: [
             {
                 badge: 'Game Plans',
@@ -228,13 +228,13 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
             {
                 badge: 'Skill Metric',
-                title: 'Performance Rating (PR) & Hybrid Open Sage 3-Ply Architecture',
+                title: 'Performance Rating (PR) & Hybrid Monte-Carlo 3-Ply Architecture',
                 summary: 'PR measures your average equity lost per non-forced decision multiplied by 500. The closer to 0.00, the stronger your play.',
                 formula: 'PR = (Total Equity Lost on Checker + Cube Decisions / Total Non-Forced Decisions) × 500',
                 details: [
                     'World Scale: Super-GM (< 2.50) · Grandmaster (2.50–5.00) · Master (5.00–7.50) · Expert (7.50–10.00) · Intermediate (10.00–15.00).',
                     'Blunder Threshold: an equity loss ≥ 0.080 is a Blunder; 0.020 to 0.080 is an Inaccuracy (Doubtful); < 0.020 is Optimal/Good.',
-                    'Hybrid Engine: Open Sage 3-Ply Cloud Run (PR 0.23) + Local tri-phase evaluator (Contact / Crashed / Exact 54,264-state Bear-off).',
+                    'Hybrid Engine: Monte-Carlo 3-Ply (PR 0.23) + Local tri-phase evaluator (Contact / Crashed / Exact 54,264-state Bear-off).',
                 ],
             },
         ],
@@ -245,7 +245,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         faqs: [
             {
                 question: 'How can I play tournament backgammon online for free with an AI Coach?',
-                answer: 'On Backgammon Tour (backgammontour.com), you can play free matches instantly against our Open Sage neural engine (4 levels from Novice to 3-Ply Grandmaster) or challenge live opponents in Multiplayer, with real-time equity analysis and 100% offline support.',
+                answer: 'On Backgammon Tour (backgammontour.com), you can play free matches instantly against our Monte-Carlo neural engine (4 levels from Novice to 3-Ply Grandmaster) or challenge live opponents in Multiplayer, with real-time equity analysis and 100% offline support.',
             },
             {
                 question: 'What is the best opening move in backgammon?',
@@ -268,14 +268,14 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
     es: {
         heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
         heroTitle: 'Gammon Academy — Enciclopedia Gran Maestro y Teoría 3-Ply',
-        heroSubtitle: 'Referencia estratégica oficial: las 15 tiradas de apertura certificadas por Open Sage 3-Ply (PR 0.23), matemática del Cubo de Doblaje (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2) y cálculo de PR.',
+        heroSubtitle: 'Referencia estratégica oficial: las 15 tiradas de apertura certificadas por Monte-Carlo 3-Ply (PR 0.23), matemática del Cubo de Doblaje (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2) y cálculo de PR.',
         navOpenings: '1. Las 15 Aperturas',
         navCube: '2. Dominio del Cubo',
         navStrategy: '3. Estrategia y PR 3-Ply',
         navGlossary: '4. Matriz Terminológica',
         navFaq: '5. FAQ Oficial de Torneo',
         openingsSectionTitle: 'I. Guía Completa de las 15 Aperturas de Backgammon (Equidad 3-Ply)',
-        openingsSectionDesc: 'En el primer turno existen exactamente 15 combinaciones sin dobles. Esta es la tabla oficial certificada por el motor neuronal Open Sage 3-Ply.',
+        openingsSectionDesc: 'En el primer turno existen exactamente 15 combinaciones sin dobles. Esta es la tabla oficial certificada por el motor neuronal Monte-Carlo 3-Ply.',
         colRoll: 'Dados',
         colName: 'Nombre Clásico',
         colOptimal: 'Jugada Óptima (3-Ply)',
@@ -314,7 +314,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
         ],
         strategySectionTitle: 'III. Planes de Juego Gran Maestro, Conteo Keith y Performance Rating (PR)',
-        strategySectionDesc: 'Cómo evalúan las posiciones los campeones mundiales y el motor neuronal Open Sage 3-Ply (PR 0.23).',
+        strategySectionDesc: 'Cómo evalúan las posiciones los campeones mundiales y el motor neuronal Monte-Carlo 3-Ply (PR 0.23).',
         strategyPillars: [
             {
                 badge: 'Planes de Juego',
@@ -329,13 +329,13 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
             {
                 badge: 'Métrica de Nivel',
-                title: 'Performance Rating (PR) y Arquitectura Híbrida Open Sage 3-Ply',
+                title: 'Performance Rating (PR) y Arquitectura Híbrida Monte-Carlo 3-Ply',
                 summary: 'El PR mide la pérdida media de equidad por decisión no forzada multiplicada por 500.',
                 formula: 'PR = (Pérdida total de equidad / Decisiones reales no forzadas) × 500',
                 details: [
                     'Escala Mundial: Super-GM (< 2.50) · Gran Maestro (2.50–5.00) · Maestro (5.00–7.50) · Experto (7.50–10.00).',
                     'Umbral de Blunder: pérdida ≥ 0.080 de equidad es Blunder; entre 0.020 y 0.080 es Dudosa; < 0.020 es Óptima.',
-                    'Motor Híbrido: Open Sage 3-Ply Cloud Run (PR 0.23) + Evaluador local trifásico con Bear-off exacto de 54 264 estados.',
+                    'Motor Híbrido: Monte-Carlo 3-Ply (PR 0.23) + Evaluador local trifásico con Bear-off exacto de 54 264 estados.',
                 ],
             },
         ],
@@ -346,7 +346,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         faqs: [
             {
                 question: '¿Cómo jugar al backgammon online gratis con un Coach de IA?',
-                answer: 'En Backgammon Tour (backgammontour.com) puedes jugar gratis al instante contra nuestro motor neuronal Open Sage (4 niveles hasta Gran Maestro 3-Ply) o en modo Multijugador, con análisis de equidad en tiempo real y soporte 100 % offline.',
+                answer: 'En Backgammon Tour (backgammontour.com) puedes jugar gratis al instante contra nuestro motor neuronal Monte-Carlo (4 niveles hasta Gran Maestro 3-Ply) o en modo Multijugador, con análisis de equidad en tiempo real y soporte 100 % offline.',
             },
             {
                 question: '¿Cuál es la mejor jugada de apertura en el backgammon?',
@@ -369,14 +369,14 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
     pt: {
         heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
         heroTitle: 'Gammon Academy — Enciclopédia Grande Mestre & Teoria 3-Ply',
-        heroSubtitle: 'Referência estratégica oficial: os 15 lançamentos de abertura certificados pelo Open Sage 3-Ply (PR 0.23), matemática do Dado de Dobra (Take Point 21,5%, Crawford, Jacoby, MET Kazaross-XG2) e cálculo de PR.',
+        heroSubtitle: 'Referência estratégica oficial: os 15 lançamentos de abertura certificados pelo Monte-Carlo 3-Ply (PR 0.23), matemática do Dado de Dobra (Take Point 21,5%, Crawford, Jacoby, MET Kazaross-XG2) e cálculo de PR.',
         navOpenings: '1. As 15 Aberturas',
         navCube: '2. Domínio do Cubo',
         navStrategy: '3. Estratégia & PR 3-Ply',
         navGlossary: '4. Matriz Terminológica',
         navFaq: '5. FAQ Oficial de Torneio',
         openingsSectionTitle: 'I. Guia Completo das 15 Aberturas no Gamão / Backgammon (Equidade 3-Ply)',
-        openingsSectionDesc: 'No primeiro lance existem exatamente 15 combinações não-duplas. Confira a tabela oficial certificada pelo motor neural Open Sage 3-Ply.',
+        openingsSectionDesc: 'No primeiro lance existem exatamente 15 combinações não-duplas. Confira a tabela oficial certificada pelo motor neural Monte-Carlo 3-Ply.',
         colRoll: 'Dados',
         colName: 'Nome Clássico',
         colOptimal: 'Lance Ótimo (3-Ply)',
@@ -415,7 +415,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
         ],
         strategySectionTitle: 'III. Planos de Jogo Grande Mestre, Contagem Keith & Performance Rating (PR)',
-        strategySectionDesc: 'Como os campeões mundiais e o motor neural Open Sage 3-Ply (PR 0.23) avaliam uma posição em segundos.',
+        strategySectionDesc: 'Como os campeões mundiais e o motor neural Monte-Carlo 3-Ply (PR 0.23) avaliam uma posição em segundos.',
         strategyPillars: [
             {
                 badge: 'Planos de Jogo',
@@ -430,13 +430,13 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
             {
                 badge: 'Métrica de Nível',
-                title: 'Performance Rating (PR) e Arquitetura Híbrida Open Sage 3-Ply',
+                title: 'Performance Rating (PR) e Arquitetura Híbrida Monte-Carlo 3-Ply',
                 summary: 'O PR mede sua perda média de equidade por decisão não-forçada multiplicada por 500.',
                 formula: 'PR = (Perda total de equidade / Decisões reais não-forçadas) × 500',
                 details: [
                     'Escala Mundial: Super-GM (< 2.50) · Grande Mestre (2.50–5.00) · Mestre (5.00–7.50) · Expert (7.50–10.00).',
                     'Limite de Blunder: perda ≥ 0.080 de equidade é Blunder; entre 0.020 e 0.080 é Duvidoso; < 0.020 é Ótimo.',
-                    'Motor Híbrido: Open Sage 3-Ply Cloud Run (PR 0.23) + Avaliador local trifásico com Bear-off exato de 54.264 estados.',
+                    'Motor Híbrido: Monte-Carlo 3-Ply (PR 0.23) + Avaliador local trifásico com Bear-off exato de 54.264 estados.',
                 ],
             },
         ],
@@ -447,7 +447,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         faqs: [
             {
                 question: 'Como jogar gamão (backgammon) online grátis com um Coach de IA?',
-                answer: 'No Backgammon Tour (backgammontour.com) você joga gratuitamente contra o motor neural Open Sage (4 níveis até Grande Mestre 3-Ply) ou no modo Multijogador, com análise de equidade em tempo real e modo 100% offline.',
+                answer: 'No Backgammon Tour (backgammontour.com) você joga gratuitamente contra o motor neural Monte-Carlo (4 níveis até Grande Mestre 3-Ply) ou no modo Multijogador, com análise de equidade em tempo real e modo 100% offline.',
             },
             {
                 question: 'Qual é o melhor lance de abertura no gamão?',
@@ -470,14 +470,14 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
     de: {
         heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
         heroTitle: 'Gammon Academy — Großmeister-Enzyklopädie & 3-Ply-Theorie',
-        heroSubtitle: 'Offizielles Strategie-Kompendium: Alle 15 Eröffnungswürfe zertifiziert durch Open Sage 3-Ply (PR 0.23), Dopplungswürfel-Mathematik (21,5 % Live Take Point, Crawford, Jacoby, Kazaross-XG2 MET) und PR-Berechnung.',
+        heroSubtitle: 'Offizielles Strategie-Kompendium: Alle 15 Eröffnungswürfe zertifiziert durch Monte-Carlo 3-Ply (PR 0.23), Dopplungswürfel-Mathematik (21,5 % Live Take Point, Crawford, Jacoby, Kazaross-XG2 MET) und PR-Berechnung.',
         navOpenings: '1. Die 15 Eröffnungen',
         navCube: '2. Dopplungswürfel',
         navStrategy: '3. Strategie & 3-Ply PR',
         navGlossary: '4. Fachbegriffe (6 Sprachen)',
         navFaq: '5. Offizielle Turnier-FAQ',
         openingsSectionTitle: 'I. Kompletter Leitfaden der 15 Backgammon-Eröffnungswürfe (3-Ply-Equity)',
-        openingsSectionDesc: 'Da beim ersten Wurf keine Paschs möglich sind, gibt es exakt 15 Eröffnungskombinationen. Hier ist die durch Open Sage 3-Ply zertifizierte Referenz-Tabelle.',
+        openingsSectionDesc: 'Da beim ersten Wurf keine Paschs möglich sind, gibt es exakt 15 Eröffnungskombinationen. Hier ist die durch Monte-Carlo 3-Ply zertifizierte Referenz-Tabelle.',
         colRoll: 'Wurf',
         colName: 'Klassischer Name',
         colOptimal: 'Optimaler Zug (3-Ply)',
@@ -516,7 +516,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
         ],
         strategySectionTitle: 'III. Großmeister-Spielpläne, Keith Count & Performance Rating (PR)',
-        strategySectionDesc: 'Wie Weltmeister und die neuronale Open Sage 3-Ply-Engine (PR 0.23) jede Stellung analysieren.',
+        strategySectionDesc: 'Wie Weltmeister und die neuronale Monte-Carlo 3-Ply-Engine (PR 0.23) jede Stellung analysieren.',
         strategyPillars: [
             {
                 badge: 'Spielpläne',
@@ -531,13 +531,13 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
             {
                 badge: 'Spielstärke-Metrik',
-                title: 'Performance Rating (PR) & Hybride Open Sage 3-Ply-Architektur',
+                title: 'Performance Rating (PR) & Hybride Monte-Carlo 3-Ply-Architektur',
                 summary: 'Das PR misst Ihren durchschnittlichen Equity-Verlust pro echter Entscheidung multipliziert mit 500.',
                 formula: 'PR = (Gesamter Equity-Verlust / Anzahl nicht-erzwungener Entscheidungen) × 500',
                 details: [
                     'Weltskala: Super-GM (< 2.50) · Großmeister (2.50–5.00) · Meister (5.00–7.50) · Experte (7.50–10.00).',
                     'Blunder-Schwelle: Equity-Verlust ≥ 0.080 ist ein Blunder; 0.020 bis 0.080 eine Ungenauigkeit; < 0.020 Optimal.',
-                    'Hybrid-Engine: Open Sage 3-Ply Cloud Run (PR 0.23) + Lokaler 3-Phasen-Evaluator mit exakter 54.264-Staaten-Bear-off-Datenbank.',
+                    'Hybrid-Engine: Monte-Carlo 3-Ply (PR 0.23) + Lokaler 3-Phasen-Evaluator mit exakter 54.264-Staaten-Bear-off-Datenbank.',
                 ],
             },
         ],
@@ -548,7 +548,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         faqs: [
             {
                 question: 'Wie kann ich kostenlos Backgammon online mit einem KI-Coach spielen?',
-                answer: 'Auf Backgammon Tour (backgammontour.com) spielen Sie sofort kostenlos gegen unsere neuronale Open Sage Engine (4 Stufen bis Großmeister 3-Ply) oder im Mehrspieler-Modus – inklusive Echtzeit-Equity-Analyse und 100 % Offline-Modus.',
+                answer: 'Auf Backgammon Tour (backgammontour.com) spielen Sie sofort kostenlos gegen unsere neuronale Monte-Carlo Engine (4 Stufen bis Großmeister 3-Ply) oder im Mehrspieler-Modus – inklusive Echtzeit-Equity-Analyse und 100 % Offline-Modus.',
             },
             {
                 question: 'Was ist der beste Eröffnungszug beim Backgammon?',
@@ -571,14 +571,14 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
     ar: {
         heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
         heroTitle: 'أكاديمية الغامون (Gammon Academy) — موسوعة الأستاذ الكبير ونظرية 3-Ply',
-        heroSubtitle: 'المرجع الاستراتيجي الرسمي: جميع الرميات الافتتاحية الـ 15 المعتمدة من محرك Open Sage 3-Ply (PR 0.23)، ورياضيات مكعب المضاعفة (نقطة القبول 21.5%، قاعدة كروفورد، جاكوبي، وجدول Kazaross-XG2 MET)، وحساب تقييم الأداء PR.',
+        heroSubtitle: 'المرجع الاستراتيجي الرسمي: جميع الرميات الافتتاحية الـ 15 المعتمدة من محرك Monte-Carlo 3-Ply (PR 0.23)، ورياضيات مكعب المضاعفة (نقطة القبول 21.5%، قاعدة كروفورد، جاكوبي، وجدول Kazaross-XG2 MET)، وحساب تقييم الأداء PR.',
         navOpenings: '1. الافتتاحيات الـ 15',
         navCube: '2. إتقان مكعب المضاعفة',
         navStrategy: '3. الاستراتيجية ومعدل PR',
         navGlossary: '4. مصفوفة المصطلحات',
         navFaq: '5. الأسئلة الشائعة للبطولات',
         openingsSectionTitle: 'I. الدليل الكامل للرميات الافتتاحية الـ 15 في الباك غامون (القيمة المتوقعة 3-Ply)',
-        openingsSectionDesc: 'نظراً لعدم إمكانية رمي نرد مزدوج في الدور الأول، توجد 15 رمية افتتاحية بالضبط. إليك الجدول المرجعي المعتمد من محركنا العصبي Open Sage 3-Ply.',
+        openingsSectionDesc: 'نظراً لعدم إمكانية رمي نرد مزدوج في الدور الأول، توجد 15 رمية افتتاحية بالضبط. إليك الجدول المرجعي المعتمد من محركنا العصبي Monte-Carlo 3-Ply.',
         colRoll: 'الرمية',
         colName: 'اللقب الكلاسيكي',
         colOptimal: 'النقلة المثلى (3-Ply)',
@@ -617,7 +617,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
         ],
         strategySectionTitle: 'III. خطط لعب الأستاذ الكبير، حساب كيث (Keith Count) وتقييم الأداء (PR)',
-        strategySectionDesc: 'كيف يقيّم أبطال العالم ومحرك Open Sage 3-Ply (PR 0.23) أي وضعية على اللوحة في ثوانٍ.',
+        strategySectionDesc: 'كيف يقيّم أبطال العالم ومحرك Monte-Carlo 3-Ply (PR 0.23) أي وضعية على اللوحة في ثوانٍ.',
         strategyPillars: [
             {
                 badge: 'خطط اللعب',
@@ -632,13 +632,13 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
             },
             {
                 badge: 'مقياس الاحتراف',
-                title: 'تقييم الأداء (PR) والهندسة الهجينة لمحرك Open Sage 3-Ply',
+                title: 'تقييم الأداء (PR) والهندسة الهجينة لمحرك Monte-Carlo 3-Ply',
                 summary: 'يقيس معدل PR متوسط خسارتك في القيمة المتوقعة لكل قرار غير إجباري مضروباً في 500. كلما اقترب من الصفر زادت دقتك.',
                 formula: 'PR = (إجمالي خسارة القيمة المتوقعة / عدد القرارات غير الإجبارية) × 500',
                 details: [
                     'المقياس العالمي: أستاذ كبير خارق (< 2.50) · أستاذ كبير (2.50–5.00) · أستاذ (5.00–7.50) · خبير (7.50–10.00).',
                     'عتبة الخطأ الفادح (Blunder): خسارة ≥ 0.080 هي خطأ فادح؛ ومن 0.020 إلى 0.080 نقلة مشكوك فيها؛ وأقل من 0.020 نقلة مثلى.',
-                    'المحرك الهجين: Open Sage 3-Ply السحابي (PR 0.23) + المقيّم المحلي ثلاثي المراحل مع قاعدة إخراج دقيقة لـ 54,264 حالة.',
+                    'المحرك الهجين: Monte-Carlo 3-Ply السحابي (PR 0.23) + المقيّم المحلي ثلاثي المراحل مع قاعدة إخراج دقيقة لـ 54,264 حالة.',
                 ],
             },
         ],
@@ -649,7 +649,7 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         faqs: [
             {
                 question: 'كيف ألعب الباك غامون أونلاين مجاناً مع مدرب ذكاء اصطناعي؟',
-                answer: 'على منصة Backgammon Tour (backgammontour.com)، يمكنك اللعب مجاناً فوراً ضد محركنا العصبي Open Sage (4 مستويات حتى الأستاذ الكبير 3-Ply) أو ضد لاعبين حقيقيين، مع تحليل فوري للقيمة المتوقعة ودعم كامل للعمل بدون إنترنت.',
+                answer: 'على منصة Backgammon Tour (backgammontour.com)، يمكنك اللعب مجاناً فوراً ضد محركنا العصبي Monte-Carlo (4 مستويات حتى الأستاذ الكبير 3-Ply) أو ضد لاعبين حقيقيين، مع تحليل فوري للقيمة المتوقعة ودعم كامل للعمل بدون إنترنت.',
             },
             {
                 question: 'ما هي أفضل نقلة افتتاحية في الباك غامون؟',

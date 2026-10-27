@@ -5,6 +5,8 @@
  */
 
 import React from 'react';
+import type { AIDifficulty } from '../../hooks/useBackgammonGame';
+import type { LobbyClockPreset } from './LobbyOptionsPanel';
 import LobbyScreen, { type LobbySelection, type LobbyModuleId } from './LobbyScreen';
 
 export type { LobbyModuleId };
@@ -14,6 +16,8 @@ export interface LobbyViewProps {
     onOpenModule: (moduleId: LobbyModuleId) => void;
     initialMatchLength: number;
     initialCoachEnabled: boolean;
+    initialDifficulty?: AIDifficulty;
+    initialClockPreset?: LobbyClockPreset;
 }
 
 /** Vue 1 — LOBBY. */
@@ -22,12 +26,16 @@ const LobbyViewComponent: React.FC<LobbyViewProps> = ({
     onOpenModule,
     initialMatchLength,
     initialCoachEnabled,
+    initialDifficulty,
+    initialClockPreset,
 }) => (
     <LobbyScreen
         onStart={onStart}
         onOpenModule={onOpenModule}
         initialMatchLength={initialMatchLength}
         initialCoachEnabled={initialCoachEnabled}
+        initialDifficulty={initialDifficulty}
+        initialClockPreset={initialClockPreset}
     />
 );
 
@@ -53,22 +61,22 @@ const SummaryViewComponent: React.FC<SummaryViewProps> = ({
         data-testid="app-summary-view"
         className={`h-dvh max-h-dvh w-full flex flex-col items-center justify-center gap-4 p-6 ${ambianceClass}`}
     >
-        <h1 className="text-2xl font-black text-amber-200">Match terminé</h1>
+        <h1 className="font-serif text-2xl font-black text-[#fdf8eb]">Match terminé</h1>
         <p className="text-sm text-slate-300">
             Score final — X : {scoreX} · O : {scoreO}
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2.5">
             <button
                 type="button"
                 onClick={onReviewBoard}
-                className="rounded-xl border border-slate-700 bg-slate-900/70 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-800"
+                className="rounded-xl border border-white/10 bg-[#0d121d]/85 px-4 py-2 text-xs font-bold text-slate-200 transition hover:border-white/25 hover:bg-[#131928]"
             >
                 Revoir le plateau
             </button>
             <button
                 type="button"
                 onClick={onBackToLobby}
-                className="rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-950 hover:from-amber-400 hover:to-amber-500"
+                className="rounded-xl border border-[#f3c65f] bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#1c1004] shadow-md transition hover:brightness-105"
             >
                 Retour au lobby
             </button>

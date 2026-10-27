@@ -1,1 +1,1 @@
-backgammon,tavla,shesh besh,tavli,videau,gnubg,cube,jeu de plateau,échecs,tournoi,ia,coach,dice,dés
+backgammon,tavla,shesh besh,tavli,videau,monte-carlo,cube,jeu de plateau,échecs,tournoi,ia,coach,dice,dés

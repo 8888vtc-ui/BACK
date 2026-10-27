@@ -27,6 +27,9 @@ export interface StripeCheckoutSessionCreateParams {
     readonly client_reference_id?: string;
     readonly customer_email?: string;
     readonly metadata?: Readonly<Record<string, string>>;
+    readonly adaptive_pricing?: {
+        readonly enabled: boolean;
+    };
     readonly subscription_data?: {
         readonly trial_period_days?: number;
         readonly metadata?: Readonly<Record<string, string>>;
@@ -126,6 +129,9 @@ function encodeStripeCheckoutForm(params: StripeCheckoutSessionCreateParams): UR
         for (const [k, v] of Object.entries(params.metadata)) {
             form.set(`metadata[${k}]`, v);
         }
+    }
+    if (params.adaptive_pricing?.enabled) {
+        form.set('adaptive_pricing[enabled]', 'true');
     }
     if (params.subscription_data) {
         if (

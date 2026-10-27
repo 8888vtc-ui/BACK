@@ -24,6 +24,17 @@ import {
     buildOpenSageTeaser,
     type QuotaStorageLike,
 } from './quotaService';
+import {
+    computeMaxAdmissibleCac,
+    evaluateAiMarginGuardrail,
+    computeTenantHealthScore,
+    resolveCancelSaveOffer,
+    buildDunningSchedule,
+    trackSaasLifecycleEvent,
+    evaluatePqlExpansionSignal,
+    getRecordedLifecycleEvents,
+    clearRecordedLifecycleEventsForTests,
+} from './retentionEngine';
 
 function createMemoryStorage(): QuotaStorageLike & { store: Map<string, string> } {
     const store = new Map<string, string>();
@@ -249,6 +260,120 @@ describe('quotaService — Règle des 3 analyses / 24h, Statuts VIP & Invités',
             expect(teaser.ctaLabelFr).toBe(
                 "Débloquer l'Analyse avec le Coach Illimité (Essai 7 jours)",
             );
+        });
+    });
+
+    describe('5. Blueprint SaaS 2026 : Grace Period 30j, Marge IA, Health Score & Cancel Flow', () => {
+        it('maintient l’accès VIP pendant la Grace Period de 30 jours sur un statut past_due', () => {
+            const futureGrace = new Date(baseNow.getTime() + 15 * 24 * 3600_000).toISOString();
+            const expiredGrace = new Date(baseNow.getTime() - 3600_000).toISOString();
+
+            expect(isVipTier('coach_yearly', 'past_due', futureGrace, baseNow)).toBe(true);
+            expect(isVipTier('coach_yearly', 'past_due', expiredGrace, baseNow)).toBe(false);
+            expect(isVipTier('club_chouette', 'active', null, baseNow)).toBe(true);
+            expect(isVipTier('pro_reverse_trial', 'trialing', null, baseNow)).toBe(true);
+        });
+
+        it('calcule le plafond CAC admissible (ARPU * Marge * 12 mois) et protège la marge brute IA >= 50 %', () => {
+            // Exemple du Blueprint : 30 $/mois * 50 % marge * 12 mois = 180 $
+            expect(
+                computeMaxAdmissibleCac({
+                    monthlyArpuUsd: 30,
+                    grossMarginRatio: 0.5,
+                    targetPaybackMonths: 12,
+                }),
+            ).toBe(180);
+
+            const healthyMargin = evaluateAiMarginGuardrail({
+                periodInferenceCostUsd: 1.2,
+                monthlyRevenueUsd: 9.99,
+            });
+            expect(healthyMargin.guardrailBreached).toBe(false);
+            expect(healthyMargin.routedModel).toBe('gemini-3.8-flash');
+
+            const breachedMargin = evaluateAiMarginGuardrail({
+                periodInferenceCostUsd: 6.5,
+                monthlyRevenueUsd: 9.99,
+            });
+            expect(breachedMargin.guardrailBreached).toBe(true);
+            expect(breachedMargin.routedModel).toBe('gemini-3.5');
+            expect(breachedMargin.allowMultiStepAgentLoop).toBe(false);
+        });
+
+        it('calcule le Health Score pondéré (0–100) et détecte une chute >= 50 % des connexions', () => {
+            const healthy = computeTenantHealthScore({
+                daysSinceLastActive: 1,
+                creditsUsedCurrentPeriod: 3,
+                monthlyCreditAllowance: 3,
+                subscriptionStatus: 'active',
+                isActivated: true,
+                loginCountPrev14d: 10,
+                loginCountLast14d: 9,
+            });
+            expect(healthy.score).toBe(97.75);
+            expect(healthy.healthScoreDroppedAlert).toBe(false);
+            expect(healthy.recommendedAction).toBe('trigger_pql_expansion');
+
+            const atRisk = computeTenantHealthScore({
+                daysSinceLastActive: 20,
+                creditsUsedCurrentPeriod: 0,
+                monthlyCreditAllowance: 10,
+                subscriptionStatus: 'past_due',
+                isActivated: false,
+                loginCountPrev14d: 10,
+                loginCountLast14d: 3,
+            });
+            expect(atRisk.healthScoreDroppedAlert).toBe(true);
+            expect(atRisk.recommendedAction).toBe('send_1click_template_rescue_email');
+        });
+
+        it('résout les offres de sauvetage Cancel Flow (Pause 1-3 mois, -25 % sur 3 mois, jamais >= 50 %) et la séquence Dunning', () => {
+            const priceOffer = resolveCancelSaveOffer('too_expensive', 9.99);
+            expect(priceOffer.primaryOfferType).toBe('discount_25_pct_3m');
+            expect(priceOffer.discountPercent).toBe(25);
+            expect(priceOffer.discountPercent).toBeLessThan(50);
+            expect(priceOffer.discountedMonthlyEur).toBe(7.49);
+
+            const pauseOffer = resolveCancelSaveOffer('low_usage', 9.99);
+            expect(pauseOffer.primaryOfferType).toBe('pause_1_to_3_months');
+            expect(pauseOffer.allowedPauseMonths).toEqual([1, 2, 3]);
+
+            const softDunning = buildDunningSchedule({
+                declineCode: 'insufficient_funds',
+                cardBrand: 'Visa',
+                cardLast4: '4242',
+            });
+            expect(softDunning.isHardDecline).toBe(false);
+            expect(softDunning.shouldRetryPayment).toBe(true);
+            expect(softDunning.steps.length).toBe(7);
+
+            const hardDunning = buildDunningSchedule({ declineCode: 'stolen_card' });
+            expect(hardDunning.isHardDecline).toBe(true);
+            expect(hardDunning.shouldRetryPayment).toBe(false);
+        });
+
+        it('instrumente la matrice des 9 événements analytiques Jour 1 et détecte le signal PQL Mois 1', () => {
+            clearRecordedLifecycleEventsForTests();
+
+            const pseoEvt = trackSaasLifecycleEvent('pseo_tool_interacted', {
+                slug: 'academy-met',
+                tool_type: 'calculator',
+                referrer_source: 'https://chatgpt.com',
+            });
+            expect(pseoEvt.automatedAction).toBe(
+                'save_session_storage_and_open_1click_sso_chatgpt_6x',
+            );
+
+            const pql = evaluatePqlExpansionSignal({
+                loginCount7d: 6,
+                checklistCompleted: true,
+                colleaguesInvited: 2,
+                accountAgeDays: 12,
+            });
+            expect(pql.isPqlQualified).toBe(true);
+            expect(pql.inPrimaryExpansionWindow).toBe(true);
+            expect(pql.offerBannerFr).toContain('30 jours sans condition');
+            expect(getRecordedLifecycleEvents().length).toBeGreaterThanOrEqual(2);
         });
     });
 });

@@ -7,6 +7,7 @@ import {
     notificationWarning,
     notificationError,
     vibrate,
+    selectionChangedHaptic,
 } from './haptics';
 import { Haptics } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
@@ -97,6 +98,9 @@ describe('Capacitor Haptics Service', () => {
 
         await impactMedium();
         expect(mockVibrate).toHaveBeenCalledWith(25);
+
+        await selectionChangedHaptic();
+        expect(mockVibrate).toHaveBeenCalledWith(6);
 
         vi.unstubAllGlobals();
     });

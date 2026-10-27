@@ -111,7 +111,7 @@ export function buildGlobalStructuredData(siteUrl: string = DEFAULT_SITE_URL): R
                 operatingSystem: 'Web, iOS, Android',
                 inLanguage: ['fr', 'en', 'es', 'pt', 'de', 'ar'],
                 description:
-                    'Plateforme de Backgammon de tournoi avec moteur neuronal Open Sage 3-Ply (PR 0.23), Coach IA en temps réel, Gammon Academy (15 ouvertures, videau, drills, puzzles) et Salon Multijoueur.',
+                    'Plateforme de Backgammon de tournoi avec moteur neuronal Monte-Carlo 3-Ply (PR 0.23), Coach IA en temps réel, Gammon Academy (15 ouvertures, videau, drills, puzzles) et Salon Multijoueur.',
                 offers: {
                     '@type': 'Offer',
                     price: '0',
@@ -124,7 +124,7 @@ export function buildGlobalStructuredData(siteUrl: string = DEFAULT_SITE_URL): R
                 '@id': `${cleanUrl}/academy#course`,
                 name: 'Gammon Academy — Encyclopédie des 15 Ouvertures, Videau & Stratégie Backgammon 3-Ply',
                 description:
-                    'Formation stratégique complète au Backgammon de tournoi : table d’équité des 15 rouleaux d’ouverture Open Sage 3-Ply, mathématique du Videau (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2), Keith Count et réduction du Performance Rating (PR).',
+                    'Formation stratégique complète au Backgammon de tournoi : table d’équité des 15 rouleaux d’ouverture Monte-Carlo 3-Ply, mathématique du Videau (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2), Keith Count et réduction du Performance Rating (PR).',
                 provider: {
                     '@type': 'Organization',
                     name: 'Backgammon Tour & Gammon Academy',
@@ -137,7 +137,7 @@ export function buildGlobalStructuredData(siteUrl: string = DEFAULT_SITE_URL): R
             {
                 '@type': 'ItemList',
                 '@id': `${cleanUrl}/academy#opening-rolls-list`,
-                name: 'Les 15 Rouleaux d’Ouverture au Backgammon (Équité 3-Ply Open Sage)',
+                name: 'Les 15 Rouleaux d’Ouverture au Backgammon (Équité 3-Ply Monte-Carlo)',
                 itemListOrder: 'https://schema.org/ItemListOrderDescending',
                 numberOfItems: OPENING_ROLLS_15.length,
                 itemListElement: openingListItems,

@@ -130,7 +130,7 @@ export function RecurringErrorsCard({ limit = 5, onStartDrill }: RecurringErrors
                         {isLocalFallback && (
                             <span
                                 data-testid="recurring-errors-local-badge"
-                                className="rounded-full bg-amber-950/70 border border-amber-500/40 px-2 py-0.5 text-[10px] font-bold text-amber-300"
+                                className="rounded-full bg-amber-950/70 border border-white/10 px-2 py-0.5 text-[11px] font-bold text-amber-300"
                             >
                                 Local / Invité
                             </span>

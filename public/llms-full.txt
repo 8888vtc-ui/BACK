@@ -5,7 +5,7 @@ Supported Languages: French (`fr`), English (`en`), Spanish (`es`), Portuguese (
 
 ---
 
-## 1. Complete 15 Opening Rolls Reference (Open Sage 3-Ply & XG Rollouts)
+## 1. Complete 15 Opening Rolls Reference (Monte-Carlo 3-Ply & XG Rollouts)
 
 | Roll | Classic Name | Optimal 3-Ply Move | DMP / Score Alternative | 3-Ply Equity | Win % | Gammon % |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -56,21 +56,22 @@ Supported Languages: French (`fr`), English (`en`), Spanish (`es`), Portuguese (
 
 ---
 
-## 4. Performance Rating (PR) Scale & Hybrid Open Sage 3-Ply Engine
+## 4. Performance Rating (PR) Scale & Hybrid Monte-Carlo 3-Ply Engine
 
 - **Formula**: `PR = (Sum of Equity Losses on Non-Forced Checker & Cube Decisions / Total Non-Forced Decisions) * 500`
 - **World Rating Tiers**:
-  - `< 2.50`: World Champion / Super-Grandmaster (Open Sage 3-Ply achieves `0.23 PR`)
+  - `< 2.50`: World Champion / Super-Grandmaster (Monte-Carlo 3-Ply achieves `0.23 PR`)
   - `2.50 - 5.00`: Grandmaster
   - `5.00 - 7.50`: Master
   - `7.50 - 10.00`: Expert
   - `10.00 - 15.00`: Intermediate
   - `> 15.00`: Novice / Casual
 - **Move Classification Thresholds**:
-  - `Optimal / Good`: `< 0.020` equity loss
-  - `Doubtful (Inaccuracy)`: `0.020 to 0.079` equity loss
-  - `Blunder`: `0.080 to 0.199` equity loss
-  - `Howler (Major Blunder)`: `>= 0.200` equity loss
+  - `Optimal`: `<= 0.010` equity loss (`<= 0.005` detailed optimal)
+  - `Good`: `> 0.010 to 0.020` equity loss
+  - `Doubtful (Inaccuracy / Mistake)`: `> 0.020 to 0.080` equity loss
+  - `Blunder`: `> 0.080 to 0.250` equity loss
+  - `Howler (Major Blunder)`: `> 0.250` equity loss
 
 ---
 

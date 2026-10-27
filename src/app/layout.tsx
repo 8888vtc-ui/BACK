@@ -7,10 +7,9 @@ export const viewport: Viewport = {
     themeColor: '#090d16',
     width: 'device-width',
     initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
     viewportFit: 'cover',
-    // Zoom utilisateur autorisé (accessibilité WCAG 1.4.4)
-    maximumScale: 5,
-    userScalable: true,
 };
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL;
@@ -22,7 +21,7 @@ export const metadata: Metadata = {
         template: '%s | Backgammon Tour',
     },
     description:
-        'Salon officiel Backgammon Tour & Gammon Academy : jouez en tournoi (matchs en 7 pts, pendule Fischer, ELO) et progressez avec le Coach IA Grand-Maître Open Sage 3-Ply (PR 0.23), Drills de Blunders et Puzzles quotidiens.',
+        'Salon officiel Backgammon Tour & Gammon Academy : jouez en tournoi (matchs en 7 pts, pendule Fischer, ELO) et progressez avec le Coach IA Grand-Maître Monte-Carlo 3-Ply (PR 0.23), Drills de Blunders et Puzzles quotidiens.',
     applicationName: 'Backgammon Tour',
     authors: [{ name: 'Backgammon Tour & Gammon Academy', url: SITE_URL }],
     generator: 'Next.js 15',
@@ -33,7 +32,7 @@ export const metadata: Metadata = {
         'backgammon online tournament',
         'coach backgammon ia',
         'backgammon ai coach',
-        'open sage 3-ply',
+        'monte-carlo 3-ply',
         'cercle monte-carlo backgammon',
         'analyse pr backgammon',
         'videau backgammon',
@@ -61,7 +60,7 @@ export const metadata: Metadata = {
         siteName: 'Backgammon Tour',
         title: 'Backgammon Tour — Cercle Monte-Carlo & Gammon Academy (IA 3-Ply)',
         description:
-            'Plateau de Backgammon Tournament-Grade, Coach IA Open Sage 3-Ply en temps réel, Académie d’entraînement (15 Ouvertures, Videau, Drills, Puzzles) et Salon Multijoueur.',
+            'Plateau de Backgammon Tournament-Grade, Coach IA Monte-Carlo 3-Ply en temps réel, Académie d’entraînement (15 Ouvertures, Videau, Drills, Puzzles) et Salon Multijoueur.',
         images: [
             {
                 url: '/og-image.svg',
@@ -75,7 +74,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'Backgammon Tour — Cercle Monte-Carlo & Gammon Academy',
         description:
-            'Jouez au Backgammon en conditions de tournoi et réduisez votre PR avec le Coach Grand-Maître IA Open Sage 3-Ply.',
+            'Jouez au Backgammon en conditions de tournoi et réduisez votre PR avec le Coach Grand-Maître IA Monte-Carlo 3-Ply.',
         images: ['/og-image.svg'],
     },
     robots: {

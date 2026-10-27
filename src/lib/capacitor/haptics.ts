@@ -147,3 +147,26 @@ export async function triggerContinuousHapticBed(durationMs = 500): Promise<void
         // Ignorer
     }
 }
+
+/**
+ * Tick haptique ultra-court de sélection (tap initial sur un pion ou changement de cible fantôme).
+ */
+export async function selectionChangedHaptic(): Promise<void> {
+    try {
+        if (Capacitor.isPluginAvailable('Haptics')) {
+            if (typeof Haptics.selectionStart === 'function') {
+                await Haptics.selectionStart();
+            }
+            if (typeof Haptics.selectionChanged === 'function') {
+                await Haptics.selectionChanged();
+            }
+            if (typeof Haptics.selectionEnd === 'function') {
+                await Haptics.selectionEnd();
+            }
+        } else if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+            navigator.vibrate(6);
+        }
+    } catch {
+        // Ignorer sur appareil non compatible
+    }
+}

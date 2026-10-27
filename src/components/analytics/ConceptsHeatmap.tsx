@@ -66,7 +66,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
         if (!cell || cell.errorCount === 0) {
             return {
                 bg: 'bg-emerald-950/15 hover:bg-emerald-950/30',
-                border: 'border-slate-800',
+                border: 'border-white/10',
                 badgeText: 'text-emerald-400',
                 label: 'Propre (0 faute)',
             };
@@ -100,16 +100,16 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
 
     return (
         <div
-            className="rounded-2xl border border-slate-700/80 bg-slate-900/90 p-5 shadow-xl space-y-4"
+            className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 shadow-xl space-y-4"
             data-testid="concepts-heatmap"
         >
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
                 <div>
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
                         <span>🔥</span>
                         <span>Blunder Heatmap — Phases × Thèmes Tactiques</span>
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
                         Cartographie de densité des bévues par phase (Opening, Midgame, Bearing off) et thème (Slotting, Priming, Blitz, Holding, Racing).
                     </p>
                 </div>
@@ -117,7 +117,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                 <div className="flex flex-wrap items-center gap-2">
                     {tacticalCells.length > 0 && (
                         <div
-                            className="inline-flex rounded-lg border border-slate-700 bg-slate-950/80 p-0.5 text-[11px]"
+                            className="inline-flex rounded-lg border border-white/10 bg-slate-950/80 p-0.5 text-xs"
                             data-testid="heatmap-mode-switcher"
                         >
                             <button
@@ -130,7 +130,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                 className={`rounded-md px-2.5 py-1 font-bold transition ${
                                     viewMode === 'tactical'
                                         ? 'bg-amber-500 text-slate-950 shadow'
-                                        : 'text-slate-400 hover:text-white'
+                                        : 'text-slate-300 hover:text-white'
                                 }`}
                             >
                                 Tactique (5×3)
@@ -145,7 +145,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                 className={`rounded-md px-2.5 py-1 font-bold transition ${
                                     viewMode === 'concepts'
                                         ? 'bg-amber-500 text-slate-950 shadow'
-                                        : 'text-slate-400 hover:text-white'
+                                        : 'text-slate-300 hover:text-white'
                                 }`}
                             >
                                 Concepts (8×3)
@@ -153,7 +153,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                         </div>
                     )}
 
-                    <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                    <div className="flex items-center gap-2 text-xs text-slate-300">
                         <span className="flex items-center gap-1">
                             <span className="h-2.5 w-2.5 rounded-sm bg-emerald-950/80 border border-emerald-500/40" />
                             <span>0 faute</span>
@@ -172,9 +172,9 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
 
             {/* Matrice 2D Heatmap */}
             <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left text-xs">
+                <table className="w-full border-collapse text-left text-xs sm:text-sm">
                     <thead>
-                        <tr className="border-b border-slate-800 text-slate-400">
+                        <tr className="border-b border-white/10 text-slate-300">
                             <th className="py-2.5 px-3 font-semibold w-1/3">
                                 {viewMode === 'tactical' ? 'Thème Tactique' : 'Concept Stratégique'}
                             </th>
@@ -185,7 +185,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                             <span>{p.icon}</span>
                                             <span className="text-slate-200">{p.enLabel}</span>
                                         </span>
-                                        <span className="text-[10px] font-normal text-slate-400">
+                                        <span className="text-xs font-normal text-slate-400">
                                             {p.label}
                                         </span>
                                     </span>
@@ -193,7 +193,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-white/10">
                         {viewMode === 'tactical'
                             ? TACTICAL_THEMES_ORDER.map((themeKey) => {
                                   const cfg = TACTICAL_THEME_CONFIGS[themeKey];
@@ -204,11 +204,11 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                           data-testid={`tactical-row-${themeKey}`}
                                       >
                                           <td className="py-3 px-3">
-                                              <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                                              <div className="font-bold text-white text-xs sm:text-sm flex items-center gap-1.5">
                                                   <span>{cfg.icon}</span>
                                                   <span>{cfg.label}</span>
                                               </div>
-                                              <div className="text-[10px] text-slate-400 mt-0.5 line-clamp-1">
+                                              <div className="text-xs text-slate-400 mt-0.5 line-clamp-1">
                                                   {cfg.description}
                                               </div>
                                           </td>
@@ -237,9 +237,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                                           className={`w-full py-2.5 px-2 rounded-xl border transition-all cursor-pointer ${styles.bg} ${styles.border}`}
                                                           title={`${cfg.label} en ${p.enLabel} : ${styles.label}`}
                                                       >
-                                                          <div
-                                                              className={`text-xs font-mono font-bold ${styles.badgeText}`}
-                                                          >
+                                                          <div className={`text-xs font-mono font-bold ${styles.badgeText}`}>
                                                               {cell && cell.errorCount > 0 ? (
                                                                   <span>
                                                                       {cell.errorCount}
@@ -250,12 +248,10 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                                                       )}
                                                                   </span>
                                                               ) : (
-                                                                  <span className="text-slate-600 font-normal">
-                                                                      0
-                                                                  </span>
+                                                                  <span className="text-slate-500 font-normal">0</span>
                                                               )}
                                                           </div>
-                                                          <div className="text-[9px] text-slate-400 mt-0.5 font-mono">
+                                                          <div className="text-xs text-slate-300 mt-0.5 font-mono">
                                                               {cell && cell.totalEquityLoss > 0
                                                                   ? `-${cell.totalEquityLoss}Δ`
                                                                   : '0.00'}
@@ -274,10 +270,10 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                           className="hover:bg-slate-800/30 transition-colors"
                                       >
                                           <td className="py-3 px-3">
-                                              <div className="font-bold text-white text-xs">
+                                              <div className="font-bold text-white text-xs sm:text-sm">
                                                   {concept.name}
                                               </div>
-                                              <div className="text-[10px] text-slate-400 mt-0.5">
+                                              <div className="text-xs text-slate-400 mt-0.5">
                                                   {concept.category}
                                               </div>
                                           </td>
@@ -304,9 +300,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                                           className={`w-full py-2.5 px-2 rounded-xl border transition-all cursor-pointer ${styles.bg} ${styles.border}`}
                                                           title={`${concept.name} en ${p.label} : ${styles.label}`}
                                                       >
-                                                          <div
-                                                              className={`text-xs font-mono font-bold ${styles.badgeText}`}
-                                                          >
+                                                          <div className={`text-xs font-mono font-bold ${styles.badgeText}`}>
                                                               {cell && cell.errorCount > 0 ? (
                                                                   <span>
                                                                       {cell.errorCount}
@@ -317,12 +311,10 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                                                       )}
                                                                   </span>
                                                               ) : (
-                                                                  <span className="text-slate-600 font-normal">
-                                                                      0
-                                                                  </span>
+                                                                  <span className="text-slate-500 font-normal">0</span>
                                                               )}
                                                           </div>
-                                                          <div className="text-[9px] text-slate-400 mt-0.5 font-mono">
+                                                          <div className="text-xs text-slate-300 mt-0.5 font-mono">
                                                               {cell && cell.totalEquityLoss > 0
                                                                   ? `-${cell.totalEquityLoss}Δ`
                                                                   : '0.00'}
@@ -341,13 +333,13 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
             {/* Volet détail de la cellule sélectionnée */}
             {selectedCell && selectedCell.errorCount > 0 && (
                 <div
-                    className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 to-slate-900 p-4 space-y-2 animate-in fade-in"
+                    className="rounded-xl border border-white/10 bg-gradient-to-r from-amber-950/40 to-slate-900 p-4 space-y-2 animate-in fade-in"
                     data-testid="heatmap-selected-detail"
                 >
                     <div className="flex items-start justify-between gap-3">
                         <div>
                             <div className="flex items-center gap-2">
-                                <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 uppercase">
+                                <span className="rounded border border-white/10 bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-300 uppercase">
                                     Phase : {selectedCell.phaseLabel}
                                 </span>
                                 <h4 className="text-sm font-black text-white">
@@ -355,11 +347,11 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
                                 </h4>
                             </div>
                             {selectedCell.description && (
-                                <p className="text-[11px] text-slate-400 mt-0.5">
+                                <p className="text-xs text-slate-300 mt-0.5">
                                     {selectedCell.description}
                                 </p>
                             )}
-                            <p className="text-xs text-slate-300 mt-1">
+                            <p className="text-xs sm:text-sm text-slate-200 mt-1">
                                 {selectedCell.errorCount} faute(s) dont {selectedCell.blunderCount} blunder(s) relevé(s) — Perte cumulée de {selectedCell.totalEquityLoss} ΔEq.
                             </p>
                         </div>

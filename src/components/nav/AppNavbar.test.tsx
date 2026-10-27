@@ -26,6 +26,12 @@ describe('Audits 1, 2 & 5 — AppNavbar & InGameMenuModal', () => {
         expect(screen.getByTestId('nav-tab-openings')).toBeDefined();
         expect(screen.getByTestId('nav-tab-progression')).toBeDefined();
 
+        // Sélecteur de langue 6 marchés
+        const localeSelect = screen.getByTestId('navbar-locale-select') as HTMLSelectElement;
+        expect(localeSelect).toBeDefined();
+        expect(localeSelect.options.length).toBe(6);
+        fireEvent.change(localeSelect, { target: { value: 'en' } });
+
         // Ouverture du tiroir mobile
         fireEvent.click(screen.getByTestId('navbar-mobile-burger'));
         expect(screen.getByTestId('navbar-mobile-drawer')).toBeDefined();
@@ -74,9 +80,10 @@ describe('Audits 1, 2 & 5 — AppNavbar & InGameMenuModal', () => {
 
     it('affiche le bouton Installer l’App quand beforeinstallprompt est émis et permet de lancer l’installation', async () => {
         const fakePrompt = vi.fn().mockResolvedValue(undefined);
-        const promptEvent = new Event('beforeinstallprompt') as any;
-        promptEvent.prompt = fakePrompt;
-        promptEvent.userChoice = Promise.resolve({ outcome: 'accepted', platform: 'web' });
+        const promptEvent = Object.assign(new Event('beforeinstallprompt'), {
+            prompt: fakePrompt,
+            userChoice: Promise.resolve({ outcome: 'accepted' as const, platform: 'web' }),
+        });
 
         render(<AppNavbar activeTab="play" />);
 

@@ -2,7 +2,7 @@ Willkommen bei Backgammon Tour — Cercle Monte-Carlo & Gammon Academy, der Refe
 
 WARUM BACKGAMMON TOUR SPIELEN?
 • GARANTIERT FAIRE WÜRFEL (CSPRNG): Jeder Wurf wird über kryptographische Zufallszahlen erzeugt — 100 % fair, ohne Manipulation.
-• OPEN SAGE 3-PLY KI-COACH: Lassen Sie jeden Zug in Echtzeit bewerten. Erkennen Sie Blunders, vergleichen Sie Equities und berechnen Sie Ihren offiziellen Performance Rating (PR).
+• MONTE-CARLO 3-PLY KI-COACH: Lassen Sie jeden Zug in Echtzeit bewerten. Erkennen Sie Blunders, vergleichen Sie Equities und berechnen Sie Ihren offiziellen Performance Rating (PR).
 • GAMMON ACADEMY: Meistern Sie alle 15 Eröffnungswürfe (Lover's Leap, Goldener Punkt, Bar-Punkt), den Dopplungswürfel (Take Point bei 21,5 %, Market Losers, Crawford-Regel, Jacoby-Regel) und das Pip-Count-System nach Keith.
 • TAKTIK-PUZZLES & DRILLS: Über 50 kuratierte Turnierstellungen zum gezielten Training.
 • MONTE-CARLO HAUTE HORLOGERIE DESIGN: Edles Ebenholz, gebürstetes 24-Karat-Gold und flüssige 60-FPS-Animationen — auch komplett offline spielbar.

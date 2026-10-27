@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import type { CoachState } from './useCoach';
+import { parseCoachNotationMoves } from '../features/coach/coachMoveNotation';
 
 export interface UseCandidateHighlightParams {
     openingEntry: { bestMoves: Array<{ from: number; to: number }> } | null;
@@ -29,20 +30,9 @@ export function useCandidateHighlight({
 
         // Prévisualisation d'un candidat : on dessine ses flèches à partir de sa notation absolue.
         if (hoveredCandidate) {
-            const candidate = coach.candidateMoves?.find((m: { notation: string }) => m.notation === hoveredCandidate);
-            if (candidate) {
-                const parsedMoves = candidate.notation
-                    .trim()
-                    .split(/\s+/)
-                    .flatMap((token: string) => {
-                        const m = token.match(/^(bar|\d+)\/(off|\d+)\*?(\((\d+)\))?$/i);
-                        if (!m) return [];
-                        const from = m[1].toLowerCase() === 'bar' ? 0 : Number(m[1]);
-                        const to = m[2].toLowerCase() === 'off' ? 0 : Number(m[2]);
-                        const count = m[4] ? Number(m[4]) : 1;
-                        return Array.from({ length: count }, () => ({ from, to }));
-                    });
-                return { optimal: parsedMoves, played: [] };
+            const parsedMoves = parseCoachNotationMoves(hoveredCandidate, 'X');
+            if (parsedMoves.length > 0) {
+                return { optimal: parsedMoves, played: coachHighlight?.played ?? [] };
             }
         }
         return coachHighlight;

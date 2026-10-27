@@ -63,7 +63,7 @@ Pour tester l'intégralité de la pile (Frontend + Microservice Open Sage `bgsag
 docker compose up --build -d
 ```
 - Frontend : `http://localhost:3000`
-- Backend Open Sage : `http://localhost:8080` (sonde `/api/health`)
+- Backend Open Sage : `http://localhost:8080` (sonde `GET /health`)
 
 ---
 
@@ -75,7 +75,7 @@ Avant de soumettre toute modification, vous devez vous assurer que **100% de la 
 |---|---|---|
 | `npm run lint` | Validation ESLint | **0 erreur** (code de sortie 0) |
 | `npm run typecheck` | Validation TypeScript | **0 erreur de typage** |
-| `npm test` | Suite de tests unitaires Vitest | **1 145+ tests réussis (201+ fichiers, 0 échec)** |
+| `npm test` | Suite de tests unitaires Vitest | **1 310+ tests réussis (224+ fichiers, 0 échec)** |
 | `pytest bgsage-service/tests -v` | Tests unitaires Python Open Sage | **100% des tests passés** |
 | `npm run test:e2e:desktop` | Tests End-to-End Playwright | **27 tests E2E passés** |
 | `npm run build` | Build de production Next.js | **Compilation sans erreur** |
@@ -88,7 +88,7 @@ Avant de soumettre toute modification, vous devez vous assurer que **100% de la 
 - **Typage Strict** : Évitez tout usage de `any`. Définissez des interfaces ou types dédiés.
 - **Règles des Hooks** : Ne jamais appeler de Hooks de manière conditionnelle ou après un retour prématuré (`return`).
 - **Accessibilité (a11y)** : Tous les éléments interactifs doivent posséder un label aria explicite, respecter les cibles tactiles WCAG ≥ 44px et supporter la navigation au clavier.
-- **Internationalisation (i18n)** : Tout texte affiché à l'utilisateur doit être extrait dans les fichiers de traduction (`src/lib/i18n/translations/fr.ts` et `en.ts`).
+- **Internationalisation (i18n)** : Tout texte affiché à l'utilisateur doit être extrait dans les dictionnaires i18n (6 langues supportées : `fr`, `en`, `es`, `pt`, `de`, `ar` dans `src/i18n/` et `src/lib/i18n/translations/`).
 
 ### 6.2 Python & FastAPI
 - Respectez la convention **PEP 8**.

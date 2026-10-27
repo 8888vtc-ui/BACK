@@ -1,1 +1,1 @@
-backgammon,tavla,shesh besh,nard,tavli,board game,gnubg,dice,cube,doubling,chess,tournament,ai,coach
+backgammon,tavla,shesh besh,nard,tavli,board game,monte-carlo,dice,cube,doubling,chess,tournament,ai,coach

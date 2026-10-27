@@ -32,6 +32,7 @@ import {
     type AIDifficulty,
 } from '../engine/aiHeuristics';
 import {
+    analyzeBoardMoves,
     evaluateBoard,
     findBestBoardMove,
     shouldOfferDouble,
@@ -302,6 +303,31 @@ export function useOpponentTurnOrchestrator({
                     if (difficulty === 'expert' || difficulty === 'grandmaster') {
                         const unified = findBestBoardMove(stateWithDice, rolledDice, 2);
                         if (unified?.sequence) return unified.sequence;
+                    }
+                    if (difficulty === 'intermediate') {
+                        const unified = findBestBoardMove(stateWithDice, rolledDice, 1);
+                        if (unified?.sequence) return unified.sequence;
+                    }
+                    if (difficulty === 'beginner') {
+                        const analysis = analyzeBoardMoves(stateWithDice, rolledDice, {
+                            candidateMoves: legalSeqs,
+                            ply: 1,
+                            maxMoves: 64,
+                        });
+                        if (analysis.moves.length > 0) {
+                            let bestMove = analysis.moves[0];
+                            let bestNoisyEq = -Infinity;
+                            for (const cand of analysis.moves) {
+                                const noisyEq = cand.equity + (Math.random() - 0.5) * 0.28;
+                                if (noisyEq > bestNoisyEq && cand.moves && cand.board) {
+                                    bestNoisyEq = noisyEq;
+                                    bestMove = cand;
+                                }
+                            }
+                            if (bestMove.moves && bestMove.board) {
+                                return { moves: bestMove.moves, board: bestMove.board };
+                            }
+                        }
                     }
                 } catch {
                     // Repli sur l'heuristique ci-dessous

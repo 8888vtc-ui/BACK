@@ -44,7 +44,7 @@ describe('MultiplayerLobbyModal', () => {
         expect(html).toBe('');
     });
 
-    it('affiche l’en-tête avec profil local, badge de rang et les 3 onglets du lobby', () => {
+    it('clarifie les 2 actions principales ("Matchmaking Rapide" vs "Salon Privé par Code"), sans onglet Classement ni texte < 10px', () => {
         const html = renderToStaticMarkup(
             <MultiplayerLobbyModal
                 {...defaultProps}
@@ -53,13 +53,18 @@ describe('MultiplayerLobbyModal', () => {
 
         expect(html).toContain('Alice Championne');
         expect(html).toContain('1680 Elo');
-        // Les 3 onglets du lobby
-        expect(html).toContain('Matchmaking Classé');
-        expect(html).toContain('Salon Privé');
-        expect(html).toContain('Classement');
+        expect(html).toContain('Matchmaking Rapide');
+        expect(html).toContain('Salon Privé par Code');
+        expect(html).toContain('Créer un Salon');
+        expect(html).toContain('Rejoindre par Code');
+        expect(html).not.toContain('Classement');
+        expect(html).not.toContain('text-[8px]');
+        expect(html).not.toContain('text-[9px]');
+        expect(html).not.toContain('text-[10px]');
+        expect(html).toContain('border-white/10');
     });
 
-    it('affiche les sélecteurs de points (1, 3, 5, 7 pts) et le bouton de recherche', () => {
+    it('affiche les sélecteurs de points (1, 3, 5, 7 pts) et les boutons des 2 actions', () => {
         const html = renderToStaticMarkup(
             <MultiplayerLobbyModal
                 {...defaultProps}
@@ -71,9 +76,10 @@ describe('MultiplayerLobbyModal', () => {
         expect(html).toContain('5 pts');
         expect(html).toContain('7 pts');
         expect(html).toContain('Lancer la recherche');
+        expect(html).toContain('Générer un code');
     });
 
-    it('affiche le radar de recherche et le bouton d’annulation en statut searching', () => {
+    it('affiche le radar de recherche et le bouton d’annulation en statut searching (Matchmaking Rapide)', () => {
         const html = renderToStaticMarkup(
             <MultiplayerLobbyModal
                 {...defaultProps}
@@ -81,12 +87,25 @@ describe('MultiplayerLobbyModal', () => {
             />,
         );
 
-        expect(html).toContain('matchmaking-searching');
+        expect(html).toContain('data-testid="matchmaking-searching"');
         expect(html).toContain('Annuler la recherche');
         expect(html).toContain('Tolérance stricte');
     });
 
-    it('affiche la carte d’affrontement Versus lors du match trouvé', () => {
+    it('affiche le code du salon privé créé lorsqu’un code est actif', () => {
+        const html = renderToStaticMarkup(
+            <MultiplayerLobbyModal
+                {...defaultProps}
+                privateRoomCode="BG-4892"
+            />,
+        );
+
+        expect(html).toContain('data-testid="multiplayer-lobby-modal"');
+        expect(html).toContain('BG-4892');
+        expect(html).toContain('Votre Salon Privé est ouvert');
+    });
+
+    it('affiche la carte d’affrontement Versus lors de la connexion du partenaire', () => {
         const html = renderToStaticMarkup(
             <MultiplayerLobbyModal
                 {...defaultProps}
@@ -109,16 +128,6 @@ describe('MultiplayerLobbyModal', () => {
         expect(html).toContain('Bob Le Grand');
         expect(html).toContain('1680 Elo');
         expect(html).toContain('1720 Elo');
-    });
-
-    it('passe les props pour salon privé sans erreur de rendu', () => {
-        const html = renderToStaticMarkup(
-            <MultiplayerLobbyModal
-                {...defaultProps}
-                privateRoomCode="BG-4892"
-            />,
-        );
-
-        expect(html).toContain('data-testid="multiplayer-lobby-modal"');
+        expect(html).not.toContain('text-[10px]');
     });
 });

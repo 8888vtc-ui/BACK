@@ -13,12 +13,13 @@ Analyse en temps réel, opening book certifié, drills de blunders, puzzles quot
 ---
 
 ## 📚 Documentation
-
+ 
 | Document | Rôle |
 |---|---|
+| [`SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md`](SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md) | **Loi Absolue du Dépôt** — Positionnement Hard Paywall (14.99 $/mo, 99 $/an), SLA Marge > 85%, Gemini 3.6, Zéro freemium passif. |
 | [`PROJECT_MAP.md`](PROJECT_MAP.md) | **Carte d'orientation** — comprendre le projet en 1 minute, ajouter une fonction en 2 minutes. **Lire en premier.** |
 | [`docs/BRAND_AND_SEO.md`](docs/BRAND_AND_SEO.md) | **Charte de Marque, Domaines, Logo & SEO** — architecture `backgammontour.com` & `gammonacademy.com`, blason Monte-Carlo et JSON-LD. |
-| [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md) | **Référentiel d'Excellence Master** — Spécifications absolues : Game Feel FLIP, Glicko-2 Composite, Psychoacoustique & Provably Fair. |
+| [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md) | **Référentiel d'Excellence Master** — Spécifications absolues : Game Feel FLIP, Glicko-2 Composite, Psychoacoustique & Hard Paywall. |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Architecture détaillée (modules, flux, décisions). |
 | [`SCALABILITY.md`](SCALABILITY.md) | Charte de scalabilité impérative (règles non négociables). |
 | [`DOCS_ENGINE.md`](DOCS_ENGINE.md) | Architecture du moteur d'évaluation unifié (Open Sage Cloud Run + repli tri-phase local). |
@@ -57,7 +58,7 @@ docker compose up --build -d
 
 ### 1. Tests Unitaires & Composants (Vitest)
 
-1 253 tests unitaires et d'intégration (215 fichiers de test, 0 échec) couvrant le moteur de règles, le benchmark Open Sage (4 niveaux de bots + videau), la priorité au dé le plus élevé, le coach IA Gemini 2.5 Flash, la notation bijective (4 000 parties), la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
+1 310 tests unitaires et d'intégration (224 fichiers de test, 0 échec) couvrant le moteur de règles, le benchmark Open Sage (4 niveaux de bots + videau), la priorité au dé le plus élevé, le coach IA Google Gemini (`gemini-3.8-flash` / `gemini-3.6`), la notation bijective (4 000 parties), la sécurité, l'observabilité (logger JSON, alertes, analytics produit) et l'interface :
 
 ```bash
 npm test
@@ -111,7 +112,7 @@ Le système intègre une solution complète de surveillance et de monitoring en 
 - **Logs Structurés JSON** : Format JSON standardisé avec corrélation par requête (`X-Correlation-ID`) compatible Datadog, Grafana Loki, CloudWatch.
 - **Sondes de Santé (Health-Checks)** :
   - Frontend : `GET /api/health` (ping actif du backend, mémoire heap/rss, statut Supabase).
-  - Backend Open Sage (`bgsage-service`) : `GET /api/health` (statut du moteur neuronal `bgsage` sur Google Cloud Run).
+  - Backend Open Sage (`bgsage-service`) : `GET /health` (statut du moteur neuronal `bgsage` sur Google Cloud Run).
 - **Alerting Opérationnel** : Détection des anomalies (latence > 2.5s, 429 rate limit, échecs consécutifs) avec déduplication et forward webhook (Slack/Discord).
 - **Analytics Produit (RGPD)** : Télémétrie d'usage sans cookies tiers, avec consentement préalable et support pluggable (GA4, PostHog).
 - Documentation complète : [`docs/MONITORING.md`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/MONITORING.md).
@@ -122,7 +123,7 @@ Le système intègre une solution complète de surveillance et de monitoring en 
 
 Le projet intègre une chaîne d'intégration et de déploiement continu automatisée avec **GitHub Actions** :
 
-- **Pipeline CI (`.github/workflows/ci.yml`)** : Exécute ESLint, TypeScript Typecheck, Vitest (1 145+ tests sur 201+ fichiers), Pytest (`bgsage-service/tests`), build de l'image Docker `bgsage-service` et Playwright E2E.
+- **Pipeline CI (`.github/workflows/ci.yml`)** : Exécute ESLint, TypeScript Typecheck, Vitest (1 310 tests sur 224 fichiers), Pytest (`bgsage-service/tests`), build de l'image Docker `bgsage-service` et Playwright E2E.
 - **Pipeline CD (`.github/workflows/deploy.yml`)** : Déploie automatiquement le frontend sur **Vercel** ou **Netlify**, et déploie le microservice **Open Sage (`bgsage-service`)** sur **Google Cloud Run** / **GHCR**.
 - **Configurations dédiées** :
   - [`vercel.json`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/vercel.json) : Configuration Next.js & en-têtes de sécurité
@@ -136,9 +137,9 @@ Le projet intègre une chaîne d'intégration et de déploiement continu automat
 
 La publication sur l'**Apple App Store** et le **Google Play Store** est entièrement instrumentée :
 
-- **Signature Automatisée** : Support de Keystore Release Android (AAB) et ExportOptions iOS (IPA).
+- **Signature Automatisée** : Support de Keystore Release Android (AAB) et ExportOptions iOS (IPA) pour l'identifiant `com.backgammontour.app`.
 - **Génération des Captures d'Écran** : Script Playwright [`scripts/capture-store-screenshots.mjs`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/scripts/capture-store-screenshots.mjs) couvrant les dimensions officielles (iPhone 6.7", iPhone 6.5", iPad 12.9", Smartphones & Tablettes Android).
-- **Fiches de Métadonnées Bilingues** : Fiches complètes en français et anglais (`store-assets/metadata/fr-FR/` et `en-US/`).
+- **Fiches de Métadonnées Multilingues (6 Langues)** : Fiches complètes dans `store-assets/metadata/` (`fr-FR`, `en-US`, `es-ES`, `pt-BR`, `de-DE`, `ar-SA`).
 - **Pipeline de Release Mobile** : Workflow GitHub Actions [`.github/workflows/release-mobile.yml`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/.github/workflows/release-mobile.yml) et configuration [`fastlane/Fastfile`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/fastlane/Fastfile).
 - Guide complet : [`docs/MOBILE_STORE_PACKAGING.md`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/MOBILE_STORE_PACKAGING.md).
 

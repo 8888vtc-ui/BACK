@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import type { Player } from '../../engine/backgammonEngine';
+import React, { useEffect } from 'react';
 import type {
     PlayerEloProfile,
     MultiplayerMatchInfo,
@@ -17,6 +16,7 @@ export interface MultiplayerResultModalProps {
     opponentProfile: PlayerEloProfile;
     eloResult: EloCalculationResult;
     onRematch: () => void;
+    onOpenReview?: () => void;
     onClose: () => void;
     theme?: ThemeName;
 }
@@ -24,16 +24,26 @@ export interface MultiplayerResultModalProps {
 export default function MultiplayerResultModal({
     isOpen,
     matchInfo,
-    localProfile,
     opponentProfile,
     eloResult,
     onRematch,
+    onOpenReview,
     onClose,
     theme,
 }: MultiplayerResultModalProps) {
     const { theme: activeTheme } = useBoardTheme();
     const currentTheme = theme || activeTheme;
     const modalClasses = getModalThemeClasses(currentTheme);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 
@@ -50,12 +60,13 @@ export default function MultiplayerResultModal({
 
     return (
         <div
+            role="dialog"
+            aria-modal="true"
             className={`fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in ${modalClasses.overlay}`}
             data-testid="multiplayer-result-modal"
         >
-            <div className={`relative w-full max-w-md overflow-hidden rounded-2xl p-6 shadow-2xl text-center transition-all ${modalClasses.container}`}>
-                {/* Icône de victoire ou défaite */}
-                <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-800/80 border border-slate-700 text-4xl shadow-inner">
+            <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-[#17110b]/98 via-[#0d121d]/98 to-[#070a10]/98 p-6 shadow-2xl text-center transition-all text-[#fdf8eb]">
+                <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-3xl border border-white/10 bg-white/5 text-4xl shadow-inner">
                     {isWinner ? '🏆' : '⚔️'}
                 </div>
 
@@ -69,12 +80,11 @@ export default function MultiplayerResultModal({
                     {isWinner ? 'VICTOIRE !' : 'DÉFAITE'}
                 </h2>
 
-                <p className="text-xs text-slate-400 mt-1 mb-5">
+                <p className="text-xs text-slate-300 mt-1 mb-5">
                     Match contre <span className="font-semibold text-white">{opponentProfile.displayName}</span> ({matchInfo.matchLength} pts)
                 </p>
 
-                {/* Carte de Variation Elo */}
-                <div className="mb-6 rounded-xl border border-slate-800 bg-slate-800/40 p-4">
+                <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
                         Évolution Classement Elo
                     </div>
@@ -82,9 +92,7 @@ export default function MultiplayerResultModal({
                     <div className="flex items-center justify-center gap-3 my-2">
                         <span className="text-sm font-mono text-slate-400">{oldRating}</span>
                         <span className="text-slate-500">→</span>
-                        <span className="text-2xl font-extrabold font-mono text-white">
-                            {newRating}
-                        </span>
+                        <span className="text-2xl font-extrabold font-mono text-white">{newRating}</span>
 
                         <span
                             className={`rounded-full px-2.5 py-0.5 text-xs font-bold font-mono ${
@@ -103,21 +111,31 @@ export default function MultiplayerResultModal({
                     </div>
                 </div>
 
-                {/* Boutons d'action */}
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                     <button
                         type="button"
                         onClick={onRematch}
-                        className="w-full rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all"
+                        className="w-full rounded-xl border border-[#f3c65f] bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] py-3 text-sm font-black uppercase tracking-wider text-[#1c1004] shadow-[0_4px_14px_rgba(212,175,55,0.3)] hover:brightness-105 transition-all"
                         data-testid="rematch-button"
                     >
-                        ⚡ Rejouer (Recherche Match)
+                        ⚡ Rejouer ({matchInfo.matchLength} pts)
                     </button>
+
+                    {onOpenReview && (
+                        <button
+                            type="button"
+                            onClick={onOpenReview}
+                            className="w-full rounded-xl border border-white/10 bg-[#26160c] py-2.5 text-xs font-bold text-[#fce8b2] hover:border-[#f3c65f] transition-colors"
+                            data-testid="multiplayer-open-review-btn"
+                        >
+                            📊 Bilan &amp; Courbe PR
+                        </button>
+                    )}
 
                     <button
                         type="button"
                         onClick={onClose}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-800/60 py-2.5 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-semibold text-slate-200 hover:border-white/25 hover:text-white transition-colors"
                         data-testid="close-result-button"
                     >
                         Retour au menu principal

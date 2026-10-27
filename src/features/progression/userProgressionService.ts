@@ -176,13 +176,14 @@ export async function loadPlayerHubData(userId?: string | null): Promise<{
                 winsCount = cloudStats.games_won ?? 0;
             }
             for (const g of cloudGames) {
-                const isFinished = g.status === 'completed' || g.winner !== null;
-                const isVictory = isFinished ? g.winner === 'X' : null;
+                const hasWinner = g.winner === 'X' || g.winner === 'O';
+                const isFinished = g.status === 'completed' || hasWinner;
+                const isVictory = isFinished && hasWinner ? g.winner === 'X' : null;
                 matches.push({
                     id: g.id,
                     dateIso: g.created_at,
                     relativeDate: formatRelativeMatchDate(g.created_at),
-                    opponentLabel: g.opponent_type === 'human' ? 'Adversaire En Ligne' : 'IA Open Sage',
+                    opponentLabel: g.opponent_type === 'human' ? 'Adversaire En Ligne' : 'IA Monte-Carlo',
                     scoreX: g.score_x,
                     scoreO: g.score_o,
                     matchLength: g.match_length,
@@ -199,13 +200,22 @@ export async function loadPlayerHubData(userId?: string | null): Promise<{
         const localGames = await loadRecentGames(5);
         for (const lg of localGames) {
             if (matches.some((m) => m.id === lg.id)) continue;
-            const isFinished = lg.status === 'completed' || lg.winner !== null;
-            const isVictory = isFinished ? lg.winner === 'X' : null;
+            const hasWinner = lg.winner === 'X' || lg.winner === 'O';
+            const isFinished = lg.status === 'completed' || hasWinner;
+            if (
+                !isFinished &&
+                lg.score_x === 0 &&
+                lg.score_o === 0 &&
+                matches.some((m) => m.isVictory === null && m.scoreX === 0 && m.scoreO === 0)
+            ) {
+                continue;
+            }
+            const isVictory = isFinished && hasWinner ? lg.winner === 'X' : null;
             matches.push({
                 id: lg.id,
                 dateIso: lg.created_at,
                 relativeDate: formatRelativeMatchDate(lg.created_at),
-                opponentLabel: lg.opponent_type === 'human' ? 'Adversaire En Ligne' : 'IA Open Sage',
+                opponentLabel: lg.opponent_type === 'human' ? 'Adversaire En Ligne' : 'IA Monte-Carlo',
                 scoreX: lg.score_x,
                 scoreO: lg.score_o,
                 matchLength: lg.match_length,
@@ -214,8 +224,9 @@ export async function loadPlayerHubData(userId?: string | null): Promise<{
             });
         }
         if (gamesPlayed === 0 && matches.length > 0) {
-            gamesPlayed = matches.length;
-            winsCount = matches.filter((m) => m.isVictory === true).length;
+            const finishedMatches = matches.filter((m) => m.isVictory !== null);
+            gamesPlayed = finishedMatches.length;
+            winsCount = finishedMatches.filter((m) => m.isVictory === true).length;
         }
     } catch {
         // Environnement sans IndexedDB

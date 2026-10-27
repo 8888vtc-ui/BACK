@@ -8,7 +8,7 @@
 
 ## 1. Vision & Principes Directeurs
 
-Le système multijoueur permet à deux joueurs de s'affronter en temps réel, soit par **matchmaking public classé Elo**, soit par **salon privé avec code d'invitation** (ex. `BG-8492`).
+Le système multijoueur permet à deux joueurs de s'affronter en temps réel en **exclusivité Salon Privé par code d'invitation (`BG-XXXX`, ex. `BG-8492`)** avec calcul de classement Glicko-2 Composite (le matchmaking public a été retiré pour garantir 0 s d'attente).
 
 | Principe | Implémentation |
 |---|---|
@@ -72,8 +72,8 @@ erDiagram
         text player "X | O"
         action_type action_type "ROLL_DICE | MOVE_CHECKER | OFFER_DOUBLE | etc."
         integer[] dice
-        integer move_from "1..24, 25 (barre)"
-        integer move_to "1..24, 0/25 (off)"
+        integer move_from "0 (barre X), 1..24, 25 (barre O)"
+        integer move_to "1..24, 0 (off X), 25 (off O)"
         text move_notation "Notation algébrique (ex: 8/5 6/5)"
         integer cube_value
         integer[] board_after "Plateau résultant pour réconciliation"
@@ -194,4 +194,14 @@ stateDiagram-v2
   - [`src/app/api/multiplayer/validate-action/route.test.ts`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/app/api/multiplayer/validate-action/route.test.ts) (4 tests)
   - [`src/features/multiplayer/sessionRecovery.test.ts`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/features/multiplayer/sessionRecovery.test.ts) (5 tests)
   - [`src/components/multiplayer/MultiplayerBanner.test.tsx`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/components/multiplayer/MultiplayerBanner.test.tsx) (6 tests)
+
+---
+
+## 7. Positionnement Produit : Exclusivité « Salon Privé sur Code (`BG-XXXX`) »
+
+Conformément à la décision stratégique documentée dans [`docs/PLAN_ACTION_PRODUIT.md`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/docs/PLAN_ACTION_PRODUIT.md), l'interface utilisateur expose **exclusivement le mode Salon Privé par Code (`room_type = 'private_code'`)** :
+- **Retrait total** des files d'attente de matchmaking public, des bannières de Pré-Saison / listes d'attente, des onglets de classement public et des adversaires simulés.
+- **Fonctionnement direct 24h/24** via [`OpenMatchesTable.tsx`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/components/lobby/OpenMatchesTable.tsx), [`MultiplayerLobbyModal.tsx`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/components/multiplayer/MultiplayerLobbyModal.tsx) et [`LobbyPrivateRoomTab.tsx`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/components/multiplayer/LobbyPrivateRoomTab.tsx) : l'hôte choisit le format (`1`, `3`, `5` ou `7 pts`), génère un code unique (ex: `BG-8492`) et le partage à son ami ou partenaire de club pour jouer immédiatement.
+
+
 

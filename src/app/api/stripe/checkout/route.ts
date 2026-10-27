@@ -16,13 +16,14 @@ import {
     STRIPE_PLANS,
     STRIPE_PRICE_IDS,
     resolveTierFromPriceId,
+    type PaidSubscriptionTier,
 } from '../../../../lib/stripe/stripeClient';
 
 export const dynamic = 'force-dynamic';
 
 interface CheckoutRequestBody {
     readonly priceId?: string;
-    readonly plan?: 'coach_monthly' | 'coach_yearly';
+    readonly plan?: PaidSubscriptionTier;
     readonly userId?: string;
     readonly email?: string;
 }
@@ -61,8 +62,10 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             rawPriceId &&
             rawPriceId !== STRIPE_PRICE_IDS.MONTHLY &&
             rawPriceId !== STRIPE_PRICE_IDS.YEARLY &&
+            rawPriceId !== STRIPE_PRICE_IDS.CLUB_CHOUETTE &&
             rawPriceId !== process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY &&
-            rawPriceId !== process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY
+            rawPriceId !== process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY &&
+            rawPriceId !== process.env.NEXT_PUBLIC_STRIPE_PRICE_CLUB_CHOUETTE
         ) {
             return Response.json(
                 {
@@ -72,8 +75,10 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             );
         }
 
-        const tier: 'coach_monthly' | 'coach_yearly' =
-            rawPlan === 'coach_monthly' || rawPlan === 'coach_yearly'
+        const tier: PaidSubscriptionTier =
+            rawPlan === 'coach_monthly' ||
+            rawPlan === 'coach_yearly' ||
+            rawPlan === 'club_chouette'
                 ? rawPlan
                 : resolveTierFromPriceId(rawPriceId ?? STRIPE_PRICE_IDS.YEARLY);
 
@@ -89,6 +94,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             user_id: userId,
             subscription_tier: tier,
             price_id: priceId,
+            seats_included: String(planConfig.seatsIncluded),
         };
 
         const session = await stripe.checkout.sessions.create({
@@ -104,6 +110,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             client_reference_id: userId,
             customer_email: body.email?.trim() || undefined,
             metadata,
+            adaptive_pricing: { enabled: true },
             subscription_data:
                 planConfig.trialPeriodDays > 0
                     ? {

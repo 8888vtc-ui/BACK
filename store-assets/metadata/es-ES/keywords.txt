@@ -1,1 +1,1 @@
-backgammon,chaquete,tablas,tavla,cubo,doblaje,torneo,ia,coach,dados,estrategia,open sage,puzzles
+backgammon,chaquete,tablas,tavla,cubo,doblaje,torneo,ia,coach,dados,estrategia,monte-carlo,puzzles

@@ -76,29 +76,29 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
         <section
             data-testid="lobby-prematch-briefing"
             aria-label="Briefing pré-match du Coach"
-            className="w-full rounded-2xl border border-[#d4af37]/40 bg-gradient-to-r from-[#17130a]/95 via-[#101624]/95 to-[#0b0f19]/95 px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.65)]"
+            className="w-full rounded-2xl border border-white/10 bg-[#0c111d]/75 px-4 py-3 shadow-md"
         >
             <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#f3c65f]">
-                            🎓 Briefing Pré-Match Grand-Maître
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
+                            🎓 Conseil du Coach
                         </span>
                         {topError ? (
                             <span
                                 data-testid="lobby-briefing-error-badge"
-                                className="rounded-full border border-rose-500/40 bg-rose-950/70 px-2 py-0.5 text-[10px] font-bold text-rose-200"
+                                className="rounded-full border border-white/10 bg-rose-950/70 px-2.5 py-0.5 text-[11px] font-bold text-rose-200"
                             >
                                 Point faible n°1 : {topError.concept_label} (×{topError.occurrence_count} · -
                                 {Math.abs(Number(topError.total_equity_loss)).toFixed(3)} ΔEq)
                             </span>
                         ) : (
-                            <span className="rounded-full border border-emerald-500/35 bg-emerald-950/60 px-2 py-0.5 text-[10px] font-bold text-emerald-200">
+                            <span className="rounded-full border border-white/10 bg-emerald-950/60 px-2.5 py-0.5 text-[11px] font-bold text-emerald-200">
                                 Focus du jour : {matchedConcept?.name}
                             </span>
                         )}
                         {isLocalGuest && (
-                            <span className="rounded-full border border-amber-500/35 bg-amber-950/60 px-2 py-0.5 text-[9px] font-semibold text-amber-200">
+                            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-slate-300">
                                 Profil Local
                             </span>
                         )}
@@ -111,7 +111,7 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
                         type="button"
                         data-testid="lobby-briefing-drill-btn"
                         onClick={() => onOpenDrills(topError?.concept_id)}
-                        className="shrink-0 rounded-xl border border-[#f3c65f]/60 bg-[#261c0b] px-3.5 py-2 text-[11px] font-bold uppercase tracking-wider text-[#f3c65f] transition hover:bg-[#362810] hover:text-amber-100"
+                        className="shrink-0 rounded-xl border border-white/10 bg-white/[0.06] px-3.5 py-2 text-xs font-bold text-[#f3c65f] transition hover:border-white/25 hover:bg-white/10 hover:text-amber-100"
                     >
                         🎯 {topError ? 'Corriger en Drill' : 'Lancer un Drill'}
                     </button>

@@ -43,7 +43,7 @@ export const DEFAULT_GAMEPLAY_SETTINGS: GameplaySettings = Object.freeze({
     moveInputMode: 'one_click_smart',
     higherDieFirst: true,
     autoConfirmTurn: 'forced_only',
-    autoBearOff: false,
+    autoBearOff: true,
     autoRoll: true,
     showPipCount: 'always',
     showPointNumbers: 'relative_to_player',

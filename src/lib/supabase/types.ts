@@ -11,11 +11,17 @@ export type Json =
     | { [key: string]: Json | undefined }
     | Json[];
 
-export type SubscriptionTier = 'free' | 'coach_monthly' | 'coach_yearly';
+export type SubscriptionTier =
+    | 'free'
+    | 'pro_reverse_trial'
+    | 'coach_monthly'
+    | 'coach_yearly'
+    | 'club_chouette';
 export type SubscriptionStatus =
     | 'active'
     | 'trialing'
     | 'past_due'
+    | 'paused'
     | 'canceled'
     | 'incomplete'
     | 'none';
@@ -44,6 +50,15 @@ export interface Database {
                     stripe_subscription_id?: string | null;
                     daily_analyses_count?: number;
                     last_analysis_reset_at?: string | null;
+                    reverse_trial_ends_at?: string | null;
+                    grace_period_ends_at?: string | null;
+                    pause_resumes_at?: string | null;
+                    period_inference_cost_usd?: number;
+                    monthly_revenue_usd?: number;
+                    activated_at?: string | null;
+                    ttfv_seconds?: number | null;
+                    health_score?: number;
+                    last_active_at?: string | null;
                     created_at: string;
                     updated_at: string;
                 };
@@ -67,6 +82,15 @@ export interface Database {
                     stripe_subscription_id?: string | null;
                     daily_analyses_count?: number;
                     last_analysis_reset_at?: string | null;
+                    reverse_trial_ends_at?: string | null;
+                    grace_period_ends_at?: string | null;
+                    pause_resumes_at?: string | null;
+                    period_inference_cost_usd?: number;
+                    monthly_revenue_usd?: number;
+                    activated_at?: string | null;
+                    ttfv_seconds?: number | null;
+                    health_score?: number;
+                    last_active_at?: string | null;
                     created_at?: string;
                     updated_at?: string;
                 };
@@ -90,6 +114,15 @@ export interface Database {
                     stripe_subscription_id?: string | null;
                     daily_analyses_count?: number;
                     last_analysis_reset_at?: string | null;
+                    reverse_trial_ends_at?: string | null;
+                    grace_period_ends_at?: string | null;
+                    pause_resumes_at?: string | null;
+                    period_inference_cost_usd?: number;
+                    monthly_revenue_usd?: number;
+                    activated_at?: string | null;
+                    ttfv_seconds?: number | null;
+                    health_score?: number;
+                    last_active_at?: string | null;
                     created_at?: string;
                     updated_at?: string;
                 };
@@ -660,6 +693,96 @@ export interface Database {
                         referencedColumns: ['id'];
                     },
                 ];
+            };
+            processed_webhooks_events: {
+                Row: {
+                    id: string;
+                    event_id: string;
+                    event_type: string;
+                    user_id: string | null;
+                    processed_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    event_id: string;
+                    event_type: string;
+                    user_id?: string | null;
+                    processed_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    event_id?: string;
+                    event_type?: string;
+                    user_id?: string | null;
+                    processed_at?: string;
+                };
+                Relationships: [];
+            };
+            credit_usage_ledger: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    task_type: string;
+                    model_routed: string;
+                    prompt_tokens: number;
+                    completion_tokens: number;
+                    actual_inference_cost_usd: number;
+                    credits_deducted: number;
+                    idempotency_key: string;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    task_type: string;
+                    model_routed: string;
+                    prompt_tokens?: number;
+                    completion_tokens?: number;
+                    actual_inference_cost_usd?: number;
+                    credits_deducted?: number;
+                    idempotency_key: string;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    user_id?: string;
+                    task_type?: string;
+                    model_routed?: string;
+                    prompt_tokens?: number;
+                    completion_tokens?: number;
+                    actual_inference_cost_usd?: number;
+                    credits_deducted?: number;
+                    idempotency_key?: string;
+                    created_at?: string;
+                };
+                Relationships: [];
+            };
+            checkout_sessions_lock: {
+                Row: {
+                    session_id: string;
+                    user_id: string;
+                    is_open: boolean;
+                    amount_total: number;
+                    currency: string;
+                    finalized_at: string | null;
+                };
+                Insert: {
+                    session_id: string;
+                    user_id: string;
+                    is_open?: boolean;
+                    amount_total?: number;
+                    currency?: string;
+                    finalized_at?: string | null;
+                };
+                Update: {
+                    session_id?: string;
+                    user_id?: string;
+                    is_open?: boolean;
+                    amount_total?: number;
+                    currency?: string;
+                    finalized_at?: string | null;
+                };
+                Relationships: [];
             };
         };
         Views: {

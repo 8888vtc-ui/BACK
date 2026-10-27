@@ -9,19 +9,18 @@
 ## 1. Synthèse Exécutive
 
 L'audit des politiques de sécurité Row Level Security (RLS) a porté sur les tables opérationnelles de l'application :
-- `profiles` (profils et classements ELO)
+- `profiles` (profils, classements Glicko-2, statut d'abonnement Stripe `subscription_tier` / `subscription_status` et quotas Coach IA — migrations `20261015000000`, `20261025000000` & `20261026000000`)
 - `games` (historique et état des parties)
 - `moves` (historique coup par coup)
-- `coach_explanations` (diagnostics pédagogiques sauvegardés)
+- `coach_explanations` (diagnostics pédagogiques sauvegardés et cache L2 partagé par `position_key` — migrations `20261015000000` & `20261023000000`)
 - `user_stats` (statistiques agrégées des joueurs)
-- `matchmaking_queue` (file d'attente d'appariement ELO)
-- `game_rooms` (salles de jeu multijoueur)
+- `matchmaking_queue` (table historique d'appariement — durcie par RLS-01)
+- `game_rooms` (salons privés multijoueur `BG-XXXX`)
 - `room_actions` (actions et coups multijoueur en temps réel)
 - `room_presence_sessions` (présence et battements de cœur)
-- `recurring_errors` (erreurs récurrentes par concept et planification FSRS — migration `20261020000000` & `20261024000000`)
-- `coach_explanations` (cache L2 partagé des explications Coach IA — migration `20261023000000`)
+- `recurring_errors` (erreurs récurrentes par concept et planification FSRS — migrations `20261020000000` & `20261024000000`)
 - `daily_puzzles` & `user_puzzle_attempts` (puzzles quotidiens certifiés Open Sage 3-ply et tentatives — migration `20261024000000`)
-- `user_subscriptions` & `coach_usage_logs` (abonnements Stripe VIP et quotas journaliers Coach IA — migration `20261025000000`)
+- `credit_usage_ledger`, `processed_webhooks_events` & `checkout_sessions_lock` (grand-livre des coûts IA, idempotence webhooks Stripe et verrous Checkout — migrations `20261025000000` & `20261026000000`)
 
 Bien que l'activation de RLS (`ALTER TABLE ... ENABLE ROW LEVEL SECURITY`) soit présente sur **100% des tables**, plusieurs politiques d'insertion et de mise à jour présentaient des clauses de contrôle trop permissives (`with check (true)` ou `using (true)`), créant un risque de falsification de données ou de manipulation d'état.
 
@@ -68,11 +67,11 @@ Un script de migration de durcissement a été généré : [`supabase/migrations
 - **Remédiation** :
   - Ajout des contraintes `match_length >= 0`, `score_x >= 0`, `score_o >= 0`, `cube_value >= 1` dans la clause `WITH CHECK`.
 
-### 3.6. Tables Pédagogiques, Puzzles FSRS & Quotas Stripe (Migrations `20261020` à `20261025`)
+### 3.6. Tables Pédagogiques, Puzzles FSRS & Quotas Stripe (Migrations `20261020` à `20261026`)
 - **`recurring_errors` ([`20261020000000_recurring_errors.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261020000000_recurring_errors.sql))** : RLS strict `auth.uid() = user_id` en lecture/écriture + RPC atomique `upsert_recurring_error()`.
-- **`coach_explanations` ([`20261023000000_shared_coach_explanations_cache.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261023000000_shared_coach_explanations_cache.sql))** : cache L2 partagé indexé par `cache_key` en lecture publique et insertion contrôlée.
+- **`coach_explanations` ([`20261023000000_shared_coach_explanations_cache.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261023000000_shared_coach_explanations_cache.sql))** : cache L2 partagé indexé par `position_key` (`idx_coach_explanations_shared_position_key`) en lecture authentifiée et insertion contrôlée.
 - **`daily_puzzles` & `user_puzzle_attempts` ([`20261024000000_glicko2_daily_puzzle_fsrs.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261024000000_glicko2_daily_puzzle_fsrs.sql))** : lecture publique des puzzles certifiés Open Sage (`daily_puzzles`) ; lecture/insertion restreintes à `auth.uid() = user_id` sur `user_puzzle_attempts` ; RPC `submit_daily_puzzle_attempt()` et `get_due_fsrs_reviews()`.
-- **`user_subscriptions` & `coach_usage_logs` ([`20261025000000_subscription_quotas_stripe.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261025000000_subscription_quotas_stripe.sql))** : lecture limitée à `auth.uid() = user_id` ; écriture des abonnements réservée au `service_role` (Webhook Stripe `/api/stripe/webhook`) ; contrôle et incrémentation atomiques du quota (3 analyses / 24h) via la RPC `check_and_increment_coach_quota()`.
+- **`profiles`, `credit_usage_ledger`, `processed_webhooks_events` & `checkout_sessions_lock` ([`20261025000000_subscription_quotas_stripe.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261025000000_subscription_quotas_stripe.sql) & [`20261026000000_saas_blueprint_monetization.sql`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/supabase/migrations/20261026000000_saas_blueprint_monetization.sql))** : colonnes d'abonnement et quotas sur `public.profiles` ; écriture des statuts Stripe et tables d'idempotence réservée au `service_role` (Webhook Stripe `/api/stripe/webhook`) ; contrôle et incrémentation atomiques du quota via la RPC `consume_daily_coach_analysis()`.
 
 ---
 

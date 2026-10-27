@@ -92,7 +92,9 @@ export default function Home() {
 
     // Coach IA en temps réel
     const {
-        coach, coachHighlight, matchStats, matchStatsX, matchStatsO,
+        coach, coachHighlight, matchStats, matchStatsX, matchStatsO, lastMoveFeedback,
+        coachHistory, selectedCoachHistoryIndex, selectCoachHistoryIndex,
+        notificationLevel, setNotificationLevel,
         isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: handleTriggerCoach,
     } = useCoach({
         game, currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
@@ -189,6 +191,9 @@ export default function Home() {
             case 'puzzles':
                 navigateTo('/puzzles');
                 break;
+            case 'import_export':
+                modals.openExportImport();
+                break;
         }
     }, [modals, navigateTo, latestGameAnalysis]);
 
@@ -226,23 +231,14 @@ export default function Home() {
     if (appScreen === 'LOBBY') {
         return (
             <PageTransition isTransitioning={isNavigating}>
-                <LobbyView
-                    onStart={handleLobbyStart}
-                    onOpenModule={handleOpenLobbyModule}
-                    initialMatchLength={7}
-                    initialCoachEnabled={isLiveAdviceEnabled}
-                />
+                <LobbyView onStart={handleLobbyStart} onOpenModule={handleOpenLobbyModule} initialMatchLength={7} initialCoachEnabled={isLiveAdviceEnabled} />
                 <GameModalsContainer
-                    theme={theme}
-                    modals={modals}
-                    game={game}
-                    multiplayer={multiplayer}
-                    isMultiplayerActive={isMultiplayerActive}
-                    latestGameAnalysis={latestGameAnalysis}
-                    turnsHistory={turnsHistory}
-                    openingEntry={openingEntry}
+                    theme={theme} modals={modals} game={game} multiplayer={multiplayer}
+                    isMultiplayerActive={isMultiplayerActive} latestGameAnalysis={latestGameAnalysis}
+                    turnsHistory={turnsHistory} openingEntry={openingEntry}
                     onApplyOpeningMove={openingEntry ? () => handleApplyOpeningMove(openingEntry.bestMoves) : () => { }}
                     onResetGameHistory={resetGameHistory}
+                    locale={locale}
                 />
             </PageTransition>
         );
@@ -251,56 +247,31 @@ export default function Home() {
     if (appScreen === 'SUMMARY') {
         return (
             <SummaryView
-                scoreX={game.state.scoreX}
-                scoreO={game.state.scoreO}
-                ambianceClass={mainAmbianceClass}
-                onReviewBoard={() => setAppScreen('GAME')}
-                onBackToLobby={handleBackToLobby}
+                scoreX={game.state.scoreX} scoreO={game.state.scoreO} ambianceClass={mainAmbianceClass}
+                onReviewBoard={() => setAppScreen('GAME')} onBackToLobby={handleBackToLobby}
             />
         );
     }
 
     return (
         <GameScreenView
-            ambianceClass={mainAmbianceClass}
-            t={t}
-            locale={locale}
-            theme={theme}
-            onToggleTheme={toggleTheme}
-            game={game}
-            isMultiplayerActive={isMultiplayerActive}
-            multiplayer={multiplayer}
-            modals={modals}
-            coach={coach}
-            coachHighlight={activeCoachHighlight}
-            isAnalyzing={isAnalyzing}
-            matchStats={matchStats}
-            matchStatsO={matchStatsO}
-            prX={prX}
-            prO={prO}
-            hoveredCandidate={hoveredCandidate}
-            onCandidateHover={setHoveredCandidate}
-            onDismissCoach={dismissCoach}
-            onReplayMove={handleReplayMove}
-            onTriggerCoach={handleTriggerCoach}
-            activeDie={activeDie}
-            isBoardLoading={isBoardLoading}
-            onCheckerClick={routedCheckerClick}
-            onCheckerRightClick={routedCheckerRightClick}
-            onDestinationClick={handleDestinationClick}
-            onPlayMove={handlePlayMoveWithSound}
-            onSelectDie={handleSelectDie}
-            onDiceClick={routedDiceClick}
-            onDeselect={handleDeselect}
-            turnsCount={turnsHistory.length}
-            onBackToLobby={handleBackToLobby}
-            latestGameAnalysis={latestGameAnalysis}
-            turnsHistory={turnsHistory}
-            openingEntry={openingEntry}
+            ambianceClass={mainAmbianceClass} t={t} locale={locale} theme={theme} onToggleTheme={toggleTheme}
+            game={game} isMultiplayerActive={isMultiplayerActive} multiplayer={multiplayer} modals={modals}
+            coach={coach} coachHighlight={activeCoachHighlight} isAnalyzing={isAnalyzing}
+            matchStats={matchStats} matchStatsO={matchStatsO} prX={prX} prO={prO}
+            hoveredCandidate={hoveredCandidate} onCandidateHover={setHoveredCandidate}
+            onDismissCoach={dismissCoach} onReplayMove={handleReplayMove} onTriggerCoach={handleTriggerCoach}
+            coachHistory={coachHistory} selectedCoachHistoryIndex={selectedCoachHistoryIndex}
+            onSelectCoachHistoryIndex={selectCoachHistoryIndex} lastMoveFeedback={lastMoveFeedback}
+            notificationLevel={notificationLevel} onChangeNotificationLevel={setNotificationLevel}
+            activeDie={activeDie} isBoardLoading={isBoardLoading}
+            onCheckerClick={routedCheckerClick} onCheckerRightClick={routedCheckerRightClick}
+            onDestinationClick={handleDestinationClick} onPlayMove={handlePlayMoveWithSound}
+            onSelectDie={handleSelectDie} onDiceClick={routedDiceClick} onDeselect={handleDeselect}
+            turnsCount={turnsHistory.length} onBackToLobby={handleBackToLobby}
+            latestGameAnalysis={latestGameAnalysis} turnsHistory={turnsHistory} openingEntry={openingEntry}
             onApplyOpeningMove={openingEntry ? () => handleApplyOpeningMove(openingEntry.bestMoves) : () => { }}
-            onResetGameHistory={resetGameHistory}
-            gameId={gameIdRef.current}
-            playerColor={playerColor}
+            onResetGameHistory={resetGameHistory} gameId={gameIdRef.current} playerColor={playerColor}
         />
     );
 }

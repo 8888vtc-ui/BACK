@@ -16,9 +16,8 @@ import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '../../lib/supabase/types';
 import UserAccountMenu, { type AuthStatus } from './UserAccountMenu';
-import LanguageSelector from './LanguageSelector';
 import type { LobbyModuleId } from '../lobby/LobbyScreen';
-import { useTranslation } from '../../i18n';
+import { useTranslation, PRIMARY_LOCALES, LOCALE_METADATA, type Locale } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
 import IosInstallModal from '../pwa/IosInstallModal';
 
@@ -49,7 +48,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
     onUserResolved,
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { t, ui } = useTranslation();
+    const { t, ui, locale, setLocale } = useTranslation();
     const { canInstall, isInstalled, showIosModal, setShowIosModal, handleInstallClick } = usePwaInstall();
 
     const navItems = useMemo<ReadonlyArray<NavItem>>(
@@ -86,7 +85,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
         <nav
             aria-label="Navigation principale"
             data-testid="app-navbar"
-            className="sticky top-0 z-40 w-full border-b border-[#d4af37]/30 bg-gradient-to-b from-[#0e131f]/95 via-[#090d16]/95 to-[#06090f]/95 backdrop-blur-xl shadow-[0_10px_32px_rgba(0,0,0,0.75),inset_0_-1px_0_rgba(255,235,180,0.12)]"
+            className="sticky top-0 z-40 w-full border-b border-white/10 bg-gradient-to-b from-[#0e131f]/95 via-[#090d16]/95 to-[#06090f]/95 backdrop-blur-xl shadow-[0_10px_32px_rgba(0,0,0,0.75)]"
         >
             {/* Liens d'évitement accessibles WCAG 2.1 AA (traduits dynamiquement) */}
             <div className="sr-only focus-within:not-sr-only focus-within:fixed focus-within:left-2 focus-within:top-2 focus-within:z-50 focus-within:flex focus-within:gap-2">
@@ -101,16 +100,16 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                 </a>
             </div>
 
-            <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-3 sm:px-6">
+            <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:px-6 overflow-hidden">
                 {/* Gauche : Burger mobile + Blason Or Ciselé */}
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2.5 shrink-0">
                     <button
                         type="button"
                         onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                         aria-expanded={isMobileMenuOpen}
                         aria-label={ui.navbar.mobileMenuAria}
                         data-testid="navbar-mobile-burger"
-                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d4af37]/35 bg-[#121826]/90 text-amber-100 shadow-inner transition hover:border-[#f3c65f] hover:text-amber-200 lg:hidden"
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-[#121826]/90 text-amber-100 shadow-inner transition hover:border-white/25 hover:text-amber-200 lg:hidden"
                     >
                         <span aria-hidden="true" className="text-base leading-none">
                             {isMobileMenuOpen ? '✕' : '☰'}
@@ -127,9 +126,9 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             }
                         }}
                         data-testid="navbar-brand-logo"
-                        className="group flex items-center gap-2.5"
+                        className="group flex items-center gap-2.5 shrink-0"
                     >
-                        <span className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#e5c158]/70 bg-gradient-to-b from-[#2a1f0d] via-[#141008] to-[#080603] text-base shadow-[0_4px_14px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,245,200,0.4)] transition-transform duration-200 group-hover:scale-105">
+                        <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-b from-[#2a1f0d] via-[#141008] to-[#080603] text-base shadow-[0_4px_14px_rgba(0,0,0,0.75)] transition-transform duration-200 group-hover:scale-105">
                             <svg
                                 aria-hidden="true"
                                 viewBox="0 0 32 32"
@@ -144,11 +143,11 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                                 <circle cx="19.8" cy="19.5" r="4.2" fill="#fde68a" stroke="#9c6f16" strokeWidth="1.3" />
                             </svg>
                         </span>
-                        <div className="hidden sm:flex flex-col leading-none">
-                            <span className="font-serif bg-gradient-to-b from-[#fff6d6] via-[#e5c158] to-[#b38428] bg-clip-text text-sm font-black tracking-[0.16em] text-transparent drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                        <div className="hidden sm:flex flex-col justify-center leading-tight whitespace-nowrap">
+                            <span className="font-serif bg-gradient-to-b from-[#fff6d6] via-[#e5c158] to-[#b38428] bg-clip-text text-xs sm:text-sm font-black tracking-[0.12em] text-transparent drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] whitespace-nowrap">
                                 BACKGAMMON TOUR
                             </span>
-                            <span className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.24em] text-[#d4af37]/85">
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400 whitespace-nowrap">
                                 {ui.navbar.brandSubtitle}
                             </span>
                         </div>
@@ -156,7 +155,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                 </div>
 
                 {/* Centre : Onglets d'accès direct Desktop */}
-                <div className="hidden lg:flex items-center gap-0.5 rounded-full border border-[#d4af37]/25 bg-[#070a10]/90 p-1 shadow-[inset_0_2px_6px_rgba(0,0,0,0.85),0_1px_0_rgba(255,240,195,0.08)]">
+                <div className="hidden lg:flex items-center gap-1 rounded-full border border-white/10 bg-[#070a10]/90 p-1 shadow-[inset_0_2px_6px_rgba(0,0,0,0.85)]">
                     {navItems.map((item) => {
                         const isActive = activeTab === item.id;
                         return (
@@ -166,9 +165,9 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                                 prefetch
                                 data-testid={item.testId}
                                 onClick={(e) => handleItemClick(item, e)}
-                                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold tracking-wide transition-all duration-150 ${
+                                className={`flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-full px-3 py-1.5 text-xs font-bold tracking-wide transition-all duration-150 ${
                                     isActive
-                                        ? 'border border-[#e5c158]/60 bg-gradient-to-b from-[#332510] via-[#221809] to-[#160f05] text-[#fff3d1] shadow-[0_2px_10px_rgba(212,175,55,0.22),inset_0_1px_0_rgba(255,245,200,0.3)]'
+                                        ? 'border border-[#f3c65f] bg-gradient-to-b from-[#332510] via-[#221809] to-[#160f05] text-[#fff3d1] shadow-[0_2px_10px_rgba(212,175,55,0.22)]'
                                         : 'text-slate-300/90 hover:bg-white/[0.04] hover:text-amber-100'
                                 }`}
                             >
@@ -187,7 +186,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             onClick={() => void handleInstallClick()}
                             data-testid="navbar-pwa-install-btn"
                             aria-label={ui.pwa.installAppAria}
-                            className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-[#d4af37]/45 bg-[#0f1422]/90 px-3 py-1 text-xs font-bold text-amber-200 shadow-[0_2px_8px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,245,205,0.2)] transition hover:border-[#f3c65f] hover:bg-[#182035] hover:text-[#fff4d0] active:scale-95"
+                            className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[#0f1422]/90 px-3 py-1 text-xs font-bold text-amber-200 shadow-sm transition hover:border-white/25 hover:bg-[#182035] hover:text-[#fff4d0] active:scale-95"
                         >
                             <svg
                                 aria-hidden="true"
@@ -206,7 +205,21 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             <span>{ui.pwa.installApp}</span>
                         </button>
                     )}
-                    <LanguageSelector />
+                    <select
+                        id="navbar-locale-select"
+                        name="locale"
+                        value={locale}
+                        onChange={(e) => setLocale(e.target.value as Locale)}
+                        aria-label="Langue"
+                        data-testid="navbar-locale-select"
+                        className="rounded-full border border-white/10 bg-[#0b101b]/90 px-2.5 py-1 text-xs font-bold text-slate-200 transition hover:border-white/25 hover:text-white focus:outline-none focus:ring-1 focus:ring-[#f3c65f]/60 cursor-pointer"
+                    >
+                        {PRIMARY_LOCALES.map((loc) => (
+                            <option key={loc} value={loc} className="bg-[#0b101b] text-slate-100">
+                                {LOCALE_METADATA[loc].flag} {loc.toUpperCase()}
+                            </option>
+                        ))}
+                    </select>
                     <UserAccountMenu
                         onNavigateModule={onOpenModule}
                         onOpenSettings={onOpenSettings}
@@ -219,7 +232,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
             {isMobileMenuOpen && (
                 <div
                     data-testid="navbar-mobile-drawer"
-                    className="border-t border-[#d4af37]/25 bg-[#080b12]/98 px-4 py-3 shadow-2xl lg:hidden"
+                    className="border-t border-white/10 bg-[#080b12]/98 px-4 py-3 shadow-2xl lg:hidden"
                 >
                     <div className="grid grid-cols-2 gap-2">
                         {navItems.map((item) => {
@@ -233,8 +246,8 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                                     onClick={(e) => handleItemClick(item, e)}
                                     className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-bold transition ${
                                         isActive
-                                            ? 'border-[#e5c158]/60 bg-gradient-to-b from-[#2e210d] to-[#181106] text-amber-100 shadow-sm'
-                                            : 'border-white/10 bg-white/[0.03] text-slate-200 hover:border-[#d4af37]/40 hover:bg-white/[0.06]'
+                                            ? 'border-[#f3c65f] bg-gradient-to-b from-[#2e210d] to-[#181106] text-amber-100 shadow-sm'
+                                            : 'border-white/10 bg-white/[0.03] text-slate-200 hover:border-white/25 hover:bg-white/[0.06]'
                                     }`}
                                 >
                                     <span aria-hidden="true" className="text-base">{item.icon}</span>
@@ -244,7 +257,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                         })}
                     </div>
                     {!isInstalled && canInstall && (
-                        <div className="mt-3 pt-2.5 border-t border-[#d4af37]/25">
+                        <div className="mt-3 pt-2.5 border-t border-white/10">
                             <button
                                 type="button"
                                 onClick={() => {
@@ -253,7 +266,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                                 }}
                                 data-testid="mobile-navbar-pwa-install-btn"
                                 aria-label={ui.pwa.installAppAria}
-                                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#d4af37]/50 bg-gradient-to-r from-[#20180d] via-[#141008] to-[#0d0f17] px-3 py-2.5 text-xs font-bold text-amber-200 shadow-md transition hover:border-[#f3c65f] hover:text-[#fff4d0]"
+                                className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-gradient-to-r from-[#20180d] via-[#141008] to-[#0d0f17] px-3 py-2.5 text-xs font-bold text-amber-200 shadow-md transition hover:border-white/25 hover:text-[#fff4d0]"
                             >
                                 <svg
                                     aria-hidden="true"

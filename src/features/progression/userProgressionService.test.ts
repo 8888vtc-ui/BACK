@@ -79,7 +79,7 @@ describe('userProgressionService', () => {
 
             const res = await loadPlayerHubData(null);
             expect(res.recentMatches.length).toBe(1);
-            expect(res.recentMatches[0].opponentLabel).toBe('IA Open Sage');
+            expect(res.recentMatches[0].opponentLabel).toBe('IA Monte-Carlo');
             expect(res.recentMatches[0].isVictory).toBe(true);
             expect(res.snapshot.gamesPlayed).toBe(1);
             expect(res.snapshot.winsCount).toBe(1);

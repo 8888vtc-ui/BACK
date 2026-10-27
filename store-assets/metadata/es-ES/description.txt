@@ -1,6 +1,6 @@
 Backgammon Tour — Círculo Monte-Carlo & Gammon Academy
 
-Domina el Backgammon de competición con el motor neuronal Open Sage 3-Ply (PR 0.23) y un Coach de Gran Maestro en tiempo real:
+Domina el Backgammon de competición con el motor neuronal Monte-Carlo 3-Ply (PR 0.23) y un Coach de Gran Maestro en tiempo real:
 - 🎲 Jugar contra la IA (4 niveles: Novato a Gran Maestro 3-Ply)
 - 🌐 Salón Oficial Multijugador con Reloj Fischer y clasificación ELO
 - 🏛️ Gammon Academy: Guía de las 15 Aperturas, Dominio del Cubo de Doblaje (Take Point 21,5 %, Regla de Crawford, MET Kazaross-XG2)

@@ -57,13 +57,13 @@
 
   <!-- Sous-titre Cercle Monte-Carlo -->
   <text x="600" y="378" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" fill="#fef3c7" letter-spacing="6">
-    CERCLE MONTE-CARLO · GRAND MAÎTRE IA OPEN SAGE 3-PLY
+    CERCLE MONTE-CARLO · COACH GRAND-MAÎTRE IA 3-PLY
   </text>
 
   <!-- 3 Badges Piliers -->
   <g transform="translate(600, 455)" filter="url(#ogShadow)">
     <rect x="-470" y="-28" width="290" height="56" rx="28" fill="#0e1422" stroke="url(#ogGold)" stroke-width="2"/>
-    <text x="-325" y="6" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="800" fill="#f5cf70" letter-spacing="2">🎲 OPEN SAGE 3-PLY (PR 0.23)</text>
+    <text x="-325" y="6" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="800" fill="#f5cf70" letter-spacing="2">🎲 MONTE-CARLO 3-PLY (PR 0.23)</text>
 
     <rect x="-145" y="-28" width="290" height="56" rx="28" fill="#0e1422" stroke="url(#ogGold)" stroke-width="2"/>
     <text x="0" y="6" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="800" fill="#f5cf70" letter-spacing="2">🏆 MATCHS OFFICIELS &amp; ELO</text>

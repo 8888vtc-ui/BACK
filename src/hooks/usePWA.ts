@@ -93,8 +93,7 @@ export const OFFLINE_CORE_ASSETS = [
     '/manifest.json',
     '/icons/icon-192.svg',
     '/icons/icon-512.svg',
-    '/engine/wildbg.wasm',
-    '/wasm/wildbg_wasm_bg.wasm',
+    '/data/bearoff.bin',
 ] as const;
 
 export interface BeforeInstallPromptEvent extends Event {
@@ -119,10 +118,8 @@ export interface UsePWAResult {
 export async function checkWasmCached(cachesApi?: CacheStorage): Promise<boolean> {
     if (!cachesApi) return false;
     try {
-        const matchEngine = await cachesApi.match('/engine/wildbg.wasm');
-        if (matchEngine) return true;
-        const matchLegacy = await cachesApi.match('/wasm/wildbg_wasm_bg.wasm');
-        return Boolean(matchLegacy);
+        const matchBearoff = await cachesApi.match('/data/bearoff.bin');
+        return Boolean(matchBearoff);
     } catch {
         return false;
     }

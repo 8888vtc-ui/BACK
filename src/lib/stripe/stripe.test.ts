@@ -15,6 +15,8 @@ import {
 } from './stripeClient';
 import { POST as checkoutPOST } from '../../app/api/stripe/checkout/route';
 import { POST as webhookPOST } from '../../app/api/stripe/webhook/route';
+import { resetProcessedWebhookEventsForTests } from './webhookStore';
+import { GET as lifecycleCronGET } from '../../app/api/cron/lifecycle-engine/route';
 import { supabase } from '../supabase/client';
 
 describe('Stripe Billing, Checkout & Webhooks', () => {
@@ -22,6 +24,7 @@ describe('Stripe Billing, Checkout & Webhooks', () => {
 
     beforeEach(() => {
         process.env.STRIPE_WEBHOOK_SECRET = testSecret;
+        resetProcessedWebhookEventsForTests();
         vi.restoreAllMocks();
     });
 
@@ -199,5 +202,125 @@ describe('Stripe Billing, Checkout & Webhooks', () => {
         expect(body.received).toBe(true);
         expect(body.subscription_tier).toBe('free');
         expect(body.subscription_status).toBe('canceled');
+    });
+
+    it('expose le 3e palier d’ancrage haut (club_chouette : 149,99 € / an, 5 sièges) et l’économie absolue en €/an', () => {
+        expect(STRIPE_PLANS.coach_yearly.annualSavingsEur).toBe(39.89);
+        expect(STRIPE_PLANS.coach_yearly.annualSavingsLabelFr).toBe(
+            'Économisez 33 % — soit 39,89 € / an',
+        );
+        expect(STRIPE_PLANS.club_chouette.priceId).toBe('price_club_chouette');
+        expect(STRIPE_PLANS.club_chouette.priceEur).toBe(149.99);
+        expect(STRIPE_PLANS.club_chouette.seatsIncluded).toBe(5);
+        expect(STRIPE_PLANS.club_chouette.trialPeriodDays).toBe(14);
+    });
+
+    it('garantit l’idempotence événementielle du webhook Stripe (un même event.id rejoué 2 fois n’exécute l’UPDATE qu’une seule fois)', async () => {
+        const eqSpy = vi.fn().mockResolvedValue({ data: null, error: null });
+        const updateSpy = vi.fn().mockReturnValue({ eq: eqSpy });
+        vi.spyOn(supabase, 'from').mockReturnValue({
+            update: updateSpy,
+        } as unknown as ReturnType<typeof supabase.from>);
+
+        const payload = JSON.stringify({
+            id: 'evt_idempotent_42',
+            object: 'event',
+            type: 'checkout.session.completed',
+            data: {
+                object: {
+                    id: 'cs_test_idem_42',
+                    object: 'checkout.session',
+                    mode: 'subscription',
+                    client_reference_id: 'user-idem-42',
+                    customer: 'cus_idem_42',
+                    subscription: 'sub_idem_42',
+                    metadata: {
+                        user_id: 'user-idem-42',
+                        subscription_tier: 'coach_yearly',
+                    },
+                },
+            },
+        });
+
+        const signature = generateStripeWebhookSignature(payload, testSecret);
+
+        const req1 = new Request('http://localhost:3000/api/stripe/webhook', {
+            method: 'POST',
+            headers: { 'stripe-signature': signature },
+            body: payload,
+        });
+        const res1 = await webhookPOST(req1);
+        expect(res1.status).toBe(200);
+        expect(updateSpy).toHaveBeenCalledTimes(1);
+
+        // Second envoi identique par Stripe (retry réseau) : bloqué par l'idempotence
+        const req2 = new Request('http://localhost:3000/api/stripe/webhook', {
+            method: 'POST',
+            headers: { 'stripe-signature': signature },
+            body: payload,
+        });
+        const res2 = await webhookPOST(req2);
+        const body2 = (await res2.json()) as { received: boolean; duplicate?: boolean };
+        expect(res2.status).toBe(200);
+        expect(body2.duplicate).toBe(true);
+        expect(updateSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('traite invoice.payment_failed en ouvrant une Grace Period de 30 jours sans coupure brutale', async () => {
+        const eqSpy = vi.fn().mockResolvedValue({ data: null, error: null });
+        const updateSpy = vi.fn().mockReturnValue({ eq: eqSpy });
+        vi.spyOn(supabase, 'from').mockReturnValue({
+            update: updateSpy,
+        } as unknown as ReturnType<typeof supabase.from>);
+
+        const payload = JSON.stringify({
+            id: 'evt_invoice_failed_1',
+            object: 'event',
+            type: 'invoice.payment_failed',
+            data: {
+                object: {
+                    id: 'in_failed_1',
+                    customer: 'cus_dunning_1',
+                    subscription: 'sub_dunning_1',
+                    attempt_count: 1,
+                },
+            },
+        });
+
+        const signature = generateStripeWebhookSignature(payload, testSecret);
+        const req = new Request('http://localhost:3000/api/stripe/webhook', {
+            method: 'POST',
+            headers: { 'stripe-signature': signature },
+            body: payload,
+        });
+
+        const res = await webhookPOST(req);
+        expect(res.status).toBe(200);
+        const body = (await res.json()) as {
+            received: boolean;
+            subscription_status: string;
+            grace_period_ends_at: string;
+            dunningTriggered: boolean;
+        };
+        expect(body.subscription_status).toBe('past_due');
+        expect(body.dunningTriggered).toBe(true);
+        expect(typeof body.grace_period_ends_at).toBe('string');
+    });
+
+    it('GET /api/cron/lifecycle-engine vérifie CRON_SECRET et exécute le cycle de vie quotidien', async () => {
+        process.env.CRON_SECRET = 'cron_secret_test_2026';
+
+        const unauthReq = new Request('http://localhost:3000/api/cron/lifecycle-engine');
+        const unauthRes = await lifecycleCronGET(unauthReq);
+        expect(unauthRes.status).toBe(401);
+
+        const authReq = new Request('http://localhost:3000/api/cron/lifecycle-engine', {
+            headers: { authorization: 'Bearer cron_secret_test_2026' },
+        });
+        const authRes = await lifecycleCronGET(authReq);
+        expect(authRes.status).toBe(200);
+        const data = (await authRes.json()) as { status: string; referenceHealthScore: number };
+        expect(data.status).toBe('ok');
+        expect(data.referenceHealthScore).toBeGreaterThanOrEqual(80);
     });
 });

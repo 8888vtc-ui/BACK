@@ -63,8 +63,8 @@ export const SoftPaywallCard: React.FC<SoftPaywallCardProps> = ({
                 data-testid="soft-paywall-card"
                 aria-label={
                     isEn
-                        ? 'Open Sage Match Highlights & Unlimited Coach'
-                        : 'Bilan Open Sage & Coach Illimité'
+                        ? 'Monte-Carlo Match Highlights & Unlimited Coach'
+                        : 'Bilan Monte-Carlo & Coach Illimité'
                 }
                 className="relative overflow-hidden rounded-3xl border border-[#d4af37]/60 bg-gradient-to-b from-[#25130b] via-[#170c07] to-[#0f0804] p-5 sm:p-7 text-[#fdf8eb] shadow-[0_24px_64px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,245,205,0.2)] space-y-5"
             >
@@ -75,14 +75,14 @@ export const SoftPaywallCard: React.FC<SoftPaywallCardProps> = ({
                 />
 
                 {/* 1. Validation dopaminergique : Révélation gratuite du PR Open Sage & Métriques de base */}
-                <div className="relative flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#f3c65f]/45 bg-[#1a0e07]/90 p-4 shadow-inner">
+                <div className="relative flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#1a0e07]/90 p-4 shadow-inner">
                     <div className="flex items-center gap-3.5">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#f3c65f]/70 bg-gradient-to-br from-[#3d2210] to-[#1a0d05] text-2xl text-[#f3c65f] shadow-md">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-[#3d2210] to-[#1a0d05] text-2xl text-[#f3c65f] shadow-md">
                             ⚜
                         </div>
                         <div>
-                            <span className="inline-block rounded-full border border-emerald-500/40 bg-emerald-950/60 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-300">
-                                {isEn ? 'Open Sage Certified PR' : 'Calcul PR Open Sage Gratuit'}
+                            <span className="inline-block rounded-full border border-emerald-500/40 bg-emerald-950/60 px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider text-emerald-300">
+                                {isEn ? 'Monte-Carlo Certified PR' : 'Calcul PR Monte-Carlo Gratuit'}
                             </span>
                             <h3
                                 data-testid="soft-paywall-pr-reveal"
@@ -98,19 +98,19 @@ export const SoftPaywallCard: React.FC<SoftPaywallCardProps> = ({
                     {/* Score & Chance aux dés (100% gratuits et illimités) */}
                     <div
                         data-testid="soft-paywall-free-metrics"
-                        className="flex items-center gap-3 rounded-xl border border-[#d4af37]/30 bg-[#110904]/90 px-3.5 py-2 text-xs"
+                        className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#110904]/90 px-3.5 py-2 text-xs"
                     >
                         <div>
-                            <span className="block text-[9px] font-bold uppercase tracking-wider text-[#e8dcc6]/65">
+                            <span className="block text-[11px] font-bold uppercase tracking-wider text-[#e8dcc6]/65">
                                 Score
                             </span>
                             <span className="font-mono font-black text-[#fce8b2]">
                                 {scoreX} - {scoreO}
                             </span>
                         </div>
-                        <div className="h-6 w-px bg-[#d4af37]/25" />
+                        <div className="h-6 w-px bg-white/10" />
                         <div>
-                            <span className="block text-[9px] font-bold uppercase tracking-wider text-[#e8dcc6]/65">
+                            <span className="block text-[11px] font-bold uppercase tracking-wider text-[#e8dcc6]/65">
                                 {isEn ? 'Dice Luck' : 'Chance aux dés'}
                             </span>
                             <span className="font-mono font-black text-sky-300">
@@ -122,7 +122,7 @@ export const SoftPaywallCard: React.FC<SoftPaywallCardProps> = ({
                 </div>
 
                 {/* 2. Teaser valorisant généré par Open Sage (modèle Chess.com) */}
-                <div className="relative rounded-2xl border border-[#d4af37]/50 bg-gradient-to-br from-[#2b1116]/90 via-[#1f1009]/95 to-[#140a05]/95 p-4 sm:p-5 space-y-3">
+                <div className="relative rounded-2xl border border-white/10 bg-gradient-to-br from-[#2b1116]/90 via-[#1f1009]/95 to-[#140a05]/95 p-4 sm:p-5 space-y-3">
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="inline-flex items-center gap-1 rounded-full border border-cyan-400/50 bg-cyan-950/70 px-3 py-1 font-mono text-xs font-black text-cyan-200 shadow-sm">
                             <span>!!</span>

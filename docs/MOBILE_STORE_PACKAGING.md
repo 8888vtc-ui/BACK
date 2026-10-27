@@ -8,8 +8,8 @@ Ce document constitue la référence exhaustive pour la préparation, la signatu
 
 | Paramètre | Valeur |
 |---|---|
-| **App Name** | Backgammon Pro & Coach |
-| **App ID / Package Name** | `com.backgammon.coach` |
+| **App Name** | Backgammon Tour |
+| **App ID / Package Name** | `com.backgammontour.app` |
 | **Framework Mobile** | Capacitor 8 (Next.js 15 Static Export) |
 | **Version Initiale** | `1.0.0` (VersionCode: `1`) |
 
@@ -69,7 +69,7 @@ L'artefact final se trouvera dans : `android/app/build/outputs/bundle/release/ap
 
 ### 3.1 Certificats & Profils de Provisionnement
 1. Rendez-vous sur [developer.apple.com](https://developer.apple.com) :
-   - Créez un **App ID** avec le Bundle Identifier : `com.backgammon.coach`.
+   - Créez un **App ID** avec le Bundle Identifier : `com.backgammontour.app`.
    - Générez un **Certificat de Distribution iOS** (App Store and Ad Hoc).
    - Créez un **Provisioning Profile App Store** associé à l'App ID et au certificat.
 2. Téléchargez et installez le profil dans Xcode.
@@ -120,10 +120,10 @@ node scripts/capture-store-screenshots.mjs
 
 ---
 
-## 5. Fiches de Métadonnées des Stores
+## 5. Fiches de Métadonnées des Stores (6 Langues)
 
 Les métadonnées sont organisées par langue dans `store-assets/metadata/` :
-- **Français (`fr-FR/`)** et **Anglais (`en-US/`)** :
+- **6 locales disponibles** : **Français (`fr-FR/`)**, **Anglais (`en-US/`)**, **Espagnol (`es-ES/`)**, **Portugais (`pt-BR/`)**, **Allemand (`de-DE/`)** et **Arabe (`ar-SA/`)** :
   - `name.txt` : Titre de l'application (max 30 car.)
   - `subtitle.txt` : Sous-titre App Store (max 30 car.)
   - `short_description.txt` : Description courte Google Play (max 80 car.)

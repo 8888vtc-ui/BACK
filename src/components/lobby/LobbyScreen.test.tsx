@@ -35,8 +35,11 @@ describe('LobbyScreen', () => {
         const onStart = vi.fn();
         render(<LobbyScreen onStart={onStart} />);
 
-        // Sélection du mode IA pour afficher les options
+        // Le clic sur la carte IA garde le panneau d'options replié jusqu'au clic sur le bouton d'options
         fireEvent.click(screen.getByTestId('lobby-card-ai'));
+        expect(screen.queryByTestId('lobby-options-panel')).toBeNull();
+        fireEvent.click(screen.getByTestId('lobby-options-toggle'));
+        expect(screen.getByTestId('lobby-options-panel')).toBeDefined();
 
         // Sélection des Noirs (O)
         const blackBtn = screen.getByTestId('lobby-color-o');
@@ -62,20 +65,28 @@ describe('LobbyScreen', () => {
         );
     });
 
-    it('affiche la grille des défis ouverts (OpenMatchesTable) lorsque le mode Multijoueur est sélectionné', () => {
+    it('affiche le panneau Multijoueur avec les 2 actions principales ("Matchmaking Rapide" vs "Salon Privé par Code") et ouvre la modale', () => {
+        const onStart = vi.fn();
         const onOpenModule = vi.fn();
-        render(<LobbyScreen onStart={vi.fn()} onOpenModule={onOpenModule} />);
+        render(<LobbyScreen onStart={onStart} onOpenModule={onOpenModule} />);
 
         fireEvent.click(screen.getByTestId('lobby-card-multiplayer'));
-        expect(screen.getByTestId('open-matches-table')).toBeDefined();
+        const openMatches = screen.getByTestId('open-matches-table');
+        expect(openMatches).toBeDefined();
+        expect(screen.getByTestId('private-salon-active-badge')).toBeDefined();
+        expect(screen.getByTestId('open-matches-quick-matchmaking')).toBeDefined();
+        expect(screen.getByTestId('open-matches-private-code')).toBeDefined();
+        expect(openMatches.innerHTML).not.toContain('text-[8px]');
+        expect(openMatches.innerHTML).not.toContain('text-[9px]');
+        expect(openMatches.innerHTML).not.toContain('text-[10px]');
 
-        // Filtrage par cadence Blitz
-        fireEvent.click(screen.getByTestId('open-matches-filter-blitz'));
-        expect(screen.getByTestId('open-match-row-chal-ex-3')).toBeDefined();
-
-        // Clic sur Rejoindre
-        fireEvent.click(screen.getByTestId('join-open-match-chal-ex-3'));
+        // Ouverture depuis le bouton Salon Privé par Code
+        fireEvent.click(screen.getByTestId('create-open-match-btn'));
         expect(onOpenModule).toHaveBeenCalledWith('multiplayer');
+
+        // Ouverture depuis le bouton principal doré
+        fireEvent.click(screen.getByTestId('lobby-start-btn'));
+        expect(onOpenModule).toHaveBeenCalledTimes(2);
     });
 
     it('affiche la barre de navigation globale (AppNavbar), la carte Mon Espace Joueur (PlayerProfileCard) et les jauges Académie', () => {
@@ -104,9 +115,10 @@ describe('LobbyScreen', () => {
 
     it('affiche le bouton Installer l’App dans le Salon lorsqu’un prompt d’installation est intercepté', async () => {
         const fakePrompt = vi.fn().mockResolvedValue(undefined);
-        const promptEvent = new Event('beforeinstallprompt') as any;
-        promptEvent.prompt = fakePrompt;
-        promptEvent.userChoice = Promise.resolve({ outcome: 'accepted', platform: 'web' });
+        const promptEvent = Object.assign(new Event('beforeinstallprompt'), {
+            prompt: fakePrompt,
+            userChoice: Promise.resolve({ outcome: 'accepted' as const, platform: 'web' }),
+        });
 
         render(<LobbyScreen onStart={vi.fn()} />);
 
@@ -118,5 +130,36 @@ describe('LobbyScreen', () => {
         expect(lobbyInstallBtn).toBeDefined();
         fireEvent.click(lobbyInstallBtn);
         expect(fakePrompt).toHaveBeenCalled();
+    });
+
+    it('respecte la hiérarchie UX/UI : actions principales au-dessus de la section secondaire, 0 micro-texte < 11px et bordure dorée réservée à l’actif et au CTA', () => {
+        const { container } = render(<LobbyScreen onStart={vi.fn()} />);
+
+        const cardAi = screen.getByTestId('lobby-card-ai');
+        const cardMulti = screen.getByTestId('lobby-card-multiplayer');
+        const optionsToggle = screen.getByTestId('lobby-options-toggle');
+        const startBtn = screen.getByTestId('lobby-start-btn');
+        const secondarySection = screen.getByTestId('lobby-secondary-section');
+
+        // 1. Le CTA principal précède la section secondaire dans le DOM
+        expect(startBtn.compareDocumentPosition(secondarySection) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(optionsToggle.compareDocumentPosition(startBtn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+        // 2. La section secondaire regroupe PlayerProfileCard, CoachPreMatchBriefingCard et LearningModulesGrid
+        expect(secondarySection.querySelector('[data-testid="player-profile-card"]')).not.toBeNull();
+        expect(secondarySection.querySelector('[data-testid="lobby-prematch-briefing"]')).not.toBeNull();
+        expect(secondarySection.querySelector('[data-testid="learning-modules-grid"]')).not.toBeNull();
+
+        // 3. Aucun micro-texte text-[8px] ou text-[9px]
+        expect(container.innerHTML).not.toContain('text-[8px]');
+        expect(container.innerHTML).not.toContain('text-[9px]');
+
+        // 4. Bordure dorée (#f3c65f) sur la carte active et le bouton principal, border-white/10 sur les cartes inactives/secondaires
+        expect(cardAi.className).toContain('border-[#f3c65f]');
+        expect(startBtn.className).toContain('border-[#f3c65f]');
+        expect(cardMulti.className).toContain('border-white/10');
+        expect(screen.getByTestId('player-profile-card').className).toContain('border-white/10');
+        expect(screen.getByTestId('lobby-prematch-briefing').className).toContain('border-white/10');
+        expect(screen.getByTestId('lobby-module-puzzles').className).toContain('border-white/10');
     });
 });

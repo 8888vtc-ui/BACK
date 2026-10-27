@@ -30,10 +30,10 @@ const CATEGORIES: { id: TheoryCategory | 'all'; labelFr: string; labelEn: string
 ];
 
 const DIFFICULTY_MAP: Record<TheoryDifficulty, { labelFr: string; labelEn: string; color: string }> = {
-    beginner: { labelFr: 'Débutant', labelEn: 'Beginner', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
-    intermediate: { labelFr: 'Intermédiaire', labelEn: 'Intermediate', color: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
-    advanced: { labelFr: 'Avancé', labelEn: 'Advanced', color: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
-    master: { labelFr: 'Grand-Maître', labelEn: 'Grandmaster', color: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
+    beginner: { labelFr: 'Débutant', labelEn: 'Beginner', color: 'bg-emerald-500/20 text-emerald-300 border-white/10' },
+    intermediate: { labelFr: 'Intermédiaire', labelEn: 'Intermediate', color: 'bg-blue-500/20 text-blue-300 border-white/10' },
+    advanced: { labelFr: 'Avancé', labelEn: 'Advanced', color: 'bg-purple-500/20 text-purple-300 border-white/10' },
+    master: { labelFr: 'Grand-Maître', labelEn: 'Grandmaster', color: 'bg-amber-500/20 text-amber-300 border-white/10' },
 };
 
 export function KnowledgeBaseModal({
@@ -53,7 +53,6 @@ export function KnowledgeBaseModal({
     const [searchQuery, setSearchQuery] = useState('');
     const detailContainerRef = useRef<HTMLDivElement>(null);
 
-    // Synchronisation sur changement de initialConceptId
     useEffect(() => {
         if (initialConceptId) {
             setSelectedId(initialConceptId);
@@ -64,7 +63,6 @@ export function KnowledgeBaseModal({
         }
     }, [initialConceptId, selectedCategory]);
 
-    // Fermeture avec la touche Échap
     useEffect(() => {
         if (!isOpen) return;
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -76,7 +74,6 @@ export function KnowledgeBaseModal({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, onClose]);
 
-    // Filtrage dynamique
     const filteredConcepts = useMemo(() => {
         const query = searchQuery.trim().toLowerCase();
         return KNOWLEDGE_BASE_CONCEPTS.filter((c) => {
@@ -123,24 +120,27 @@ export function KnowledgeBaseModal({
             role="dialog"
             aria-modal="true"
             aria-label={isEn ? 'Backgammon Grandmaster Knowledge Base' : 'Base de Connaissances Backgammon Grand-Maître'}
+            onClick={(e) => {
+                if (e.target === e.currentTarget) onClose();
+            }}
         >
             <div
-                className={`relative flex h-[94vh] w-full max-w-6xl flex-col rounded-3xl shadow-2xl overflow-hidden border border-slate-700/60 backdrop-blur-2xl transition-all ${modalClasses.container}`}
+                className={`relative flex h-[94vh] w-full max-w-6xl flex-col rounded-3xl shadow-2xl overflow-hidden border border-white/10 backdrop-blur-2xl transition-all ${modalClasses.container}`}
             >
                 {/* 1. Header du Modal */}
-                <div className={`flex items-center justify-between border-b px-5 py-4 ${modalClasses.header}`}>
+                <div className={`flex items-center justify-between border-b border-white/10 px-5 py-4 ${modalClasses.header}`}>
                     <div className="flex items-center gap-3">
                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 text-2xl shadow-lg shadow-indigo-950">
                             📚
                         </div>
                         <div>
-                            <h2 className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-2">
+                            <h2 className="text-lg sm:text-xl font-black tracking-tight text-white flex flex-wrap items-center gap-2">
                                 <span>{isEn ? 'Theory & Knowledge Base' : 'Encyclopédie & Théorie'}</span>
-                                <span className="rounded-full bg-blue-500/20 px-2.5 py-0.5 text-xs font-bold text-blue-300 border border-blue-500/30">
+                                <span className="rounded-full bg-blue-500/20 px-2.5 py-0.5 text-xs font-bold text-blue-300 border border-white/10">
                                     {KNOWLEDGE_BASE_CONCEPTS.length} {isEn ? 'Master Chapters' : 'Fiches Grand-Maître'}
                                 </span>
                             </h2>
-                            <p className="text-xs text-slate-400">
+                            <p className="text-xs sm:text-sm text-slate-300">
                                 {isEn
                                     ? 'Authoritative theory: Magriel, Woolsey, Trice, Robertie, Kazaross, Olsen & Mochy'
                                     : 'Théorie de référence : Magriel, Woolsey, Trice, Robertie, Kazaross, Olsen & Mochy'}
@@ -151,7 +151,7 @@ export function KnowledgeBaseModal({
                     <button
                         onClick={onClose}
                         data-testid="kb-close-btn"
-                        className="rounded-2xl p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                        className="rounded-2xl border border-white/10 p-2 text-slate-300 hover:bg-slate-800 hover:text-white transition"
                         aria-label={isEn ? 'Close modal' : 'Fermer la boîte de dialogue'}
                     >
                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -161,9 +161,8 @@ export function KnowledgeBaseModal({
                 </div>
 
                 {/* 2. Barre de Recherche et Sélecteur de Catégories */}
-                <div className="border-b border-slate-800/80 bg-slate-950/60 px-5 py-3 space-y-3">
+                <div className="border-b border-white/10 bg-slate-950/60 px-5 py-3 space-y-3">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                        {/* Barre de recherche */}
                         <div className="relative flex-1">
                             <input
                                 type="text"
@@ -171,7 +170,7 @@ export function KnowledgeBaseModal({
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder={isEn ? 'Search concept, author, formula (e.g. Magriel, EPC, 25%)...' : 'Rechercher un concept, auteur, formule (ex: Magriel, EPC, 25%)...'}
                                 data-testid="kb-search-input"
-                                className="w-full rounded-xl bg-slate-900/90 border border-slate-700/80 px-4 py-2 pl-10 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full rounded-xl bg-slate-900/90 border border-white/10 px-4 py-2 pl-10 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <span className="absolute left-3 top-2.5 text-slate-400 text-sm">🔍</span>
                             {searchQuery && (
@@ -184,13 +183,11 @@ export function KnowledgeBaseModal({
                             )}
                         </div>
 
-                        {/* Compteur filtré */}
-                        <div className="text-xs text-slate-400 self-center">
+                        <div className="text-xs sm:text-sm text-slate-300 self-center">
                             <span className="font-bold text-blue-400">{filteredConcepts.length}</span> / {KNOWLEDGE_BASE_CONCEPTS.length} {isEn ? 'topics' : 'notions'}
                         </div>
                     </div>
 
-                    {/* Filtres de Catégories (Chips horizontaux avec scroll) */}
                     <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-800">
                         {CATEGORIES.map((cat) => {
                             const isSelected = selectedCategory === cat.id;
@@ -199,10 +196,10 @@ export function KnowledgeBaseModal({
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
                                     data-testid={`kb-category-${cat.id}`}
-                                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
+                                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 py-1.5 text-xs sm:text-sm font-semibold transition border ${
                                         isSelected
-                                            ? 'bg-blue-600 text-white shadow-md shadow-blue-950'
-                                            : 'bg-slate-900/70 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
+                                            ? 'border-blue-400/50 bg-blue-600 text-white shadow-md shadow-blue-950'
+                                            : 'border-white/10 bg-slate-900/70 text-slate-300 hover:bg-slate-800 hover:text-white'
                                     }`}
                                 >
                                     <span>{cat.icon}</span>
@@ -213,12 +210,12 @@ export function KnowledgeBaseModal({
                     </div>
                 </div>
 
-                {/* 3. Contenu Principal : Disposition Split 2 Colonnes */}
-                <div className="flex flex-1 overflow-hidden">
+                {/* 3. Contenu Principal : Disposition Responsive (Empilée Mobile / Split Desktop) */}
+                <div className="flex flex-col sm:flex-row flex-1 overflow-hidden">
                     {/* Colonne Gauche : Liste des Concepts */}
-                    <div className="w-full sm:w-2/5 md:w-1/3 border-r border-slate-800/80 overflow-y-auto bg-slate-950/30 p-3 space-y-2">
+                    <div className="w-full sm:w-2/5 md:w-1/3 max-h-[36vh] sm:max-h-full border-b sm:border-b-0 sm:border-r border-white/10 overflow-y-auto bg-slate-950/30 p-3 space-y-2">
                         {filteredConcepts.length === 0 ? (
-                            <div className="p-8 text-center text-slate-500 text-sm">
+                            <div className="p-8 text-center text-slate-400 text-sm">
                                 🔍 {isEn ? 'No concept matching your query.' : 'Aucun concept ne correspond à votre recherche.'}
                             </div>
                         ) : (
@@ -232,15 +229,15 @@ export function KnowledgeBaseModal({
                                         data-testid={`kb-concept-item-${concept.id}`}
                                         className={`w-full text-left rounded-2xl p-3.5 transition border ${
                                             isSelected
-                                                ? 'bg-blue-900/40 border-blue-500/80 shadow-lg shadow-blue-950/50'
-                                                : 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700'
+                                                ? 'bg-blue-900/40 border-blue-400/70 shadow-lg shadow-blue-950/50'
+                                                : 'bg-slate-900/50 border-white/10 hover:bg-slate-900 hover:border-white/25'
                                         }`}
                                     >
                                         <div className="flex items-center justify-between gap-1 mb-1">
-                                            <span className="text-[11px] font-bold text-slate-400">
+                                            <span className="text-xs font-bold text-slate-300">
                                                 {concept.author}
                                             </span>
-                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${diff.color}`}>
+                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${diff.color}`}>
                                                 {isEn ? diff.labelEn : diff.labelFr}
                                             </span>
                                         </div>
@@ -249,7 +246,7 @@ export function KnowledgeBaseModal({
                                             {isEn ? concept.title.en : concept.title.fr}
                                         </h3>
 
-                                        <p className="mt-1 text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                                        <p className="mt-1 text-xs text-slate-300 line-clamp-2 leading-relaxed">
                                             {isEn ? concept.summary.en : concept.summary.fr}
                                         </p>
                                     </button>
@@ -258,17 +255,16 @@ export function KnowledgeBaseModal({
                         )}
                     </div>
 
-                    {/* Colonne Droite : Fiche Théorique Détaillée */}
+                    {/* Colonne Droite : Fiche Théorique Détaillée (accessible sur mobile & desktop) */}
                     <div
                         ref={detailContainerRef}
-                        className="hidden sm:block sm:w-3/5 md:w-2/3 overflow-y-auto p-6 space-y-6 bg-slate-950/50"
+                        className="flex-1 sm:w-3/5 md:w-2/3 overflow-y-auto p-4 sm:p-6 space-y-6 bg-slate-950/50"
                     >
                         {activeConcept ? (
                             <div className="space-y-6 max-w-3xl">
-                                {/* En-tête du Concept */}
                                 <div>
                                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                                        <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-300 border border-slate-700">
+                                        <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-300 border border-white/10">
                                             👤 {activeConcept.author}
                                         </span>
                                         <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${DIFFICULTY_MAP[activeConcept.difficulty].color}`}>
@@ -278,59 +274,56 @@ export function KnowledgeBaseModal({
 
                                     <h1
                                         data-testid="kb-detail-title"
-                                        className="text-2xl font-black tracking-tight text-white"
+                                        className="text-xl sm:text-2xl font-black tracking-tight text-white"
                                     >
                                         {isEn ? activeConcept.title.en : activeConcept.title.fr}
                                     </h1>
 
                                     <div className="mt-2 flex flex-wrap gap-1.5">
                                         {activeConcept.tags.map((tag) => (
-                                            <span key={tag} className="text-[10px] font-semibold text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">
+                                            <span key={tag} className="text-xs font-semibold text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-md border border-white/10">
                                                 #{tag}
                                             </span>
                                         ))}
                                     </div>
                                 </div>
 
-                                {/* Résumé & À Retenir */}
-                                <div className="rounded-2xl bg-gradient-to-br from-blue-950/40 via-indigo-950/30 to-purple-950/40 border border-blue-800/40 p-4 space-y-2 shadow-inner">
-                                    <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                                <div className="rounded-2xl bg-gradient-to-br from-blue-950/40 via-indigo-950/30 to-purple-950/40 border border-white/10 p-4 space-y-2 shadow-inner">
+                                    <h3 className="text-xs font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
                                         <span>💡</span> {isEn ? 'Key Takeaway' : 'À Retenir Absolument'}
                                     </h3>
                                     <p className="text-sm font-semibold text-white leading-relaxed">
                                         {isEn ? activeConcept.keyTakeaway.en : activeConcept.keyTakeaway.fr}
                                     </p>
-                                    <p className="text-xs text-slate-300 leading-relaxed pt-1 border-t border-blue-900/40">
+                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pt-1 border-t border-white/10">
                                         {isEn ? activeConcept.summary.en : activeConcept.summary.fr}
                                     </p>
                                 </div>
 
-                                {/* Explication Théorique Complète */}
                                 <div className="space-y-3">
-                                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
                                         <span>🧠</span> {isEn ? 'Theoretical Foundation' : 'Fondements Théoriques'}
                                     </h3>
-                                    <div className="space-y-2 text-sm text-slate-300 leading-relaxed">
+                                    <div className="space-y-2 text-sm text-slate-200 leading-relaxed">
                                         {(isEn ? activeConcept.explanation.en : activeConcept.explanation.fr).map((paragraph, idx) => (
                                             <p key={idx}>{paragraph}</p>
                                         ))}
                                     </div>
                                 </div>
 
-                                {/* Carte Formule ou Règle Mathématique */}
                                 {activeConcept.formulaOrRule && (
-                                    <div className="rounded-2xl bg-slate-900/90 border border-amber-500/30 p-4 space-y-2 shadow-md">
+                                    <div className="rounded-2xl bg-slate-900/90 border border-white/10 p-4 space-y-2 shadow-md">
                                         <div className="flex items-center justify-between">
-                                            <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                                            <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                                                 <span>📐</span> {activeConcept.formulaOrRule.name}
                                             </h4>
                                         </div>
                                         {activeConcept.formulaOrRule.formula && (
-                                            <div className="rounded-xl bg-slate-950 p-3 font-mono text-sm font-black text-amber-300 border border-amber-900/50">
+                                            <div className="rounded-xl bg-slate-950 p-3 font-mono text-sm font-black text-amber-300 border border-white/10">
                                                 {activeConcept.formulaOrRule.formula}
                                             </div>
                                         )}
-                                        <p className="text-xs text-slate-300 leading-relaxed">
+                                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                                             {isEn
                                                 ? activeConcept.formulaOrRule.explanation.en
                                                 : activeConcept.formulaOrRule.explanation.fr}
@@ -338,25 +331,24 @@ export function KnowledgeBaseModal({
                                     </div>
                                 )}
 
-                                {/* Exemples Pratiques et Situations Types */}
                                 {activeConcept.practicalExamples.length > 0 && (
                                     <div className="space-y-3">
-                                        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
                                             <span>🎯</span> {isEn ? 'Practical Examples & Key Positions' : 'Exemples Pratiques & Positions Types'}
                                         </h3>
                                         <div className="space-y-3">
                                             {activeConcept.practicalExamples.map((ex, idx) => (
-                                                <div key={idx} className="rounded-2xl bg-slate-900/60 border border-slate-800 p-3.5 space-y-2">
-                                                    <div className="flex items-center justify-between">
-                                                        <span className="text-xs font-semibold text-slate-300">
+                                                <div key={idx} className="rounded-2xl bg-slate-900/60 border border-white/10 p-3.5 space-y-2">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <span className="text-xs sm:text-sm font-semibold text-slate-200">
                                                             {isEn ? ex.positionDesc.en : ex.positionDesc.fr}
                                                         </span>
-                                                        <span className="font-mono text-xs font-black text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-800/60">
+                                                        <span className="font-mono text-xs font-black text-emerald-300 bg-emerald-950/60 px-2.5 py-0.5 rounded-lg border border-white/10 shrink-0">
                                                             ✓ {ex.bestPlay}
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs text-slate-400 leading-relaxed">
-                                                        <strong className="text-slate-300">{isEn ? 'Reasoning:' : 'Raisonnement :'}</strong>{' '}
+                                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                                        <strong className="text-slate-200">{isEn ? 'Reasoning:' : 'Raisonnement :'}</strong>{' '}
                                                         {isEn ? ex.reasoning.en : ex.reasoning.fr}
                                                     </p>
                                                 </div>
@@ -365,9 +357,8 @@ export function KnowledgeBaseModal({
                                     </div>
                                 )}
 
-                                {/* Règle d'or de Grand-Maître */}
-                                <div className="rounded-2xl bg-amber-950/20 border border-amber-500/40 p-4 space-y-1">
-                                    <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <div className="rounded-2xl bg-amber-950/20 border border-white/10 p-4 space-y-1">
+                                    <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                                         <span>🏆</span> {isEn ? 'Grandmaster Golden Rule' : "Règle d'Or de Grand-Maître"}
                                     </h4>
                                     <p className="text-sm font-bold text-amber-200 italic leading-relaxed">
@@ -375,30 +366,29 @@ export function KnowledgeBaseModal({
                                     </p>
                                 </div>
 
-                                {/* Sources Fiables & Bibliographie */}
-                                <div className="border-t border-slate-800/80 pt-4 space-y-2">
-                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                                <div className="border-t border-white/10 pt-4 space-y-2">
+                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                                         <span>🌐</span> {isEn ? 'Authoritative Sources & Data References' : 'Sources Fiables & Références Documentaires'}
                                     </h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         {activeConcept.sources.map((src, idx) => (
                                             <div
                                                 key={idx}
-                                                className="rounded-xl bg-slate-900/40 border border-slate-800/60 p-2.5 text-xs flex flex-col justify-between"
+                                                className="rounded-xl bg-slate-900/40 border border-white/10 p-3 text-xs flex flex-col justify-between"
                                             >
                                                 <div>
-                                                    <span className="text-[10px] uppercase font-bold text-blue-400 block">
+                                                    <span className="text-xs uppercase font-bold text-blue-300 block">
                                                         [{src.type}] {src.author}
                                                     </span>
-                                                    <strong className="text-white block mt-0.5">{src.title}</strong>
-                                                    {src.details && <p className="text-slate-400 text-[11px] mt-0.5">{src.details}</p>}
+                                                    <strong className="text-white block mt-0.5 text-sm">{src.title}</strong>
+                                                    {src.details && <p className="text-slate-300 text-xs mt-0.5">{src.details}</p>}
                                                 </div>
                                                 {src.url && (
                                                     <a
                                                         href={src.url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="mt-2 text-blue-400 hover:text-blue-300 inline-flex items-center gap-1 text-[11px] font-semibold"
+                                                        className="mt-2 text-blue-300 hover:text-blue-200 inline-flex items-center gap-1 text-xs font-semibold"
                                                     >
                                                         <span>{isEn ? 'Read on Backgammon Galore' : 'Consulter sur Backgammon Galore'}</span>
                                                         <span>↗</span>

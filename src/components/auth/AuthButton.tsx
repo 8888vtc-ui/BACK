@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import AuthModal from './AuthModal';
 import {
     getCurrentUser,
@@ -115,14 +116,14 @@ export default function AuthButton() {
                     </div>
 
                     <div className="py-1 border-b border-slate-800/80">
-                        <a
+                        <Link
                             href="/progression"
                             onClick={() => setIsDropdownOpen(false)}
                             className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-slate-200 hover:bg-slate-800 hover:text-white transition"
                         >
                             <span>📊</span>
                             <span>Ma Progression (PR)</span>
-                        </a>
+                        </Link>
                     </div>
 
                     <div className="py-1">

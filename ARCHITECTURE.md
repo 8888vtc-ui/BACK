@@ -6,8 +6,9 @@
 > 📚 **Carte d'orientation** : [`PROJECT_MAP.md`](PROJECT_MAP.md) permet de comprendre
 > le projet en 1 minute et d'ajouter une fonction en 2 minutes. **Lire en premier.**
 >
-> 💎 **Référentiel d'Excellence Master** : [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md)
-> regroupe les spécifications ultimes de compétition : Game Feel FLIP, Glicko-2 Composite, Audio modal & Provably Fair.
+> 💎 **Référentiel d'Excellence Master & Perfection Produit Max (70 % $\to$ 100 %)** :
+> [`SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md`](SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md) et [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md)
+> imposent la **priorité exclusive à la Perfection Produit (Zéro coup douteux du Bot, Esthétique Haute-Horlogerie sans surcharge visuelle, Zéro gros ou petit bug)** avant toute activation commerciale.
 
 > ⚠️ **Charte de scalabilité & Doctrine Atomique obligatoires** : toute nouvelle création de code DOIT
 > respecter les 5 Lois Fondamentales définies dans [`SCALABILITY.md`](SCALABILITY.md) :
@@ -53,10 +54,11 @@ Principes directeurs :
 | Moteur de jeu | **Open Sage (bgsage-service sur Google Cloud Run) + repli local tri-phase TypeScript** (point d'entrée unifié côté client) |
 | Moteur serveur | **Open Sage** (`bgsage-service/`) : FastAPI + moteur neuronal `bgsage` (PR 0.23, 4 niveaux de bot + videau Double/Take/Pass) sur Google Cloud Run |
 | Moteur serveur (legacy) | **Backend Python** (archivé sous `archive/backend_engine_gnubg_legacy/`) : FastAPI + client GNUBG |
-| Coach IA | **Google Gemini `gemini-2.5-flash`** via streaming SSE + Market Window + Cache L2 Supabase (`coach_explanations`) |
-| Persistance | **Supabase** (Postgres + Auth + RLS + Cache Coach L2 + Erreurs Récurrentes + Glicko-2/FSRS + Quotas Stripe) |
-| Mobile & PWA | **Capacitor 8** (iOS/Android) + **PWA Web installable** (Desktop & Mobile) |
-| Tests | **Vitest** (1 253 tests unitaires sur 215 fichiers) + **Playwright** (e2e) |
+| Coach IA | **API Google Gemini directe (`gemini-3.8-flash` / `gemini-3.6` + repli `gemini-3.5`)** via streaming SSE + Structured Outputs + Cache L2 Supabase (`public.coach_explanations`) |
+| Monétisation (2 Temps) | **Phase 1 (Court Terme — Hard Paywall)** : 14.99 $/mo ou 99.00 $/an (bloqué après 3 blunders à vie + `/drills` réservé Pro) · **Phase 2 (Long Terme — Rétention & Clubs)** : Pack Club & Chouette (149,99 €/an, 5 sièges), Downsell anti-churn (9,99 €/mo) et Reverse Trial |
+| Persistance | **Supabase** (Postgres + Auth + RLS + Cache Coach L2 `coach_explanations` + Blunders `recurring_errors` + Abonnements/Quotas `profiles` & `credit_usage_ledger`) |
+| Mobile & PWA | **Capacitor 8** (iOS/Android — `com.backgammontour.app`) + **PWA Web installable** (Desktop & Mobile) |
+| Tests | **Vitest** (1 310 tests unitaires sur 224 fichiers) + **Playwright** (e2e) |
 
 ---
 
@@ -125,7 +127,7 @@ backgammon/
 │   └── requirements-dev.txt     # + pytest, httpx
 ├── archive/                     # Moteurs historiques archivés (backend_engine_gnubg_legacy, wildbg)
 ├── supabase/
-│   └── migrations/              # 8 migrations SQL + RLS (recurring_errors, cache L2, Glicko-2/FSRS, quotas Stripe)
+│   └── migrations/              # 9 migrations SQL + RLS (recurring_errors, cache L2 coach_explanations, Glicko-2/FSRS, quotas Stripe & ledger IA)
 ├── docs/                        # Documentation détaillée & ADRs
 ├── e2e/                         # Tests Playwright
 ├── ios/                         # Projet Capacitor iOS
@@ -174,10 +176,9 @@ aucun miroir ni inversion :
 
 | Indice | Signification |
 |---|---|
+| `board[X_BAR]` (0) / `board[X_OFF]` (0) | Barre de X (Blanc) — valeur positive (`X_BAR = 0`, `X_OFF = 0`) |
 | `board[1..24]` | Flèches 1 à 24 (indices absolus, identiques à l'affichage) |
-| `board[X_BAR]` (25) | Barre de X (Blanc) — valeur positive |
-| `board[O_BAR]` (0) | Barre de O (Noir) — valeur négative |
-| `board[X_OFF]` / `board[O_OFF]` | Pions sortis (bear-off) |
+| `board[O_BAR]` (25) / `board[O_OFF]` (25) | Barre de O (Noir) — valeur négative (`O_BAR = 25`, `O_OFF = 25`) |
 
 - **Valeurs positives** = pions X (Blanc, avance de 24 → 1).
 - **Valeurs négatives** = pions O (Noir, avance de 1 → 24).
@@ -222,30 +223,29 @@ aucun miroir ni inversion :
 
 Module **100 % pur**, sans dépendance React/Node/navigateur :
 
-- Représentation du plateau : tableau de 26 entiers (`board[0]` = barre O, `board[1..24]` = flèches, `board[25]` = barre X ; positif = X, négatif = O).
+- Représentation du plateau : tableau de 26 entiers (`board[0]` = barre X / `X_BAR`, `board[1..24]` = flèches, `board[25]` = barre O / `O_BAR` ; positif = X, négatif = O).
 - Génération exhaustive des coups légaux (`generateLegalMoves`, `computeLegalTargets`).
 - Machine à états de partie, videau, bear-off, gammons/backgammons.
 - Sérialisation XGID, pip count, borne-off count.
 
 ### 5.2 Moteur Open Sage (bgsage-service/) & Client `src/lib/engine/bgsageClient.ts`
 - **Moteur neuronal Open Sage (bgsage sur Google Cloud Run)** :
-  - **Service FastAPI (`bgsage-service/`)** : déployé sur Google Cloud Run (`https://bgsage-service-468274233732.europe-west1.run.app`), exposant `/api/evaluate`, `/api/evaluate-board`, `/api/selfplay`, `/api/health`.
+  - **Service FastAPI (`bgsage-service/`)** : déployé sur Google Cloud Run (`https://bgsage-service-468274233732.europe-west1.run.app`), exposant `/api/evaluate`, `/api/evaluate-board`, `/api/selfplay`, `/health`.
   - **Client TypeScript (`src/lib/engine/bgsageClient.ts`)** : pilote les coups de pions des bots (`selectBotMoveWithBgsage`), les décisions de videau (`evaluateBotCubeWithBgsage`) et le Coach IA (`evaluateWithBgsage`).
   - **Retrait de WildBG WASM** : WildBG a été retiré au profit exclusif d'Open Sage.
 - **Client Fallback Hors-Ligne** : `src/lib/engine/evaluator.ts` exposant l'évaluation tri-phase instantanée hors-ligne.
 - **Doc de référence** : [`DOCS_ENGINE.md`](DOCS_ENGINE.md) et [`bgsage-service/README.md`](bgsage-service/README.md).
 
-### 5.3 Classificateur d'erreurs — `src/features/coach/moveClassifier.ts`
+### 5.3 Classificateur d'erreurs — `src/features/coach/logAnalyzer.ts` & `moveClassifier.ts`
 
 Traduit les équités brutes en verdicts pédagogiques (EMG) :
 
-| Verdict | Seuil de perte d'équité |
-|---|---|
-| Excellent / optimal | ≤ 0.010 |
-| Bon | ≤ 0.020 |
-| Erreur | > 0.020 |
-| **Blunder** | > 0.080 |
-| Howler | > 0.250 |
+| Verdict (`logAnalyzer.ts` — 4 paliers) | Seuil de perte d'équité | Verdict détaillé (`moveClassifier.ts` — 6 paliers) |
+|---|---|---|
+| `Optimal ✅` | ≤ 0.010 | `optimal` (≤ 0.005) / `good` (≤ 0.010) |
+| `Bon 👍` | ≤ 0.020 | `good` (≤ 0.020) |
+| `Imprécision ⚠️` | > 0.020 (≤ 0.080) | `inaccuracy` (≤ 0.040) / `mistake` (≤ 0.080) |
+| **`Blunder ❌`** | **> 0.080** | `blunder` (≤ 0.250) / `howler` (> 0.250) |
 
 ### 5.4 Extracteur de concepts — `src/features/coach/featureExtractor.ts`
 
@@ -253,8 +253,8 @@ Fonction pure `Position + contexte → PositionConcepts` : pip counts, classific
 
 ### 5.5 Coach LLM — `src/app/api/coach/route.ts`
 
-- Route Handler serveur (clé API côté serveur) avec streaming SSE et contrôle de quota (`402 Payment Required` au-delà de 3 analyses gratuites / 24h).
-- Fournisseur principal Google Gemini (`gemini-2.5-flash`) + Cache L2 partagé Supabase (`coach_explanations`).
+- Route Handler serveur (clé API côté serveur) avec streaming SSE et contrôle de quota (`402 Payment Required` — code `DAILY_COACH_QUOTA_REACHED` au-delà du quota gratuit).
+- Fournisseur exclusif API directe Google Gemini (`gemini-3.8-flash` temps réel / `gemini-3.6` profond / repli `gemini-3.5`) + Cache L2 partagé Supabase (`public.coach_explanations`).
 - Mode dégradé : explication règle-basée locale (`generateRuleBasedExplanation`).
 
 ### 5.5bis Cours explicatif & Synthèse IA de fin de partie — `src/app/api/coach/review/route.ts`
@@ -292,9 +292,9 @@ Sur un double, l'intervalle entre les pions est réduit de 25 %.
 - Déclenché depuis [`recordBlunderToBankIfApplicable()`](src/components/coach/CoachPanel.tsx:248) quand un blunder a un `conceptId`.
 - Affiché dans [`RecurringErrorsCard`](src/components/stats/RecurringErrorsCard.tsx:1) (tableau de progression).
 
-### 5.8 Multijoueur temps réel — `src/features/multiplayer/` + Supabase Realtime
+### 5.8 Multijoueur temps réel (Exclusivité Salon Privé `BG-XXXX`) — `src/features/multiplayer/` + Supabase Realtime
 
-- Matchmaking Glicko-2 / Elo, salons privés par code.
+- Salons privés directs par code à 4 chiffres (`BG-XXXX`, ex. `BG-8492`) et calcul de classement Glicko-2 Composite (le matchmaking public a été retiré pour garantir 0 s d'attente).
 - Canaux Realtime : broadcast, presence, Postgres Changes.
 - Séquençage strict anti-désynchronisation et RNG Provably Fair dans [`MatchHeader.tsx`](src/components/hud/MatchHeader.tsx:67).
 
@@ -304,11 +304,15 @@ Sur un double, l'intervalle entre les pions est réduit de 25 %.
 - Intégré dans [`useBackgammonGame.ts`](src/hooks/useBackgammonGame.ts) (`state.provablyFair`, révélation de `serverSeed` en fin de partie) et [`MatchHeader.tsx`](src/components/hud/MatchHeader.tsx) (jets multijoueur).
 - Audit interactif en 1 clic via [`DiceAuditModal.tsx`](src/components/dice/DiceAuditModal.tsx) (montée dans [`GameModalsContainer.tsx`](src/components/modals/GameModalsContainer.tsx) et accessible depuis le bouton `🛡️ Audit Dés (SHA-256)` de [`PostMatchTrainingReport.tsx`](src/components/summary/PostMatchTrainingReport.tsx)).
 
-### 5.10 Économie Freemium, Quota Coach IA & Stripe — `src/lib/subscription/` & `src/lib/stripe/`
+### 5.10 Monétisation en 2 Temps, Quota Coach IA, Rétention & Stripe — `src/lib/subscription/` & `src/lib/stripe/`
 
-- **Quota Gratuit (3 analyses Coach IA / 24h)** : géré côté serveur et local par [`quotaService.ts`](src/lib/subscription/quotaService.ts) (table `coach_usage_logs` + RPC `check_and_increment_coach_quota`, migration [`20261025000000_subscription_quotas_stripe.sql`](supabase/migrations/20261025000000_subscription_quotas_stripe.sql)) et exposé au client par [`useCoachQuota.ts`](src/hooks/useCoachQuota.ts).
-- **Soft Paywall** : lorsque `/api/coach` ou `/api/coach/review` renvoie `402 Payment Required` (`QUOTA_EXCEEDED`), [`PostMatchAiSynthesis.tsx`](src/components/summary/PostMatchAiSynthesis.tsx) affiche la bannière d'upgrade et ouvre [`SubscriptionModal.tsx`](src/components/subscription/SubscriptionModal.tsx).
-- **Stripe Billing** : grille tarifaire ([`plans.ts`](src/lib/stripe/plans.ts), page [`/pricing`](src/app/pricing/page.tsx), entrée menu [`UserAccountMenu.tsx`](src/components/nav/UserAccountMenu.tsx)) et endpoints [`/api/stripe/checkout`](src/app/api/stripe/checkout/route.ts) + [`/api/stripe/webhook`](src/app/api/stripe/webhook/route.ts).
+- **Quota Coach IA & Grace Period 30 jours** : géré côté serveur et local par [`quotaService.ts`](src/lib/subscription/quotaService.ts) (colonnes d'abonnement/quota sur `public.profiles`, tables `public.credit_usage_ledger`, `public.processed_webhooks_events`, `public.checkout_sessions_lock` + RPC `consume_daily_coach_analysis` et `run_daily_lifecycle_engine`, migrations [`20261025000000_subscription_quotas_stripe.sql`](supabase/migrations/20261025000000_subscription_quotas_stripe.sql) et [`20261026000000_saas_blueprint_monetization.sql`](supabase/migrations/20261026000000_saas_blueprint_monetization.sql)) et exposé au client par [`useCoachQuota.ts`](src/hooks/useCoachQuota.ts).
+- **Stratégie en 2 Phases (Court Terme & Long Terme)** :
+  - *Phase 1 (Court Terme — Hard Paywall)* : 3 blunders expliqués à vie (Aha Moment) + blocage Pro sur `/drills`, grille frontale 14.99 $/mo (`coach_monthly`) et 99.00 $/an (`coach_yearly`).
+  - *Phase 2 (Long Terme — Expansion Clubs & Rétention)* : Pack Club & Chouette 5 sièges (`club_chouette` à 149,99 €/an), Downsell anti-churn (9,99 €/mo ou -25 % via [`CancelFlowModal.tsx`](src/components/subscription/CancelFlowModal.tsx)) et Reverse Trial 7j (`pro_reverse_trial`).
+- **Moteur Financier, Garde-Fou Marge IA & Rétention Anti-Churn** : [`retentionEngine.ts`](src/lib/subscription/retentionEngine.ts) (plafond $\text{CAC}_{\max}$, garde-fou de marge brute IA $\ge 50\,\%$ avec routage Google Gemini `gemini-3.8-flash` $\to$ `gemini-3.5` / local dans [`coachRouteHelpers.ts`](src/lib/coach/coachRouteHelpers.ts), `Health Score` pondéré $30/25/15/15/15\,\%$, séquence *Dunning* 7 relances) et [`lifecycleEvents.ts`](src/lib/subscription/lifecycleEvents.ts) (matrice des 9 événements analytiques Jour 1 et signal PQL Mois 1).
+- **Paywall UI & Cancel Flow** : lorsque `/api/coach` ou `/api/coach/review` renvoie `402 Payment Required` (`DAILY_COACH_QUOTA_REACHED`), [`PostMatchAiSynthesis.tsx`](src/components/summary/PostMatchAiSynthesis.tsx) affiche la bannière d'upgrade et ouvre [`SubscriptionModal.tsx`](src/components/subscription/SubscriptionModal.tsx). Le tunnel de rétention en 3 étapes est servi par [`CancelFlowModal.tsx`](src/components/subscription/CancelFlowModal.tsx) et [`ManageSubscriptionBanner.tsx`](src/components/subscription/ManageSubscriptionBanner.tsx).
+- **Stripe Billing & Cron Lifecycle** : grille tarifaire ([`stripePlans.ts`](src/lib/stripe/stripePlans.ts) / [`plans.ts`](src/lib/stripe/plans.ts), page [`/pricing`](src/app/pricing/page.tsx), entrée menu [`UserAccountMenu.tsx`](src/components/nav/UserAccountMenu.tsx)) et endpoints [`/api/stripe/checkout`](src/app/api/stripe/checkout/route.ts), [`/api/stripe/webhook`](src/app/api/stripe/webhook/route.ts) (double idempotence + `invoice.payment_failed`) et [`/api/cron/lifecycle-engine`](src/app/api/cron/lifecycle-engine/route.ts).
 
 ### 5.11 Puzzles Quotidiens V2 & Répétition Espacée FSRS — `src/lib/puzzle/`
 
@@ -334,7 +338,7 @@ sequenceDiagram
     participant C as Classificateur (logAnalyzer)
     participant X as Extracteur de concepts
     participant S as Route Handler /api/coach
-    participant L as Gemini 2.5 Flash (+ Cache L2)
+    participant L as Google Gemini 3.8 Flash / 3.6 (+ Cache L2)
 
     J->>UI: joue un coup
     UI->>G: validation + ajout MatchLogEntry immuable
@@ -343,10 +347,10 @@ sequenceDiagram
     C->>C: verdict (4 paliers : Optimal / Bon / Imprécision / Blunder)
     alt blunder détecté
         C->>X: extraction des concepts
-        X->>S: POST /api/coach (vérification quota 3/24h)
-        S->>L: prompt structuré (ou Cache L2 Supabase)
+        X->>S: POST /api/coach (vérification quota 3 blunders)
+        S->>L: prompt structuré (ou Cache L2 Supabase coach_explanations)
         L-->>S: explication en streaming
-        S-->>UI: SSE (ou 402 Soft Paywall)
+        S-->>UI: SSE (ou 402 Paywall DAILY_COACH_QUOTA_REACHED)
         UI->>J: panneau coach + surbrillance
     end
     G->>S_AI: selectBotMoveWithBgsage (Pipeline parallèle Roll & Compute)
@@ -379,7 +383,7 @@ Le moteur principal en ligne repose sur le microservice **Open Sage (`bgsage-ser
 ### 8.3 Sécurité
 
 - Clés LLM et Stripe uniquement en variables d'environnement serveur.
-- RLS Supabase durci sur toutes les tables (8 migrations SQL) ; validation Zod des payloads.
+- RLS Supabase durci sur toutes les tables (9 migrations SQL) ; validation Zod des payloads.
 - Rate limiting et contrôle de quota (`quotaService.ts`) sur `/api/coach` et `/api/coach/review`.
 
 ### 8.4 Accessibilité et i18n (6 langues + RTL)
@@ -397,10 +401,11 @@ Le moteur principal en ligne repose sur le microservice **Open Sage (`bgsage-ser
 
 | Point | Gravité | Statut |
 |---|---|---|
-| `page.tsx` (découpé à 293 lignes, 3 vues exclusives) | — | ✅ Résolu (conforme R1 < 300 lignes) |
-| `useBackgammonGame.ts` (~2370 lignes) | Élevée | À découper (extraction reducer / effets IA) |
-| `Board.tsx` (~994 lignes) | Moyenne | À découper (sous-composants SVG) |
-| `knowledgeBaseData.ts` (~1587 lignes de données) | Faible | À externaliser en JSON |
+| `page.tsx` (découpé à 274 lignes, 3 vues exclusives) | — | ✅ Résolu (conforme R1 < 300 lignes) |
+| `Board.tsx` (découpé à 281 lignes) | — | ✅ Résolu (conforme R1 < 300 lignes) |
+| `knowledgeBaseData.ts` (47 lignes + `knowledgeBaseData.json`) | — | ✅ Résolu (externalisé en JSON) |
+| `useBackgammonGame.ts` (découpé à 164 lignes) | — | ✅ Résolu (conforme R1 < 200 lignes) |
+| `useMultiplayerGame.ts` (découpé à 144 lignes) | — | ✅ Résolu (conforme R1 < 200 lignes) |
 
 ---
 

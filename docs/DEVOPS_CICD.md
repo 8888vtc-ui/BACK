@@ -17,9 +17,9 @@ flowchart TD
     subgraph CI["Pipeline CI (.github/workflows/ci.yml)"]
         direction TB
         LINT["Frontend Lint & Typecheck\n(ESLint + tsc --noEmit)"]
-        TEST_FE["Tests Unitaires Frontend\n(Vitest: 539 tests)"]
-        TEST_BE["Tests Backend Python\n(Pytest: 24 tests)"]
-        DOCKER_VAL["Test Build Docker Backend\n(gnubg + FastAPI)"]
+        TEST_FE["Tests Unitaires Frontend\n(Vitest: 1 310 tests / 224 fichiers)"]
+        TEST_BE["Tests Backend Python\n(Pytest: bgsage-service)"]
+        DOCKER_VAL["Test Build Docker Backend\n(Open Sage bgsage + FastAPI)"]
         BUILD_FE["Build Production Frontend\n(Next.js App Router)"]
         E2E["Tests E2E Playwright\n(Chromium Desktop)"]
 
@@ -31,7 +31,7 @@ flowchart TD
     subgraph CD["Pipeline CD (.github/workflows/deploy.yml)"]
         direction TB
         ReleaseTag & Manual --> CD_FE["Déploiement Frontend\n(Vercel ou Netlify)"]
-        ReleaseTag & Manual --> CD_BE["Build & Push Image Docker\n(ghcr.io)"]
+        ReleaseTag & Manual --> CD_BE["Build & Push Image Docker\n(Google Cloud Run / ghcr.io)"]
     end
 ```
 
@@ -44,9 +44,9 @@ Le workflow `.github/workflows/ci.yml` s'exécute automatiquement sur chaque `pu
 | Job | Outils & Commandes | Rôle |
 |---|---|---|
 | **Frontend Lint & Typecheck** | `npm run lint`<br>`npm run typecheck` | Détecte les erreurs syntaxiques, conventions React 19 / Next.js et conformité stricte TypeScript. |
-| **Frontend Tests** | `npm test -- --run` | Exécute la suite complète de 539 tests Vitest (moteur, IA, videau, multijoueur, sécurité). |
-| **Backend Tests** | `pytest backend-engine/tests -v` | Exécute les tests unitaires Python (modèles Pydantic, parsers de coups, rate limiter, API). |
-| **Docker Build & Verify** | `docker build` + `docker run` | Valide la compilation de l'image Docker Debian avec le binaire réel `gnubg` et teste les parsers en conteneur. |
+| **Frontend Tests** | `npm test -- --run` | Exécute la suite complète de 1 310 tests Vitest sur 224 fichiers (moteur, IA, videau, multijoueur, sécurité). |
+| **Backend Tests** | `pytest bgsage-service/tests -v` | Exécute les tests unitaires Python Open Sage (modèles Pydantic, évaluation 0-3 ply, cube, selfplay). |
+| **Docker Build & Verify** | `docker build` + `docker run` | Valide la compilation de l'image Docker `bgsage-service` (Python 3.11 + `bgsage`) et teste `/health`. |
 | **Frontend Build** | `npm run build` | Compile l'application Next.js 15 en mode production (App Router, routes dynamiques, SSR). |
 | **Playwright E2E** | `npm run test:e2e:desktop` | Exécute les scénarios de bout en bout (lancer de dés, déplacement de pions, coach grand-maître). |
 
@@ -79,12 +79,12 @@ Le workflow inspecte automatiquement les secrets configurés dans le dépôt Git
 
 ---
 
-### 3.2 Déploiement Backend (Conteneur Docker sur GHCR)
+### 3.2 Déploiement Backend (Conteneur Docker Open Sage sur Google Cloud Run & GHCR)
 
-Le moteur neuronal d'analyse Backgammon (FastAPI + GNU Backgammon CLI) est packagé sous forme d'image Docker et publié automatiquement sur le **GitHub Container Registry (GHCR)** :
+Le moteur neuronal d'analyse Backgammon **Open Sage** (`bgsage-service/`, FastAPI + `bgsage` C++) est packagé sous forme d'image Docker déployée sur **Google Cloud Run** (`https://bgsage-service-468274233732.europe-west1.run.app`) et publiée sur le **GitHub Container Registry (GHCR)** :
 
 - **Registre** : `ghcr.io`
-- **Image** : `ghcr.io/<votre-orga-ou-username>/backgammon-backend-engine:latest`
+- **Image** : `ghcr.io/<votre-orga-ou-username>/bgsage-service:latest`
 - **Tags automatiques** :
   - `:latest` (sur la branche `main`)
   - `:sha-<commit-hash>` (traçabilité de chaque build)
@@ -93,21 +93,21 @@ Le moteur neuronal d'analyse Backgammon (FastAPI + GNU Backgammon CLI) est packa
 #### Téléchargement et lancement de l'image publiée :
 ```bash
 # Authentification avec GHCR (si image privée) ou pull direct (si publique)
-docker pull ghcr.io/<votre-username>/backgammon-backend-engine:latest
+docker pull ghcr.io/<votre-username>/bgsage-service:latest
 
 # Lancement en arrière-plan avec redémarrage automatique
 docker run -d \
-  --name backgammon-backend \
-  -p 8000:8000 \
+  --name bgsage-service \
+  -p 8080:8080 \
   --restart unless-stopped \
-  ghcr.io/<votre-username>/backgammon-backend-engine:latest
+  ghcr.io/<votre-username>/bgsage-service:latest
 ```
 
 ---
 
 ## 4. Orchestration Locale & Auto-Hébergée (Docker Compose)
 
-Pour déployer l'intégralité de la pile (Frontend Next.js + Backend GNU Backgammon) sur un serveur VPS (ex: Hetzner, OVH, DigitalOcean) ou en local :
+Pour déployer l'intégralité de la pile (Frontend Next.js + Microservice Open Sage `bgsage-service`) sur un serveur VPS (ex: Hetzner, OVH, DigitalOcean) ou en local :
 
 ```bash
 # Construction et lancement simultanés des deux services
@@ -116,7 +116,7 @@ docker compose up --build -d
 
 ### Services instanciés :
 - **`frontend`** : Accessible sur `http://localhost:3000` (Next.js 15 en conteneur multi-stage non-root).
-- **`backend-engine`** : Accessible sur `http://localhost:8000` (FastAPI + gnubg avec healthcheck actif sur `/health`).
+- **`bgsage-service`** : Accessible sur `http://localhost:8080` (FastAPI + Open Sage `bgsage` avec healthcheck actif sur `GET /health`).
 
 Pour vérifier la santé des conteneurs :
 ```bash

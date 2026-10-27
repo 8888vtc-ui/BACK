@@ -278,11 +278,11 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
             onClick={onClose}
         >
             <div
-                className="w-full max-w-4xl max-h-[92vh] overflow-y-auto space-y-4 rounded-3xl border border-[#d4af37]/55 bg-gradient-to-b from-[#1a0f08] via-[#120a05] to-[#0a0503] p-4 text-[#fdf8eb] shadow-[0_28px_80px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,245,205,0.2)] sm:p-6"
+                className="w-full max-w-4xl max-h-[92vh] overflow-y-auto space-y-4 rounded-3xl border border-white/10 bg-gradient-to-b from-[#1a0f08] via-[#120a05] to-[#0a0503] p-4 text-[#fdf8eb] shadow-[0_28px_80px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,245,205,0.2)] sm:p-6"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* En-tête de la modale */}
-                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#d4af37]/25 pb-3">
+                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
                     <div className="flex items-center gap-2.5">
                         <span
                             aria-hidden="true"
@@ -308,7 +308,7 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                         onClick={onClose}
                         data-testid="dice-audit-close-btn"
                         aria-label="Fermer la modale d'audit"
-                        className="rounded-xl border border-[#d4af37]/40 bg-[#24140a] px-3 py-1.5 text-xs font-bold text-[#fce8b2] transition hover:border-[#f3c65f] hover:text-white active:scale-95"
+                        className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-[#fce8b2] transition hover:border-white/25 hover:text-white active:scale-95"
                     >
                         ✕ Fermer
                     </button>
@@ -354,15 +354,15 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                 {/* 2. Affichage des graines (Commit - Play - Reveal) */}
                 <section
                     aria-label="Graines cryptographiques du match"
-                    className="grid grid-cols-1 gap-2.5 rounded-2xl border border-[#d4af37]/35 bg-[#120904]/90 p-3.5"
+                    className="grid grid-cols-1 gap-2.5 rounded-2xl border border-white/10 bg-[#120904]/90 p-3.5"
                 >
                     {/* serverSeedHash initial */}
-                    <div className="rounded-xl border border-[#d4af37]/25 bg-[#0c0603] p-2.5">
+                    <div className="rounded-xl border border-white/10 bg-[#0c0603] p-2.5">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#f3c65f]">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
                                 🔒 Phase 1 (Commit pré-match) — serverSeedHash initial (SHA-256)
                             </span>
-                            <span className="rounded-full border border-emerald-500/45 bg-emerald-950/60 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
+                            <span className="rounded-full border border-emerald-500/45 bg-emerald-950/60 px-2.5 py-0.5 font-mono text-[11px] font-bold text-emerald-300">
                                 Engagement scellé avant le 1er jet
                             </span>
                         </div>
@@ -375,14 +375,14 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                     </div>
 
                     {/* serverSeed révélée */}
-                    <div className="rounded-xl border border-[#d4af37]/25 bg-[#0c0603] p-2.5">
+                    <div className="rounded-xl border border-white/10 bg-[#0c0603] p-2.5">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#f3c65f]">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
                                 🔑 Phase 3 (Reveal) — serverSeed révélée (256 bits)
                             </span>
                             <span
                                 data-testid="dice-audit-hash-match-badge"
-                                className={`rounded-full border px-2 py-0.5 font-mono text-[10px] font-bold ${
+                                className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-bold ${
                                     isHashMatch
                                         ? 'border-emerald-500/50 bg-emerald-950/70 text-emerald-300'
                                         : 'border-rose-500/50 bg-rose-950/70 text-rose-300'
@@ -402,12 +402,12 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                     </div>
 
                     {/* clientSeed combinée */}
-                    <div className="rounded-xl border border-[#d4af37]/25 bg-[#0c0603] p-2.5">
+                    <div className="rounded-xl border border-white/10 bg-[#0c0603] p-2.5">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#f3c65f]">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
                                 🤝 Phase 2 (Play multipartite) — clientSeed combinée (clientSeedA:clientSeedB)
                             </span>
-                            <span className="font-mono text-[10px] text-[#e8dcc6]/70">
+                            <span className="font-mono text-[11px] text-[#e8dcc6]/70">
                                 Message HMAC : <code className="text-[#f3c65f]">{effectiveClientSeed}:nonce</code>
                             </span>
                         </div>
@@ -419,7 +419,7 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                         </p>
 
                         {onUpdateClientSeeds && (
-                            <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-[#d4af37]/15 pt-2">
+                            <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-white/10 pt-2">
                                 <input
                                     type="text"
                                     value={customSeedA}
@@ -427,7 +427,7 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                                     placeholder="Graine Joueur A (clientSeedA)"
                                     aria-label="Graine Joueur A"
                                     data-testid="dice-audit-input-seed-a"
-                                    className="flex-1 min-w-[140px] rounded-lg border border-[#d4af37]/35 bg-[#180d07] px-2.5 py-1 font-mono text-xs text-[#fdf8eb]"
+                                    className="flex-1 min-w-[140px] rounded-lg border border-white/10 bg-[#180d07] px-2.5 py-1 font-mono text-xs text-[#fdf8eb]"
                                 />
                                 <input
                                     type="text"
@@ -436,13 +436,13 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                                     placeholder="Graine Joueur B (clientSeedB)"
                                     aria-label="Graine Joueur B"
                                     data-testid="dice-audit-input-seed-b"
-                                    className="flex-1 min-w-[140px] rounded-lg border border-[#d4af37]/35 bg-[#180d07] px-2.5 py-1 font-mono text-xs text-[#fdf8eb]"
+                                    className="flex-1 min-w-[140px] rounded-lg border border-white/10 bg-[#180d07] px-2.5 py-1 font-mono text-xs text-[#fdf8eb]"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => onUpdateClientSeeds(customSeedA, customSeedB)}
                                     data-testid="dice-audit-apply-seeds-btn"
-                                    className="rounded-lg border border-[#d4af37]/50 bg-[#2c190d] px-3 py-1 text-xs font-bold text-[#fce8b2] hover:border-[#f3c65f]"
+                                    className="rounded-lg border border-white/10 bg-white/10 px-3 py-1 text-xs font-bold text-[#fce8b2] hover:border-white/25"
                                 >
                                     Mettre à jour
                                 </button>
@@ -464,13 +464,13 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
 
                     <div
                         data-testid="dice-audit-rolls-table-container"
-                        className="max-h-64 overflow-y-auto rounded-2xl border border-[#d4af37]/35 bg-[#0c0603]/95"
+                        className="max-h-64 overflow-y-auto rounded-2xl border border-white/10 bg-[#0c0603]/95"
                     >
                         <table
                             data-testid="dice-audit-rolls-table"
                             className="w-full border-collapse text-left font-mono text-xs"
                         >
-                            <thead className="sticky top-0 z-10 border-b border-[#d4af37]/30 bg-[#1e1109] text-[10px] font-bold uppercase tracking-wider text-[#f3c65f]">
+                            <thead className="sticky top-0 z-10 border-b border-white/10 bg-[#1e1109] text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
                                 <tr>
                                     <th className="px-3 py-2">Tour (nonce)</th>
                                     <th className="px-3 py-2">Jet Réel</th>
@@ -504,7 +504,7 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                                             <td className="px-3 py-2 font-bold text-emerald-300">
                                                 #{row.nonce}
                                                 {row.isOpeningRoll && (
-                                                    <span className="ml-1.5 rounded bg-emerald-900/70 px-1.5 py-0.5 font-sans text-[9px] font-semibold uppercase text-emerald-200">
+                                                    <span className="ml-1.5 rounded bg-emerald-900/70 px-1.5 py-0.5 font-sans text-[11px] font-semibold uppercase text-emerald-200">
                                                         Ouverture
                                                     </span>
                                                 )}
@@ -525,14 +525,14 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                                                 {row.isValid ? (
                                                     <span
                                                         data-testid={`dice-audit-status-${row.nonce}`}
-                                                        className="inline-flex items-center gap-1 rounded-full border border-emerald-400/50 bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-black text-emerald-300"
+                                                        className="inline-flex items-center gap-1 rounded-full border border-emerald-400/50 bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-black text-emerald-300"
                                                     >
                                                         Validé ✓
                                                     </span>
                                                 ) : (
                                                     <span
                                                         data-testid={`dice-audit-status-${row.nonce}`}
-                                                        className="inline-flex items-center gap-1 rounded-full border border-rose-400/50 bg-rose-500/20 px-2.5 py-0.5 text-[10px] font-black text-rose-300"
+                                                        className="inline-flex items-center gap-1 rounded-full border border-rose-400/50 bg-rose-500/20 px-2.5 py-0.5 text-[11px] font-black text-rose-300"
                                                     >
                                                         Invalide ✗
                                                     </span>
@@ -547,7 +547,7 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                 </section>
 
                 {/* 4. Pied de modale : Bouton d'exportation / copie pour vérification externe */}
-                <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d4af37]/25 pt-3">
+                <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
                     <p className="text-[11px] text-[#e8dcc6]/70">
                         Vérifiable indépendamment via OpenSSL, CyberChef ou tout terminal HMAC-SHA256.
                     </p>
@@ -557,7 +557,7 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                             type="button"
                             onClick={() => void handleCopyAuditProof()}
                             data-testid="dice-audit-copy-btn"
-                            className="inline-flex items-center gap-2 rounded-xl border border-[#f3c65f]/65 bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#1a0f07] shadow-[0_6px_18px_rgba(212,175,55,0.28)] transition hover:brightness-105 active:scale-95"
+                            className="inline-flex items-center gap-2 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#1a0f07] shadow-[0_6px_18px_rgba(212,175,55,0.28)] transition hover:brightness-105 active:scale-95"
                         >
                             <span aria-hidden="true">{copiedFeedback ? '✓' : '📋'}</span>
                             <span>

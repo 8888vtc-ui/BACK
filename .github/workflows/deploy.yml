@@ -116,18 +116,18 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ steps.repo_name.outputs.lowercase }}/backend-engine
+          images: ghcr.io/${{ steps.repo_name.outputs.lowercase }}/bgsage-service
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix=sha-,format=short
             type=semver,pattern={{version}}
             type=ref,event=branch
 
-      - name: Build and push backend Docker image
+      - name: Build and push bgsage-service Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./backend-engine
-          file: ./backend-engine/Dockerfile
+          context: ./bgsage-service
+          file: ./bgsage-service/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -136,12 +136,12 @@ jobs:
 
       - name: Output deployment summary
         run: |
-          echo "### Backend Docker Image Published" >> $GITHUB_STEP_SUMMARY
-          echo "The GNU Backgammon backend engine image was successfully published to GHCR:" >> $GITHUB_STEP_SUMMARY
+          echo "### Backend Open Sage (bgsage-service) Docker Image Published" >> $GITHUB_STEP_SUMMARY
+          echo "The Open Sage backend engine image was successfully published to GHCR:" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "docker pull ghcr.io/${{ steps.repo_name.outputs.lowercase }}/backend-engine:latest" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ghcr.io/${{ steps.repo_name.outputs.lowercase }}/bgsage-service:latest" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "Run locally or deploy via Docker Compose:" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "docker run -d --name backgammon-backend -p 8000:8000 ghcr.io/${{ steps.repo_name.outputs.lowercase }}/backend-engine:latest" >> $GITHUB_STEP_SUMMARY
+          echo "docker run -d --name bgsage-service -p 8080:8080 ghcr.io/${{ steps.repo_name.outputs.lowercase }}/bgsage-service:latest" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY

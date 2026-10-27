@@ -313,7 +313,7 @@ export const DAILY_PUZZLES_CATALOG: ReadonlyArray<DailyPuzzleDefinition> = [
         strategicPrinciple:
             'Lorsqu’une 4-prime (points 5, 6, 7, 8) est déjà en place et que l’adversaire possède deux pions arrières piégés sur le point 1, étendre la prime en 5-prime (8/4 6/4) prime sur toute évasion arrière.',
         geminiExplanation:
-            'Open Sage 3-Ply certifie 8/4 6/4 (+0.642 Eq). En fermant le point 4 sans casser le point 8 (qui compte 3 dames), vous érigez une 5-prime pure (4-5-6-7-8). Les deux dames adverses sur le point 1 sont paralysées : seul un 6 leur permettrait d’atteindre le point 7 déjà occupé.',
+            'Monte-Carlo 3-Ply certifie 8/4 6/4 (+0.642 Eq). En fermant le point 4 sans casser le point 8 (qui compte 3 dames), vous érigez une 5-prime pure (4-5-6-7-8). Les deux dames adverses sur le point 1 sont paralysées : seul un 6 leur permettrait d’atteindre le point 7 déjà occupé.',
     },
     {
         id: 'sage_daily_02_bar_reentry_blitz',
@@ -441,7 +441,7 @@ export const DAILY_PUZZLES_CATALOG: ReadonlyArray<DailyPuzzleDefinition> = [
         turn: 'X',
         dice: [6, 1],
         initialBoard: buildBoard(
-            { 1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 2 },
+            { 1: 2, 2: 2, 3: 2, 4: 3, 5: 3, 6: 3 },
             { 19: 5, 20: 5, 21: 4 },
             0,
             1,
@@ -455,7 +455,7 @@ export const DAILY_PUZZLES_CATALOG: ReadonlyArray<DailyPuzzleDefinition> = [
         doublingOfferedBy: null,
         opponentReplay: {
             boardBeforeOpponent: buildBoard(
-                { 1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 2 },
+                { 1: 2, 2: 2, 3: 2, 4: 3, 5: 3, 6: 3 },
                 { 19: 5, 20: 5, 21: 4 },
                 0,
                 1,
@@ -675,7 +675,7 @@ export function classifyEquityDeltaVerdict(params: {
             trapAlertMessage: null,
             earnedXp,
             xpPenaltyPct,
-            feedbackHeadline: 'Coup Optimal Certifié Open Sage 3T !',
+            feedbackHeadline: 'Coup Optimal Certifié Monte-Carlo 3-Ply !',
             feedbackDetail: `Vous avez trouvé la ligne exacte (${params.bestNotation}) sans aucune perte d'équité (ΔE = 0.000).`,
         };
     }

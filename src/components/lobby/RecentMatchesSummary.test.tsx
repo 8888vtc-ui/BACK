@@ -16,7 +16,7 @@ describe('RecentMatchesSummary', () => {
             id: 'match-1',
             dateIso: '2026-10-22T20:00:00.000Z',
             relativeDate: 'Hier',
-            opponentLabel: 'IA Open Sage (Expert)',
+            opponentLabel: 'IA Monte-Carlo (Expert)',
             scoreX: 7,
             scoreO: 3,
             matchLength: 7,

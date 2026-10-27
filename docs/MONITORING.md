@@ -22,12 +22,12 @@ flowchart LR
         UI --> Analytics
     end
 
-    subgraph Backend["Backend Engine (Python 3.12 / FastAPI)"]
-        FastAPI["Endpoints FastAPI & Pool Workers"]
-        SentryBE["Sentry SDK (FastAPI Integration)"]
-        JSONLogBE["Logger JSON (Formatter)"]
+    subgraph Backend["Backend Open Sage (Python 3.11 / FastAPI bgsage-service)"]
+        FastAPI["Endpoints FastAPI Open Sage"]
+        SentryBE["Sentry SDK / Cloud Run Logs"]
+        JSONLogBE["Logger Structuré (Cloud Logging)"]
         AlertBE["Backend Alert Manager"]
-        HealthBE["GET /health, /health/ready, /health/live"]
+        HealthBE["GET /health"]
 
         FastAPI --> SentryBE
         FastAPI --> JSONLogBE
@@ -60,10 +60,10 @@ Le SDK `@sentry/nextjs` est initialisé à travers trois points d'entrée :
 - [`src/lib/monitoring/sentry.ts`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/lib/monitoring/sentry.ts) : Module centralisé fournissant `captureException`, `captureMessage`, `setMonitoringUser`, `addMonitoringBreadcrumb`.
 - Intégration dans le composant [`src/components/common/ErrorBoundary.tsx`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/components/common/ErrorBoundary.tsx) pour remonter automatiquement les crashs de rendu React avec le `componentStack`.
 
-### 2.2 Configuration Backend (FastAPI)
-- [`backend-engine/app/monitoring.py`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/backend-engine/app/monitoring.py) :
-  - Initialisation automatique avec `FastApiIntegration(transaction_style="endpoint")` et `StarletteIntegration`.
-  - Échantillonnage des traces (`traces_sample_rate: 0.2` en prod) et profilage (`profiles_sample_rate: 0.1`).
+### 2.2 Configuration Backend (FastAPI Open Sage)
+- [`bgsage-service/app/main.py`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/bgsage-service/app/main.py) :
+  - Microservice FastAPI déployé sur Google Cloud Run (`bgsage-service`, Python 3.11) exposant `/health`, `/api/evaluate`, `/api/evaluate-board` et `/api/selfplay`.
+  - *(Note : l'ancien service `backend-engine/` a été archivé sous `archive/backend_engine_gnubg_legacy/`).*
 
 ### Variables d'Environnement :
 | Variable | Contexte | Description |
@@ -91,22 +91,18 @@ Le module [`src/lib/monitoring/logger.ts`](file:///c:/Users/LAPTOP/Desktop/PROJE
 - **En environnement client** : Un format lisible avec horodatage et contexte dépliable dans les DevTools.
 - **Propagation de Corrélation** : Support des `child` loggers pour lier les logs à un `correlationId` ou `userId`.
 
-### 3.2 Côté Backend Python
-Le module [`backend-engine/app/logger.py`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/backend-engine/app/logger.py) injecte un `JSONFormatter` dans le logger standard :
-- Un middleware intercepte toutes les requêtes entrantes, lit ou génère un en-tête `X-Correlation-ID`, mesure la latence à la milliseconde et logue chaque requête au format JSON.
+### 3.2 Côté Backend Python (`bgsage-service`)
+Le microservice [`bgsage-service/app/main.py`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/bgsage-service/app/main.py) journalise les requêtes entrantes et leur latence d'évaluation Open Sage sur Google Cloud Logging.
 
 ---
 
 ## 4. Sondes de Santé (Health-Checks)
 
-### 4.1 Backend Engine (FastAPI)
+### 4.1 Backend Open Sage (`bgsage-service` — FastAPI)
 
 | Endpoint | Méthode | Rôle | Format de Réponse |
 |---|---|---|---|
-| `/health` | `GET` | Sonde de disponibilité historique (rétrocompatibilité exacte). | `{"status": "ok"}` |
-| `/health/ready` | `GET` | **Readiness Probe** pour Kubernetes / Docker Compose. Vérifie que le pool de workers gnubg est prêt à recevoir des tâches. | `{"status": "ready", "gnubg_pool_ready": true, "pool_stats": {...}, "uptime_seconds": 12.4}` |
-| `/health/live` | `GET` | **Liveness Probe** rapide confirmant que le serveur répond. | `{"status": "alive"}` |
-| `/api/health` | `GET` | Diagnostic complet pour dashboards de maintenance (uptime, Sentry, pool stats). | `{"status": "ok", "service": "backgammon-backend-engine", "version": "0.2.0", ...}` |
+| `/health` | `GET` | Sonde de disponibilité principale (utilisée par `docker-compose.yml` et Google Cloud Run). | `{"status": "ok", "engine": "bgsage"}` |
 
 ### 4.2 Frontend Web App (Next.js)
 
@@ -118,7 +114,7 @@ Le module [`backend-engine/app/logger.py`](file:///c:/Users/LAPTOP/Desktop/PROJE
 
 ## 5. Système d'Alerte Opérationnel
 
-Les modules [`src/lib/monitoring/alerts.ts`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/lib/monitoring/alerts.ts) et [`backend-engine/app/alerts.py`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/backend-engine/app/alerts.py) surveillent les anomalies en temps réel :
+Le module [`src/lib/monitoring/alerts.ts`](file:///c:/Users/LAPTOP/Desktop/PROJET%20TUTO/BACKGAMMON/src/lib/monitoring/alerts.ts) surveille les anomalies en temps réel :
 
 - **Types d'Alertes Gérées** :
   - `HIGH_LATENCY` : Latence anormale sur les évaluations (> 2.5s).

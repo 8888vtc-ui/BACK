@@ -1,7 +1,8 @@
-export * from './types';
+﻿export * from './types';
 export * from './I18nContext';
 export * from './engineMessages';
 export * from './terminologyMatrix';
+export * from './uiTranslations';
 export { fr } from './translations/fr';
 export { en } from './translations/en';
 export { es } from './translations/es';

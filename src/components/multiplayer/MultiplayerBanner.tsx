@@ -59,13 +59,13 @@ export default function MultiplayerBanner({
 
     return (
         <div
-            className="w-full rounded-2xl border border-slate-700/80 bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 p-3 shadow-xl backdrop-blur-md"
+            className="w-full rounded-2xl border border-white/10 bg-gradient-to-r from-[#131926]/95 via-[#0d121d]/95 to-[#070a10]/98 p-3 shadow-xl backdrop-blur-md"
             data-testid="multiplayer-banner"
         >
             {/* Bannière de reconnexion suite à coupure réseau */}
             {isReconnecting && (
                 <div
-                    className="mb-2.5 flex items-center justify-between rounded-xl border border-sky-500/50 bg-sky-500/10 px-3 py-1.5 text-xs text-sky-300 animate-pulse"
+                    className="mb-2.5 flex items-center justify-between rounded-xl border border-sky-500/40 bg-sky-500/10 px-3 py-1.5 text-xs text-sky-300 animate-pulse"
                     data-testid="reconnecting-warning"
                 >
                     <span className="flex items-center gap-2 font-medium">
@@ -77,7 +77,7 @@ export default function MultiplayerBanner({
             {/* Bannière d'alerte en cas de déconnexion de l'adversaire */}
             {status === 'opponent_disconnected' && disconnectCountdown !== null && (
                 <div
-                    className="mb-2.5 flex items-center justify-between rounded-xl border border-amber-500/50 bg-amber-500/10 px-3 py-1.5 text-xs text-amber-300 animate-pulse"
+                    className="mb-2.5 flex items-center justify-between rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs text-amber-300 animate-pulse"
                     data-testid="disconnect-warning"
                 >
                     <span className="flex items-center gap-2 font-medium">
@@ -92,7 +92,7 @@ export default function MultiplayerBanner({
             {/* Bulle de Quick Chat flottante */}
             {quickChatMessage && (
                 <div className="mb-2 text-center animate-bounce">
-                    <span className="inline-block rounded-full bg-slate-800 border border-amber-500/40 px-3 py-1 text-xs font-semibold text-amber-300 shadow-md">
+                    <span className="inline-block rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold text-amber-300 shadow-md">
                         {quickChatMessage.player === matchInfo.localRole ? 'Vous' : opponentProfile.displayName} :{' '}
                         {QUICK_MESSAGES[quickChatMessage.messageId] || quickChatMessage.messageId}
                     </span>
@@ -105,8 +105,8 @@ export default function MultiplayerBanner({
                     <div
                         className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-bold text-white shadow ${
                             matchInfo.localRole === 'X'
-                                ? 'border-2 border-slate-300 bg-slate-700'
-                                : 'border-2 border-amber-500/60 bg-amber-900/60'
+                                ? 'border border-white/25 bg-slate-700'
+                                : 'border border-amber-500/40 bg-amber-900/60'
                         }`}
                     >
                         {matchInfo.localRole}
@@ -116,15 +116,15 @@ export default function MultiplayerBanner({
                             <span>{localProfile.displayName} (Vous)</span>
                             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" title="Connecté" />
                         </div>
-                        <div className="text-[10px] font-mono text-amber-400">
+                        <div className="text-[11px] font-mono text-amber-400">
                             {localProfile.rating} Elo
                         </div>
                         {clockState && (
                             <div
                                 className={`mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-mono font-bold ${
                                     clockState.activePlayer === matchInfo.localRole
-                                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 animate-pulse'
-                                        : 'bg-slate-800 text-slate-400'
+                                        ? 'bg-amber-500/20 text-amber-300 border border-[#f3c65f]/60 animate-pulse'
+                                        : 'border border-white/10 bg-white/5 text-slate-300'
                                 }`}
                                 data-testid="local-clock"
                             >
@@ -146,7 +146,7 @@ export default function MultiplayerBanner({
                             className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-tight shadow-sm transition-all ${
                                 isMyTurn
                                     ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse'
-                                    : 'bg-slate-800 text-slate-400 border border-slate-700'
+                                    : 'bg-white/5 text-slate-300 border border-white/10'
                             }`}
                         >
                             {isMyTurn ? '👉 À VOUS DE JOUER' : `Tour de ${opponentProfile.displayName}`}
@@ -162,7 +162,7 @@ export default function MultiplayerBanner({
                     </div>
 
                     {/* Barre de timer */}
-                    <div className="h-1.5 w-36 overflow-hidden rounded-full bg-slate-800">
+                    <div className="h-1.5 w-36 overflow-hidden rounded-full bg-white/10">
                         <div
                             className={`h-full transition-all duration-1000 ${
                                 isTimerCritical ? 'bg-rose-500' : 'bg-gradient-to-r from-emerald-500 to-amber-400'
@@ -184,15 +184,15 @@ export default function MultiplayerBanner({
                             />
                             <span>{opponentProfile.displayName}</span>
                         </div>
-                        <div className="text-[10px] font-mono text-amber-400">
+                        <div className="text-[11px] font-mono text-amber-400">
                             {opponentProfile.rating} Elo
                         </div>
                         {clockState && (
                             <div
                                 className={`mt-1 inline-flex items-center justify-end gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-mono font-bold ${
                                     clockState.activePlayer === opponentRole
-                                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 animate-pulse'
-                                        : 'bg-slate-800 text-slate-400'
+                                        ? 'bg-amber-500/20 text-amber-300 border border-[#f3c65f]/60 animate-pulse'
+                                        : 'border border-white/10 bg-white/5 text-slate-300'
                                 }`}
                                 data-testid="opponent-clock"
                             >
@@ -208,8 +208,8 @@ export default function MultiplayerBanner({
                     <div
                         className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-bold text-white shadow ${
                             opponentRole === 'X'
-                                ? 'border-2 border-slate-300 bg-slate-700'
-                                : 'border-2 border-amber-500/60 bg-amber-900/60'
+                                ? 'border border-white/25 bg-slate-700'
+                                : 'border border-amber-500/40 bg-amber-900/60'
                         }`}
                     >
                         {opponentRole}
@@ -217,19 +217,19 @@ export default function MultiplayerBanner({
                 </div>
 
                 {/* 4. Actions : Quick Chat & Abandon */}
-                <div className="flex items-center gap-2 border-t border-slate-800/80 pt-2 w-full justify-end">
+                <div className="flex items-center gap-2 border-t border-white/10 pt-2 w-full justify-end">
                     {/* Menu Quick Chat */}
                     <div className="relative">
                         <button
                             type="button"
                             onClick={() => setShowChatMenu(!showChatMenu)}
-                            className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+                            className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-200 hover:border-white/25 hover:text-white transition-colors"
                         >
                             💬 Message
                         </button>
 
                         {showChatMenu && (
-                            <div className="absolute right-0 bottom-full mb-2 z-20 w-44 rounded-xl border border-slate-700 bg-slate-900 p-1.5 shadow-xl space-y-1">
+                            <div className="absolute right-0 bottom-full mb-2 z-20 w-44 rounded-xl border border-white/10 bg-slate-900 p-1.5 shadow-xl space-y-1">
                                 {(
                                     [
                                         ['gg', '👏 Bien joué !'],
@@ -246,7 +246,7 @@ export default function MultiplayerBanner({
                                             onSendQuickChat(key);
                                             setShowChatMenu(false);
                                         }}
-                                        className="w-full rounded-lg px-2 py-1 text-left text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                                        className="w-full rounded-lg px-2 py-1 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
                                     >
                                         {label}
                                     </button>
@@ -260,27 +260,27 @@ export default function MultiplayerBanner({
                         <button
                             type="button"
                             onClick={() => setShowResignConfirm(true)}
-                            className="rounded-lg border border-rose-900/50 bg-rose-950/40 px-2.5 py-1 text-xs text-rose-300 hover:bg-rose-900/60 hover:text-rose-100 transition-colors"
+                            className="rounded-lg border border-white/10 bg-rose-950/40 px-2.5 py-1 text-xs text-rose-300 hover:border-rose-500/40 hover:bg-rose-900/60 hover:text-rose-100 transition-colors"
                         >
                             🏳️ Abandonner
                         </button>
                     ) : (
                         <div className="flex items-center gap-1.5 animate-fade-in">
-                            <span className="text-[10px] text-rose-400">Confirmer ?</span>
+                            <span className="text-xs text-rose-400">Confirmer ?</span>
                             <button
                                 type="button"
                                 onClick={() => {
                                     setShowResignConfirm(false);
                                     onResign();
                                 }}
-                                className="rounded bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-rose-500"
+                                className="rounded bg-rose-600 px-2.5 py-1 text-xs font-bold text-white hover:bg-rose-500"
                             >
                                 Oui
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setShowResignConfirm(false)}
-                                className="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-slate-400 hover:bg-slate-700"
+                                className="rounded border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-300 hover:bg-white/10"
                             >
                                 Non
                             </button>

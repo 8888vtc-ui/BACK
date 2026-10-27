@@ -1,7 +1,7 @@
 # Master Technical & Product Specifications: eXtreme Gammon (XG), Snowie 4 & Backgammon Galaxy Parity
 
 > **Primary Language**: English (International Engineering & WBF/USBGF Competitive Standard)  
-> **Supported i18n Locales**: `en` (Primary), `fr`, `es`, `de`, `ja`, `ar` (RTL-ready), `zh`  
+> **Supported i18n Locales**: `en` (Primary), `fr`, `es`, `pt`, `de`, `ar` (RTL-ready) + `ja` glossary  
 > **Target Benchmarks**: **eXtreme Gammon 2 (XG2)**, **BGBlitz / Snowie 4**, and **Backgammon Galaxy**  
 > **Architectural Governance**: Strict compliance with [`GOVERNANCE.md`](../GOVERNANCE.md) (Zero Mocks in Production, Deterministic Engine Truth, Strict TDD) and [`SCALABILITY.md`](../SCALABILITY.md) ($\le 300$ lines per file, decoupled domain/UI).
 
@@ -55,11 +55,11 @@ The evaluation pipeline orchestrates four deterministic tiers:
 
 | Analysis Level | Engine Depth | Move Filter (Candidate Pruning) | Target Latency (p95) | Runtime Execution Target |
 | :--- | :--- | :--- | :---: | :--- |
-| **0-Ply (Instant)** | Direct neural net forward pass | All legal sequences evaluated | $< 5\text{ ms}$ | `WildBG` WASM Web Worker (`src/workers/wildbg.worker.ts`) |
-| **1-Ply (Fast)** | 1-ply (21 distinct dice replies) | Top 8 moves from 0-ply | $< 20\text{ ms}$ | `bgsage-service` (Open Sage C-bindings) / `WildBG` |
-| **2-Ply (XG Fast / Snowie 2-Ply)** | $21 \times 21 = 441$ reply branches | Normal Filter: Top 5 + any move within $0.080\text{ EMG}$ | $< 60\text{ ms}$ | `backend-engine` (`GnubgPersistentClient` Pool) |
-| **3-Ply (XG World Class)** | $21^3 = 9\,261$ branches | Dynamic 2-pass: re-evaluates moves where $\|\Delta E\| \le 0.060\text{ EMG}$ | $< 320\text{ ms}$ | `backend-engine` (`GnubgPersistentClient` Pool) |
-| **Rollout 1296 / 3888 (Gold)** | $36^2 = 1\,296$ or $3 \times 36^2 = 3\,888$ trials | Top 2 to 4 candidates | $1.5\text{ s} - 6.0\text{ s}$ (SSE stream) | `gnubg` with `set rollout quasi on` (Variance-Reduced Stratified Rollout) |
+| **0-Ply / Offline Instant** | Direct neural pass or Tri-Phase + Exact 54,264 Bear-Off | All legal sequences evaluated | $< 5\text{ ms}$ | `bgsage-service` (0-ply) / Local `evaluator.ts` (`gnubg.worker.ts`) |
+| **1-Ply (Fast)** | 1-ply (21 distinct dice replies) | Top 8 moves from 0-ply | $< 20\text{ ms}$ | `bgsage-service` (Open Sage C-bindings on Google Cloud Run) |
+| **2-Ply (XG Fast / Snowie 2-Ply)** | $21 \times 21 = 441$ reply branches | Normal Filter: Top 5 + any move within $0.080\text{ EMG}$ | $< 60\text{ ms}$ | `bgsage-service` (Open Sage 2-ply on Google Cloud Run) |
+| **3-Ply (XG World Class)** | $21^3 = 9\,261$ branches | Dynamic 2-pass: re-evaluates moves where $\|\Delta E\| \le 0.060\text{ EMG}$ | $< 320\text{ ms}$ | `bgsage-service` (Open Sage 3-ply, PR 0.23) |
+| **Rollout 1296 / 3888 (Gold)** | $36^2 = 1\,296$ or $3 \times 36^2 = 3\,888$ trials | Top 2 to 4 candidates | $1.5\text{ s} - 6.0\text{ s}$ (SSE stream) | `/api/rollout` (Variance-Reduced Stratified Rollout) |
 
 #### Output Probability Vector (5-Tuple Standard)
 Every evaluation returns the canonical 5-tuple probability vector from the active player's perspective:
@@ -118,22 +118,21 @@ $$\text{Luck}_{\text{EMG}}(t) = E_{\text{EMG}}^*(S_t, r_t) - \sum_{k=1}^{21} w_k
 - **Luck-Adjusted Match Equity**: $\Delta \text{MWC}_{\text{skill}} = \Delta \text{MWC}_{\text{actual}} - \Delta \text{MWC}_{\text{luck}}$.
 
 #### D. Error Severity Classification Thresholds (EMG)
-- **Optimal / Excellent**: $\Delta E_{\text{EMG}} < 0.005$
-- **Good**: $0.005 \le \Delta E_{\text{EMG}} < 0.020$
-- **Inaccuracy (`?` / Doubtful)**: $0.020 \le \Delta E_{\text{EMG}} < 0.040$
-- **Mistake (`?!` / Error)**: $0.040 \le \Delta E_{\text{EMG}} < 0.080$
-- **Blunder (`??` / Very Bad)**: $\Delta E_{\text{EMG}} \ge 0.080$
+- **Optimal / Excellent (`logAnalyzer`: `Optimal ✅`)**: $\Delta E_{\text{EMG}} \le 0.010$ (`moveClassifier` optimal $\le 0.005$)
+- **Good (`logAnalyzer`: `Bon 👍`)**: $0.010 < \Delta E_{\text{EMG}} \le 0.020$
+- **Inaccuracy (`?` / `logAnalyzer`: `Imprécision ⚠️`)**: $0.020 < \Delta E_{\text{EMG}} \le 0.040$
+- **Mistake (`?!` / `logAnalyzer`: `Imprécision ⚠️`)**: $0.040 < \Delta E_{\text{EMG}} \le 0.080$
+- **Blunder (`??` / `logAnalyzer`: `Blunder ❌`)**: $\Delta E_{\text{EMG}} > 0.080$ (`howler` $> 0.250$)
 
 ---
 
 ## 4. Core Gameplay, Ergonomics & 60 FPS Zero-Latency Specification
 
 ### 4.1 Interaction Modes (Desktop & Mobile)
-1. **Smart One-Click & Two-Click Hybrid (Desktop)**:
-   - **Left-Click on Checker**: Prioritizes the currently active/preferred die (`preferredDie`, toggled by clicking the dice or pressing `Tab`). If only 1 legal destination exists for the checker, plays it immediately. If 2 distinct destinations exist (and smart-click ambiguity applies), selects the checker and highlights legal target triangles (`ghostDestinations`) so the player never plays an unintended move.
-   - **Right-Click on Checker**: Explicitly plays the secondary die (`1 - preferredDie`).
-   - **Double-Click on Checker**: Executes a **Sum-of-Dice Move** ($d_1 + d_2$ with the same checker) using the exact legal intermediate point (`midDest` via whichever die legally reaches it first, followed immediately by the second die).
-   - **Point-Building Shortcut (Port Click)**: Clicking an empty point or blot when two checkers can legally land on it plays both checkers to make the point.
+1. **Smart Point Click (Destination-First — Zero Native Double-Click)**:
+   - **Left-Click on Checker or Target Point**: Prioritizes the currently active/preferred die (`preferredDie`, toggled by clicking the dice or pressing `Tab`). Clicking a destination point reachable in 1 die plays it immediately; clicking a destination reachable via the sum $d_1 + d_2$ chains both sub-moves with a 55ms intermediate touch pause (`smartClickResolver.ts`); native `onDoubleClick` is strictly prohibited to avoid 250ms debounce latency.
+   - **Right-Click on Checker**: Explicitly plays the secondary die (`1 - preferredDie`). Right-click on the board felt triggers Undo.
+   - **Point-Building Shortcut (Port Click)**: Clicking an empty point or blot when two checkers can legally land on it plays both checkers to make the point with a 45ms choreographed stagger.
 2. **Touch-First Ergonomics (Mobile/Tablet)**:
    - Minimum `44x44 px` WCAG touch targets on all 24 points, bar, and bear-off trays (`X_OFF = 0`, `O_OFF = 25`).
    - Tap on dice swaps `preferredDie` (`0 <-> 1`) with immediate visual and haptic feedback.
@@ -202,6 +201,6 @@ To ensure that live AI Coach hints never corrupt or artificially inflate a playe
 - **Layer 1 (Deterministic Feature Extractor — `tacticalExplainer.ts` & `logAnalyzer.ts`)**:
   - Computes exact pip counts, prime lengths, home-board points, direct/indirect shots (1 to 12 pips), back-checker anchor status, and Kazaross MET gammon prices.
 - **Layer 2 (Contextual LLM Synthesizer — `/api/coach` & `/api/coach/review`)**:
-  - Consumes the immutable `CoachDigest` / `CompleteGameAnalysis` JSON and generates natural-language pedagogical feedback in the user's active locale (`en`, `fr`, `es`, `de`, `ja`) without ever inventing moves or probabilities.
-- **Layer 3 (Canonical XGID Cache — `explanationCache.ts`)**:
-  - Caches explanations by canonical `XGID` + `locale` in Upstash Redis (24h TTL) + local LRU cache.
+  - Consumes the immutable `CoachDigest` / `CompleteGameAnalysis` JSON and generates natural-language pedagogical feedback via direct Google Gemini API (`gemini-3.8-flash` / `gemini-3.6` / fallback `gemini-3.5`) in the user's active locale (`en`, `fr`, `es`, `pt`, `de`, `ar`) without ever inventing moves or probabilities.
+- **Layer 3 (Canonical Position Cache — `explanationCache.ts` & `coachExplanationPersistence.ts`)**:
+  - Caches explanations by canonical `position_key` (SHA-256 of board + match context + move + locale) in L1 Memory LRU + L2 shared Supabase table `public.coach_explanations`.

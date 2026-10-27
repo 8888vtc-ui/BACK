@@ -163,11 +163,20 @@ export function calculateRetryDelay(attempts: number): number {
     return baseDelay + jitter;
 }
 
-function isDuplicateKeyConflict(err: unknown): boolean {
+function isUnrecoverableSyncConflict(err: unknown): boolean {
     if (!err || typeof err !== 'object') return false;
-    const code = (err as { code?: unknown }).code;
+    const code = String((err as { code?: unknown }).code || '');
     const message = String((err as { message?: unknown }).message || '').toLowerCase();
-    return code === '23505' || message.includes('duplicate key') || message.includes('already exists');
+    return (
+        code === '23505' ||
+        code === '22P02' ||
+        code === '42501' ||
+        code === '23503' ||
+        message.includes('duplicate key') ||
+        message.includes('already exists') ||
+        message.includes('invalid input syntax for type uuid') ||
+        message.includes('row-level security')
+    );
 }
 
 /**
@@ -222,6 +231,12 @@ export async function processSyncQueue(force: boolean = false): Promise<{
         const now = Date.now();
 
         for (const item of items) {
+            if (item.payload?.user_id === 'anonymous_player') {
+                await deleteRecord('sync_queue', item.id);
+                syncedCount++;
+                continue;
+            }
+
             if (!force && item.nextRetryAt && now < item.nextRetryAt) {
                 failedCount++;
                 continue;
@@ -248,7 +263,7 @@ export async function processSyncQueue(force: boolean = false): Promise<{
                 await deleteRecord('sync_queue', item.id);
                 syncedCount++;
             } catch (err: unknown) {
-                if (isDuplicateKeyConflict(err)) {
+                if (isUnrecoverableSyncConflict(err)) {
                     await deleteRecord('sync_queue', item.id);
                     syncedCount++;
                     continue;

@@ -1,21 +1,25 @@
 /**
- * Synthèse Vocale Multilingue du Coach IA (Web Speech API).
+ * Synthèse Vocale Multilingue & Transducteur Phonétique AST-to-SSML du Coach IA (Web Speech API).
  *
- * Langues supportées (matrice i18n 5 langues) :
- * - EN (`en-US`)
- * - FR (`fr-FR`)
- * - ES (`es-ES`)
- * - DE (`de-DE`)
- * - JA (`ja-JP`)
- *
- * Résilience & A11y :
- * - SSR-safe et compatible environnement de test / Node.js.
- * - Nettoyage approfondi du Markdown et de la notation technique avant prononciation.
- * - Sélection automatique de la voix native du système correspondant à la locale.
- * - Annulation propre (`cancel()`) pour contrer les chevauchements lors de cadences rapides.
- * - Respect du mode muet global et persistance de la préférence utilisateur.
- * - Strictement 0 any.
+ * Langues supportées :
+ * - EN (`en-US`), FR (`fr-FR`), ES (`es-ES`), DE (`de-DE`), JA (`ja-JP`), PT (`pt-BR`), AR (`ar-SA`)
+ * - Strictement 0 any, < 270 lignes.
  */
+
+import {
+    transduceMoveNotationToPhonetic,
+    transduceToPhoneticSSML,
+    getPhoneticLexicon,
+    type PhoneticLocaleLexicon,
+} from './ssmlTransducer';
+import { detectLocale } from '../i18n/I18nContext';
+
+export {
+    transduceMoveNotationToPhonetic,
+    transduceToPhoneticSSML,
+    getPhoneticLexicon,
+    type PhoneticLocaleLexicon,
+};
 
 export type VoiceCoachLocale = 'en' | 'fr' | 'es' | 'de' | 'ja';
 
@@ -86,24 +90,30 @@ export function sanitizeTextForSpeech(rawText: string): string {
  */
 export function cleanCoachTextForSpeech(rawText: string, locale: string = 'fr'): string {
     if (!rawText) return '';
-    const isFr = locale.toLowerCase().startsWith('fr');
-    const toWord = isFr ? 'vers' : 'to';
-    const barWord = isFr ? 'barre' : 'bar';
-    const offWord = isFr ? 'sortie' : 'off';
-    const deltaWord = isFr ? 'delta équité' : 'delta equity';
-
+    const lex = getPhoneticLexicon(locale);
+    const isEn = (locale || 'fr').toLowerCase().startsWith('en');
     return rawText
         .replace(/#{1,6}\s*/g, '')
         .replace(/\*\*([^*]+)\*\*/g, '$1')
         .replace(/\*([^*]+)\*/g, '$1')
         .replace(/`([^`]+)`/g, '$1')
-        .replace(/ΔEq/gi, deltaWord)
-        .replace(/\bbar\/(\d+)\*?/gi, `${barWord} ${toWord} $1`)
-        .replace(/\b(\d+)\/off\*?/gi, `$1 ${toWord} ${offWord}`)
-        .replace(/\b(\d+)\/(\d+)\((\d+)\)\*?/g, isFr ? '$1 vers $2 $3 fois' : '$1 to $2 $3 times')
-        .replace(/\b(\d+)\/(\d+)\*?/g, `$1 ${toWord} $2`)
+        .replace(/ΔEq/gi, lex.deltaWord)
+        .replace(/\b(\d+)\/36\b/g, (_, n: string) => (isEn ? `${n} chances out of 36` : `${n} chances sur 36`))
+        .replace(/\bbar\/(\d+)\*?/gi, `${lex.barWord} ${lex.toWord} $1`)
+        .replace(/\b(\d+)\/off\*?/gi, `$1 ${lex.toWord} ${lex.offWord}`)
+        .replace(/\b(\d+)\/(\d+)\((\d+)\)\*?/g, (_, from: string, to: string, count: string) =>
+            `${from} ${lex.toWord} ${to} ${lex.timesFormat(count)}`,
+        )
+        .replace(/\b(\d+)\/(\d+)\*?/g, `$1 ${lex.toWord} $2`)
         .replace(/\s+/g, ' ')
         .trim();
+}
+
+/**
+ * Alias de compatibilité AST-to-SSML (`<speak>...</speak>`).
+ */
+export function transduceCoachToSsml(rawText: string, locale: string = 'fr'): string {
+    return transduceToPhoneticSSML(rawText, locale);
 }
 
 /**
@@ -149,11 +159,9 @@ export function selectBestCoachVoice(
     return bestVoice;
 }
 
-/**
- * Normalise un code de langue vers l'une des 5 locales supportées.
- */
 export function resolveVoiceLocale(locale?: string): VoiceCoachLocale {
-    const clean = (locale || 'fr').toLowerCase().slice(0, 2);
+    const raw = locale || detectLocale();
+    const clean = raw.toLowerCase().slice(0, 2);
     if (clean === 'en' || clean === 'fr' || clean === 'es' || clean === 'de' || clean === 'ja') {
         return clean;
     }
@@ -167,9 +175,7 @@ class VoiceCoachEngine {
         if (typeof window !== 'undefined') {
             try {
                 const saved = localStorage.getItem(VOICE_COACH_STORAGE_KEY);
-                if (saved !== null) {
-                    this.enabled = saved === 'true';
-                }
+                if (saved !== null) this.enabled = saved === 'true';
             } catch {
                 // localStorage indisponible
             }
@@ -193,9 +199,7 @@ class VoiceCoachEngine {
 
     public setEnabled(value: boolean): boolean {
         this.enabled = value;
-        if (!value) {
-            this.stop();
-        }
+        if (!value) this.stop();
         if (typeof localStorage !== 'undefined') {
             try {
                 localStorage.setItem(VOICE_COACH_STORAGE_KEY, String(this.enabled));
@@ -220,29 +224,29 @@ class VoiceCoachEngine {
         }
     }
 
-    /**
-     * Prononce une alerte tactique du Coach IA dans la langue spécifiée.
-     */
+    public buildSSML(text: string, locale?: string): string {
+        return transduceToPhoneticSSML(text, resolveVoiceLocale(locale));
+    }
+
     public speak(
         text: string,
-        locale: string = 'fr',
-        options?: { force?: boolean; isGlobalMuted?: boolean; rate?: number },
+        locale?: string,
+        options?: { force?: boolean; isGlobalMuted?: boolean; rate?: number; phoneticMoves?: boolean },
     ): boolean {
         const host = this.getHost();
-        if (!host?.speechSynthesis) return false;
-        if (options?.isGlobalMuted) return false;
+        if (!host?.speechSynthesis || options?.isGlobalMuted) return false;
         if (!this.enabled && !options?.force) return false;
 
-        const cleanText = sanitizeTextForSpeech(text);
+        const resolvedLocale = resolveVoiceLocale(locale);
+        const cleanText = options?.phoneticMoves
+            ? transduceMoveNotationToPhonetic(text, resolvedLocale)
+            : sanitizeTextForSpeech(text);
         if (!cleanText) return false;
 
-        const resolvedLocale = resolveVoiceLocale(locale);
         const bcp47 = VOICE_LOCALE_BCP47[resolvedLocale];
 
         try {
-            // Annulation préalable pour éviter la cacophonie lors des cadences rapides
             host.speechSynthesis.cancel();
-
             const UtteranceCtor =
                 typeof SpeechSynthesisUtterance !== 'undefined'
                     ? SpeechSynthesisUtterance
@@ -258,9 +262,7 @@ class VoiceCoachEngine {
             const matchingVoice =
                 voices.find((v) => v.lang.toLowerCase() === bcp47.toLowerCase()) ||
                 voices.find((v) => v.lang.toLowerCase().startsWith(resolvedLocale));
-            if (matchingVoice) {
-                utterance.voice = matchingVoice;
-            }
+            if (matchingVoice) utterance.voice = matchingVoice;
 
             host.speechSynthesis.speak(utterance);
             return true;

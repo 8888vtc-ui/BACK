@@ -228,15 +228,18 @@ event: done
 data: {"cached": false, "provider": "llm"}
 ```
 
-#### Réponse Quota Dépassé — `402 Payment Required` (Soft Paywall)
-Lorsque l'utilisateur gratuit a consommé ses **3 analyses Coach IA offertes sur 24h glissantes**, l'endpoint retourne :
+#### Réponse Quota Dépassé — `402 Payment Required` (Paywall Coach IA)
+Lorsque l'utilisateur gratuit a consommé son quota de **3 analyses Coach IA offertes**, l'endpoint retourne :
 ```json
 {
-  "error": "QUOTA_EXCEEDED",
-  "message": "Vous avez utilisé vos 3 analyses Coach IA gratuites aujourd'hui.",
-  "usedToday": 3,
-  "dailyLimit": 3,
-  "resetAt": "2026-10-24T00:00:00.000Z",
+  "error": "DAILY_COACH_QUOTA_REACHED",
+  "message": "Vous avez atteint votre limite de 3 analyses Coach IA gratuites.",
+  "quota": {
+    "tier": "free",
+    "usedToday": 3,
+    "dailyLimit": 3,
+    "remainingToday": 0
+  },
   "upgradeUrl": "/pricing"
 }
 ```
@@ -245,7 +248,7 @@ Lorsque l'utilisateur gratuit a consommé ses **3 analyses Coach IA offertes sur
 
 ### 3.2 Synthèse & Cours IA Post-Match — `POST /api/coach/review`
 
-Génère en streaming SSE le cours pédagogique complet de fin de match (forces, axes de travail, leçons prioritaires) à partir du bilan `CompleteGameAnalysis`. Soumis au même contrôle de quota (`402 Payment Required` au-delà de 3 analyses gratuites / 24h pour les comptes non-VIP).
+Génère en streaming SSE le cours pédagogique complet de fin de match (forces, axes de travail, leçons prioritaires) à partir du bilan `CompleteGameAnalysis`. Soumis au même contrôle de quota (`402 Payment Required` — `DAILY_COACH_QUOTA_REACHED` pour les comptes non-Pro ayant atteint leur limite).
 
 - **URL** : `/api/coach/review`
 - **Méthode** : `POST`
@@ -296,18 +299,18 @@ Endpoint serveur d'autorité garantissant l'intégrité anti-triche des parties 
 
 ---
 
-## 5. Endpoints Stripe Billing & Abonnements VIP
+## 5. Endpoints Stripe Billing & Abonnements Pro / VIP
 
 ### 5.1 Créer une Session Stripe Checkout — `POST /api/stripe/checkout`
 
-Crée une session de paiement sécurisée Stripe Checkout pour l'un des plans VIP (`coach_monthly` à 9,99 €/mois, `coach_annual` à 79,99 €/an avec 7 jours d'essai, `club_chouette` à 149,99 €/an).
+Crée une session de paiement sécurisée Stripe Checkout pour l'un des plans (`coach_monthly` à 14.99 $/mois, `coach_yearly` à 99.00 $/an, `club_chouette` à 149,99 €/an pour 5 sièges, ou `coach_downsell_monthly` à 9,99 €/mois).
 
 - **URL** : `/api/stripe/checkout`
 - **Méthode** : `POST`
 - **Corps de la Requête (JSON)** :
   ```json
   {
-    "planId": "coach_annual",
+    "planId": "coach_yearly",
     "userId": "usr-uuid",
     "email": "champion@backgammontour.com"
   }
@@ -322,7 +325,7 @@ Crée une session de paiement sécurisée Stripe Checkout pour l'un des plans VI
 
 ### 5.2 Webhook de Synchronisation Stripe — `POST /api/stripe/webhook`
 
-Vérifie la signature cryptographique `Stripe-Signature` et synchronise les événements `checkout.session.completed`, `customer.subscription.updated` et `customer.subscription.deleted` dans la table Supabase `user_subscriptions`.
+Vérifie la signature cryptographique `Stripe-Signature` et synchronise les événements `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted` et `invoice.payment_failed` dans la table Supabase `public.profiles` (avec journalisation idempotente dans `public.processed_webhooks_events`).
 
 ---
 
@@ -330,5 +333,5 @@ Vérifie la signature cryptographique `Stripe-Signature` et synchronise les év�
 
 | Endpoint | Méthode | Destination | Description | Format Réponse |
 |---|---|---|---|---|
-| `/api/health` | `GET` | Open Sage (`bgsage-service`) | Disponibilité du microservice neuronal Cloud Run. | `{"status": "ok", "engine": "bgsage"}` |
+| `/health` | `GET` | Open Sage (`bgsage-service`) | Disponibilité du microservice neuronal Cloud Run. | `{"status": "ok", "engine": "bgsage"}` |
 | `/api/health` | `GET` | Frontend Next.js | Diagnostic global : ping actif du backend, heap mémoire et état Supabase. | `{"status": "ok", "checks": {"backendEngine": {"status": "ok", "latencyMs": 14}, ...}}` |

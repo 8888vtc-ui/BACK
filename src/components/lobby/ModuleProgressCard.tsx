@@ -43,7 +43,7 @@ const ModuleProgressCardComponent: React.FC<ModuleProgressCardProps> = ({
             type="button"
             data-testid={testId}
             onClick={() => onSelect(id)}
-            className="group relative flex flex-col justify-between gap-2 rounded-2xl border border-[#d4af37]/25 bg-gradient-to-b from-[#121826]/90 to-[#090d16]/95 p-3.5 text-left shadow-[0_10px_24px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,245,205,0.14)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#f3c65f]/65 hover:shadow-[0_14px_30px_rgba(0,0,0,0.7),0_0_20px_rgba(212,175,55,0.18)] active:scale-[0.98]"
+            className="group relative flex flex-col justify-between gap-2 rounded-2xl border border-white/10 bg-[#0d121d]/80 p-3.5 text-left shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-[#131928]/90 active:scale-[0.98]"
         >
             {/* Ligne supérieure : Icône + Badge d'action */}
             <div className="flex w-full items-center justify-between gap-1.5">
@@ -52,7 +52,7 @@ const ModuleProgressCardComponent: React.FC<ModuleProgressCardProps> = ({
                 </span>
                 <span
                     data-testid={`${testId}-action-badge`}
-                    className="rounded-full border border-amber-400/35 bg-amber-500/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-amber-200 transition group-hover:border-amber-300 group-hover:bg-amber-400 group-hover:text-slate-950"
+                    className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-bold text-amber-200 transition group-hover:border-white/25 group-hover:bg-amber-400 group-hover:text-slate-950"
                 >
                     {actionBadge}
                 </span>
@@ -60,12 +60,12 @@ const ModuleProgressCardComponent: React.FC<ModuleProgressCardProps> = ({
 
             {/* Titre & Compteur dynamique */}
             <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-extrabold text-slate-100 group-hover:text-white">
+                <span className="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-white">
                     {title}
                 </span>
                 <span
                     data-testid={`${testId}-live-metric`}
-                    className="text-[10px] font-semibold text-emerald-300/90 leading-tight"
+                    className="text-xs font-medium text-emerald-300/90 leading-tight"
                 >
                     {liveMetricLabel}
                 </span>
@@ -73,7 +73,7 @@ const ModuleProgressCardComponent: React.FC<ModuleProgressCardProps> = ({
 
             {/* Barre de progression Or / Émeraude + Pourcentage ou Streak */}
             <div className="w-full pt-1">
-                <div className="mb-1 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                <div className="mb-1 flex items-center justify-between text-[11px] font-mono text-slate-400">
                     <span>{highlightBadge ?? 'Progression'}</span>
                     <span className="font-bold text-amber-300">{clampedPct}%</span>
                 </div>

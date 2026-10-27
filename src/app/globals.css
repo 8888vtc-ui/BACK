@@ -66,6 +66,40 @@
     100% { transform: translate3d(0, 0, 0) scale3d(1, 1, 1); opacity: 1; }
   }
   .checker-land { animation: checker-land 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  /* Verrouillage natif iOS/Android contre le pull-to-refresh, le pinch-zoom parasite et la sélection */
+  .mobile-game-viewport-lock {
+    touch-action: manipulation;
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Conteneur Portrait : Zéro padding latéral, plein bord-à-bord pour maximiser la largeur des 12 flèches */
+  @media (max-width: 767px) and (orientation: portrait) {
+    .board-adaptive-shell {
+      width: 100vw;
+      height: 100%;
+      max-height: none !important;
+      border-radius: 0 !important;
+      border-left-width: 0 !important;
+      border-right-width: 0 !important;
+      padding-left: 2px !important;
+      padding-right: 2px !important;
+    }
+  }
+
+  /* Conteneur Paysage Mobile : Full-Bleed immersif avec respect des encoches (Dynamic Island / Notch) */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .landscape-full-bleed {
+      padding-top: max(2px, env(safe-area-inset-top, 0px));
+      padding-bottom: max(2px, env(safe-area-inset-bottom, 0px));
+      padding-left: max(6px, env(safe-area-inset-left, 0px));
+      padding-right: max(6px, env(safe-area-inset-right, 0px));
+    }
+  }
 }
 
 /* Isolation stricte de l'indicateur technique Next.js en bas à gauche */

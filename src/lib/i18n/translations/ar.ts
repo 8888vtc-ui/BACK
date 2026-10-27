@@ -91,7 +91,7 @@ export const ar: TranslationDictionary = {
         retryBtn: 'إعادة المحاولة',
     },
     rollout: {
-        title: 'محاكاة عميقة (Rollout GNUBG)',
+        title: 'محاكاة عميقة (Rollout Monte-Carlo)',
         badge: '2-ply',
         subtitle: 'معالجة متوازية ومحاكاة مونت كارلو',
         poolStats: 'المعالجات: {idle}/{total} جاهزة',
@@ -111,7 +111,7 @@ export const ar: TranslationDictionary = {
         completed: 'اكتملت المحاكاة',
         failed: 'فشلت المحاكاة',
         cancelled: 'أُلغيت المحاكاة',
-        progressBarLabel: 'تقدم محاكاة GNUBG',
+        progressBarLabel: 'تقدم محاكاة Monte-Carlo',
         gamesCount: 'الجولات: {done} / {total}',
         gamesLabel: 'الجولات',
         etaRemaining: 'الوقت المتبقي المقدر: {eta}',
@@ -126,7 +126,7 @@ export const ar: TranslationDictionary = {
         tableEquity: 'القيمة المتوقعة (±CI)',
         tableWin: 'فوز %',
         tableGammon: 'غامون %',
-        calculatedIn: 'حُسبت في {duration} ثانية عبر GNUBG',
+        calculatedIn: 'حُسبت في {duration} ثانية عبر Monte-Carlo',
         rerunBtn: 'إعادة المحاكاة',
     },
     engine: {

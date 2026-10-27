@@ -51,18 +51,18 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
         >
             <div className="mb-1 flex flex-wrap items-center justify-between gap-2 px-1">
                 <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400/90">
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-300/90">
                         Académie &amp; Analyse Grand Maître
                     </span>
                     {snapshot.unlockedBadges.length > 0 && (
                         <div
                             data-testid="academy-unlocked-badges"
-                            className="flex items-center gap-1"
+                            className="flex items-center gap-1.5"
                         >
                             {snapshot.unlockedBadges.map((b) => (
                                 <span
                                     key={b.id}
-                                    className="rounded-full border border-amber-400/35 bg-amber-500/15 px-2 py-0.5 text-[9px] font-bold text-amber-200"
+                                    className="rounded-full border border-white/10 bg-amber-500/10 px-2 py-0.5 text-[11px] font-bold text-amber-200"
                                 >
                                     {b.icon} {b.label}
                                 </span>
@@ -70,9 +70,6 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
                         </div>
                     )}
                 </div>
-                <span className="text-[10px] text-slate-400">
-                    Open Sage 3-Ply · Bear-Off Exact
-                </span>
             </div>
 
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
@@ -138,22 +135,23 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
                 href="/academy"
                 prefetch
                 data-testid="lobby-academy-hub-link"
-                className="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-[#d4af37]/40 bg-gradient-to-r from-[#1d160b]/95 via-[#0f1422]/95 to-[#171209]/95 px-4 py-3.5 shadow-[0_10px_28px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,245,205,0.18)] transition hover:border-[#f3c65f] hover:shadow-[0_12px_32px_rgba(212,175,55,0.2)]"
+                className="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#0c111d]/85 px-4 py-3 shadow-md transition hover:border-white/25 hover:bg-[#121828]/90"
             >
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                     <div className="flex items-center gap-2">
-                        <span className="rounded-full border border-[#d4af37]/45 bg-black/50 px-2.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-[#f3c65f]">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
                             🏛️ {ui.lobby.academyBannerBadge}
                         </span>
+                        <span className="text-slate-500">·</span>
+                        <h2 className="font-serif text-sm font-bold text-[#fdf8eb] group-hover:text-amber-200 transition">
+                            {ui.lobby.academyBannerTitle}
+                        </h2>
                     </div>
-                    <h2 className="font-serif text-sm font-bold text-[#fdf8eb] group-hover:text-amber-200 transition">
-                        {ui.lobby.academyBannerTitle}
-                    </h2>
-                    <p className="text-[11px] text-slate-300/90 leading-relaxed">
+                    <p className="text-xs text-slate-300/90 leading-relaxed">
                         {ui.lobby.academyBannerDesc}
                     </p>
                 </div>
-                <span className="shrink-0 rounded-full border border-[#f3c65f]/65 bg-gradient-to-b from-[#3b2b12] to-[#1a1206] px-4 py-2 text-xs font-extrabold uppercase tracking-wider text-[#fff6d6] shadow-md group-hover:scale-105 transition">
+                <span className="shrink-0 rounded-xl border border-white/10 bg-white/[0.06] px-3.5 py-2 text-xs font-bold text-amber-100 group-hover:border-white/25 group-hover:text-white transition">
                     {ui.lobby.academyBannerCta}
                 </span>
             </Link>

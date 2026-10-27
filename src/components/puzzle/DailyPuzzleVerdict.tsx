@@ -2,12 +2,7 @@
 
 /**
  * Carte de Verdict & Gamification du "Puzzle du Jour" (`DailyPuzzleVerdict.tsx`).
- *
- * Affiche les 4 paliers exacts d'écart d'équité ΔE = E(m_1) - E(m_joueur) :
- * - 🟢 BEST (ΔE = 0.000) : Valide le puzzle, incrémente le Streak quotidien.
- * - 🟡 EXCELLENTE ALTERNATIVE (ΔE <= 0.015) : Félicite sans pénaliser, propose de chercher la nuance supérieure.
- * - 🟠 ERREUR (0.020 <= ΔE < 0.080) : Propose un second essai.
- * - 🔴 BLUNDER (ΔE >= 0.080) : Révèle le débriefing + alerte piège de la partie originale.
+ * Loi 5 : < 300 lignes, typage strict, 0 micro-texte (< 12px), bordures secondaires border-white/10.
  */
 
 import React from 'react';
@@ -35,27 +30,27 @@ const VERDICT_THEME: Readonly<
 > = {
     BEST: {
         containerClass:
-            'border-emerald-500/65 bg-gradient-to-r from-[#082418]/95 via-[#0b1b15]/95 to-[#0d121c]/95 text-emerald-100',
-        badgeClass: 'border-emerald-400/60 bg-emerald-950/80 text-emerald-200',
-        deltaClass: 'border-emerald-500/45 bg-black/50 text-emerald-300',
+            'border-emerald-500/60 bg-gradient-to-r from-[#082418]/95 via-[#0b1b15]/95 to-[#0d121c]/95 text-emerald-100',
+        badgeClass: 'border-emerald-400/50 bg-emerald-950/80 text-emerald-200',
+        deltaClass: 'border-white/10 bg-black/50 text-emerald-300',
     },
     EXCELLENT_ALTERNATIVE: {
         containerClass:
-            'border-[#f3c65f]/65 bg-gradient-to-r from-[#2c1d09]/95 via-[#1b1309]/95 to-[#0d121c]/95 text-amber-100',
-        badgeClass: 'border-[#f3c65f]/60 bg-amber-950/80 text-[#fce8b2]',
-        deltaClass: 'border-[#f3c65f]/45 bg-black/50 text-[#f3c65f]',
+            'border-[#f3c65f]/60 bg-gradient-to-r from-[#2c1d09]/95 via-[#1b1309]/95 to-[#0d121c]/95 text-amber-100',
+        badgeClass: 'border-[#f3c65f]/50 bg-amber-950/80 text-[#fce8b2]',
+        deltaClass: 'border-white/10 bg-black/50 text-[#f3c65f]',
     },
     ERROR: {
         containerClass:
-            'border-orange-500/65 bg-gradient-to-r from-[#2d1409]/95 via-[#1c0e08]/95 to-[#0d121c]/95 text-orange-100',
-        badgeClass: 'border-orange-400/60 bg-orange-950/80 text-orange-200',
-        deltaClass: 'border-orange-500/45 bg-black/50 text-orange-300',
+            'border-orange-500/60 bg-gradient-to-r from-[#2d1409]/95 via-[#1c0e08]/95 to-[#0d121c]/95 text-orange-100',
+        badgeClass: 'border-orange-400/50 bg-orange-950/80 text-orange-200',
+        deltaClass: 'border-white/10 bg-black/50 text-orange-300',
     },
     BLUNDER: {
         containerClass:
-            'border-rose-500/75 bg-gradient-to-r from-[#3a0d12]/95 via-[#21090c]/95 to-[#0d121c]/95 text-rose-100',
-        badgeClass: 'border-rose-400/70 bg-rose-950/90 text-rose-200',
-        deltaClass: 'border-rose-500/50 bg-black/50 text-rose-300',
+            'border-rose-500/70 bg-gradient-to-r from-[#3a0d12]/95 via-[#21090c]/95 to-[#0d121c]/95 text-rose-100',
+        badgeClass: 'border-rose-400/60 bg-rose-950/90 text-rose-200',
+        deltaClass: 'border-white/10 bg-black/50 text-rose-300',
     },
 };
 
@@ -73,10 +68,10 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
         <section
             data-testid="daily-puzzle-verdict"
             data-verdict-code={verdict.code}
-            className={`w-full rounded-3xl border p-5 sm:p-6 shadow-[0_24px_60px_rgba(0,0,0,0.88)] space-y-4 ${styles.containerClass}`}
+            className={`w-full rounded-2xl border p-4 sm:p-5 shadow-2xl space-y-3 ${styles.containerClass}`}
         >
             {/* Ligne principale : Badge Verdict, Titre & ΔE */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <div className="flex flex-wrap items-center gap-2.5">
                     <span
                         data-testid="verdict-badge"
@@ -101,7 +96,7 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
                     {verdict.earnedXp > 0 && (
                         <span
                             data-testid="verdict-earned-xp"
-                            className="rounded-xl border border-[#f3c65f]/50 bg-[#261409] px-3 py-1 font-mono text-xs font-black text-[#f3c65f]"
+                            className="rounded-xl border border-white/10 bg-[#261409] px-3 py-1 font-mono text-xs font-black text-[#f3c65f]"
                         >
                             +{verdict.earnedXp} XP
                         </span>
@@ -117,7 +112,7 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
             {verdict.trapAlertMessage && (
                 <div
                     data-testid="verdict-original-trap-alert"
-                    className="rounded-2xl border border-rose-400/65 bg-[#460e14]/85 p-3.5 text-xs text-rose-100 shadow-inner"
+                    className="rounded-xl border border-rose-400/50 bg-[#460e14]/85 p-3 text-xs text-rose-100"
                 >
                     {verdict.trapAlertMessage}
                 </div>
@@ -127,7 +122,7 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
             {fsrsScheduledEntry && (
                 <div
                     data-testid="verdict-fsrs-scheduled-banner"
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[#d4af37]/45 bg-[#160b06]/90 px-4 py-2.5 text-xs text-[#e2d2b5]"
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#160b06]/90 px-3.5 py-2 text-xs text-[#e2d2b5]"
                 >
                     <div className="flex items-center gap-2">
                         <span>🔁</span>
@@ -139,14 +134,14 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
                             injecté dans <code className="font-mono">recurring_errors</code>.
                         </span>
                     </div>
-                    <span className="rounded-lg border border-[#d4af37]/35 bg-black/50 px-2.5 py-0.5 font-mono text-[11px] text-[#f3c65f]">
+                    <span className="rounded-lg border border-white/10 bg-black/50 px-2.5 py-0.5 font-mono text-xs text-[#f3c65f]">
                         Cycle : J+1 · J+3 · J+7 · J+14 · J+30 (Prochaine : J+{fsrsScheduledEntry.interval_days})
                     </span>
                 </div>
             )}
 
             {/* Boutons d'action selon le palier de verdict */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-2.5">
                 <div className="flex flex-wrap items-center gap-3 text-xs">
                     <span>
                         <span className="text-[#c7b89c]">Votre coup : </span>
@@ -154,7 +149,7 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
                     </span>
                     {verdict.revealDebrief && (
                         <span>
-                            <span className="text-[#c7b89c]">Meilleur coup Sage 3T : </span>
+                            <span className="text-[#c7b89c]">Meilleur coup Monte-Carlo : </span>
                             <strong className="font-mono text-[#f3c65f]">{verdict.bestNotation}</strong>
                         </span>
                     )}
@@ -166,7 +161,7 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
                             type="button"
                             data-testid="verdict-seek-nuance-btn"
                             onClick={onRetry}
-                            className="rounded-xl border border-[#f3c65f] bg-[#361c0b] px-4 py-2 text-xs font-extrabold text-[#fff3c4] hover:brightness-110 transition"
+                            className="rounded-xl border border-[#f3c65f] bg-[#361c0b] px-3.5 py-1.5 text-xs font-extrabold text-[#fff3c4] hover:brightness-110 transition"
                         >
                             🔍 Chercher la nuance supérieure (#1)
                         </button>
@@ -177,7 +172,7 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
                             type="button"
                             data-testid="verdict-second-try-btn"
                             onClick={onRetry}
-                            className="rounded-xl border border-orange-400/70 bg-[#3d170b] px-4 py-2 text-xs font-extrabold text-orange-100 hover:brightness-110 transition"
+                            className="rounded-xl border border-orange-400/60 bg-[#3d170b] px-3.5 py-1.5 text-xs font-extrabold text-orange-100 hover:brightness-110 transition"
                         >
                             ↺ Tenter un second essai
                         </button>
@@ -188,7 +183,7 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
                             type="button"
                             data-testid="verdict-reveal-debrief-btn"
                             onClick={onOpenDebrief}
-                            className="rounded-xl border border-[#d4af37]/40 bg-[#140a05] px-3.5 py-2 text-xs font-bold text-[#e2d2b5] hover:border-[#f3c65f] hover:text-white transition"
+                            className="rounded-xl border border-white/10 bg-[#140a05] px-3.5 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white transition"
                         >
                             📖 Révéler le débriefing
                         </button>

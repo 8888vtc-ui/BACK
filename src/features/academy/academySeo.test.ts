@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { OPENING_ROLLS_15 } from './academyData';
+import { getOpening } from '../openings/openingDatabase';
 import { getAcademyContent } from './academyTranslations';
 import { buildGlobalStructuredData } from '../../lib/seo/structuredData';
 import { PRIMARY_LOCALES } from '../../lib/i18n/types';
@@ -19,6 +20,10 @@ describe('Gammon Academy SEO Hub, Programmatic Routes, Calculators & Structured 
 
         for (const item of OPENING_ROLLS_15) {
             expect(item.optimalMove.length).toBeGreaterThan(0);
+            const [d1, d2] = item.roll.split('-').map(Number);
+            const bookEntry = getOpening(d1, d2);
+            expect(bookEntry).not.toBeNull();
+            expect(item.optimalMove).toBe(bookEntry?.bestMoveNotation);
             expect(item.equity3Ply.startsWith('+') || item.equity3Ply.startsWith('-')).toBe(true);
             for (const loc of PRIMARY_LOCALES) {
                 expect(item.nickname[loc].length).toBeGreaterThan(2);

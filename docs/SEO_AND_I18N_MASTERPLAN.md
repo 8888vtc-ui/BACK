@@ -37,7 +37,7 @@ flowchart TD
 
     subgraph SEO["4. Hub SEO Gammon Academy & Schema.org"]
         LAYOUT["src/app/layout.tsx (Metadata + hreflang + JSON-LD)"]
-        JSONLD["src/lib/seo/structuredData.ts (@graph 6 entités)"]
+        JSONLD["src/lib/seo/structuredData.ts (@graph 8 entités)"]
         ACAD_PAGE["src/app/academy/page.tsx (/academy)"]
         ACAD_DATA["src/features/academy/academyData.ts (15 Ouvertures 3-Ply)"]
         ACAD_TRANS["src/features/academy/academyTranslations.ts (6 langues)"]
@@ -134,7 +134,7 @@ Pour positionner **`backgammontour.com`** et **`gammonacademy.com`** en 1ère pa
 ## 5. SEO Technique Avancé, Schema.org (`@graph`), Sitemap & ASO Multi-Stores
 
 ### 5.1 Graphe JSON-LD Schema.org ([`src/lib/seo/structuredData.ts`](../src/lib/seo/structuredData.ts))
-Injecté automatiquement dans le `<head>` de [`src/app/layout.tsx`](../src/app/layout.tsx), le graphe déclare **9 schémas interconnectés** :
+Injecté automatiquement dans le `<head>` de [`src/app/layout.tsx`](../src/app/layout.tsx), le graphe déclare **8 entités `@graph` interconnectées** :
 1. **`WebSite`** (`#website`) avec `inLanguage: ['fr-FR', 'en-US', 'es-ES', 'pt-BR', 'de-DE', 'ar-SA']`.
 2. **`VideoGame`** & **`SoftwareApplication`** (`#application`) avec `sameAs: ['https://gammonacademy.com', 'https://bgmontecarlo.com']` et `offers` gratuit (`0 EUR`).
 3. **`Course`** (`/academy#course`) décrivant le programme pédagogique de la *Gammon Academy*.
