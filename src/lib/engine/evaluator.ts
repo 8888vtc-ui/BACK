@@ -40,6 +40,8 @@ export {
     type EffectivePipResult,
     type RaceCubeEvaluation,
 } from './effectivePipCount';
+export type { Probabilities } from './types';
+import { refineTopCandidatesExpectiminimax2Ply } from './expectiminimax';
 
 /**
  * Formate un déplacement unique en notation standard de Backgammon (ex: "24/20", "bar/20", "6/off").
@@ -791,8 +793,8 @@ export function analyzeBoardMoves(
             dice: null,
         };
 
-        // On évalue la position du point de vue de l'adversaire puis on inverse l'équité
-        const oppEval = evaluateBoard(resultingState, options.ply ?? 2);
+        // Évaluation statique 0-ply du point de vue de l'adversaire
+        const oppEval = evaluateBoard(resultingState, 0);
         const playerEquity = -oppEval.cubefulEquity;
 
         // Inversion des probabilités pour le joueur au trait
@@ -834,17 +836,29 @@ export function analyzeBoardMoves(
         }
     }
 
-    // Tri décroissant par équité
+    // Tri initial décroissant par équité 0-ply
     scoredCandidates.sort((a, b) => b.equity - a.equity);
 
-    const bestEquity = scoredCandidates[0].equity;
+    // Approfondissement Expectiminimax 2-Ply sur les Top-6 candidats si ply >= 2
+    const targetPly = options.ply ?? 2;
+    let refinedCandidates = scoredCandidates;
+    if (targetPly >= 2 && scoredCandidates.length > 1) {
+        refinedCandidates = refineTopCandidatesExpectiminimax2Ply(
+            state,
+            scoredCandidates,
+            (st) => evaluateBoard(st, 0),
+            { maxCandidates: 6, timeBudgetMs: 110 },
+        );
+    }
+
+    const bestEquity = refinedCandidates[0].equity;
     const maxMoves = options.maxMoves ?? 5;
-    const sliced = scoredCandidates.slice(0, maxMoves);
+    const sliced = refinedCandidates.slice(0, maxMoves);
 
     // SANITY CHECK (Règle d'or n°3) : chaque sous-coup de la meilleure séquence doit
     // partir d'une flèche contenant un pion du joueur actif sur le plateau simulé pas à pas.
     if (typeof console !== 'undefined' && process.env.NODE_ENV !== 'production') {
-        const bestSeq = scoredCandidates[0].seq;
+        const bestSeq = refinedCandidates[0].seq;
         let simBoard = state.board.slice();
         for (const m of bestSeq.moves) {
             const src = simBoard[m.from];

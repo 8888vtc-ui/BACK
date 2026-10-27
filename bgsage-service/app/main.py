@@ -63,7 +63,7 @@ def _get_analyzer(ply: int) -> "BgBotAnalyzer":
 
 
 def _to_probabilities(probs) -> Probabilities:
-    """Convertit les probabilités bgsage (cumulatives) en probabilités simples."""
+    """Convertit les probabilités bgsage (cumulatives) en probabilités simples exclusives et cumulatives."""
     win = probs.win
     win_backgammon = probs.backgammon_win
     win_gammon = probs.gammon_win - probs.backgammon_win
@@ -82,6 +82,8 @@ def _to_probabilities(probs) -> Probabilities:
         loseSingle=lose_single,
         loseGammon=lose_gammon,
         loseBackgammon=lose_backgammon,
+        winGammonCumulative=probs.gammon_win,
+        loseGammonCumulative=probs.gammon_loss,
     )
 
 
@@ -261,6 +263,12 @@ def evaluate(req: EvaluateRequest):
                 loseWin=1.0 - probs.win,
                 loseGammon=probs.gammon_loss,
                 loseBackgammon=probs.backgammon_loss,
+                winGammonCumulative=probs.gammon_win,
+                loseGammonCumulative=probs.gammon_loss,
+                winGammonExclusive=probs.gammon_win - probs.backgammon_win,
+                loseGammonExclusive=probs.gammon_loss - probs.backgammon_loss,
+                winSingle=probs.win - probs.gammon_win,
+                loseSingle=(1.0 - probs.win) - probs.gammon_loss,
             )
             chequer_play.append(
                 LegacyMoveAnalysis(
@@ -326,6 +334,12 @@ def evaluate_board(req: EvaluateBoardRequest):
             loseWin=1.0 - probs.win,
             loseGammon=probs.gammon_loss,
             loseBackgammon=probs.backgammon_loss,
+            winGammonCumulative=probs.gammon_win,
+            loseGammonCumulative=probs.gammon_loss,
+            winGammonExclusive=probs.gammon_win - probs.backgammon_win,
+            loseGammonExclusive=probs.gammon_loss - probs.backgammon_loss,
+            winSingle=probs.win - probs.gammon_win,
+            loseSingle=(1.0 - probs.win) - probs.gammon_loss,
         )
         chequer_play.append(
             LegacyMoveAnalysis(

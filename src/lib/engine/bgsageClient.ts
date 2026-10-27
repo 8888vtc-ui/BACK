@@ -28,12 +28,57 @@ import { bgsageCacheKey, getCachedBgsageEvaluation, setCachedBgsageEvaluation } 
 export { clearBgsageEvaluationCache, bgsageEvaluationCacheSize, BGSAGE_CACHE_MAX_ENTRIES } from './bgsageCache';
 
 export interface BgsageProbabilities {
+    /** P(victoire totale) [0..1]. */
     win: number;
+    /** P(gammon cumulé, incluant les backgammons conformément à la norme bgsage C++ / XG). */
     winGammon: number;
+    /** P(backgammon). */
     winBackgammon: number;
+    /** P(défaite totale) = 1 - win. */
     loseWin: number;
+    /** P(gammon adverse cumulé, incluant les backgammons). */
     loseGammon: number;
+    /** P(backgammon adverse). */
     loseBackgammon: number;
+    /** P(gammon sans backgammon) optionnelle pour éviter toute ambiguïté. */
+    winGammonExclusive?: number;
+    /** P(gammon adverse sans backgammon) optionnelle. */
+    loseGammonExclusive?: number;
+    /** P(victoire simple sans gammon ni backgammon) optionnelle. */
+    winSingle?: number;
+    /** P(défaite simple) optionnelle. */
+    loseSingle?: number;
+    /** P(gammon cumulé) explicite. */
+    winGammonCumulative?: number;
+    /** P(gammon adverse cumulé) explicite. */
+    loseGammonCumulative?: number;
+}
+
+/**
+ * Calcule l'équité cubeless normalisée sans double comptage des backgammons :
+ *
+ * Formule canonique eXtreme Gammon / GNU Backgammon :
+ * Equity = (W - L) + (W_g - L_g) + (W_bg - L_bg)
+ * lorsque W_g et L_g sont cumulatifs (incluent déjà les backgammons).
+ *
+ * Si les probabilités exclusives sont fournies (sans backgammons) :
+ * Equity = (W - L) + (W_g_excl - L_g_excl) + 2 * (W_bg - L_bg).
+ */
+export function calculateCubelessEquity(probs: BgsageProbabilities): number {
+    const w = probs.win;
+    const l = probs.loseWin ?? 1.0 - w;
+    const wBg = probs.winBackgammon;
+    const lBg = probs.loseBackgammon;
+
+    if (typeof probs.winGammonExclusive === 'number' && typeof probs.loseGammonExclusive === 'number') {
+        const wGExcl = probs.winGammonExclusive;
+        const lGExcl = probs.loseGammonExclusive;
+        return Number(((w - l) + (wGExcl - lGExcl) + 2 * (wBg - lBg)).toFixed(4));
+    }
+
+    const wGCum = probs.winGammonCumulative ?? probs.winGammon;
+    const lGCum = probs.loseGammonCumulative ?? probs.loseGammon;
+    return Number(((w - l) + (wGCum - lGCum) + (wBg - lBg)).toFixed(4));
 }
 
 export interface BgsageMove {

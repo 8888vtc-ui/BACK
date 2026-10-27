@@ -136,20 +136,21 @@ export interface BgsageStrategicInsights {
     optimalMetrics?: BgsageMoveMetrics;
 }
 
-export type VolatilityLevel = 'low' | 'medium' | 'high';
+import {
+    computeMarketWindowMetrics,
+    countExactMarketLosers,
+    type MarketWindowMetrics,
+    type MarketWindowParams,
+    type VolatilityLevel,
+} from './marketWindow';
 
-export interface MarketWindowMetrics {
-    /** Seuil d'entrée dans la fenêtre de double (Double Point, ex: 0.65). */
-    doublePoint: number;
-    /** Seuil d'abandon adverse (Cash Point = 1 - Take Point adverse, ex: 0.75). */
-    cashPoint: number;
-    /** Niveau de volatilité de la position ('low' | 'medium' | 'high'). */
-    volatility: VolatilityLevel;
-    /** Estimation des séquences sur 36 faisant perdre le marché (Market Losers, 0..36). */
-    estimatedMarketLosers: number;
-    /** Indique si la position se situe dans la fenêtre de marché (Market Window). */
-    inMarketWindow: boolean;
-}
+export {
+    computeMarketWindowMetrics,
+    countExactMarketLosers,
+    type MarketWindowMetrics,
+    type MarketWindowParams,
+    type VolatilityLevel,
+};
 
 export interface StrategicFeatures {
     /** Joueur dont le coup est analysé (perspective des features). */
@@ -269,75 +270,6 @@ function classifyContact(board: number[]): ContactStatus {
 }
 
 /**
- * Calcule les métriques de fenêtre de marché (Market Window) et de volatilité du videau.
- */
-export function computeMarketWindowMetrics(params: {
-    contactStatus: ContactStatus;
-    boardStructure: BoardStructure;
-    blotsAndShots: BlotsAndShots;
-    pipCountDiff: PipCountDiff;
-    opponentTakePoint?: number;
-    gammonPrice?: number;
-    bgsage?: BgsageStrategicInsights;
-    shotExposure?: ShotExposureComparison;
-}): MarketWindowMetrics {
-    const {
-        contactStatus,
-        boardStructure,
-        blotsAndShots,
-        pipCountDiff,
-        opponentTakePoint = 0.25,
-        gammonPrice = 0.5,
-        bgsage,
-        shotExposure,
-    } = params;
-
-    const cashPoint = Number(Math.max(0.55, Math.min(0.95, 1 - opponentTakePoint)).toFixed(3));
-    const userShotsTotal =
-        shotExposure?.user.totalRolls ?? Math.min(36, blotsAndShots.user.reduce((s, b) => s + b.totalShots, 0));
-    const bestShotsTotal =
-        shotExposure?.best.totalRolls ?? Math.min(36, blotsAndShots.best.reduce((s, b) => s + b.totalShots, 0));
-    const gammonThreat = bgsage?.optimalMetrics?.winGammonProb ?? (boardStructure.innerBoardPoints >= 4 ? 0.22 : 0.1);
-
-    let volatility: VolatilityLevel = 'medium';
-    if (contactStatus === 'pureRace') {
-        volatility = 'low';
-    } else if (
-        userShotsTotal >= 6 ||
-        bestShotsTotal >= 6 ||
-        (boardStructure.innerBoardPoints >= 4 && gammonThreat >= 0.2) ||
-        Math.abs(userShotsTotal - bestShotsTotal) >= 5
-    ) {
-        volatility = 'high';
-    }
-
-    const windowWidth = volatility === 'high' ? 0.13 : volatility === 'medium' ? 0.10 : 0.08;
-    const doublePoint = Number(Math.max(0.50, cashPoint - windowWidth).toFixed(3));
-
-    const baseLosers =
-        contactStatus === 'pureRace'
-            ? Math.max(2, Math.min(12, Math.round((12 - Math.min(12, Math.abs(pipCountDiff.diff))) * 0.8)))
-            : Math.min(36, Math.max(userShotsTotal, bestShotsTotal) + boardStructure.innerBoardPoints * 2);
-
-    const optWin = bgsage?.optimalMetrics?.winProb;
-    const optGammon = bgsage?.optimalMetrics?.winGammonProb ?? 0;
-    const effectiveWinEq =
-        optWin !== undefined
-            ? optWin + gammonPrice * optGammon * 0.5
-            : 0.5 - pipCountDiff.diff * 0.008;
-
-    const inMarketWindow = effectiveWinEq >= doublePoint && effectiveWinEq <= cashPoint + 0.03;
-
-    return {
-        doublePoint,
-        cashPoint,
-        volatility,
-        estimatedMarketLosers: Math.max(0, Math.min(36, baseLosers)),
-        inMarketWindow,
-    };
-}
-
-/**
  * Compare l'état du plateau après le coup du joueur et après le meilleur coup
  * du moteur, et retourne un objet JSON structuré de concepts stratégiques.
  */
@@ -433,6 +365,8 @@ export function extractStrategicFeatures(
         blotsAndShots,
         pipCountDiff,
         shotExposure,
+        bestEndState,
+        player,
     });
 
     return {

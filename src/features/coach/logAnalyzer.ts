@@ -568,33 +568,6 @@ export async function analyzeHumanMoveFromLogWithBgsage(
     if (openingBookEntry) {
         const openingResult = analyzeHumanMoveFromLog(params);
         if (openingResult) {
-            try {
-                const bgsageOpeningResp = await evaluateWithBgsage(xgid, params.ply ?? 2, 3000);
-                const isRealBgsageOpening = Boolean(
-                    bgsageOpeningResp &&
-                        bgsageOpeningResp.chequerPlay.length > 0 &&
-                        bgsageOpeningResp.source !== 'typescript-tri-phase' &&
-                        bgsageOpeningResp.source !== 'local',
-                );
-                if (isRealBgsageOpening && bgsageOpeningResp) {
-                    const topMove = bgsageOpeningResp.chequerPlay[0];
-                    return {
-                        ...openingResult,
-                        bgsageInsights: {
-                            isRace: Boolean(bgsageOpeningResp.isRace),
-                            playerGamePlan:
-                                bgsageOpeningResp.gamePlans?.player ?? topMove.playerGamePlan ?? 'contact',
-                            opponentGamePlan:
-                                bgsageOpeningResp.gamePlans?.opponent ?? topMove.opponentGamePlan ?? 'contact',
-                            evalLevel: topMove.evalLevel ?? `${params.ply ?? 2}-ply`,
-                            optimalMetrics: toBgsageMoveMetrics(topMove),
-                        },
-                        source: 'bgsage',
-                    };
-                }
-            } catch {
-                // Repli silencieux sur le Livre d'Ouvertures local
-            }
             return { ...openingResult, source: 'local' };
         }
     }

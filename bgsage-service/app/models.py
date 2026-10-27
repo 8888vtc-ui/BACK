@@ -28,7 +28,27 @@ class EvaluateRequest(BaseModel):
 
 
 class LegacyProbabilities(BaseModel):
-    """Probabilités au format attendu par le frontend (analysisService.ts)."""
+    """Probabilités au format attendu par le frontend et l'API standard.
+
+    Normalisation des probabilités (Harmonisation Open Sage):
+    - win: P(victoire) totale [0..1]
+    - winGammon: P(gammon cumulée, incluant les backgammons conformément à la norme bgsage C++ / XG)
+    - winBackgammon: P(backgammon)
+    - loseWin: P(défaite) = 1 - win
+    - loseGammon: P(gammon adverse cumulée, incluant les backgammons)
+    - loseBackgammon: P(backgammon adverse)
+
+    Champs dérivés explicites (pour éviter toute ambiguïté ou double-comptage) :
+    - winGammonCumulative: égal à winGammon
+    - loseGammonCumulative: égal à loseGammon
+    - winGammonExclusive: P(gammon sans backgammon) = winGammon - winBackgammon
+    - loseGammonExclusive: P(gammon adverse sans backgammon) = loseGammon - loseBackgammon
+    - winSingle: P(victoire simple) = win - winGammon
+    - loseSingle: P(défaite simple) = loseWin - loseGammon
+
+    Formule d'équité cubeless EMG sans double comptage :
+    Equity = (win - loseWin) + (winGammon - loseGammon) + (winBackgammon - loseBackgammon)
+    """
 
     win: float
     winGammon: float
@@ -36,6 +56,12 @@ class LegacyProbabilities(BaseModel):
     loseWin: float
     loseGammon: float
     loseBackgammon: float
+    winGammonCumulative: float | None = None
+    loseGammonCumulative: float | None = None
+    winGammonExclusive: float | None = None
+    loseGammonExclusive: float | None = None
+    winSingle: float | None = None
+    loseSingle: float | None = None
 
 
 class LegacyMoveAnalysis(BaseModel):
@@ -114,7 +140,21 @@ class AnalyzeRequest(BaseModel):
 
 
 class Probabilities(BaseModel):
-    """Probabilités cubeless (perspective du joueur au trait)."""
+    """Probabilités cubeless issues de l'endpoint /analyze (perspective du joueur au trait).
+
+    Dans ce format :
+    - win: P(victoire) totale [0..1]
+    - winSingle: P(victoire simple sans gammon)
+    - winGammon: P(gammon exclusif, sans backgammon)
+    - winBackgammon: P(backgammon)
+    - loseSingle: P(défaite simple)
+    - loseGammon: P(gammon adverse exclusif)
+    - loseBackgammon: P(backgammon adverse)
+
+    Champs cumulatifs explicites pour harmonisation complète :
+    - winGammonCumulative: P(gammon ou backgammon) = winGammon + winBackgammon
+    - loseGammonCumulative: P(gammon ou backgammon adverse) = loseGammon + loseBackgammon
+    """
 
     win: float
     winSingle: float
@@ -123,6 +163,8 @@ class Probabilities(BaseModel):
     loseSingle: float
     loseGammon: float
     loseBackgammon: float
+    winGammonCumulative: float | None = None
+    loseGammonCumulative: float | None = None
 
 
 class MoveAnalysis(BaseModel):
