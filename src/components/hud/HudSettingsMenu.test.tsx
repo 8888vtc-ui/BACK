@@ -35,10 +35,10 @@ describe('HudSettingsMenu Component', () => {
             />,
         );
         expect(html).toContain('block');
-        expect(html).toContain('Snowie');
+        expect(html).toContain('Noyer Royal');
         expect(html).toContain('Tournament');
         expect(html).toContain('Midnight');
-        expect(html).toContain('Galaxy');
+        expect(html).toContain('Obsidienne');
         expect(html).toContain('Son');
         expect(html).toContain('Langue');
         expect(html).toContain('Partager / XGID');
@@ -47,6 +47,8 @@ describe('HudSettingsMenu Component', () => {
         expect(html).toContain('2× Gammon');
         expect(html).toContain('3× BG');
         expect(html).toContain('Reset');
+        expect(html).toContain('data-testid="hud-auto-confirm-btn"');
+        expect(html).toContain('data-testid="hud-game-speed-btn"');
     });
 
     it('ne contient plus les outils de debug (Skeleton, Réseau, IA & Back-End)', () => {

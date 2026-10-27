@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import DifficultySelector from './DifficultySelector';
 
 describe('DifficultySelector', () => {
-    it('affiche les 3 niveaux d’IA (Novice 0-ply, Maître WASM 2-ply, Tardieu 3-ply)', () => {
+    it('affiche les niveaux d’IA (Novice 0-ply, Maître 2-ply, Viktor Orlov 3-ply)', () => {
         const html = renderToStaticMarkup(
             <DifficultySelector difficulty="expert" onChange={vi.fn()} />,
         );
@@ -12,8 +12,8 @@ describe('DifficultySelector', () => {
         expect(html).toContain('Novice');
         expect(html).toContain('0-ply');
         expect(html).toContain('Maître');
-        expect(html).toContain('WASM 2-Ply');
-        expect(html).toContain('Tardieu');
+        expect(html).toContain('2-Ply');
+        expect(html).toContain('Viktor Orlov');
         expect(html).toContain('3-Ply Sélectif');
     });
 

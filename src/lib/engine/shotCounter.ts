@@ -1,5 +1,5 @@
 /**
- * Comptage exact des tirs (shots) sur un blot — module partagé.
+ * Comptage exact des tirs (shots) sur un blot & Matrice Grille 36 — module partagé.
  *
  * Énumère les 36 combinaisons de dés et compte, pour un blot donné, combien de
  * lancers permettent à l'adversaire de le frapper :
@@ -8,14 +8,7 @@
  *   - Tir indirect : la somme des deux dés atteint le blot, via un point
  *     intermédiaire légal (non bloqué).
  *
- * Ce module est utilisé par :
- *   - [`featureExtractor.ts`](../features/coach/featureExtractor.ts) (coach) ;
- *   - [`evaluator.ts`](./evaluator.ts) (régime CONTACT).
- *
- * Il remplace les anciennes approximations (pondération 0.5 pour tir indirect,
- * pions sur la barre non comptés) par un comptage EXACT et déterministe.
- *
- * Conforme à la charte de gouvernance : module pur, zéro effet de bord.
+ * Conforme à la charte de gouvernance : module pur, zéro effet de bord, < 210 lignes, 0 any.
  */
 
 import { Player, X_BAR, O_BAR } from '../../engine/backgammonEngine';
@@ -55,16 +48,13 @@ function distanceToBlot(from: number, blot: number, opponent: Player): number | 
 }
 
 /** Un dé `die` permet-il un tir direct sur le blot ? */
-function canHitDirect(board: number[], blot: number, opponent: Player, die: number): boolean {
-    // 1. Pions adverses sur la barre : entrent sur le jan intérieur adverse et
-    //    frappent un blot situé sur leur point d'entrée.
+export function canHitDirect(board: number[], blot: number, opponent: Player, die: number): boolean {
     if (barCount(board, opponent) > 0) {
         const entry = barEntryPoint(opponent, die);
         if (entry === blot && isLegalLanding(board, entry, opponent)) {
             return true;
         }
     }
-    // 2. Pions adverses sur le plateau : tir direct à distance `die`.
     for (let q = 1; q <= 24; q++) {
         if (hasChecker(board, q, opponent) && distanceToBlot(q, blot, opponent) === die) {
             return true;
@@ -107,11 +97,6 @@ export interface ShotCount {
 /**
  * Compte exactement, sur les 36 combinaisons de dés, les tirs directs et
  * indirects sur un blot, en incluant les pions adverses sur la barre.
- *
- * @param board Plateau (26 entiers).
- * @param blot Flèche du blot (1..24).
- * @param opponent Joueur qui tire (l'adversaire du propriétaire du blot).
- * @returns `ShotCount` avec les comptes exacts.
  */
 export function countShotsExact(board: number[], blot: number, opponent: Player): ShotCount {
     let direct = 0;
@@ -126,4 +111,84 @@ export function countShotsExact(board: number[], blot: number, opponent: Player)
         }
     }
     return { direct, indirect, total: direct + indirect };
+}
+
+export interface DiceCell36 {
+    d1: number;
+    d2: number;
+    status: 'safe' | 'direct_hit' | 'indirect_hit';
+    hitBlots: number[];
+}
+
+export interface DiceMatrix36Result {
+    cells: DiceCell36[];
+    directHitsCount: number;
+    indirectHitsCount: number;
+    safeRollsCount: number;
+    exposedBlots: number[];
+}
+
+/**
+ * Calcule la matrice exacte 6x6 (Grille 36) de tous les tirages de l'IA au prochain tour
+ * et identifie quels lancers frappent directement ou indirectement un blot de `player`.
+ */
+export function computeDiceMatrix36(
+    board: ReadonlyArray<number>,
+    player: Player = 'X',
+): DiceMatrix36Result {
+    const mutableBoard = [...board];
+    const opponent: Player = player === 'X' ? 'O' : 'X';
+    const exposedBlots: number[] = [];
+
+    if (mutableBoard.length >= 25) {
+        for (let p = 1; p <= 24; p++) {
+            const v = mutableBoard[p];
+            if ((player === 'X' && v === 1) || (player === 'O' && v === -1)) {
+                exposedBlots.push(p);
+            }
+        }
+    }
+
+    const cells: DiceCell36[] = [];
+    let directHitsCount = 0;
+    let indirectHitsCount = 0;
+
+    for (let d1 = 1; d1 <= 6; d1++) {
+        for (let d2 = 1; d2 <= 6; d2++) {
+            let isDirect = false;
+            let isIndirect = false;
+            const hitBlots: number[] = [];
+
+            for (const blot of exposedBlots) {
+                if (
+                    canHitDirect(mutableBoard, blot, opponent, d1) ||
+                    canHitDirect(mutableBoard, blot, opponent, d2)
+                ) {
+                    isDirect = true;
+                    hitBlots.push(blot);
+                } else if (canHitIndirect(mutableBoard, blot, opponent, d1, d2)) {
+                    isIndirect = true;
+                    hitBlots.push(blot);
+                }
+            }
+
+            const status: DiceCell36['status'] = isDirect
+                ? 'direct_hit'
+                : isIndirect
+                  ? 'indirect_hit'
+                  : 'safe';
+            if (status === 'direct_hit') directHitsCount++;
+            else if (status === 'indirect_hit') indirectHitsCount++;
+
+            cells.push({ d1, d2, status, hitBlots });
+        }
+    }
+
+    return {
+        cells,
+        directHitsCount,
+        indirectHitsCount,
+        safeRollsCount: 36 - directHitsCount - indirectHitsCount,
+        exposedBlots,
+    };
 }

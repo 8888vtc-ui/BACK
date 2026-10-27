@@ -68,12 +68,14 @@ export const DraggedCheckerOverlay: React.FC<DraggedCheckerOverlayProps> = ({ dr
             style={overlayStyle}
             aria-hidden="true"
         >
-            <Checker
-                color={dragState.checkerColor as CheckerColor}
-                isPlayable
-                isTopChecker
-                isActiveMotion={isActive}
-            />
+            <div className="max-md:-translate-y-7 rounded-full transition-transform duration-75">
+                <Checker
+                    color={dragState.checkerColor as CheckerColor}
+                    isPlayable
+                    isTopChecker
+                    isActiveMotion={isActive}
+                />
+            </div>
         </div>
     );
 };

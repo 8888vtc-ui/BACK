@@ -370,9 +370,15 @@ function countShotsOnBlot(
     // Comptage exact des 36 lancers (directs + indirects + pions sur la barre).
     const { total } = countShotsExact(board, point, opponent);
 
+    // Pondération par la distance parcourue (pips exposés en cas de frappe) :
+    // un pion arrière splitté en 24/23 ne perd que 1-2 pips s'il est frappé,
+    // tandis qu'un blot exposé dans le jan extérieur/intérieur perd 15-22 pips.
+    const pipsAtRisk = player === 'X' ? 25 - point : point;
+    const progressWeight = 0.15 + 0.85 * (pipsAtRisk / 24);
+
     // Pondération par la force du jan intérieur adverse (caractéristique
     // stratégique légitime : un jan fermé rend la frappe plus coûteuse).
-    return total * (1 + opponentHomeStrength * 0.15);
+    return total * progressWeight * (1 + opponentHomeStrength * 0.15);
 }
 
 /**
@@ -493,10 +499,10 @@ function evaluateContact(
         const isOpponentBlot = opponent === 'X' ? v === 1 : v === -1;
         if (isPlayerBlot) {
             const shots = countShotsOnBlot(board, p, player, opponent);
-            blotPenaltyPlayer += shots * 0.06;
+            blotPenaltyPlayer += shots * 0.035;
         } else if (isOpponentBlot) {
             const shots = countShotsOnBlot(board, p, opponent, player);
-            blotPenaltyOpponent += shots * 0.06;
+            blotPenaltyOpponent += shots * 0.035;
         }
     }
     z += blotPenaltyOpponent - blotPenaltyPlayer;
@@ -539,14 +545,18 @@ function evaluateContact(
                 ? (KEY_POINT_WEIGHTS[p] ?? 1.0)
                 : p >= 8 && p <= 11
                   ? 0.45 - (p - 8) * 0.05
-                  : 0;
+                  : p === 13
+                    ? 0.55
+                    : 0;
         const revP = 25 - p;
         const wO =
             revP >= 1 && revP <= 7
                 ? (KEY_POINT_WEIGHTS[revP] ?? 1.0)
                 : revP >= 8 && revP <= 11
                   ? 0.45 - (revP - 8) * 0.05
-                  : 0;
+                  : revP === 13
+                    ? 0.55
+                    : 0;
 
         if (countX >= 2) {
             if (player === 'X') keyPointsPlayer += wX;
@@ -559,7 +569,7 @@ function evaluateContact(
     }
     z += 0.14 * (keyPointsPlayer - keyPointsOpponent);
 
-    // 6. Pénalité de chandeliers (empilement > 5 pions sur une même flèche, antisymétrique).
+    // 6. Pénalité de chandeliers et enterrement sur les flèches basses (antisymétrique).
     let stackingPenaltyPlayer = 0;
     let stackingPenaltyOpponent = 0;
     for (let p = 1; p <= 24; p++) {
@@ -568,29 +578,38 @@ function evaluateContact(
         const countO = opponent === 'X' ? Math.max(0, v) : Math.max(0, -v);
         if (countP > 5) stackingPenaltyPlayer += 0.08 * (countP - 5);
         if (countO > 5) stackingPenaltyOpponent += 0.08 * (countO - 5);
+
+        const relP = player === 'X' ? p : 25 - p;
+        const relO = opponent === 'X' ? p : 25 - p;
+        if (relP === 1 && countP > 2) stackingPenaltyPlayer += 0.06 * (countP - 2);
+        else if (relP === 2 && countP > 3) stackingPenaltyPlayer += 0.04 * (countP - 3);
+        if (relO === 1 && countO > 2) stackingPenaltyOpponent += 0.06 * (countO - 2);
+        else if (relO === 2 && countO > 3) stackingPenaltyOpponent += 0.04 * (countO - 3);
     }
     z += stackingPenaltyOpponent - stackingPenaltyPlayer;
 
-    // 7. Mobilité des pions arrières (bloqués en 24/23 face à une prime adverse, antisymétrique).
-    if (primeOpponent >= 4) {
-        for (const p of player === 'X' ? [24, 23] : [1, 2]) {
-            const v = board[p];
-            const count = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
-            if (count > 0) z -= 0.06 * count;
-        }
+    // 7. Mobilité et évasion des pions arrières (bloqués en 24/23, antisymétrique).
+    const homePointsPlayer = opponentHomeBoardStrength(board, player);
+    const homePointsOpponent = opponentHomeBoardStrength(board, opponent);
+    const backPenaltyScalePlayer = primeOpponent >= 4 ? 0.06 : 0.02 + homePointsOpponent * 0.008;
+    const backPenaltyScaleOpponent = primePlayer >= 4 ? 0.06 : 0.02 + homePointsPlayer * 0.008;
+    for (const p of player === 'X' ? [24, 23] : [1, 2]) {
+        const v = board[p];
+        const count = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
+        if (count > 0) z -= backPenaltyScalePlayer * count;
     }
-    if (primePlayer >= 4) {
-        for (const p of opponent === 'X' ? [24, 23] : [1, 2]) {
-            const v = board[p];
-            const count = opponent === 'X' ? Math.max(0, v) : Math.max(0, -v);
-            if (count > 0) z += 0.06 * count;
-        }
+    for (const p of opponent === 'X' ? [24, 23] : [1, 2]) {
+        const v = board[p];
+        const count = opponent === 'X' ? Math.max(0, v) : Math.max(0, -v);
+        if (count > 0) z += backPenaltyScaleOpponent * count;
     }
 
-    // 8. Pions sur la barre.
+    // 8. Pions sur la barre (pondérés par la fermeture du jan intérieur).
     const barPlayer = player === 'X' ? board[X_BAR] : -board[O_BAR];
     const barOpponent = opponent === 'X' ? board[X_BAR] : -board[O_BAR];
-    z += 0.25 * (barOpponent - barPlayer);
+    const barValueForPlayer = barOpponent * (0.25 + homePointsPlayer * 0.06);
+    const barValueForOpponent = barPlayer * (0.25 + homePointsOpponent * 0.06);
+    z += barValueForPlayer - barValueForOpponent;
 
     const winProb = clamp(1 / (1 + Math.exp(-z)), 0.02, 0.98);
     const loseProb = 1 - winProb;
@@ -794,6 +813,27 @@ export function analyzeBoardMoves(
         });
     }
 
+    // Alignement prioritaire avec le Livre d'Ouvertures (Opening Book) en position initiale
+    if (isInitialBoardPosition(state.board) && dice[0] !== dice[1]) {
+        const opening = getOpening(dice[0], dice[1]);
+        if (opening) {
+            let bestTargetBoard = state.board.slice();
+            for (const m of opening.bestMoves) {
+                const effMove = player === 'X' ? m : { from: 25 - m.from, to: 25 - m.to };
+                bestTargetBoard = applyMove(bestTargetBoard, effMove, player);
+            }
+            const bestIdx = scoredCandidates.findIndex((c) =>
+                c.seq.board.every((val, i) => val === bestTargetBoard[i]),
+            );
+            if (bestIdx >= 0) {
+                const maxEvalEquity = Math.max(...scoredCandidates.map((c) => c.equity));
+                scoredCandidates[bestIdx].equity = Number(
+                    Math.max(opening.equity, maxEvalEquity + 0.035).toFixed(4),
+                );
+            }
+        }
+    }
+
     // Tri décroissant par équité
     scoredCandidates.sort((a, b) => b.equity - a.equity);
 
@@ -838,7 +878,7 @@ export function analyzeBoardMoves(
 }
 
 import { calculateTakePoint } from '../../features/coach/matchContext';
-import { isInitialBoardPosition } from '../../features/openings/openingDatabase';
+import { getOpening, isInitialBoardPosition } from '../../features/openings/openingDatabase';
 
 /**
  * Analyse la décision de videau pour la position donnée.

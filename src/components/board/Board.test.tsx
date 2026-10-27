@@ -9,11 +9,12 @@ describe('Board & BoardDiceRiver Components', () => {
     afterEach(() => {
         cleanup();
     });
-    it('rend les 4 quadrants (via BoardQuadrantRow), la barre centrale et le badge de pips', () => {
+    it('rend les 4 quadrants (via BoardQuadrantRow), la barre centrale et le badge de pips quand showPipCount est activé', () => {
         const state = createInitialState(7);
         const { getByTestId } = render(
             <Board
                 state={state}
+                showPipCount={true}
                 leftDieTargets={new Map()}
                 rightDieTargets={new Map()}
                 selectedPoint={null}
@@ -30,6 +31,25 @@ describe('Board & BoardDiceRiver Components', () => {
         expect(getByTestId('tray-zone-x')).toBeTruthy();
         expect(getByTestId('tray-zone-o')).toBeTruthy();
         expect(getByTestId('pip-count-bar')).toBeTruthy();
+    });
+
+    it('masque le badge de pips par défaut pour éviter tout doublon avec MatchHud et préserver la hauteur du feutre', () => {
+        const state = createInitialState(7);
+        const { queryByTestId } = render(
+            <Board
+                state={state}
+                leftDieTargets={new Map()}
+                rightDieTargets={new Map()}
+                selectedPoint={null}
+                selectedDie={0}
+                usedDice={[false, false]}
+                onCheckerClick={vi.fn()}
+                onCheckerRightClick={vi.fn()}
+                onDestinationClick={vi.fn()}
+            />,
+        );
+
+        expect(queryByTestId('pip-count-bar')).toBeNull();
     });
 
     it('affiche 4 dés lors d’un double et route le clic vers le slot 0 sans indicateur de swap', () => {

@@ -57,8 +57,8 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
             }}
         >
             <div
-                className={`relative w-7 h-7 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-all duration-150 overflow-hidden ${canDouble
-                    ? 'border-amber-400 ring-4 ring-amber-400/70 shadow-[0_0_22px_rgba(251,191,36,0.85)] animate-pulse cursor-pointer hover:scale-110 active:scale-95'
+                className={`relative w-5 h-5 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-md sm:rounded-xl flex items-center justify-center transition-all duration-150 overflow-hidden ${canDouble
+                    ? 'border-amber-400 ring-2 sm:ring-4 ring-amber-400/70 shadow-[0_0_22px_rgba(251,191,36,0.85)] animate-pulse cursor-pointer hover:scale-110 active:scale-95'
                     : 'hover:scale-105'
                     }`}
                 style={{
@@ -90,7 +90,7 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
 
                 {/* Chiffre sérigraphié rétro encré dans la patine */}
                 <span
-                    className="relative z-10 text-xl font-black tabular-nums tracking-tighter"
+                    className="relative z-10 text-xs sm:text-xl font-black tabular-nums tracking-tighter"
                     style={{
                         color: '#1a1612',
                         textShadow:

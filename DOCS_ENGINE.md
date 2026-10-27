@@ -15,12 +15,14 @@ Le moteur de production repose sur **Open Sage (`bgsage-service`)** déployé su
 
 Le microservice **`bgsage-service`** fournit des évaluations neuronales multi-ply (`1-ply`, `2-ply`, `3-ply`) et prend en charge les coups de pions (`checker_play`), le videau (`cube_action` avec score `away1`/`away2`) et la classification stratégique (`classify_game_plans`).
 
-| Niveau Bot Frontend | Niveau Open Sage | PR mesuré (vs 3-ply) | Snowie Error Rate | % Coups Optimaux | Usage |
-|---|---|---:|---:|---:|---|
-| **`grandmaster`** | **Open Sage `3-ply`** | **0.00 PR** | `0.0000` | **100 %** | Bot Grand-Maître & Oracle Coach IA |
-| **`expert`** | **Open Sage `2-ply`** | **2.22 PR** | `0.0044` | **90 %** | Bot Expert (niveau World Class) |
-| **`intermediate`** | **Open Sage `1-ply`** | **4.89 PR** | `0.0098` | **85 %** | Bot Intermédiaire / Maître |
-| **`beginner`** | **Open Sage `1-ply` + Bruit ($\pm 0.14\text{ Eq}$)** | **15.07 PR** | `0.0301` | **65 %** | Bot Débutant / Joueur de club |
+> **Précision absolue vs relative** : Face à des rollouts de référence de vérité terrain, Open Sage Stage 11 affiche un PR absolu de **0.56 PR en 3-ply (`3P`)**, **0.41 PR en 4-ply (`4P`)**, **0.26 PR en rollout tronqué `2T`** et **0.23 PR en `3T`**. Le tableau ci-dessous indique les PR **relatifs** mesurés dans l'application en prenant le moteur `3-ply` comme étalon de référence interne (`0.00 PR`).
+
+| Niveau Bot Frontend | Niveau Open Sage | PR relatif (vs 3-ply) | PR absolu (vérité terrain) | Snowie Error Rate | % Coups Optimaux | Usage |
+|---|---|---:|---:|---:|---:|---|
+| **`grandmaster`** | **Open Sage `3-ply`** | **0.00 PR** | **0.56 PR** | `0.0000` | **100 %** | Bot Grand-Maître & Oracle Coach IA |
+| **`expert`** | **Open Sage `2-ply`** | **2.22 PR** | **~2.78 PR** | `0.0044` | **90 %** | Bot Expert (niveau World Class) |
+| **`intermediate`** | **Open Sage `1-ply`** | **4.89 PR** | **~5.45 PR** | `0.0098` | **85 %** | Bot Intermédiaire / Maître |
+| **`beginner`** | **Open Sage `1-ply` + Bruit ($\pm 0.14\text{ Eq}$)** | **15.07 PR** | **~15.63 PR** | `0.0301` | **65 %** | Bot Débutant / Joueur de club |
 
 ## 2. Prise en charge complète du Videau (Cube : Double / Take / Pass)
 

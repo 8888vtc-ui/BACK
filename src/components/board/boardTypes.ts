@@ -42,8 +42,8 @@ export interface BoardProps {
     onPassDouble?: () => void;
     theme?: string;
     isLoading?: boolean;
-    /** Phase stricte du jeu (LOI 2) — pilote les contrôles centraux. */
-    gamePhase?: GamePhase;
+    /** Phase stricte du jeu (LOI 2) ou Replay — pilote les contrôles centraux. */
+    gamePhase?: GamePhase | 'REPLAY_VIEW';
     /** Lancer les dés (contrôles centraux). */
     onRoll?: () => void;
     /** Valider le coup (contrôles centraux). */
@@ -76,4 +76,9 @@ export interface BoardProps {
      * côté X, la couleur choisie dans le lobby est purement visuelle.
      */
     swapColors?: boolean;
+    /**
+     * Affiche ou masque le badge Pip Count en bas du cadre.
+     * Faux par défaut pour éliminer tout doublon avec MatchHud et préserver 100 % de la hauteur du feutre.
+     */
+    showPipCount?: boolean;
 }

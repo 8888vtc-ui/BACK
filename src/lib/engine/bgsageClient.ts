@@ -4,12 +4,25 @@
  */
 
 import {
+    applyMove,
+    borneOffCount,
+    serializeCanonicalXGID,
     serializeXGID,
     type BoardState,
+    type Move,
     type MoveSequence,
     type Player,
 } from '../../engine/backgammonEngine';
+
+export { serializeCanonicalXGID };
 import type { AIDifficulty } from '../../engine/aiHeuristics';
+import { formatMoveSequenceNotationAbsolute } from './evaluator';
+import {
+    movesFromBoardDiff,
+    normalizeCoachNotation,
+    parseCoachNotationMoves,
+    relativeNotationToAbsolute,
+} from '../../features/coach/coachMoveNotation';
 import { bgsageCacheKey, getCachedBgsageEvaluation, setCachedBgsageEvaluation } from './bgsageCache';
 
 export { clearBgsageEvaluationCache, bgsageEvaluationCacheSize, BGSAGE_CACHE_MAX_ENTRIES } from './bgsageCache';
@@ -30,6 +43,7 @@ export interface BgsageMove {
     equityLoss: number;
     probabilities: BgsageProbabilities | null;
     board?: number[] | null;
+    moves?: Move[] | null;
     playerGamePlan?: string | null;
     opponentGamePlan?: string | null;
     cubelessEquity?: number | null;
@@ -48,31 +62,64 @@ export interface BgsageEvaluateResponse {
     cubeDecision: BgsageCubeDecision;
     gamePlans?: { player: string; opponent: string } | null;
     isRace?: boolean | null;
+    source?: string | null;
 }
 
 const DEFAULT_CLOUD_RUN_URL = 'https://bgsage-service-468274233732.europe-west1.run.app';
 
-/** Résout l'URL de base du bgsage-service (NEXT_PUBLIC_BACKEND_URL ou Cloud Run par défaut). */
+/**
+ * Résout l'URL de base du service d'évaluation :
+ * - Côté navigateur (`window` défini) : utilise uniquement le proxy interne `/api/evaluate`
+ *   (sauf si `NEXT_PUBLIC_BACKEND_URL` est explicitement forcé), afin de ne jamais exposer
+ *   l'URL Google Cloud Run dans l'onglet Réseau (DevTools) du client.
+ * - Côté serveur / Node : cible directement `BACKEND_URL` / `GNUBG_BACKEND_URL` ou Cloud Run.
+ */
 export function resolveBgsageBaseUrl(): string {
+    if (typeof window !== 'undefined') {
+        if (process.env.NODE_ENV === 'test') {
+            const publicUrl = (process.env.NEXT_PUBLIC_BACKEND_URL ?? '').trim();
+            return publicUrl.replace(/\/+$/, '');
+        }
+        return '';
+    }
     const raw = (
-        process.env.NEXT_PUBLIC_BACKEND_URL ??
+        process.env.BACKEND_URL ??
         process.env.GNUBG_BACKEND_URL ??
+        process.env.NEXT_PUBLIC_BACKEND_URL ??
         DEFAULT_CLOUD_RUN_URL
     ).trim();
     return raw.replace(/\/+$/, '');
 }
 
-/** Convertit un plateau `m.board` (26 entiers bgsage) vers la convention absolue `board[0..25]`. */
-export function bgsageMoveBoardToProjectBoard(bgsageBoard: ReadonlyArray<number>, player: Player): number[] {
+/**
+ * Convertit un plateau `m.board` (26 entiers) vers la convention absolue `board[0..25]`.
+ * Si `source === 'typescript-tri-phase'`, le plateau est déjà dans le référentiel projet (`board[0..25]`).
+ */
+export function bgsageMoveBoardToProjectBoard(
+    bgsageBoard: ReadonlyArray<number>,
+    player: Player,
+    source?: string | null,
+): number[] {
+    if (source === 'typescript-tri-phase') {
+        return bgsageBoard.map((v) => (v === 0 ? 0 : v));
+    }
     const res = new Array<number>(26).fill(0);
     if (player === 'X') {
         res[0] = Math.abs(bgsageBoard[25] ?? 0);
-        res[25] = -Math.abs(bgsageBoard[0] ?? 0);
-        for (let p = 1; p <= 24; p++) res[p] = bgsageBoard[p] ?? 0;
+        const barO = -Math.abs(bgsageBoard[0] ?? 0);
+        res[25] = barO === 0 ? 0 : barO;
+        for (let p = 1; p <= 24; p++) {
+            const v = bgsageBoard[p] ?? 0;
+            res[p] = v === 0 ? 0 : v;
+        }
     } else {
         res[0] = Math.abs(bgsageBoard[0] ?? 0);
-        res[25] = -Math.abs(bgsageBoard[25] ?? 0);
-        for (let p = 1; p <= 24; p++) res[p] = -(bgsageBoard[25 - p] ?? 0);
+        const barO = -Math.abs(bgsageBoard[25] ?? 0);
+        res[25] = barO === 0 ? 0 : barO;
+        for (let p = 1; p <= 24; p++) {
+            const v = -(bgsageBoard[25 - p] ?? 0);
+            res[p] = v === 0 ? 0 : v;
+        }
     }
     return res;
 }
@@ -85,10 +132,82 @@ export function boardsMatchOnPoints(a: ReadonlyArray<number>, b: ReadonlyArray<n
     return true;
 }
 
-/** Compare deux plateaux sur les 26 indices (flèches 1..24 + barres 0 et 25). */
+/** Compare deux plateaux sur les 26 indices (flèches 1..24 + barres 0 et 25 + bear-off X et O). */
 export function boardsMatchOnPointsAndBar(a: ReadonlyArray<number>, b: ReadonlyArray<number>): boolean {
     if (!boardsMatchOnPoints(a, b)) return false;
-    return (a[0] ?? 0) === (b[0] ?? 0) && (a[25] ?? 0) === (b[25] ?? 0);
+    if ((a[0] ?? 0) !== (b[0] ?? 0) || (a[25] ?? 0) !== (b[25] ?? 0)) return false;
+    return (
+        borneOffCount(a as number[], 'X') === borneOffCount(b as number[], 'X') &&
+        borneOffCount(a as number[], 'O') === borneOffCount(b as number[], 'O')
+    );
+}
+
+/**
+ * Apparie un candidat `BgsageMove` contre `legalSeqs` par ses sous-coups ou sa notation
+ * convertie en numérotation absolue (`formatMoveSequenceNotationAbsolute`).
+ */
+function matchCandidateMoveByNotation(
+    m: BgsageMove,
+    legalSeqs: ReadonlyArray<MoveSequence>,
+    boardBefore: ReadonlyArray<number>,
+    player: Player,
+): MoveSequence | undefined {
+    if (m.moves && m.moves.length > 0) {
+        const targetAbsFromMoves = normalizeCoachNotation(formatMoveSequenceNotationAbsolute(m.moves, player));
+        const byMovesNotation = legalSeqs.find(
+            (seq) => normalizeCoachNotation(formatMoveSequenceNotationAbsolute(seq.moves, player)) === targetAbsFromMoves,
+        );
+        if (byMovesNotation) return byMovesNotation;
+
+        let sim = [...boardBefore];
+        for (const mv of m.moves) sim = applyMove(sim, mv, player);
+        const byMovesBoard =
+            legalSeqs.find((seq) => boardsMatchOnPointsAndBar(seq.board, sim)) ??
+            legalSeqs.find((seq) => boardsMatchOnPoints(seq.board, sim));
+        if (byMovesBoard) return byMovesBoard;
+    }
+
+    if (!m.notation || !m.notation.trim()) return undefined;
+
+    const absTarget = relativeNotationToAbsolute(m.notation, player);
+    const normAbsTarget = normalizeCoachNotation(absTarget);
+    const normRawTarget = normalizeCoachNotation(m.notation);
+
+    if (normAbsTarget) {
+        // 1. Appariement direct ou insensible à l'ordre via formatMoveSequenceNotationAbsolute
+        const directMatch = legalSeqs.find(
+            (seq) => normalizeCoachNotation(formatMoveSequenceNotationAbsolute(seq.moves, player)) === normAbsTarget,
+        );
+        if (directMatch) return directMatch;
+
+        // 2. Appariement sur le différentiel de plateau (coups chaînés ex. 24/13 vs 24/18 18/13)
+        const diffMatch = legalSeqs.find((seq) => {
+            const diffMoves = movesFromBoardDiff(boardBefore, seq.board, player);
+            return normalizeCoachNotation(formatMoveSequenceNotationAbsolute(diffMoves, player)) === normAbsTarget;
+        });
+        if (diffMatch) return diffMatch;
+
+        // 3. Replay des sous-coups parsés en notation absolue sur boardBefore
+        const parsedMoves = parseCoachNotationMoves(absTarget, player);
+        if (parsedMoves.length > 0) {
+            let sim = [...boardBefore];
+            for (const mv of parsedMoves) sim = applyMove(sim, mv, player);
+            const boardMatch =
+                legalSeqs.find((seq) => boardsMatchOnPointsAndBar(seq.board, sim)) ??
+                legalSeqs.find((seq) => boardsMatchOnPoints(seq.board, sim));
+            if (boardMatch) return boardMatch;
+        }
+    }
+
+    // 4. Repli si l'appelant a fourni une notation déjà absolue pour O
+    if (player === 'O' && normRawTarget && normRawTarget !== normAbsTarget) {
+        const rawMatch = legalSeqs.find(
+            (seq) => normalizeCoachNotation(formatMoveSequenceNotationAbsolute(seq.moves, player)) === normRawTarget,
+        );
+        if (rawMatch) return rawMatch;
+    }
+
+    return undefined;
 }
 
 /** Protège les XGID à 11 champs lorsque la flèche 24 est vide (`body[0] === '-'` et `body[25] === '-'`). */
@@ -132,7 +251,7 @@ export async function evaluateWithBgsage(
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            console.warn(`[bgsageClient] Réponse HTTP ${response.status} du bgsage-service`);
+            console.warn(`[MonteCarloEngine] Réponse HTTP ${response.status} du moteur d'évaluation`);
             return null;
         }
 
@@ -143,7 +262,7 @@ export async function evaluateWithBgsage(
         return data;
     } catch (err) {
         clearTimeout(timeoutId);
-        console.warn('[bgsageClient] bgsage-service indisponible :', err instanceof Error ? err.message : err);
+        console.warn('[MonteCarloEngine] Service distant indisponible :', err instanceof Error ? err.message : err);
         return null;
     }
 }
@@ -163,7 +282,7 @@ export async function selectBotMoveWithBgsage(
     if (legalSeqs.length === 1) return { sequence: legalSeqs[0], evalLevel: 'forced' };
 
     const ply = difficulty === 'grandmaster' ? 3 : difficulty === 'expert' ? 2 : 1;
-    const xgid = serializeXGID(stateWithDice);
+    const xgid = serializeCanonicalXGID(stateWithDice);
     const resp = precomputedResponse ?? (await evaluateWithBgsage(xgid, ply, timeoutMs));
     if (!resp || !resp.chequerPlay || resp.chequerPlay.length === 0) return null;
 
@@ -171,16 +290,29 @@ export async function selectBotMoveWithBgsage(
     const matchedCandidates: Array<{ move: BgsageMove; seq: MoveSequence }> = [];
     for (const m of resp.chequerPlay) {
         if (m.board && m.board.length === 26) {
-            const targetBoard = bgsageMoveBoardToProjectBoard(m.board, player);
+            const targetBoard = bgsageMoveBoardToProjectBoard(m.board, player, resp.source);
             const found =
                 legalSeqs.find((seq) => boardsMatchOnPointsAndBar(seq.board, targetBoard)) ??
                 legalSeqs.find((seq) => boardsMatchOnPoints(seq.board, targetBoard));
-            if (found) matchedCandidates.push({ move: m, seq: found });
+            if (found && !matchedCandidates.some((c) => c.seq === found)) {
+                matchedCandidates.push({ move: m, seq: found });
+            }
         }
     }
 
+    // Si aucun plateau n'a correspondu, tente un appariement par notation absolue contre legalSeqs
     if (matchedCandidates.length === 0) {
-        return { sequence: legalSeqs[0], cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply-fallback` };
+        for (const m of resp.chequerPlay) {
+            const found = matchCandidateMoveByNotation(m, legalSeqs, stateWithDice.board, player);
+            if (found && !matchedCandidates.some((c) => c.seq === found)) {
+                matchedCandidates.push({ move: m, seq: found });
+            }
+        }
+    }
+
+    // Ne JAMAIS retourner legalSeqs[0] par défaut : retourne null pour basculer sur pickLocal() (findBestBoardMove)
+    if (matchedCandidates.length === 0) {
+        return null;
     }
 
     if (difficulty === 'beginner' && matchedCandidates.length > 1) {
@@ -225,7 +357,7 @@ export async function evaluateBotCubeWithBgsage(
     }
 
     const ply = difficulty === 'grandmaster' ? 3 : difficulty === 'expert' ? 2 : 1;
-    const xgid = serializeXGID({ ...state, dice: null });
+    const xgid = serializeCanonicalXGID({ ...state, dice: null });
     const resp = await evaluateWithBgsage(xgid, ply, timeoutMs);
     if (!resp || !resp.cubeDecision) return null;
 

@@ -58,15 +58,16 @@ const CheckerComponent: React.FC<CheckerProps> = ({
             data-checker-top={isTopChecker ? 'true' : undefined}
             data-gpu-will-change={getScopedWillChange(isActiveMotion)}
             data-checker-pattern={getCheckerPatternKind(color)}
-            className={`relative flex items-center justify-center select-none transition-[transform,opacity] duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] touch-none ${isInteractive
-                ? 'cursor-pointer hover:-translate-y-1 hover:scale-[1.06] active:scale-95'
+            className={`relative flex items-center justify-center select-none transition-[transform,opacity] duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] touch-manipulation ${isInteractive
+                ? 'cursor-pointer hover:-translate-y-1 hover:scale-[1.06] active:scale-95 after:content-[""] after:absolute after:-inset-1.5 after:rounded-full'
                 : ''
                 }`}
             onPointerDown={isInteractive ? onPointerDown : undefined}
             style={{
-                width: 'clamp(13px, min(3.4vw, calc((100dvh - 185px) / 13.5)), 46px)',
-                height: 'clamp(13px, min(3.4vw, calc((100dvh - 185px) / 13.5)), 46px)',
+                width: 'clamp(22px, min(calc(6.2vw + 1.5px), calc((100dvh - 165px) / 11.2)), 46px)',
+                height: 'clamp(22px, min(calc(6.2vw + 1.5px), calc((100dvh - 165px) / 11.2)), 46px)',
                 borderRadius: '9999px',
+                touchAction: 'manipulation',
                 transform: 'translate3d(0, 0, 0)',
                 willChange: getScopedWillChange(isActiveMotion),
             }}

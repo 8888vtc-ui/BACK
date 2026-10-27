@@ -35,7 +35,7 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
                 </span>
             ))}
         </div>
-        <div className="w-8 sm:w-14 md:w-20 mx-0.5 sm:mx-1 shrink-0" />
+        <div className="w-6 sm:w-14 md:w-20 mx-0.5 sm:mx-1 shrink-0" />
         <div className="flex min-w-0">
             {row.slice(6).map((p) => (
                 <span
@@ -46,7 +46,7 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
                 </span>
             ))}
         </div>
-        <div className="w-9 sm:w-14 md:w-20 pl-1 ml-0.5 sm:pl-1.5 sm:ml-1 shrink-0 flex items-center justify-center">
+        <div className="w-7 sm:w-14 md:w-20 pl-0.5 ml-0.5 sm:pl-1.5 sm:ml-1 shrink-0 flex items-center justify-center">
             {onToggleOrientation && (
                 <button
                     type="button"

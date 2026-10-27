@@ -10,6 +10,9 @@
 /** Clé de persistance de l'orientation. */
 export const ORIENTATION_STORAGE_KEY = 'backgammon_orientation';
 
+/** Événement DOM émis lors d'un changement d'orientation (synchronisation HUD ↔ Plateau). */
+export const ORIENTATION_CHANGE_EVENT = 'backgammon:orientation-change';
+
 /** Orientation du plateau. */
 export type BoardOrientation = 'normal' | 'inverted';
 
@@ -68,7 +71,7 @@ export function getSavedOrientation(defaultValue: BoardOrientation = 'normal'): 
 }
 
 /**
- * Persiste l'orientation dans localStorage.
+ * Persiste l'orientation dans localStorage et notifie les composants abonnés.
  */
 export function saveOrientation(orientation: BoardOrientation): void {
     if (typeof localStorage === 'undefined') return;
@@ -76,5 +79,8 @@ export function saveOrientation(orientation: BoardOrientation): void {
         localStorage.setItem(ORIENTATION_STORAGE_KEY, orientation);
     } catch {
         // ignore
+    }
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+        window.dispatchEvent(new CustomEvent<BoardOrientation>(ORIENTATION_CHANGE_EVENT, { detail: orientation }));
     }
 }

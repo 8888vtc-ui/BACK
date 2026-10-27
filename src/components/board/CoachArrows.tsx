@@ -129,12 +129,16 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
                     next[`pt-${pt}`] = ((r.left + r.width / 2 - svgRect.left) / svgRect.width) * VB_W;
                 }
             }
-            const barEl = boardRoot.querySelector('[data-testid="central-bar"]');
+            const barEl = boardRoot.querySelector(
+                '[data-testid="central-bar-container"], [data-testid="central-bar"]',
+            );
             if (barEl) {
                 const r = barEl.getBoundingClientRect();
                 next.bar = ((r.left + r.width / 2 - svgRect.left) / svgRect.width) * VB_W;
             }
-            const offEl = boardRoot.querySelector('[data-testid^="off-tray-"]');
+            const offEl = boardRoot.querySelector(
+                '[data-off-tray], [data-testid^="tray-zone-"], [data-testid^="off-tray-"]',
+            );
             if (offEl) {
                 const r = offEl.getBoundingClientRect();
                 next.off = ((r.left + r.width / 2 - svgRect.left) / svgRect.width) * VB_W;
@@ -224,7 +228,17 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
             ))}
 
             {playedArrows.map((a, i) => (
-                <g key={`played-${i}`} filter="url(#glow-red)">
+                <g key={`played-${i}`} data-testid={`coach-played-arrow-${i}`} filter="url(#glow-red)">
+                    <circle
+                        data-testid={`coach-ghost-checker-played-${i}`}
+                        cx={a.x2}
+                        cy={a.y2}
+                        r="14"
+                        fill="rgba(239, 68, 68, 0.18)"
+                        stroke="#ef4444"
+                        strokeWidth="1.75"
+                        strokeDasharray="4 3"
+                    />
                     <path
                         d={a.path}
                         fill="none"
@@ -240,7 +254,16 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
             ))}
 
             {optimalArrows.map((a, i) => (
-                <g key={`optimal-${i}`} filter="url(#glow-green)">
+                <g key={`optimal-${i}`} data-testid={`coach-optimal-arrow-${i}`} filter="url(#glow-green)">
+                    <circle
+                        data-testid={`coach-ghost-checker-optimal-${i}`}
+                        cx={a.x2}
+                        cy={a.y2}
+                        r="15"
+                        fill="rgba(34, 197, 94, 0.24)"
+                        stroke="#22c55e"
+                        strokeWidth="2"
+                    />
                     <path
                         d={a.path}
                         fill="none"

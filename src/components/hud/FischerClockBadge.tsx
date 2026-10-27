@@ -66,7 +66,7 @@ const FischerClockBadgeComponent: React.FC<FischerClockBadgeProps> = ({
             {isActiveTurn && formattedDelay && !isFlagFallen && (
                 <span
                     data-testid={`${testId}-delay`}
-                    className="rounded bg-emerald-500/20 border border-emerald-400/50 px-1 text-[9px] font-bold text-emerald-300"
+                    className="rounded bg-emerald-500/20 border border-emerald-400/50 px-1 text-[11px] font-bold text-emerald-300"
                 >
                     {formattedDelay}
                 </span>

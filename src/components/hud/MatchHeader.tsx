@@ -23,8 +23,11 @@ import React, { useCallback, useMemo } from 'react';
 import type { ThemeName } from '../board/boardThemes';
 import type { Player } from '../../engine/backgammonEngine';
 import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
+import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
+import type { CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
 import { pipCount } from '../../engine/backgammonEngine';
 import MatchHud from './MatchHud';
+import { useCoachQuota } from '../../hooks/useCoachQuota';
 import { soundEngine } from '../../lib/sound/soundEngine';
 import { impactHeavy, impactMedium } from '../../lib/capacitor/haptics';
 import { toast } from '../toast/ToastContext';
@@ -61,6 +64,15 @@ export interface MatchHeaderProps {
     playerColor?: Player;
     /** Ouvre le panneau d'audit cryptographique des dés en 1 clic. */
     onOpenDiceAudit?: () => void;
+    /** Verdict normalisé XG du dernier coup humain. */
+    lastMoveFeedback?: LastMoveFeedback | null;
+    /** Seuil d'alerte du Coach IA. */
+    notificationLevel?: CoachNotificationLevel;
+    onChangeNotificationLevel?: (level: CoachNotificationLevel) => void;
+    /** Badge de quota explicite optionnel (sinon calculé réactivement par useCoachQuota). */
+    coachQuotaBadge?: string;
+    /** Statut VIP explicite optionnel. */
+    isVip?: boolean;
 }
 
 const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
@@ -78,7 +90,18 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
     onBackToLobby,
     playerColor,
     onOpenDiceAudit,
+    lastMoveFeedback,
+    notificationLevel,
+    onChangeNotificationLevel,
+    coachQuotaBadge,
+    isVip,
 }) => {
+    const quotaData = useCoachQuota();
+    const effectiveIsVip = isVip ?? quotaData.isVip;
+    const effectiveBadge =
+        coachQuotaBadge ??
+        (effectiveIsVip ? 'VIP ∞' : `${quotaData.remainingToday}/${quotaData.maxDaily}`);
+
     const canDoubleAllowed = game.canDouble;
 
     // Pip counts des deux joueurs (calcul pur, aucune mutation d'état).
@@ -141,17 +164,17 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
     const lastMoveNotation = rawMoveNotation ? `${lastOpponentDice}${rawMoveNotation}` : null;
 
     return (
-        <header className="relative w-full max-w-7xl mx-auto shrink-0 z-50 flex flex-col gap-1 px-1 pt-0.5 pb-1 min-w-0 overflow-visible">
+        <header className="relative w-full max-w-7xl mx-auto shrink-0 z-50 flex flex-col gap-0.5 sm:gap-1 px-0 sm:px-1 pt-0 sm:pt-0.5 pb-0.5 sm:pb-1 min-w-0 overflow-visible [@media(max-height:500px)]:hidden">
             {/* Liens d'évitement (Skip links) pour accessibilité clavier */}
             <nav aria-label="Liens d'évitement" className="fixed top-0 left-0 z-50 pointer-events-none">
                 <a href="#backgammon-board" className="sr-only focus:not-sr-only focus:pointer-events-auto focus:inline-block focus:m-4 rounded-lg bg-sky-600 px-4 py-2 font-bold text-white shadow-xl outline-none ring-2 ring-white hover:bg-sky-500">
-                    Aller au plateau de jeu
+                    {t('board.skipToBoard')}
                 </a>
                 <a href="#match-hud" className="sr-only focus:not-sr-only focus:pointer-events-auto focus:inline-block focus:m-4 rounded-lg bg-sky-600 px-4 py-2 font-bold text-white shadow-xl outline-none ring-2 ring-white hover:bg-sky-500">
-                    Aller au tableau de score (HUD)
+                    {t('board.skipToHud')}
                 </a>
                 <a href="#coach-panel" className="sr-only focus:not-sr-only focus:pointer-events-auto focus:inline-block focus:m-4 rounded-lg bg-sky-600 px-4 py-2 font-bold text-white shadow-xl outline-none ring-2 ring-white hover:bg-sky-500">
-                    Aller au coach
+                    {t('board.skipToCoach')}
                 </a>
             </nav>
                 {/* Barre supérieure UNIQUE (sans bandeau parasite dessous : le videau vit sur le plateau) */}
@@ -187,6 +210,15 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                     boardState={game.state}
                     serverSeedHash={game.serverSeedHash}
                     onOpenDiceAudit={onOpenDiceAudit}
+                    lastMoveFeedback={lastMoveFeedback}
+                    notificationLevel={notificationLevel}
+                    onChangeNotificationLevel={onChangeNotificationLevel}
+                    coachQuotaBadge={effectiveBadge}
+                    isVip={effectiveIsVip}
+                    autoConfirmMode={game.autoConfirmMode}
+                    onSelectAutoConfirmMode={game.setAutoConfirmMode}
+                    gameSpeed={game.gameSpeed}
+                    onSelectGameSpeed={game.setGameSpeed}
                 />
         </header>
     );

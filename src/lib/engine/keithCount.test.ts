@@ -32,28 +32,43 @@ describe('Keith Count — calibration de la course', () => {
             const ko = computeKeithCount(state.board, 'O');
             expect(kx.rawPips).toBe(167);
             expect(ko.rawPips).toBe(167);
+            // Gaps sur les flèches 4 et 5 (la 6 a 5 pions) => 2 ajustements
+            expect(kx.adjustments).toBe(2);
+            expect(ko.adjustments).toBe(2);
         });
 
-        it('pénalise l\'empilement sur la flèche 1 (+2 par pion au-delà de 2)', () => {
-            // X : 4 pions sur la flèche 1 => +2*(4-2) = +4 d'ajustement.
+        it('pénalise l\'empilement sur la flèche 1 (+2 par pion au-delà de 1)', () => {
+            // X : 4 pions sur la flèche 1 => +2*(4-1) = +6 d'empilement
+            // + 3 gaps sur 4, 5, 6 (+3) = 9
             const board = makeRaceBoard([4, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]);
             const kx = computeKeithCount(board, 'X');
-            // rawPips = 4 pions * 1 = 4. Ajustements = +4 (empilement flèche 1)
-            // + 3 (gaspillage au-delà du premier : 4-1=3).
             expect(kx.rawPips).toBe(4);
-            expect(kx.adjustments).toBeGreaterThanOrEqual(4);
+            expect(kx.adjustments).toBe(6 + 3);
+            expect(kx.total).toBe(13);
         });
 
-        it('pénalise les gaps dans le jan intérieur', () => {
-            // X : 3 pions sur la flèche 6, 1 pion sur la flèche 8 (extérieur),
-            // rien sur 4 et 5 => gaps pénalisés car il reste des pions plus hauts.
-            const board = new Array<number>(26).fill(0);
-            board[6] = 3; // 3 pions X sur la flèche 6
-            board[8] = 1; // 1 pion X sur la flèche 8 (extérieur)
+        it('pénalise l\'empilement sur les flèches 2 et 3 selon la formule officielle', () => {
+            // 2 pions sur flèche 2 (+1), 4 pions sur flèche 3 (+1), points 4/5/6 occupés (0 gap)
+            // 1 pion sur flèche 1 (0 ajustement car pas > 1)
+            const board = makeRaceBoard([1, 2, 4, 2, 2, 2], [0, 0, 0, 0, 0, 0]);
             const kx = computeKeithCount(board, 'X');
-            // rawPips = 3*6 + 1*8 = 26. Gaps sur 4 et 5 (2 gaps) => +2.
+            // rawPips = 1*1 + 2*2 + 4*3 + 2*4 + 2*5 + 2*6 = 1 + 4 + 12 + 8 + 10 + 12 = 47
+            expect(kx.rawPips).toBe(47);
+            // c1=1 (0), c2=2 (1), c3=4 (1), gaps=0 => adjustments = 2
+            expect(kx.adjustments).toBe(2);
+            expect(kx.total).toBe(49);
+        });
+
+        it('pénalise les gaps sur 4, 5 et 6', () => {
+            // X : 3 pions sur la flèche 6, 1 pion sur la flèche 8 (extérieur), rien sur 1..5
+            const board = new Array<number>(26).fill(0);
+            board[6] = 3;
+            board[8] = 1;
+            const kx = computeKeithCount(board, 'X');
+            // rawPips = 3*6 + 1*8 = 26. Gaps sur 4 et 5 (2 gaps) => 2
             expect(kx.rawPips).toBe(26);
-            expect(kx.adjustments).toBeGreaterThanOrEqual(2);
+            expect(kx.adjustments).toBe(2);
+            expect(kx.total).toBe(28);
         });
     });
 

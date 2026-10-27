@@ -44,6 +44,19 @@ export default function GameOverOverlay({
     const currentTheme = theme || activeTheme;
     const modalClasses = getModalThemeClasses(currentTheme);
 
+    React.useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (e.code === 'Enter' || e.code === 'Space') {
+                e.preventDefault();
+                if (isMatchOver) onResetMatch();
+                else onNextGame();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isMatchOver, onNextGame, onResetMatch]);
+
     const isXWinner = result.winner === 'X';
 
     const winTypeBadge = {
@@ -71,6 +84,10 @@ export default function GameOverOverlay({
 
     const progressX = matchLength > 0 ? Math.min(100, Math.round((scoreX / matchLength) * 100)) : 0;
     const progressO = matchLength > 0 ? Math.min(100, Math.round((scoreO / matchLength) * 100)) : 0;
+    const handleShareResult = () => {
+        impactLight();
+        shareGameResult({ winner: result.winner, pointsWon: result.pointsWon, winType: result.winType, scoreX, scoreO, matchLength }).catch(() => {});
+    };
 
     return (
         <div
@@ -88,43 +105,48 @@ export default function GameOverOverlay({
 
                 <div className="relative flex flex-col items-center text-center">
                     {/* Icône de victoire */}
-                    <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-3xl shadow-lg shadow-amber-500/30 ring-2 ring-amber-300">
+                    <div className="mb-2.5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-2xl shadow-lg shadow-amber-500/30 ring-2 ring-amber-300">
                         {isMatchOver ? '🏆' : '🎖️'}
                     </div>
 
-                    <h2 id="game-over-title" className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                    <span className={`mb-1 text-xs font-bold uppercase tracking-wider ${isXWinner ? 'text-emerald-400' : 'text-amber-300'}`}>
+                        {isXWinner ? 'Bravo · Vous gagnez !' : 'Victoire de l’adversaire'}
+                    </span>
+
+                    <h2 id="game-over-title" className="text-xl sm:text-2xl font-black tracking-tight text-white">
                         {isMatchOver
                             ? `Victoire du Match : Joueur ${matchWinner} !`
                             : `Manche remportée par le Joueur ${result.winner} !`}
                     </h2>
 
-                    <div className="mt-2 flex flex-col items-center gap-1.5">
-                        <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-extrabold uppercase tracking-wider ${winTypeBadge.color}`}>
-                            {winTypeBadge.label}
-                        </span>
-                        <p className="text-xs text-slate-400 max-w-xs">{winTypeBadge.desc}</p>
-                    </div>
-
-                    {/* Points remportés */}
-                    <div className="my-4 w-full rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                        <span className="text-xs uppercase tracking-wider text-slate-400">Points de la manche</span>
-                        <div className="text-3xl font-black text-emerald-400">
-                            +{result.pointsWon} {result.pointsWon > 1 ? 'points' : 'point'}
+                    {/* Bandeau unifié : Type de victoire + Points remportés */}
+                    <div className="my-3.5 w-full rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 flex items-center justify-between gap-3 text-left">
+                        <div className="flex flex-col gap-1 min-w-0">
+                            <span className={`inline-flex w-fit items-center rounded-full border px-2.5 py-0.5 text-xs font-extrabold uppercase tracking-wider ${winTypeBadge.color}`}>
+                                {winTypeBadge.label}
+                            </span>
+                            <p className="text-xs text-slate-400 line-clamp-2">{winTypeBadge.desc}</p>
+                        </div>
+                        <div className="shrink-0 text-right pl-2 border-l border-white/10">
+                            <span className="block text-[11px] uppercase tracking-wider text-slate-400">Gain</span>
+                            <div className="text-2xl font-black text-emerald-400 whitespace-nowrap">
+                                +{result.pointsWon} {result.pointsWon > 1 ? 'points' : 'point'}
+                            </div>
                         </div>
                     </div>
 
                     {/* Bloc Performance Rating (PR) de la manche */}
                     {analysis && (
-                        <div className="mb-4 w-full rounded-2xl border border-blue-500/30 bg-blue-950/25 p-3.5 flex items-center justify-between">
+                        <div className="mb-3.5 w-full rounded-2xl border border-blue-500/30 bg-blue-950/25 p-3.5 flex items-center justify-between">
                             <div className="text-left">
-                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
+                                <span className="text-[11px] font-bold text-blue-400 uppercase tracking-wider">
                                     Performance Rating (PR)
                                 </span>
                                 <div className="flex items-baseline gap-2 mt-0.5">
                                     <span className="font-mono text-xl font-black text-white" data-testid="gameover-pr-value">
                                         {analysis.performanceRating}
                                     </span>
-                                    <span className="rounded-full border border-blue-400/40 bg-blue-500/20 px-2 py-0.5 text-[10px] font-bold text-blue-300">
+                                    <span className="rounded-full border border-blue-400/40 bg-blue-500/20 px-2 py-0.5 text-[11px] font-bold text-blue-300">
                                         {analysis.prCategory}
                                     </span>
                                     <span className="text-xs text-amber-300 font-bold ml-1">
@@ -160,7 +182,7 @@ export default function GameOverOverlay({
 
                     {/* Tableau récapitulatif du match */}
                     {matchLength > 0 && (
-                        <div className="w-full space-y-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-4 text-left">
+                        <div className="w-full space-y-2.5 rounded-2xl border border-white/10 bg-slate-950/40 p-3.5 text-left">
                             <div className="flex items-center justify-between text-xs font-semibold text-slate-400">
                                 <span>Progression du Match</span>
                                 <span>Objectif : {matchLength} pts</span>
@@ -171,7 +193,7 @@ export default function GameOverOverlay({
                                 <div className="flex justify-between text-xs font-bold text-slate-200 mb-1">
                                     <span className="flex items-center gap-1.5">
                                         <span className="h-2.5 w-2.5 rounded-full bg-slate-100 ring-1 ring-slate-400" />
-                                        Joueur X (Blanc)
+                                        Vous · Joueur X (Blanc)
                                     </span>
                                     <span>{scoreX} / {matchLength}</span>
                                 </div>
@@ -188,7 +210,7 @@ export default function GameOverOverlay({
                                 <div className="flex justify-between text-xs font-bold text-slate-200 mb-1">
                                     <span className="flex items-center gap-1.5">
                                         <span className="h-2.5 w-2.5 rounded-full bg-slate-900 ring-1 ring-slate-600" />
-                                        Joueur O (Noir)
+                                        IA · Joueur O (Noir)
                                     </span>
                                     <span>{scoreO} / {matchLength}</span>
                                 </div>
@@ -233,17 +255,7 @@ export default function GameOverOverlay({
                                 </Link>
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        impactLight();
-                                        shareGameResult({
-                                            winner: result.winner,
-                                            pointsWon: result.pointsWon,
-                                            winType: result.winType,
-                                            scoreX,
-                                            scoreO,
-                                            matchLength,
-                                        }).catch(() => { });
-                                    }}
+                                    onClick={handleShareResult}
                                     className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-xl border border-blue-500/50 bg-blue-950/40 px-4 py-3 text-xs font-bold text-blue-300 hover:bg-blue-900/40 transition active:scale-95"
                                 >
                                     <span>📤</span>
@@ -261,17 +273,7 @@ export default function GameOverOverlay({
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        impactLight();
-                                        shareGameResult({
-                                            winner: result.winner,
-                                            pointsWon: result.pointsWon,
-                                            winType: result.winType,
-                                            scoreX,
-                                            scoreO,
-                                            matchLength,
-                                        }).catch(() => { });
-                                    }}
+                                    onClick={handleShareResult}
                                     className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-xl border border-blue-500/50 bg-blue-950/40 px-4 py-3 text-xs font-bold text-blue-300 hover:bg-blue-900/40 transition active:scale-95"
                                 >
                                     <span>📤</span>

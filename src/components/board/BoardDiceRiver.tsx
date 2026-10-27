@@ -74,7 +74,7 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
     };
 
     return (
-        <div className="pointer-events-none absolute left-[24%] top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center gap-2 sm:gap-4">
+        <div className="pointer-events-none absolute left-[24%] top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center gap-1.5 sm:gap-4 max-w-[44%]">
             {dice && (
                 <div
                     data-testid="board-dice-pair"
@@ -85,12 +85,22 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                             ? 'Valider le tour'
                             : isDouble
                               ? `Double ${dice[0]} (${4 - visibleDice.filter((_, i) => usedDice[i]).length} restants)`
-                              : "Inverser l'ordre des dés"
+                              : canSwapOrder
+                                ? "Inverser l'ordre des dés"
+                                : `Dés ${dice[0]} et ${dice[1]}`
                     }
-                    title={confirmOnClick ? 'Cliquer sur les dés pour valider le tour' : isDouble ? `Double ${dice[0]}` : "Cliquer pour inverser l'ordre des dés"}
+                    title={
+                        confirmOnClick
+                            ? 'Cliquer sur les dés pour valider le tour'
+                            : isDouble
+                              ? `Double ${dice[0]}`
+                              : canSwapOrder
+                                ? "Cliquer pour inverser l'ordre des dés"
+                                : `Dés ${dice[0]} et ${dice[1]}`
+                    }
                     onClick={handleContainerClick}
                     onKeyDown={handleContainerKeyDown}
-                    className="pointer-events-auto flex items-center gap-2 sm:gap-3 rounded-xl px-1.5 sm:px-2.5 py-1 min-h-[40px] sm:min-h-[44px] cursor-pointer transition hover:bg-white/5 active:scale-95"
+                    className={`pointer-events-auto flex items-center ${isDouble ? 'gap-1 sm:gap-2.5 px-1 sm:px-2.5' : 'gap-2 sm:gap-3 px-1.5 sm:px-2.5'} rounded-xl py-1 min-h-[40px] sm:min-h-[44px] cursor-pointer transition hover:bg-white/5 active:scale-95 touch-manipulation`}
                 >
                     {visibleDice.map((value, i) => {
                         const dieSlot: 0 | 1 = i === 0 ? 0 : 1;
@@ -135,13 +145,13 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                             />
                         );
                     })}
-                    {!isDouble && (
+                    {canSwapOrder && (
                         <span
                             data-testid="dice-order-indicator"
                             aria-hidden="true"
-                            className="ml-0.5 flex flex-col items-center justify-center rounded-lg bg-slate-950/75 border border-amber-400/35 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-200/95 shadow-md backdrop-blur-sm"
+                            className="ml-0.5 flex flex-col items-center justify-center rounded-lg bg-slate-950/75 border border-white/10 px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-200/95 shadow-md backdrop-blur-sm"
                         >
-                            <span className="text-[10px] leading-none text-sky-300">⇄</span>
+                            <span className="text-[11px] leading-none text-sky-300">⇄</span>
                             <span className="leading-tight">{selectedDie === 1 ? '2→1' : '1→2'}</span>
                         </span>
                     )}

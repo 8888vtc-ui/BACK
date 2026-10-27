@@ -96,7 +96,7 @@ const InGameMenuModalComponent: React.FC<InGameMenuModalProps> = ({
         >
             <div
                 data-testid="leave-match-confirm-modal"
-                className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#d4af37]/60 bg-gradient-to-b from-[#131824]/98 via-[#0b0e16]/98 to-[#06080d]/98 p-5 text-slate-100 flex flex-col gap-4 shadow-[0_28px_80px_rgba(0,0,0,0.92),0_0_0_1px_rgba(255,244,210,0.14),inset_0_1px_1px_rgba(255,245,205,0.25)]"
+                className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#d4af37]/45 bg-[#0e121b]/98 p-5 text-slate-100 flex flex-col gap-4 shadow-[0_28px_80px_rgba(0,0,0,0.92)]"
             >
                 {/* Filet supérieur spéculaire en laiton poli */}
                 <div
@@ -104,12 +104,12 @@ const InGameMenuModalComponent: React.FC<InGameMenuModalProps> = ({
                     className="pointer-events-none absolute inset-x-10 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#f3c65f] to-transparent"
                 />
 
-                {/* En-tête gravé : Tableau de Session Privé */}
-                <div className="flex items-center justify-between border-b border-[#d4af37]/25 pb-3">
+                {/* En-tête épuré : Menu de Partie */}
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
                     <div className="flex items-center gap-2.5">
                         <span
                             aria-hidden="true"
-                            className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#e5c158]/55 bg-gradient-to-b from-[#2b1f0d] to-[#120c05] text-sm text-[#f3c65f] shadow-inner"
+                            className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#e5c158]/45 bg-[#20170a] text-sm text-[#f3c65f]"
                         >
                             ⚜
                         </span>
@@ -118,10 +118,10 @@ const InGameMenuModalComponent: React.FC<InGameMenuModalProps> = ({
                                 id="in-game-menu-title"
                                 className="font-serif text-base font-black tracking-wide text-[#fdf8eb]"
                             >
-                                Tableau de Session Privé
+                                Pause &amp; Options de Partie
                             </h2>
-                            <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#d4af37]/80">
-                                Cercle Monte-Carlo · Pause & Arbitrage
+                            <span className="text-[11px] font-medium text-slate-400">
+                                Votre position et vos dés sont sauvegardés automatiquement
                             </span>
                         </div>
                     </div>
@@ -130,74 +130,65 @@ const InGameMenuModalComponent: React.FC<InGameMenuModalProps> = ({
                         onClick={onClose}
                         data-testid="close-in-game-menu-btn"
                         aria-label="Reprendre la partie"
-                        className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#d4af37]/30 bg-white/[0.04] text-xs text-amber-100/80 transition hover:border-[#f3c65f] hover:bg-white/10 hover:text-white"
+                        className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-xs text-slate-300 transition hover:border-[#f3c65f] hover:bg-white/10 hover:text-white"
                     >
                         ✕
                     </button>
                 </div>
 
                 {/* Écrin unifié : Score Officiel, Videau & Sauvegarde Atomique */}
-                <div className="rounded-xl border border-[#d4af37]/35 bg-gradient-to-b from-[#17120a]/90 to-[#0c0a07]/95 p-3.5 shadow-[inset_0_2px_8px_rgba(0,0,0,0.85)]">
+                <div className="rounded-xl border border-white/10 bg-black/40 p-3.5">
                     {boardState && (
-                        <div className="mb-3 flex items-center justify-between border-b border-[#d4af37]/20 pb-2.5">
+                        <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-2.5">
                             <div className="flex flex-col">
-                                <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#d4af37]">
-                                    {boardState.matchLength > 0 ? `Match Officiel · ${boardState.matchLength} Points` : 'Money Game · Table Libre'}
+                                <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#d4af37]">
+                                    {boardState.matchLength > 0 ? `Match en ${boardState.matchLength} Points` : 'Partie Libre'}
                                 </span>
                                 <span className="mt-0.5 font-serif text-base font-black tracking-wide text-[#fdf8eb]">
                                     Vous <span className="font-mono text-[#f3c65f]">{boardState.scoreX}</span>
-                                    <span className="mx-1.5 text-xs text-[#d4af37]/60">—</span>
+                                    <span className="mx-1.5 text-xs text-slate-500">—</span>
                                     <span className="font-mono text-[#f3c65f]">{boardState.scoreO}</span> IA
                                 </span>
                             </div>
                             <div className="flex flex-col items-end text-right">
-                                <span className="rounded-md border border-[#f3c65f]/55 bg-gradient-to-b from-[#33240f] to-[#1a1106] px-2 py-0.5 font-mono text-[11px] font-black text-[#f3c65f] shadow-sm">
+                                <span className="rounded-md border border-[#f3c65f]/45 bg-[#261b0b] px-2 py-0.5 font-mono text-xs font-black text-[#f3c65f]">
                                     Videau {effectiveCube}×
                                 </span>
-                                <span className="mt-0.5 text-[9px] font-medium text-slate-400">
-                                    Enjeu : {effectiveCube} pt{effectiveCube > 1 ? 's' : ''} (Gammon {effectiveCube * 2})
+                                <span className="mt-0.5 text-[11px] font-medium text-slate-400">
+                                    Enjeu : {effectiveCube} pt{effectiveCube > 1 ? 's' : ''}
                                 </span>
                             </div>
                         </div>
                     )}
 
-                    <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-semibold text-amber-100/90">
-                            Coffre de session · Position & dés préservés
-                        </span>
-                        <span className="font-mono text-[10px] font-bold text-[#f3c65f]">
-                            ● Synchronisé
-                        </span>
-                    </div>
-
-                    <div className="mt-3 flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5">
                         <button
                             type="button"
                             data-testid="cancel-leave-match-btn"
                             onClick={onClose}
-                            className="flex-1 rounded-xl border border-[#fef08a]/80 px-3 py-2.5 text-xs font-black uppercase tracking-[0.14em] text-[#1c1004] transition hover:brightness-105 active:scale-[0.98]"
+                            className="flex-1 rounded-xl border border-[#fef08a]/80 px-3 py-2.5 text-xs font-black uppercase tracking-[0.12em] text-[#1c1004] transition hover:brightness-105 active:scale-[0.98]"
                             style={{
                                 background: 'linear-gradient(180deg, #fff6d1 0%, #f3c65f 35%, #c88e1b 100%)',
-                                boxShadow: '0 6px 20px rgba(212,175,55,0.35), inset 0 1px 1px rgba(255,255,255,0.8)',
+                                boxShadow: '0 6px 20px rgba(212,175,55,0.3), inset 0 1px 1px rgba(255,255,255,0.8)',
                             }}
                         >
-                            Rester en jeu
+                            Reprendre la partie
                         </button>
                         <button
                             type="button"
                             data-testid="confirm-leave-match-btn"
                             onClick={handleSaveAndLeave}
-                            className="flex-1 rounded-xl border border-[#d4af37]/35 bg-[#141924] px-3 py-2.5 text-xs font-bold tracking-wide text-amber-100/90 shadow-inner transition hover:border-[#f3c65f] hover:bg-[#1c2333] hover:text-white active:scale-[0.98]"
+                            className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-xs font-bold tracking-wide text-slate-200 transition hover:border-[#f3c65f]/60 hover:bg-white/[0.08] hover:text-white active:scale-[0.98]"
                         >
                             Quitter vers le Lobby
                         </button>
                     </div>
                 </div>
 
-                {/* Section 2 : Ébénisterie & Outils de Salon */}
+                {/* Section 2 : Thème & Outils */}
                 <div className="flex flex-col gap-2">
-                    <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#d4af37]/85">
-                        Essence du Plateau & Outils d’Analyse
+                    <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#d4af37]">
+                        Thème &amp; Outils rapides
                     </span>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {THEME_CHOICES.map((t) => (
@@ -206,10 +197,10 @@ const InGameMenuModalComponent: React.FC<InGameMenuModalProps> = ({
                                 type="button"
                                 onClick={() => onSelectTheme(t.id)}
                                 data-testid={`ingame-theme-${t.id}`}
-                                className={`flex items-center justify-center gap-1.5 rounded-xl border px-2 py-1.5 text-[11px] font-bold transition ${
+                                className={`flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2 text-xs font-bold transition ${
                                     theme === t.id
-                                        ? 'border-[#f3c65f] bg-gradient-to-b from-[#2e210e] to-[#171006] text-[#fdf8eb] shadow-[0_0_12px_rgba(212,175,55,0.25)]'
-                                        : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-[#d4af37]/40 hover:bg-white/[0.06]'
+                                        ? 'border-[#f3c65f] bg-[#2a1e0d] text-[#fdf8eb]'
+                                        : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:bg-white/[0.06]'
                                 }`}
                             >
                                 <span className={`h-2.5 w-2.5 shrink-0 rounded-full border bg-gradient-to-br ${t.swatch}`} />
@@ -223,9 +214,9 @@ const InGameMenuModalComponent: React.FC<InGameMenuModalProps> = ({
                             type="button"
                             onClick={onToggleSound}
                             data-testid="ingame-toggle-sound-btn"
-                            className="flex items-center justify-center gap-1.5 rounded-xl border border-[#d4af37]/25 bg-[#101520] px-2.5 py-2 text-xs font-semibold text-amber-100/90 transition hover:border-[#f3c65f]/60 hover:text-white"
+                            className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs font-semibold text-slate-200 transition hover:border-white/25 hover:text-white"
                         >
-                            <span className="[filter:sepia(0.9)_saturate(2.5)_hue-rotate(5deg)]">{isSoundMuted ? '🔇' : '🔊'}</span>
+                            <span>{isSoundMuted ? '🔇' : '🔊'}</span>
                             <span>{isSoundMuted ? 'Muet' : 'Audio On'}</span>
                         </button>
                         {onTriggerCoach && (
@@ -233,9 +224,9 @@ const InGameMenuModalComponent: React.FC<InGameMenuModalProps> = ({
                                 type="button"
                                 onClick={() => { onClose(); onTriggerCoach(); }}
                                 data-testid="ingame-coach-btn"
-                                className="flex items-center justify-center gap-1.5 rounded-xl border border-[#d4af37]/35 bg-gradient-to-b from-[#261b0b] to-[#140e05] px-2.5 py-2 text-xs font-bold text-[#fce8b2] transition hover:border-[#f3c65f] hover:text-white"
+                                className="flex items-center justify-center gap-1.5 rounded-xl border border-[#d4af37]/35 bg-[#241a0b] px-2.5 py-2 text-xs font-bold text-[#fce8b2] transition hover:border-[#f3c65f] hover:text-white"
                             >
-                                <span className="[filter:sepia(0.9)_saturate(2.5)_hue-rotate(5deg)]">🎓</span>
+                                <span>🎓</span>
                                 <span>Coach IA</span>
                             </button>
                         )}
@@ -244,9 +235,9 @@ const InGameMenuModalComponent: React.FC<InGameMenuModalProps> = ({
                                 type="button"
                                 onClick={() => { onClose(); onOpenExportImport(); }}
                                 data-testid="ingame-review-moves-btn"
-                                className="flex items-center justify-center gap-1.5 rounded-xl border border-[#d4af37]/25 bg-[#101520] px-2.5 py-2 text-xs font-bold text-amber-100/90 transition hover:border-[#f3c65f]/60 hover:text-white"
+                                className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs font-bold text-slate-200 transition hover:border-white/25 hover:text-white"
                             >
-                                <span className="[filter:sepia(0.9)_saturate(2.5)_hue-rotate(5deg)]">📜</span>
+                                <span>📜</span>
                                 <span>Coups / XGID</span>
                             </button>
                         )}

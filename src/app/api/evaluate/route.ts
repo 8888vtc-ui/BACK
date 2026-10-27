@@ -15,12 +15,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit, RATE_LIMIT_PROFILES } from '../../../lib/security/rateLimit';
 import { EvaluateRequestSchema, validateJsonBody } from '../../../lib/security/schemas';
-import { parseXGID } from '../../../engine/backgammonEngine';
+import { parseXGID, serializeCanonicalXGID } from '../../../engine/backgammonEngine';
 import { analyzeBoardMoves, analyzeBoardCube } from '../../../lib/engine/evaluator';
 
 export const dynamic = 'force-dynamic';
 
-const BACKEND_URL = process.env.GNUBG_BACKEND_URL || 'http://localhost:8000';
+const DEFAULT_CLOUD_RUN_URL = 'https://bgsage-service-468274233732.europe-west1.run.app';
+const CLOUD_RUN_TIMEOUT_MS = process.env.NODE_ENV === 'test' ? 1500 : 3200;
+const REMOTE_BACKEND_COOLDOWN_MS = 10_000;
+const BACKEND_URL =
+    process.env.NODE_ENV === 'test'
+        ? process.env.GNUBG_BACKEND_URL || 'http://localhost:8000'
+        : (
+              process.env.BACKEND_URL ||
+              process.env.GNUBG_BACKEND_URL ||
+              DEFAULT_CLOUD_RUN_URL
+          ).replace(/\/+$/, '');
+
+let remoteBackendCooldownUntil = 0;
+let consecutiveFailures = 0;
 
 export async function GET() {
     return NextResponse.json({
@@ -47,31 +60,55 @@ export async function POST(req: NextRequest) {
 
     const { xgid, ply } = validation.data;
 
-    // 3. Tentative d'évaluation via le backend GNUBG distant (optionnel).
+    // 3. Tentative d'évaluation via le backend Open Sage Cloud Run.
     //    Si indisponible, on bascule directement sur le moteur local déterministe.
-    try {
-        const backendResp = await fetch(`${BACKEND_URL}/api/evaluate`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
-            body: JSON.stringify({ xgid, ply }),
-            signal: AbortSignal.timeout(3000),
-        });
-
-        if (backendResp.ok) {
-            const data = await backendResp.json();
-            return NextResponse.json(data, {
-                status: 200,
-                headers: {
-                    'X-RateLimit-Limit': String(rateLimit.result.limit),
-                    'X-RateLimit-Remaining': String(rateLimit.result.remaining),
-                },
-            });
+    const shouldTryRemote =
+        process.env.NODE_ENV === 'test' || Date.now() >= remoteBackendCooldownUntil;
+    if (shouldTryRemote) {
+        let canonicalXgid = xgid;
+        try {
+            canonicalXgid = serializeCanonicalXGID(parseXGID(xgid));
+        } catch {
+            canonicalXgid = xgid;
         }
-    } catch {
-        // Backend Python indisponible : bascule transparente sur le moteur local.
+        try {
+            const backendResp = await fetch(`${BACKEND_URL}/api/evaluate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({ xgid: canonicalXgid, ply }),
+                signal: AbortSignal.timeout(CLOUD_RUN_TIMEOUT_MS),
+            });
+
+            if (backendResp.ok) {
+                remoteBackendCooldownUntil = 0;
+                consecutiveFailures = 0;
+                const data = await backendResp.json();
+                const payload =
+                    data && typeof data === 'object'
+                        ? { ...data, source: 'bgsage-cloud-run' }
+                        : { data, source: 'bgsage-cloud-run' };
+                return NextResponse.json(payload, {
+                    status: 200,
+                    headers: {
+                        'X-RateLimit-Limit': String(rateLimit.result.limit),
+                        'X-RateLimit-Remaining': String(rateLimit.result.remaining),
+                    },
+                });
+            }
+            consecutiveFailures++;
+            if (process.env.NODE_ENV !== 'test' && consecutiveFailures >= 3) {
+                remoteBackendCooldownUntil = Date.now() + REMOTE_BACKEND_COOLDOWN_MS;
+            }
+        } catch {
+            // Backend distant indisponible ou timeout : incrémente les échecs et bascule sur le moteur local.
+            consecutiveFailures++;
+            if (process.env.NODE_ENV !== 'test' && consecutiveFailures >= 3) {
+                remoteBackendCooldownUntil = Date.now() + REMOTE_BACKEND_COOLDOWN_MS;
+            }
+        }
     }
 
     // 4. Évaluation déterministe locale via le moteur TypeScript tri-phase.
@@ -79,7 +116,7 @@ export async function POST(req: NextRequest) {
         const state = parseXGID(xgid);
         const dice: [number, number] = state.dice ?? [3, 1];
 
-        const movesResult = analyzeBoardMoves(state, dice, { ply: ply ?? 2, maxMoves: 5 });
+        const movesResult = analyzeBoardMoves(state, dice, { ply: ply ?? 2, maxMoves: 64 });
         const cubeResult = analyzeBoardCube(state, { ply: ply ?? 2 });
 
         const chequerPlay = movesResult.moves.map((m) => ({
@@ -88,6 +125,8 @@ export async function POST(req: NextRequest) {
             equity: m.equity,
             equityLoss: m.equityLoss,
             probabilities: m.probabilities ?? null,
+            board: m.board ?? null,
+            moves: m.moves ?? [],
         }));
 
         const cubeDecision = {

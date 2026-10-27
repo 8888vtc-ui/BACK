@@ -11,7 +11,6 @@ interface HealthCheckResult {
     checks: {
         backendEngine: {
             status: 'ok' | 'unreachable' | 'degraded';
-            url: string;
             latencyMs?: number;
             error?: string;
         };
@@ -76,7 +75,6 @@ export async function GET() {
         checks: {
             backendEngine: {
                 status: backendStatus,
-                url: cleanBackendUrl,
                 latencyMs: backendLatency,
                 error: backendError,
             },

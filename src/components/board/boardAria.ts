@@ -61,3 +61,11 @@ export function getTrayAriaLabel(board: number[], player: Player, canBearOff: bo
     }
     return label;
 }
+
+
+export function getBoardRegionAriaLabel(rawLabel?: string): string {
+    if (rawLabel && rawLabel !== 'board.regionLabel' && rawLabel !== 'Backgammon Game Board') {
+        return rawLabel;
+    }
+    return 'Plateau de jeu de Backgammon';
+}

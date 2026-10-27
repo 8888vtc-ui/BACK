@@ -16,6 +16,7 @@ import {
 } from '../../engine/pipCalculator';
 
 export { PIP_COUNT_STORAGE_KEY, computePipDiff, isLeading };
+export const PIP_VISIBILITY_CHANGE_EVENT = 'bg:pip-visibility-change';
 
 /**
  * Recommandation stratégique contextuelle selon l'écart de course (théorie Magriel / Robertie).
@@ -122,6 +123,9 @@ const PipCountBadgeComponent: React.FC<PipCountBadgeProps> = ({
             const next = !prev;
             try {
                 localStorage.setItem(PIP_COUNT_STORAGE_KEY, String(next));
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent<boolean>(PIP_VISIBILITY_CHANGE_EVENT, { detail: next }));
+                }
             } catch {
                 // ignore
             }
@@ -141,7 +145,7 @@ const PipCountBadgeComponent: React.FC<PipCountBadgeProps> = ({
         <div
             data-testid="pip-count-bar"
             data-live-board-mode={!visible ? 'true' : 'false'}
-            className="flex items-center justify-between gap-2 px-2 pt-0.5 text-[10px] font-semibold select-none shrink-0"
+            className="hidden md:flex items-center justify-between gap-2 px-2 pt-0.5 text-[11px] font-semibold select-none shrink-0"
         >
             {/* Plaque en laiton incrustée avec scores tabulaires */}
             <div
@@ -192,13 +196,13 @@ const PipCountBadgeComponent: React.FC<PipCountBadgeProps> = ({
                             {displaySign}
                             {absDiff}
                         </span>
-                        <span className="hidden sm:inline font-sans text-[9px] font-semibold opacity-90">
+                        <span className="hidden sm:inline font-sans text-[11px] font-semibold opacity-90">
                             ({statusLabel})
                         </span>
                         {hasEpc && (
                             <span
                                 data-testid="pip-epc-badge"
-                                className="hidden md:inline-block ml-0.5 text-[8px] uppercase tracking-wider text-amber-300/90 bg-amber-950/50 px-1 py-0.2 rounded border border-amber-700/50"
+                                className="hidden md:inline-block ml-0.5 text-[11px] uppercase tracking-wider text-amber-300/90 bg-amber-950/50 px-1 py-0.2 rounded border border-white/10"
                                 title="Effective Pip Count actif (sans contact)"
                             >
                                 EPC

@@ -39,19 +39,19 @@ const LEVELS: Array<{
         {
             id: 'expert',
             name: 'Maître',
-            ply: 'WASM 2-Ply',
-            badge: 'XG-Web',
+            ply: '2-Ply',
+            badge: 'Monte-Carlo',
             icon: '🔴',
-            tooltip: 'XG-Web 2-Ply : réseau neuronal distillé sur les ouvertures, primes et blitz.',
+            tooltip: 'Monte-Carlo 2-Ply : réseau neuronal calibré sur les ouvertures, primes et blitz.',
             activeClass: 'border-rose-500/80 bg-rose-950/60 text-rose-200 shadow-rose-500/20',
         },
         {
             id: 'grandmaster',
-            name: 'Tardieu',
+            name: 'Viktor Orlov',
             ply: '3-Ply Sélectif',
-            badge: 'XG++++',
+            badge: 'Monte-Carlo',
             icon: '🏆',
-            tooltip: 'François Tardieu — Triple Champion d\'Europe, la légende. 3-ply sélectif : la profondeur ultime.',
+            tooltip: 'Viktor Orlov — L\'Oracle de Monte-Carlo. Moteur Monte-Carlo 3-ply sélectif : la profondeur ultime.',
             activeClass: 'border-amber-500/80 bg-amber-950/60 text-amber-200 shadow-amber-500/20',
         },
     ];
@@ -90,7 +90,7 @@ export default function DifficultySelector({
                         <span className="text-xs">{level.icon}</span>
                         <span>{level.name}</span>
                         <span
-                            className={`rounded px-1.5 py-0.2 text-[9px] font-extrabold uppercase tracking-tighter ${isActive ? 'bg-black/30' : 'bg-slate-800 text-slate-500'
+                            className={`rounded px-1.5 py-0.2 text-[11px] font-extrabold uppercase tracking-tighter ${isActive ? 'bg-black/30' : 'bg-slate-800 text-slate-500'
                                 }`}
                         >
                             {level.ply}

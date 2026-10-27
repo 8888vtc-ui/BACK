@@ -14,7 +14,7 @@ export const RESIGN_TIERS: ReadonlyArray<{
         label: 'Simple',
         badge: 'Enjeu ×1',
         cardClass:
-            'border-white/15 bg-gradient-to-b from-[#171b24] to-[#0d1017] text-slate-200 hover:border-[#d4af37]/50 hover:text-white',
+            'border-white/10 bg-gradient-to-b from-[#171b24] to-[#0d1017] text-slate-200 hover:border-[#d4af37]/50 hover:text-white',
         badgeClass: 'text-slate-400',
     },
     {
@@ -59,13 +59,13 @@ export function InGameResignSection({
     const pointsAtStake = pendingResignMultiplier ? effectiveCube * pendingResignMultiplier : effectiveCube;
 
     return (
-        <div className="border-t border-[#d4af37]/20 pt-3">
+        <div className="border-t border-white/10 pt-3">
             <div className="flex items-center justify-between">
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-rose-300/90">
+                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-rose-300/90">
                     Concéder la Manche (Videau {effectiveCube}×)
                 </span>
-                <span className="text-[9px] italic text-slate-400">
-                    Validation en 2 étapes
+                <span className="text-[11px] text-slate-400">
+                    Confirmation requise
                 </span>
             </div>
 
@@ -79,15 +79,15 @@ export function InGameResignSection({
                                 type="button"
                                 data-testid={`ingame-resign-${mult}x-btn`}
                                 onClick={() => setPendingResignMultiplier(mult)}
-                                className={`flex flex-col items-center justify-between gap-0.5 rounded-xl border px-2 py-2.5 text-center transition active:scale-95 ${cardClass}`}
+                                className={`flex flex-col items-center justify-between gap-0.5 rounded-xl border px-2 py-2 text-center transition active:scale-95 ${cardClass}`}
                             >
-                                <span className={`text-[8px] uppercase tracking-widest ${badgeClass}`}>
+                                <span className={`text-[11px] uppercase tracking-wider ${badgeClass}`}>
                                     {badge}
                                 </span>
                                 <span className="font-serif text-xs font-black whitespace-nowrap">
                                     {label}
                                 </span>
-                                <span className="font-mono text-[10px] font-bold opacity-85 whitespace-nowrap">
+                                <span className="font-mono text-[11px] font-bold opacity-85 whitespace-nowrap">
                                     ({pts} pt{pts > 1 ? 's' : ''})
                                 </span>
                             </button>
@@ -107,7 +107,7 @@ export function InGameResignSection({
                             type="button"
                             data-testid="cancel-resign-btn"
                             onClick={() => setPendingResignMultiplier(null)}
-                            className="rounded-lg border border-white/20 bg-black/40 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:bg-black/60"
+                            className="rounded-lg border border-white/10 bg-black/40 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:bg-black/60"
                         >
                             Annuler
                         </button>

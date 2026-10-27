@@ -36,7 +36,7 @@ function rollDeterministicDice(rng: () => number): [number, number] {
 
 describe('Contrôle de Qualité & Benchmark PR — Moteur Unique Open Sage (bgsage-service sur Google Cloud Run)', () => {
     it('1. Vérifie la disponibilité et la précision d’Open Sage (Cloud Run) pour X et O au lancer 3-1', async () => {
-        const available = await isBgsageAvailable(10000);
+        const available = await isBgsageAvailable(20000);
         expect(available).toBe(true);
 
         // Test pour X (Blanc) avec 3-1 en position initiale
@@ -46,7 +46,7 @@ describe('Contrôle de Qualité & Benchmark PR — Moteur Unique Open Sage (bgsa
             dice: [3, 1],
         };
         const legalX = generateLegalMoves(stateX, [3, 1]);
-        const choiceX = await selectBotMoveWithBgsage(stateX, legalX, 'grandmaster', 10000);
+        const choiceX = await selectBotMoveWithBgsage(stateX, legalX, 'grandmaster', 15000);
         expect(choiceX).not.toBeNull();
         expect(choiceX!.sequence.board[5]).toBe(2);
         expect(choiceX!.sequence.board[6]).toBe(4);
@@ -60,12 +60,12 @@ describe('Contrôle de Qualité & Benchmark PR — Moteur Unique Open Sage (bgsa
             dice: [3, 1],
         };
         const legalO = generateLegalMoves(stateO, [3, 1]);
-        const choiceO = await selectBotMoveWithBgsage(stateO, legalO, 'grandmaster', 10000);
+        const choiceO = await selectBotMoveWithBgsage(stateO, legalO, 'grandmaster', 15000);
         expect(choiceO).not.toBeNull();
         expect(choiceO!.sequence.board[20]).toBe(-2);
         expect(choiceO!.sequence.board[19]).toBe(-4);
         expect(choiceO!.sequence.board[17]).toBe(-2);
-    }, 30000);
+    }, 45000);
 
     it(
         '2. Mesure le vrai PR et Error Rate des 4 niveaux de Bots (Beginner, Intermediate, Expert, Grandmaster) branchés sur Open Sage',

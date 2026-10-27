@@ -1,6 +1,6 @@
 # ADR-007 : Déploiement Hybride XG-Web (Bear-Off Exact 54 264 États + Moteur WASM 2-Ply SIMD)
 
-- **Statut** : Accepté
+- **Statut** : Remplacé par [ADR-009](0009-open-sage-cloud-run.md) *(la table Bear-Off exacte 54 264 états Option A est conservée en production dans `src/lib/engine/bearoffTable.ts` ; l'étage Rust/WASM 2-Ply a été remplacé par Open Sage Cloud Run)*
 - **Date** : 2026-10-18
 - **Décideurs** : Équipe d'ingénierie Backgammon Suite
 - **Domaine** : Moteur de jeu, IA Grand-Maître & Haute Performance

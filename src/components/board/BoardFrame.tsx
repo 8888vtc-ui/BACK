@@ -24,11 +24,12 @@ const BoardFrameComponent: React.FC<BoardFrameProps> = ({ children, theme }) => 
     const tokens = getBoardThemeTokens(theme).frame;
     return (
         <div
-            className="relative w-full h-full rounded-[20px] sm:rounded-[28px] p-1.5 sm:p-3.5 md:p-5 flex flex-col shadow-2xl select-none"
+            className="board-adaptive-shell relative w-full h-full max-w-full max-h-full min-w-0 min-h-0 md:max-w-[min(100%,calc((100dvh-130px)*1.375))] md:aspect-[11/8] mx-auto max-sm:rounded-none max-sm:border-x-0 rounded-[20px] sm:rounded-[28px] p-0.5 sm:p-2.5 md:p-3.5 [@media(max-height:500px)]:!p-1.5 flex flex-col shadow-2xl select-none"
             style={{
                 background: tokens.background,
                 boxShadow: tokens.boxShadow,
                 border: tokens.border,
+                touchAction: 'none',
             }}
         >
             {/* Chanfrein intérieur en laiton / cuivre / titane */}
@@ -100,7 +101,7 @@ const FeltSurfaceComponent: React.FC<FeltSurfaceProps> = ({ children, theme }) =
     const tokens = getBoardThemeTokens(theme).felt;
     return (
         <div
-            className="relative flex-1 min-h-0 rounded-xl sm:rounded-2xl p-1 sm:p-2.5 flex flex-col overflow-hidden shadow-inner"
+            className="relative flex-1 min-h-0 rounded-xl sm:rounded-2xl p-1 sm:p-2.5 [@media(max-height:500px)]:!p-1 flex flex-col overflow-hidden shadow-inner"
             style={{
                 backgroundColor: tokens.backgroundColor,
                 backgroundImage: tokens.backgroundImage,

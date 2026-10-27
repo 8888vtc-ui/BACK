@@ -99,15 +99,27 @@ export interface CheckerStackLayout {
 export function computeCheckerStackLayout(
     checkerCount: number,
     isTopRow: boolean,
+    compactMobile: boolean = false,
 ): CheckerStackLayout {
     const safeCount = Math.max(0, Math.floor(checkerCount));
     const visibleCheckers = Math.min(safeCount, MAX_VISIBLE);
-    const isCompressed = safeCount > MAX_VISIBLE;
-    const extraCheckers = isCompressed ? Math.min(10, safeCount - MAX_VISIBLE) : 0;
-    const overlapPx = isCompressed ? Math.round(4 + extraCheckers * 1.2) : 1;
+    const isCompressed = safeCount > MAX_VISIBLE || (compactMobile && safeCount >= 3);
+    const extraCheckers =
+        safeCount > MAX_VISIBLE
+            ? Math.min(10, safeCount - MAX_VISIBLE)
+            : compactMobile && safeCount >= 3
+              ? safeCount - 2
+              : 0;
+    const overlapPx =
+        safeCount > MAX_VISIBLE
+            ? Math.round((compactMobile ? 6 : 4) + extraCheckers * 1.2)
+            : compactMobile && safeCount >= 3
+              ? Math.round(3 + extraCheckers * 1.5)
+              : 1;
     const apexIndex = isTopRow ? Math.max(0, visibleCheckers - 1) : 0;
-    const badgeCount = isCompressed ? safeCount : undefined;
-    const badgeText = isCompressed ? `×${safeCount}` : null;
+    const showBadge = safeCount > MAX_VISIBLE || (compactMobile && safeCount >= 3);
+    const badgeCount = showBadge ? safeCount : undefined;
+    const badgeText = showBadge ? `×${safeCount}` : null;
 
     return {
         visibleCheckers,

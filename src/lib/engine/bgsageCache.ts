@@ -21,9 +21,88 @@ function cloneResponse(resp: BgsageEvaluateResponse): BgsageEvaluateResponse {
     return JSON.parse(JSON.stringify(resp)) as BgsageEvaluateResponse;
 }
 
-/** Construit la clé de cache `${safeXgid}|${ply}`. */
+/**
+ * Canonise algébriquement une chaîne XGID pour maximiser les hits de cache :
+ * a) Symétrie des dés : ordonne d1 >= d2 (ex. "13" -> "31")
+ * b) Invariance linéaire du videau en Money Game (matchLength === 0) : normalise cube >= 2 à 2
+ * c) Scores en distance away en Match Play (matchLength > 0) : normalise (scoreX, scoreO, matchLength) en (awayX, awayO)
+ */
+export function canonicalizeXgidForCache(safeXgid: string): string {
+    const raw = safeXgid.startsWith('XGID=') ? safeXgid.slice(5) : safeXgid;
+    const parts = raw.split(':');
+    if (parts.length !== 10 && parts.length !== 11) {
+        return safeXgid;
+    }
+
+    if (parts.length === 10) {
+        // Format canonique XG (10 champs) :
+        // [0] body, [1] cubeExp, [2] cubeOwner, [3] turnDir, [4] dice, [5] scoreX, [6] scoreO, [7] crawford, [8] matchLength, [9] maxCube
+        let dice = parts[4];
+        if (dice && dice.length === 2 && /^[1-6]{2}$/.test(dice)) {
+            const d1 = Number(dice[0]);
+            const d2 = Number(dice[1]);
+            parts[4] = d1 < d2 ? `${d2}${d1}` : `${d1}${d2}`;
+        }
+
+        const matchLength = Number(parts[8]) || 0;
+        const cubeExp = Number(parts[1]) || 0;
+
+        if (matchLength === 0) {
+            // Money game : si cube >= 2 (cubeExp >= 1), normalise à cube=2 (cubeExp=1)
+            if (cubeExp >= 1) {
+                parts[1] = '1';
+            }
+        } else {
+            // Match play : normalise scores en away
+            const scoreX = Number(parts[5]) || 0;
+            const scoreO = Number(parts[6]) || 0;
+            const awayX = Math.max(1, matchLength - scoreX);
+            const awayO = Math.max(1, matchLength - scoreO);
+            parts[5] = String(awayX);
+            parts[6] = String(awayO);
+            parts[8] = 'away';
+        }
+        return `XGID=${parts.join(':')}`;
+    }
+
+    if (parts.length === 11) {
+        // Format frontend (11 champs) :
+        // [0] body, [1] matchplay, [2] scoreX, [3] scoreO, [4] dice, [5] playerOnRoll, [6] cube, [7] cubeOwner, [8] crawford, [9] doubled, [10] matchLength
+        let dice = parts[4];
+        if (dice && dice.length === 2 && /^[1-6]{2}$/.test(dice)) {
+            const d1 = Number(dice[0]);
+            const d2 = Number(dice[1]);
+            parts[4] = d1 < d2 ? `${d2}${d1}` : `${d1}${d2}`;
+        }
+
+        const matchLength = Number(parts[10]) || 0;
+        const cube = Number(parts[6]) || 1;
+
+        if (matchLength === 0) {
+            // Money game : si cube >= 2, normalise à cube = 2
+            if (cube >= 2) {
+                parts[6] = '2';
+            }
+        } else {
+            // Match play : normalise scores en away
+            const scoreX = Number(parts[2]) || 0;
+            const scoreO = Number(parts[3]) || 0;
+            const awayX = Math.max(1, matchLength - scoreX);
+            const awayO = Math.max(1, matchLength - scoreO);
+            parts[2] = String(awayX);
+            parts[3] = String(awayO);
+            parts[10] = 'away';
+        }
+        return `XGID=${parts.join(':')}`;
+    }
+
+    return safeXgid;
+}
+
+/** Construit la clé de cache canonisée `${canonicalXgid}|${ply}`. */
 export function bgsageCacheKey(safeXgid: string, ply: number): string {
-    return `${safeXgid}|${ply}`;
+    const canonical = canonicalizeXgidForCache(safeXgid);
+    return `${canonical}|${ply}`;
 }
 
 /**

@@ -121,7 +121,7 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
     const colorX: CheckerColor = swapColors ? 'black' : 'white';
     return (
     <div
-        className="relative row-span-2 w-8 sm:w-14 md:w-20 flex flex-col justify-between items-center rounded-xl mx-0.5 sm:mx-1 py-1 sm:py-2 select-none"
+        className="relative row-span-2 w-6 sm:w-14 md:w-20 flex flex-col justify-between items-center rounded-xl mx-0.5 sm:mx-1 py-1 sm:py-2 select-none"
         style={{
             background: bar.background,
             boxShadow: bar.boxShadow,

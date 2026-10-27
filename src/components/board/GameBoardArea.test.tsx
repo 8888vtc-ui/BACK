@@ -167,4 +167,167 @@ describe('GameBoardArea Component', () => {
         expect(html).toContain('data-testid="opp-from-indicator-19"');
         expect(html).toContain('data-testid="opp-to-indicator-22"');
     });
+
+    it('masque MoveTimelineBar tant qu aucun coup n a été joué (effectiveTurns.length === 0)', () => {
+        const html = renderToStaticMarkup(
+            <GameBoardArea
+                theme="midnight"
+                game={dummyGame}
+                activeDie={0}
+                isBoardLoading={false}
+                activeCoachHighlight={null}
+                onCheckerClick={vi.fn()}
+                onCheckerRightClick={vi.fn()}
+                onDestinationClick={vi.fn()}
+                onPlayMove={vi.fn()}
+                onSelectDie={vi.fn()}
+                onDeselect={vi.fn()}
+                coach={null}
+                isAnalyzing={false}
+                onDismissCoach={vi.fn()}
+                onTriggerCoach={vi.fn()}
+                gameId="game_123"
+                turnsHistory={[]}
+            />
+        );
+
+        expect(html).not.toContain('data-testid="board-move-timeline"');
+    });
+
+    it('Chantier 2 : réserve toujours la colonne latérale lg:col-span-4 et affiche l état d accueil Cercle Monte-Carlo même quand coach est null', () => {
+        const html = renderToStaticMarkup(
+            <GameBoardArea
+                theme="midnight"
+                game={dummyGame}
+                activeDie={0}
+                isBoardLoading={false}
+                activeCoachHighlight={null}
+                onCheckerClick={vi.fn()}
+                onCheckerRightClick={vi.fn()}
+                onDestinationClick={vi.fn()}
+                onPlayMove={vi.fn()}
+                onSelectDie={vi.fn()}
+                onDeselect={vi.fn()}
+                coach={null}
+                isAnalyzing={false}
+                onDismissCoach={vi.fn()}
+                onTriggerCoach={vi.fn()}
+                gameId="game_123"
+            />
+        );
+
+        expect(html).toContain('lg:col-span-8');
+        expect(html).toContain('lg:col-span-4');
+        expect(html).toContain('id="coach-panel"');
+        expect(html).toContain('data-testid="coach-idle-welcome-card"');
+        expect(html).toContain('Cercle Monte-Carlo');
+        expect(html).toContain('Pip count');
+        expect(html).toContain('Plan de jeu');
+        expect(html).toContain('Historique');
+    });
+
+    it('Chantier 2 : éradique le PipCountBadge redondant au bas du plateau pour maximiser la hauteur du tapis', () => {
+        const html = renderToStaticMarkup(
+            <GameBoardArea
+                theme="midnight"
+                game={dummyGame}
+                activeDie={0}
+                isBoardLoading={false}
+                activeCoachHighlight={null}
+                onCheckerClick={vi.fn()}
+                onCheckerRightClick={vi.fn()}
+                onDestinationClick={vi.fn()}
+                onPlayMove={vi.fn()}
+                onSelectDie={vi.fn()}
+                onDeselect={vi.fn()}
+                coach={null}
+                isAnalyzing={false}
+                onDismissCoach={vi.fn()}
+                onTriggerCoach={vi.fn()}
+                gameId="game_123"
+            />
+        );
+
+        // PipCountBadge est masqué dans GameBoardArea car déjà dans MatchHud
+        expect(html).not.toContain('data-testid="pip-count-bar"');
+    });
+
+    it('Pilier B : garantit la stabilité géométrique 100 % (lg:col-span-8, wrapper shrink-0 h-8) sans saut de layout au 1er coup joué ni quand le Coach s ouvre', () => {
+        // État 1 : Avant le 1er coup, coach = null
+        const htmlTurn0 = renderToStaticMarkup(
+            <GameBoardArea
+                theme="midnight"
+                game={dummyGame}
+                activeDie={0}
+                isBoardLoading={false}
+                activeCoachHighlight={null}
+                onCheckerClick={vi.fn()}
+                onCheckerRightClick={vi.fn()}
+                onDestinationClick={vi.fn()}
+                onPlayMove={vi.fn()}
+                onSelectDie={vi.fn()}
+                onDeselect={vi.fn()}
+                coach={null}
+                isAnalyzing={false}
+                onDismissCoach={vi.fn()}
+                onTriggerCoach={vi.fn()}
+                gameId="game_123"
+                turnsHistory={[]}
+            />,
+        );
+
+        // État 2 : Après le 1er coup joué, avec analyse Coach active
+        const htmlTurn1 = renderToStaticMarkup(
+            <GameBoardArea
+                theme="midnight"
+                game={{
+                    ...dummyGame,
+                    matchLog: [
+                        {
+                            turnIndex: 1,
+                            player: 'X',
+                            dice: [3, 1],
+                            boardBefore: createInitialState(7).board,
+                            boardAfter: createInitialState(7).board,
+                            movePlayed: [{ from: 8, to: 5 }, { from: 6, to: 5 }],
+                        },
+                    ],
+                }}
+                activeDie={0}
+                isBoardLoading={false}
+                activeCoachHighlight={null}
+                onCheckerClick={vi.fn()}
+                onCheckerRightClick={vi.fn()}
+                onDestinationClick={vi.fn()}
+                onPlayMove={vi.fn()}
+                onSelectDie={vi.fn()}
+                onDeselect={vi.fn()}
+                coach={{
+                    verdict: 'optimal',
+                    equityLoss: 0,
+                    playedMove: '8/5 6/5',
+                    optimalMove: '8/5 6/5',
+                    explanation: 'Coup de Grand-Maître',
+                }}
+                isAnalyzing={false}
+                onDismissCoach={vi.fn()}
+                onTriggerCoach={vi.fn()}
+                gameId="game_123"
+            />,
+        );
+
+        // Les deux états conservent exactement la même structure de grille
+        expect(htmlTurn0).toContain('lg:col-span-8');
+        expect(htmlTurn0).toContain('lg:col-span-4');
+        expect(htmlTurn1).toContain('lg:col-span-8');
+        expect(htmlTurn1).toContain('lg:col-span-4');
+
+        // La barre inférieure garde un conteneur rigide shrink-0 h-8 dans les deux cas
+        expect(htmlTurn0).toContain('shrink-0 h-8');
+        expect(htmlTurn1).toContain('shrink-0 h-8');
+
+        // Zéro doublon de Pip Count dans les deux états
+        expect(htmlTurn0).not.toContain('data-testid="pip-count-bar"');
+        expect(htmlTurn1).not.toContain('data-testid="pip-count-bar"');
+    });
 });

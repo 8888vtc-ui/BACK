@@ -148,7 +148,7 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
         <div className="contents">
             <div className="flex min-h-0">{points.map(renderPoint)}</div>
             <div
-                className={`w-9 sm:w-14 md:w-20 pl-1 ml-0.5 sm:pl-1.5 sm:ml-1 border-l border-amber-500/25 flex flex-col ${
+                className={`w-7 sm:w-14 md:w-20 pl-0.5 ml-0.5 sm:pl-1.5 sm:ml-1 border-l border-amber-500/25 flex flex-col ${
                     isTopRow ? 'justify-start pt-1 pb-1 sm:pb-2' : 'justify-end pt-1 sm:pt-2 pb-1'
                 }`}
             >

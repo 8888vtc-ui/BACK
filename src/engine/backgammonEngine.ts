@@ -106,7 +106,7 @@ function encodePoint(count: number): string {
 }
 
 function decodePoint(ch: string): number {
-    if (ch === '-') return 0;
+    if (ch === '-' || ch === '0') return 0;
     const xi = XGID_X.indexOf(ch);
     if (xi >= 0) return xi + 1;
     const oi = XGID_O.indexOf(ch);
@@ -130,14 +130,14 @@ export function serializeXGID(state: BoardState): string {
     let board = '';
     // Flèches 24 → 1 (ordre décroissant, conforme au standard XGID).
     for (let p = 24; p >= 1; p--) board += encodePoint(state.board[p]);
-    // Barre : supporte sans perte la présence simultanée de pions X et O sur la barre.
+    // Barre : supporte sans perte la présence de pions X sur la barre sans collision avec offX - offO < 0.
     const barX = Math.max(0, state.board[X_BAR]);
     const barO = Math.max(0, -state.board[O_BAR]);
-    if (barX > 0 && barO > 0) {
+    if (barX > 0) {
         board += encodePoint(barX);
         board += encodePoint(-barO);
     } else {
-        board += encodePoint(barX - barO);
+        board += encodePoint(-barO);
         // Bear-off : positif = pions X sortis, négatif = pions O sortis.
         const offX = borneOffCount(state.board, 'X');
         const offO = borneOffCount(state.board, 'O');
@@ -155,6 +155,44 @@ export function serializeXGID(state: BoardState): string {
     const crawford = state.crawford ? '1' : '0';
     const doubled = state.doubled ? '1' : '0';
     return `XGID=${board}:${matchplay}:${scoreX}:${scoreO}:${dice}:${playerOnRoll}:${cube}:${cubeOwner}:${crawford}:${doubled}:${state.matchLength}`;
+}
+
+/**
+ * Sérialise un état en XGID au format canonique standard eXtreme Gammon (10 champs).
+ *
+ * Format : `XGID=[26 chars]:cubeExp:cubeOwner:turnDir:dice:scoreX:scoreO:crawford:matchLength:maxCube`
+ * Sans aucune ambiguïté entre barre et bear-off :
+ *   - body[0]     : barre de O (board[25], minuscule 'a'..'o' ou '-')
+ *   - body[1..24] : flèches 1 à 24 dans l'ordre croissant (majuscule = X, minuscule = O, '-' = vide)
+ *   - body[25]    : barre de X (board[0], majuscule 'A'..'O' ou '-')
+ * Le bear-off est dérivé exactement de `15 - pions(plateau + barre)`.
+ */
+export function serializeCanonicalXGID(state: BoardState): string {
+    const barO = Math.max(0, -(state.board[O_BAR] ?? 0));
+    const barX = Math.max(0, state.board[X_BAR] ?? 0);
+
+    let body = encodePoint(-barO);
+    for (let p = 1; p <= 24; p++) {
+        body += encodePoint(state.board[p] ?? 0);
+    }
+    body += encodePoint(barX);
+
+    const cubeVal = Math.max(1, state.cubeValue ?? 1);
+    const cubeExp = cubeVal > 1 ? Math.round(Math.log2(cubeVal)) : 0;
+    const cubeOwner = state.cubeOwner === 'X' ? '1' : state.cubeOwner === 'O' ? '-1' : '0';
+    const turnDir = state.turn === 'O' ? '-1' : '1';
+    const dice = state.doubled
+        ? 'D'
+        : state.dice
+          ? `${state.dice[0]}${state.dice[1]}`
+          : '00';
+    const scoreX = state.scoreX ?? 0;
+    const scoreO = state.scoreO ?? 0;
+    const crawford = state.crawford ? '1' : '0';
+    const matchLength = state.matchLength ?? 0;
+    const maxCube = 8;
+
+    return `XGID=${body}:${cubeExp}:${cubeOwner}:${turnDir}:${dice}:${scoreX}:${scoreO}:${crawford}:${matchLength}:${maxCube}`;
 }
 
 /** Parse un XGID (format 11 champs ou format canonique eXtreme Gammon 10 champs) et reconstruit l'état correspondant sans perte. */

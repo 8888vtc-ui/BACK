@@ -37,7 +37,7 @@ Nous adoptons **Open Sage** (`bgsage-service/`) hébergé sur **Google Cloud Run
 
 ## 3. Conséquences & Bénéfices
 
-- **Précision maximale** : PR certifié à 0.23 en 2-ply et 3-ply.
+- **Précision maximale** : Open Sage Stage 11 surclasse eXtreme Gammon (XG2) avec un PR absolu de **0.56 PR en 3-ply (`3P`)**, **0.26 PR en rollout tronqué `2T`** et **0.23 PR en `3T`** (7 tours) face aux rollouts de vérité terrain. En étalonnage interne dans l'application, le bot Grandmaster 3-ply sert de référence absolue à `0.00 PR relatif`.
 - **Zéro dépendance binaire locale lourde** : Plus de compilation Rust/WASM locale ni de gros fichiers `.wasm` dans le bundle client Next.js.
 - **Architecture unifiée** : Un seul contrat JSON canonique pour le bot et le Coach.
 - **Résilience** : En cas de coupure réseau temporaire, le moteur dispose d'un repli local déterministe (`evaluator.ts` + table de bear-off) sans jamais bloquer l'expérience joueur.

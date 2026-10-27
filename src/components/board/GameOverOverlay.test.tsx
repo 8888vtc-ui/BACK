@@ -33,9 +33,9 @@ describe('GameOverOverlay', () => {
     it('affiche la progression des scores du match', () => {
         const html = renderToStaticMarkup(<GameOverOverlay {...defaultProps} />);
 
-        expect(html).toContain('Joueur X (Blanc)');
+        expect(html).toContain('Vous · Joueur X (Blanc)');
         expect(html).toContain('4 / 7');
-        expect(html).toContain('Joueur O (Noir)');
+        expect(html).toContain('IA · Joueur O (Noir)');
         expect(html).toContain('2 / 7');
     });
 

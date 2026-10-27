@@ -1,16 +1,12 @@
 'use client';
 
 /**
- * Cartes joueurs du HUD supérieur — Guichets Horlogers Encastrés dans la Boiserie.
- *
- * Rôle :
- *   Affiche, pour chaque joueur, un cadran encastré en onyx et laiton :
- *   pion 3D + nom + guichet de score biseauté + badge PR en direct + pip count.
- *   Aucun calcul métier : les valeurs arrivent prêtes à afficher.
+ * Cartes joueurs du HUD supérieur — Guichets Horlogers Encastrés dans la Boiserie (< 250 lignes, 0 any).
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Player } from '../../engine/backgammonEngine';
+import { getSavedPipCountVisibility, PIP_VISIBILITY_CHANGE_EVENT } from '../board/PipCountBadge';
 
 export interface HudScoreboardProps {
     matchLength: number;
@@ -69,6 +65,7 @@ interface PlayerCardProps {
     pip?: number | null;
     epc?: number | null;
     isPureRace?: boolean;
+    pipVisible?: boolean;
     testId: string;
 }
 
@@ -82,6 +79,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
     pip,
     epc,
     isPureRace,
+    pipVisible = true,
     testId,
 }) => {
     const pipTitle = isPureRace && typeof epc === 'number'
@@ -93,42 +91,41 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
         <div
             data-testid={testId}
             title={`${name} (${colorLabel}) — Score : ${score}${isTurn ? ' — Au tour' : ''}`}
-            className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1 transition-all ${
+            className={`flex items-center gap-1 sm:gap-1.5 shrink-0 rounded-xl border px-1.5 sm:px-2.5 py-0.5 sm:py-1 transition-all ${
                 isTurn
-                    ? 'border-[#f3c65f]/90 bg-gradient-to-b from-[#26160a] to-[#110904] ring-1 ring-[#f3c65f]/70 shadow-[0_0_16px_rgba(243,198,95,0.32),inset_0_1px_1px_rgba(255,245,205,0.3)]'
-                    : 'border-[#d4af37]/25 bg-[#0c0603]/85 ring-1 ring-transparent opacity-85 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]'
+                    ? 'border-[#f3c65f] bg-gradient-to-b from-[#26160a] to-[#110904] ring-1 ring-[#f3c65f]/70 shadow-[0_0_16px_rgba(243,198,95,0.32)]'
+                    : 'border-white/10 bg-[#0c0603]/85 ring-1 ring-transparent opacity-85 shadow-inner'
             }`}
         >
-            {/* Pion 3D serti */}
             <span
                 aria-hidden="true"
-                className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 rounded-full ${
+                className={`h-3 w-3 sm:h-4 sm:w-4 shrink-0 rounded-full ${
                     isWhite
-                        ? 'bg-[radial-gradient(circle_at_32%_28%,#fffdf7_0%,#e8dec8_48%,#b8a47e_100%)] ring-1 ring-[#d4af37]/80 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.4)]'
-                        : 'bg-[radial-gradient(circle_at_32%_28%,#4a2518_0%,#241009_48%,#0a0402_100%)] ring-1 ring-[#d4af37]/60 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.85)]'
+                        ? 'bg-[radial-gradient(circle_at_32%_28%,#fffdf7_0%,#e8dec8_48%,#b8a47e_100%)] ring-1 ring-white/25 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.4)]'
+                        : 'bg-[radial-gradient(circle_at_32%_28%,#4a2518_0%,#241009_48%,#0a0402_100%)] ring-1 ring-white/20 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.85)]'
                 }`}
             />
             <div className="flex flex-col leading-none min-w-0">
-                <span className="font-serif text-[10px] sm:text-[11px] font-bold text-[#fdf8eb] truncate max-w-[68px] sm:max-w-none">
+                <span className="font-serif text-[11px] sm:text-xs font-bold text-[#fdf8eb] whitespace-nowrap truncate max-w-[54px] sm:max-w-none">
                     {name}
                 </span>
                 {pip !== null && pip !== undefined && (
                     <span
-                        className="hidden lg:inline font-mono text-[9px] text-[#d4af37]/80 whitespace-nowrap cursor-help"
+                        data-testid={`${testId}-pip`}
+                        className="font-mono text-[10px] sm:text-[11px] tabular-nums text-[#d4af37]/85 whitespace-nowrap cursor-help"
                         title={pipTitle}
                     >
-                        {pip} pips
+                        {pipVisible ? pip : '•••'} <span className="hidden sm:inline">pips</span><span className="sm:hidden">p</span>
                     </span>
                 )}
             </div>
-            {/* Guichet horloger du score */}
-            <span className="ml-0.5 rounded border border-[#d4af37]/40 bg-black/70 px-1.5 py-0.5 font-mono text-xs sm:text-sm font-black tabular-nums text-[#f3c65f] shadow-inner">
+            <span className="ml-0.5 shrink-0 rounded border border-white/10 bg-black/70 px-1 sm:px-1.5 py-0.5 font-mono text-[11px] sm:text-sm font-black tabular-nums text-[#f3c65f] shadow-inner">
                 {score}
             </span>
             <span
                 data-testid={`${testId}-pr`}
                 title={`Performance Rating (PR) : ${pr !== null && pr !== undefined ? pr.toFixed(1) : '--'} — Niveau : ${prCategory} (plus bas = meilleur)`}
-                className={`ml-0.5 rounded border px-1 py-0.5 font-mono text-[8px] sm:text-[9px] font-bold transition-shadow duration-300 ${prBadgeClass(pr)}`}
+                className={`hidden sm:inline-block ml-0.5 shrink-0 whitespace-nowrap rounded border px-1 py-0.5 font-mono text-[11px] font-bold transition-shadow duration-300 ${prBadgeClass(pr)}`}
             >
                 PR {pr !== null && pr !== undefined ? pr.toFixed(1) : '--'}
             </span>
@@ -173,10 +170,20 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
             ? 'Videau possédé par l’IA (Double interdit)'
             : 'Videau centré (Accessible aux deux joueurs)';
 
+    const [pipVisible, setPipVisible] = useState<boolean>(true);
+    useEffect(() => {
+        setPipVisible(getSavedPipCountVisibility(true));
+        const onSync = (e: Event) => {
+            const detail = (e as CustomEvent<boolean>).detail;
+            if (typeof detail === 'boolean') setPipVisible(detail);
+        };
+        window.addEventListener(PIP_VISIBILITY_CHANGE_EVENT, onSync);
+        return () => window.removeEventListener(PIP_VISIBILITY_CHANGE_EVENT, onSync);
+    }, []);
+
     return (
-        <div className="flex items-center gap-1 sm:gap-2 min-w-0">
-            {/* Cartouche en laiton gravé : Format du match, Crawford & Enjeu du Videau */}
-            <div className="hidden sm:flex flex-col rounded-lg border border-[#d4af37]/30 bg-[#0d0703]/85 px-2 py-0.5 text-[10px] leading-tight text-amber-100/80 shadow-inner">
+        <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 shrink-0">
+            <div className="hidden lg:flex flex-col shrink-0 rounded-lg border border-white/10 bg-[#0d0703]/85 px-2 py-0.5 text-[11px] leading-tight text-amber-100/80 shadow-inner">
                 <div className="flex items-center gap-1 whitespace-nowrap">
                     <span data-testid="hud-match-format" className="font-serif font-bold text-[#f5d78e]">
                         {matchLength > 0 ? `Match ${matchLength} pts` : 'Money Game'}
@@ -184,7 +191,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                     {effectiveCube > 1 && !crawford && (
                         <span
                             data-testid="hud-cube-badge"
-                            className="rounded bg-amber-500/20 border border-[#f3c65f]/50 px-1 text-[9px] font-black text-[#f3c65f]"
+                            className="rounded bg-amber-500/20 border border-white/10 px-1 text-[11px] font-black text-[#f3c65f]"
                             title={cubeOwnershipTitle}
                         >
                             Cube {effectiveCube}×{cubeOwner === 'X' ? ' (Vous)' : cubeOwner === 'O' ? ' (IA)' : ''}
@@ -194,13 +201,13 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                 {crawford ? (
                     <span
                         data-testid="hud-crawford-badge"
-                        className="mt-0.5 w-max rounded bg-amber-500/20 px-1.5 text-[9px] font-bold uppercase tracking-wider text-amber-300 ring-1 ring-amber-500/40"
+                        className="mt-0.5 w-max rounded bg-amber-500/20 px-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-300 ring-1 ring-amber-500/40"
                     >
                         Crawford
                     </span>
                 ) : (
                     <span
-                        className="text-[9px] text-amber-200/75 whitespace-nowrap font-medium cursor-help"
+                        className="text-[11px] text-amber-200/75 whitespace-nowrap font-medium cursor-help"
                         title={cubeOwnershipTitle}
                     >
                         {cubeStakeLabel}
@@ -218,10 +225,11 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                 pip={pipX}
                 epc={epcX}
                 isPureRace={isPureRace}
+                pipVisible={pipVisible}
                 testId="hud-player-x"
             />
 
-            <span className="font-serif text-[9px] sm:text-[10px] font-black tracking-widest text-[#d4af37]/80">
+            <span className="font-serif text-[11px] font-black tracking-widest text-[#d4af37]/80">
                 VS
             </span>
 
@@ -235,6 +243,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                 pip={pipO}
                 epc={epcO}
                 isPureRace={isPureRace}
+                pipVisible={pipVisible}
                 testId="hud-player-o"
             />
         </div>

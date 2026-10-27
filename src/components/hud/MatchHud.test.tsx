@@ -1,10 +1,14 @@
 // @vitest-environment jsdom
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, cleanup } from '@testing-library/react';
 import MatchHud from './MatchHud';
 import { createInitialState } from '../../engine/backgammonEngine';
+
+afterEach(() => {
+    cleanup();
+});
 
 describe('MatchHud', () => {
     const defaultProps = {
@@ -154,5 +158,69 @@ describe('MatchHud', () => {
         expect(html).toContain('Cube 4×');
         expect(html).toContain('Enjeu : 4 pts');
     });
+
+    it('affiche le badge de verdict XG normalisé et le sélecteur de seuil d’alerte Coach', () => {
+        const onChangeNotificationLevel = vi.fn();
+        const { getByTestId } = render(
+            <MatchHud
+                {...defaultProps}
+                lastMoveFeedback={{
+                    verdict: 'inaccuracy',
+                    equityLoss: 0.045,
+                    turnIndex: 1,
+                }}
+                notificationLevel="blunder"
+                onChangeNotificationLevel={onChangeNotificationLevel}
+            />,
+        );
+
+        const verdictBadge = getByTestId('hud-verdict-badge');
+        expect(verdictBadge.textContent).toContain('IMPRÉCISION (-0.045)');
+
+        fireEvent.click(getByTestId('coach-threshold-error'));
+        expect(onChangeNotificationLevel).toHaveBeenCalledWith('error');
+    });
+
+    it('affiche le micro-badge de quota Freemium ou VIP sur le bouton Coach', () => {
+        const htmlFree = renderToStaticMarkup(
+            <MatchHud
+                {...defaultProps}
+                onTriggerCoach={vi.fn()}
+                coachQuotaBadge="2/3"
+                isVip={false}
+            />,
+        );
+        expect(htmlFree).toContain('data-testid="hud-coach-quota-badge"');
+        expect(htmlFree).toContain('2/3');
+
+        const htmlVip = renderToStaticMarkup(
+            <MatchHud
+                {...defaultProps}
+                onTriggerCoach={vi.fn()}
+                coachQuotaBadge="VIP ∞"
+                isVip={true}
+            />,
+        );
+        expect(htmlVip).toContain('data-testid="hud-coach-quota-badge"');
+        expect(htmlVip).toContain('VIP ∞');
+    });
+
+    it('transmet le bon multiplicateur (2x Gammon / 3x Backgammon) à onResign depuis InGameMenuModal', () => {
+        const onResign = vi.fn();
+        const { getByTestId } = render(
+            <MatchHud
+                {...defaultProps}
+                isGameActive={true}
+                onResign={onResign}
+            />,
+        );
+
+        fireEvent.click(getByTestId('hud-back-to-lobby-btn'));
+        fireEvent.click(getByTestId('ingame-resign-2x-btn'));
+        fireEvent.click(getByTestId('confirm-resign-btn'));
+
+        expect(onResign).toHaveBeenCalledWith(2);
+    });
 });
+
 

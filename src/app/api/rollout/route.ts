@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(simulatedRolloutManager.getStats());
     }
 
-    return NextResponse.json({ status: 'ok', service: 'gnubg-rollout-pool' });
+    return NextResponse.json({ status: 'ok', service: 'montecarlo-rollout-pool' });
 }
 
 export async function POST(req: NextRequest) {

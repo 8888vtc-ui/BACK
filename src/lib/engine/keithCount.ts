@@ -4,24 +4,19 @@
  * Le Keith Count est une méthode de comptage de pips ajustée, publiée et
  * validée publiquement, qui donne une décision de videau (double/take/pass)
  * fiable à ~90 % en course pure. Elle remplace les approximations empiriques
- * de l'ancien `computeEPC` pour la phase RACE.
+ * pour la phase RACE.
  *
- * Formule officielle :
- *   1. Pips bruts : somme des distances de chaque pion à sa sortie.
- *   2. Ajustements :
- *      - +2 par pion au-delà de 2 sur la flèche 1 (point 1).
- *      - +1 par pion au-delà de 2 sur la flèche 2 (point 2).
- *      - +1 par pion au-delà de 3 sur la flèche 3 (point 3).
- *      - +1 par case vide (gap) dans le jan intérieur (flèches 4, 5, 6)
- *        s'il reste des pions sur des flèches plus hautes.
- *      - +1 par pion supplémentaire au-delà du premier sur la flèche 1
- *        (gaspillage d'empilement).
- *   3. Règle de décision : si le retard (différence de Keith Count) est
- *      supérieur à 4 pips après ajustement, le joueur en retard doit passer
- *      (drop) ; sinon il accepte (take).
+ * Formule officielle (Tom Keith, 1993) :
+ *   1. Pips bruts (Basic pip count) : somme des distances de chaque pion à sa sortie.
+ *   2. Ajustements de gaspillage dans le jan intérieur :
+ *      - +2 pips pour chaque pion au-delà de 1 sur la flèche 1 (point 1).
+ *      - +1 pip pour chaque pion au-delà de 1 sur la flèche 2 (point 2).
+ *      - +1 pip pour chaque pion au-delà de 3 sur la flèche 3 (point 3).
+ *      - +1 pip pour chaque case vide (gap) sur les flèches 4, 5 et 6.
+ *   3. Majoration du trait (+1/7e) & Décision de videau.
  *
  * Conforme à la charte de gouvernance : module pur, zéro effet de bord,
- * mathématiques du domaine public (aucun problème de licence).
+ * mathématiques du domaine public.
  */
 
 import { Player, pipCount } from '../../engine/backgammonEngine';
@@ -37,7 +32,7 @@ export interface KeithCountResult {
 }
 
 /**
- * Calcule le Keith Count officiel d'un joueur.
+ * Calcule le Keith Count officiel d'un joueur selon la formule de Tom Keith (1993).
  *
  * @param board Plateau (26 entiers, conventions de `backgammonEngine.ts`).
  * @param player Joueur dont on calcule le Keith Count.
@@ -53,50 +48,29 @@ export function computeKeithCount(board: number[], player: Player): KeithCountRe
     // Pour X, le jan intérieur est les flèches 1..6 (valeurs positives).
     // Pour O, le jan intérieur est les flèches 24..19 (valeurs négatives).
     const homeCount = (point: number): number => {
-        const v = board[point];
+        const idx = player === 'X' ? point : 25 - point;
+        const v = board[idx];
         return player === 'X' ? Math.max(0, v) : Math.max(0, -v);
     };
 
-    // Ajustement 1 : +2 par pion au-delà de 2 sur la flèche 1.
+    // 1. +2 pips pour chaque pion au-delà de 1 sur la flèche 1
     const c1 = homeCount(1);
-    if (c1 > 2) adjustments += 2 * (c1 - 2);
+    if (c1 > 1) adjustments += 2 * (c1 - 1);
 
-    // Ajustement 2 : +1 par pion au-delà de 2 sur la flèche 2.
+    // 2. +1 pip pour chaque pion au-delà de 1 sur la flèche 2
     const c2 = homeCount(2);
-    if (c2 > 2) adjustments += 1 * (c2 - 2);
+    if (c2 > 1) adjustments += 1 * (c2 - 1);
 
-    // Ajustement 3 : +1 par pion au-delà de 3 sur la flèche 3.
+    // 3. +1 pip pour chaque pion au-delà de 3 sur la flèche 3
     const c3 = homeCount(3);
     if (c3 > 3) adjustments += 1 * (c3 - 3);
 
-    // Ajustement 4 : +1 par case vide (gap) dans le jan intérieur (flèches 4, 5, 6)
-    // s'il reste des pions sur des flèches plus hautes (7..24 pour X, 1..18 pour O).
+    // 4. +1 pip pour chaque case vide sur les flèches 4, 5 ou 6
     for (const point of [4, 5, 6]) {
         if (homeCount(point) === 0) {
-            // Vérifie s'il reste des pions sur des flèches plus hautes.
-            let hasHigher = false;
-            if (player === 'X') {
-                for (let q = 7; q <= 24; q++) {
-                    if (board[q] > 0) {
-                        hasHigher = true;
-                        break;
-                    }
-                }
-            } else {
-                for (let q = 1; q <= 18; q++) {
-                    if (board[q] < 0) {
-                        hasHigher = true;
-                        break;
-                    }
-                }
-            }
-            if (hasHigher) adjustments += 1;
+            adjustments += 1;
         }
     }
-
-    // Ajustement 5 : +1 par pion supplémentaire au-delà du premier sur la flèche 1
-    // (gaspillage d'empilement sur le point 1).
-    if (c1 > 1) adjustments += 1 * (c1 - 1);
 
     return {
         rawPips,
@@ -137,14 +111,18 @@ export function evaluateKeithCube(
     // Avance du joueur au trait (positif = en avance).
     const lead = ko - kp;
 
-    // Seuil de double : le joueur propose de doubler dès qu'il a une avance
-    // d'au moins 2 pips (marge de sécurité pour le redouble).
-    const doubleThreshold = isRedouble ? 3 : 2;
+    // En course moyenne/longue (kp >= 35), la formule officielle de Tom Keith ajoute 1/7e (+14.3 %) au Keith Count du doubleur :
+    // - Seuil de double : ~ (kp / 7) - 2 pips (+1 pip pour un redouble)
+    // - Seuil de passe (Drop) : > (kp / 7) + 2 pips
+    // En course courte de sortie (kp < 35), les seuils directs (2/3 pips et > 4 pips) s'appliquent.
+    const oneSeventh = kp >= 35 ? Math.round(kp / 7) : 0;
+    const doubleThreshold = kp >= 35
+        ? Math.max(isRedouble ? 3 : 2, oneSeventh - (isRedouble ? 1 : 2))
+        : isRedouble ? 3 : 2;
+    const dropThreshold = kp >= 35 ? oneSeventh + 2 : 4;
 
     if (lead >= doubleThreshold) {
-        // Le joueur est en avance : il propose de doubler.
-        // L'adversaire passe si son retard > 4 pips.
-        if (lead > 4) {
+        if (lead > dropThreshold) {
             return { action: 'Double, pass', lead };
         }
         return { action: 'Double, take', lead };
