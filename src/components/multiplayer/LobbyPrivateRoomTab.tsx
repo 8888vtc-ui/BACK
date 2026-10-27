@@ -22,6 +22,7 @@ export const LobbyPrivateRoomTab: React.FC<LobbyPrivateRoomTabProps> = ({
     const [joinError, setJoinError] = useState<string | null>(null);
     const [isJoining, setIsJoining] = useState<boolean>(false);
     const [copiedCode, setCopiedCode] = useState<boolean>(false);
+    const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
     const handleCopyCode = async (codeToCopy: string) => {
         try {
@@ -31,6 +32,35 @@ export const LobbyPrivateRoomTab: React.FC<LobbyPrivateRoomTabProps> = ({
         } catch {
             // fallback
         }
+    };
+
+    const handleCopyInviteLink = async (code: string) => {
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://backgammontour.com';
+        const url = `${origin}/?join=${encodeURIComponent(code)}`;
+        try {
+            await navigator.clipboard.writeText(url);
+            setCopiedLink(true);
+            setTimeout(() => setCopiedLink(false), 2000);
+        } catch {
+            // fallback
+        }
+    };
+
+    const handleShareWhatsAppClub = async (code: string) => {
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://backgammontour.com';
+        const url = `${origin}/?join=${encodeURIComponent(code)}`;
+        const title = 'Duel Backgammon — Salon Privé';
+        const text = `Rejoins mon salon privé de Backgammon (${code}) pour un duel en direct !`;
+
+        if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+            try {
+                await navigator.share({ title, text, url });
+                return;
+            } catch {
+                // Annulé
+            }
+        }
+        await handleCopyInviteLink(code);
     };
 
     const handleCreateRoom = async () => {
@@ -81,8 +111,25 @@ export const LobbyPrivateRoomTab: React.FC<LobbyPrivateRoomTabProps> = ({
                         </button>
                     </div>
 
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
+                        <button
+                            type="button"
+                            onClick={() => handleCopyInviteLink(privateRoomCode)}
+                            className="w-full sm:w-auto rounded-xl border border-sky-400/40 bg-sky-950/40 hover:bg-sky-900/50 py-2 px-3 text-xs font-bold text-sky-200 transition"
+                        >
+                            <span>🔗</span> {copiedLink ? '✓ Lien copié !' : 'Copier le lien direct'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleShareWhatsAppClub(privateRoomCode)}
+                            className="w-full sm:w-auto rounded-xl border border-emerald-500/50 bg-emerald-950/40 hover:bg-emerald-900/50 py-2 px-3 text-xs font-bold text-emerald-200 transition"
+                        >
+                            <span>💬</span> Partager (WhatsApp / Club)
+                        </button>
+                    </div>
+
                     <p className="text-xs text-slate-300">
-                        Partagez ce code à un ami pour qu&apos;il rejoigne votre partie en direct.
+                        Partagez ce code ou lien à un ami pour qu&apos;il rejoigne votre partie en direct en 1 clic.
                     </p>
 
                     <div className="flex items-center justify-center gap-2 text-xs text-amber-300/90 animate-pulse">

@@ -22,6 +22,7 @@ import { useGamePersistence } from '../hooks/useGamePersistence';
 import { useGameModals } from '../hooks/useGameModals';
 import { useOpeningAssistant } from '../hooks/useOpeningAssistant';
 import { useMatchBootstrap } from '../hooks/useMatchBootstrap';
+import { usePrivateRoomInvite } from '../hooks/usePrivateRoomInvite';
 import { toast } from '../components/toast/ToastContext';
 import { notificationSuccess } from '../lib/capacitor/haptics';
 import { soundEngine } from '../lib/sound/soundEngine';
@@ -141,10 +142,19 @@ export default function Home() {
         if (userInitiatedMultiplayerRef.current && multiplayer.status === 'matched' && multiplayer.matchInfo) {
             game.resetMatch();
             modals.closeMatchmaking();
+            modals.closePrivateRoomModal();
             setAppScreen('GAME');
             toast.success(`Match contre ${multiplayer.opponentProfile?.displayName} en ${multiplayer.matchInfo.matchLength} pts.`, 'Partie Multijoueur');
         }
     }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, modals, game]);
+
+    // Détection d'invitation 1-clic Salon Privé (?join=BG-XXXX ou ?room=BG-XXXX)
+    usePrivateRoomInvite({
+        onAutoJoinRoom: useCallback((code: string) => {
+            userInitiatedMultiplayerRef.current = true;
+            modals.openPrivateRoomModal(code);
+        }, [modals]),
+    });
 
     /** Démarre le match depuis le lobby et bascule sur la vue GAME. */
     const handleLobbyStart = useCallback((selection: LobbySelection) => {

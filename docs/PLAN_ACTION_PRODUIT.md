@@ -67,6 +67,9 @@
    - `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PRICE_MONTHLY`, `NEXT_PUBLIC_STRIPE_PRICE_YEARLY`, `NEXT_PUBLIC_STRIPE_PRICE_COACH_MONTHLY`, `NEXT_PUBLIC_STRIPE_PRICE_COACH_ANNUAL`, `NEXT_PUBLIC_STRIPE_PRICE_CLUB_CHOUETTE`, `NEXT_PUBLIC_STRIPE_PRICE_DOWNSELL_MONTHLY`.
 3. **Automatisation de l'alimentation quotidienne de `daily_puzzles`** : tâche planifiée (`/api/cron/daily-puzzle`) générant et certifiant de nouvelles positions Open Sage 3-ply au-delà du catalogue initial embarqué.
 
-### 🟢 P3 — Enrichissement du Salon Privé (Partage Direct)
+### 🟢 P3 — Enrichissement du Salon Privé (Partage Direct) ✅ (Livré)
 1. **Lien d'invitation directe en 1 clic (`https://backgammontour.com/?join=BG-XXXX`)** :
-   - Permettre de partager un lien WhatsApp / Discord / SMS qui ouvre directement le Salon Privé et pré-remplit le code `BG-XXXX` de l'hôte.
+   - ✅ Détection automatique de `?join=BG-XXXX` ou `?room=BG-XXXX` sur `src/app/page.tsx` via `usePrivateRoomInvite.ts`.
+   - ✅ Nettoyage fluide de l'URL via `window.history.replaceState` sans rechargement.
+   - ✅ Ouverture automatique de `PrivateRoomModal.tsx`, pré-remplissage du code et connexion en 1 clic.
+   - ✅ Boutons « Copier le lien direct » et « Partager (WhatsApp / Club) » via Web Share API (`navigator.share`) avec repli presse-papiers dans `PrivateRoomModal.tsx` et `LobbyPrivateRoomTab.tsx`.

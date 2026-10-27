@@ -27,9 +27,20 @@ export function useGameModals() {
     const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
     const [isDiceAuditModalOpen, setIsDiceAuditModalOpen] = useState(false);
     const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+    const [isPrivateRoomModalOpen, setIsPrivateRoomModalOpen] = useState(false);
+    const [privateRoomInitialCode, setPrivateRoomInitialCode] = useState<string | null>(null);
 
     const openMatchmaking = useCallback(() => setIsMatchmakingModalOpen(true), []);
     const closeMatchmaking = useCallback(() => setIsMatchmakingModalOpen(false), []);
+
+    const openPrivateRoomModal = useCallback((code?: string | null) => {
+        setPrivateRoomInitialCode(code ?? null);
+        setIsPrivateRoomModalOpen(true);
+    }, []);
+    const closePrivateRoomModal = useCallback(() => {
+        setIsPrivateRoomModalOpen(false);
+        setPrivateRoomInitialCode(null);
+    }, []);
 
     const openGameReview = useCallback(() => {
         setReviewInitialTab('overview');
@@ -102,5 +113,10 @@ export function useGameModals() {
         isSubscriptionModalOpen,
         openSubscriptionModal,
         closeSubscriptionModal,
+        // Private Room Modal (Lien d'invitation directe 1-clic)
+        isPrivateRoomModalOpen,
+        privateRoomInitialCode,
+        openPrivateRoomModal,
+        closePrivateRoomModal,
     };
 }

@@ -24,6 +24,7 @@ import type { OpeningEntry } from '../../features/openings';
 import PostMatchTrainingReport from '../summary/PostMatchTrainingReport';
 import GameReviewModal from '../rating/GameReviewModal';
 import MultiplayerLobbyModal from '../multiplayer/MultiplayerLobbyModal';
+import PrivateRoomModal from '../multiplayer/PrivateRoomModal';
 import MultiplayerResultModal from '../multiplayer/MultiplayerResultModal';
 import { OpeningBookModal } from '../openings/OpeningBookModal';
 import MatchImportExportModal from './MatchImportExportModal';
@@ -139,6 +140,24 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                     modals.closeMatchmaking();
                 }}
                 theme={theme}
+            />
+
+            {/* 3b. Modale Salon Privé dédiée (Lien d'invitation 1-clic & Partage WhatsApp/Club) */}
+            <PrivateRoomModal
+                isOpen={modals.isPrivateRoomModalOpen}
+                onClose={modals.closePrivateRoomModal}
+                privateRoomCode={multiplayer.privateRoomCode}
+                onCreatePrivateRoom={(len) => multiplayer.createPrivateRoom(len)}
+                onJoinPrivateRoom={async (code) => {
+                    await multiplayer.joinPrivateRoom(code);
+                    modals.closePrivateRoomModal();
+                }}
+                onCancelSearch={() => {
+                    multiplayer.cancelMatchmaking();
+                    modals.closePrivateRoomModal();
+                }}
+                initialRoomCode={modals.privateRoomInitialCode}
+                autoConnect={Boolean(modals.privateRoomInitialCode)}
             />
 
             {multiplayer.status === 'game_over' && multiplayer.matchInfo && multiplayer.opponentProfile && multiplayer.eloResult && (
