@@ -4,6 +4,7 @@ import { evaluateBoard, shouldOfferDouble } from '../../lib/engine/evaluator';
 import { evaluateBotCubeWithBgsage } from '../../lib/engine/bgsageClient';
 import { CUBE_DECISION_BUDGET_MS } from '../../lib/gameFeel/speedPresets';
 import type { AIDifficulty } from '../../engine/aiHeuristics';
+import { evaluateHumanCubeHeuristic } from '../../engine/humanBotController';
 
 export function canOpponentDouble(boardState: BoardState, matchLength: number): boolean {
     const isBotDmp = matchLength > 0 && boardState.scoreX === matchLength - 1 && boardState.scoreO === matchLength - 1;
@@ -30,6 +31,15 @@ export async function evaluateOpponentDoubleAsync(
             dice: null,
         };
         const localPreCheck = evaluateBoard(iaCubeState, 1);
+        if (difficulty === 'beginner' || difficulty === 'intermediate') {
+            const winProb = Math.max(0, Math.min(1, (localPreCheck.cubelessEquity + 1) / 2));
+            const justHitOpponent = (boardState.board[0] ?? 0) > 0;
+            return evaluateHumanCubeHeuristic({
+                difficulty,
+                winProbability: winProb,
+                justHitOpponent,
+            }).shouldDouble;
+        }
         if (localPreCheck.cubelessEquity < 0.30) return false;
         const sageCube = await evaluateBotCubeWithBgsage(iaCubeState, difficulty, CUBE_DECISION_BUDGET_MS);
         return sageCube ? sageCube.shouldDouble : shouldOfferDouble(localPreCheck.cubelessEquity);

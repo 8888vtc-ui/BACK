@@ -28,12 +28,12 @@ describe('MatchHud', () => {
         onResetGame: vi.fn(),
     };
 
-    it('affiche le format, les cartes joueurs (Vous vs IA Expert) et le tour actif sans jargon X/O', () => {
+    it('affiche le format, les cartes joueurs (Vous vs 💼 Victor) et le tour actif sans jargon X/O', () => {
         const html = renderToStaticMarkup(<MatchHud {...defaultProps} />);
 
         expect(html).toContain('Match 7 pts');
         expect(html).toContain('>Vous<');
-        expect(html).toContain('>IA Expert<');
+        expect(html).toContain('>💼 Victor<');
         expect(html).not.toContain('X (Vous - Blanc)');
         expect(html).toContain('>3<');
         expect(html).toContain('>2<');

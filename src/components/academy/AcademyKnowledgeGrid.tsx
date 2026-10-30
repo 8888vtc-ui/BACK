@@ -91,20 +91,24 @@ const AcademyKnowledgeGridComponent: React.FC<AcademyKnowledgeGridProps> = ({ co
                 </div>
             </section>
 
-            {/* SECTION IV : Matrice Terminologique Internationale (6 Langues) */}
-            <section
+            {/* SECTION IV : Matrice Terminologique Internationale repliée par défaut (Loi Elon Musk : 0 bruit visuel) */}
+            <details
                 id="lexicon-matrix"
-                aria-labelledby="glossary-heading"
                 data-testid="academy-glossary-section"
-                className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#131926]/95 to-[#090d16]/95 p-5 sm:p-7 shadow-xl space-y-4"
+                className="group rounded-3xl border border-white/10 bg-gradient-to-b from-[#131926]/95 to-[#090d16]/95 p-5 sm:p-6 shadow-xl"
             >
-                <div className="space-y-1">
-                    <h2 id="glossary-heading" className="font-serif text-xl sm:text-2xl font-black tracking-wide text-[#f5cf70]">
-                        {content.glossarySectionTitle}
-                    </h2>
-                    <p className="text-sm sm:text-base text-slate-300">{content.glossarySectionDesc}</p>
-                </div>
-                <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#070a11]/90">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+                    <div>
+                        <h2 id="glossary-heading" className="font-serif text-lg sm:text-xl font-black tracking-wide text-[#f5cf70]">
+                            🌍 {content.glossarySectionTitle}
+                        </h2>
+                        <p className="text-xs sm:text-sm text-slate-400">{content.glossarySectionDesc}</p>
+                    </div>
+                    <span className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-[#f3c65f] group-open:rotate-180 transition-transform">
+                        ▾
+                    </span>
+                </summary>
+                <div className="mt-4 overflow-x-auto rounded-2xl border border-white/10 bg-[#070a11]/90">
                     <table className="w-full text-left border-collapse text-xs sm:text-sm">
                         <thead>
                             <tr className="border-b border-white/10 bg-[#101624] font-extrabold uppercase tracking-wider text-[#e5c158]">
@@ -133,7 +137,7 @@ const AcademyKnowledgeGridComponent: React.FC<AcademyKnowledgeGridProps> = ({ co
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </details>
         </div>
     );
 };

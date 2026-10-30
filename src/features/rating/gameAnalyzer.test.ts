@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { analyzeCompleteGame } from './gameAnalyzer';
 import type { RawGameTurn } from './types';
-import { createInitialState } from '../../engine/backgammonEngine';
+import { createInitialState, applyMove } from '../../engine/backgammonEngine';
 
 describe('gameAnalyzer Module', () => {
     it('calcule une analyse parfaite avec PR=0 quand tous les coups sont optimaux', () => {
@@ -138,5 +138,45 @@ describe('gameAnalyzer Module', () => {
         const analysis = analyzeCompleteGame(turns, { targetPlayer: 'X' });
         expect(analysis.totalMovesCount).toBe(1);
         expect(analysis.evaluatedMoves[0].player).toBe('X');
+    });
+
+    it('ne génère aucun faux Howler sur un coup chaîné joué avec le dé fort en premier (ex: [5,6] -> 24/18 18/13) ni sur un moves partiel avec boardAfter exact', () => {
+        const initial = createInitialState(7);
+        let boardAfter65 = applyMove(initial.board, { from: 24, to: 18 }, 'X');
+        boardAfter65 = applyMove(boardAfter65, { from: 18, to: 13 }, 'X');
+
+        let boardAfter31 = applyMove(initial.board, { from: 8, to: 5 }, 'X');
+        boardAfter31 = applyMove(boardAfter31, { from: 6, to: 5 }, 'X');
+
+        const turns: RawGameTurn[] = [
+            {
+                turnNumber: 1,
+                player: 'X',
+                dice: [5, 6],
+                boardBefore: initial.board,
+                boardAfter: boardAfter65,
+                // Le joueur joue le dé 6 (24/18) puis le dé 5 (18/13), alors que generateLegalMoves génère 24/19 19/13
+                moves: [
+                    { from: 24, to: 18 },
+                    { from: 18, to: 13 },
+                ],
+            },
+            {
+                turnNumber: 2,
+                player: 'X',
+                dice: [1, 3],
+                boardBefore: initial.board,
+                boardAfter: boardAfter31,
+                // Sous-mouvement partiel dans `moves`, mais `boardAfter` contient bien le coup complet 8/5 6/5
+                moves: [{ from: 8, to: 5 }],
+            },
+        ];
+
+        const analysis = analyzeCompleteGame(turns, { targetPlayer: 'X' });
+        expect(analysis.totalEquityLoss).toBe(0);
+        expect(analysis.performanceRating).toBe(0);
+        expect(analysis.breakdown.optimal).toBe(2);
+        expect(analysis.breakdown.howler).toBe(0);
+        expect(analysis.breakdown.blunder).toBe(0);
     });
 });

@@ -18,6 +18,7 @@ import type {
 } from './gameStateReducer';
 import { canOpponentDouble } from './orchestrators/opponentCubeDecision';
 import { executeOpponentTurn, BOT_FLIGHT_ESTIMATE_MS } from './orchestrators/opponentTurnExecution';
+import { getBotPersona } from '../features/personas/botPersonas';
 
 export { BOT_FLIGHT_ESTIMATE_MS };
 
@@ -90,9 +91,10 @@ export function useOpponentTurnOrchestrator({
         clearOpponentTimers();
 
         if (!isCustomTestTiming) {
+            const p = getBotPersona(difficulty);
             dispatch({
                 type: 'OPPONENT_PREPARE_ROLL',
-                statusMessage: locale === 'en' ? 'Black (AI) is rolling the dice...' : "L'ordinateur lance les dés...",
+                statusMessage: locale === 'en' ? `${p.avatar} ${p.shortName} is rolling the dice...` : `${p.avatar} ${p.shortName} lance les dés...`,
             });
         }
 

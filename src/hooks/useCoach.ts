@@ -47,7 +47,7 @@ export function useCoach({
         optimalStreak, brilliantMove, setBrilliantMove,
         lastMoveFeedback, setLastMoveFeedback,
         recordDecisionStats,
-    } = useCoachMatchStats();
+    } = useCoachMatchStats(coachHistory);
 
     const lastPlayerEvalRef = useRef<string | null>(null);
     const lastCubeEvalKeyRef = useRef<string | null>(null);

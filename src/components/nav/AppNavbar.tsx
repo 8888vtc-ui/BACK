@@ -140,8 +140,8 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             <span className="text-xs sm:text-sm font-black tracking-wider text-white">
                                 BACKGAMMON
                             </span>
-                            <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-amber-300">
-                                PRO
+                            <span className="rounded border border-[#f3c65f]/40 bg-[#f3c65f]/15 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#f3c65f]">
+                                TOUR
                             </span>
                         </div>
                     </Link>

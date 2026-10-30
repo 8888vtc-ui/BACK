@@ -13,7 +13,14 @@ export interface GameReviewOverviewCardsProps {
 }
 
 export const GameReviewOverviewCards: React.FC<GameReviewOverviewCardsProps> = ({ analysis }) => {
-    const totalDecisions = Math.max(1, analysis.unforcedDecisionsCount);
+    const breakdownSum =
+        analysis.breakdown.optimal +
+        analysis.breakdown.acceptable +
+        analysis.breakdown.doubtful +
+        analysis.breakdown.blunder +
+        analysis.breakdown.howler;
+    const totalDecisions = Math.max(1, breakdownSum || analysis.unforcedDecisionsCount);
+    const displayCategory = analysis.prCategory === 'Débutant' ? 'En Progression' : analysis.prCategory;
 
     return (
         <div className="space-y-4">
@@ -32,7 +39,7 @@ export const GameReviewOverviewCards: React.FC<GameReviewOverviewCardsProps> = (
                             {analysis.performanceRating}
                         </span>
                         <span className="rounded-full border border-white/10 bg-[#2f1b0c] px-2 py-0.5 text-xs font-bold text-[#fce8b2]">
-                            {analysis.prCategory}
+                            {displayCategory}
                         </span>
                     </div>
                     <p className="mt-1 text-xs text-[#e8dcc6]/70">

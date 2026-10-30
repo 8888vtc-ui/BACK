@@ -127,6 +127,13 @@ export async function executeOpponentTurn({
     };
 
     const legalSeqs = generateLegalMoves(stateWithDice, rolledDice);
+    const humanReadMs = isCustomTestTiming
+        ? 0
+        : legalSeqs.length <= 1
+          ? Math.round(T2_READ_MS * 0.65)
+          : legalSeqs.length >= 12
+            ? T2_READ_MS + 180
+            : T2_READ_MS;
     const initialStatus = formatOpponentDiceRollStatus(rolledDice[0], rolledDice[1], locale);
 
     const revealDice = (statusMessage: string) => {
@@ -199,7 +206,7 @@ export async function executeOpponentTurn({
 
         const [resolved] = await Promise.all([
             movePromise,
-            waitOpponent(T1_ROLL_MS + T2_READ_MS),
+            waitOpponent(T1_ROLL_MS + humanReadMs),
         ]);
         if (isTurnAborted()) return;
         best = resolved;

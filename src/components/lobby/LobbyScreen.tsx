@@ -21,6 +21,7 @@ import LearningModulesGrid from './LearningModulesGrid';
 import CoachPreMatchBriefingCard from './CoachPreMatchBriefingCard';
 import TournamentTableClockModal from '../clock/TournamentTableClockModal';
 import { getSyncAcademySnapshot, loadPlayerHubData, type AcademyProgressSnapshot, type RecentMatchEntry } from '../../features/progression/userProgressionService';
+import { BOT_PERSONAS_BY_DIFFICULTY } from '../../features/personas/botPersonas';
 import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
 
@@ -62,16 +63,17 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     const [recentMatches, setRecentMatches] = useState<RecentMatchEntry[]>([]);
 
     const matchFormats = useMemo(() => [
-        { value: 0, label: ui.lobby.moneyGame, hint: ui.lobby.formatMoneyHint }, { value: 3, label: '3 pts', hint: ui.lobby.formatShortHint },
-        { value: 5, label: '5 pts', hint: ui.lobby.formatFastHint }, { value: 7, label: '7 pts', hint: ui.lobby.formatStandardHint }, { value: 11, label: '11 pts', hint: ui.lobby.formatLongHint },
+        { value: 0, label: ui.lobby.moneyGame, hint: ui.lobby.formatMoneyHint }, { value: 1, label: '1 pt (DMP)', hint: 'Manche sèche (3 min)' },
+        { value: 3, label: '3 pts', hint: ui.lobby.formatShortHint }, { value: 5, label: '5 pts', hint: ui.lobby.formatFastHint },
+        { value: 7, label: '7 pts', hint: ui.lobby.formatStandardHint }, { value: 11, label: '11 pts', hint: ui.lobby.formatLongHint },
     ], [ui.lobby]);
 
     const opponents = useMemo<Array<{ value: AIDifficulty; label: string; hint: string }>>(() => [
-        { value: 'beginner', label: ui.lobby.opponentNovice, hint: 'Blitz agressif · 1-ply bruité' },
-        { value: 'intermediate', label: ui.lobby.opponentIntermediate, hint: 'Holding & Pièges · 1-ply' },
-        { value: 'expert', label: ui.lobby.opponentMaster, hint: 'Course & Videau · 2-ply' },
-        { value: 'grandmaster', label: ui.lobby.opponentGrandmaster, hint: 'Open Sage 3-ply (PR 0.23)' },
-    ], [ui.lobby]);
+        { value: 'beginner', label: `${BOT_PERSONAS_BY_DIFFICULTY.beginner.avatar} ${BOT_PERSONAS_BY_DIFFICULTY.beginner.shortName}`, hint: BOT_PERSONAS_BY_DIFFICULTY.beginner.lobbyHint },
+        { value: 'intermediate', label: `${BOT_PERSONAS_BY_DIFFICULTY.intermediate.avatar} ${BOT_PERSONAS_BY_DIFFICULTY.intermediate.shortName}`, hint: BOT_PERSONAS_BY_DIFFICULTY.intermediate.lobbyHint },
+        { value: 'expert', label: `${BOT_PERSONAS_BY_DIFFICULTY.expert.avatar} ${BOT_PERSONAS_BY_DIFFICULTY.expert.shortName}`, hint: BOT_PERSONAS_BY_DIFFICULTY.expert.lobbyHint },
+        { value: 'grandmaster', label: `${BOT_PERSONAS_BY_DIFFICULTY.grandmaster.avatar} ${BOT_PERSONAS_BY_DIFFICULTY.grandmaster.shortName}`, hint: BOT_PERSONAS_BY_DIFFICULTY.grandmaster.lobbyHint },
+    ], []);
 
     const mainCards = useMemo<ReadonlyArray<{ id: LobbyMode; icon: string; badge: string; title: string; subtitle: string }>>(() => [
         { id: 'ai', icon: '♟️', badge: ui.lobby.cardAiBadge, title: ui.lobby.cardAiTitle, subtitle: ui.lobby.cardAiSubtitle },
@@ -165,28 +167,48 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                 {/* Cockpit de lancement 1-Tap : Choix direct Match (Crawford) vs Money Game (Jacoby) + Outils + Jouer */}
                 <div className="flex w-full flex-col gap-2 rounded-2xl border border-white/10 bg-slate-900/65 p-2.5">
                     {selectedMode === 'ai' && (
-                        <div data-testid="lobby-direct-format-bar" className="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.07] pb-2">
-                            <div className="flex flex-wrap items-center gap-1.5">
-                                <div className="inline-flex rounded-xl border border-white/10 bg-black/40 p-0.5">
-                                    <button type="button" data-testid="lobby-pill-match-mode" aria-pressed={matchLength > 0} onClick={() => setMatchLength((prev) => (prev === 0 ? 7 : prev))} className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${matchLength > 0 ? 'bg-[#f3c65f] text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}`}>🏆 Match</button>
-                                    <button type="button" data-testid="lobby-pill-money-mode" aria-pressed={matchLength === 0} onClick={() => setMatchLength(0)} className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${matchLength === 0 ? 'bg-[#f3c65f] text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}`}>💰 Money Game</button>
-                                </div>
-                                {matchLength > 0 ? (
-                                    <div className="inline-flex items-center gap-1" role="group" aria-label="Points du match">
-                                        {[3, 5, 7, 11].map((pts) => (
-                                            <button key={pts} type="button" data-testid={`lobby-quick-pts-${pts}`} aria-pressed={matchLength === pts} onClick={() => setMatchLength(pts)} className={`rounded-lg border px-2 py-1 font-mono text-xs font-bold transition ${matchLength === pts ? 'border-[#f3c65f]/70 bg-[#f3c65f]/15 text-[#f3c65f]' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'}`}>{pts} pts</button>
-                                        ))}
-                                        <span className="hidden md:inline-block pl-1 text-[11px] text-slate-400">· Règle de Crawford</span>
+                        <>
+                            <div data-testid="lobby-direct-format-bar" className="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.07] pb-2">
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                    <div className="inline-flex rounded-xl border border-white/10 bg-black/40 p-0.5">
+                                        <button type="button" data-testid="lobby-pill-match-mode" aria-pressed={matchLength > 0} onClick={() => setMatchLength((prev) => (prev === 0 ? 7 : prev))} className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${matchLength > 0 ? 'bg-[#f3c65f] text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}`}>🏆 Match</button>
+                                        <button type="button" data-testid="lobby-pill-money-mode" aria-pressed={matchLength === 0} onClick={() => setMatchLength(0)} className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${matchLength === 0 ? 'bg-[#f3c65f] text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}`}>💰 Money Game</button>
                                     </div>
-                                ) : (
-                                    <span data-testid="lobby-money-rule-badge" className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-300">Partie continue au point (∞) · Règle de Jacoby active</span>
-                                )}
+                                    {matchLength > 0 ? (
+                                        <div className="inline-flex items-center gap-1" role="group" aria-label="Points du match">
+                                            {[1, 3, 5, 7, 11].map((pts) => (
+                                                <button key={pts} type="button" data-testid={`lobby-quick-pts-${pts}`} aria-pressed={matchLength === pts} onClick={() => setMatchLength(pts)} className={`rounded-lg border px-2 py-1 font-mono text-xs font-bold transition ${matchLength === pts ? 'border-[#f3c65f]/70 bg-[#f3c65f]/15 text-[#f3c65f]' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'}`}>{pts === 1 ? '1 pt' : `${pts} pts`}</button>
+                                            ))}
+                                            <span className="hidden md:inline-block pl-1 text-[11px] text-slate-400">· {matchLength === 1 ? 'DMP (Manche sèche)' : 'Règle de Crawford'}</span>
+                                        </div>
+                                    ) : (
+                                        <span data-testid="lobby-money-rule-badge" className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-300">Partie continue au point (∞) · Règle de Jacoby active</span>
+                                    )}
+                                </div>
+                                <button type="button" onClick={() => setShowOptions((v) => !v)} aria-expanded={showOptions} data-testid="lobby-options-toggle" className={`flex items-center gap-2 rounded-xl border px-2.5 py-1 text-xs font-medium text-slate-200 transition ${showOptions ? 'border-[#f3c65f] bg-slate-800' : 'border-white/10 bg-black/30 hover:border-white/20'}`}>
+                                    <span className="font-mono text-xs text-slate-200">{opponents.find((o) => o.value === difficulty)?.label ?? difficulty} · {clockPreset.toUpperCase()} · {playerColor === 'X' ? ui.lobby.ivory : ui.lobby.ebony}</span>
+                                    <span className="text-xs font-bold text-[#f3c65f]">{showOptions ? ui.lobby.collapse : `⚙️ ${ui.lobby.configure}`}</span>
+                                </button>
                             </div>
-                            <button type="button" onClick={() => setShowOptions((v) => !v)} aria-expanded={showOptions} data-testid="lobby-options-toggle" className={`flex items-center gap-2 rounded-xl border px-2.5 py-1 text-xs font-medium text-slate-200 transition ${showOptions ? 'border-[#f3c65f] bg-slate-800' : 'border-white/10 bg-black/30 hover:border-white/20'}`}>
-                                <span className="font-mono text-xs text-slate-200">IA {opponents.find((o) => o.value === difficulty)?.label ?? difficulty} · {clockPreset.toUpperCase()} · {playerColor === 'X' ? ui.lobby.ivory : ui.lobby.ebony}</span>
-                                <span className="text-xs font-bold text-[#f3c65f]">{showOptions ? ui.lobby.collapse : `⚙️ ${ui.lobby.configure}`}</span>
-                            </button>
-                        </div>
+                            <div data-testid="lobby-persona-quickbar" className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 border-b border-white/[0.07] pb-2" role="group" aria-label="Adversaire Bot Personnifié">
+                                {(['beginner', 'intermediate', 'expert', 'grandmaster'] as const).map((lvl) => {
+                                    const p = BOT_PERSONAS_BY_DIFFICULTY[lvl];
+                                    const active = difficulty === lvl;
+                                    return (
+                                        <button
+                                            key={lvl} type="button" data-testid={`lobby-persona-pill-${lvl}`} aria-pressed={active} onClick={() => setDifficulty(lvl)}
+                                            className={`flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition ${active ? 'border-[#f3c65f]/80 bg-[#f3c65f]/15 text-white' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'}`}
+                                        >
+                                            <span className="text-base leading-none shrink-0" aria-hidden="true">{p.avatar}</span>
+                                            <span className="min-w-0 flex-1">
+                                                <span className="block truncate text-xs font-bold">{p.shortName}</span>
+                                                <span className="block truncate text-[11px] text-slate-400">{p.styleBadge}</span>
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </>
                     )}
 
                     <div className="flex flex-wrap items-center justify-between gap-1.5" data-testid="lobby-tournament-quickbar">

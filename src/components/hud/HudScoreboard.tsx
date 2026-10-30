@@ -166,8 +166,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     const isOTurn = turn === 'O' || isAiThinking;
     const humanIsWhite = playerColor === 'X';
     const nameX = 'Vous';
-    const normalizedOpponent = opponentLabel.startsWith('IA') ? opponentLabel : `IA ${opponentLabel}`;
-    const nameO = opponentLabel === 'IA' ? 'IA' : normalizedOpponent;
+    const nameO = opponentLabel || 'IA';
     const colorLabelX = humanIsWhite ? 'Blanc' : 'Noir';
     const colorLabelO = humanIsWhite ? 'Noir' : 'Blanc';
     const effectiveCube = Math.max(1, cubeValue);

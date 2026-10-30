@@ -13,7 +13,7 @@
  * Loi de Scalabilité : strictement 0 any, < 250 lignes.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import AppNavbar from '../nav/AppNavbar';
 import BeginnerInteractiveRulesCourse from './BeginnerInteractiveRulesCourse';
@@ -23,13 +23,20 @@ import AcademyKnowledgeGrid from './AcademyKnowledgeGrid';
 import { getAcademyContent } from '../../features/academy/academyTranslations';
 import { useTranslation, type PrimaryLocale } from '../../i18n';
 
+type AcademyTab = 'beginner' | 'club' | 'pro' | 'all';
+
 const GammonAcademyViewComponent: React.FC = () => {
     const { locale, dir } = useTranslation();
+    const [activeTab, setActiveTab] = useState<AcademyTab>('beginner');
     const safeLocale: PrimaryLocale =
         locale === 'fr' || locale === 'en' || locale === 'es' || locale === 'pt' || locale === 'de' || locale === 'ar'
             ? locale
             : 'en';
     const content = useMemo(() => getAcademyContent(safeLocale), [safeLocale]);
+
+    const showBeginner = activeTab === 'beginner' || activeTab === 'all';
+    const showClub = activeTab === 'club' || activeTab === 'all';
+    const showPro = activeTab === 'pro' || activeTab === 'all';
 
     return (
         <div
@@ -42,57 +49,68 @@ const GammonAcademyViewComponent: React.FC = () => {
         >
             <AppNavbar activeTab="academy" />
 
-            <main className="mx-auto w-full max-w-6xl flex-1 space-y-8 px-4 py-8 sm:px-6">
-                {/* En-tête Encyclopédique Gammon Academy */}
-                <header className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#1e170b]/95 via-[#0e1422]/95 to-[#080c15]/95 p-6 sm:p-8 text-center shadow-[0_18px_46px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,245,205,0.18)] space-y-4">
+            <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6 sm:px-6">
+                {/* En-tête épuré Backgammon Tour — Académie (3 Paliers Caméléon : Débutant, Club, Pro) */}
+                <header className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#1e170b]/95 via-[#0e1422]/95 to-[#080c15]/95 p-5 sm:p-7 text-center shadow-[0_18px_46px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,245,205,0.18)] space-y-4">
                     <span className="inline-block rounded-full border border-white/10 bg-black/50 px-3.5 py-1 text-xs font-extrabold uppercase tracking-[0.22em] text-[#f3c65f]">
                         🏛️ {content.heroBadge}
                     </span>
                     <h1 className="font-serif bg-gradient-to-b from-[#fff9e6] via-[#f0cb69] to-[#b38428] bg-clip-text text-2xl sm:text-4xl font-black tracking-wide text-transparent">
                         {content.heroTitle}
                     </h1>
-                    <p className="mx-auto max-w-3xl text-sm sm:text-base text-slate-300 leading-relaxed">
+                    <p className="mx-auto max-w-2xl text-xs sm:text-sm text-slate-300 leading-relaxed">
                         {content.heroSubtitle}
                     </p>
 
-                    {/* Sommaire d'ancres rapides (Maillage Interne) */}
-                    <nav aria-label="Sommaire Gammon Academy" className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                        <a href="#learn-rules" className="rounded-full border border-emerald-400/50 bg-emerald-950/70 px-4 py-1.5 text-xs sm:text-sm font-extrabold text-emerald-200 hover:border-emerald-300 transition">
-                            🌱 Apprendre les Règles (Débutant)
-                        </a>
-                        <a href="#openings-guide" className="rounded-full border border-white/10 bg-[#0b101b] px-4 py-1.5 text-xs sm:text-sm font-bold text-amber-200 hover:border-[#f3c65f] transition">
-                            {content.navOpenings}
-                        </a>
-                        <a href="#doubling-cube-guide" className="rounded-full border border-white/10 bg-[#0b101b] px-4 py-1.5 text-xs sm:text-sm font-bold text-amber-200 hover:border-[#f3c65f] transition">
-                            {content.navCube}
-                        </a>
-                        <a href="#interactive-calculator" className="rounded-full border border-white/10 bg-[#0b101b] px-4 py-1.5 text-xs sm:text-sm font-bold text-emerald-300 hover:border-emerald-400 transition">
-                            🧮 MET &amp; Keith Calculator
-                        </a>
-                        <a href="#grandmaster-strategy" className="rounded-full border border-white/10 bg-[#0b101b] px-4 py-1.5 text-xs sm:text-sm font-bold text-amber-200 hover:border-[#f3c65f] transition">
-                            {content.navStrategy}
-                        </a>
-                        <a href="#concepts-library" className="rounded-full border border-white/10 bg-[#0b101b] px-4 py-1.5 text-xs sm:text-sm font-bold text-amber-200 hover:border-[#f3c65f] transition">
-                            21 Concepts GM
-                        </a>
-                        <a href="#lexicon-matrix" className="rounded-full border border-white/10 bg-[#0b101b] px-4 py-1.5 text-xs sm:text-sm font-bold text-amber-200 hover:border-[#f3c65f] transition">
-                            {content.navGlossary}
-                        </a>
-                        <a href="#seo-faq" className="rounded-full border border-white/10 bg-[#0b101b] px-4 py-1.5 text-xs sm:text-sm font-bold text-amber-200 hover:border-[#f3c65f] transition">
-                            {content.navFaq}
-                        </a>
+                    {/* Sélecteur Progressif 3 Niveaux (Loi Elon Musk : Zéro surcharge cognitive) */}
+                    <nav aria-label="Niveaux de l'Académie" className="mx-auto grid max-w-3xl grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
+                        <button
+                            type="button" data-testid="academy-tab-beginner" aria-pressed={activeTab === 'beginner'}
+                            onClick={() => setActiveTab('beginner')}
+                            className={`flex flex-col items-center rounded-2xl border px-4 py-2.5 text-center transition ${activeTab === 'beginner' ? 'border-emerald-400 bg-emerald-950/75 text-white shadow-lg' : 'border-white/10 bg-[#0b101b] text-slate-300 hover:border-white/25'}`}
+                        >
+                            <span className="text-xs sm:text-sm font-black text-emerald-300">🌱 1. Niveau Débutant</span>
+                            <span className="text-[11px] text-slate-400">Règles en 5 Étapes &amp; Quiz</span>
+                        </button>
+                        <button
+                            type="button" data-testid="academy-tab-club" aria-pressed={activeTab === 'club'}
+                            onClick={() => setActiveTab('club')}
+                            className={`flex flex-col items-center rounded-2xl border px-4 py-2.5 text-center transition ${activeTab === 'club' ? 'border-[#f3c65f] bg-amber-950/50 text-white shadow-lg' : 'border-white/10 bg-[#0b101b] text-slate-300 hover:border-white/25'}`}
+                        >
+                            <span className="text-xs sm:text-sm font-black text-[#f3c65f]">🎲 2. Niveau Club</span>
+                            <span className="text-[11px] text-slate-400">15 Ouvertures &amp; Videau (21,5 %)</span>
+                        </button>
+                        <button
+                            type="button" data-testid="academy-tab-pro" aria-pressed={activeTab === 'pro'}
+                            onClick={() => setActiveTab('pro')}
+                            className={`flex flex-col items-center rounded-2xl border px-4 py-2.5 text-center transition ${activeTab === 'pro' ? 'border-amber-300 bg-slate-900 text-white shadow-lg' : 'border-white/10 bg-[#0b101b] text-slate-300 hover:border-white/25'}`}
+                        >
+                            <span className="text-xs sm:text-sm font-black text-amber-200">🏆 3. Grand-Maître Pro</span>
+                            <span className="text-[11px] text-slate-400">Calculateur MET &amp; 21 Concepts</span>
+                        </button>
                     </nav>
+                    <div className="flex justify-center pt-1">
+                        <button
+                            type="button" data-testid="academy-tab-all" aria-pressed={activeTab === 'all'}
+                            onClick={() => setActiveTab((prev) => (prev === 'all' ? 'beginner' : 'all'))}
+                            className="text-xs font-semibold text-slate-400 underline-offset-4 hover:text-[#f3c65f] hover:underline transition"
+                        >
+                            {activeTab === 'all' ? '▴ Revenir à l’affichage guidé par niveau' : '📚 Afficher toute l’encyclopédie sur une seule page'}
+                        </button>
+                    </div>
                 </header>
 
-                {/* SECTION 0 : Parcours Débutant Interactif (Apprendre les Règles en 5 Étapes + Quiz + Bravos) */}
-                <BeginnerInteractiveRulesCourse />
+                {/* PALIER 1 : Parcours Débutant Interactif */}
+                <div className={showBeginner ? 'space-y-8' : 'hidden'}>
+                    <BeginnerInteractiveRulesCourse />
+                </div>
 
-                {/* SECTION I : Les 15 Rouleaux d'Ouverture */}
-                <OpeningRollsTable content={content} locale={safeLocale} />
+                {/* PALIER 2 : Les 15 Rouleaux d'Ouverture & Maîtrise du Videau */}
+                <div className={showClub ? 'space-y-8' : 'hidden'}>
+                    <OpeningRollsTable content={content} locale={safeLocale} />
 
-                {/* SECTION II : Guide de Maîtrise du Videau (Doubling Cube) */}
-                <section
-                    id="doubling-cube-guide"
+                    <section
+                        id="doubling-cube-guide"
                     aria-labelledby="cube-guide-heading"
                     data-testid="academy-cube-section"
                     className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#131926]/95 to-[#090d16]/95 p-5 sm:p-7 shadow-xl space-y-5"
@@ -123,8 +141,10 @@ const GammonAcademyViewComponent: React.FC = () => {
                         ))}
                     </div>
                 </section>
+                </div>
 
-                {/* SECTION II-bis : Calculateur Interactif MET Kazaross-XG2 & Course de Keith */}
+                {/* PALIER 3 : Calculateur MET Kazaross-XG2, Plans de Jeu Grand-Maître & 21 Concepts */}
+                <div className={showPro ? 'space-y-8' : 'hidden'}>
                 <MatchEquityCalculator locale={safeLocale} />
 
                 {/* SECTION III : Plans de Jeu Grand-Maître, Keith Count & Performance Rating (PR) */}
@@ -163,6 +183,7 @@ const GammonAcademyViewComponent: React.FC = () => {
 
                 {/* SECTION IV : 21 Concepts Grand-Maître & Matrice Terminologique (6 Langues) */}
                 <AcademyKnowledgeGrid content={content} locale={safeLocale} />
+                </div>
 
                 {/* SECTION V : FAQ SEO Officielle */}
                 <section

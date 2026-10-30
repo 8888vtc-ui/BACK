@@ -1,10 +1,10 @@
-# Backgammon Tour — Cercle Monte-Carlo & Gammon Academy
+# Backgammon Tour
 
-> Official tournament Backgammon platform (`https://backgammontour.com` & `https://gammonacademy.com`) featuring the Monte-Carlo 3-Ply Neural Engine (PR 0.23), real-time AI Coach in 6 languages (FR, EN, ES, PT, DE, AR), interactive Match Equity & Keith Count Calculators, Daily 3-Ply Puzzles, Blunder Drills, and 100% offline PWA/Capacitor support (`com.backgammontour.app`).
+> Official tournament Backgammon platform (`https://backgammontour.com`) featuring the Monte-Carlo 3-Ply Neural Engine (PR 0.23), real-time AI Coach in 6 languages (FR, EN, ES, PT, DE, AR), interactive Match Equity & Keith Count Calculators, Daily 3-Ply Puzzles, Blunder Drills, and 100% offline PWA/Capacitor support (`com.backgammontour.app`).
 
 ## Core Entry Points
 - [Salon Privé & Play vs 3-Ply AI](https://backgammontour.com/): Play tournament backgammon online or offline against 4 AI levels (Novice to 3-Ply Grandmaster) or live multiplayer.
-- [Gammon Academy Encyclopedia](https://backgammontour.com/academy): Complete 3-Ply Opening Rolls Table, Doubling Cube Mathematics (21.5% Live Take Point, Crawford, Jacoby, Kazaross-XG2 MET), Interactive MET & Keith Count Calculator, and 6-language terminology matrix.
+- [Backgammon Tour Academy](https://backgammontour.com/academy): Complete 3-Ply Opening Rolls Table, Doubling Cube Mathematics (21.5% Live Take Point, Crawford, Jacoby, Kazaross-XG2 MET), Interactive MET & Keith Count Calculator, and 6-language terminology matrix.
 - [Daily 3-Ply Tactical Puzzles](https://backgammontour.com/puzzles): Curated tournament positions evaluated by Monte-Carlo 3-Ply & eXtreme Gammon (XG).
 - [Blunder Training Drills](https://backgammontour.com/drills): Interactive checker & cube drills to lower your Performance Rating (PR).
 - [PR & Analytics Dashboard](https://backgammontour.com/progression): Track your Performance Rating (`PR = Equity Loss * 500`), Snowie Error Rate, and recurring leaks.

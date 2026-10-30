@@ -9,14 +9,15 @@
  * 5. Alimenter automatiquement la banque d'entraînement (Blunder Training)
  */
 
-import { type Player, type BoardState, applyMove } from '../../engine/backgammonEngine';
+import { type Player, type BoardState, type Move, applyMove } from '../../engine/backgammonEngine';
 import {
-    analyzeBoardMoves,
     analyzeBoardCube,
     evaluateBoard,
     formatMoveSequenceNotation,
 } from '../../lib/engine/evaluator';
-import { normalizeMoveNotation } from '../drills/blunderDrillEngine';
+import { boardsMatchOnPointsAndBar } from '../../lib/engine/bgsageClient';
+import { analyzeHumanMoveFromLog } from '../coach/logAnalyzer';
+import { movesFromBoardDiff } from '../coach/coachMoveNotation';
 import { recordBlunder } from '../drills/blunderBank';
 import { categorizeExplanation } from '../../lib/stats/statsAggregator';
 import {
@@ -112,7 +113,6 @@ export function analyzeCompleteGame(
     options: AnalyzeGameOptions = {},
 ): CompleteGameAnalysis {
     const targetPlayer = options.targetPlayer ?? 'X';
-    const opponent: Player = targetPlayer === 'X' ? 'O' : 'X';
     const playerTurns = turns.filter((t) => t.player === targetPlayer);
 
     const matchLength = options.matchLength ?? 7;
@@ -145,8 +145,35 @@ export function analyzeCompleteGame(
         const turnCubeOwner = turn.cubeOwner !== undefined ? turn.cubeOwner : (options.cubeOwner ?? null);
         const turnCrawford = turn.crawford ?? options.crawford ?? false;
 
-        const playedNotation = formatMoveSequenceNotation(turn.moves, targetPlayer);
-        const normalizedPlayed = normalizeMoveNotation(playedNotation);
+        const hasDistinctBoardAfter =
+            Boolean(turn.boardAfter && turn.boardAfter.length >= 26) &&
+            !boardsMatchOnPointsAndBar(turn.boardBefore, turn.boardAfter);
+
+        let effectiveMoves: Move[] = turn.moves ?? [];
+        let effectiveBoardAfter: number[];
+
+        if (hasDistinctBoardAfter) {
+            effectiveBoardAfter = [...turn.boardAfter];
+            if (effectiveMoves.length > 0) {
+                let simBoard = [...turn.boardBefore];
+                for (const mv of effectiveMoves) {
+                    simBoard = applyMove(simBoard, mv, targetPlayer);
+                }
+                if (!boardsMatchOnPointsAndBar(simBoard, effectiveBoardAfter)) {
+                    effectiveMoves = movesFromBoardDiff(turn.boardBefore, effectiveBoardAfter, targetPlayer);
+                }
+            } else {
+                effectiveMoves = movesFromBoardDiff(turn.boardBefore, effectiveBoardAfter, targetPlayer);
+            }
+        } else {
+            let simBoard = [...turn.boardBefore];
+            for (const mv of effectiveMoves) {
+                simBoard = applyMove(simBoard, mv, targetPlayer);
+            }
+            effectiveBoardAfter = simBoard;
+        }
+
+        const fallbackPlayedNotation = formatMoveSequenceNotation(effectiveMoves, targetPlayer);
 
         const syntheticState: BoardState = {
             board: turn.boardBefore,
@@ -177,20 +204,34 @@ export function analyzeCompleteGame(
             preRollEquity = 0;
         }
 
-        // 3. Analyse des candidats par le moteur
-        let analysis;
-        try {
-            analysis = analyzeBoardMoves(syntheticState, turn.dice, { ply: 2, maxMoves: 8 });
-        } catch {
-            analysis = { moves: [], bestMove: null };
-        }
+        // 3. Analyse unifiée avec le Coach en direct (`analyzeHumanMoveFromLog` : maxMoves 64,
+        //    Opening Book, appariement par plateau résultant et notations chaînées/inversées)
+        const logEval = analyzeHumanMoveFromLog({
+            logEntry: {
+                turnIndex: turn.turnNumber || i + 1,
+                player: targetPlayer,
+                dice: [turn.dice[0], turn.dice[1]],
+                boardBefore: turn.boardBefore,
+                movePlayed: effectiveMoves,
+                boardAfter: effectiveBoardAfter,
+                notation: fallbackPlayedNotation,
+                timestamp: 0,
+            },
+            localPlayer: targetPlayer,
+            cubeValue: turnCubeValue,
+            cubeOwner: turnCubeOwner,
+            crawford: turnCrawford,
+            matchLength,
+            scoreX,
+            scoreO,
+            ply: 2,
+        });
 
-        const candidateCount = analysis.moves.length;
-        const isUnforced = candidateCount > 1;
-        const bestMove = analysis.bestMove;
-        const optimalNotation = bestMove ? bestMove.notation : playedNotation;
-        const normalizedOptimal = normalizeMoveNotation(optimalNotation);
-        const bestEquity = bestMove ? bestMove.equity : preRollEquity;
+        const candidateCount = logEval ? logEval.candidateMoves.length : 0;
+        const isUnforced = logEval ? logEval.isUnforced : false;
+        const playedNotation = logEval ? logEval.playedNotation : fallbackPlayedNotation;
+        const optimalNotation = logEval ? logEval.optimalNotation : playedNotation;
+        const bestEquity = logEval ? logEval.bestEquity : preRollEquity;
 
         // Calcul de la chance du jet de dés : Luck = E*(S, dice) - E(S)
         const rollLuck = Number(
@@ -198,47 +239,16 @@ export function analyzeCompleteGame(
         );
         totalLuck += rollLuck;
 
-        let equityLoss = 0;
-
-        if (!isUnforced) {
-            equityLoss = 0;
-        } else if (normalizedPlayed === normalizedOptimal) {
-            equityLoss = 0;
-        } else {
-            const matchedCandidate = analysis.moves.find(
-                (m) => normalizeMoveNotation(m.notation) === normalizedPlayed,
-            );
-
-            if (matchedCandidate) {
-                equityLoss = -Math.abs(matchedCandidate.equityLoss);
-            } else {
-                // Évaluation directe de la position d'arrivée (`boardAfter`) via le moteur (zéro cap -0.22)
-                let resultingBoard = [...turn.boardBefore];
-                if (turn.moves && turn.moves.length > 0) {
-                    for (const mv of turn.moves) {
-                        resultingBoard = applyMove(resultingBoard, mv, targetPlayer);
-                    }
-                } else if (turn.boardAfter && turn.boardAfter.length >= 26) {
-                    resultingBoard = [...turn.boardAfter];
-                }
-
-                // Exactement la même perspective que analyzeBoardMoves (évaluation du tour adverse inversée)
-                const oppAfterPlayedEval = evaluateBoard(
-                    { ...syntheticState, board: resultingBoard, turn: opponent, dice: null },
-                    2,
-                );
-                const playedEquity = -oppAfterPlayedEval.cubefulEquity;
-                const directLoss = Math.max(0, bestEquity - playedEquity);
-                equityLoss = -Number(directLoss.toFixed(4));
-            }
-        }
+        const equityLoss =
+            isUnforced && logEval ? -Number(Math.abs(logEval.equityLoss).toFixed(4)) : 0;
 
         const equityBefore = Number(bestEquity.toFixed(4));
         const equityAfter = Number((bestEquity + equityLoss).toFixed(4));
         const mwcBefore = convertEquityToMwc(equityBefore, awayPlayer, awayOpponent, turnCubeValue);
         const mwcAfter = convertEquityToMwc(equityAfter, awayPlayer, awayOpponent, turnCubeValue);
 
-        const verdict = classifyMoveEquity(equityLoss);
+        const absLoss = Math.abs(equityLoss);
+        const verdict = absLoss >= 0.005 && absLoss < 0.02 ? 'acceptable' : classifyMoveEquity(equityLoss);
         breakdown[verdict] += 1;
 
         if (isUnforced) {
@@ -259,7 +269,7 @@ export function analyzeCompleteGame(
                     player: targetPlayer,
                     playedMove: playedNotation,
                     optimalMove: optimalNotation,
-                    acceptableMoves: analysis.moves
+                    acceptableMoves: (logEval?.candidateMoves ?? [])
                         .filter((m) => Math.abs(m.equityLoss) < 0.02)
                         .map((m) => m.notation),
                     equityLoss: Math.abs(equityLoss),
@@ -287,7 +297,7 @@ export function analyzeCompleteGame(
             player: targetPlayer,
             dice: turn.dice,
             boardBefore: turn.boardBefore,
-            boardAfter: turn.boardAfter,
+            boardAfter: effectiveBoardAfter,
             playedNotation,
             optimalNotation,
             equityLoss: Number(equityLoss.toFixed(4)),

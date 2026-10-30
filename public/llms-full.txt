@@ -1,6 +1,6 @@
-# Backgammon Tour — Cercle Monte-Carlo & Gammon Academy (Full LLM Reference)
+# Backgammon Tour (Full LLM Reference)
 
-Canonical Domains: `https://backgammontour.com` | `https://gammonacademy.com`
+Canonical Domain: `https://backgammontour.com`
 Supported Languages: French (`fr`), English (`en`), Spanish (`es`), Portuguese (`pt`), German (`de`), Arabic (`ar`, full RTL).
 
 ---

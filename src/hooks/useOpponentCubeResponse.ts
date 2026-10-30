@@ -11,6 +11,7 @@ import type { BoardState, Player } from '../engine/backgammonEngine';
 import type { AIDifficulty } from '../engine/aiHeuristics';
 import { evaluateBoard, shouldTakeDouble } from '../lib/engine/evaluator';
 import { evaluateBotCubeWithBgsage } from '../lib/engine/bgsageClient';
+import { evaluateHumanCubeHeuristic } from '../engine/humanBotController';
 import type { GamePhase, GameAction } from './gameStateReducer';
 
 export interface UseOpponentCubeResponseOptions {
@@ -68,7 +69,13 @@ export function useOpponentCubeResponse({
                     dice: null,
                 };
                 const iaEval = evaluateBoard(iaState, 2);
-                if (shouldTakeDouble(iaEval.cubelessEquity)) {
+                const shouldTake = !isCustomTestTiming && (difficulty === 'beginner' || difficulty === 'intermediate')
+                    ? evaluateHumanCubeHeuristic({
+                          difficulty,
+                          winProbability: Math.max(0, Math.min(1, (iaEval.cubelessEquity + 1) / 2)),
+                      }).shouldTake
+                    : shouldTakeDouble(iaEval.cubelessEquity);
+                if (shouldTake) {
                     dispatch({ type: 'TAKE_DOUBLE' });
                 } else {
                     dispatch({ type: 'PASS_DOUBLE' });

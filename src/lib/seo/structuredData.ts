@@ -102,18 +102,17 @@ export function buildGlobalStructuredData(siteUrl: string = DEFAULT_SITE_URL): R
             {
                 '@type': ['VideoGame', 'SoftwareApplication'],
                 '@id': `${cleanUrl}/#application`,
-                name: 'Backgammon Tour — Cercle Monte-Carlo & Gammon Academy',
+                name: 'Backgammon Tour',
                 url: cleanUrl,
                 sameAs: [
-                    'https://gammonacademy.com',
-                    'https://bgmontecarlo.com',
+                    'https://backgammontour.com',
                 ],
                 applicationCategory: 'GameApplication',
                 genre: ['Board Game', 'Strategy Game', 'Educational Game'],
                 operatingSystem: 'Web, iOS, Android',
                 inLanguage: ['fr', 'en', 'es', 'pt', 'de', 'ar'],
                 description:
-                    'Plateforme de Backgammon de tournoi avec moteur neuronal Monte-Carlo 3-Ply (PR 0.23), Coach IA en temps réel, Gammon Academy (15 ouvertures, videau, drills, puzzles) et Salon Multijoueur.',
+                    'Plateforme de Backgammon de tournoi avec moteur neuronal Monte-Carlo 3-Ply (PR 0.23), Coach IA en temps réel, Académie (15 ouvertures, videau, drills, puzzles) et Salon Multijoueur.',
                 offers: {
                     '@type': 'Offer',
                     price: '0',
@@ -124,13 +123,13 @@ export function buildGlobalStructuredData(siteUrl: string = DEFAULT_SITE_URL): R
             {
                 '@type': 'Course',
                 '@id': `${cleanUrl}/academy#course`,
-                name: 'Gammon Academy — Encyclopédie des 15 Ouvertures, Videau & Stratégie Backgammon 3-Ply',
+                name: 'Backgammon Tour — Académie des 15 Ouvertures, Videau & Stratégie Backgammon 3-Ply',
                 description:
                     'Formation stratégique complète au Backgammon de tournoi : table d’équité des 15 rouleaux d’ouverture Monte-Carlo 3-Ply, mathématique du Videau (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2), Keith Count et réduction du Performance Rating (PR).',
                 provider: {
                     '@type': 'Organization',
-                    name: 'Backgammon Tour & Gammon Academy',
-                    sameAs: ['https://backgammontour.com', 'https://gammonacademy.com'],
+                    name: 'Backgammon Tour',
+                    sameAs: ['https://backgammontour.com'],
                 },
                 url: `${cleanUrl}/academy`,
                 inLanguage: ['fr', 'en', 'es', 'pt', 'de', 'ar'],

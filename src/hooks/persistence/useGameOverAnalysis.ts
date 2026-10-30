@@ -4,7 +4,7 @@ import { analyzeCompleteGame, saveGameAnalysis, type CompleteGameAnalysis, type 
 import { parseFromXGID } from '../../features/export';
 import type { GameResult, UseBackgammonGameReturn } from '../useBackgammonGame';
 import type { Player } from '../../engine/backgammonEngine';
-import type { GamePhase } from '../gameStateReducer';
+import type { MatchLogEntry } from '../../actions/types';
 import type { MatchSnapshotRestorePayload } from './gamePersistenceTypes';
 
 export interface UseGameOverAnalysisParams {
@@ -20,6 +20,9 @@ export interface UseGameOverAnalysisParams {
     gameCubeValue: number;
     gameCubeOwner: Player | null;
     gameMatchLength: number;
+    gameCrawford?: boolean;
+    gameDifficulty?: string | null;
+    gameMatchLog?: ReadonlyArray<MatchLogEntry>;
     isMultiplayerActive: boolean;
     setTurnsHistory: (turns: RawGameTurn[]) => void;
     setLatestGameAnalysis: (analysis: CompleteGameAnalysis | null) => void;
@@ -39,6 +42,9 @@ export function useGameOverAnalysis({
     gameCubeValue,
     gameCubeOwner,
     gameMatchLength,
+    gameCrawford = false,
+    gameDifficulty = null,
+    gameMatchLog,
     isMultiplayerActive,
     setTurnsHistory,
     setLatestGameAnalysis,
@@ -70,24 +76,51 @@ export function useGameOverAnalysis({
             });
             currentTurnMovesRef.current = [];
         }
+
+        // Source d'autorité : `gameMatchLog` (enregistré de façon atomique par le reducer,
+        // insensible aux clics directs sans sélection et nettoyé lors des Rewinds).
+        const logDiceEntries = (gameMatchLog ?? []).filter(
+            (e) => e.dice && e.dice[0] > 0 && e.dice[1] > 0,
+        );
+        let turnsForAnalysis = turnsHistoryRef.current;
+        if (logDiceEntries.some((e) => e.player === 'X')) {
+            turnsForAnalysis = logDiceEntries.map((e, idx) => ({
+                turnNumber: e.turnIndex || idx + 1,
+                player: e.player,
+                dice: [e.dice[0], e.dice[1]],
+                boardBefore: [...e.boardBefore],
+                boardAfter: [...e.boardAfter],
+                moves: e.movePlayed.map((m) => ({ from: m.from, to: m.to })),
+                cubeValue: gameCubeValue,
+                cubeOwner: gameCubeOwner,
+                crawford: gameCrawford,
+            }));
+            turnsHistoryRef.current = turnsForAnalysis;
+            setTurnsHistory([...turnsForAnalysis]);
+        }
+
         try {
-            const analysis = analyzeCompleteGame(turnsHistoryRef.current, {
+            const analysis = analyzeCompleteGame(turnsForAnalysis, {
                 targetPlayer: 'X',
                 gameId: gameIdRef.current || `game_${Date.now()}`,
                 opponentType: isMultiplayerActive ? 'human' : 'ai',
+                opponentDifficulty: isMultiplayerActive ? null : gameDifficulty,
                 winner: result.winner,
                 winType: result.winType,
                 pointsWon: result.pointsWon,
                 scoreX: gameScoreX,
                 scoreO: gameScoreO,
                 matchLength: gameMatchLength,
+                cubeValue: gameCubeValue,
+                cubeOwner: gameCubeOwner,
+                crawford: gameCrawford,
             });
             saveGameAnalysis(analysis);
             setLatestGameAnalysis(analysis);
         } catch (e) {
             console.warn('[Persistence] Échec analyse fin de partie :', e);
         }
-    }, [clearEmergencyCheckpoint, gameBoard, gameCubeOwner, gameCubeValue, gameIdRef, gameMatchLength, gameScoreO, gameScoreX, isMultiplayerActive, setLatestGameAnalysis, currentTurnDiceRef, currentTurnMovesRef, turnBoardBeforeRef, turnsHistoryRef]);
+    }, [clearEmergencyCheckpoint, gameBoard, gameCrawford, gameCubeOwner, gameCubeValue, gameDifficulty, gameIdRef, gameMatchLength, gameMatchLog, gameScoreO, gameScoreX, isMultiplayerActive, setLatestGameAnalysis, setTurnsHistory, currentTurnDiceRef, currentTurnMovesRef, turnBoardBeforeRef, turnsHistoryRef]);
 
     const restoreMatchSnapshot = useCallback((snapshot: MatchSnapshotRestorePayload) => {
         if (snapshot.gameId) gameIdRef.current = snapshot.gameId;

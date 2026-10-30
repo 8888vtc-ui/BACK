@@ -1,5 +1,5 @@
-# Backgammon Tour — Cercle Monte-Carlo & Gammon Academy
-# Canonical domains: https://backgammontour.com | https://gammonacademy.com
+# Backgammon Tour
+# Canonical domain: https://backgammontour.com
 # Languages: fr, en, es, pt, de, ar
 # LLM Reference: https://backgammontour.com/llms.txt | https://backgammontour.com/llms-full.txt
 

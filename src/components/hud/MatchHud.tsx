@@ -20,6 +20,7 @@ import HudMuteButton from './HudMuteButton';
 import InGameMenuModal from './InGameMenuModal';
 import { useSoundManager } from '../../hooks/useSoundManager';
 import { getHudThemeClasses, useBoardTheme } from '../../hooks/useBoardTheme';
+import { getBotPersona } from '../../features/personas/botPersonas';
 
 export interface MatchHudProps {
     matchLength: number;
@@ -65,10 +66,10 @@ export interface MatchHudProps {
 }
 
 const DIFFICULTY_LABEL: Record<AIDifficulty, string> = {
-    beginner: 'IA Débutant',
-    intermediate: 'IA Intermédiaire',
-    expert: 'IA Expert',
-    grandmaster: 'IA Grand-Maître',
+    beginner: '🤬 Maxime',
+    intermediate: '🕶️ Sofia',
+    expert: '💼 Victor',
+    grandmaster: '🧐 Viktor',
 };
 
 function getHudVerdictConfig(fb: LastMoveFeedback): { icon: string; label: string; badgeClass: string } {
@@ -156,7 +157,7 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                         <span aria-hidden="true" className="text-amber-300">←</span>
                         <span className="hidden sm:inline">Lobby</span>
                     </button>
-                    <div id="match-hud" className="flex items-center min-w-0">
+                    <div id="match-hud" className="flex items-center gap-1.5 min-w-0">
                         <HudScoreboard
                             matchLength={matchLength} scoreX={scoreX} scoreO={scoreO} turn={turn}
                             crawford={crawford} dice={dice} usedDice={usedDice} prX={prX} prO={prO}
@@ -166,6 +167,19 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                             opponentLabel={DIFFICULTY_LABEL[difficulty]} playerColor={playerColor}
                             cubeValue={cubeValue} cubeOwner={cubeOwner}
                         />
+                        {(() => {
+                            const p = getBotPersona(difficulty);
+                            return (
+                                <span
+                                    data-testid="hud-bot-persona-badge"
+                                    title={`${p.name} — ${p.styleBadge} (${p.skillTaught})`}
+                                    className="hidden xl:inline-flex items-center gap-1 shrink-0 rounded-lg border border-amber-400/35 bg-amber-500/10 px-2 py-0.5 text-[11px] font-bold text-amber-200"
+                                >
+                                    <span aria-hidden="true">{p.avatar}</span>
+                                    <span>{p.shortName}</span>
+                                </span>
+                            );
+                        })()}
                     </div>
                 </div>
 

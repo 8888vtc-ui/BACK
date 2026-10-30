@@ -144,7 +144,7 @@ export default function GameReviewModal({
                                 <h2 id="game-review-title" className="font-sans text-lg sm:text-xl font-black tracking-tight text-white">
                                     Bilan &amp; Estimation du PR
                                 </h2>
-                                <span className="rounded-full border border-amber-400/40 bg-slate-900 px-2.5 py-0.5 text-xs font-bold text-amber-300">{analysis.prCategory}</span>
+                                <span className="rounded-full border border-amber-400/40 bg-slate-900 px-2.5 py-0.5 text-xs font-bold text-amber-300">{analysis.prCategory === 'Débutant' ? 'En Progression' : analysis.prCategory}</span>
                                 <span data-testid="daily-quota-badge" className="rounded-full border border-white/10 bg-slate-900 px-2.5 py-0.5 text-[11px] font-semibold text-slate-300">{quotaBadgeLabel}</span>
                             </div>
                             <p className="text-xs text-slate-400 mt-0.5">Navigation coup par coup, courbe d&apos;équité et analyse conceptuelle.</p>

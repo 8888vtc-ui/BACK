@@ -64,8 +64,8 @@ export interface AcademyLocaleContent {
 
 export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
     fr: {
-        heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
-        heroTitle: 'Gammon Academy — Encyclopédie Grand-Maître & Théorie 3-Ply',
+        heroBadge: 'BACKGAMMONTOUR.COM',
+        heroTitle: 'Backgammon Tour — Académie Grand-Maître & Théorie 3-Ply',
         heroSubtitle: 'Référentiel stratégique officiel : les 15 rouleaux d’ouverture certifiés Monte-Carlo 3-Ply (PR 0.23), la mathématique du Videau (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2) et le calcul du Performance Rating.',
         navOpenings: '1. Les 15 Ouvertures',
         navCube: '2. Maîtrise du Videau',
@@ -165,8 +165,8 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         ctaPuzzlesBtn: '🧩 Résoudre le Puzzle du Jour',
     },
     en: {
-        heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
-        heroTitle: 'Gammon Academy — Grandmaster Encyclopedia & 3-Ply Theory',
+        heroBadge: 'BACKGAMMONTOUR.COM',
+        heroTitle: 'Backgammon Tour — Academy & 3-Ply Theory',
         heroSubtitle: 'Official strategy reference: all 15 opening rolls certified by Monte-Carlo 3-Ply (PR 0.23), Doubling Cube mathematics (21.5% Live Take Point, Crawford, Jacoby, Kazaross-XG2 MET), and Performance Rating mastery.',
         navOpenings: '1. The 15 Opening Rolls',
         navCube: '2. Doubling Cube Mastery',
@@ -266,8 +266,8 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         ctaPuzzlesBtn: '🧩 Solve Daily Puzzle',
     },
     es: {
-        heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
-        heroTitle: 'Gammon Academy — Enciclopedia Gran Maestro y Teoría 3-Ply',
+        heroBadge: 'BACKGAMMONTOUR.COM',
+        heroTitle: 'Backgammon Tour — Academia Gran Maestro y Teoría 3-Ply',
         heroSubtitle: 'Referencia estratégica oficial: las 15 tiradas de apertura certificadas por Monte-Carlo 3-Ply (PR 0.23), matemática del Cubo de Doblaje (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2) y cálculo de PR.',
         navOpenings: '1. Las 15 Aperturas',
         navCube: '2. Dominio del Cubo',
@@ -367,8 +367,8 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         ctaPuzzlesBtn: '🧩 Resolver Problema Diario',
     },
     pt: {
-        heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
-        heroTitle: 'Gammon Academy — Enciclopédia Grande Mestre & Teoria 3-Ply',
+        heroBadge: 'BACKGAMMONTOUR.COM',
+        heroTitle: 'Backgammon Tour — Academia Grande Mestre & Teoria 3-Ply',
         heroSubtitle: 'Referência estratégica oficial: os 15 lançamentos de abertura certificados pelo Monte-Carlo 3-Ply (PR 0.23), matemática do Dado de Dobra (Take Point 21,5%, Crawford, Jacoby, MET Kazaross-XG2) e cálculo de PR.',
         navOpenings: '1. As 15 Aberturas',
         navCube: '2. Domínio do Cubo',
@@ -468,8 +468,8 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         ctaPuzzlesBtn: '🧩 Desafio Diário',
     },
     de: {
-        heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
-        heroTitle: 'Gammon Academy — Großmeister-Enzyklopädie & 3-Ply-Theorie',
+        heroBadge: 'BACKGAMMONTOUR.COM',
+        heroTitle: 'Backgammon Tour — Akademie & 3-Ply-Theorie',
         heroSubtitle: 'Offizielles Strategie-Kompendium: Alle 15 Eröffnungswürfe zertifiziert durch Monte-Carlo 3-Ply (PR 0.23), Dopplungswürfel-Mathematik (21,5 % Live Take Point, Crawford, Jacoby, Kazaross-XG2 MET) und PR-Berechnung.',
         navOpenings: '1. Die 15 Eröffnungen',
         navCube: '2. Dopplungswürfel',
@@ -569,8 +569,8 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
         ctaPuzzlesBtn: '🧩 Tägliches Puzzle lösen',
     },
     ar: {
-        heroBadge: 'BACKGAMMONTOUR.COM · GAMMONACADEMY.COM',
-        heroTitle: 'أكاديمية الغامون (Gammon Academy) — موسوعة الأستاذ الكبير ونظرية 3-Ply',
+        heroBadge: 'BACKGAMMONTOUR.COM',
+        heroTitle: 'أكاديمية Backgammon Tour — موسوعة الأستاذ الكبير ونظرية 3-Ply',
         heroSubtitle: 'المرجع الاستراتيجي الرسمي: جميع الرميات الافتتاحية الـ 15 المعتمدة من محرك Monte-Carlo 3-Ply (PR 0.23)، ورياضيات مكعب المضاعفة (نقطة القبول 21.5%، قاعدة كروفورد، جاكوبي، وجدول Kazaross-XG2 MET)، وحساب تقييم الأداء PR.',
         navOpenings: '1. الافتتاحيات الـ 15',
         navCube: '2. إتقان مكعب المضاعفة',

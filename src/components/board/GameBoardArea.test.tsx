@@ -216,8 +216,10 @@ describe('GameBoardArea Component', () => {
             />
         );
 
-        expect(html).toContain('lg:col-span-8');
-        expect(html).toContain('lg:col-span-4');
+        expect(html).toContain('lg:col-span-12');
+        expect(html).toContain('data-testid="board-focus-toggle-btn"');
+        expect(html).toContain('data-testid="board-fullscreen-toggle-btn"');
+        expect(html).toContain('data-testid="board-bot-speech-bubble"');
         expect(html).toContain('id="coach-panel"');
         expect(html).toContain('data-testid="coach-idle-welcome-card"');
         expect(html).toContain('Cercle Monte-Carlo');
@@ -316,11 +318,9 @@ describe('GameBoardArea Component', () => {
             />,
         );
 
-        // Les deux états conservent exactement la même structure de grille
-        expect(htmlTurn0).toContain('lg:col-span-8');
-        expect(htmlTurn0).toContain('lg:col-span-4');
-        expect(htmlTurn1).toContain('lg:col-span-8');
-        expect(htmlTurn1).toContain('lg:col-span-4');
+        // Les deux états conservent exactement la même structure de grille plein écran par défaut (lg:col-span-12)
+        expect(htmlTurn0).toContain('lg:col-span-12');
+        expect(htmlTurn1).toContain('lg:col-span-12');
 
         // La barre inférieure garde un conteneur rigide shrink-0 h-8 dans les deux cas
         expect(htmlTurn0).toContain('shrink-0 h-8');

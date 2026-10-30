@@ -103,6 +103,20 @@ export function executeHumanMove(
     if (win) {
         const nextScoreX = win.winner === 'X' ? state.boardState.scoreX + win.pointsWon : state.boardState.scoreX;
         const nextScoreO = win.winner === 'O' ? state.boardState.scoreO + win.pointsWon : state.boardState.scoreO;
+        const winTurnMoves: Move[] = [
+            ...state.moveHistory.flatMap((h) => (h.move ? [h.move] : [])),
+            move,
+        ];
+        const winLogEntry: MatchLogEntry = Object.freeze({
+            turnIndex: (state.matchLog?.length ?? 0) + 1,
+            player: state.boardState.turn,
+            dice: Object.freeze([state.boardState.dice![0], state.boardState.dice![1]]) as readonly [number, number],
+            boardBefore: Object.freeze([...(state.moveHistory[0]?.board ?? state.boardState.board)]),
+            movePlayed: Object.freeze(winTurnMoves),
+            boardAfter: Object.freeze([...newBoard]),
+            notation: formatMoveSequenceNotationAbsolute(winTurnMoves, state.boardState.turn),
+            timestamp: Date.now(),
+        });
 
         return {
             ...state,
@@ -117,6 +131,7 @@ export function executeHumanMove(
             selected: null,
             gameResult: win,
             moveHistory: [],
+            matchLog: Object.freeze([...(state.matchLog ?? []), winLogEntry]),
             provablyFair: revealSessionServerSeed(currentPf),
         };
     }

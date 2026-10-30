@@ -4,7 +4,7 @@
  * Zone centrale de jeu (Plateau interactif + Éclairage Zénithal + Panneau Coach, < 275 lignes, 0 any).
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ThemeName, CoachHighlight } from './boardThemes';
 import type { BoardState } from '../../engine/backgammonEngine';
 import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
@@ -14,6 +14,7 @@ import type { CoachAnalysisHistoryEntry } from '../../hooks/useCoach';
 import { useInteractiveReplay } from '../../hooks/useInteractiveReplay';
 import Board from './Board';
 import BoardHorologyBar from './BoardHorologyBar';
+import BoardLivePersonaBubble from './BoardLivePersonaBubble';
 import CoachSidebar, { type CoachSidebarProps } from '../coach/CoachSidebar';
 import MobilePortraitCoachBanner from '../coach/MobilePortraitCoachBanner';
 import ErrorBoundary from '../common/ErrorBoundary';
@@ -67,6 +68,25 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
 }) => {
     const [replayViewPhase, setReplayViewPhase] = useState<'before' | 'after'>('before');
     const [previewBoardMode, setPreviewBoardMode] = useState<'live' | 'before'>('live');
+    const [isFocusFullBoard, setIsFocusFullBoard] = useState<boolean>(true);
+    const [isBrowserFullscreen, setIsBrowserFullscreen] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+        const onFsChange = () => setIsBrowserFullscreen(Boolean(document.fullscreenElement));
+        document.addEventListener('fullscreenchange', onFsChange);
+        return () => document.removeEventListener('fullscreenchange', onFsChange);
+    }, []);
+
+    const handleToggleBrowserFullscreen = useCallback(() => {
+        if (typeof document === 'undefined') return;
+        if (!document.fullscreenElement) {
+            setIsFocusFullBoard(true);
+            document.documentElement.requestFullscreen?.().catch(() => {});
+        } else {
+            document.exitFullscreen?.().catch(() => {});
+        }
+    }, []);
 
     const effectiveTurns = useMemo<RawGameTurn[]>(() => {
         const log = game.matchLog ?? [];
@@ -163,58 +183,62 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
             />
 
             <div
-                className="col-span-1 lg:col-span-8 h-full min-h-0 min-w-0 flex flex-col items-center justify-center gap-0.5 sm:gap-1 overflow-hidden w-full relative z-10"
+                data-testid="board-main-column"
+                className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 flex flex-col items-center justify-center gap-0.5 sm:gap-1 overflow-hidden w-full relative z-10 transition-all duration-200`}
             >
                 <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full flex items-center justify-center">
+                    <BoardLivePersonaBubble
+                        difficulty={game.difficulty}
+                        isPlayerThinking={Boolean(game.state.turn === 'X' && game.state.dice)}
+                        turnsCount={effectiveTurns.length}
+                        verdict={displayCoach?.verdict ?? null}
+                        equityLoss={displayCoach?.equityLoss ?? null}
+                        boardBefore={displayCoach?.boardBefore}
+                        boardAfter={game.state.board}
+                        opponentDice={!displayState.dice ? game.lastOpponentDice : null}
+                        onReplayMove={handleSyncedReplayMove}
+                        onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
+                    />
+                    <div className="hidden lg:flex items-center gap-1.5 absolute top-1.5 right-2 z-30">
+                        <button
+                            type="button" data-testid="board-focus-toggle-btn"
+                            onClick={() => setIsFocusFullBoard((v) => !v)}
+                            title={isFocusFullBoard ? 'Réafficher le panneau Coach & Bot' : 'Masquer le panneau latéral pour agrandir le plateau à 100%'}
+                            className="rounded-lg border border-white/15 bg-slate-950/85 px-2.5 py-1 text-[11px] font-bold text-slate-200 shadow-md backdrop-blur-md transition hover:border-[#f3c65f] hover:text-white active:scale-95"
+                        >
+                            {isFocusFullBoard ? '🎓 Ouvrir Coach' : '⇔ Plateau 100%'}
+                        </button>
+                        <button
+                            type="button" data-testid="board-fullscreen-toggle-btn"
+                            onClick={handleToggleBrowserFullscreen}
+                            title="Basculer le mode Plein Écran intégral (F11)"
+                            className="rounded-lg border border-[#f3c65f]/50 bg-slate-950/85 px-2.5 py-1 text-[11px] font-bold text-[#f3c65f] shadow-md backdrop-blur-md transition hover:border-[#f3c65f] hover:bg-[#f3c65f]/15 active:scale-95"
+                        >
+                            {isBrowserFullscreen ? '🗗 Quitter Plein Écran' : '⛶ Plein Écran'}
+                        </button>
+                    </div>
                     <ErrorBoundary name="Plateau de jeu">
                         <Board
                             state={displayState}
-                            leftDieTargets={replay.isLive ? game.leftDieTargets : new Map()}
-                            rightDieTargets={replay.isLive ? game.rightDieTargets : new Map()}
-                            selectedPoint={replay.isLive ? (game.selected?.point ?? null) : null}
-                            selectedDie={game.selected ? game.selected.die : activeDie}
-                            usedDice={replay.isLive ? game.usedDice : [false, false]}
-                            opponentDice={!displayState.dice ? game.lastOpponentDice : null}
-                            onCheckerClick={replay.isLive ? (pt) => {
-                                if (previewBoardMode !== 'live') setPreviewBoardMode('live');
-                                if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null);
-                                onCheckerClick(pt);
-                            } : NOOP}
-                            onCheckerRightClick={replay.isLive ? onCheckerRightClick : NOOP}
-                            onDestinationClick={replay.isLive ? onDestinationClick : NOOP}
-                            onPlayMove={replay.isLive ? onPlayMove : NOOP}
-                            onSelectDie={replay.isLive ? onSelectDie : NOOP}
-                            onDiceClick={replay.isLive ? onDiceClick : NOOP}
-                            onDeselect={replay.isLive ? onDeselect : NOOP}
-                            onUndo={replay.isLive ? game.undoMove : NOOP}
+                            leftDieTargets={replay.isLive ? game.leftDieTargets : new Map()} rightDieTargets={replay.isLive ? game.rightDieTargets : new Map()}
+                            selectedPoint={replay.isLive ? (game.selected?.point ?? null) : null} selectedDie={game.selected ? game.selected.die : activeDie}
+                            usedDice={replay.isLive ? game.usedDice : [false, false]} opponentDice={!displayState.dice ? game.lastOpponentDice : null}
+                            onCheckerClick={replay.isLive ? (pt) => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); onCheckerClick(pt); } : NOOP}
+                            onCheckerRightClick={replay.isLive ? onCheckerRightClick : NOOP} onDestinationClick={replay.isLive ? onDestinationClick : NOOP}
+                            onPlayMove={replay.isLive ? onPlayMove : NOOP} onSelectDie={replay.isLive ? onSelectDie : NOOP}
+                            onDiceClick={replay.isLive ? onDiceClick : NOOP} onDeselect={replay.isLive ? onDeselect : NOOP} onUndo={replay.isLive ? game.undoMove : NOOP}
                             coachHighlight={displayCoachHighlight}
                             opponentHighlight={!replay.isLive && replay.selectedTurn?.player === 'O' && replayViewPhase === 'before' ? [...replay.selectedTurn.moves] : game.opponentHighlight}
-                            canDouble={replay.isLive && game.canDouble}
-                            doublingOfferedBy={game.doublingOfferedBy}
-                            onOfferDouble={replay.isLive ? game.offerDouble : NOOP}
-                            onTakeDouble={replay.isLive ? game.takeDouble : NOOP}
-                            onPassDouble={replay.isLive ? game.passDouble : NOOP}
-                            theme={theme}
-                            isLoading={isBoardLoading}
-                            gamePhase={replay.isLive ? game.gamePhase : 'REPLAY_VIEW'}
-                            onRoll={replay.isLive ? () => {
-                                if (previewBoardMode !== 'live') setPreviewBoardMode('live');
-                                if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null);
-                                game.rollDice();
-                            } : replay.returnToLive}
+                            canDouble={replay.isLive && game.canDouble} doublingOfferedBy={game.doublingOfferedBy}
+                            onOfferDouble={replay.isLive ? game.offerDouble : NOOP} onTakeDouble={replay.isLive ? game.takeDouble : NOOP} onPassDouble={replay.isLive ? game.passDouble : NOOP}
+                            theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? game.gamePhase : 'REPLAY_VIEW'}
+                            onRoll={replay.isLive ? () => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); game.rollDice(); } : replay.returnToLive}
                             onConfirm={replay.isLive ? () => game.commitHumanMove() : replay.returnToLive}
-                            canUndo={replay.isLive && game.canUndo}
-                            canConfirm={replay.isLive && game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
-                            autoConfirmEnabled={game.autoConfirmTurn}
-                            onToggleAutoConfirm={game.toggleAutoConfirmTurn}
-                            autoConfirmMode={game.autoConfirmMode}
-                            onSelectAutoConfirmMode={game.setAutoConfirmMode}
-                            onCycleAutoConfirmMode={game.cycleAutoConfirmMode}
-                            gameSpeed={game.gameSpeed}
-                            onCycleGameSpeed={game.setGameSpeed ? () => game.setGameSpeed(NEXT_SPEED[game.gameSpeed ?? 'tournament']) : undefined}
-                            isMatchStarted={isMatchStarted}
-                            swapColors={playerColor === 'O'}
-                            showPipCount={false}
+                            canUndo={replay.isLive && game.canUndo} canConfirm={replay.isLive && game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
+                            autoConfirmEnabled={game.autoConfirmTurn} onToggleAutoConfirm={game.toggleAutoConfirmTurn}
+                            autoConfirmMode={game.autoConfirmMode} onSelectAutoConfirmMode={game.setAutoConfirmMode} onCycleAutoConfirmMode={game.cycleAutoConfirmMode}
+                            gameSpeed={game.gameSpeed} onCycleGameSpeed={game.setGameSpeed ? () => game.setGameSpeed(NEXT_SPEED[game.gameSpeed ?? 'tournament']) : undefined}
+                            isMatchStarted={isMatchStarted} swapColors={playerColor === 'O'} showPipCount={false}
                         />
                     </ErrorBoundary>
                 </div>
@@ -253,34 +277,24 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                 )}
             </div>
 
-            <div className="hidden lg:flex lg:col-span-4 h-full min-h-0 min-w-0 overflow-hidden relative z-10">
+            <div
+                data-testid="board-coach-column"
+                className={`${isFocusFullBoard ? 'hidden' : 'hidden lg:flex lg:col-span-4'} h-full min-h-0 min-w-0 overflow-hidden relative z-10`}
+            >
                 <CoachSidebar
-                    coach={displayCoach}
-                    isAnalyzing={isAnalyzing}
-                    onDismiss={onDismissCoach}
-                    onReplayMove={handleSyncedReplayMove}
-                    onOpenKnowledgeConcept={onOpenKnowledgeConcept}
-                    onBlunderClick={onBlunderClick}
+                    coach={displayCoach} isAnalyzing={isAnalyzing}
+                    onDismiss={() => { onDismissCoach(); setIsFocusFullBoard(true); }}
+                    onReplayMove={handleSyncedReplayMove} onOpenKnowledgeConcept={onOpenKnowledgeConcept} onBlunderClick={onBlunderClick}
                     onCandidateHover={(notation) => {
                         if (notation) setPreviewBoardMode('before');
                         else if (selectedCoachHistoryIndex === null) setPreviewBoardMode('live');
                         onCandidateHover?.(notation);
                     }}
-                    turnsHistory={turnsHistory}
-                    onTriggerCoach={onTriggerCoach}
-                    theme={theme}
-                    matchStats={matchStats}
-                    matchStatsO={matchStatsO}
-                    locale={locale}
-                    coachHistory={coachHistory}
-                    selectedCoachHistoryIndex={selectedCoachHistoryIndex}
-                    onSelectCoachHistoryIndex={onSelectCoachHistoryIndex}
-                    matchContext={matchContext}
-                    positionKey={displayState.board.join(',')}
-                    gameId={gameId}
-                    dice={displayState.dice}
-                    board={displayState.board}
-                    difficulty={game.difficulty}
+                    turnsHistory={turnsHistory} onTriggerCoach={onTriggerCoach} theme={theme}
+                    matchStats={matchStats} matchStatsO={matchStatsO} locale={locale}
+                    coachHistory={coachHistory} selectedCoachHistoryIndex={selectedCoachHistoryIndex} onSelectCoachHistoryIndex={onSelectCoachHistoryIndex}
+                    matchContext={matchContext} positionKey={displayState.board.join(',')} gameId={gameId}
+                    dice={displayState.dice} board={displayState.board} difficulty={game.difficulty}
                 />
             </div>
         </div>

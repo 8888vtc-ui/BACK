@@ -21,6 +21,7 @@ import {
 } from '../../engine/backgammonEngine';
 import type { MatchLogEntry } from '../../actions/types';
 import { analyzeBoardMoves, evaluateBoard } from '../../lib/engine/evaluator';
+import { evaluatePositionExpectiminimax2Ply } from '../../lib/engine/expectiminimax';
 import {
     evaluateWithBgsage,
     boardsMatchOnPoints,
@@ -467,22 +468,34 @@ export function analyzeHumanMoveFromLog(
         analysis.moves.find((m) => notationsAreEquivalent(m.notation, playedNotation) || notationsAreEquivalent(m.notation, canonicalNotation));
 
     const bestEquity = analysis.bestMove.equity;
+    const isBestMovePlayed =
+        (analysis.bestMove.board && boardsMatchOnPointsAndBar(analysis.bestMove.board, effectiveBoardAfter)) ||
+        notationsAreEquivalent(analysis.bestMove.notation, playedNotation, logEntry.player) ||
+        notationsAreEquivalent(analysis.bestMove.notation, canonicalNotation, logEntry.player);
+
     let playedEquity: number;
-    if (matchedAnalysis) {
+    if (isBestMovePlayed) {
+        playedEquity = bestEquity;
+    } else if (matchedAnalysis && analysis.moves.indexOf(matchedAnalysis) < 6) {
         playedEquity = matchedAnalysis.equity;
     } else {
-        // Évaluation directe de la position finale jouée (sans pénalité arbitraire -0.15)
+        // Évaluation directe de la position finale jouée sur la même échelle (2-ply Expectiminimax ou 0-ply)
+        // que `bestEquity`, sans pénalité artificielle de queue (`minEvaluated2Ply`).
         const opponent: Player = logEntry.player === 'X' ? 'O' : 'X';
-        const afterEval = evaluateBoard(
-            {
-                ...evalState,
-                board: effectiveBoardAfter,
-                turn: opponent,
-                dice: null,
-            },
-            Math.max(0, (params.ply ?? 2) - 1),
-        );
-        playedEquity = -afterEval.cubelessEquity;
+        const resultingState: BoardState = {
+            ...evalState,
+            board: effectiveBoardAfter,
+            turn: opponent,
+            dice: null,
+        };
+        if ((params.ply ?? 2) >= 2) {
+            playedEquity = evaluatePositionExpectiminimax2Ply(
+                resultingState,
+                (st) => evaluateBoard(st, 0),
+            ).equity;
+        } else {
+            playedEquity = -evaluateBoard(resultingState, 0).cubefulEquity;
+        }
     }
     // Règle d'or n°3 : perte d'équité bornée à zéro (jamais négative).
     const equityLoss = Math.max(0, bestEquity - playedEquity);
