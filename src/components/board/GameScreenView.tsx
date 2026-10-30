@@ -120,10 +120,10 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     return (
         <main
             data-testid="app-game-view"
-            className={`mobile-game-viewport-lock landscape-full-bleed h-dvh max-h-dvh w-full grid grid-rows-[minmax(0,auto)_minmax(0,1fr)_minmax(0,auto)] overflow-hidden p-0 sm:p-2 select-none transition-colors duration-500 ${ambianceClass}`}
+            className={`mobile-game-viewport-lock landscape-full-bleed h-dvh max-h-dvh w-full max-w-[100vw] grid grid-cols-[minmax(0,1fr)] grid-rows-[minmax(0,auto)_minmax(0,1fr)_minmax(0,auto)] overflow-hidden p-0 sm:p-2 select-none transition-colors duration-500 ${ambianceClass}`}
         >
             {/* 1. HUD Compact Mobile (< 44px, masqué sur Desktop/Paysage où les colonnes latérales prennent le relais) */}
-            <div className="md:hidden shrink-0">
+            <div className="md:hidden shrink-0 w-full max-w-full min-w-0 overflow-hidden">
                 <MatchHeader
                     t={t}
                     theme={theme}

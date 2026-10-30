@@ -162,17 +162,17 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
         <>
             <header
                 role="region" aria-label="Barre de match"
-                className="relative z-40 w-full max-w-[1260px] mx-auto h-9 max-md:max-h-[42px] md:h-11 max-sm:rounded-none max-sm:border-x-0 rounded-xl border border-white/10 bg-slate-950/95 px-1.5 sm:px-3 shadow-lg backdrop-blur-xl transition-all duration-200 flex items-center justify-between gap-1 sm:gap-2 min-w-0 overflow-visible touch-manipulation"
+                className="relative z-40 w-full max-w-[1260px] mx-auto h-9 max-md:max-h-[40px] md:h-11 max-sm:rounded-none max-sm:border-x-0 rounded-xl border border-white/10 bg-slate-950/95 px-1.5 sm:px-3 shadow-lg backdrop-blur-xl transition-all duration-200 flex items-center justify-between gap-1 sm:gap-2 min-w-0 max-w-full overflow-hidden sm:overflow-visible touch-manipulation"
             >
-                <div className="flex items-center gap-1 sm:gap-2 min-w-0 shrink-0">
+                <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1 overflow-hidden">
                     <button
                         type="button" onClick={handleLobbyClick} data-testid="hud-back-to-lobby-btn" title="Menu de Session / Retour au Salon"
-                        className="flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-2 sm:px-2.5 py-1 text-[11px] font-bold text-slate-200 transition hover:border-white/25 hover:bg-slate-800 hover:text-white active:scale-95 shrink-0 touch-manipulation"
+                        className="flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-1.5 sm:px-2.5 py-1 text-[11px] font-bold text-slate-200 transition hover:border-white/25 hover:bg-slate-800 hover:text-white active:scale-95 shrink-0 touch-manipulation"
                     >
                         <span aria-hidden="true" className="text-amber-300">←</span>
                         <span className="hidden sm:inline">Lobby</span>
                     </button>
-                    <div id="match-hud" className="flex items-center gap-1.5 min-w-0">
+                    <div id="match-hud" className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 overflow-hidden">
                         <HudScoreboard
                             matchLength={matchLength} scoreX={scoreX} scoreO={scoreO} turn={turn}
                             crawford={crawford} dice={dice} usedDice={usedDice} prX={prX} prO={prO}

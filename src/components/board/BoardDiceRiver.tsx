@@ -74,12 +74,12 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
     };
 
     const dieSizeClass = isDouble
-        ? 'w-7 h-7 sm:w-10 sm:h-10 md:w-11 md:h-11'
-        : 'w-8 h-8 sm:w-11 sm:h-11 md:w-12 md:h-12';
+        ? 'w-6 h-6 sm:w-9 sm:h-9 md:w-10 md:h-10 [@media(max-height:540px)]:!w-7 [@media(max-height:540px)]:!h-7'
+        : 'w-7 h-7 sm:w-10 sm:h-10 md:w-11 md:h-11 [@media(max-height:540px)]:!w-8 [@media(max-height:540px)]:!h-8';
 
     return (
         <>
-            <div className="pointer-events-none absolute left-[25%] sm:left-[24%] top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center gap-1 sm:gap-4 max-w-[46%] sm:max-w-[44%]">
+            <div className="pointer-events-none absolute left-[25%] sm:left-[24%] top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center gap-1 sm:gap-3 [@media(max-height:540px)]:!gap-1.5 max-w-[46%] sm:max-w-[44%]">
                 {dice && (
                     <div
                         data-testid="board-dice-pair"
@@ -105,7 +105,7 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                         }
                         onClick={handleContainerClick}
                         onKeyDown={handleContainerKeyDown}
-                        className={`pointer-events-auto flex items-center ${isDouble ? 'gap-0.5 sm:gap-2.5 px-0.5 sm:px-2.5' : 'gap-1.5 sm:gap-3 px-1 sm:px-2.5'} rounded-xl py-1 min-h-[38px] sm:min-h-[44px] cursor-pointer transition hover:bg-white/5 active:scale-95 touch-manipulation`}
+                        className={`pointer-events-auto flex items-center ${isDouble ? 'gap-0.5 sm:gap-2 [@media(max-height:540px)]:!gap-1 px-0.5 sm:px-2' : 'gap-1 sm:gap-2.5 [@media(max-height:540px)]:!gap-1.5 px-1 sm:px-2.5'} rounded-xl py-1 min-h-[34px] sm:min-h-[40px] cursor-pointer transition hover:bg-white/5 active:scale-95 touch-manipulation`}
                     >
                         {visibleDice.map((value, i) => {
                             const dieSlot: 0 | 1 = i === 0 ? 0 : 1;

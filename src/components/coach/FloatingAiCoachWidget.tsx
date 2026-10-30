@@ -195,7 +195,9 @@ export const FloatingAiCoachWidget: React.FC<FloatingAiCoachWidgetProps> = ({
         <div
             data-testid="floating-ai-coach-container"
             className={`fixed right-4 z-50 flex flex-col items-end ${
-                isInGame ? 'bottom-20 md:bottom-4' : 'bottom-4'
+                isInGame
+                    ? `${isOpen ? ' flex' : ' hidden xl:flex [@media(max-height:600px)]:!hidden'} bottom-20 md:bottom-4`
+                    : 'bottom-4'
             }`}
         >
             {isOpen && (

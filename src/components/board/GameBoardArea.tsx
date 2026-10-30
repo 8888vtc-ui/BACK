@@ -16,7 +16,12 @@ import { useInteractiveReplay } from '../../hooks/useInteractiveReplay';
 import Board from './Board';
 import BoardHorologyBar from './BoardHorologyBar';
 import BoardLivePersonaBubble from './BoardLivePersonaBubble';
-import { BoardLeftPlayerRail, BoardRightActionRail } from './BoardSideRails';
+import {
+    BoardLeftPlayerRail,
+    BoardRightActionRail,
+    BoardPortraitTopHud,
+    BoardPortraitBottomHud,
+} from './BoardSideRails';
 import CoachSidebar, { type CoachSidebarProps } from '../coach/CoachSidebar';
 import MobilePortraitCoachBanner from '../coach/MobilePortraitCoachBanner';
 import MoveErrorPopToast from '../coach/MoveErrorPopToast';
@@ -181,7 +186,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     };
 
     return (
-        <div className="w-full h-full min-h-0 flex-1 overflow-hidden relative grid grid-cols-1 lg:grid-cols-12 gap-1 sm:gap-3 max-w-[1920px] mx-auto px-0.5 sm:px-2 pb-0.5 sm:pb-1">
+        <div className="w-full max-w-full h-full min-h-0 min-w-0 flex-1 overflow-hidden relative grid grid-cols-[minmax(0,1fr)] lg:grid-cols-12 gap-1 sm:gap-3 max-w-[1920px] mx-auto px-0 sm:px-2 pb-0.5 sm:pb-1">
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 -z-0"
@@ -193,7 +198,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
 
             <div
                 data-testid="board-main-column"
-                className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 flex flex-col items-center justify-center gap-0 overflow-hidden w-full relative z-10 transition-all duration-200`}
+                className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 max-w-full flex flex-col items-center justify-between sm:justify-center gap-0 overflow-hidden w-full relative z-10 transition-all duration-200`}
             >
                 <MoveErrorPopToast
                     feedback={lastMoveFeedback}
@@ -203,7 +208,20 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
                 />
 
-                <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full flex items-stretch justify-center gap-2 sm:gap-4 px-1 sm:px-3 py-0.5 sm:py-1.5">
+                <BoardPortraitTopHud
+                    difficulty={game.difficulty}
+                    locale={locale}
+                    isXTurn={isXTurn}
+                    scoreX={game.state.scoreX}
+                    scoreO={game.state.scoreO}
+                    cubeValue={game.state.cubeValue}
+                    matchLength={game.state.matchLength}
+                    turn={game.state.turn}
+                    prX={prX}
+                    prO={prO}
+                />
+
+                <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 px-0 sm:px-3 py-0 sm:py-1.5 overflow-hidden">
                     <BoardLivePersonaBubble
                         difficulty={game.difficulty}
                         isPlayerThinking={Boolean(game.state.turn === 'X' && game.state.dice)}
@@ -267,6 +285,11 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         onBackToLobby={onBackToLobby}
                     />
                 </div>
+
+                <BoardPortraitBottomHud
+                    scoreX={game.state.scoreX}
+                    turn={game.state.turn}
+                />
 
                 {isMatchStarted && (
                     <>

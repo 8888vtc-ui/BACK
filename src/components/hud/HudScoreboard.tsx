@@ -74,7 +74,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
         <div
             data-testid={testId}
             title={`${name} (${colorLabel}) — Score : ${score}${isTurn ? ' — Au tour' : ''}`}
-            className={`flex items-center gap-1 sm:gap-1.5 shrink-0 rounded-xl border px-1.5 sm:px-2.5 py-0.5 sm:py-1 transition-all ${
+            className={`flex items-center gap-1 sm:gap-1.5 min-w-0 shrink rounded-xl border px-1 sm:px-2.5 py-0.5 sm:py-1 transition-all ${
                 isTurn
                     ? 'border-[#f3c65f] bg-slate-900 ring-1 ring-[#f3c65f]/70 shadow-[0_0_14px_rgba(243,198,95,0.22)]'
                     : 'border-white/10 bg-slate-950/85 ring-1 ring-transparent opacity-85 shadow-inner'
@@ -148,7 +148,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
                 <span
                     data-testid={`${testId}-pr`}
                     title={`Performance Rating (PR) : ${pr !== null && pr !== undefined ? pr.toFixed(2) : '--'} — Niveau : ${prCategory} (plus bas = meilleur)`}
-                    className={`inline-flex ml-1 shrink-0 whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[11px] font-black tabular-nums transition-shadow duration-300 ${prBadgeClass(pr)}`}
+                    className={`hidden sm:inline-flex ml-1 shrink-0 whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[11px] font-black tabular-nums transition-shadow duration-300 ${prBadgeClass(pr)}`}
                 >
                     PR {pr !== null && pr !== undefined ? pr.toFixed(2) : '0.00'}
                 </span>
@@ -204,7 +204,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     }, []);
 
     return (
-        <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 shrink overflow-hidden">
             <div className="hidden lg:flex flex-col shrink-0 rounded-lg border border-white/10 bg-slate-900/90 px-2 py-0.5 text-[11px] leading-tight text-slate-300 shadow-inner">
                 <div className="flex items-center gap-1 whitespace-nowrap">
                     <span

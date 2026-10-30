@@ -126,7 +126,7 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
                     className="absolute inset-0 z-30 rounded-xl ring-2 ring-amber-400/90 pointer-events-none"
                 />
             )}
-            <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-normal sm:tracking-widest text-amber-200/75 drop-shadow">
+            <span className="hidden sm:inline [@media(max-height:540px)]:!hidden text-[10px] font-bold uppercase tracking-normal sm:tracking-widest text-amber-200/75 drop-shadow">
                 Sortie
             </span>
             {isTarget && (
@@ -176,7 +176,7 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
             {/* Compteur exact count/15 */}
             <span
                 data-testid={`tray-counter-${trayKey}`}
-                className="text-xs sm:text-sm font-black tabular-nums text-amber-200/95 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
+                className="text-[10px] sm:text-xs [@media(max-height:540px)]:!text-[10px] font-black tabular-nums whitespace-nowrap text-amber-200/95 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
             >
                 {formatBearOffCounter(clampedCount)}
             </span>

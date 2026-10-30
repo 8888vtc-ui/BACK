@@ -95,7 +95,7 @@ const BoardPlayfieldGridComponent: React.FC<BoardPlayfieldGridProps> = ({
 
     return (
         <div
-            className="flex-1 min-h-0 grid grid-cols-[1fr_auto_1fr_auto] grid-rows-2"
+            className="flex-1 min-h-0 min-w-0 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] grid-rows-2"
             onClick={onBackgroundClick}
         >
             {/* Quadrant Haut Gauche */}

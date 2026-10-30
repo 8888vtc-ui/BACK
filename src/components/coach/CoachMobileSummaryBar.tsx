@@ -51,7 +51,7 @@ const CoachMobileSummaryBarComponent: React.FC<CoachMobileSummaryBarProps> = ({
     return (
         <div
             data-testid="coach-mobile-summary-bar"
-            className="hidden md:flex lg:hidden fixed top-14 right-3 z-30 max-w-md items-center gap-2 rounded-2xl border border-[#d4af37]/50 bg-[#120b06]/95 px-3 py-1.5 text-[#fdf8eb] backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.85)]"
+            className="hidden md:flex lg:hidden [@media(max-height:600px)]:!hidden fixed top-14 right-3 z-30 max-w-md items-center gap-2 rounded-2xl border border-[#d4af37]/50 bg-[#120b06]/95 px-3 py-1.5 text-[#fdf8eb] backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.85)]"
         >
             {/* PR actuel */}
             <div className="flex flex-col items-center leading-none shrink-0">

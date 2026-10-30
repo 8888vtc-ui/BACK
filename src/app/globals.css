@@ -81,9 +81,12 @@
 
   /* Verrouillage natif iOS/Android contre le pull-to-refresh, le pinch-zoom parasite et la sélection */
   .mobile-game-viewport-lock {
+    width: 100%;
+    max-width: 100vw;
     height: 100dvh;
     max-height: 100dvh;
     overflow: hidden;
+    overflow-x: hidden;
     touch-action: manipulation;
     overscroll-behavior: none;
     -webkit-user-select: none;
@@ -92,10 +95,11 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Conteneur Portrait : Ratio 1.15:1 (375x326 sur SE, 390x339 sur iPhone 14/15), grille Zero-Margin 12,65 col. */
+  /* Conteneur Portrait : Ratio 1.15:1 (375x326 sur SE, 390x339 sur iPhone 14/15), 100% largeur sans débordement */
   @media (max-width: 767px) and (orientation: portrait) {
     .board-adaptive-shell {
-      width: 100vw !important;
+      width: 100% !important;
+      max-width: 100% !important;
       height: auto !important;
       aspect-ratio: 1.15 / 1 !important;
       max-height: min(100%, calc(100vw / 1.15)) !important;
