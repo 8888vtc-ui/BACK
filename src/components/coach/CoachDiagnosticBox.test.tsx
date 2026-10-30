@@ -160,7 +160,7 @@ describe('CoachDiagnosticBox', () => {
         expect(interactiveBoard).toBeDefined();
 
         // Clic sur la case 5 du MiniBoardDiagram
-        const point5 = screen.getByTestId('mini-point-5');
+        const point5 = screen.getByTestId('mini-board-point-5');
         fireEvent.click(point5);
 
         const pointFeedback = screen.getByTestId('coach-board-point-feedback');
