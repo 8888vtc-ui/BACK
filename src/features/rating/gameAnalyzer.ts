@@ -64,7 +64,7 @@ function evaluateTurnCubeDecision(
     turn: RawGameTurn,
     syntheticState: BoardState,
 ): { isCloseCube: boolean; cubeLoss: number } {
-    if (!turn.cubeDecision) {
+    if (!turn.cubeDecision || syntheticState.crawford) {
         return { isCloseCube: false, cubeLoss: 0 };
     }
 
@@ -81,10 +81,6 @@ function evaluateTurnCubeDecision(
         const loss = Math.abs(turn.cubeDecision.cubeEquityLoss);
         const isClose = turn.cubeDecision.isCloseDecision ?? true;
         return { isCloseCube: isClose, cubeLoss: Number(loss.toFixed(4)) };
-    }
-
-    if (syntheticState.crawford) {
-        return { isCloseCube: false, cubeLoss: 0 };
     }
 
     const cubeEval = analyzeBoardCube(syntheticState, { ply: 2 });

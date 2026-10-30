@@ -289,61 +289,72 @@ describe('Audit en boucle (20 parties simulées) — Bilan PR & Comptes Rendus C
         expect(prResults).toHaveLength(20);
     });
 
-    it('4. Stress-Test Beta 5 000 parties (Grand-Maître, Club, Amateur, Débutant, Joueur O, Videau & 170 variantes Coach)', () => {
-        const ALL_21_ROLLS: Array<[number, number]> = [
-            [1, 1], [2, 1], [2, 2], [3, 1], [3, 2], [3, 3],
-            [4, 1], [4, 2], [4, 3], [4, 4], [5, 1], [5, 2],
-            [5, 3], [5, 4], [5, 5], [6, 1], [6, 2], [6, 3],
-            [6, 4], [6, 5], [6, 6],
-        ];
+    it(
+        '4. Stress-Test Beta 20 000 parties (100 000 décisions : Grand-Maître, Club, Amateur, Débutant, Joueur O, Crawford, Videau & 170 variantes Coach)',
+        () => {
+            const ALL_21_ROLLS: Array<[number, number]> = [
+                [1, 1], [2, 1], [2, 2], [3, 1], [3, 2], [3, 3],
+                [4, 1], [4, 2], [4, 3], [4, 4], [5, 1], [5, 2],
+                [5, 3], [5, 4], [5, 5], [6, 1], [6, 2], [6, 3],
+                [6, 4], [6, 5], [6, 6],
+            ];
 
-        // Pré-construit 42 situations canoniques variées (ouverture, contact, barre, course, doubles)
-        // et peuple le cache bgsage 3-ply + un pool non-caché pour auditer les 2 moteurs en parallèle.
-        interface PreparedTurnPool {
-            boardBefore: number[];
-            dice: [number, number];
-            player: 'X' | 'O';
-            candidates: Array<{ moves: BoardState['dice'] extends never ? never : import('../../engine/backgammonEngine').Move[]; board: number[]; notation: string; equity: number; equityLoss: number }>;
-        }
-
-        const pool: PreparedTurnPool[] = [];
-        let simBoard = [...createInitialState(7).board];
-
-        for (let idx = 0; idx < 42; idx++) {
-            const player: 'X' | 'O' = idx % 2 === 0 ? 'X' : 'O';
-            const dice = ALL_21_ROLLS[idx % ALL_21_ROLLS.length];
-            const state: BoardState = {
-                ...createInitialState(7),
-                board: [...simBoard],
-                turn: player,
-                dice,
-            };
-            const legal = generateLegalMoves(state, dice);
-            if (legal.length === 0) {
-                simBoard = [...createInitialState(7).board];
-                continue;
+            interface PreparedTurnPool {
+                boardBefore: number[];
+                dice: [number, number];
+                player: 'X' | 'O';
+                candidates: Array<{
+                    moves: BoardState['dice'] extends never
+                        ? never
+                        : import('../../engine/backgammonEngine').Move[];
+                    board: number[];
+                    notation: string;
+                    equity: number;
+                    equityLoss: number;
+                }>;
             }
-            const ranked = analyzeBoardMoves(state, dice, { ply: 0, maxMoves: 12 });
-            if (ranked.moves.length === 0) continue;
 
-            const bestEq = ranked.moves[0].equity;
-            const candidates = ranked.moves.map((m, rankIdx) => {
-                const mvList = m.moves ?? [];
-                const brdAfter = m.board ?? simBoard;
-                const notation = formatMoveSequenceNotation(mvList, player);
-                const rawDiff = Math.max(0, bestEq - m.equity);
-                const calibratedLoss = rankIdx === 0 ? 0 : Number(Math.min(0.18, rawDiff * 0.25 + rankIdx * 0.018).toFixed(4));
-                return {
-                    moves: mvList,
-                    board: brdAfter,
-                    notation,
-                    equity: Number((bestEq - calibratedLoss).toFixed(4)),
-                    equityLoss: calibratedLoss,
+            const pool: PreparedTurnPool[] = [];
+            let simBoard = [...createInitialState(7).board];
+
+            for (let idx = 0; idx < 42; idx++) {
+                const player: 'X' | 'O' = idx % 2 === 0 ? 'X' : 'O';
+                const dice = ALL_21_ROLLS[idx % ALL_21_ROLLS.length];
+                const state: BoardState = {
+                    ...createInitialState(7),
+                    board: [...simBoard],
+                    turn: player,
+                    dice,
                 };
-            });
+                const legal = generateLegalMoves(state, dice);
+                if (legal.length === 0) {
+                    simBoard = [...createInitialState(7).board];
+                    continue;
+                }
+                const ranked = analyzeBoardMoves(state, dice, { ply: 0, maxMoves: 12 });
+                if (ranked.moves.length === 0) continue;
 
-            // Peuple 85% des positions dans bgsageCache (cas nominal 3-ply) et laisse 15% en repli local 0-ply
-            if (idx % 7 !== 0) {
+                const bestEq = ranked.moves[0].equity;
+                const candidates = ranked.moves.map((m, rankIdx) => {
+                    const mvList = m.moves ?? [];
+                    const brdAfter = m.board ?? simBoard;
+                    const notation = formatMoveSequenceNotation(mvList, player);
+                    const rawDiff = Math.max(0, bestEq - m.equity);
+                    const calibratedLoss =
+                        rankIdx === 0
+                            ? 0
+                            : Number(Math.min(0.18, rawDiff * 0.25 + rankIdx * 0.018).toFixed(4));
+                    return {
+                        moves: mvList,
+                        board: brdAfter,
+                        notation,
+                        equity: Number((bestEq - calibratedLoss).toFixed(4)),
+                        equityLoss: calibratedLoss,
+                    };
+                });
+
+                // Peuple 100% du pool dans bgsageCache 3-ply (pour simuler 20 000 parties haute vitesse)
+                // tout en gardant un test dédié aux replis locaux hors-cache
                 const xgid = serializeCanonicalXGID(state);
                 setCachedBgsageEvaluation(bgsageCacheKey(xgid, 3), {
                     source: 'bgsage-cloud-run',
@@ -372,114 +383,107 @@ describe('Audit en boucle (20 parties simulées) — Bilan PR & Comptes Rendus C
                         },
                     })),
                 });
+
+                pool.push({
+                    boardBefore: [...simBoard],
+                    dice,
+                    player,
+                    candidates,
+                });
+
+                simBoard = [...candidates[0].board];
             }
 
-            pool.push({
-                boardBefore: [...simBoard],
-                dice,
-                player,
-                candidates,
-            });
+            const TOTAL_GAMES = 20000;
+            let totalDecisionsAudited = 0;
+            let nanOrInfinityCount = 0;
+            let cubeCheckerConfusionCount = 0;
+            let crawfordGamesAudited = 0;
+            let liveCoachChecks = 0;
+            const statsByArchetype = {
+                gm: [] as number[],
+                club: [] as number[],
+                amateur: [] as number[],
+                chaos: [] as number[],
+            };
 
-            simBoard = [...candidates[0].board];
-        }
+            for (let g = 0; g < TOTAL_GAMES; g++) {
+                const archetype =
+                    g < 6000 ? 'gm' : g < 12000 ? 'club' : g < 16000 ? 'amateur' : 'chaos';
+                const targetPlayer: 'X' | 'O' = g % 8 === 7 ? 'O' : 'X';
+                const playerPool = pool.filter((p) => p.player === targetPlayer);
+                const isCrawfordGame = g % 20 === 0;
+                if (isCrawfordGame) crawfordGamesAudited += 1;
 
-        const TOTAL_GAMES = 5000;
-        let totalDecisionsAudited = 0;
-        let nanOrInfinityCount = 0;
-        let cubeCheckerConfusionCount = 0;
-        const statsByArchetype = {
-            gm: [] as number[],
-            club: [] as number[],
-            amateur: [] as number[],
-            chaos: [] as number[],
-        };
+                const turns: RawGameTurn[] = [];
 
-        for (let g = 0; g < TOTAL_GAMES; g++) {
-            const archetype =
-                g < 1500 ? 'gm' : g < 3000 ? 'club' : g < 4000 ? 'amateur' : 'chaos';
-            const targetPlayer: 'X' | 'O' = g % 10 === 9 ? 'O' : 'X';
-            const playerPool = pool.filter((p) => p.player === targetPlayer);
-            const turns: RawGameTurn[] = [];
+                for (let t = 0; t < 5; t++) {
+                    const item = playerPool[(g * 5 + t) % playerPool.length];
+                    const maxIdx = item.candidates.length - 1;
+                    let pickIdx = 0;
+                    if (archetype === 'gm') {
+                        pickIdx = 0;
+                    } else if (archetype === 'club') {
+                        pickIdx = t % 3 === 2 ? Math.min(1, maxIdx) : 0;
+                    } else if (archetype === 'amateur') {
+                        pickIdx = t % 2 === 1 ? Math.min(2, maxIdx) : Math.min(1, maxIdx);
+                    } else {
+                        pickIdx = Math.min(3 + (t % 3), maxIdx);
+                    }
 
-            for (let t = 0; t < 5; t++) {
-                const item = playerPool[(g * 5 + t) % playerPool.length];
-                const maxIdx = item.candidates.length - 1;
-                let pickIdx = 0;
-                if (archetype === 'gm') {
-                    pickIdx = 0;
-                } else if (archetype === 'club') {
-                    pickIdx = t % 3 === 2 ? Math.min(1, maxIdx) : 0;
-                } else if (archetype === 'amateur') {
-                    pickIdx = t % 2 === 1 ? Math.min(2, maxIdx) : Math.min(1, maxIdx);
-                } else {
-                    pickIdx = Math.min(3 + (t % 3), maxIdx);
+                    const chosen = item.candidates[pickIdx] ?? item.candidates[0];
+                    const hasOpponentOwnedCube = g % 40 === 0 && t === 2;
+
+                    turns.push({
+                        turnNumber: t + 1,
+                        player: targetPlayer,
+                        dice: item.dice,
+                        boardBefore: item.boardBefore,
+                        boardAfter: chosen.board,
+                        moves: chosen.moves,
+                        cubeValue: isCrawfordGame ? 1 : g % 3 === 0 ? 2 : 1,
+                        cubeOwner: hasOpponentOwnedCube ? (targetPlayer === 'X' ? 'O' : 'X') : null,
+                        crawford: isCrawfordGame,
+                        cubeDecision:
+                            hasOpponentOwnedCube || isCrawfordGame
+                                ? { action: 'no_double', cubeEquityLoss: 0.45, isCloseDecision: true }
+                                : undefined,
+                    });
                 }
 
-                const chosen = item.candidates[pickIdx] ?? item.candidates[0];
-                const hasOpponentOwnedCube = g % 25 === 0 && t === 2;
-
-                turns.push({
-                    turnNumber: t + 1,
-                    player: targetPlayer,
-                    dice: item.dice,
-                    boardBefore: item.boardBefore,
-                    boardAfter: chosen.board,
-                    moves: chosen.moves,
-                    cubeValue: (g % 3 === 0 ? 2 : 1),
-                    cubeOwner: hasOpponentOwnedCube ? (targetPlayer === 'X' ? 'O' : 'X') : null,
-                    // Vérifie que si le videau appartient à l'adversaire, aucune fausse erreur de videau n'est comptée
-                    cubeDecision: hasOpponentOwnedCube
-                        ? { action: 'no_double', cubeEquityLoss: 0.45, isCloseDecision: true }
-                        : undefined,
-                });
-            }
-
-            const analysis = analyzeCompleteGame(turns, {
-                targetPlayer,
-                gameId: `beta_5000_${g}`,
-                matchLength: g % 5 === 0 ? 0 : 7,
-                scoreX: g % 4,
-                scoreO: g % 3,
-                ply: 0,
-            });
-
-            totalDecisionsAudited += analysis.evaluatedMoves.length;
-            statsByArchetype[archetype].push(analysis.performanceRating);
-
-            if (
-                !Number.isFinite(analysis.performanceRating) ||
-                !Number.isFinite(analysis.luckAdjustedPR) ||
-                !Number.isFinite(analysis.totalLuck) ||
-                analysis.performanceRating < 0
-            ) {
-                nanOrInfinityCount += 1;
-            }
-
-            // Si le videau appartenait à l'adversaire, closeCubeDecisionsCount doit rester 0 (Invariant AGENTS.md)
-            if (g % 25 === 0 && analysis.closeCubeDecisionsCount !== 0) {
-                cubeCheckerConfusionCount += 1;
-            }
-
-            // Échantillonne le constructeur complet du Coach en direct tous les 25 matchs (200 vérifications profondes)
-            if (g % 25 === 0 && analysis.evaluatedMoves.length > 0) {
-                const sampleTurn = turns[0];
-                const logRes = analyzeHumanMoveFromLog({
-                    logEntry: {
-                        turnIndex: 1,
-                        player: targetPlayer,
-                        dice: sampleTurn.dice,
-                        boardBefore: sampleTurn.boardBefore,
-                        movePlayed: sampleTurn.moves,
-                        boardAfter: sampleTurn.boardAfter,
-                        timestamp: g,
-                    },
-                    localPlayer: targetPlayer,
+                const analysis = analyzeCompleteGame(turns, {
+                    targetPlayer,
+                    gameId: `beta_20000_${g}`,
+                    matchLength: g % 5 === 0 ? 0 : 7,
+                    scoreX: isCrawfordGame ? 6 : g % 4,
+                    scoreO: isCrawfordGame ? 4 : g % 3,
+                    crawford: isCrawfordGame,
                     ply: 0,
                 });
-                if (logRes) {
-                    const { coachState } = buildCoachStateFromLogResult({
-                        lastEntry: {
+
+                totalDecisionsAudited += analysis.evaluatedMoves.length;
+                statsByArchetype[archetype].push(analysis.performanceRating);
+
+                if (
+                    !Number.isFinite(analysis.performanceRating) ||
+                    !Number.isFinite(analysis.luckAdjustedPR) ||
+                    !Number.isFinite(analysis.totalLuck) ||
+                    analysis.performanceRating < 0
+                ) {
+                    nanOrInfinityCount += 1;
+                }
+
+                // En manche de Crawford ou lorsque le videau appartient à l'adversaire, aucune décision de videau ne doit être comptée
+                if ((hasOpponentOwnedCubeInGame(g) || isCrawfordGame) && analysis.closeCubeDecisionsCount !== 0) {
+                    cubeCheckerConfusionCount += 1;
+                }
+
+                // Échantillonne le constructeur complet du Coach en direct tous les 40 matchs (500 vérifications profondes)
+                if (g % 40 === 0 && analysis.evaluatedMoves.length > 0) {
+                    liveCoachChecks += 1;
+                    const sampleTurn = turns[0];
+                    const logRes = analyzeHumanMoveFromLog({
+                        logEntry: {
                             turnIndex: 1,
                             player: targetPlayer,
                             dice: sampleTurn.dice,
@@ -488,23 +492,41 @@ describe('Audit en boucle (20 parties simulées) — Bilan PR & Comptes Rendus C
                             boardAfter: sampleTurn.boardAfter,
                             timestamp: g,
                         },
-                        result: { ...logRes, source: 'bgsage' },
-                        playedMoves: sampleTurn.moves,
-                        playedNotation: logRes.playedNotation,
-                        gameState: {
-                            ...createInitialState(7),
-                            board: sampleTurn.boardBefore,
-                            turn: targetPlayer,
-                            dice: sampleTurn.dice,
-                        },
+                        localPlayer: targetPlayer,
+                        ply: 0,
                     });
-                    if (!coachState.explanation || coachState.explanation.includes('undefined')) {
-                        cubeCheckerConfusionCount += 1;
+                    if (logRes) {
+                        const { coachState } = buildCoachStateFromLogResult({
+                            lastEntry: {
+                                turnIndex: 1,
+                                player: targetPlayer,
+                                dice: sampleTurn.dice,
+                                boardBefore: sampleTurn.boardBefore,
+                                movePlayed: sampleTurn.moves,
+                                boardAfter: sampleTurn.boardAfter,
+                                timestamp: g,
+                            },
+                            result: { ...logRes, source: 'bgsage' },
+                            playedMoves: sampleTurn.moves,
+                            playedNotation: logRes.playedNotation,
+                            gameState: {
+                                ...createInitialState(7),
+                                board: sampleTurn.boardBefore,
+                                turn: targetPlayer,
+                                dice: sampleTurn.dice,
+                            },
+                        });
+                        if (!coachState.explanation || coachState.explanation.includes('undefined')) {
+                            cubeCheckerConfusionCount += 1;
+                        }
+                        expect(coachState.features?.player).toBe(targetPlayer);
                     }
-                    expect(coachState.features?.player).toBe(targetPlayer);
                 }
             }
-        }
+
+            function hasOpponentOwnedCubeInGame(gameIndex: number): boolean {
+                return gameIndex % 40 === 0;
+            }
 
         // Audit exhaustif des 170 messages de la banque Coach (13 catégories Pions × 10 + 4 catégories Videau × 10)
         const ALL_CHECKER_CATS: VariedCheckerCategory[] = [
@@ -560,11 +582,13 @@ describe('Audit en boucle (20 parties simulées) — Bilan PR & Comptes Rendus C
         const chaosAvg = avg(statsByArchetype.chaos);
         const chaosMax = max(statsByArchetype.chaos);
 
-        expect(totalDecisionsAudited).toBe(25000);
+        expect(totalDecisionsAudited).toBe(100000);
+        expect(crawfordGamesAudited).toBe(1000);
+        expect(liveCoachChecks).toBe(500);
         expect(nanOrInfinityCount).toBe(0);
         expect(cubeCheckerConfusionCount).toBe(0);
 
-        // Hiérarchie stricte des PR : Grand-Maître < Club < Amateur < Chaos, et plafond < 50 même en Chaos
+        // Hiérarchie stricte des PR : Grand-Maître < Club < Amateur < Chaos, et plafond < 55 même en Chaos
         expect(gmAvg).toBeLessThan(1.5);
         expect(clubAvg).toBeGreaterThan(gmAvg);
         expect(clubAvg).toBeLessThan(12);
@@ -572,5 +596,7 @@ describe('Audit en boucle (20 parties simulées) — Bilan PR & Comptes Rendus C
         expect(amateurAvg).toBeLessThan(25);
         expect(chaosAvg).toBeGreaterThan(amateurAvg);
         expect(chaosMax).toBeLessThan(55);
-    });
+    },
+    120000,
+    );
 });
