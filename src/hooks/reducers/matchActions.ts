@@ -121,6 +121,7 @@ export function handleMatchAction(
                 opponentHighlight: null,
                 opponentStatusMessage: null,
                 moveHistory: [],
+                matchLog: [],
                 provablyFair: createProvablyFairSession({
                     clientSeedA: currentPf.clientSeedA,
                     clientSeedB: currentPf.clientSeedB,
@@ -144,6 +145,7 @@ export function handleMatchAction(
                 opponentHighlight: null,
                 opponentStatusMessage: null,
                 moveHistory: [],
+                matchLog: [],
                 provablyFair: createProvablyFairSession({
                     clientSeedA: currentPf.clientSeedA,
                     clientSeedB: currentPf.clientSeedB,

@@ -16,6 +16,7 @@
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import AppNavbar from '../nav/AppNavbar';
+import BeginnerInteractiveRulesCourse from './BeginnerInteractiveRulesCourse';
 import OpeningRollsTable from './OpeningRollsTable';
 import MatchEquityCalculator from './MatchEquityCalculator';
 import AcademyKnowledgeGrid from './AcademyKnowledgeGrid';
@@ -56,6 +57,9 @@ const GammonAcademyViewComponent: React.FC = () => {
 
                     {/* Sommaire d'ancres rapides (Maillage Interne) */}
                     <nav aria-label="Sommaire Gammon Academy" className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                        <a href="#learn-rules" className="rounded-full border border-emerald-400/50 bg-emerald-950/70 px-4 py-1.5 text-xs sm:text-sm font-extrabold text-emerald-200 hover:border-emerald-300 transition">
+                            🌱 Apprendre les Règles (Débutant)
+                        </a>
                         <a href="#openings-guide" className="rounded-full border border-white/10 bg-[#0b101b] px-4 py-1.5 text-xs sm:text-sm font-bold text-amber-200 hover:border-[#f3c65f] transition">
                             {content.navOpenings}
                         </a>
@@ -79,6 +83,9 @@ const GammonAcademyViewComponent: React.FC = () => {
                         </a>
                     </nav>
                 </header>
+
+                {/* SECTION 0 : Parcours Débutant Interactif (Apprendre les Règles en 5 Étapes + Quiz + Bravos) */}
+                <BeginnerInteractiveRulesCourse />
 
                 {/* SECTION I : Les 15 Rouleaux d'Ouverture */}
                 <OpeningRollsTable content={content} locale={safeLocale} />

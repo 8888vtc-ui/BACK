@@ -47,6 +47,10 @@ export interface PostMatchHeaderProps {
     totalEquityLoss: number;
     /** Taux de précision global (0–100 %, optionnel). */
     accuracyPercent?: number;
+    /** PR spécifique au jeu de pions (PR-Positional). */
+    checkerPr?: number;
+    /** PR spécifique au videau (PR-Cube). */
+    cubePr?: number;
     /** Langue d'affichage. */
     locale?: string;
 }
@@ -101,9 +105,12 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
     counters,
     totalEquityLoss,
     accuracyPercent,
+    checkerPr,
+    cubePr,
     locale = 'fr',
 }) => {
     const isEn = Boolean(locale && locale !== 'fr');
+    const [showPrSplit, setShowPrSplit] = React.useState(false);
     const isPlayerWinner = winner === 'X';
     const winInfo = winType ? WIN_TYPE_LABELS[winType] : null;
 
@@ -169,11 +176,21 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
             <div className="grid grid-cols-2 gap-2">
                 <div
                     data-testid="post-match-pr-player"
-                    className="rounded-xl border border-white/10 bg-[#1c1008]/90 p-2.5"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setShowPrSplit((v) => !v)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowPrSplit((v) => !v); } }}
+                    title="Toucher pour ventiler PR-Positional (Dames) vs PR-Cube (Videau)"
+                    className="rounded-xl border border-white/10 bg-[#1c1008]/90 p-2.5 cursor-pointer transition hover:border-white/25"
                 >
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
-                        {isEn ? 'Your PR' : 'Votre PR'}
-                    </span>
+                    <div className="flex items-center justify-between gap-1">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
+                            {isEn ? 'Your PR' : 'Votre PR'}
+                        </span>
+                        <span className="text-[10px] font-mono text-[#e8dcc6]/70">
+                            {showPrSplit ? '▴ Split' : '▾ Split'}
+                        </span>
+                    </div>
                     <div className="mt-0.5 flex items-baseline gap-1.5">
                         <span className={`font-mono text-xl font-black ${prColor(playerPr)}`}>
                             {playerPr.toFixed(2)}
@@ -182,6 +199,13 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                             {playerCategory}
                         </span>
                     </div>
+                    {showPrSplit && (
+                        <div data-testid="post-match-pr-split" className="mt-1.5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-1.5 font-mono text-[10px] text-[#fce8b2]">
+                            <span>Dames : <strong>{(checkerPr ?? playerPr).toFixed(2)}</strong></span>
+                            <span>·</span>
+                            <span>Videau : <strong>{(cubePr ?? 0).toFixed(2)}</strong></span>
+                        </div>
+                    )}
                 </div>
 
                 <div
@@ -249,6 +273,22 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                     </div>
                 )}
             </div>
+
+            {/* Bouclier d'Ego Post-Défaite : distingue la variance des dés de la qualité de jeu */}
+            {winner === 'O' && (
+                <div
+                    data-testid="post-match-ego-shield"
+                    className="rounded-xl border border-amber-400/35 bg-[#1e1208]/90 px-3 py-2 text-xs text-[#fce8b2]"
+                >
+                    {counters.blunder <= 1
+                        ? isEn
+                            ? `🎲 The dice favored your opponent on this game, but your decision quality (${counters.blunder} blunder) held strong!`
+                            : `🎲 Les dés ont favorisé votre adversaire sur cette manche, mais votre qualité de jeu (${counters.blunder} blunder) était au rendez-vous !`
+                        : isEn
+                          ? `🎲 Tough dice on this game! Fixing just ${counters.blunder} key turn(s) below will turn the next match around.`
+                          : `🎲 Les dés étaient capricieux sur cette manche ! En corrigeant vos ${counters.blunder} décisions clés ci-dessous, vous inverserez la tendance au prochain match.`}
+                </div>
+            )}
         </section>
     );
 };

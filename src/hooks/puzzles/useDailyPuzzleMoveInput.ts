@@ -164,6 +164,10 @@ export function useDailyPuzzleMoveInput({
             if (leftTargets.length === 0 && rightTargets.length === 0) return;
 
             if (selectedPoint === point) {
+                if (selectedDie === 1 && !usedDice[1] && rightTargets.length > 0) {
+                    handlePlayMove(point, rightTargets[0], 1);
+                    return;
+                }
                 if (!usedDice[0] && leftTargets.length > 0) {
                     handlePlayMove(point, leftTargets[0], 0);
                     return;
@@ -182,7 +186,7 @@ export function useDailyPuzzleMoveInput({
             else if (!usedDice[1] && rightTargets.length > 0) setSelectedDie(1);
             void impactLight();
         },
-        [isReplayingIntro, isSolved, selectedPoint, puzzle.turn, currentBoard, leftDieTargets, rightDieTargets, usedDice, handlePlayMove],
+        [isReplayingIntro, isSolved, selectedPoint, selectedDie, puzzle.turn, currentBoard, leftDieTargets, rightDieTargets, usedDice, handlePlayMove],
     );
 
     const handleDestinationClick = useCallback(

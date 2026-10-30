@@ -46,17 +46,23 @@ describe('SoftPaywallCard, SubscriptionModal & Action Serveur Coach', () => {
         expect(screen.getByTestId('soft-paywall-unlock-btn').textContent).toBe(
             "Débloquer l'Analyse avec le Coach Illimité (Essai 7 jours)",
         );
+        expect(screen.getByTestId('soft-paywall-swap-dice-moment').textContent).toContain(
+            'Swap Dice',
+        );
+        expect(screen.getByTestId('soft-paywall-six-axes').textContent).toContain(
+            'Diagnostic sur 6 Axes',
+        );
 
         // Cliquer sur le bouton doré ouvre la modale d'abonnement
         fireEvent.click(screen.getByTestId('soft-paywall-unlock-btn'));
         expect(screen.getByTestId('subscription-modal')).toBeTruthy();
     });
 
-    it('affiche la modale prestige avec bascule Mensuel/Annuel, badge -33 % et les 4 privilèges ⚜', () => {
+    it('affiche la modale prestige avec bascule Mensuel/Annuel, badge -45 % et les 4 privilèges ⚜', () => {
         render(<SubscriptionModal isOpen={true} initialPlan="coach_yearly" />);
 
         expect(screen.getByTestId('subscription-discount-badge').textContent).toBe(
-            'Économisez 33 % — 6,67 € / mois',
+            'Économisez 45 % — 8,25 € / mois',
         );
 
         const benefitsList = screen.getByTestId('subscription-benefits-list').textContent ?? '';
@@ -72,7 +78,7 @@ describe('SoftPaywallCard, SubscriptionModal & Action Serveur Coach', () => {
         // Bascule sur le plan mensuel
         fireEvent.click(screen.getByTestId('toggle-plan-monthly'));
         expect(screen.getByTestId('stripe-checkout-submit-btn').textContent).toContain(
-            '9,99 € TTC / mois',
+            '14,99 € TTC / mois',
         );
     });
 
@@ -98,11 +104,11 @@ describe('SoftPaywallCard, SubscriptionModal & Action Serveur Coach', () => {
         expect(fetchSpy).not.toHaveBeenCalled();
     });
 
-    it('affiche l’économie en % ET en valeur absolue (39,89 € / an), la frise d’essai Adapty, le 3e palier Club et la garantie 30 jours', () => {
+    it('affiche l’économie en % ET en valeur absolue (80,88 € / an), la frise d’essai Adapty, le 3e palier Club et la garantie 30 jours', () => {
         render(<SubscriptionModal isOpen={true} initialPlan="coach_yearly" />);
 
         expect(screen.getByTestId('annual-absolute-savings-label').textContent).toBe(
-            'Économisez 33 % — soit 39,89 € / an',
+            'Économisez 45 % — soit 80,88 € / an',
         );
         expect(screen.getByTestId('subscription-trial-timeline').textContent).toContain(
             'Aujourd’hui (Jour 0)',
@@ -115,6 +121,9 @@ describe('SoftPaywallCard, SubscriptionModal & Action Serveur Coach', () => {
         fireEvent.click(screen.getByTestId('plan-card-club'));
         expect(screen.getByTestId('stripe-checkout-submit-btn').textContent).toContain(
             '149,99 € / an',
+        );
+        expect(screen.getByTestId('club-chouette-whatsapp-share-btn').textContent).toContain(
+            '30 €/an par joueur (2,50 €/mois)',
         );
     });
 

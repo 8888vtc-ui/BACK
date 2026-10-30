@@ -100,8 +100,8 @@ describe('BoardHorologyBar Component', () => {
         expect(html).toContain('data-testid="board-move-timeline"');
         expect(html).toContain('data-mode="live"');
         expect(html).toContain('data-testid="dopamine-ai-rival-card"');
-        expect(html).toContain('Kenji Sato');
-        expect(html).toContain('PR ~3.5');
+        expect(html).toContain('Victor « L’Homme d’Affaires »');
+        expect(html).toContain('PR ~2.6');
         expect(html).toContain('data-testid="dopamine-combo-badge"');
         expect(html).toContain('x2');
         expect(html).toContain('data-testid="dopamine-cube-stakes"');

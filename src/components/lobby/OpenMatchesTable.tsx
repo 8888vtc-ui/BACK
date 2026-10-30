@@ -60,20 +60,20 @@ const OpenMatchesTableComponent: React.FC<OpenMatchesTableProps> = ({
     return (
         <div
             data-testid="open-matches-table"
-            className="mt-2.5 w-full rounded-2xl border border-white/10 bg-gradient-to-b from-[#151b2b]/95 via-[#0d121d]/95 to-[#070a10]/98 p-5 shadow-[0_18px_44px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,245,205,0.18)] backdrop-blur-xl space-y-4"
+            className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-900/75 p-4 shadow-xl backdrop-blur-xl space-y-3.5"
         >
             {/* En-tête épuré */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
-                <div className="flex items-center gap-2.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.85)]" />
-                    <h2 className="font-serif text-xs sm:text-sm font-extrabold uppercase tracking-[0.16em] text-[#fdf8eb]">
-                        Duel en Ligne · Cercle Monte-Carlo
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+                <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white">
+                        Duel en Ligne · Match &amp; Money Game
                     </h2>
                 </div>
 
                 <span
                     data-testid="private-salon-active-badge"
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-[#e5c158]"
+                    className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-amber-300"
                 >
                     ⏱️ Pendule WBF · 🛡️ Dés SHA-256
                 </span>
@@ -84,19 +84,19 @@ const OpenMatchesTableComponent: React.FC<OpenMatchesTableProps> = ({
                 {/* Action 1 : Matchmaking Rapide */}
                 <div
                     data-testid="open-matches-quick-matchmaking"
-                    className="rounded-xl border border-white/10 bg-[#0c111d]/90 p-4 flex flex-col justify-between gap-3"
+                    className="rounded-xl border border-white/10 bg-slate-950/60 p-3.5 flex flex-col justify-between gap-3"
                 >
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                         <div className="flex items-center justify-between gap-2">
-                            <span className="font-serif text-sm font-bold text-[#fdf8eb]">
+                            <span className="text-sm font-bold text-white">
                                 ⚡ Matchmaking Rapide
                             </span>
-                            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-semibold text-slate-300">
+                            <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-300">
                                 Classé Elo
                             </span>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed">
-                            Trouvez automatiquement un adversaire de niveau proche ({eloRating} Elo) en 1, 3, 5 ou 7 points.
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                            Appariement instantané contre un adversaire de niveau proche ({eloRating} Elo) en Match (1, 3, 5, 7, 11 pts) ou Money Game.
                         </p>
                     </div>
 
@@ -104,7 +104,7 @@ const OpenMatchesTableComponent: React.FC<OpenMatchesTableProps> = ({
                         type="button"
                         data-testid="quick-matchmaking-btn"
                         onClick={handleQuickMatchmaking}
-                        className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#fdf8eb] hover:border-white/25 hover:bg-white/15 transition"
+                        className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white hover:border-white/25 hover:bg-white/15 transition"
                     >
                         ⚡ Matchmaking Rapide
                     </button>
@@ -113,19 +113,19 @@ const OpenMatchesTableComponent: React.FC<OpenMatchesTableProps> = ({
                 {/* Action 2 : Salon Privé par Code */}
                 <div
                     data-testid="open-matches-private-code"
-                    className="rounded-xl border border-white/10 bg-[#0c111d]/90 p-4 flex flex-col justify-between gap-3"
+                    className="rounded-xl border border-white/10 bg-slate-950/60 p-3.5 flex flex-col justify-between gap-3"
                 >
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                         <div className="flex items-center justify-between gap-2">
-                            <span className="font-serif text-sm font-bold text-[#fdf8eb]">
+                            <span className="text-sm font-bold text-white">
                                 🔑 Salon Privé par Code
                             </span>
-                            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-semibold text-[#e5c158]">
+                            <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
                                 BG-XXXX · Ami &amp; Club
                             </span>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed">
-                            Créez une table privée en 1 clic et partagez le code à 4 chiffres, ou rejoignez celui d&apos;un ami.
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                            Créez une table privée (Match Crawford ou Money Game Jacoby) et partagez le code à 4 chiffres avec un ami.
                         </p>
                     </div>
 
@@ -134,7 +134,7 @@ const OpenMatchesTableComponent: React.FC<OpenMatchesTableProps> = ({
                             type="button"
                             data-testid="create-open-match-btn"
                             onClick={onCreateChallenge}
-                            className="w-full rounded-xl border border-[#f3c65f] bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#1c1004] shadow-[0_4px_14px_rgba(212,175,55,0.3)] hover:brightness-105 active:scale-95 transition"
+                            className="w-full rounded-xl border border-[#f3c65f] bg-[#f3c65f] px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-950 shadow-sm hover:bg-[#f7d37c] active:scale-[0.99] transition"
                         >
                             🔑 Salon Privé par Code
                         </button>
@@ -144,9 +144,9 @@ const OpenMatchesTableComponent: React.FC<OpenMatchesTableProps> = ({
 
             {/* Liste optionnelle de défis ouverts si fournie */}
             {challenges && challenges.length > 0 && (
-                <div className="divide-y divide-white/10 rounded-xl border border-white/10 bg-[#0b101b]/80">
+                <div className="divide-y divide-white/10 rounded-xl border border-white/10 bg-slate-950/60">
                     {challenges.map((item) => {
-                        const formatLabel = item.matchLength === 0 ? 'Money' : `${item.matchLength} pts`;
+                        const formatLabel = item.matchLength === 0 ? 'Money Game' : `${item.matchLength} pts`;
                         return (
                             <div
                                 key={item.id}
@@ -154,10 +154,10 @@ const OpenMatchesTableComponent: React.FC<OpenMatchesTableProps> = ({
                                 className="flex flex-wrap items-center justify-between gap-3 p-3"
                             >
                                 <div className="flex items-center gap-2.5">
-                                    <span className="font-serif text-xs font-bold text-[#fdf8eb]">
+                                    <span className="text-xs font-bold text-white">
                                         {item.hostName}
                                     </span>
-                                    <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[11px] font-semibold text-[#e5c158]">
+                                    <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[11px] font-semibold text-amber-300">
                                         {item.galaxyRating} Elo
                                     </span>
                                     <span className="font-mono text-xs text-slate-300">
@@ -169,7 +169,7 @@ const OpenMatchesTableComponent: React.FC<OpenMatchesTableProps> = ({
                                     type="button"
                                     data-testid={`join-open-match-${item.id}`}
                                     onClick={() => onJoinChallenge?.(item)}
-                                    className="rounded-xl border border-white/10 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-[#fdf8eb] hover:border-white/25 hover:bg-white/15 transition"
+                                    className="rounded-xl border border-white/10 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white hover:border-white/25 hover:bg-white/15 transition"
                                 >
                                     Rejoindre
                                 </button>

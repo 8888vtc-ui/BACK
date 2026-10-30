@@ -94,8 +94,8 @@ export const BackToLobbyButton: React.FC<BackToLobbyButtonProps> = ({
     onClick,
     href = '/',
 }) => {
-    const luxuryBtnClass =
-        'flex items-center gap-2 rounded-xl border border-[#d4af37]/55 bg-gradient-to-b from-[#261a0c] to-[#120b05] px-4 py-2 text-xs font-bold tracking-wide text-[#fdf8eb] shadow-[0_6px_18px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,245,205,0.25)] transition hover:border-[#f3c65f] hover:text-white active:scale-95';
+    const proBtnClass =
+        'flex items-center gap-2 rounded-xl border border-white/15 bg-slate-900 px-4 py-2 text-xs font-bold tracking-tight text-slate-100 shadow-md transition hover:border-amber-400/50 hover:text-white active:scale-95';
 
     if (onClick) {
         return (
@@ -103,10 +103,10 @@ export const BackToLobbyButton: React.FC<BackToLobbyButtonProps> = ({
                 type="button"
                 onClick={onClick}
                 data-testid="universal-back-to-lobby-btn"
-                className={luxuryBtnClass}
+                className={proBtnClass}
             >
-                <span aria-hidden="true" className="text-[#f3c65f]">⚜</span>
-                <span className="font-serif">{label}</span>
+                <span aria-hidden="true" className="text-amber-400">←</span>
+                <span className="font-sans">{label}</span>
             </button>
         );
     }
@@ -116,10 +116,10 @@ export const BackToLobbyButton: React.FC<BackToLobbyButtonProps> = ({
             href={href}
             prefetch
             data-testid="universal-back-to-lobby-btn"
-            className={luxuryBtnClass}
+            className={proBtnClass}
         >
-            <span aria-hidden="true" className="text-[#f3c65f]">⚜</span>
-            <span className="font-serif">{label}</span>
+            <span aria-hidden="true" className="text-amber-400">←</span>
+            <span className="font-sans">{label}</span>
         </Link>
     );
 };

@@ -97,3 +97,53 @@ Supported Languages: French (`fr`), English (`en`), Spanish (`es`), Portuguese (
 - https://backgammontour.com/academy/concepts/dmp-strategy
 - https://backgammontour.com/academy/concepts/opening-philosophy
 - https://backgammontour.com/academy/concepts/mochy-golden-rules
+
+---
+
+## 6. World Backgammon Tournaments Database & Where to Play Directory (/tournaments)
+
+Main Hub: `https://backgammontour.com/tournaments`
+
+### 6.1 The 18 International Tournaments Calendar (2026-2027)
+
+| Tournament | Tier | Dates | City, Country | Venue | Federation | Match Length | Clock Rules | Entry Fee | Prize Pool |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| [Monte-Carlo World Championship](https://backgammontour.com/tournaments/monte-carlo-world-championship-2027) | MEGA | 2027-07-25 → 2027-08-01 | Monte-Carlo, Monaco | Fairmont Monte Carlo | WBGF | 17 pts | Fischer 12s + 2m/pt | 1 000 EUR | 180 000 EUR |
+| [Merit Open International](https://backgammontour.com/tournaments/merit-open-cyprus-2026) | MEGA | 2026-11-03 → 2026-11-08 | Kyrenia, Cyprus | Merit Crystal Cove | WBA | 15 pts | Fischer 12s + 2m/pt | 850 EUR | 150 000 EUR |
+| [Las Vegas Open](https://backgammontour.com/tournaments/las-vegas-open-2026) | MEGA | 2026-11-18 → 2026-11-22 | Las Vegas, USA | Flamingo Hotel & Casino | USBGF | 15 pts | Fischer 12s + 2m/pt | 600 USD | 120 000 USD |
+| [Nordic Open Backgammon](https://backgammontour.com/tournaments/nordic-open-copenhagen-2027) | MEGA | 2027-03-24 → 2027-03-29 | Copenhagen, Denmark | Tivoli Congress Center | WBGF | 15 pts | Fischer 12s + 2m/pt | 500 EUR | 95 000 EUR |
+| [Istanbul International Open](https://backgammontour.com/tournaments/istanbul-international-open-2027) | MEGA | 2027-05-19 → 2027-05-23 | Istanbul, Turkey | Hilton Istanbul Bosphorus | WBA | 15 pts | Fischer 12s + 2m/pt | 550 EUR | 85 000 EUR |
+| [Texas Championships](https://backgammontour.com/tournaments/texas-championships-2027) | MEGA | 2027-02-03 → 2027-02-07 | San Antonio, USA | Omni San Antonio Colonnade | USBGF | 15 pts | Fischer 12s + 2m/pt | 500 USD | 75 000 USD |
+| [Paris Masters FFB](https://backgammontour.com/tournaments/paris-masters-ffb-2026) | GRAND | 2026-12-11 → 2026-12-13 | Paris, France | Novotel Paris Tour Eiffel | FFB | 13 pts | Fischer 12s + 2m/pt | 250 EUR | 28 000 EUR |
+| [UK Backgammon Open](https://backgammontour.com/tournaments/uk-backgammon-open-2027) | GRAND | 2027-09-03 → 2027-09-05 | Coventry, UK | CBS Arena Coventry | UKBGF | 13 pts | Fischer 12s + 2m/pt | 220 GBP | 32 000 GBP |
+| [Chicago Open](https://backgammontour.com/tournaments/chicago-open-2027) | GRAND | 2027-05-27 → 2027-05-31 | Chicago, USA | Westin O'Hare Hotel | USBGF | 13 pts | Fischer 12s + 2m/pt | 350 USD | 42 000 USD |
+| [German Backgammon Open](https://backgammontour.com/tournaments/german-backgammon-open-2027) | GRAND | 2027-06-11 → 2027-06-13 | Niedernhausen, Germany | H+ Hotel Wiesbaden | EUBGF | 13 pts | Fischer 12s + 2m/pt | 260 EUR | 30 000 EUR |
+| [Tokyo Backgammon Festival](https://backgammontour.com/tournaments/tokyo-backgammon-festival-2027) | GRAND | 2027-05-02 → 2027-05-05 | Tokyo, Japan | Shinagawa Prince Hotel | WBGF | 13 pts | Fischer 12s + 2m/pt | 35 000 JPY | 4 500 000 JPY |
+| [Gibraltar Championship](https://backgammontour.com/tournaments/gibraltar-championship-2027) | GRAND | 2027-02-10 → 2027-02-14 | Gibraltar | Sunborn Yacht Hotel | WBGF | 13 pts | Fischer 12s + 2m/pt | 300 GBP | 38 000 GBP |
+| [Riviera Cup Nice](https://backgammontour.com/tournaments/riviera-cup-nice-2027) | MOYEN | 2027-04-10 → 2027-04-11 | Nice, France | Palais de la Méditerranée | FFB | 11 pts | Fischer 12s + 2m/pt | 90 EUR | 5 500 EUR |
+| [Grand Prix de Lyon](https://backgammontour.com/tournaments/grand-prix-lyon-2027) | MOYEN | 2027-01-16 → 2027-01-17 | Lyon, France | Mercure Saxe Lafayette | FFB | 11 pts | Fischer 12s + 2m/pt | 80 EUR | 4 200 EUR |
+| [Geneva Lake Classic](https://backgammontour.com/tournaments/geneva-lake-classic-2027) | MOYEN | 2027-03-13 → 2027-03-14 | Geneva, Switzerland | Hôtel President Wilson | EUBGF | 11 pts | Fischer 12s + 2m/pt | 140 CHF | 7 500 CHF |
+| [London Weekend Open](https://backgammontour.com/tournaments/london-weekend-open-2026) | MOYEN | 2026-11-28 → 2026-11-29 | London, UK | Roehampton Club | UKBGF | 11 pts | Fischer 12s + 2m/pt | 75 GBP | 3 800 GBP |
+| [São Paulo Open](https://backgammontour.com/tournaments/sao-paulo-open-2027) | MOYEN | 2027-08-14 → 2027-08-15 | São Paulo, Brazil | Club Transatlântico | WBGF | 11 pts | Fischer 12s + 2m/pt | 120 USD | 6 000 USD |
+| [Dubai Creek Masters](https://backgammontour.com/tournaments/dubai-creek-masters-2027) | MOYEN | 2027-01-22 → 2027-01-24 | Dubai, UAE | Park Hyatt Dubai | WBGF | 11 pts | Fischer 12s + 2m/pt | 180 USD | 9 000 USD |
+
+### 6.2 Where to Play Directory — 16 World Backgammon Clubs & Lounges
+
+| Club / Venue | Category | City, Country | Address | Schedule | Federation |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| [Paris Vie d'Eau (Videau Club)](https://backgammontour.com/tournaments/clubs/paris-vie-deau) | Federation Club | Paris, France | Café de la Mairie, 8 Place Saint-Sulpice, 75006 | Tue & Thu 19:00 - 23:30 | FFBG |
+| [Backgammon Social Paris](https://backgammontour.com/tournaments/clubs/backgammon-social-paris) | Social Lounge | Paris, France | Le Marais / Grands Boulevards, 75003 | Wed & Sun from 18:30 | Independent |
+| [Monte-Carlo Backgammon Society](https://backgammontour.com/tournaments/clubs/monte-carlo-society) | Prestige Palace | Monte-Carlo, Monaco | Fairmont Monte Carlo, 12 Av des Spélugues | Fri & Sat 17:00 - 00:00 | WBGF |
+| [L'Ancre Marseillaise](https://backgammontour.com/tournaments/clubs/ancre-marseillaise) | Federation Club | Marseille, France | 10 Rue Vian (Cours Julien), 13006 | Wed 19:00 & Sat 14:30 | FFBG |
+| [Lyon Backgammon Club](https://backgammontour.com/tournaments/clubs/lyon-backgammon-club) | Federation Club | Lyon, France | Brasserie Saxe Lafayette, 69003 | Mon from 19:30 | FFBG |
+| [Backgammon London (Clissold Arms)](https://backgammontour.com/tournaments/clubs/backgammon-london) | Federation Club | London, UK | 105 Fortis Green, Muswell Hill, N2 9HR | 1st & 3rd Tue 19:00 | UKBGF |
+| [Københavns Backgammon Klub (KBgK)](https://backgammontour.com/tournaments/clubs/kobenhavns-backgammon-klub) | Federation Club | Copenhagen, Denmark | Barkowski, Nørre Farimagsgade 49, 1364 | Thu 18:30 & Sun PM | DBGF / WBGF |
+| [Association Genevoise de Backgammon](https://backgammontour.com/tournaments/clubs/association-genevoise-backgammon) | Federation Club | Geneva, Switzerland | Restaurant Tavolone, 41 Rue des Bains, 1205 | Sun 14:00 prompt | SBGV / WBGF |
+| [New York Metropolitan Backgammon Club](https://backgammontour.com/tournaments/clubs/new-york-metro-club) | Federation Club | New York, USA | Midtown Manhattan & Upper East Side | Tue & Thu from 19:00 | USBGF |
+| [Chicago Backgammon League](https://backgammontour.com/tournaments/clubs/chicago-backgammon-league) | Federation Club | Chicago, USA | City Works / Winnetka Community House | Tue & Wed from 18:30 | USBGF |
+| [The Social Point Rooftop Club](https://backgammontour.com/tournaments/clubs/social-point-rooftop-miami) | Social Lounge | Fort Lauderdale, USA | McSorley's Beach Pub, 837 N Ft Lauderdale Beach Blvd | Thu 18:30 - 22:30 | USBGF |
+| [Elite-TR & Cafés du Bosphore](https://backgammontour.com/tournaments/clubs/elite-tr-istanbul) | Traditional Café | Istanbul, Turkey | Bebek & Kadıköy Rıhtım, Istanbul | Daily continuous | WBA |
+| [Mindskillz Backgammon Club & Academy](https://backgammontour.com/tournaments/clubs/mindskillz-dubai) | Prestige Palace | Dubai, UAE | Business Bay & DIFC, Dubai | Sat & Tue from 18:00 | WBGF |
+| [SAKA Backgammon Club](https://backgammontour.com/tournaments/clubs/saka-athenes) | Traditional Café | Athens, Greece | Psychiko & Pláka, Athens | Fri evening & Sun 17:00 | EUBGF |
+| [JBA Tokyo Lounge](https://backgammontour.com/tournaments/clubs/jba-tokyo-lounge) | Federation Club | Tokyo, Japan | Shinagawa & Ginza District, Tokyo | Wed & Sat 13:00 - 21:00 | JBA / WBGF |
+| [Sydney Backgammon Club (RACA)](https://backgammontour.com/tournaments/clubs/sydney-backgammon-club) | Prestige Palace | Sydney, Australia | Royal Automobile Club, 89 Macquarie Street | Tue from 18:00 | WBGF |

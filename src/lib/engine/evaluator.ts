@@ -849,6 +849,8 @@ export function analyzeBoardMoves(
     }
 
     // Alignement prioritaire avec le Livre d'Ouvertures (Opening Book) selon le score de match
+    let openingBestTargetBoard: number[] | null = null;
+    let openingTargetEquity = 0;
     if (isInitialBoardPosition(state.board) && dice[0] !== dice[1]) {
         const openingRegime = detectOpeningScoreRegime({
             matchLength: state.matchLength,
@@ -865,6 +867,8 @@ export function analyzeBoardMoves(
                 const effMove = player === 'X' ? m : { from: 25 - m.from, to: 25 - m.to };
                 bestTargetBoard = applyMove(bestTargetBoard, effMove, player);
             }
+            openingBestTargetBoard = bestTargetBoard;
+            openingTargetEquity = opening.equity;
             const bestIdx = scoredCandidates.findIndex((c) =>
                 c.seq.board.every((val, i) => val === bestTargetBoard[i]),
             );
@@ -890,6 +894,20 @@ export function analyzeBoardMoves(
             (st) => evaluateBoard(st, 0),
             { maxCandidates: 6, timeBudgetMs: 110 },
         );
+        if (openingBestTargetBoard) {
+            const targetBoard = openingBestTargetBoard;
+            const openIdx = refinedCandidates.findIndex((c) =>
+                c.seq.board.every((val, i) => val === targetBoard[i]),
+            );
+            if (openIdx >= 0) {
+                const maxRefinedEquity = Math.max(...refinedCandidates.map((c) => c.equity));
+                refinedCandidates[openIdx] = {
+                    ...refinedCandidates[openIdx],
+                    equity: Number(Math.max(openingTargetEquity, maxRefinedEquity + 0.035).toFixed(4)),
+                };
+                refinedCandidates.sort((a, b) => b.equity - a.equity);
+            }
+        }
     }
 
     const bestEquity = refinedCandidates[0].equity;
@@ -959,13 +977,14 @@ export function analyzeBoardCube(
     const cubelessEquity = evaluation.cubelessEquity;
 
     const noDouble = Number(equity.toFixed(4));
-    const doubleTake = Number(clamp(2 * cubelessEquity - 0.15, -1.0, 1.0).toFixed(4));
     const doublePass = 1.0;
 
     const effectiveMatchLength = options.score?.matchLength ?? state.matchLength ?? 0;
     const scoreX = options.score?.scoreX ?? state.scoreX ?? 0;
     const scoreO = options.score?.scoreO ?? state.scoreO ?? 0;
     const isMoney = effectiveMatchLength <= 0;
+    const currentCubeValue = state.cubeValue ?? 1;
+    const activePlayerScore = state.turn === 'X' ? scoreX : scoreO;
 
     let optimalAction = 'No double, take';
 
@@ -975,11 +994,17 @@ export function analyzeBoardCube(
     } else if (!isMoney && scoreX === effectiveMatchLength - 1 && scoreO === effectiveMatchLength - 1) {
         // 2. Double Match Point (DMP) : le videau est sans objet pour les deux joueurs
         optimalAction = 'No double (DMP)';
-    } else if (!isMoney && (state.turn === 'X' ? scoreX === effectiveMatchLength - 1 : scoreO === effectiveMatchLength - 1)) {
-        // 3. Dead Cube : un joueur à 1 point de la victoire (1-away) ne double jamais
+    } else if (!isMoney && activePlayerScore + currentCubeValue >= effectiveMatchLength) {
+        // 3. Dead Cube : le joueur au trait possède déjà assez de points avec le videau actuel pour gagner le match
         optimalAction = 'No double (Dead cube)';
+    } else if (state.cubeOwner !== null && state.cubeOwner !== state.turn) {
+        // 4. Videau possédé par l'adversaire
+        optimalAction = 'No double (Cube not owned)';
+    } else if (currentCubeValue >= 64) {
+        // 5. Videau déjà au plafond (64)
+        optimalAction = 'No double (Max cube)';
     } else if (isInitialBoardPosition(state.board)) {
-        // 4. Règle officielle WBF 5.1 : pas de double sur la position initiale avant le premier coup joué
+        // 6. Règle officielle WBF 5.1 : pas de double sur la position initiale avant le premier coup joué
         optimalAction = 'No double (Opening position)';
     } else {
         const regime = classifyPosition(state.board);
@@ -1010,6 +1035,16 @@ export function analyzeBoardCube(
                 optimalAction = 'Double, pass';
             }
         }
+    }
+
+    // Calcul cohérent de l'équité Double/Take vis-à-vis de No Double et Double/Pass (1.0)
+    let doubleTake: number;
+    if (optimalAction === 'Double, pass') {
+        doubleTake = Number(Math.max(1.05, clamp(2 * cubelessEquity - 0.15, 1.05, 2.0)).toFixed(4));
+    } else if (optimalAction === 'Double, take') {
+        doubleTake = Number(clamp(2 * cubelessEquity - 0.15, Math.min(0.95, noDouble + 0.04), 0.99).toFixed(4));
+    } else {
+        doubleTake = Number(Math.min(noDouble - 0.02, clamp(2 * cubelessEquity - 0.42, -2.0, 0.95)).toFixed(4));
     }
 
     return {

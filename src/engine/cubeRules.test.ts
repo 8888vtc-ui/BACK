@@ -50,5 +50,7 @@ describe('cubeRules (Audit 9/20 — Manipulation du Videau & Cube Safety)', () =
         expect(canPlayerOfferDouble({ ...base, scoreX: 6, scoreO: 6 })).toBe(false);
         // Dead Cube : X mène 5-2 sur 7 avec un videau déjà à 2 (5 + 2 >= 7) -> interdit
         expect(canPlayerOfferDouble({ ...base, scoreX: 5, cubeValue: 2 })).toBe(false);
+        // Règle WBF 5.1 : interdit de doubler sur la position initiale avant le premier coup joué
+        expect(canPlayerOfferDouble({ ...base, isOpeningPosition: true })).toBe(false);
     });
 });

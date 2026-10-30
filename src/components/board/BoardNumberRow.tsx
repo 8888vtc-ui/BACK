@@ -21,32 +21,35 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
     onToggleOrientation,
 }) => (
     <div
-        className={`grid grid-cols-[1fr_auto_1fr_auto] items-center px-1 sm:px-2.5 shrink-0 ${
-            padding === 'top' ? 'pb-0.5 sm:pb-1' : 'pt-0.5 sm:pt-1'
+        className={`grid grid-cols-[1fr_auto_1fr_auto] items-center h-[14px] sm:h-auto px-0.5 sm:px-2.5 shrink-0 ${
+            padding === 'top' ? 'pb-0 sm:pb-1' : 'pt-0 sm:pt-1'
         }`}
     >
         <div className="flex min-w-0">
             {row.slice(0, 6).map((p) => (
                 <span
                     key={`num-${p}`}
-                    className="text-[10px] sm:text-xs font-serif font-bold tracking-wider text-[#f3c65f]/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)] select-none flex-1 min-w-0 text-center"
+                    className="text-[10px] sm:text-xs font-mono sm:font-serif font-bold tracking-tight sm:tracking-wider text-[#f3c65f]/85 leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)] select-none flex-1 min-w-0 text-center"
                 >
                     {p}
                 </span>
             ))}
         </div>
-        <div className="w-6 sm:w-14 md:w-20 mx-0.5 sm:mx-1 shrink-0" />
+        <div className="w-6 sm:w-14 md:w-20 mx-0.5 sm:mx-1 shrink-0 text-center text-[10px] font-mono text-amber-200/40 sm:hidden">
+            BAR
+        </div>
+        <div className="hidden sm:block sm:w-14 md:w-20 sm:mx-1 shrink-0" />
         <div className="flex min-w-0">
             {row.slice(6).map((p) => (
                 <span
                     key={`num-${p}`}
-                    className="text-[10px] sm:text-xs font-serif font-bold tracking-wider text-[#f3c65f]/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)] select-none flex-1 min-w-0 text-center"
+                    className="text-[10px] sm:text-xs font-mono sm:font-serif font-bold tracking-tight sm:tracking-wider text-[#f3c65f]/85 leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)] select-none flex-1 min-w-0 text-center"
                 >
                     {p}
                 </span>
             ))}
         </div>
-        <div className="w-7 sm:w-14 md:w-20 pl-0.5 ml-0.5 sm:pl-1.5 sm:ml-1 shrink-0 flex items-center justify-center">
+        <div className="w-4 sm:w-14 md:w-20 pl-0.5 ml-0.5 sm:pl-1.5 sm:ml-1 shrink-0 flex items-center justify-center">
             {onToggleOrientation && (
                 <button
                     type="button"

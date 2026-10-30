@@ -116,4 +116,52 @@ describe('HudScoreboard Component', () => {
         expect(html).toContain('title="Pip count : 45 pips | EPC: 51.2"');
         expect(html).toContain('title="Pip count : 52 pips | EPC: 58.6"');
     });
+
+    it('adapte l’affichage du scoreboard aux 3 couches Caméléon (0: masqué sans PR, 1: différentiel Course ±, 2: score n-away)', () => {
+        const htmlLayer0 = renderToStaticMarkup(
+            <HudScoreboard
+                matchLength={7} scoreX={4} scoreO={2} turn="X"
+                dice={null} usedDice={[false, false]} pipX={69} pipO={79} prX={16.2}
+                chameleonLayer={0}
+            />,
+        );
+        expect(htmlLayer0).not.toContain('data-testid="hud-player-x-pip"');
+        expect(htmlLayer0).not.toContain('data-testid="hud-player-x-pr"');
+
+        const htmlLayer1 = renderToStaticMarkup(
+            <HudScoreboard
+                matchLength={7} scoreX={4} scoreO={2} turn="X"
+                dice={null} usedDice={[false, false]} pipX={69} pipO={79} prX={8.4}
+                chameleonLayer={1}
+            />,
+        );
+        expect(htmlLayer1).toContain('Course : +10');
+        expect(htmlLayer1).toContain('Course : -10');
+
+        const htmlLayer2 = renderToStaticMarkup(
+            <HudScoreboard
+                matchLength={7} scoreX={4} scoreO={2} turn="X"
+                dice={null} usedDice={[false, false]} pipX={69} pipO={79} prX={3.1}
+                chameleonLayer={2}
+            />,
+        );
+        expect(htmlLayer2).toContain('3-away, 5-away');
+        expect(htmlLayer2).toContain('69 pips');
+    });
+
+    it('expose les déclencheurs interactifs pour basculer le score en format X-Away (XG2) au clic ou clic droit', () => {
+        const html = renderToStaticMarkup(
+            <HudScoreboard
+                matchLength={7}
+                scoreX={3}
+                scoreO={2}
+                turn="X"
+                dice={null}
+                usedDice={[false, false]}
+            />,
+        );
+        expect(html).toContain('data-testid="hud-player-x-score"');
+        expect(html).toContain('data-testid="hud-player-o-score"');
+        expect(html).toContain('Away Score (XG2)');
+    });
 });

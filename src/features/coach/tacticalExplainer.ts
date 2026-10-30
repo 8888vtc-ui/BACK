@@ -80,6 +80,73 @@ function countOff(board: ReadonlyArray<number>, player: Player): number {
     return Math.max(0, 15 - onBoard);
 }
 
+/** Retourne le nombre de pions du joueur sur sa flèche relative `relPoint` (1..24). */
+function countPlayerAtRelativePoint(board: ReadonlyArray<number>, player: Player, relPoint: number): number {
+    const idx = player === 'X' ? relPoint : 25 - relPoint;
+    const v = board[idx] ?? 0;
+    return player === 'X' ? Math.max(0, v) : Math.max(0, -v);
+}
+
+/**
+ * Simule à 1 tour (les 36 lancers de dés) combien de tirages permettent au joueur
+ * de fermer une nouvelle porte clé (flèches relatives 4, 5, 7, 3, 2) grâce à ses bâtisseurs.
+ */
+export function countConstructiveCoverRolls36(board: ReadonlyArray<number>, player: Player): number {
+    const targetRelPoints = [5, 4, 7, 3, 2];
+    const openTargets = targetRelPoints.filter((pt) => countPlayerAtRelativePoint(board, player, pt) < 2);
+    if (openTargets.length === 0) return 0;
+
+    // Un pion est "disponible comme bâtisseur" sur relPt s'il est seul (1) ou en surnombre (>= 3)
+    const hasSpareOrBlot = (relPt: number): boolean => {
+        if (relPt < 1 || relPt > 24) return false;
+        const c = countPlayerAtRelativePoint(board, player, relPt);
+        return c === 1 || c >= 3;
+    };
+
+    let constructiveRolls = 0;
+    for (let d1 = 1; d1 <= 6; d1++) {
+        for (let d2 = 1; d2 <= 6; d2++) {
+            let coversAny = false;
+            for (const target of openTargets) {
+                const countAtTarget = countPlayerAtRelativePoint(board, player, target);
+                if (countAtTarget === 1) {
+                    // Un blot déjà posé (slot) n'a besoin que d'un seul dé (d1, d2 ou d1+d2) pour être couvert
+                    if (
+                        hasSpareOrBlot(target + d1) ||
+                        hasSpareOrBlot(target + d2) ||
+                        hasSpareOrBlot(target + d1 + d2)
+                    ) {
+                        coversAny = true;
+                        break;
+                    }
+                } else if (countAtTarget === 0) {
+                    // Case vide : besoin de d1 ET d2 depuis deux bâtisseurs (ou un double depuis une pile >= 4)
+                    if (d1 !== d2 && hasSpareOrBlot(target + d1) && hasSpareOrBlot(target + d2)) {
+                        coversAny = true;
+                        break;
+                    }
+                    if (d1 === d2 && countPlayerAtRelativePoint(board, player, target + d1) >= 4) {
+                        coversAny = true;
+                        break;
+                    }
+                }
+            }
+            if (coversAny) constructiveRolls++;
+        }
+    }
+    return constructiveRolls;
+}
+
+/** Compte les empilements excessifs ("chandeliers" >= 5 pions hors flèche 6 et 13 initiale). */
+function countCandlesticks(board: ReadonlyArray<number>, player: Player): number {
+    let stacks = 0;
+    for (let rel = 1; rel <= 24; rel++) {
+        const c = countPlayerAtRelativePoint(board, player, rel);
+        if (c >= 5) stacks += c - 4;
+    }
+    return stacks;
+}
+
 /**
  * Génère un diagnostic stratégique comparant le coup optimal au coup joué (0ms, déterministe).
  */
@@ -159,12 +226,38 @@ export function explainTacticalDifference(
     }
 
     // 5. Évasion des pions arrières & préservation du Midpoint
-    const rearIdx = player === 'X' ? 24 : 1;
-    const optRear = player === 'X' ? Math.max(0, boardOptimal[rearIdx] ?? 0) : Math.max(0, -(boardOptimal[rearIdx] ?? 0));
-    const playedRear = player === 'X' ? Math.max(0, boardPlayed[rearIdx] ?? 0) : Math.max(0, -(boardPlayed[rearIdx] ?? 0));
+    const optRear = countPlayerAtRelativePoint(boardOptimal, player, 24);
+    const playedRear = countPlayerAtRelativePoint(boardPlayed, player, 24);
     if (optRear < playedRear) {
         concepts.push('Évasion');
-        reasons.push('le coup optimal évade un pion arrière du camp adverse avant d’être bloqué');
+        reasons.push('le coup optimal évade ou sépare un pion arrière du camp adverse avant d’être bloqué');
+    }
+
+    // 6. Dégorgement du Midpoint (Unstacking point 13) & descente de Bâtisseurs (zone 8..11)
+    const beforeMid = countPlayerAtRelativePoint(boardBefore, player, 13);
+    const optMid = countPlayerAtRelativePoint(boardOptimal, player, 13);
+    const playedMid = countPlayerAtRelativePoint(boardPlayed, player, 13);
+    if (beforeMid >= 4 && optMid < playedMid) {
+        concepts.push('Bâtisseurs');
+        reasons.push('le coup optimal dégorge la pile du Midpoint (point 13) pour descendre des bâtisseurs actifs');
+    }
+
+    // 7. Lookahead Constructif à 1 tour (nombre de lancers sur 36 qui ferment une porte au tour suivant)
+    const optCovers36 = countConstructiveCoverRolls36(boardOptimal, player);
+    const playedCovers36 = countConstructiveCoverRolls36(boardPlayed, player);
+    if (optCovers36 > playedCovers36 + 2) {
+        concepts.push('Couverture (/36)');
+        reasons.push(
+            `le coup optimal multiplie vos bons dés au prochain tour (${optCovers36}/36 lancers ferment une porte contre ${playedCovers36}/36)`,
+        );
+    }
+
+    // 8. Réduction des empilements ("chandeliers" >= 5 pions) & flexibilité
+    const optStacks = countCandlesticks(boardOptimal, player);
+    const playedStacks = countCandlesticks(boardPlayed, player);
+    if (optStacks < playedStacks && reasons.length === 0) {
+        concepts.push('Flexibilité');
+        reasons.push('le coup optimal évite d’empiler vos pions sur une seule flèche et maximise votre flexibilité');
     }
 
     let summary: string;
@@ -180,4 +273,100 @@ export function explainTacticalDifference(
         concepts: Object.freeze(concepts),
         absEquityLoss,
     };
+}
+
+export interface BrilliantMoveEvaluationParams {
+    readonly equityLossEmg: number;
+    readonly secondBestGapEmg?: number;
+    readonly directShotsConceded?: number;
+    readonly brokeHomePoint?: boolean;
+    readonly slottedKeyPointNaked?: boolean;
+    readonly hasDeepTacticalJustification?: boolean;
+    readonly level?: 'fun' | 'pro';
+}
+
+/** Section 1.3 : Évalue les 4 portes mathématiques d'un « Coup Brillant (!!) ». */
+export function evaluateBrilliantMoveCriteria(params: BrilliantMoveEvaluationParams): boolean {
+    const {
+        equityLossEmg, secondBestGapEmg = 0.030, directShotsConceded = 0,
+        brokeHomePoint = false, slottedKeyPointNaked = false, hasDeepTacticalJustification = true, level = 'fun',
+    } = params;
+    const minGapRequired = level === 'fun' ? 0.015 : 0.025;
+    if (Math.abs(equityLossEmg) > 0.005 || secondBestGapEmg < minGapRequired) return false;
+    return (directShotsConceded > 0 || brokeHomePoint || slottedKeyPointNaked) && hasDeepTacticalJustification;
+}
+
+export interface BiLevelCoachMicroCopy {
+    readonly headerBadge: string;
+    readonly bulletDiagnostic: string;
+    readonly bulletAction: string;
+    readonly bulletHabitHook: string | null;
+    readonly ctaPills: readonly [string, string, string];
+    readonly proTelemetryLine: string;
+    readonly wordCountLevel1: number;
+}
+
+/** Sections 1.3 & 1.4 : Micro-copie bi-niveau (< 3 s, 18–28 mots max sans jargon au Niveau 1, mEMG au Niveau 2). */
+export function buildBiLevelCoachMicroCopy(params: {
+    readonly equityLossEmg: number;
+    readonly directShotsConceded?: number;
+    readonly dominantTheme?: string | null;
+    readonly recurringErrorCount?: number;
+    readonly isBrilliantMove?: boolean;
+    readonly locale?: string;
+}): BiLevelCoachMicroCopy {
+    const {
+        equityLossEmg, directShotsConceded = 0, dominantTheme = 'CONSTRUCTION',
+        recurringErrorCount = 0, isBrilliantMove = false, locale = 'fr',
+    } = params;
+    const isEn = locale === 'en';
+    const absLoss = Math.abs(equityLossEmg);
+    const mEmg = Math.round(absLoss * 1000);
+    const winPctDelta = Math.min(45, Math.max(1, Math.round(absLoss * 85)));
+
+    const headerBadge = isBrilliantMove
+        ? isEn ? '😱 Brilliant Move (+11% win)' : '😱 Coup Brillant (+11 % de victoire)'
+        : absLoss <= 0.015
+          ? isEn ? '⭐ Best Move (+1% win)' : '⭐ Meilleur Coup (Optimal)'
+          : absLoss < 0.045
+            ? isEn ? `🤔 Inaccuracy (-${winPctDelta}% win)` : `🤔 Imprécision (-${winPctDelta} % de victoire)`
+            : absLoss < 0.080
+              ? isEn ? `❓ Mistake (-${winPctDelta}% win)` : `❓ Erreur (-${winPctDelta} % de victoire)`
+              : isEn ? `😵 Blunder (-${winPctDelta}% win)` : `😵 Gaffe (-${winPctDelta} % de victoire)`;
+
+    const bulletDiagnostic = directShotsConceded > 0
+        ? isEn ? `This lone checker gives ${directShotsConceded} rolls out of 36 to hit you.` : `Ce pion isolé donne ${directShotsConceded} lancers sur 36 pour te frapper.`
+        : isEn ? 'Your checkers are stacked too high: they sleep instead of helping.' : 'Tes pions sont empilés trop haut : ils dorment au lieu d’aider.';
+
+    const themeUpper = (dominantTheme ?? '').toUpperCase();
+    const bulletAction = themeUpper.includes('RACE') || themeUpper.includes('COURSE')
+        ? isEn ? 'Run your back checkers quickly to win the race.' : 'Avance vite tes pions arrières pour gagner la course.'
+        : themeUpper.includes('HOLD') || themeUpper.includes('ANCR')
+          ? isEn ? 'Keep your back base to set an ambush.' : 'Garde ta base arrière pour tendre une embuscade.'
+          : isEn ? 'Take point 5 instead to build an unbreakable wall.' : 'Prends plutôt la case 5 pour bâtir un mur.';
+
+    const bulletHabitHook = recurringErrorCount >= 2
+        ? isEn ? `⚠️ Your ${recurringErrorCount}th similar mistake this week.` : `⚠️ C'est ta ${recurringErrorCount}e erreur similaire cette semaine.`
+        : null;
+    const ctaPills: readonly [string, string, string] = isEn ? ['See danger', 'See idea', 'Retry'] : ['Voir danger', 'Voir idée', 'Réessayer'];
+    const proTelemetryLine = `-${absLoss.toFixed(3)} EMG (-${mEmg} mEMG) | Shots: ${directShotsConceded}/36 | 3-ply`;
+    const wordCountLevel1 = `${bulletDiagnostic} ${bulletAction}`.trim().split(/\s+/).length;
+
+    return { headerBadge, bulletDiagnostic, bulletAction, bulletHabitHook, ctaPills, proTelemetryLine, wordCountLevel1 };
+}
+
+/** Section 2.4 (Garde-Fou #2 Anti-Paranoïa) : Tuteur Silencieux expliquant la « Chance Préparée » du Bot (/36). */
+export function buildSilentTutorBotLuckExplanation(params: {
+    readonly boardBeforeBotRoll: ReadonlyArray<number>;
+    readonly boardAfterBotMove: ReadonlyArray<number>;
+    readonly botPlayer?: Player;
+    readonly locale?: string;
+}): string | null {
+    const { boardBeforeBotRoll, boardAfterBotMove, botPlayer = 'O', locale = 'fr' } = params;
+    if (countHomePoints(boardAfterBotMove, botPlayer) <= countHomePoints(boardBeforeBotRoll, botPlayer)) return null;
+    const preparedCoverRolls = countConstructiveCoverRolls36(boardBeforeBotRoll, botPlayer);
+    if (preparedCoverRolls < 10) return null;
+    return locale === 'en'
+        ? `Well prepared: thanks to its reserve checkers, the bot had ${preparedCoverRolls} rolls out of 36 to cover this point!`
+        : `Bien préparé : grâce à la position de ses pions de réserve, le bot avait ${preparedCoverRolls} lancers sur 36 pour couvrir cette case !`;
 }

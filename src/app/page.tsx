@@ -30,6 +30,7 @@ import { useCheckerSoundFeedback } from '../hooks/useCheckerSoundFeedback';
 import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
 import { readStoredPlayerColor } from '../components/hud/ColorSelector';
+import { computeRealtimeBotErrorRate, MAX_BOT_DISPLAY_PR } from '../features/personas/botPersonas';
 import type { Player } from '../engine/backgammonEngine';
 
 /** Vues exclusives de l'application (une seule montée à la fois). */
@@ -91,7 +92,7 @@ export default function Home() {
         currentTurnDiceRef, latestGameAnalysis, handleGameOverAnalysis, resetGameHistory,
     } = useGamePersistence({ game, isMultiplayerActive, t });
 
-    // Coach IA en temps réel
+    // Coach IA en temps réel (sur mobile, notifications non-intrusives via CoachMobileSummaryBar sans tiroir auto)
     const {
         coach, coachHighlight, matchStats, matchStatsX, matchStatsO, lastMoveFeedback,
         coachHistory, selectedCoachHistoryIndex, selectCoachHistoryIndex,
@@ -99,11 +100,12 @@ export default function Home() {
         isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: handleTriggerCoach,
     } = useCoach({
         game, currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
-        onCoachTriggered: modals.openMobileDrawer,
     });
 
-    const prX = matchStatsX.decisionsCount > 0 ? (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500 : null;
-    const prO = matchStatsO.decisionsCount > 0 ? (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500 : null;
+    const prX = matchStatsX.decisionsCount > 0 ? (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500 : 0.0;
+    const prO = matchStatsO.decisionsCount > 0
+        ? Math.min(MAX_BOT_DISPLAY_PR, (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500)
+        : computeRealtimeBotErrorRate(game.matchLog, game.difficulty);
 
     // Interaction pions et dés
     const {
@@ -148,12 +150,19 @@ export default function Home() {
         }
     }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, modals, game]);
 
-    // Détection d'invitation 1-clic Salon Privé (?join=BG-XXXX ou ?room=BG-XXXX)
+    // Détection d'invitation 1-clic Salon Privé (?join=BG-XXXX) ou Entraînement Tournoi (?matchLength=15)
     usePrivateRoomInvite({
         onAutoJoinRoom: useCallback((code: string) => {
             userInitiatedMultiplayerRef.current = true;
             modals.openPrivateRoomModal(code);
         }, [modals]),
+        onAutoStartTournamentMatch: useCallback((len: number, tourneyName: string | null) => {
+            userInitiatedMultiplayerRef.current = false;
+            game.startNewMatch(len, 'expert');
+            resetGameHistory();
+            setAppScreen('GAME');
+            toast.success(tourneyName ? `${tourneyName} (${len} pts)` : `Match de tournoi en ${len} pts`, 'Entraînement Tournoi');
+        }, [game, resetGameHistory]),
     });
 
     /** Démarre le match depuis le lobby et bascule sur la vue GAME. */
@@ -233,7 +242,7 @@ export default function Home() {
 
     const mainAmbianceClass =
         theme === 'snowie_classic'
-            ? 'bg-[#120703] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#3a1d10_0%,#1a0c06_45%,#080302_100%)] text-amber-50 selection:bg-amber-600'
+            ? 'bg-slate-950 bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#1e293b_0%,#0f172a_50%,#020617_100%)] text-slate-100 selection:bg-amber-500'
             : theme === 'tournament'
                 ? 'bg-[#0a180f] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#183a24_0%,#0c1f14_50%,#040a06_100%)] text-slate-100 selection:bg-emerald-600'
                 : 'bg-slate-950 text-slate-100 selection:bg-amber-500';

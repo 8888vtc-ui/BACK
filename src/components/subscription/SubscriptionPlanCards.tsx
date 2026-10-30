@@ -29,7 +29,7 @@ export const SubscriptionPlanCards: React.FC<SubscriptionPlanCardsProps> = ({
                     {isEn ? 'Starter Monthly' : 'Plan Mensuel (1 Joueur)'}
                 </span>
                 <div className="mt-2 flex items-baseline gap-1.5">
-                    <span className="font-mono text-2xl font-black text-[#fdf8eb]">9,99 €</span>
+                    <span className="font-mono text-2xl font-black text-[#fdf8eb]">14,99 €</span>
                     <span className="text-xs text-[#e8dcc6]/75">{isEn ? '/ mo' : 'TTC / mois'}</span>
                 </div>
                 <p className="mt-1 text-[11px] text-[#e8dcc6]/70">
@@ -51,13 +51,13 @@ export const SubscriptionPlanCards: React.FC<SubscriptionPlanCardsProps> = ({
                         {isEn ? 'Annual (Most Popular)' : 'Plan Annuel (Le Plus Populaire)'}
                     </span>
                     <span className="rounded-full border border-[#f3c65f]/60 bg-[#3d181c] px-2 py-0.5 text-[10px] font-black text-[#fce8b2]">
-                        -33 %
+                        -45 %
                     </span>
                 </div>
                 <div className="mt-2 flex items-baseline gap-1.5">
-                    <span className="font-mono text-2xl font-black text-[#f3c65f]">6,67 €</span>
+                    <span className="font-mono text-2xl font-black text-[#f3c65f]">8,25 €</span>
                     <span className="text-xs text-[#e8dcc6]/80">
-                        {isEn ? '/ mo (79,99 € / yr)' : '/ mois (79,99 € TTC / an)'}
+                        {isEn ? '/ mo (99,00 € / yr)' : '/ mois (99,00 € TTC / an)'}
                     </span>
                 </div>
                 <p data-testid="annual-absolute-savings-label" className="mt-1 text-[11px] font-bold text-amber-300">

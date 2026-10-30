@@ -237,7 +237,7 @@ begin
         new.id,
         coalesce(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1) || '_' || substr(new.id::text, 1, 4)),
         coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
-        new.raw_user_meta_data->>'avatar_url'
+        coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture')
     )
     on conflict (id) do nothing;
 

@@ -21,7 +21,7 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 - **Doctrine Active (« Perfection Produit Max 70 % $\to$ 100 % »)** : Focus exclusif sur l'éradication de tous les bugs (zéro coup douteux du Bot, stabilité géométrique et esthétique Haute-Horlogerie Monte-Carlo, fluidité 60 FPS) avant l'activation commerciale. Voir [`SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md`](SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md).
 - **Modules Actifs Clés** : Jeu Solo vs Bot Open Sage (4 niveaux), Salon Privé sur code 4 chiffres (`BG-XXXX`), Puzzles Quotidiens V2 (`/daily-puzzle` & `/puzzles`), Drills (`/drills`) et Gammon Academy (`/academy`).
 - **Persistance** : Supabase (Postgres + Auth + RLS + Cache Coach L2 `coach_explanations` + Erreurs récurrentes `recurring_errors` + Profils `profiles`).
-- **Tests** : Vitest (1 310 tests unitaires sur 224 fichiers, 0 échec) + Playwright (e2e) + pytest (`bgsage-service/`).
+- **Tests** : Vitest (1 463 tests unitaires sur 241 fichiers, 0 échec) + Playwright (e2e) + pytest (`bgsage-service/`).
 
 ---
 
@@ -46,23 +46,25 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | Dossier | Rôle |
 |---|---|
 | `coach/` | Extracteur de concepts, classificateur de blunders, prompts LLM, **`logAnalyzer.ts` (pipeline log-driven + verdicts 4 paliers)** |
+| `personas/` | **Écosystème des 4 Bots Personnifiés (`botPersonas.ts` : Blitz, Riviera, Videau, Intellectuel), biais tactiques plateau, mode adaptatif `fun`/`pro`, garde-fous App Store 1.2 et comparateur Swap Dice** |
 | `drills/` | Moteur d'exercices de répétition espacée sur blunders (réservé aux abonnés Pro) |
 | `multiplayer/` | Validation d'actions, Glicko-2, Salons Privés temps réel par code `BG-XXXX` |
 | `puzzles/` | Puzzles quotidiens |
 | `rating/` | Analyse de partie, calcul de PR |
 | `openings/` | Base d'ouvertures |
 | `academy/` | Données encyclopédiques 3-Ply des 15 ouvertures (`academyData.ts`) et guides stratégiques 6 langues (`academyTranslations.ts`) |
-| `export/` | Sérialisation XGID/SGF/MAT, partage |
+| `export/` | Sérialisation XGID/SGF/MAT, partage, **reconnaissance photo de tournoi & éditeur tactile (`positionPhotoParser.ts`)** |
+| `tournaments/` | Base de données mondiale des tournois (`worldTournamentsCatalog.ts`, `tournamentEngine.ts`, palmarès et archives des finales `worldTournamentsResults.ts`) |
 | `knowledge/` | Base de connaissances pédagogiques |
 
 ### `src/components/` — Composants React (présentation)
 | Dossier | Rôle |
 |---|---|
-| `board/` | Plateau (`Board.tsx`, `GameScreenView.tsx`, `GameBoardArea.tsx`, `MobileThumbDock.tsx`, `PipCountBadge.tsx`, `MatchClockBadge.tsx`, géométrie, thèmes) |
+| `board/` | Plateau (`Board.tsx`, `GameScreenView.tsx`, `GameBoardArea.tsx`, `MobileThumbDock.tsx`, `PipCountBadge.tsx`, `MatchClockBadge.tsx`, grille mobile `12,65` col. `1.15:1`, géométrie, thèmes) |
 | `lobby/` | Lobby principal (`LobbyScreen.tsx`, `LearningModulesGrid.tsx`, `AppScreenViews.tsx`) |
 | `nav/` | Barre de navigation horlogère (`AppNavbar.tsx`) et sélecteur 6 langues (`LanguageSelector.tsx`) |
 | `academy/` | Hub SEO Gammon Academy (`GammonAcademyView.tsx`, `OpeningRollsTable.tsx`, `MatchEquityCalculator.tsx`, `KeithRaceCalculatorCard.tsx`, `matchEquityCalculatorData.ts`, `AcademyKnowledgeGrid.tsx`) |
-| `coach/` | Panneau coach (`CoachPanel.tsx`, `CoachSidebar.tsx`, `CoachMobileDrawer.tsx`, `CoachPanelView.tsx`, `CoachMoveComparisonCard.tsx`) |
+| `coach/` | Panneau coach (`CoachPanel.tsx`, `CoachSidebar.tsx`, `CoachMobileDrawer.tsx`, `MobilePortraitCoachBanner.tsx`, `CoachPanelView.tsx`, `CoachMoveComparisonCard.tsx`) |
 | `hud/` | HUD de match (`MatchHud.tsx`, `MatchHeader.tsx`, `HudScoreboard.tsx`, `FischerClockBadge.tsx`, `MatchTurnBar.tsx`, sélecteurs) |
 | `multiplayer/` | Bannière et composants multijoueur (`MultiplayerBanner.tsx`, `PrivateRoomModal.tsx`) |
 | `rating/` | Review de partie, courbes, cours IA (`GameReviewCourse.tsx`) |
@@ -76,7 +78,9 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | `drills/` | Entraînement sur blunders (`BlunderDrillView.tsx`, `BlunderDrillHeader.tsx`, `BlunderDrillFeedbackCard.tsx`) |
 | `puzzle/` | Composants V2 du Puzzle du Jour (`DailyPuzzleBoard.tsx`, `DailyPuzzleResultCard.tsx`, `DailyStreakBadge.tsx`) |
 | `share/` | Partage social viral HD Canvas (`ShareBlunderButton.tsx`) |
-| `auth/`, `common/`, `toast/`, `providers/`, `modals/` | Infra UI (`GameModalsContainer.tsx`, `UserAccountMenu.tsx`) |
+| `tournaments/` | Hub mondial des tournois (`TournamentWorldHubView.tsx`, `TournamentCard.tsx`, `TournamentAgendaView.tsx`, `TournamentDetailView.tsx`, `TournamentResultsArchiveView.tsx`, `SubmitTournamentModal.tsx`) |
+| `clock/` | **Pendule WBF / Bronstein Tête-Bêche, Scoreboard Crawford & Arbitre Photo 1-Tap (`TournamentTableClockModal.tsx`)** |
+| `auth/`, `common/`, `toast/`, `providers/`, `modals/` | Infra UI (`GameModalsContainer.tsx`, `MatchImportExportModal.tsx`, `PositionPhotoScannerTab.tsx`, `UserAccountMenu.tsx`) |
 
 ### `src/hooks/` — Hooks React & Sous-modules découplés (Règle R1 : Hook $\le 200$, Logic $\le 400$)
 | Hook / Dossier | Rôle |
@@ -123,8 +127,10 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | Chemin | Rôle |
 |---|---|
 | `page.tsx` | Orchestrateur principal (274 lignes, conforme R1 < 300 lignes) à 3 vues exclusives (`LOBBY`, `GAME`, `SUMMARY`) |
+| `tournaments/` | Hub mondial (`/tournaments`), fiches SEO programmatiques des 18 tournois (`/tournaments/[slug]`) |
+| `auth/callback/` | Échange de session sécurisé pour Google / Gmail OAuth (`route.ts`) |
 | `academy/`, `drills/`, `puzzles/`, `daily-puzzle/`, `progression/`, `pricing/` | Hub SEO Gammon Academy (`/academy`), Puzzles Quotidiens V2 unifiés (`/puzzles` & `/daily-puzzle`), Drills Pro (`/drills`), Progression (`/progression`), Grille Tarifaire VIP (`/pricing`) |
-| `api/coach/`, `api/evaluate/`, `api/rollout/`, `api/stripe/`, `api/multiplayer/`, `api/health/` | Route Handlers serveur (Coach SSE + quota 402, Open Sage, Rollouts, Stripe Checkout/Webhook, Validation multijoueur, Health) |
+| `api/coach/`, `api/evaluate/`, `api/rollout/`, `api/scan-position/`, `api/stripe/`, `api/multiplayer/`, `api/health/` | Route Handlers serveur (Coach SSE + quota 402, Open Sage, Rollouts, Scan Photo Vision IA, Stripe Checkout/Webhook, Validation multijoueur, Health) |
 
 ### `src/workers/` — Web Workers
 | Fichier | Rôle |
@@ -200,6 +206,7 @@ Voir [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md) pour
 | Où sont les règles de scalabilité ? | [`SCALABILITY.md`](SCALABILITY.md) |
 | Où est le référentiel d'excellence (Game Feel, Glicko-2, Audio, Provably Fair) ? | [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md) |
 | Où est l'architecture détaillée ? | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| Où sont la Base Mondiale des Tournois et le Palmarès ? | [`src/features/tournaments/`](src/features/tournaments/) + [`src/components/tournaments/`](src/components/tournaments/) + [`src/app/tournaments/`](src/app/tournaments/) |
 
 ---
 
@@ -208,7 +215,7 @@ Voir [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md) pour
 | Catégorie | Fichiers de référence actifs | Archives historiques (`archive/docs_historiques/`) |
 |---|---|---|
 | **Manifeste & Stratégie Produit** | [`SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md`](SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md), [`docs/PLAN_ACTION_PRODUIT.md`](docs/PLAN_ACTION_PRODUIT.md) | `archive/docs_historiques/ROADMAP_PARITE_XG_GALAXY.md`, `archive/docs_historiques/AUDIT_SYSTEME_ET_PARITE_XG_GALAXY.md` |
-| **Excellence & Game Feel** | [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md) (Game Feel WAAPI, Glicko-2 Composite, Audio modal, Provably Fair) | — |
+| **Excellence, Mobile & Scanner Photo** | [`docs/MASTER_SPEC_EXCELLENCE.md`](docs/MASTER_SPEC_EXCELLENCE.md), [`docs/MOBILE_ARCHITECTURE_AND_PHOTO_SCANNER.md`](docs/MOBILE_ARCHITECTURE_AND_PHOTO_SCANNER.md) | — |
 | **Moteur IA** | [`DOCS_ENGINE.md`](DOCS_ENGINE.md), [`bgsage-service/README.md`](bgsage-service/README.md), [`docs/adr/0009-open-sage-cloud-run.md`](docs/adr/0009-open-sage-cloud-run.md) | `archive/projet_abandonne_bot_non_fiable/`, `archive/docs_historiques/TECHNIQUE_XG.md`, `archive/docs_historiques/PLAN_AMELIORATION_XG.md` |
 | **Architecture & Règles** | [`PROJECT_MAP.md`](PROJECT_MAP.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCALABILITY.md`](SCALABILITY.md), [`GOVERNANCE.md`](GOVERNANCE.md) | `archive/docs_historiques/AUDIT_FRONTEND_COMPLET.md`, `archive/docs_historiques/FRONTEND_REFACTOR_PLAN.md` |
 | **Marque, SEO & i18n (6 Langues)** | [`docs/SEO_AND_I18N_MASTERPLAN.md`](docs/SEO_AND_I18N_MASTERPLAN.md), [`docs/BRAND_AND_SEO.md`](docs/BRAND_AND_SEO.md) | — |

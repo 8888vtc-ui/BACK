@@ -646,12 +646,13 @@ export async function analyzeHumanMoveFromLogWithBgsage(
         };
     };
 
-    // 1. Tentative via le bgsage-service (réseau de neurones Open Sage).
+    // 1. Tentative via le bgsage-service (réseau de neurones Open Sage, 3-ply niveau ultime par défaut).
     if (params.signal?.aborted) {
         return null;
     }
+    const targetPly = params.ply ?? 3;
     try {
-        const bgsageResult = await evaluateWithBgsage(xgid, params.ply ?? 2, 3000);
+        const bgsageResult = await evaluateWithBgsage(xgid, targetPly, 4000);
         if (params.signal?.aborted) {
             return null;
         }
@@ -730,7 +731,7 @@ export async function analyzeHumanMoveFromLogWithBgsage(
                     legalSeqs,
                     candidates: bgsageResult.chequerPlay,
                     bestEquity,
-                    ply: params.ply ?? 2,
+                    ply: 2,
                 });
                 playedEquity = bestEquity - offList.equityLoss;
             }
@@ -766,7 +767,7 @@ export async function analyzeHumanMoveFromLogWithBgsage(
                 isRace: Boolean(bgsageResult.isRace),
                 playerGamePlan: bgsageResult.gamePlans?.player ?? bestMove.playerGamePlan ?? 'contact',
                 opponentGamePlan: bgsageResult.gamePlans?.opponent ?? bestMove.opponentGamePlan ?? 'contact',
-                evalLevel: bestMove.evalLevel ?? `${params.ply ?? 2}-ply`,
+                evalLevel: bestMove.evalLevel ?? `${targetPly}-ply`,
                 optimalMetrics: toBgsageMoveMetrics(bestMove),
                 playedMetrics: matched ? toBgsageMoveMetrics(matched) : undefined,
             };

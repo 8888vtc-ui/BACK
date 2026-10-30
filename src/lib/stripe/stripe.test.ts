@@ -28,15 +28,15 @@ describe('Stripe Billing, Checkout & Webhooks', () => {
         vi.restoreAllMocks();
     });
 
-    it('expose le catalogue officiel : Mensuel 9,99 € TTC et Annuel 79,99 € TTC (-33 %, 7j d’essai)', () => {
+    it('expose le catalogue officiel : Mensuel 14,99 € TTC et Annuel 99,00 € TTC (-45 %, 7j d’essai)', () => {
         expect(STRIPE_PLANS.coach_monthly.priceId).toBe('price_coach_monthly');
-        expect(STRIPE_PLANS.coach_monthly.priceEur).toBe(9.99);
+        expect(STRIPE_PLANS.coach_monthly.priceEur).toBe(14.99);
         expect(STRIPE_PLANS.coach_monthly.trialPeriodDays).toBe(0);
 
         expect(STRIPE_PLANS.coach_yearly.priceId).toBe('price_coach_yearly');
-        expect(STRIPE_PLANS.coach_yearly.priceEur).toBe(79.99);
+        expect(STRIPE_PLANS.coach_yearly.priceEur).toBe(99.0);
         expect(STRIPE_PLANS.coach_yearly.trialPeriodDays).toBe(7);
-        expect(STRIPE_PLANS.coach_yearly.badgeFr).toBe('Économisez 33 % — 6,67 € / mois');
+        expect(STRIPE_PLANS.coach_yearly.badgeFr).toBe('Économisez 45 % — 8,25 € / mois');
     });
 
     it('POST /api/stripe/checkout crée une session subscription avec trial_period_days=7 et user_id en metadata', async () => {
@@ -205,9 +205,9 @@ describe('Stripe Billing, Checkout & Webhooks', () => {
     });
 
     it('expose le 3e palier d’ancrage haut (club_chouette : 149,99 € / an, 5 sièges) et l’économie absolue en €/an', () => {
-        expect(STRIPE_PLANS.coach_yearly.annualSavingsEur).toBe(39.89);
+        expect(STRIPE_PLANS.coach_yearly.annualSavingsEur).toBe(80.88);
         expect(STRIPE_PLANS.coach_yearly.annualSavingsLabelFr).toBe(
-            'Économisez 33 % — soit 39,89 € / an',
+            'Économisez 45 % — soit 80,88 € / an',
         );
         expect(STRIPE_PLANS.club_chouette.priceId).toBe('price_club_chouette');
         expect(STRIPE_PLANS.club_chouette.priceEur).toBe(149.99);

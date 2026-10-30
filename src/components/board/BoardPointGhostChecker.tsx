@@ -19,7 +19,7 @@ export interface BoardPointGhostCheckerProps {
     readonly combinedTargetDieValue?: number | null;
 }
 
-const GHOST_CHECKER_SIZE = 'clamp(22px, min(calc(6.2vw + 1.5px), calc((100dvh - 135px) / 10.8)), 46px)';
+const GHOST_CHECKER_SIZE = 'clamp(26.5px, min(7.4vw, calc((100dvh - 135px) / 11.2)), 46px)';
 
 export const BoardPointGhostChecker: React.FC<BoardPointGhostCheckerProps> = ({
     pointNumber,

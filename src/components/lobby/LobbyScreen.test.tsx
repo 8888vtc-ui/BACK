@@ -162,4 +162,40 @@ describe('LobbyScreen', () => {
         expect(screen.getByTestId('lobby-prematch-briefing').className).toContain('border-white/10');
         expect(screen.getByTestId('lobby-module-puzzles').className).toContain('border-white/10');
     });
+
+    it('expose en 1 tap au-dessus de la ligne de flottaison le Scanner Photo et la Pendule WBF de Tournoi', () => {
+        const onOpenModule = vi.fn();
+        render(<LobbyScreen onStart={vi.fn()} onOpenModule={onOpenModule} />);
+
+        const scannerBtn = screen.getByTestId('lobby-quick-scanner-btn');
+        const clockBtn = screen.getByTestId('lobby-quick-clock-btn');
+        expect(scannerBtn).toBeDefined();
+        expect(clockBtn).toBeDefined();
+
+        fireEvent.click(scannerBtn);
+        expect(onOpenModule).toHaveBeenCalledWith('import_export');
+
+        fireEvent.click(clockBtn);
+        expect(screen.getByTestId('tournament-table-clock-modal')).toBeDefined();
+    });
+
+    it('permet de basculer en 1 tap entre Match (3/5/7/11 pts - Crawford) et Money Game (Jacoby) sans ouvrir de sous-menu', () => {
+        const onStart = vi.fn();
+        render(<LobbyScreen onStart={onStart} initialMatchLength={7} />);
+
+        const startBtn = screen.getByTestId('lobby-start-btn');
+        expect(startBtn.textContent).toContain('MATCH 7 PTS');
+
+        // Passage en 5 pts en 1 tap
+        fireEvent.click(screen.getByTestId('lobby-quick-pts-5'));
+        expect(startBtn.textContent).toContain('MATCH 5 PTS');
+
+        // Bascule en Money Game en 1 tap
+        fireEvent.click(screen.getByTestId('lobby-pill-money-mode'));
+        expect(screen.getByTestId('lobby-money-rule-badge')).toBeDefined();
+        expect(startBtn.textContent).toContain('MONEY GAME');
+
+        fireEvent.click(startBtn);
+        expect(onStart).toHaveBeenCalledWith(expect.objectContaining({ matchLength: 0 }));
+    });
 });

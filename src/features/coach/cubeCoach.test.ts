@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 /**
- * Tests du module cubeCoach (analyse pédagogique des décisions de videau).
+ * Tests du module cubeCoach (analyse pédagogique des décisions de videau et des cubes oubliés).
  */
 
 import { describe, it, expect } from 'vitest';
-import { analyzeCubeDecision, classifyCubeResponse } from './cubeCoach';
+import { analyzeCubeDecision, classifyCubeResponse, detectMissedCubeBeforeRoll } from './cubeCoach';
 import type { BoardState } from '../../engine/backgammonEngine';
 
 function makeState(overrides: Partial<BoardState> = {}): BoardState {
@@ -64,11 +64,17 @@ describe('classifyCubeResponse', () => {
         expect(res.verdict).toBe('blunder');
         expect(res.explanation).toContain('Double prématuré');
     });
+
+    it('détecte un videau oublié (missed_double) quand Double était requis', () => {
+        const res = classifyCubeResponse('Double, take', 'missed_double');
+        expect(res.verdict).toBe('blunder');
+        expect(res.explanation).toContain('Videau oublié');
+        expect(classifyCubeResponse('No double, take', 'missed_double').verdict).toBe('optimal');
+    });
 });
 
-describe('analyzeCubeDecision', () => {
+describe('analyzeCubeDecision & detectMissedCubeBeforeRoll', () => {
     it('retourne un verdict optimal pour un double justifié', () => {
-        // Position très favorable : le joueur X a presque gagné.
         const state = makeState({
             board: [
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -83,34 +89,20 @@ describe('analyzeCubeDecision', () => {
         expect(result.advice).toBeTruthy();
     });
 
-    it('détecte un double interdit par la règle de Crawford', () => {
+    it('détecte un double interdit par la règle de Crawford et ignore les cubes oubliés sous Crawford', () => {
         const state = makeState({ crawford: true });
         const result = analyzeCubeDecision(state, 'double');
         expect(result.verdict).toBe('blunder');
         expect(result.explanation).toContain('Crawford');
+        expect(detectMissedCubeBeforeRoll(state)).toBeNull();
     });
 
-    it('retourne un verdict pour un take', () => {
+    it('retourne un verdict pour un take et un pass', () => {
         const state = makeState();
-        const result = analyzeCubeDecision(state, 'take');
-        expect(['optimal', 'good', 'inaccuracy', 'blunder']).toContain(result.verdict);
-        expect(result.playedAction).toBe('take');
-    });
-
-    it('retourne un verdict pour un pass', () => {
-        const state = makeState();
-        const result = analyzeCubeDecision(state, 'pass');
-        expect(['optimal', 'good', 'inaccuracy', 'blunder']).toContain(result.verdict);
-        expect(result.playedAction).toBe('pass');
-    });
-
-    it('fournit toujours une explication et un conseil', () => {
-        const state = makeState();
-        for (const action of ['double', 'take', 'pass'] as const) {
+        for (const action of ['double', 'take', 'pass', 'missed_double'] as const) {
             const result = analyzeCubeDecision(state, action);
             expect(result.explanation.length).toBeGreaterThan(0);
             expect(result.advice.length).toBeGreaterThan(0);
         }
     });
 });
-

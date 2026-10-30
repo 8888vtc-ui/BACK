@@ -144,12 +144,21 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
         return <div className="flex min-h-0">{points.map(renderPoint)}</div>;
     }
 
+    const isBearOffExpanded = offTray.count > 0 || offTray.isTarget || offTray.isOpponentToOff;
+
     return (
         <div className="contents">
             <div className="flex min-h-0">{points.map(renderPoint)}</div>
             <div
-                className={`w-7 sm:w-14 md:w-20 pl-0.5 ml-0.5 sm:pl-1.5 sm:ml-1 border-l border-amber-500/25 flex flex-col ${
-                    isTopRow ? 'justify-start pt-1 pb-1 sm:pb-2' : 'justify-end pt-1 sm:pt-2 pb-1'
+                data-bearoff-expanded={isBearOffExpanded ? 'true' : 'false'}
+                className={`${
+                    offTray.isTarget
+                        ? 'w-8 max-sm:pl-0.5 max-sm:ml-0.5 border-l'
+                        : isBearOffExpanded
+                          ? 'w-4 max-sm:pl-0.5 max-sm:ml-0 border-l'
+                          : 'max-sm:w-0 max-sm:p-0 max-sm:m-0 max-sm:border-0 max-sm:overflow-hidden w-0'
+                } sm:w-14 md:w-20 sm:pl-1.5 sm:ml-1 sm:border-l border-amber-500/25 flex flex-col transition-[width] duration-200 ${
+                    isTopRow ? 'justify-start pt-0.5 sm:pt-1 pb-0.5 sm:pb-2' : 'justify-end pt-0.5 sm:pt-2 pb-0.5 sm:pb-1'
                 }`}
             >
                 <BoardOffTray

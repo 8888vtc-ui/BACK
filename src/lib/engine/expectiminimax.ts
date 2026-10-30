@@ -181,6 +181,7 @@ export function refineTopCandidatesExpectiminimax2Ply(
     const topCount = Math.min(maxCandidates, scoredCandidates.length);
 
     const refined = [...scoredCandidates];
+    let evaluatedCount = 0;
 
     for (let i = 0; i < topCount; i++) {
         const elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startTime;
@@ -203,9 +204,28 @@ export function refineTopCandidatesExpectiminimax2Ply(
             equity: result2Ply.equity,
             probabilities: result2Ply.probabilities,
         };
+        evaluatedCount++;
     }
 
-    // Re-tri des candidats avec leurs scores affinés en 2-ply
-    refined.sort((a, b) => b.equity - a.equity);
-    return refined;
+    if (evaluatedCount === 0) {
+        return scoredCandidates;
+    }
+
+    // Re-tri exclusif des candidats réellement évalués en 2-ply pour ne pas mélanger
+    // les équités 2-ply (après réplique adverse) avec les équités statiques 0-ply de la queue.
+    const evaluatedSlice = refined.slice(0, evaluatedCount);
+    evaluatedSlice.sort((a, b) => b.equity - a.equity);
+
+    const minEvaluated2Ply = evaluatedSlice[evaluatedSlice.length - 1].equity;
+    const lastEvaluated0Ply = scoredCandidates[evaluatedCount - 1].equity;
+
+    for (let i = evaluatedCount; i < refined.length; i++) {
+        const delta0 = Math.max(0.001, lastEvaluated0Ply - scoredCandidates[i].equity);
+        refined[i] = {
+            ...refined[i],
+            equity: Number((minEvaluated2Ply - delta0).toFixed(4)),
+        };
+    }
+
+    return [...evaluatedSlice, ...refined.slice(evaluatedCount)];
 }

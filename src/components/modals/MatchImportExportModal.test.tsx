@@ -163,4 +163,37 @@ describe('MatchImportExportModal', () => {
         expect(writeTextMock).toHaveBeenCalledTimes(1);
         expect(writeTextMock.mock.calls[0][0]).toMatch(/^XGID=/);
     });
+
+    it('permet d’ouvrir l’onglet Photo / Éditeur Tactile, de modifier une flèche en 1 tap et de charger la position', () => {
+        render(
+            <MatchImportExportModal
+                isOpen={true}
+                onClose={mockClose}
+                currentState={defaultState}
+                onImportState={mockImportState}
+                locale="fr"
+            />
+        );
+
+        const scannerTab = screen.getByTestId('tab-photo-scanner-btn');
+        fireEvent.click(scannerTab);
+
+        expect(screen.getByTestId('position-photo-scanner-tab')).toBeDefined();
+
+        // Tester le Verdict Instantané (Videau + Meilleur Coup) et l'inversion des côtés
+        fireEvent.click(screen.getByTestId('editor-instant-eval-btn'));
+        expect(screen.getByTestId('editor-instant-verdict-box')).toBeDefined();
+        fireEvent.click(screen.getByTestId('editor-invert-sides-btn'));
+
+        // Vider le plateau puis ajouter un pion Blanc sur la flèche 5 en 1 tap
+        fireEvent.click(screen.getByTestId('editor-clear-board-btn'));
+        fireEvent.click(screen.getByTestId('editor-point-5'));
+
+        const applyBtn = screen.getByTestId('apply-scanned-position-btn');
+        fireEvent.click(applyBtn);
+
+        expect(mockImportState).toHaveBeenCalledTimes(1);
+        expect(mockImportState.mock.calls[0][0].board[5]).toBe(1);
+        expect(mockClose).toHaveBeenCalledTimes(1);
+    });
 });

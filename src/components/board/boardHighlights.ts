@@ -108,11 +108,16 @@ export function computeGhostDestinations(params: {
         return new Set<number>();
     }
 
+    const combinedSelected = new Set([
+        ...(leftDieTargets.get(selectedPoint) ?? []),
+        ...(rightDieTargets.get(selectedPoint) ?? []),
+    ]);
+    if (combinedSelected.size > 0) return combinedSelected;
     if (selectedDie !== null) {
         const targets = selectedDie === 0 ? leftDieTargets : rightDieTargets;
         return new Set(targets.get(selectedPoint) ?? []);
     }
-    return new Set([...(leftDieTargets.get(selectedPoint) ?? []), ...(rightDieTargets.get(selectedPoint) ?? [])]);
+    return combinedSelected;
 }
 
 /**

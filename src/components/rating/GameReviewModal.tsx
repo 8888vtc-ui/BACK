@@ -5,7 +5,6 @@
  */
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import Link from 'next/link';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
 import { shareContent, shareGameResult } from '../../lib/capacitor/share';
 import { impactLight } from '../../lib/capacitor/haptics';
@@ -122,34 +121,38 @@ export default function GameReviewModal({
     const tabBtnClass = (tab: ReviewTab) =>
         `flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition whitespace-nowrap ${
             activeTab === tab
-                ? 'border border-[#f5d77f]/60 bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#f3c65f] text-[#1a0f07] shadow-md'
-                : 'border border-white/10 bg-[#1a0f08] text-[#e8dcc6]/80 hover:border-[#d4af37]/45 hover:text-white'
+                ? 'border border-amber-400/60 bg-amber-400 text-slate-950 shadow-md'
+                : 'border border-white/10 bg-slate-900 text-slate-300 hover:border-amber-400/45 hover:text-white'
         }`;
 
     return (
         <div
             role="dialog" aria-modal="true" aria-labelledby="game-review-title" data-testid="game-review-modal"
+            onClick={onClose}
             className={`fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-5 animate-in fade-in duration-200 overflow-y-auto ${modalClasses.overlay}`}
         >
-            <div className={`relative w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl shadow-2xl my-auto transition-all ${modalClasses.container}`}>
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className={`relative w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl shadow-2xl my-auto transition-all ${modalClasses.container}`}
+            >
                 {/* 1. En-tête du Modal */}
                 <div className={`flex items-center justify-between border-b p-4 sm:p-5 ${modalClasses.header}`}>
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d4af37]/50 bg-gradient-to-br from-[#33200f] to-[#1a0f07] text-xl text-[#f3c65f] shadow-lg">⚜</div>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-amber-400/40 bg-amber-400/15 text-lg text-amber-300 shadow-inner">📊</div>
                         <div>
                             <div className="flex flex-wrap items-center gap-2">
-                                <h2 id="game-review-title" className="font-serif text-lg sm:text-xl font-black tracking-tight text-[#fdf8eb]">
+                                <h2 id="game-review-title" className="font-sans text-lg sm:text-xl font-black tracking-tight text-white">
                                     Bilan &amp; Estimation du PR
                                 </h2>
-                                <span className="rounded-full border border-[#d4af37]/50 bg-[#2a1a0d] px-2.5 py-0.5 text-xs font-bold text-[#fce8b2]">{analysis.prCategory}</span>
-                                <span data-testid="daily-quota-badge" className="rounded-full border border-white/15 bg-[#1a0f07] px-2.5 py-0.5 text-[11px] font-semibold text-[#f3c65f]">{quotaBadgeLabel}</span>
+                                <span className="rounded-full border border-amber-400/40 bg-slate-900 px-2.5 py-0.5 text-xs font-bold text-amber-300">{analysis.prCategory}</span>
+                                <span data-testid="daily-quota-badge" className="rounded-full border border-white/10 bg-slate-900 px-2.5 py-0.5 text-[11px] font-semibold text-slate-300">{quotaBadgeLabel}</span>
                             </div>
-                            <p className="text-xs text-[#e8dcc6]/70 mt-0.5">Navigation coup par coup, courbe d&apos;équité et analyse conceptuelle.</p>
+                            <p className="text-xs text-slate-400 mt-0.5">Navigation coup par coup, courbe d&apos;équité et analyse conceptuelle.</p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <button type="button" onClick={handleExportSgf} data-testid="export-sgf-review-btn" title="Télécharger l'enregistrement au format SGF" className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-[#221309] px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-[#fce8b2] hover:border-[#f3c65f] transition">
+                        <button type="button" onClick={handleExportSgf} data-testid="export-sgf-review-btn" title="Télécharger l'enregistrement au format SGF" className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-amber-400/50 transition">
                             <span>💾</span><span className="hidden sm:inline">Export</span><span>SGF</span>
                         </button>
                         <button
@@ -162,22 +165,22 @@ export default function GameReviewModal({
                                     dialogTitle: 'Partager mon bilan de partie',
                                 }).catch(() => {});
                             }}
-                            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-white/15 bg-[#221309] px-3 py-1.5 text-xs font-semibold text-[#fce8b2] hover:border-[#f3c65f] transition"
+                            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-amber-400/50 transition"
                         >
                             <span>📤</span><span>Partager PR</span>
                         </button>
-                        <button type="button" onClick={onClose} aria-label="Fermer le bilan" data-testid="close-review-modal-btn" className="rounded-xl border border-white/15 bg-[#1e120a] p-2 text-[#e8dcc6]/80 hover:text-white hover:border-[#f3c65f] transition">✕</button>
+                        <button type="button" onClick={onClose} aria-label="Fermer le bilan" data-testid="close-review-modal-btn" className="rounded-xl border border-white/10 bg-slate-900 p-2 text-slate-300 hover:text-white hover:border-amber-400/50 transition">✕</button>
                     </div>
                 </div>
 
                 {/* 2. Onglets de Navigation Post-Partie (5 onglets distincts sans doublon) */}
-                <div role="tablist" aria-label="Sections du bilan" className="flex items-center gap-1.5 border-b border-white/10 bg-[#0d0704]/80 px-4 sm:px-6 py-2.5 overflow-x-auto">
+                <div role="tablist" aria-label="Sections du bilan" className="flex items-center gap-1.5 border-b border-white/10 bg-slate-950/80 px-4 sm:px-6 py-2.5 overflow-x-auto">
                     <button type="button" role="tab" aria-selected={activeTab === 'overview'} onClick={() => setActiveTab('overview')} className={tabBtnClass('overview')} data-testid="tab-overview">
                         <span>📈</span><span>Courbe &amp; Synthèse</span>
                     </button>
                     <button type="button" role="tab" aria-selected={activeTab === 'step_by_step'} onClick={() => { setDrillModeActive(false); setActiveTab('step_by_step'); }} className={tabBtnClass('step_by_step')} data-testid="tab-step-by-step">
                         <span>♟️</span><span>Coup par Coup</span>
-                        <span className="rounded-full bg-[#120904] px-1.5 py-0.2 text-[10px] text-[#f3c65f]">#{selectedIndex + 1}</span>
+                        <span className="rounded-full bg-slate-950/60 px-1.5 py-0.2 text-[10px] text-amber-300">#{selectedIndex + 1}</span>
                     </button>
                     <button type="button" role="tab" aria-selected={activeTab === 'concepts'} onClick={() => setActiveTab('concepts')} className={tabBtnClass('concepts')} data-testid="tab-concepts">
                         <span>🧠</span><span>Concepts en Erreur</span>
@@ -247,7 +250,7 @@ export default function GameReviewModal({
 
                             {activeTab === 'course' && (
                                 <div className="space-y-5 animate-in fade-in">
-                                    <div className="rounded-2xl border border-white/10 bg-[#140b06]/90 p-4 sm:p-5">
+                                    <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-4 sm:p-5">
                                         <GameReviewCourse analysis={analysis} language={locale} />
                                     </div>
                                 </div>
@@ -256,15 +259,21 @@ export default function GameReviewModal({
                     )}
                 </div>
 
-                {/* 4. Barre d'action inférieure */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 p-4 bg-[#0d0704]/90">
-                    <Link
-                        href="/drills"
-                        className="rounded-xl border border-amber-500/50 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition shadow-sm flex items-center gap-1.5"
+                {/* 4. Barre d'action inférieure (Drill in-place sans quitter le match) */}
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 p-4 bg-slate-950/90">
+                    <button
+                        type="button"
+                        data-testid="review-inline-drill-btn"
+                        onClick={() => {
+                            setSelectedIndex(mistakeIndices[0] ?? 0);
+                            setDrillModeActive(true);
+                            setActiveTab('step_by_step');
+                        }}
+                        className="rounded-xl border border-amber-400/50 bg-amber-400/15 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-amber-400/25 transition shadow-sm flex items-center gap-1.5"
                     >
                         <span>🎯</span>
                         <span>Rejouer mes erreurs en Drill</span>
-                    </Link>
+                    </button>
                     <div className="flex items-center gap-2">
                         <button
                             type="button"

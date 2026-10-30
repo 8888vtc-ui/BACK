@@ -14,6 +14,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CoachPanel from './CoachPanel';
 import CoachLiveAiRadar from './CoachLiveAiRadar';
+import BotPersonaChatCard from './BotPersonaChatCard';
 import CoachMobileSummaryBar from './CoachMobileSummaryBar';
 import CoachMobileHistoryNav from './CoachMobileHistoryNav';
 import ErrorBoundary from '../common/ErrorBoundary';
@@ -166,19 +167,19 @@ const CoachMobileDrawerComponent: React.FC<CoachMobileDrawerProps> = ({
                 }`}
             >
                 <div
-                    className={`relative ${drawerHeightClass} flex flex-col rounded-t-3xl border-t-2 border-[#d4af37]/60 bg-gradient-to-b from-[#180f08]/98 via-[#0e121b]/98 to-[#07090e]/98 text-slate-100 backdrop-blur-2xl shadow-[0_-12px_40px_rgba(0,0,0,0.9)] overflow-hidden transition-all duration-300`}
+                    className={`relative ${drawerHeightClass} flex flex-col rounded-t-3xl border-t border-white/15 bg-slate-950/98 text-slate-100 backdrop-blur-2xl shadow-[0_-12px_40px_rgba(0,0,0,0.9)] overflow-hidden transition-all duration-300`}
                 >
                     {/* Poignée d'ancrage et en-tête */}
                     <div
                         data-testid="coach-drawer-handle"
                         onTouchStart={handleTouchStart}
                         onTouchEnd={handleTouchEnd}
-                        className="flex flex-col border-b border-[#d4af37]/25 bg-gradient-to-r from-[#24160b]/95 via-[#150e08]/95 to-[#1e1309]/95 shrink-0 px-4 py-2 cursor-grab active:cursor-grabbing select-none"
+                        className="flex flex-col border-b border-white/10 bg-slate-900/95 shrink-0 px-4 py-2 cursor-grab active:cursor-grabbing select-none"
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2" onClick={toggleSnapState}>
-                                <span className="h-1.5 w-10 rounded-full bg-[#d4af37]/50 hover:bg-[#d4af37] transition" />
-                                <span className="font-serif text-xs font-bold text-[#fce8b2] tracking-wide">
+                                <span className="h-1.5 w-10 rounded-full bg-slate-600 hover:bg-amber-400 transition" />
+                                <span className="font-sans text-xs font-bold text-white tracking-tight">
                                     🎓 Coach IA {snapState === 'full' ? '(90%)' : '(46%)'}
                                 </span>
                             </div>
@@ -188,7 +189,7 @@ const CoachMobileDrawerComponent: React.FC<CoachMobileDrawerProps> = ({
                                     type="button"
                                     data-testid="coach-drawer-snap-toggle"
                                     onClick={toggleSnapState}
-                                    className="rounded-lg p-1 text-[#f3c65f] hover:text-white transition text-xs font-bold"
+                                    className="rounded-lg p-1 text-amber-300 hover:text-white transition text-xs font-bold"
                                     title={snapState === 'full' ? 'Réduire à 46% (demi-écran)' : 'Agrandir à 90% (plein écran)'}
                                     aria-label="Ajuster la hauteur du tiroir"
                                 >
@@ -197,7 +198,7 @@ const CoachMobileDrawerComponent: React.FC<CoachMobileDrawerProps> = ({
                                 <button
                                     type="button"
                                     onClick={onClose}
-                                    className="rounded-lg p-1 text-[#f3c65f] hover:text-white transition"
+                                    className="rounded-lg p-1 text-slate-300 hover:text-white transition"
                                     aria-label="Fermer le tiroir du coach"
                                 >
                                     ✕
@@ -233,18 +234,8 @@ const CoachMobileDrawerComponent: React.FC<CoachMobileDrawerProps> = ({
                                     matchStatsO={matchStatsO ?? undefined}
                                     topMoves={activeCoach?.candidateMoves}
                                     boardBefore={activeCoach?.boardBefore}
-                                    onReplayMove={
-                                        onReplayMove
-                                            ? () => {
-                                                  onReplayMove();
-                                                  onClose();
-                                              }
-                                            : undefined
-                                    }
-                                    onDismiss={() => {
-                                        onDismiss();
-                                        onClose();
-                                    }}
+                                    onReplayMove={onReplayMove ? () => { onReplayMove(); onClose(); } : undefined}
+                                    onDismiss={() => { onDismiss(); onClose(); }}
                                     onOpenKnowledgeConcept={onOpenKnowledgeConcept}
                                     isLoading={isAnalyzing}
                                     matchContext={matchContext ?? undefined}
@@ -258,13 +249,22 @@ const CoachMobileDrawerComponent: React.FC<CoachMobileDrawerProps> = ({
                                 />
                             </ErrorBoundary>
                             {!activeCoach?.verdict && !isAnalyzing && (
-                                <CoachLiveAiRadar
-                                    board={board}
-                                    matchContext={matchContext as MatchContext | undefined}
-                                    verdict={activeCoach?.verdict ?? null}
-                                    equityLoss={activeCoach?.equityLoss ?? null}
-                                    locale={locale}
-                                />
+                                <>
+                                    <CoachLiveAiRadar
+                                        board={board}
+                                        matchContext={matchContext as MatchContext | undefined}
+                                        verdict={activeCoach?.verdict ?? null}
+                                        equityLoss={activeCoach?.equityLoss ?? null}
+                                        locale={locale}
+                                    />
+                                    <BotPersonaChatCard
+                                        verdict={activeCoach?.verdict ?? null}
+                                        equityLoss={activeCoach?.equityLoss ?? null}
+                                        dice={dice ?? null}
+                                        matchStats={matchStats}
+                                        onReplayMove={onReplayMove}
+                                    />
+                                </>
                             )}
                         </div>
                     )}

@@ -11,6 +11,7 @@
  */
 
 import type { Player } from './backgammonEngine';
+import { isInitialBoardPosition } from '../features/openings/openingDatabase';
 
 /** Délai de verrouillage anti-misclick à l'apparition de la modale de videau (ms). */
 export const CUBE_SAFETY_DELAY_MS = 250;
@@ -60,11 +61,14 @@ export interface CubeEligibilityParams {
     readonly scoreX: number;
     readonly scoreO: number;
     readonly matchLength: number;
+    readonly isOpeningPosition?: boolean;
+    readonly board?: ReadonlyArray<number>;
 }
 
 /**
  * Vérifie selon les règles officielles WBF / XG2 si le joueur au trait a le droit
- * de proposer le videau (hors Crawford, hors DMP, hors Dead Cube, avant de lancer les dés).
+ * de proposer le videau (hors position initiale d'ouverture WBF 5.1, hors Crawford,
+ * hors DMP, hors Dead Cube, avant de lancer les dés).
  */
 export function canPlayerOfferDouble(params: CubeEligibilityParams): boolean {
     const {
@@ -76,9 +80,13 @@ export function canPlayerOfferDouble(params: CubeEligibilityParams): boolean {
         scoreX,
         scoreO,
         matchLength,
+        isOpeningPosition,
+        board,
     } = params;
 
     if (hasRolledDice) return false;
+    if (isOpeningPosition) return false;
+    if (board && isInitialBoardPosition(board as number[])) return false;
     if (isCrawford) return false;
     if (cubeValue >= MAX_TOURNAMENT_CUBE_VALUE) return false;
     if (cubeOwner !== null && cubeOwner !== turn) return false;
@@ -87,7 +95,7 @@ export function canPlayerOfferDouble(params: CubeEligibilityParams): boolean {
         if (scoreX >= matchLength || scoreO >= matchLength) return false;
         // Double Match Point (DMP)
         if (scoreX === matchLength - 1 && scoreO === matchLength - 1) return false;
-        // Règle du Dead Cube : le joueur au trait a déjà assez de points avec la valeur actuelle du videau pour gagner le match
+        // Règle du Dead Cube : le joueur au trait a déjà assez de points avec le videau actuel pour gagner le match
         const activePlayerScore = turn === 'X' ? scoreX : scoreO;
         if (activePlayerScore + cubeValue >= matchLength) return false;
     }

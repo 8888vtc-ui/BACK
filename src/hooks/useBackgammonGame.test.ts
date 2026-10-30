@@ -205,11 +205,17 @@ describe('useBackgammonGame - Machine à états (Reducer)', () => {
         expect(s4.phase).toBe('WAITING_FOR_ROLL');
     });
 
-    it('gère les actions de videau : OFFER_DOUBLE, TAKE_DOUBLE', () => {
+    it('gère les actions de videau : interdit OFFER_DOUBLE au démarrage (position initiale), puis autorise OFFER_DOUBLE et TAKE_DOUBLE en cours de partie', () => {
         const s0 = createInitialGameState(7);
         expect(s0.phase).toBe('WAITING_FOR_ROLL');
 
-        // X propose de doubler
+        // Règle WBF 5.1 : interdit de doubler au tout début de la partie (avant le lancer d'ouverture)
+        const sBlockedAtStart = backgammonGameReducer(s0, { type: 'OFFER_DOUBLE' });
+        expect(sBlockedAtStart.phase).toBe('WAITING_FOR_ROLL');
+        expect(sBlockedAtStart.doublingOfferedBy).toBeNull();
+
+        // Partie en cours (après le 1er coup) : X propose de doubler
+        s0.boardState.board[1] = 1;
         const s1 = backgammonGameReducer(s0, { type: 'OFFER_DOUBLE' });
         expect(s1.phase).toBe('DOUBLING_OFFERED');
         expect(s1.doublingOfferedBy).toBe('X');

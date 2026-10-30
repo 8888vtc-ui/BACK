@@ -26,10 +26,14 @@ describe('BoardOffTray / BearOffTray (Audit 4/20)', () => {
         );
 
         expect(screen.getByTestId('tray-counter-x').textContent).toBe('6/15');
+        expect(screen.getByTestId('tray-stack-x').getAttribute('data-grouped-by-five')).toBe('true');
         for (let i = 0; i < 6; i++) {
             const slice = screen.getByTestId(`borne-off-slice-0-${i}`);
             expect(slice.getAttribute('data-beveled-slice')).toBe('true');
         }
+        // La 5e tranche (index 4) marque la fin du premier bloc de 5 pions (5 + 5 + 5)
+        expect(screen.getByTestId('borne-off-slice-0-4').getAttribute('data-group-end')).toBe('true');
+        expect(screen.getByTestId('borne-off-slice-0-5').getAttribute('data-group-end')).toBeNull();
     });
 
     it('permet la sortie en 1-tap (clic gauche), clic droit (second dé) et swipe rapide vers le sabot', () => {

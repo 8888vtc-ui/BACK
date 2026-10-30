@@ -68,7 +68,7 @@ export const DraggedCheckerOverlay: React.FC<DraggedCheckerOverlayProps> = ({ dr
             style={overlayStyle}
             aria-hidden="true"
         >
-            <div className="max-md:-translate-y-7 rounded-full transition-transform duration-75">
+            <div className="max-md:-translate-y-11 rounded-full transition-transform duration-75">
                 <Checker
                     color={dragState.checkerColor as CheckerColor}
                     isPlayable

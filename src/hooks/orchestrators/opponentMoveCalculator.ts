@@ -9,6 +9,16 @@ import {
 } from '../../lib/engine/evaluator';
 import { selectBotMoveWithBgsage } from '../../lib/engine/bgsageClient';
 import { findOpeningBookSequenceForOpponent, isInitialBoardPosition } from '../../features/openings';
+import { isVisuallyObviousBestMove } from '../../features/personas/botPersonas';
+import {
+    selectHumanCalibratedMove,
+    type BotPrErrorBudgetState,
+} from '../../engine/humanBotController';
+
+let sessionBotBudget: BotPrErrorBudgetState = {
+    totalEmgLost: 0,
+    unforcedDecisions: 0,
+};
 
 export interface ResolveOpponentMoveParams {
     stateWithDice: BoardState;
@@ -47,29 +57,34 @@ export function pickLocalMove(
             const unified = findBestBoardMove(stateWithDice, rolledDice, 2);
             if (unified?.sequence) return unified.sequence;
         }
-        if (difficulty === 'intermediate') {
-            const unified = findBestBoardMove(stateWithDice, rolledDice, 1);
-            if (unified?.sequence) return unified.sequence;
-        }
-        if (difficulty === 'beginner') {
+        if (difficulty === 'intermediate' || difficulty === 'beginner') {
             const analysis = analyzeBoardMoves(stateWithDice, rolledDice, {
                 candidateMoves: legalSeqs,
                 ply: 1,
                 maxMoves: 64,
             });
-            if (analysis.moves.length > 0) {
-                let bestMove = analysis.moves[0];
-                let bestNoisyEq = -Infinity;
-                for (const cand of analysis.moves) {
-                    const noisyEq = cand.equity + (Math.random() - 0.5) * 0.28;
-                    if (noisyEq > bestNoisyEq && cand.moves && cand.board) {
-                        bestNoisyEq = noisyEq;
-                        bestMove = cand;
-                    }
+            const validMoves = analysis.moves.filter(
+                (m): m is typeof m & { moves: MoveSequence['moves']; board: number[] } =>
+                    Boolean(m.moves && m.board),
+            );
+            if (validMoves.length > 0) {
+                const topBoard = validMoves[0].board;
+                if (isVisuallyObviousBestMove(stateWithDice.board, topBoard, stateWithDice.turn)) {
+                    return { moves: validMoves[0].moves, board: topBoard };
                 }
-                if (bestMove.moves && bestMove.board) {
-                    return { moves: bestMove.moves, board: bestMove.board };
-                }
+                const calibrated = selectHumanCalibratedMove({
+                    boardBefore: stateWithDice.board,
+                    candidates: validMoves.map((m, idx) => ({
+                        id: `${idx}-${m.notation}`,
+                        sequence: { moves: m.moves, board: m.board },
+                        trueEquity: m.equity,
+                    })),
+                    difficulty,
+                    player: stateWithDice.turn,
+                    budgetState: sessionBotBudget,
+                });
+                sessionBotBudget = calibrated.updatedBudget;
+                return calibrated.selected.sequence;
             }
         }
     } catch {

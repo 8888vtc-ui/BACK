@@ -17,6 +17,7 @@ import {
     EXCLUSIVE_COACH_BENEFITS_EN,
     type PaidSubscriptionTier,
 } from '../../lib/stripe/stripePlans';
+import { buildClubChouetteWhatsAppShareUrl } from '../../features/coach/sixAxesDiagnostic';
 import SubscriptionPlanCards from './SubscriptionPlanCards';
 import SubscriptionTrialAndBenefits from './SubscriptionTrialAndBenefits';
 
@@ -111,15 +112,15 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             : 'Redirection sécurisée vers Stripe…'
         : selectedTier === 'coach_yearly'
           ? isEn
-              ? 'Start 7-Day Free Trial (Then 79,99 € / year)'
-              : 'Démarrer mon Essai Gratuit de 7 jours (puis 79,99 € / an)'
+              ? 'Start 7-Day Free Trial (Then 99,00 € / year)'
+              : 'Démarrer mon Essai Gratuit de 7 jours (puis 99,00 € / an)'
           : selectedTier === 'club_chouette'
             ? isEn
                 ? 'Start 14-Day Club Trial (5 VIP Accounts — 149,99 € / year)'
                 : 'Démarrer l’Essai Club 14 jours (5 Comptes VIP — 149,99 € / an)'
             : isEn
-              ? 'Subscribe Monthly (9,99 € TTC / month)'
-              : 'S’abonner au Coach Illimité (9,99 € TTC / mois)';
+              ? 'Subscribe Monthly (14,99 € TTC / month)'
+              : 'S’abonner au Coach Illimité (14,99 € TTC / mois)';
 
     const cardContent = (
         <div
@@ -168,7 +169,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                                 : 'text-[#e8dcc6]/75 hover:text-[#fdf8eb]'
                         }`}
                     >
-                        {isEn ? 'Monthly (9,99 €)' : 'Mensuel (9,99 €)'}
+                        {isEn ? 'Monthly (14,99 €)' : 'Mensuel (14,99 €)'}
                     </button>
                     <button
                         type="button"
@@ -181,7 +182,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                                 : 'text-[#e8dcc6]/75 hover:text-[#fdf8eb]'
                         }`}
                     >
-                        <span>{isEn ? 'Annual (79,99 €)' : 'Annuel (79,99 €)'}</span>
+                        <span>{isEn ? 'Annual (99,00 €)' : 'Annuel (99,00 €)'}</span>
                         <span
                             data-testid="subscription-discount-badge"
                             className="rounded-full border border-[#d4af37]/60 bg-[#2b1116] px-2.5 py-0.5 text-[10px] font-extrabold normal-case tracking-normal text-[#f3c65f]"
@@ -229,6 +230,18 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 >
                     {ctaText}
                 </button>
+                {selectedTier === 'club_chouette' && (
+                    <a
+                        href={buildClubChouetteWhatsAppShareUrl().whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-testid="club-chouette-whatsapp-share-btn"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-400/55 bg-emerald-950/60 px-4 py-2 text-xs font-bold text-emerald-200 transition hover:border-emerald-300 hover:text-white"
+                    >
+                        <span>📲</span>
+                        <span>Partager en 1 clic sur WhatsApp : 30 €/an par joueur (2,50 €/mois)</span>
+                    </a>
+                )}
                 <p data-testid="stripe-security-guarantee" className="text-center text-[11px] text-[#e8dcc6]/80">
                     🔒{' '}
                     {isEn

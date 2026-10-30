@@ -10,6 +10,7 @@ export interface UiLocaleStrings {
     readonly navbar: {
         readonly brandSubtitle: string;
         readonly play: string;
+        readonly tournaments: string;
         readonly puzzles: string;
         readonly drills: string;
         readonly openings: string;
@@ -82,6 +83,7 @@ export const UI_TRANSLATIONS: Record<PrimaryLocale, UiLocaleStrings> = {
         navbar: {
             brandSubtitle: 'Cercle Monte-Carlo · Academy',
             play: 'Salon de Jeu',
+            tournaments: 'Tournois & Agenda',
             puzzles: 'Puzzles',
             drills: 'Entraînement',
             openings: 'Ouvertures',
@@ -152,6 +154,7 @@ export const UI_TRANSLATIONS: Record<PrimaryLocale, UiLocaleStrings> = {
         navbar: {
             brandSubtitle: 'Monte-Carlo Club · Academy',
             play: 'Game Salon',
+            tournaments: 'Tournaments & Calendar',
             puzzles: 'Puzzles',
             drills: 'Drills',
             openings: 'Openings',
@@ -222,6 +225,7 @@ export const UI_TRANSLATIONS: Record<PrimaryLocale, UiLocaleStrings> = {
         navbar: {
             brandSubtitle: 'Círculo Monte-Carlo · Academia',
             play: 'Salón de Juego',
+            tournaments: 'Torneos y Agenda',
             puzzles: 'Problemas',
             drills: 'Entrenamiento',
             openings: 'Aperturas',
@@ -292,6 +296,7 @@ export const UI_TRANSLATIONS: Record<PrimaryLocale, UiLocaleStrings> = {
         navbar: {
             brandSubtitle: 'Círculo Monte-Carlo · Academia',
             play: 'Salão de Jogo',
+            tournaments: 'Torneios e Agenda',
             puzzles: 'Desafios',
             drills: 'Treino',
             openings: 'Aberturas',
@@ -362,6 +367,7 @@ export const UI_TRANSLATIONS: Record<PrimaryLocale, UiLocaleStrings> = {
         navbar: {
             brandSubtitle: 'Monte-Carlo Club · Akademie',
             play: 'Spielsalon',
+            tournaments: 'Turniere & Kalender',
             puzzles: 'Puzzles',
             drills: 'Training',
             openings: 'Eröffnungen',
@@ -432,6 +438,7 @@ export const UI_TRANSLATIONS: Record<PrimaryLocale, UiLocaleStrings> = {
         navbar: {
             brandSubtitle: 'نادي مونت كارلو · الأكاديمية',
             play: 'صالون اللعب',
+            tournaments: 'البطولات والأجندة',
             puzzles: 'الألغاز',
             drills: 'التدريبات',
             openings: 'الافتتاحيات',

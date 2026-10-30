@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Modale d'Import & Export Horloger Universel (.mat, .sgf, XGID) & Revue de Match.
@@ -18,6 +18,7 @@ import {
 } from '../../features/export';
 import { getImportExportTranslations } from '../../lib/i18n/uiTranslations';
 import { toast } from '../toast/ToastContext';
+import PositionPhotoScannerTab from './PositionPhotoScannerTab';
 
 export interface MatchImportExportModalProps {
     readonly isOpen: boolean;
@@ -33,7 +34,7 @@ export interface MatchImportExportModalProps {
     readonly pointsWon?: number;
     readonly onImportState?: (state: BoardState) => void;
     readonly onImportMatch?: (match: ImportedMatchResult) => void;
-    readonly initialTab?: 'import' | 'export';
+    readonly initialTab?: 'import' | 'export' | 'scanner';
     readonly locale?: string;
 }
 
@@ -67,7 +68,7 @@ const MatchImportExportModalComponent: React.FC<MatchImportExportModalProps> = (
     initialTab = 'import',
     locale = 'fr',
 }) => {
-    const [activeTab, setActiveTab] = useState<'import' | 'export'>(initialTab);
+    const [activeTab, setActiveTab] = useState<'import' | 'export' | 'scanner'>(initialTab);
     const [rawInput, setRawInput] = useState('');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -162,49 +163,59 @@ const MatchImportExportModalComponent: React.FC<MatchImportExportModalProps> = (
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in" data-testid="match-import-export-modal" role="dialog" aria-modal="true" aria-label={t.modalTitle}>
-            <div className="relative flex w-full max-w-xl flex-col rounded-3xl border border-[#d4af37]/50 bg-gradient-to-b from-[#181109] via-[#0d121c] to-[#070a10] shadow-[0_25px_70px_rgba(0,0,0,0.95)] overflow-hidden text-slate-100">
-                <div className="flex items-center justify-between border-b border-[#d4af37]/30 bg-gradient-to-r from-[#24170c] to-[#1e1309] px-5 py-3.5">
+            <div className="relative flex w-full max-w-xl flex-col rounded-2xl border border-white/10 bg-slate-950/98 shadow-2xl overflow-hidden text-slate-100">
+                <div className="flex items-center justify-between border-b border-white/10 bg-slate-900/90 px-5 py-3.5">
                     <div className="flex items-center gap-2.5">
-                        <span className="text-xl">⏱️</span>
+                        <span className="text-lg">📷</span>
                         <div>
-                            <h2 className="font-serif text-base font-black text-[#fdf8eb] tracking-wide">{t.modalTitle}</h2>
-                            <p className="text-[11px] text-amber-200/70">{t.modalSubtitle}</p>
+                            <h2 className="text-sm sm:text-base font-bold text-white tracking-wide">{t.modalTitle}</h2>
+                            <p className="text-[11px] text-slate-400">{t.modalSubtitle}</p>
                         </div>
                     </div>
-                    <button type="button" onClick={onClose} data-testid="close-import-export-modal-btn" className="h-8 w-8 rounded-lg border border-[#d4af37]/30 text-amber-200/80 hover:text-white transition flex items-center justify-center text-xs">✕</button>
+                    <button type="button" onClick={onClose} data-testid="close-import-export-modal-btn" className="h-8 w-8 rounded-lg border border-white/10 bg-white/5 text-slate-300 hover:text-white transition flex items-center justify-center text-xs">✕</button>
                 </div>
-                <div className="flex border-b border-[#d4af37]/20 bg-[#090d16]/90 px-4 py-2 gap-2">
-                    <button type="button" onClick={() => setActiveTab('import')} data-testid="tab-import-btn" className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold transition ${activeTab === 'import' ? 'border-[#f3c65f] bg-[#3a2a10] text-[#fff8e1]' : 'border-white/10 text-slate-300'}`}>📥 {t.tabImport}</button>
-                    <button type="button" onClick={() => setActiveTab('export')} data-testid="tab-export-btn" className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold transition ${activeTab === 'export' ? 'border-[#f3c65f] bg-[#3a2a10] text-[#fff8e1]' : 'border-white/10 text-slate-300'}`}>📤 {t.tabExport}</button>
+                <div className="flex flex-wrap border-b border-white/10 bg-slate-950 px-4 py-2 gap-2">
+                    <button type="button" onClick={() => setActiveTab('import')} data-testid="tab-import-btn" className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold transition ${activeTab === 'import' ? 'border-[#f3c65f] bg-[#f3c65f]/15 text-white' : 'border-white/10 text-slate-300 hover:border-white/25'}`}>📥 {t.tabImport}</button>
+                    <button type="button" onClick={() => setActiveTab('scanner')} data-testid="tab-photo-scanner-btn" className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold transition ${activeTab === 'scanner' ? 'border-[#f3c65f] bg-[#f3c65f]/15 text-white' : 'border-white/10 text-slate-300 hover:border-white/25'}`}>📷 Photo / Éditeur</button>
+                    <button type="button" onClick={() => setActiveTab('export')} data-testid="tab-export-btn" className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold transition ${activeTab === 'export' ? 'border-[#f3c65f] bg-[#f3c65f]/15 text-white' : 'border-white/10 text-slate-300 hover:border-white/25'}`}>📤 {t.tabExport}</button>
                 </div>
                 <div className="p-4 sm:p-5 space-y-4">
-                    {activeTab === 'import' ? (
+                    {activeTab === 'scanner' ? (
+                        <PositionPhotoScannerTab
+                            currentState={currentState}
+                            onApplyState={(scannedState) => {
+                                onImportState?.(scannedState);
+                                toast.success(t.successXgid, 'Position chargée');
+                                onClose();
+                            }}
+                        />
+                    ) : activeTab === 'import' ? (
                         <div className="space-y-3">
-                            <div onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFile(e.dataTransfer.files?.[0]); }} className={`border-2 border-dashed rounded-2xl p-4 text-center text-xs cursor-pointer transition ${isDragging ? 'border-amber-400 bg-amber-500/10' : 'border-[#d4af37]/35 bg-white/[0.02]'}`}>
+                            <div onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFile(e.dataTransfer.files?.[0]); }} className={`border-2 border-dashed rounded-xl p-4 text-center text-xs cursor-pointer transition ${isDragging ? 'border-amber-400 bg-amber-500/10' : 'border-white/15 bg-white/[0.02]'}`}>
                                 <label className="cursor-pointer block">
                                     <span className="text-xl block mb-1">📂</span>
                                     <span className="text-slate-300 font-medium">{t.importDropZone}</span>
                                     <input type="file" accept=".mat,.sgf,.txt" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
                                 </label>
                             </div>
-                            <textarea value={rawInput} onChange={(e) => { setRawInput(e.target.value); setErrorMessage(null); }} placeholder={t.importPlaceholder} data-testid="import-textarea" rows={4} className="w-full rounded-xl border border-white/10 bg-black/50 p-3 text-xs font-mono text-slate-200 placeholder-slate-500 focus:border-amber-400 focus:outline-none" />
+                            <textarea value={rawInput} onChange={(e) => { setRawInput(e.target.value); setErrorMessage(null); }} placeholder={t.importPlaceholder} data-testid="import-textarea" rows={4} className="w-full rounded-xl border border-white/10 bg-slate-900 p-3 text-xs font-mono text-slate-200 placeholder-slate-500 focus:border-amber-400 focus:outline-none" />
                             {errorMessage && <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-2 text-xs text-rose-300">⚠️ {errorMessage}</div>}
                             <div className="flex gap-2">
-                                <button type="button" onClick={() => handleApplyImport(rawInput)} data-testid="apply-import-btn" className="flex-1 rounded-xl border border-amber-400/80 bg-gradient-to-r from-amber-600 to-amber-500 py-2 text-xs font-black text-black hover:brightness-110 transition shadow-md">{t.importCta}</button>
+                                <button type="button" onClick={() => handleApplyImport(rawInput)} data-testid="apply-import-btn" className="flex-1 rounded-xl border border-[#f3c65f] bg-[#f3c65f] py-2 text-xs font-black text-slate-950 hover:bg-[#f7d37c] transition shadow-sm">{t.importCta}</button>
                                 <button type="button" onClick={handlePasteClipboard} data-testid="paste-clipboard-btn" className="rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-bold hover:bg-white/10 transition">📋 {t.pasteCta}</button>
                             </div>
                         </div>
                     ) : (
                         <div className="space-y-3.5">
-                            <div className="rounded-2xl border border-[#d4af37]/30 bg-black/40 p-3.5 space-y-2">
+                            <div className="rounded-xl border border-white/10 bg-slate-900/70 p-3.5 space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-amber-200">Position Courante (XGID)</span>
-                                    <button type="button" onClick={() => handleCopy(xgidString, 'xgid')} data-testid="copy-xgid-btn" className="rounded-lg border border-amber-400/50 bg-amber-500/20 px-2.5 py-1 text-[11px] font-bold text-amber-100 hover:bg-amber-500/30 transition">{copiedKey === 'xgid' ? '✓ Copié' : '📋 Copier'}</button>
+                                    <span className="text-xs font-bold text-slate-200">Position Courante (XGID)</span>
+                                    <button type="button" onClick={() => handleCopy(xgidString, 'xgid')} data-testid="copy-xgid-btn" className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-amber-300 hover:border-white/25 hover:text-white transition">{copiedKey === 'xgid' ? '✓ Copié' : '📋 Copier'}</button>
                                 </div>
-                                <div className="rounded-lg bg-black/60 p-2 font-mono text-[11px] text-slate-300 break-all select-all">{xgidString || 'XGID=...'}</div>
+                                <div className="rounded-lg bg-slate-950 p-2 font-mono text-[11px] text-slate-300 break-all select-all">{xgidString || 'XGID=...'}</div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                <button type="button" onClick={() => downloadTextFile(serializeToMAT(exportData), 'match.mat')} data-testid="download-mat-btn" className="flex items-center justify-center gap-2 rounded-xl border border-[#d4af37]/45 bg-[#25180c] hover:bg-[#342211] p-3 text-xs font-bold text-amber-200 transition">💾 {t.downloadMatCta}</button>
+                                <button type="button" onClick={() => downloadTextFile(serializeToMAT(exportData), 'match.mat')} data-testid="download-mat-btn" className="flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] p-3 text-xs font-bold text-amber-200 transition">💾 {t.downloadMatCta}</button>
                                 <button type="button" onClick={() => downloadTextFile(serializeToSGF(exportData), 'match.sgf')} data-testid="download-sgf-btn" className="flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] p-3 text-xs font-bold text-slate-200 transition">📄 {t.downloadSgfCta}</button>
                             </div>
                             <p className="text-[11px] text-slate-400 text-center leading-relaxed">{t.exportNotice}</p>

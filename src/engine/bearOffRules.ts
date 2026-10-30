@@ -15,7 +15,8 @@
  * Strictement 0 `any`, module pur < 300 lignes.
  */
 
-import { X_BAR, O_BAR, X_OFF, O_OFF, type Player } from './backgammonEngine';
+import { applyMove, X_BAR, O_BAR, X_OFF, O_OFF, type Player } from './backgammonEngine';
+import { computeRemainingSequences } from './smartClickResolver';
 
 export const MAX_CHECKERS_PER_PLAYER = 15;
 export const BEAR_OFF_SWIPE_MIN_DX_PX = 28;
@@ -244,4 +245,116 @@ export function isQuickBearOffSwipe(deltaX: number, deltaY: number): boolean {
 export function formatBearOffCounter(count: number): string {
     const clamped = Math.max(0, Math.min(MAX_CHECKERS_PER_PLAYER, Math.trunc(count)));
     return `${clamped}/${MAX_CHECKERS_PER_PLAYER}`;
+}
+
+/**
+ * Vérifie si le joueur est en phase de sortie strictement sans contact (Pure Race Bear-Off) :
+ * - Tous ses pions sont dans son jan intérieur (`canPlayerBearOff`).
+ * - L'adversaire n'a aucun pion sur la barre ni dans le jan intérieur du joueur.
+ */
+export function isPureBearOffWithoutContact(board: readonly number[], player: Player): boolean {
+    if (!canPlayerBearOff(board, player)) return false;
+    if (player === 'X') {
+        if ((board[O_BAR] ?? 0) < 0) return false;
+        for (let pt = 1; pt <= 6; pt++) {
+            if ((board[pt] ?? 0) < 0) return false;
+        }
+        return true;
+    }
+    if ((board[X_BAR] ?? 0) > 0) return false;
+    for (let pt = 19; pt <= 24; pt++) {
+        if ((board[pt] ?? 0) > 0) return false;
+    }
+    return true;
+}
+
+/**
+ * Vérifie si tous les pions restants en jeu de `player` reposent sur son point 1 (l'As : `1` pour X, `24` pour O).
+ * Dans cet état, tout jet de dé aboutit au même résultat et la sortie est automatisable à 100 %.
+ */
+export function areAllCheckersOnAcePoint(board: readonly number[], player: Player): boolean {
+    if (!canPlayerBearOff(board, player)) return false;
+    const highest = getHighestOccupiedInnerPoint(board, player);
+    return highest !== null && highest.distance === 1;
+}
+
+/**
+ * Détecte un sous-coup de sortie automatique selon le standard Greedy Bearoff (FIBS / Backgammon NJ — optimal à 99,86 %) :
+ * 1. Si tous les pions restants sont sur l'As (`areAllCheckersOnAcePoint`), sort immédiatement depuis l'As.
+ * 2. En sortie strictement sans contact (`isPureBearOffWithoutContact`), si TOUS les dés restants permettent
+ *    de sortir un pion ET qu'il n'existe qu'une seule structure finale de plateau produisant ce maximum de sorties,
+ *    retourne le premier sous-coup de sortie correspondant.
+ */
+export function detectGreedyBearOffStep(params: {
+    readonly board: readonly number[];
+    readonly player: Player;
+    readonly dice: readonly [number, number] | null;
+    readonly usedDice?: readonly boolean[];
+    readonly leftDieTargets: ReadonlyMap<number, readonly number[]>;
+    readonly rightDieTargets: ReadonlyMap<number, readonly number[]>;
+}): { readonly from: number; readonly to: number; readonly die: 0 | 1 } | null {
+    const { board, player, dice, usedDice = [false, false], leftDieTargets, rightDieTargets } = params;
+    if (!dice || !canPlayerBearOff(board, player)) return null;
+    const offPoint = getPlayerOffPoint(player);
+
+    const resolveDieSlot = (from: number): 0 | 1 | null => {
+        if (leftDieTargets.get(from)?.includes(offPoint)) return 0;
+        if (rightDieTargets.get(from)?.includes(offPoint)) return 1;
+        return null;
+    };
+
+    if (areAllCheckersOnAcePoint(board, player)) {
+        const acePoint = player === 'X' ? 1 : 24;
+        const die = resolveDieSlot(acePoint);
+        return die !== null ? { from: acePoint, to: offPoint, die } : null;
+    }
+
+    if (!isPureBearOffWithoutContact(board, player)) return null;
+
+    const seqs = computeRemainingSequences(board, player, dice, usedDice);
+    if (seqs.length === 0) return null;
+
+    const remainingDiceCount =
+        dice[0] === dice[1]
+            ? Math.max(0, 4 - usedDice.filter(Boolean).length)
+            : (usedDice[0] ? 0 : 1) + (usedDice[1] ? 0 : 1);
+    if (remainingDiceCount === 0) return null;
+
+    const requiredOff = Math.min(
+        remainingDiceCount,
+        board.slice(1, 25).reduce((acc, v) => acc + (player === 'X' ? Math.max(0, v) : Math.max(0, -v)), 0),
+    );
+    if (requiredOff <= 0) return null;
+
+    const greedySeqs = seqs.filter((s) => s.filter((m) => m.to === offPoint).length === requiredOff);
+    if (greedySeqs.length === 0) return null;
+
+    const finalBoards = new Set<string>();
+    for (const seq of greedySeqs) {
+        const endBoard = seq.reduce<number[]>((acc, m) => applyMove(acc, m, player), [...board]);
+        finalBoards.add(endBoard.join(','));
+    }
+    if (finalBoards.size !== 1) return null;
+
+    const firstOffMove = greedySeqs[0].find((m) => m.to === offPoint);
+    if (!firstOffMove) return null;
+    const die = resolveDieSlot(firstOffMove.from);
+    return die !== null ? { from: firstOffMove.from, to: offPoint, die } : null;
+}
+
+/**
+ * Détermine si le Smart Auto-Roll peut lancer les dés automatiquement sans jamais confisquer une décision de Videau
+ * (y compris lorsque le joueur est fermé sur la barre / "closed out" mais détient encore l'accès au cube).
+ */
+export function shouldSmartAutoRoll(params: {
+    readonly autoRollEnabled: boolean;
+    readonly gamePhase: string;
+    readonly hasDice: boolean;
+    readonly canDouble: boolean;
+    readonly doublingOfferedBy: Player | null;
+}): boolean {
+    const { autoRollEnabled, gamePhase, hasDice, canDouble, doublingOfferedBy } = params;
+    if (!autoRollEnabled) return false;
+    if (gamePhase !== 'HUMAN_WAITING_ROLL' || hasDice || doublingOfferedBy !== null) return false;
+    return !canDouble;
 }

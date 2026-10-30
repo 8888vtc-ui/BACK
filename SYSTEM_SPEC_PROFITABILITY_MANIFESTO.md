@@ -42,6 +42,17 @@
      - **Puzzles Quotidiens V2 (`/daily-puzzle` & `/puzzles`)** et **Gammon Academy (`/academy`)**.
      - **Banque d'entraînement de Blunders (`/drills`)** alimentée par `public.recurring_errors`.
 
+5. **PILIER E — Écosystème de Bots Personnifiés, Interface Adaptative (« UI Caméléon ») & Addiction Positive** :
+   - **Incarnation des 4 Adversaires (Fin du Robot Muet)** : Transformer les 4 paliers actuels (*Léo, Sofia, Kenji, Viktor*) en **4 Archétypes Vivants** dotés à la fois d'un **biais tactique dans le moteur** (`evaluator.ts` / `bgsageClient.ts`) et d'une **personnalité conversationnelle temps réel (< 500 ms)** :
+     1. **Le Mauvais Joueur (Style Blitz Agressif)** : Surpondère les frappes, casse ses portes pour attaquer et peste avec mauvaise foi contre les dés (*Luck Rating* / *Huge Joker*), sans jamais insulter l'intelligence du joueur (conformité étude CMU).
+     2. **La Dragueuse « Riviera Monte-Carlo » (Style Holding & Pièges)** : Conserve des ancres hautes, pose des pions appâts (*blots* calculés) et taquine avec l'élégance d'un salon privé de Monte-Carlo (avec garde-fous stricts App Store Section 1.2 : filtrage E/S + boutons *Signaler / Muet*).
+     3. **L'Homme d'Affaires High-Roller (Style Course Pure & Videau Actif)** : Optimise le *Pip Count*, négocie agressivement le Videau (*Doubling Cube*) et enseigne les seuils mathématiques de *Take / Pass* (25 %).
+     4. **L'Intellectuel Grand-Maître (Style Positionnel & Barricade / Prime)** : Construit des murs de 5–6 portes consécutives et enseigne les probabilités sur 36 en 2–3 phrases maximum.
+   - **Double Environnement Adaptatif (« S'amuser pour le Débutant » ↔ « S'améliorer pour le Pro »)** :
+     - **Mode Découverte / Ludique (Débutant)** : Interface épurée, format court 1 point (DMP) ou sans hasard (**Gammon36**), repères visuels sur les portes et pions isolés, et **Tuteur Préventif incarné par le Bot** qui réagit *avant* la validation d'une grosse gaffe (> 0,12 EMG) sans jargon intimidant.
+     - **Mode Master / Pro (Expert)** : HUD analytique complet (perte d'équité en millipoints EMG, *Performance Rating* PR, Keith Count, distribution sur 36), zéro interruption pendant le coup et sparring spécialisé à haute profondeur (2-ply / 3-ply Open Sage).
+   - **Neutralisation du « Syndrome des Dés Truqués »** : Coupler l'audit cryptographique `provablyFairRng.ts` avec le bouton pédagogique **« 🔄 Rejouer en Inversant les Dés (Swap Dice) »** permettant au joueur de rejouer exactement la même graine en prenant les tirages qu'avait reçus le Bot.
+
 ---
 
 ## 2. RÉPARTITION DES RÔLES IA (ORCHESTRATION AUTONOME ARGON + FLASH 3.8 + CLAUDE)
@@ -61,3 +72,22 @@ Pour atteindre 100 % de perfection sans micro-management humain toutes les 3 min
 L'infrastructure Stripe et Supabase (`public.profiles`, `public.credit_usage_ledger`, `public.processed_webhooks_events`, `public.checkout_sessions_lock`) est maintenue propre en arrière-plan et ne sera poussée commercialement qu'une fois la Perfection Produit validée à 100 % :
 - **Phase 1 (Court Terme post-perfection)** : Hard Paywall sur le Coach IA (3 blunders expliqués en onboarding) et `/drills`, plans `coach_monthly` (14.99 $/mo) et `coach_yearly` (99.00 $/an).
 - **Phase 2 (Long Terme)** : Pack Club & Chouette (`club_chouette` à 149,99 €/an pour 5 sièges) et Downsell anti-churn (`9,99 €/mo`).
+
+---
+
+## 4. DOCTRINE SOLOPRENEUR AUGMENTÉ, ALGORITHME EN 5 ÉTAPES & MASTER PLAN AUTOFINANCÉ
+
+1. **Souveraineté Capitalistique (0 % Dilution)** :
+   - Le projet opère selon le modèle du **Solopreneur Augmenté** (marge opérationnelle cible > 75 %, 100 % du capital et des droits de vote conservés).
+   - Le coût marginal d'inférence IA et d'évaluation est maintenu sous **0 à 5 $ / jour pour 1 000 joueurs actifs quotidiens (DAU)** grâce au couplage : évaluateur local (`evaluator.ts`) + Cache L2 Supabase (`public.coach_explanations`) + fenêtrage JSON compact (< 500 ms) sur `gemini-3.8-flash`.
+
+2. **Application Stricte de « L'Algorithme en 5 Étapes » & de « L'Indice Idiot » d'Elon Musk** :
+   - **Étape 1 (Questionner chaque exigence)** & **Étape 2 (Supprimer au moins 10 % des étapes superflues)** : Suppression totale du matchmaking public (remplacé par les 4 Bots Personnifiés disponibles 24h/24 et le Salon Privé `BG-XXXX` à 0 seconde d'attente). Suppression des bandeaux redondants sur le plateau.
+   - **Étape 3 (Simplifier & Optimiser)** : Unification du moteur de jeu et du coaching conversationnel autour des événements mathématiques du plateau (`Blunder > 0.12 EMG`, `Huge Joker`, `Hit Blot`, `Cube Window`).
+   - **Étape 4 (Accélérer le temps de cycle)** : Sessions atomiques de 3 minutes (Match 1 pt DMP, Défi Tactique Flash, Puzzle du Jour).
+   - **Étape 5 (Automatiser en dernier)** : Priorité aux réactions déterministes pré-cachées (0 ms, coût 0 $) avant d'appeler le LLM en streaming.
+
+3. **Master Plan Autofinancé en 3 Paliers & Distribution-First** :
+   - **Palier 1 (Viralité Organique & Preuve Terrain)** : Exploiter les réactions théâtrales des 4 Bots (*Le Mauvais Joueur*, *La Dragueuse*) et le bouton **« Inverser les Dés (Swap Dice) »** comme moteur de contenus courts (TikTok / Reels / Shorts / Clubs) et valider l'expérience auprès d'au moins 10 joueurs cibles (5 débutants + 5 joueurs de club).
+   - **Palier 2 (Monétisation par la Valeur — Cible 10k€ à 20k€ MRR)** : Commercialiser une transition mesurable (« Apprenez en vous amusant sans vous faire humilier » pour le Débutant ; « Divisez votre PR par deux face à 4 sparring-partners spécialisés » pour le Pro).
+   - **Palier 3 (Expansion Autofinancée & Revue de Pivot à 90 Jours)** : Réinvestir les bénéfices dans le déploiement App Store / Google Play (Capacitor) et auditer trimestriellement la rétention et la conversion tout en protégeant l'énergie du fondateur (< 35h/semaine d'opérations répétitives).

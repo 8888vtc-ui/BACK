@@ -34,16 +34,35 @@ export interface CacheKeyParams {
     scoreO?: number;
 }
 
+import {
+    encodeGnubgPositionId,
+    classifyStrategicScoreRegime,
+    buildCanonicalGnubgCacheKey,
+} from './gnubgCanonicalCache';
+
+export { encodeGnubgPositionId, classifyStrategicScoreRegime, buildCanonicalGnubgCacheKey };
+
 /**
- * Calcule une clé de cache canonique complète (XGID / plateau, dés, videau, Crawford, score, coup joué/optimal).
+ * Calcule une clé de cache canonique complète (GNUBG Position ID 14 chars / XGID, régime de score, dés, videau, Crawford, coup joué/optimal).
  */
 export function computeExplanationCacheKey(params: CacheKeyParams): string {
-    const rawPos = params.xgid || params.positionKey || (params.board ? params.board.join(',') : 'default_pos');
+    const rawPos =
+        params.xgid ||
+        params.positionKey ||
+        (params.board && params.board.length >= 26 ? encodeGnubgPositionId(params.board, 'X') : params.board ? params.board.join(',') : 'default_pos');
     const pos = rawPos.trim();
     const played = params.playedMove.trim();
     const opt = (params.optimalMove || '').trim();
     const verdict = (params.verdict || '').trim().toLowerCase();
-    const score = `${params.matchLength ?? 0}_${params.scoreX ?? 0}_${params.scoreO ?? 0}`;
+    const regime = classifyStrategicScoreRegime({
+        board: params.board,
+        matchLength: params.matchLength,
+        scorePlayer: params.scoreX,
+        scoreOpponent: params.scoreO,
+        cubeValue: params.cubeValue ?? 1,
+        crawford: Boolean(params.crawford),
+    });
+    const score = `${regime}_${params.matchLength ?? 0}_${params.scoreX ?? 0}_${params.scoreO ?? 0}`;
     const diceStr = params.dice ? `${params.dice[0]}-${params.dice[1]}` : 'no_dice';
     const cubeStr = `${params.cubeValue ?? 1}_${params.cubeOwner ?? 'center'}_${params.crawford ? '1' : '0'}`;
 

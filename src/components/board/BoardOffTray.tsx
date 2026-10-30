@@ -126,36 +126,46 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
                     className="absolute inset-0 z-30 rounded-xl ring-2 ring-amber-400/90 pointer-events-none"
                 />
             )}
-            <span className="text-[10px] font-bold uppercase tracking-normal sm:tracking-widest text-amber-200/75 drop-shadow">
+            <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-normal sm:tracking-widest text-amber-200/75 drop-shadow">
                 Sortie
             </span>
+            {isTarget && (
+                <span className="sm:hidden px-0.5 py-0.5 rounded bg-emerald-400 text-slate-950 text-[10px] font-black tracking-tighter leading-none">
+                    OFF
+                </span>
+            )}
 
-            {/* Empilement 3D biseauté des pions sortis posés sur la tranche */}
+            {/* Empilement 3D biseauté des pions sortis posés sur la tranche (groupés par blocs de 5 : 5+5+5) */}
             <div
                 data-testid={`tray-stack-${trayKey}`}
+                data-grouped-by-five="true"
                 className="flex flex-col items-center justify-center gap-[2px] my-1 w-full px-1 flex-1"
             >
                 {visibleSlices > 0 ? (
-                    Array.from({ length: visibleSlices }).map((_, i) => (
-                        <span
-                            key={i}
-                            data-testid={`borne-off-slice-${offPoint}-${i}`}
-                            data-beveled-slice="true"
-                            className={`relative w-full max-w-[36px] h-[6px] rounded-[3px] border transition-transform duration-150 ${
-                                isWhiteTray
-                                    ? 'border-amber-900/60'
-                                    : 'border-white/25'
-                            }`}
-                            style={{
-                                background: isWhiteTray
-                                    ? 'linear-gradient(90deg, #b89f72 0%, #eadbc0 22%, #fffdf8 50%, #e4d2b2 78%, #9e8458 100%)'
-                                    : 'linear-gradient(90deg, #09090b 0%, #27272a 24%, #71717a 50%, #27272a 76%, #09090b 100%)',
-                                boxShadow: isWhiteTray
-                                    ? 'inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(120,85,40,0.65), 0 1px 2px rgba(0,0,0,0.75)'
-                                    : 'inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -1px 0 rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.85)',
-                            }}
-                        />
-                    ))
+                    Array.from({ length: visibleSlices }).map((_, i) => {
+                        const isFifthGroupEnd = (i + 1) % 5 === 0 && i < visibleSlices - 1;
+                        return (
+                            <span
+                                key={i}
+                                data-testid={`borne-off-slice-${offPoint}-${i}`}
+                                data-beveled-slice="true"
+                                data-group-end={isFifthGroupEnd ? 'true' : undefined}
+                                className={`relative w-full max-w-[36px] h-[6px] rounded-[3px] border transition-transform duration-150 ${
+                                    isWhiteTray
+                                        ? 'border-amber-900/60'
+                                        : 'border-white/25'
+                                } ${isFifthGroupEnd ? 'mb-1.5 after:content-[""] after:absolute after:-bottom-[5px] after:inset-x-1 after:h-[1px] after:bg-amber-400/45' : ''}`}
+                                style={{
+                                    background: isWhiteTray
+                                        ? 'linear-gradient(90deg, #b89f72 0%, #eadbc0 22%, #fffdf8 50%, #e4d2b2 78%, #9e8458 100%)'
+                                        : 'linear-gradient(90deg, #09090b 0%, #27272a 24%, #71717a 50%, #27272a 76%, #09090b 100%)',
+                                    boxShadow: isWhiteTray
+                                        ? 'inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(120,85,40,0.65), 0 1px 2px rgba(0,0,0,0.75)'
+                                        : 'inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -1px 0 rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.85)',
+                                }}
+                            />
+                        );
+                    })
                 ) : (
                     <div className="w-5 h-5 rounded-full border border-amber-900/40 bg-black/40 flex items-center justify-center shadow-inner">
                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500/20" />

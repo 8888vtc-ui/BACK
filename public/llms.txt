@@ -8,7 +8,49 @@
 - [Daily 3-Ply Tactical Puzzles](https://backgammontour.com/puzzles): Curated tournament positions evaluated by Monte-Carlo 3-Ply & eXtreme Gammon (XG).
 - [Blunder Training Drills](https://backgammontour.com/drills): Interactive checker & cube drills to lower your Performance Rating (PR).
 - [PR & Analytics Dashboard](https://backgammontour.com/progression): Track your Performance Rating (`PR = Equity Loss * 500`), Snowie Error Rate, and recurring leaks.
-- [Full Knowledge Base for LLMs](https://backgammontour.com/llms-full.txt): Complete 15 opening rolls ground-truth table, Kazaross-XG2 Match Equity formulas, and 21 Grandmaster strategic concepts.
+- [World Tournaments Calendar & Where to Play Directory](https://backgammontour.com/tournaments): Complete international calendar of 18 verified tournaments across 3 tiers (MEGA, GRAND, MOYEN), interactive SVG world map, and directory of 16 live clubs & lounges.
+- [Full Knowledge Base for LLMs](https://backgammontour.com/llms-full.txt): Complete 15 opening rolls ground-truth table, Kazaross-XG2 Match Equity formulas, 21 Grandmaster strategic concepts, and complete tournament/club directory.
+
+## World Backgammon Tournament Database & Where to Play Directory (/tournaments)
+- [World Tournaments Hub](https://backgammontour.com/tournaments): Official international circuit calendar and directory.
+- **MEGA Major Championships (15-17 pts, €75k-€180k prize pools)**:
+  - [Monte-Carlo World Championship 2027](https://backgammontour.com/tournaments/monte-carlo-world-championship-2027): 17 pts, Fairmont Monte Carlo, Monaco (WBGF).
+  - [Merit Open Cyprus 2026](https://backgammontour.com/tournaments/merit-open-cyprus-2026): 15 pts, Merit Crystal Cove, Kyrenia (WBA).
+  - [Las Vegas Open 2026](https://backgammontour.com/tournaments/las-vegas-open-2026): 15 pts, Flamingo Hotel, Las Vegas (USBGF).
+  - [Nordic Open Copenhagen 2027](https://backgammontour.com/tournaments/nordic-open-copenhagen-2027): 15 pts, Tivoli Congress, Copenhagen (WBGF).
+  - [Istanbul International Open 2027](https://backgammontour.com/tournaments/istanbul-international-open-2027): 15 pts, Hilton Bosphorus, Istanbul (WBA).
+  - [Texas Championships 2027](https://backgammontour.com/tournaments/texas-championships-2027): 15 pts, Omni San Antonio, USA (USBGF).
+- **GRAND Masters & National Championships (13 pts, €28k-€42k prize pools)**:
+  - [Paris Masters FFB 2026](https://backgammontour.com/tournaments/paris-masters-ffb-2026): 13 pts, Novotel Paris Tour Eiffel (FFB).
+  - [UK Backgammon Open 2027](https://backgammontour.com/tournaments/uk-backgammon-open-2027): 13 pts, CBS Arena, Coventry (UKBGF).
+  - [Chicago Open 2027](https://backgammontour.com/tournaments/chicago-open-2027): 13 pts, Westin O'Hare, Chicago (USBGF).
+  - [German Backgammon Open 2027](https://backgammontour.com/tournaments/german-backgammon-open-2027): 13 pts, H+ Hotel Niedernhausen (EUBGF).
+  - [Tokyo Backgammon Festival 2027](https://backgammontour.com/tournaments/tokyo-backgammon-festival-2027): 13 pts, Shinagawa Prince Hotel (WBGF/JBL).
+  - [Gibraltar Championship 2027](https://backgammontour.com/tournaments/gibraltar-championship-2027): 13 pts, Sunborn Yacht Hotel (WBGF).
+- **MOYEN Regional & Club Opens (11 pts)**:
+  - [Riviera Cup Nice 2027](https://backgammontour.com/tournaments/riviera-cup-nice-2027): 11 pts, Palais de la Méditerranée, Nice (FFB).
+  - [Grand Prix de Lyon 2027](https://backgammontour.com/tournaments/grand-prix-lyon-2027): 11 pts, Mercure Saxe Lafayette, Lyon (FFB).
+  - [Geneva Lake Classic 2027](https://backgammontour.com/tournaments/geneva-lake-classic-2027): 11 pts, Hôtel President Wilson, Genève (EUBGF).
+  - [London Weekend Club Open 2026](https://backgammontour.com/tournaments/london-weekend-open-2026): 11 pts, Roehampton Club, London (UKBGF).
+  - [São Paulo Open 2027](https://backgammontour.com/tournaments/sao-paulo-open-2027): 11 pts, Club Transatlântico, São Paulo (WBGF).
+  - [Dubai Creek Masters 2027](https://backgammontour.com/tournaments/dubai-creek-masters-2027): 11 pts, Park Hyatt Dubai (WBGF).
+- **Where to Play — 16 World Backgammon Clubs & Lounges**:
+  - [Paris: Paris Vie d'Eau (Videau Club)](https://backgammontour.com/tournaments/clubs/paris-vie-deau): Café de la Mairie, Place Saint-Sulpice, Tuesdays & Thursdays 19:00.
+  - [Paris: Backgammon Social Paris](https://backgammontour.com/tournaments/clubs/backgammon-social-paris): Le Marais, trendy lounge & cocktails, Wednesdays & Sundays 18:30.
+  - [Monaco: Monte-Carlo Backgammon Society](https://backgammontour.com/tournaments/clubs/monte-carlo-society): Fairmont Monte Carlo, Friday & Saturday evenings.
+  - [Marseille: L'Ancre Marseillaise](https://backgammontour.com/tournaments/clubs/ancre-marseillaise): 10 Rue Vian (Cours Julien), Wednesdays 19:00 & Saturdays 14:30.
+  - [Lyon: Lyon Backgammon Club](https://backgammontour.com/tournaments/clubs/lyon-backgammon-club): Brasserie Saxe Lafayette, Mondays 19:30.
+  - [London: Backgammon London (The Clissold Arms)](https://backgammontour.com/tournaments/clubs/backgammon-london): Muswell Hill, 1st & 3rd Tuesdays 19:00.
+  - [Copenhagen: Københavns Backgammon Klub (KBgK)](https://backgammontour.com/tournaments/clubs/kobenhavns-backgammon-klub): Barkowski, Thursdays 18:30.
+  - [Geneva: Association Genevoise de Backgammon](https://backgammontour.com/tournaments/clubs/association-genevoise-backgammon): Restaurant Tavolone, Sundays 14:00.
+  - [New York: NY Metropolitan Backgammon Club](https://backgammontour.com/tournaments/clubs/new-york-metro-club): Midtown Manhattan, Tuesdays & Thursdays 19:00.
+  - [Chicago: Chicago Backgammon League & Winnetka Club](https://backgammontour.com/tournaments/clubs/chicago-backgammon-league): Tuesdays & Wednesdays 18:30.
+  - [Miami / Ft Lauderdale: The Social Point Rooftop](https://backgammontour.com/tournaments/clubs/social-point-rooftop-miami): McSorley's Beach Pub, Thursdays 18:30.
+  - [Istanbul: Elite-TR & Cafés du Bosphore](https://backgammontour.com/tournaments/clubs/elite-tr-istanbul): Kadıköy & Bebek, continuous Tavla & clock play.
+  - [Dubai: Mindskillz Backgammon Club & Academy](https://backgammontour.com/tournaments/clubs/mindskillz-dubai): Business Bay & DIFC, Saturdays & Tuesdays 18:00.
+  - [Athens: SAKA Backgammon Club](https://backgammontour.com/tournaments/clubs/saka-athenes): Psychiko & Pláka, Fridays & Sundays 17:00.
+  - [Tokyo: Japan Backgammon Association (JBA) Lounge](https://backgammontour.com/tournaments/clubs/jba-tokyo-lounge): Shinagawa & Ginza, Wednesdays & Saturdays 13:00.
+  - [Sydney: Sydney Backgammon Club](https://backgammontour.com/tournaments/clubs/sydney-backgammon-club): Royal Automobile Club (RACA), Tuesdays 18:00.
 
 ## 15 Backgammon Opening Rolls (Monte-Carlo 3-Ply Ground Truth)
 - [3-1 Opening (8/5 6/5, +0.194 Eq)](https://backgammontour.com/academy/openings/3-1): Makes the Golden Point (5-point). Best roll in backgammon.

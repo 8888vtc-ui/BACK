@@ -41,7 +41,8 @@ gcloud run deploy bgsage-service \
   --platform managed \
   --allow-unauthenticated \
   --min-instances 0 \
-  --max-instances 1 \
-  --memory 1Gi \
-  --cpu 1
+  --max-instances 10 \
+  --concurrency 2 \
+  --memory 2Gi \
+  --cpu 4
 ```

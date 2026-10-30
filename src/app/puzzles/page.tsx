@@ -12,33 +12,30 @@ export const metadata: Metadata = {
 
 export default function PuzzlesPage() {
     return (
-        <main className="flex h-dvh overflow-y-auto flex-col items-center p-3 sm:p-5 space-y-4 bg-[radial-gradient(ellipse_at_top,#1f120b_0%,#0b0e16_65%,#05070b_100%)] text-[#fdf8eb]">
+        <main className="flex h-dvh overflow-y-auto flex-col items-center p-3 sm:p-5 space-y-4 bg-slate-950 text-slate-100">
             <div className="w-full max-w-6xl flex flex-wrap items-center justify-between gap-2">
                 <BackToLobbyButton label="Retour au Lobby" />
 
-                <div className="flex flex-wrap items-center gap-2">
-                    <Link
-                        href="/academy"
-                        className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#150c07]/90 px-3.5 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-[#fdf8eb] transition shadow-sm"
-                    >
-                        <span>🏛️</span>
-                        <span>Gammon Academy</span>
-                    </Link>
+                <nav aria-label="Modules d'entraînement" className="flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/90 p-1">
                     <Link
                         href="/drills"
-                        className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#150c07]/90 px-3.5 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-[#fdf8eb] transition shadow-sm"
+                        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition"
                     >
                         <span>🎯</span>
-                        <span>Drills FSRS</span>
+                        <span>Drills</span>
                     </Link>
+                    <span className="flex items-center gap-1.5 rounded-lg bg-amber-400 px-3 py-1.5 text-xs font-bold text-slate-950 shadow-sm">
+                        <span>🧩</span>
+                        <span>Puzzles</span>
+                    </span>
                     <Link
                         href="/progression"
-                        className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#150c07]/90 px-3.5 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-[#fdf8eb] transition shadow-sm"
+                        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition"
                     >
                         <span>📊</span>
-                        <span>Progression &amp; Concepts</span>
+                        <span>Progression</span>
                     </Link>
-                </div>
+                </nav>
             </div>
 
             <DailyPuzzleScreen />

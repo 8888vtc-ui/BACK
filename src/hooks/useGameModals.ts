@@ -30,50 +30,82 @@ export function useGameModals() {
     const [isPrivateRoomModalOpen, setIsPrivateRoomModalOpen] = useState(false);
     const [privateRoomInitialCode, setPrivateRoomInitialCode] = useState<string | null>(null);
 
-    const openMatchmaking = useCallback(() => setIsMatchmakingModalOpen(true), []);
+    const closeAllModals = useCallback(() => {
+        setIsMatchmakingModalOpen(false);
+        setIsPrivateRoomModalOpen(false);
+        setIsGameReviewModalOpen(false);
+        setIsOpeningBookModalOpen(false);
+        setIsExportImportModalOpen(false);
+        setIsKnowledgeModalOpen(false);
+        setIsMobileDrawerOpen(false);
+        setIsDiceAuditModalOpen(false);
+        setIsSubscriptionModalOpen(false);
+    }, []);
+
+    const openMatchmaking = useCallback(() => {
+        closeAllModals();
+        setIsMatchmakingModalOpen(true);
+    }, [closeAllModals]);
     const closeMatchmaking = useCallback(() => setIsMatchmakingModalOpen(false), []);
 
     const openPrivateRoomModal = useCallback((code?: string | null) => {
+        closeAllModals();
         setPrivateRoomInitialCode(code ?? null);
         setIsPrivateRoomModalOpen(true);
-    }, []);
+    }, [closeAllModals]);
     const closePrivateRoomModal = useCallback(() => {
         setIsPrivateRoomModalOpen(false);
         setPrivateRoomInitialCode(null);
     }, []);
 
     const openGameReview = useCallback(() => {
+        closeAllModals();
         setReviewInitialTab('overview');
         setIsGameReviewModalOpen(true);
-    }, []);
+    }, [closeAllModals]);
     const openGameCourse = useCallback(() => {
+        closeAllModals();
         setReviewInitialTab('course');
         setIsGameReviewModalOpen(true);
-    }, []);
+    }, [closeAllModals]);
     const closeGameReview = useCallback(() => setIsGameReviewModalOpen(false), []);
 
     const openOpeningBook = useCallback((id?: string) => {
+        closeAllModals();
         setSelectedOpeningIdForModal(id);
         setIsOpeningBookModalOpen(true);
-    }, []);
+    }, [closeAllModals]);
     const closeOpeningBook = useCallback(() => setIsOpeningBookModalOpen(false), []);
 
-    const openExportImport = useCallback(() => setIsExportImportModalOpen(true), []);
+    const openExportImport = useCallback(() => {
+        closeAllModals();
+        setIsExportImportModalOpen(true);
+    }, [closeAllModals]);
     const closeExportImport = useCallback(() => setIsExportImportModalOpen(false), []);
 
     const openKnowledgeBase = useCallback((conceptId?: string) => {
+        closeAllModals();
         setSelectedKnowledgeConceptId(conceptId);
         setIsKnowledgeModalOpen(true);
-    }, []);
+    }, [closeAllModals]);
     const closeKnowledgeBase = useCallback(() => setIsKnowledgeModalOpen(false), []);
 
-    const openMobileDrawer = useCallback(() => setIsMobileDrawerOpen(true), []);
+    const openMobileDrawer = useCallback(() => {
+        closeAllModals();
+        setIsMobileDrawerOpen(true);
+    }, [closeAllModals]);
     const closeMobileDrawer = useCallback(() => setIsMobileDrawerOpen(false), []);
 
-    const openDiceAudit = useCallback(() => setIsDiceAuditModalOpen(true), []);
+    const openDiceAudit = useCallback(() => {
+        closeAllModals();
+        setIsDiceAuditModalOpen(true);
+    }, [closeAllModals]);
     const closeDiceAudit = useCallback(() => setIsDiceAuditModalOpen(false), []);
 
-    const openSubscriptionModal = useCallback(() => setIsSubscriptionModalOpen(true), []);
+    const openSubscriptionModal = useCallback(() => {
+        closeAllModals();
+        setIsSubscriptionModalOpen(true);
+    }, [closeAllModals]);
     const closeSubscriptionModal = useCallback(() => setIsSubscriptionModalOpen(false), []);
 
     return {

@@ -330,4 +330,40 @@ describe('GameBoardArea Component', () => {
         expect(htmlTurn0).not.toContain('data-testid="pip-count-bar"');
         expect(htmlTurn1).not.toContain('data-testid="pip-count-bar"');
     });
+
+    it('affiche la bannière contextuelle MobilePortraitCoachBanner avec 1-Tap Move Toggle et sabot adaptatif', () => {
+        const html = renderToStaticMarkup(
+            <GameBoardArea
+                theme="midnight"
+                game={dummyGame}
+                activeDie={0}
+                isBoardLoading={false}
+                activeCoachHighlight={{
+                    optimal: [{ from: 13, to: 11 }],
+                    played: [{ from: 13, to: 9 }],
+                }}
+                onCheckerClick={vi.fn()}
+                onCheckerRightClick={vi.fn()}
+                onDestinationClick={vi.fn()}
+                onPlayMove={vi.fn()}
+                onSelectDie={vi.fn()}
+                onDeselect={vi.fn()}
+                coach={{
+                    verdict: 'blunder',
+                    equityLoss: 0.145,
+                    playedMove: '13/9',
+                    optimalMove: '13/11',
+                    explanation: 'Protégez votre blot',
+                }}
+                isAnalyzing={false}
+                onDismissCoach={vi.fn()}
+                onTriggerCoach={vi.fn()}
+                gameId="game_123"
+            />,
+        );
+
+        expect(html).toContain('data-testid="mobile-portrait-coach-banner"');
+        expect(html).toContain('data-testid="mobile-banner-move-toggle-btn"');
+        expect(html).toContain('data-bearoff-expanded="false"');
+    });
 });

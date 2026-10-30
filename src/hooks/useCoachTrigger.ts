@@ -130,7 +130,7 @@ export async function runManualTriggerAnalysis(
             matchLength: stateToEval.matchLength,
             scoreX: stateToEval.scoreX,
             scoreO: stateToEval.scoreO,
-            ply: 2,
+            ply: 3,
         });
         if (result) {
             const loggedMoves = [...entryToAnalyze.movePlayed];
@@ -151,11 +151,11 @@ export async function runManualTriggerAnalysis(
         setTimeout(() => reject(new Error('Timeout analyse coach (8s)')), 8000),
     );
     const analysisPromise = (async () => {
-        const res = await evaluatePosition(stateToEval, { ply: 2, timeoutMs: 1500 });
+        const res = await evaluatePosition(stateToEval, { ply: 3, timeoutMs: 2500 });
         if (res && res.moves && res.moves.length > 0) {
             return { best: res.moves[0], candidates: res.moves };
         }
-        const localRes = analyzeBoardMoves(stateToEval, evalDice, { ply: 2, maxMoves: 5 });
+        const localRes = analyzeBoardMoves(stateToEval, evalDice, { ply: 3, maxMoves: 5 });
         if (localRes && localRes.bestMove) {
             return { best: localRes.bestMove, candidates: localRes.moves };
         }

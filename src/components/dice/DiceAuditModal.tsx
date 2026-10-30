@@ -10,11 +10,12 @@
  * Conforme à SCALABILITY.md (< 300 lignes, 0 any, Dumb UI pure).
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { REJECTION_THRESHOLD, type ProvablyFairSessionState } from '../../lib/crypto/provablyFairRng';
 import { useDiceAuditSubtle, type DiceAuditRollInput } from './useDiceAuditSubtle';
 import DiceAuditSeedsSection from './DiceAuditSeedsSection';
 import DiceAuditRollsTable from './DiceAuditRollsTable';
+import { computeSwapDiceComparison } from '../../features/personas/botPersonas';
 
 export type { DiceAuditRollInput };
 
@@ -60,6 +61,12 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
 
     const [customSeedA, setCustomSeedA] = useState<string>(session?.clientSeedA ?? '');
     const [customSeedB, setCustomSeedB] = useState<string>(session?.clientSeedB ?? '');
+    const [isSwappedView, setIsSwappedView] = useState<boolean>(false);
+
+    const swapSummary = useMemo(
+        () => computeSwapDiceComparison(browserAuditRows.map((r) => ({ die1: r.actualDice[0], die2: r.actualDice[1] }))),
+        [browserAuditRows],
+    );
 
     // Fermeture au clavier via Escape
     useEffect(() => {
@@ -171,6 +178,52 @@ export const DiceAuditModal: React.FC<DiceAuditModalProps> = ({
                     setCustomSeedB={setCustomSeedB}
                     onUpdateClientSeeds={onUpdateClientSeeds}
                 />
+
+                {/* Simulation Pédagogique : Inversion des Dés (Swap Dice Anti-Frustration) */}
+                <section
+                    data-testid="dice-audit-swap-dice-section"
+                    className="rounded-2xl border border-[#f3c65f]/40 bg-black/50 p-3.5 space-y-2"
+                >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#f3c65f]">
+                                🔄 Outil Pédagogique : Inverser les Dés avec le Bot (Swap Dice)
+                            </h3>
+                            <p className="text-[11px] text-slate-300">
+                                Comparez la somme totale de pips et de doubles reçus par chaque camp sur cette graine.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            data-testid="dice-audit-swap-toggle-btn"
+                            onClick={() => setIsSwappedView((v) => !v)}
+                            className="rounded-xl border border-[#f3c65f]/60 bg-[#2a1c0b] px-3 py-1.5 text-xs font-bold text-[#f3c65f] hover:bg-[#3a2710] transition"
+                        >
+                            {isSwappedView ? '↩️ Rétablir l’ordre initial' : '🔄 Simuler l’Inversion des Dés'}
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                        <div className="rounded-xl border border-white/10 bg-black/60 p-2.5">
+                            <div className="text-[10px] uppercase text-slate-400">
+                                {isSwappedView ? 'Vous (avec les dés du Bot)' : 'Vos Lancers Réels'}
+                            </div>
+                            <div className="mt-0.5 text-sm font-bold text-amber-200">
+                                {isSwappedView ? swapSummary.botTotalPips : swapSummary.playerTotalPips} pips ·{' '}
+                                {isSwappedView ? swapSummary.botDoubles : swapSummary.playerDoubles} double(s)
+                            </div>
+                        </div>
+                        <div className="rounded-xl border border-white/10 bg-black/60 p-2.5">
+                            <div className="text-[10px] uppercase text-slate-400">
+                                {isSwappedView ? 'Le Bot (avec vos dés)' : 'Lancers Réels du Bot'}
+                            </div>
+                            <div className="mt-0.5 text-sm font-bold text-emerald-200">
+                                {isSwappedView ? swapSummary.playerTotalPips : swapSummary.botTotalPips} pips ·{' '}
+                                {isSwappedView ? swapSummary.playerDoubles : swapSummary.botDoubles} double(s)
+                            </div>
+                        </div>
+                    </div>
+                    <p className="text-[11px] text-amber-100/90 leading-relaxed">{swapSummary.verdictText}</p>
+                </section>
 
                 {/* Tableau déroulant de tous les jets de la partie */}
                 <DiceAuditRollsTable rows={browserAuditRows} />

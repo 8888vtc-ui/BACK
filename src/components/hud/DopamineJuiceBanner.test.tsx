@@ -53,9 +53,9 @@ describe('DopamineJuiceBanner — 4 High-Dopamine & Addiction Mechanics', () => 
     it('affiche le Rival IA incarné (Boss Ladder), son PR cible et sa réplique', () => {
         render(<DopamineJuiceBanner difficulty="expert" coachHistory={[]} cubeValue={1} />);
 
-        expect(screen.getByTestId('dopamine-ai-rival-card').textContent).toContain('Maître Kenji Sato');
-        expect(screen.getByTestId('dopamine-ai-rival-pr').textContent).toContain('PR ~3.5');
-        expect(screen.getByTestId('dopamine-ai-rival-quote').textContent).toContain('Point d’Or');
+        expect(screen.getByTestId('dopamine-ai-rival-card').textContent).toContain('Victor « L’Homme d’Affaires »');
+        expect(screen.getByTestId('dopamine-ai-rival-pr').textContent).toContain('PR ~2.6');
+        expect(screen.getByTestId('dopamine-ai-rival-quote').textContent).toContain('Videau');
     });
 
     it('célèbre un Coup Brillant (!!) et un Combo de Maître x3 sur une série optimale', () => {

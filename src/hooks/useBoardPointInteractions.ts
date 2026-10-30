@@ -92,7 +92,7 @@ export function useBoardPointInteractions({
             executeBoardPointClick({
                 pointNumber, board, isX, player, bar, xBarPoint, oBarPoint,
                 ghostDestinations, selectedPoint, leftDieTargets, rightDieTargets,
-                dice, preferredDie, legalSequences,
+                dice, preferredDie, ctrlKey: Boolean(e.ctrlKey || e.metaKey), legalSequences,
                 onCheckerClick, onDestinationClick, onPlayMove, onDeselect,
             });
         },

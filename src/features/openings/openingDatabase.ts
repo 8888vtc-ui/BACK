@@ -442,14 +442,18 @@ export function getAllOpenings(): OpeningEntry[] {
     return OPENING_BOOK;
 }
 
+const INITIAL_BOARD_COUNTS: readonly number[] = [
+    0, -2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, -5,
+    5, 0, 0, 0, -3, 0, -5, 0, 0, 0, 0, 2, 0,
+] as const;
+
 /** Vérifie si le plateau correspond exactement à la position initiale de début de partie. */
 export function isInitialBoardPosition(board: number[]): boolean {
     if (!board || board.length < 26) return false;
-    return (
-        board[1] === -2 && board[6] === 5 && board[8] === 3 && board[12] === -5 &&
-        board[13] === 5 && board[17] === -3 && board[19] === -5 && board[24] === 2 &&
-        (board[0] || 0) === 0 && (board[25] || 0) === 0
-    );
+    for (let i = 0; i <= 25; i++) {
+        if ((board[i] ?? 0) !== INITIAL_BOARD_COUNTS[i]) return false;
+    }
+    return true;
 }
 
 /** Vérifie si les 15 pions du joueur X sont encore dans leur configuration initiale d'ouverture. */

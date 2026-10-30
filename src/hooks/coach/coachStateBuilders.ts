@@ -15,6 +15,7 @@ import {
     analyzeBlots,
     generateRuleBasedExplanation,
     buildMatchContext,
+    detectMissedCubeBeforeRoll,
     type StrategicFeatures,
 } from '../../features/coach';
 import { analyzeBoardMoves } from '../../lib/engine/evaluator';
@@ -123,6 +124,7 @@ export function buildCoachStateFromLogResult(params: {
         boardPlayed: playedEndState.board,
         player: 'X',
     });
+    const missedCubeAlert = detectMissedCubeBeforeRoll(evalState);
 
     const effectiveLang = params.language || (typeof window !== 'undefined' ? detectLocale() : 'fr');
     const ruleBased = generateRuleBasedExplanation({
@@ -142,6 +144,13 @@ export function buildCoachStateFromLogResult(params: {
         language: effectiveLang,
     });
 
+    const baseTactical = verdict === 'optimal' ? undefined : tactical.summary;
+    const combinedTacticalSummary = missedCubeAlert
+        ? baseTactical
+            ? `${missedCubeAlert.explanation} · ${baseTactical}`
+            : missedCubeAlert.explanation
+        : baseTactical;
+
     return {
         coachState: {
             verdict,
@@ -152,7 +161,7 @@ export function buildCoachStateFromLogResult(params: {
             whyFailed: ruleBased.whyFailed || undefined,
             whyOptimal: ruleBased.whyOptimal || undefined,
             summary: ruleBased.summary,
-            tacticalSummary: verdict === 'optimal' ? undefined : tactical.summary,
+            tacticalSummary: combinedTacticalSummary,
             features,
             positionKey: serializeXGID(evalState),
             candidateMoves: candidateMoves.slice(0, 5).map(

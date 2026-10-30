@@ -20,17 +20,22 @@ import {
     saveForcedMoveAutoPlay,
     type ForcedMoveDescriptor,
 } from '../engine/forcedMoveDetector';
+import { detectGreedyBearOffStep } from '../engine/bearOffRules';
 
 export interface UseForcedMoveAutoPlayOptions {
     phase: string;
     turn: 'X' | 'O';
     isHumanTurn?: boolean;
+    board?: readonly number[];
     dice: [number, number] | null;
+    usedDice?: readonly boolean[];
     leftDieTargets: Map<number, number[]>;
     rightDieTargets: Map<number, number[]>;
     onPlayMove: (from: number, to: number, die: 0 | 1) => void;
     /** Permet de forcer l'activation/désactivation de l'auto-play (sinon lu depuis localStorage). */
     autoPlayEnabled?: boolean;
+    /** Active le Greedy Bearoff (sortie auto sans contact quand 1 seule façon de sortir le max de pions) et l'Auto-Bearoff sur l'As. */
+    greedyBearOffEnabled?: boolean;
     /** Délai avant exécution automatique (défaut : 300 ms — Audit 13 / 20). */
     delayMs?: number;
 }
@@ -48,11 +53,14 @@ export function useForcedMoveAutoPlay({
     phase,
     turn,
     isHumanTurn,
+    board,
     dice,
+    usedDice,
     leftDieTargets,
     rightDieTargets,
     onPlayMove,
     autoPlayEnabled: externalAutoPlay,
+    greedyBearOffEnabled = true,
     delayMs = FORCED_MOVE_AUTO_PLAY_DELAY_MS,
 }: UseForcedMoveAutoPlayOptions): UseForcedMoveAutoPlayReturn {
     const [storedAutoPlay, setStoredAutoPlay] = useState<boolean>(() =>
@@ -80,8 +88,32 @@ export function useForcedMoveAutoPlay({
                 highlightDestination: null,
             };
         }
-        return detectForcedMove({ leftDieTargets, rightDieTargets, dice });
-    }, [isMovingPhase, activeHumanTurn, dice, leftDieTargets, rightDieTargets]);
+        const forced = detectForcedMove({ leftDieTargets, rightDieTargets, dice });
+        if (forced.isForced || !greedyBearOffEnabled || !board) return forced;
+
+        const greedy = detectGreedyBearOffStep({
+            board,
+            player: turn,
+            dice,
+            usedDice,
+            leftDieTargets,
+            rightDieTargets,
+        });
+        if (!greedy) return forced;
+        const descriptor: ForcedMoveDescriptor = {
+            from: greedy.from,
+            to: greedy.to,
+            die: greedy.die,
+            dieValue: dice[greedy.die] ?? null,
+        };
+        return {
+            isForced: true,
+            forcedMove: descriptor,
+            uniqueLegalMoves: [descriptor],
+            highlightOrigin: descriptor.from,
+            highlightDestination: descriptor.to,
+        };
+    }, [isMovingPhase, activeHumanTurn, dice, leftDieTargets, rightDieTargets, greedyBearOffEnabled, board, turn, usedDice]);
 
     useEffect(() => {
         if (!effectiveAutoPlay || !detection.isForced || !detection.forcedMove) {

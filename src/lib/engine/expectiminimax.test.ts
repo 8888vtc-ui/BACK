@@ -116,4 +116,50 @@ describe('refineTopCandidatesExpectiminimax2Ply', () => {
         expect(refined[0].notation).toBe('8/5 6/5');
         expect(refined[0].equity).toBeGreaterThan(refined[1].equity);
     });
+
+    it('ne fait jamais passer un candidat de queue non évalué (0-ply) devant les Top candidats évalués en 2-ply', () => {
+        const state = createInitialState();
+        const boardGolden = state.board.slice();
+        boardGolden[8] -= 1;
+        boardGolden[6] -= 1;
+        boardGolden[5] += 2;
+
+        const boardBlot = state.board.slice();
+        boardBlot[24] -= 1;
+        boardBlot[23] += 1;
+        boardBlot[13] -= 1;
+        boardBlot[10] += 1;
+
+        const candidates: ScoredCandidate[] = [
+            {
+                seq: { moves: [{ from: 8, to: 5 }, { from: 6, to: 5 }], board: boardGolden },
+                equity: 0.25,
+                probabilities: { win: 0.6, winGammon: 0.15, winBackgammon: 0.01, loseWin: 0.4, loseGammon: 0.1, loseBackgammon: 0.01 },
+                notation: '8/5 6/5',
+            },
+            {
+                seq: { moves: [{ from: 24, to: 23 }, { from: 13, to: 10 }], board: boardBlot },
+                equity: 0.15,
+                probabilities: { win: 0.53, winGammon: 0.1, winBackgammon: 0.01, loseWin: 0.47, loseGammon: 0.1, loseBackgammon: 0.01 },
+                notation: '24/23 13/10',
+            },
+            {
+                seq: { moves: [{ from: 24, to: 20 }], board: boardBlot },
+                equity: 0.14,
+                probabilities: { win: 0.52, winGammon: 0.1, winBackgammon: 0.01, loseWin: 0.48, loseGammon: 0.1, loseBackgammon: 0.01 },
+                notation: '24/20 (queue 0-ply)',
+            },
+        ];
+
+        const refined = refineTopCandidatesExpectiminimax2Ply(
+            state,
+            candidates,
+            (s) => evaluateBoard(s, 0),
+            { maxCandidates: 2, timeBudgetMs: 500 },
+        );
+
+        expect(refined[0].notation).toBe('8/5 6/5');
+        expect(refined[2].notation).toBe('24/20 (queue 0-ply)');
+        expect(refined[1].equity).toBeGreaterThan(refined[2].equity);
+    });
 });

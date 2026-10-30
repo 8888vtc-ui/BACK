@@ -3,6 +3,8 @@ import type { BoardState } from '../../engine/backgammonEngine';
 import { formatCoachMoveSequence, movesFromBoardDiff } from '../../features/coach/coachMoveNotation';
 import { soundEngine } from '../../lib/sound/soundEngine';
 import { analyzeHumanMoveFromLogWithBgsage, type CoachVerdict } from '../../features/coach/logAnalyzer';
+import { evaluateBrilliantMoveCriteria } from '../../features/coach/tacticalExplainer';
+import { recordBlunder } from '../../features/drills/blunderBank';
 import { shouldNotify, type CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
 import {
     buildCoachStateFromLogResult,
@@ -81,7 +83,7 @@ export function useCoachLogAnalyzer({
                     matchLength: gameState.matchLength,
                     scoreX: gameState.scoreX,
                     scoreO: gameState.scoreO,
-                    ply: 2,
+                    ply: 3,
                     signal: controller.signal,
                 });
                 if (isStale() || !result) return;
@@ -95,9 +97,32 @@ export function useCoachLogAnalyzer({
                 if (isUnforced) {
                     recordDecisionStats(verdict, equityLoss, playedNotation, result.optimalNotation);
                     const secondBest = candidateMoves[1];
-                    setBrilliantMove(
-                        Math.abs(equityLoss) < 0.0001 && secondBest !== undefined && Math.abs(secondBest.equityLoss) > 0.06,
-                    );
+                    const uniquenessDelta = secondBest !== undefined ? Math.abs(secondBest.equityLoss) : 0;
+                    const isBrilliant = evaluateBrilliantMoveCriteria({
+                        equityLossEmg: Math.abs(equityLoss),
+                        secondBestGapEmg: uniquenessDelta,
+                        slottedKeyPointNaked: uniquenessDelta > 0.045 || playedNotation.includes('*'),
+                    });
+                    setBrilliantMove(isBrilliant);
+                    if (verdict === 'blunder' || Math.abs(equityLoss) >= 0.06) {
+                        try {
+                            recordBlunder({
+                                board: [...lastEntry.boardBefore],
+                                dice: [lastEntry.dice[0], lastEntry.dice[1]],
+                                player: 'X',
+                                playedMove: playedNotation,
+                                optimalMove: result.optimalNotation,
+                                acceptableMoves: candidateMoves
+                                    .filter((m) => Math.abs(m.equityLoss) < 0.02)
+                                    .map((m) => m.notation),
+                                equityLoss: Math.abs(equityLoss),
+                                verdict: Math.abs(equityLoss) >= 0.20 ? 'howler' : Math.abs(equityLoss) >= 0.08 ? 'blunder' : 'doubtful',
+                                conceptId: 'positional',
+                                conceptName: 'Jeu positionnel',
+                                explanation: `Le coup optimal était ${result.optimalNotation} (perte de ${Math.abs(equityLoss).toFixed(3)} EMG sur ${playedNotation}).`,
+                            });
+                        } catch { /* ignore storage errors */ }
+                    }
                 }
                 if (isStale()) return;
 

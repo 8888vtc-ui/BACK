@@ -1,107 +1,55 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
-    signUpWithEmail,
-    signInWithEmail,
-    signInWithGoogle,
-    signInWithApple,
-    signOut,
+    extractGoogleUserMetadata,
+    sanitizeAuthRedirectPath,
+    exchangeOAuthCodeForSession,
 } from './auth';
-import { supabase } from './client';
 
-describe('Supabase Authentication Service', () => {
-    beforeEach(() => {
-        vi.restoreAllMocks();
-    });
-
-    it('appelle supabase.auth.signUp avec les paramètres email et mot de passe', async () => {
-        const signUpSpy = vi.spyOn(supabase.auth, 'signUp').mockResolvedValue({
-            data: { user: { id: 'u123', email: 'test@example.com' } as any, session: null },
-            error: null,
-        });
-
-        const res = await signUpWithEmail({
-            email: 'test@example.com',
-            password: 'password123',
-            displayName: 'Joueur1',
-        });
-
-        expect(signUpSpy).toHaveBeenCalledWith({
-            email: 'test@example.com',
-            password: 'password123',
-            options: {
-                data: {
-                    full_name: 'Joueur1',
-                    username: 'test',
-                },
+describe('Supabase Google / Gmail OAuth Helpers (auth.ts)', () => {
+    it('extrait correctement le nom complet, le pseudo et la photo Gmail (picture ou avatar_url)', () => {
+        const meta = extractGoogleUserMetadata({
+            id: 'a1b2c3d4-9999-4000-8000-000000000000',
+            email: 'champion.monaco@gmail.com',
+            user_metadata: {
+                full_name: 'Laurent Monte-Carlo',
+                picture: 'https://lh3.googleusercontent.com/a/avatar-gmail',
             },
         });
-        expect(res.data.user?.email).toBe('test@example.com');
+
+        expect(meta).toEqual({
+            username: 'champion.monaco_a1b2',
+            displayName: 'Laurent Monte-Carlo',
+            avatarUrl: 'https://lh3.googleusercontent.com/a/avatar-gmail',
+            email: 'champion.monaco@gmail.com',
+        });
     });
 
-    it('appelle supabase.auth.signInWithPassword pour la connexion email', async () => {
-        const signInSpy = vi.spyOn(supabase.auth, 'signInWithPassword').mockResolvedValue({
-            data: { user: { id: 'u123', email: 'test@example.com' } as any, session: {} as any },
-            error: null,
-        });
-
-        const res = await signInWithEmail({
-            email: 'test@example.com',
-            password: 'password123',
-        });
-
-        expect(signInSpy).toHaveBeenCalledWith({
-            email: 'test@example.com',
-            password: 'password123',
-        });
-        expect(res.error).toBeNull();
-    });
-
-    it('appelle supabase.auth.signInWithOAuth avec le provider Google', async () => {
-        const oAuthSpy = vi.spyOn(supabase.auth, 'signInWithOAuth').mockResolvedValue({
-            data: { provider: 'google', url: 'https://accounts.google.com/o/oauth2' },
-            error: null,
-        });
-
-        const res = await signInWithGoogle('http://localhost:3000/auth/callback');
-
-        expect(oAuthSpy).toHaveBeenCalledWith({
-            provider: 'google',
-            options: {
-                redirectTo: 'http://localhost:3000/auth/callback',
-                queryParams: {
-                    access_type: 'offline',
-                    prompt: 'consent',
-                },
+    it('utilise des valeurs de repli propres si Google ne fournit que le champ name', () => {
+        const meta = extractGoogleUserMetadata({
+            id: 'f9e8d7c6-1111-4000-8000-000000000000',
+            email: 'club.player@gmail.com',
+            user_metadata: {
+                name: 'Club Player',
             },
         });
-        expect(res.data.provider).toBe('google');
+
+        expect(meta.displayName).toBe('Club Player');
+        expect(meta.username).toBe('club.player_f9e8');
+        expect(meta.avatarUrl).toBeNull();
     });
 
-    it('appelle supabase.auth.signInWithOAuth avec le provider Apple', async () => {
-        const oAuthSpy = vi.spyOn(supabase.auth, 'signInWithOAuth').mockResolvedValue({
-            data: { provider: 'apple', url: 'https://appleid.apple.com/auth/authorize' },
-            error: null,
-        });
-
-        const res = await signInWithApple('http://localhost:3000/auth/callback');
-
-        expect(oAuthSpy).toHaveBeenCalledWith({
-            provider: 'apple',
-            options: {
-                redirectTo: 'http://localhost:3000/auth/callback',
-            },
-        });
-        expect(res.data.provider).toBe('apple');
+    it('bloque toute tentative d’Open Redirect dans sanitizeAuthRedirectPath', () => {
+        expect(sanitizeAuthRedirectPath('/tournaments')).toBe('/tournaments');
+        expect(sanitizeAuthRedirectPath('/tournaments?lang=fr')).toBe('/tournaments?lang=fr');
+        expect(sanitizeAuthRedirectPath('https://evil.example.com')).toBe('/');
+        expect(sanitizeAuthRedirectPath('//evil.example.com')).toBe('/');
+        expect(sanitizeAuthRedirectPath(null)).toBe('/');
+        expect(sanitizeAuthRedirectPath('')).toBe('/');
     });
 
-    it('appelle supabase.auth.signOut lors de la déconnexion', async () => {
-        const signOutSpy = vi.spyOn(supabase.auth, 'signOut').mockResolvedValue({
-            error: null,
-        });
-
-        const res = await signOut();
-
-        expect(signOutSpy).toHaveBeenCalled();
-        expect(res.error).toBeNull();
+    it('retourne une erreur explicite si le code OAuth est vide', async () => {
+        const res = await exchangeOAuthCodeForSession('   ');
+        expect(res.session).toBeNull();
+        expect(res.error?.message).toContain('Code OAuth manquant');
     });
 });

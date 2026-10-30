@@ -145,7 +145,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
             aria-label="Barre de contrôle horlogère"
             data-testid={totalTurns > 0 ? 'board-move-timeline' : 'board-horology-bar'}
             data-mode={totalTurns > 0 ? 'live' : undefined}
-            className="w-full max-w-[1260px] mx-auto shrink-0 h-8 flex flex-nowrap items-center justify-between gap-2 overflow-hidden whitespace-nowrap rounded-xl border border-[#d4af37]/40 bg-gradient-to-r from-[#140b06]/95 via-[#1c1008]/95 to-[#120a05]/95 px-2 py-0.5 text-[11px] text-amber-50 shadow-[0_6px_18px_rgba(0,0,0,0.65)] z-30 select-none"
+            className="w-full max-w-[1260px] mx-auto shrink-0 h-8 flex flex-nowrap items-center justify-between gap-2 overflow-hidden whitespace-nowrap rounded-xl border border-white/10 bg-slate-950/95 px-2 py-0.5 text-[11px] text-slate-100 shadow-[0_6px_18px_rgba(0,0,0,0.65)] z-30 select-none"
         >
             {/* Contrôles Replay rapides (si au moins 1 tour joué) */}
             {totalTurns > 0 ? (
@@ -153,22 +153,22 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                     <button
                         type="button" data-testid="timeline-btn-first" disabled={!canStepPrev} onClick={onStepFirst}
                         title="Revenir au premier coup"
-                        className="inline-flex items-center rounded-lg border border-white/10 bg-black/40 px-1.5 py-0.5 text-[10px] font-bold text-slate-200 hover:border-[#f3c65f]/60 hover:text-white disabled:opacity-35 transition"
+                        className="inline-flex items-center rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-slate-200 hover:border-amber-400/50 hover:text-white disabled:opacity-35 transition"
                     >
                         ⏪
                     </button>
                     <button
                         type="button" data-testid="timeline-btn-prev" disabled={!canStepPrev} onClick={onStepPrev}
                         title="Inspecter le coup précédent"
-                        className="inline-flex items-center rounded-lg border border-white/10 bg-black/40 px-1.5 py-0.5 text-[10px] font-bold text-slate-200 hover:border-[#f3c65f]/60 hover:text-white disabled:opacity-35 transition"
+                        className="inline-flex items-center rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-slate-200 hover:border-amber-400/50 hover:text-white disabled:opacity-35 transition"
                     >
                         ◀
                     </button>
-                    <span data-testid="timeline-step-counter" className="px-1.5 py-0.5 rounded-md bg-black/50 border border-[#d4af37]/30 font-mono text-[10px] font-bold tabular-nums text-[#f3c65f]">
+                    <span data-testid="timeline-step-counter" className="px-1.5 py-0.5 rounded-md bg-slate-900 border border-white/10 font-mono text-[10px] font-bold tabular-nums text-amber-300">
                         {totalTurns} / {totalTurns}
                     </span>
                     <button
-                        type="button" data-testid="timeline-btn-next" disabled className="inline-flex items-center rounded-lg border border-white/5 bg-black/20 px-1.5 py-0.5 text-[10px] font-bold text-slate-500 opacity-35"
+                        type="button" data-testid="timeline-btn-next" disabled className="inline-flex items-center rounded-lg border border-white/5 bg-slate-900/40 px-1.5 py-0.5 text-[10px] font-bold text-slate-500 opacity-35"
                     >
                         ▶
                     </button>
@@ -191,17 +191,17 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
 
             {/* Rival IA : Avatar, Nom, PR cible et citation réactive */}
             <div data-testid="dopamine-ai-rival-card" className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden px-1">
-                <span aria-hidden="true" className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-[#f3c65f]/60 bg-[#2a170b] text-xs shadow-inner">
+                <span aria-hidden="true" className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/10 bg-slate-900 text-xs shadow-inner">
                     {rival.avatar}
                 </span>
                 <div className="min-w-0 flex flex-nowrap items-center gap-1.5 overflow-hidden">
-                    <span className="font-serif font-black text-[#f3c65f] tracking-wide whitespace-nowrap">
+                    <span className="font-sans font-bold text-white tracking-tight whitespace-nowrap">
                         {rival.name}
                     </span>
-                    <span data-testid="dopamine-ai-rival-pr" className="rounded border border-amber-400/40 bg-black/50 px-1.5 py-0.2 font-mono text-[10px] font-bold tabular-nums text-amber-300">
+                    <span data-testid="dopamine-ai-rival-pr" className="rounded border border-amber-400/40 bg-slate-900 px-1.5 py-0.2 font-mono text-[10px] font-bold tabular-nums text-amber-300">
                         PR ~{rival.targetPr}
                     </span>
-                    <span data-testid="dopamine-ai-rival-quote" className="truncate italic text-[11px] text-slate-200 max-w-[200px] sm:max-w-[320px] xl:max-w-[480px]" title={rivalQuote}>
+                    <span data-testid="dopamine-ai-rival-quote" className="truncate italic text-[11px] text-slate-300 max-w-[200px] sm:max-w-[320px] xl:max-w-[480px]" title={rivalQuote}>
                         « {rivalQuote} »
                     </span>
                 </div>
@@ -258,7 +258,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                     <button
                         type="button" data-testid="dopamine-instant-rematch-btn" onClick={onInstantRematch}
                         title={`Revanche contre ${rival.name}`}
-                        className="inline-flex items-center gap-1 rounded-lg border border-[#d4af37]/55 bg-[#261409] px-1.5 py-0.5 text-[10px] font-bold text-[#f7e5b7] hover:border-[#f3c65f] transition active:scale-95"
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-amber-300 hover:border-amber-400/50 transition active:scale-95"
                     >
                         <span>🔥</span><span>{isEn ? 'Rematch' : 'Revanche'}</span>
                     </button>

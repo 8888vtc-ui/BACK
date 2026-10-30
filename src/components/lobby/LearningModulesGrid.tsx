@@ -49,9 +49,9 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
             data-testid="learning-modules-grid"
             className="w-full pt-1 space-y-3"
         >
-            <div className="mb-1 flex flex-wrap items-center justify-between gap-2 px-1">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
                 <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-amber-300/90">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
                         Académie &amp; Analyse Grand Maître
                     </span>
                     {snapshot.unlockedBadges.length > 0 && (
@@ -62,7 +62,7 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
                             {snapshot.unlockedBadges.map((b) => (
                                 <span
                                     key={b.id}
-                                    className="rounded-full border border-white/10 bg-amber-500/10 px-2 py-0.5 text-[11px] font-bold text-amber-200"
+                                    className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-bold text-amber-200"
                                 >
                                     {b.icon} {b.label}
                                 </span>
@@ -72,7 +72,7 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <ModuleProgressCard
                     id="puzzles"
                     testId="lobby-module-puzzles"
@@ -130,28 +130,47 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
                 />
             </div>
 
-            {/* Bannière SEO & Encyclopédie Gammon Academy (/academy) */}
+            {/* Accès direct Parcours Débutant Interactif (0 connaissance requise : 5 Leçons + Quiz + Bravos) */}
+            <Link
+                href="/academy#learn-rules"
+                prefetch
+                data-testid="lobby-beginner-rules-link"
+                className="group flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-emerald-950/30 px-3.5 py-2.5 transition hover:border-emerald-400/40 hover:bg-emerald-950/50"
+            >
+                <div className="flex flex-wrap items-center gap-2 min-w-0">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
+                        🌱 Débutant · Jamais joué ?
+                    </span>
+                    <span className="text-slate-600">·</span>
+                    <span className="text-xs font-bold text-slate-100 group-hover:text-white transition truncate">
+                        Apprendre les Règles en 5 Étapes Ludiques (Diagrammes, Quiz &amp; Bravos 🎉)
+                    </span>
+                </div>
+                <span className="shrink-0 rounded-lg border border-white/10 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-200 group-hover:border-emerald-400/50 group-hover:text-white transition">
+                    Commencer (5 min) →
+                </span>
+            </Link>
+
+            {/* Barre compacte SEO & Encyclopédie Gammon Academy (/academy) */}
             <Link
                 href="/academy"
                 prefetch
                 data-testid="lobby-academy-hub-link"
-                className="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#0c111d]/85 px-4 py-3 shadow-md transition hover:border-white/25 hover:bg-[#121828]/90"
+                className="group flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-slate-900/40 px-3.5 py-2.5 transition hover:border-white/25 hover:bg-slate-800/60"
             >
-                <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
-                            🏛️ {ui.lobby.academyBannerBadge}
-                        </span>
-                        <span className="text-slate-500">·</span>
-                        <h2 className="font-serif text-sm font-bold text-[#fdf8eb] group-hover:text-amber-200 transition">
-                            {ui.lobby.academyBannerTitle}
-                        </h2>
-                    </div>
-                    <p className="text-xs text-slate-300/90 leading-relaxed">
-                        {ui.lobby.academyBannerDesc}
-                    </p>
+                <div className="flex flex-wrap items-center gap-2 min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                        🏛️ {ui.lobby.academyBannerBadge}
+                    </span>
+                    <span className="text-slate-600">·</span>
+                    <h2 className="text-xs font-bold text-slate-100 group-hover:text-white transition truncate">
+                        {ui.lobby.academyBannerTitle}
+                    </h2>
+                    <span className="hidden md:inline text-xs text-slate-400 truncate">
+                        — {ui.lobby.academyBannerDesc}
+                    </span>
                 </div>
-                <span className="shrink-0 rounded-xl border border-white/10 bg-white/[0.06] px-3.5 py-2 text-xs font-bold text-amber-100 group-hover:border-white/25 group-hover:text-white transition">
+                <span className="shrink-0 rounded-lg border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[11px] font-bold text-slate-200 group-hover:border-white/25 group-hover:text-white transition">
                     {ui.lobby.academyBannerCta}
                 </span>
             </Link>

@@ -128,10 +128,10 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                 touchAction: 'manipulation',
                 paddingBottom: 'max(0.45rem, env(safe-area-inset-bottom, 0px))',
                 background:
-                    'linear-gradient(180deg, rgba(28, 16, 9, 0.98) 0%, rgba(18, 11, 6, 0.99) 55%, rgba(7, 10, 16, 1) 100%)',
-                borderTop: '1.5px solid rgba(212, 175, 55, 0.55)',
+                    'linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(2, 6, 23, 0.99) 100%)',
+                borderTop: '1px solid rgba(255, 255, 255, 0.1)',
                 boxShadow:
-                    '0 -12px 32px rgba(0, 0, 0, 0.88), inset 0 1px 0 rgba(255, 243, 196, 0.25)',
+                    '0 -12px 32px rgba(0, 0, 0, 0.85)',
             }}
             className={`md:hidden [@media(max-height:500px)]:hidden relative z-40 w-full shrink-0 px-2.5 pt-1.5 flex items-center justify-between gap-2 select-none touch-manipulation ${
                 isLeftHanded ? 'flex-row-reverse' : 'flex-row'
@@ -148,12 +148,12 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                         onUndo();
                     }}
                     aria-label="Annuler le dernier déplacement"
-                    className="relative flex flex-col items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-2xl border border-[#d4af37]/45 bg-gradient-to-b from-[#28160b] to-[#120904] text-[#fce8b2] shadow-[inset_0_1px_0_rgba(255,245,205,0.2),0_4px_10px_rgba(0,0,0,0.65)] transition-transform duration-100 active:scale-90 disabled:opacity-35 disabled:pointer-events-none touch-manipulation"
+                    className="relative flex flex-col items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-2xl border border-white/10 bg-slate-900 text-slate-200 shadow-md transition-transform duration-100 active:scale-90 disabled:opacity-35 disabled:pointer-events-none touch-manipulation"
                 >
-                    <span aria-hidden="true" className="text-base leading-none font-bold text-[#f3c65f]">
+                    <span aria-hidden="true" className="text-base leading-none font-bold text-amber-300">
                         ↶
                     </span>
-                    <span className="mt-0.5 text-[11px] font-extrabold uppercase tracking-tighter text-amber-100/90">
+                    <span className="mt-0.5 text-[11px] font-extrabold uppercase tracking-tighter text-slate-300">
                         Undo
                     </span>
                 </button>
@@ -167,12 +167,12 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                         onOpenCubeSheet();
                     }}
                     aria-label={`Videau x${nextCubeValue}`}
-                    className="relative flex flex-col items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-2xl border border-white/10 bg-gradient-to-b from-[#3d150e] to-[#1a0704] text-[#fce8b2] shadow-[inset_0_1px_0_rgba(255,230,180,0.25),0_4px_10px_rgba(0,0,0,0.65)] transition-transform duration-100 active:scale-90 disabled:opacity-35 touch-manipulation"
+                    className="relative flex flex-col items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-2xl border border-white/10 bg-slate-900 text-slate-200 shadow-md transition-transform duration-100 active:scale-90 disabled:opacity-35 touch-manipulation"
                 >
-                    <span className="rounded px-1 py-0.2 font-mono text-[11px] font-black leading-tight bg-gradient-to-b from-[#f3c65f] to-[#b88218] text-[#1a0e04] tabular-nums">
+                    <span className="rounded px-1 py-0.2 font-mono text-[11px] font-black leading-tight bg-amber-400 text-slate-950 tabular-nums">
                         ×{nextCubeValue}
                     </span>
-                    <span className="mt-0.5 text-[11px] font-extrabold uppercase tracking-tighter text-amber-100/90">
+                    <span className="mt-0.5 text-[11px] font-extrabold uppercase tracking-tighter text-slate-300">
                         Videau
                     </span>
                 </button>
@@ -185,7 +185,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                         onOpenCoachDrawer();
                     }}
                     aria-label={`Ouvrir le Coach IA (${coachQuotaBadge})`}
-                    className={`relative flex flex-col items-center justify-center w-14 h-12 min-w-[54px] min-h-[48px] rounded-2xl border bg-gradient-to-b from-[#2f200d] to-[#150d05] text-[#fce8b2] shadow-[inset_0_1px_0_rgba(255,245,205,0.24),0_4px_10px_rgba(0,0,0,0.65)] transition-transform duration-100 active:scale-90 touch-manipulation ${
+                    className={`relative flex flex-col items-center justify-center w-14 h-12 min-w-[54px] min-h-[48px] rounded-2xl border bg-slate-900 text-slate-200 shadow-md transition-transform duration-100 active:scale-90 touch-manipulation ${
                         isTilted
                             ? 'border-rose-400/80 ring-1 ring-rose-500/60'
                             : 'border-white/10'
@@ -201,14 +201,14 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                                 isAnalyzingCoach
                                     ? 'bg-emerald-500/30 text-emerald-200 border border-emerald-400/60 animate-pulse'
                                     : isVip
-                                      ? 'bg-amber-400/25 text-[#f3c65f] border border-white/10'
-                                      : 'bg-black/70 text-amber-200 border border-white/10'
+                                      ? 'bg-amber-400/20 text-amber-300 border border-white/10'
+                                      : 'bg-slate-950 text-amber-300 border border-white/10'
                             }`}
                         >
                             {isAnalyzingCoach ? '…' : coachQuotaBadge}
                         </span>
                     </div>
-                    <span className="mt-1 text-[11px] font-extrabold uppercase tracking-tighter text-amber-100/90">
+                    <span className="mt-1 text-[11px] font-extrabold uppercase tracking-tighter text-slate-300">
                         Coach
                     </span>
                 </button>
@@ -225,7 +225,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                                 void impactHeavy();
                                 onTakeDouble();
                             }}
-                            className="flex-1 h-14 min-w-[48px] min-h-[52px] rounded-2xl border border-emerald-300/75 bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800 px-2 font-serif text-xs font-black uppercase tracking-wider text-white shadow-lg active:scale-95 touch-manipulation tabular-nums"
+                            className="flex-1 h-14 min-w-[48px] min-h-[52px] rounded-2xl border border-emerald-400/60 bg-emerald-600 px-2 font-sans text-xs font-black uppercase tracking-wider text-white shadow-lg active:scale-95 touch-manipulation tabular-nums"
                         >
                             ✓ Prendre ×{nextCubeValue}
                         </button>
@@ -236,7 +236,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                                 void impactLight();
                                 onPassDouble();
                             }}
-                            className="h-14 min-w-[48px] min-h-[52px] rounded-2xl border border-rose-400/70 bg-gradient-to-b from-[#521217] to-[#280709] px-3 font-serif text-xs font-black uppercase tracking-wider text-rose-100 shadow-lg active:scale-95 touch-manipulation"
+                            className="h-14 min-w-[48px] min-h-[52px] rounded-2xl border border-rose-400/60 bg-rose-950 px-3 font-sans text-xs font-black uppercase tracking-wider text-rose-100 shadow-lg active:scale-95 touch-manipulation"
                         >
                             ✕ Passer
                         </button>
@@ -251,14 +251,14 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                             (primaryState === 'CONFIRM' && !canConfirm)
                         }
                         onClick={handlePrimaryPress}
-                        className={`w-full h-14 min-w-[48px] min-h-[56px] rounded-2xl px-4 flex items-center justify-center gap-2 font-serif text-xs sm:text-sm font-black uppercase tracking-[0.12em] transition-all duration-150 active:scale-95 touch-manipulation ${
+                        className={`w-full h-14 min-w-[48px] min-h-[56px] rounded-2xl px-4 flex items-center justify-center gap-2 font-sans text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-150 active:scale-95 touch-manipulation ${
                             primaryState === 'ROLL'
-                                ? 'border-2 border-[#f3c65f] bg-gradient-to-b from-[#f7d774] via-[#d4af37] to-[#9a7418] text-[#1a0f05] shadow-[0_6px_22px_rgba(212,175,55,0.45),inset_0_2px_1px_rgba(255,255,255,0.65)]'
+                                ? 'border border-amber-300 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-[0_6px_20px_rgba(245,158,11,0.35)]'
                                 : primaryState === 'CONFIRM' && canConfirm
-                                  ? 'border-2 border-emerald-300/85 bg-gradient-to-b from-emerald-400 via-emerald-600 to-emerald-800 text-emerald-950 animate-pulse shadow-[0_6px_22px_rgba(16,185,129,0.5),inset_0_2px_1px_rgba(255,255,255,0.55)]'
+                                  ? 'border border-emerald-300/85 bg-gradient-to-r from-emerald-400 to-emerald-500 text-slate-950 animate-pulse shadow-[0_6px_20px_rgba(16,185,129,0.4)]'
                                   : primaryState === 'NO_MOVE'
                                     ? 'border border-slate-500/60 bg-slate-800/90 text-slate-200'
-                                    : 'border border-[#d4af37]/25 bg-[#19110a] text-amber-200/40 cursor-not-allowed'
+                                    : 'border border-white/10 bg-slate-900 text-slate-500 cursor-not-allowed'
                         }`}
                     >
                         {primaryState === 'ROLL' && (

@@ -8,7 +8,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import type { ThemeName } from '../board/boardThemes';
-import type { BoardState, Player } from '../../engine/backgammonEngine';
+import { borneOffCount, type BoardState, type Player } from '../../engine/backgammonEngine';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
 import type { CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
@@ -146,28 +146,23 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
         <>
             <header
                 role="region" aria-label="Barre de match"
-                className="relative z-40 w-full max-w-[1260px] mx-auto h-9 max-md:max-h-[42px] md:h-12 max-sm:rounded-none max-sm:border-x-0 rounded-2xl px-1.5 sm:px-3.5 transition-all duration-300 flex items-center justify-between gap-1 sm:gap-2 min-w-0 overflow-visible touch-manipulation"
-                style={{
-                    background: 'repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 6px), linear-gradient(180deg, #321a0d 0%, #1e0e06 52%, #120803 100%)',
-                    border: '1.5px solid rgba(212, 175, 55, 0.55)',
-                    boxShadow: '0 10px 28px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 240, 195, 0.28), inset 0 -2px 5px rgba(0, 0, 0, 0.85)',
-                }}
+                className="relative z-40 w-full max-w-[1260px] mx-auto h-9 max-md:max-h-[42px] md:h-11 max-sm:rounded-none max-sm:border-x-0 rounded-xl border border-white/10 bg-slate-950/95 px-1.5 sm:px-3 shadow-lg backdrop-blur-xl transition-all duration-200 flex items-center justify-between gap-1 sm:gap-2 min-w-0 overflow-visible touch-manipulation"
             >
-                <span aria-hidden="true" className="pointer-events-none hidden md:block h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-br from-[#fff3c4] via-[#d4af37] to-[#6b480a] shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
-
                 <div className="flex items-center gap-1 sm:gap-2 min-w-0 shrink-0">
                     <button
                         type="button" onClick={handleLobbyClick} data-testid="hud-back-to-lobby-btn" title="Menu de Session / Retour au Salon"
-                        className="flex items-center gap-1 rounded-xl border border-[#d4af37]/45 bg-gradient-to-b from-[#261409] to-[#120904] px-2 sm:px-2.5 py-1 text-[11px] font-bold tracking-wide text-[#f7e5b7] shadow-[inset_0_1px_0_rgba(255,245,205,0.22),0_2px_6px_rgba(0,0,0,0.6)] transition hover:border-[#f3c65f] hover:text-white active:scale-95 shrink-0 touch-manipulation"
+                        className="flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-2 sm:px-2.5 py-1 text-[11px] font-bold text-slate-200 transition hover:border-white/25 hover:bg-slate-800 hover:text-white active:scale-95 shrink-0 touch-manipulation"
                     >
-                        <span aria-hidden="true" className="text-[#f3c65f]">⚜</span>
-                        <span className="hidden sm:inline font-serif">Lobby</span>
+                        <span aria-hidden="true" className="text-amber-300">←</span>
+                        <span className="hidden sm:inline">Lobby</span>
                     </button>
                     <div id="match-hud" className="flex items-center min-w-0">
                         <HudScoreboard
                             matchLength={matchLength} scoreX={scoreX} scoreO={scoreO} turn={turn}
                             crawford={crawford} dice={dice} usedDice={usedDice} prX={prX} prO={prO}
                             isAiThinking={isAiThinking ?? turn === 'O'} pipX={pipX} pipO={pipO}
+                            borneOffX={boardState ? borneOffCount(boardState.board, 'X') : 0}
+                            borneOffO={boardState ? borneOffCount(boardState.board, 'O') : 0}
                             opponentLabel={DIFFICULTY_LABEL[difficulty]} playerColor={playerColor}
                             cubeValue={cubeValue} cubeOwner={cubeOwner}
                         />
@@ -178,7 +173,7 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                     {hasBarChecker && isHumanTurn && (
                         <span
                             data-testid="hud-bar-checker-alert"
-                            className="flex items-center gap-1.5 shrink-0 rounded-lg border border-rose-400/75 bg-gradient-to-b from-[#450d12] to-[#240608] px-2.5 py-0.5 text-[11px] font-bold text-rose-100 animate-pulse shadow-[inset_0_1px_0_rgba(255,200,200,0.25)]"
+                            className="flex items-center gap-1.5 shrink-0 rounded-lg border border-rose-500/60 bg-rose-950/80 px-2.5 py-0.5 text-[11px] font-bold text-rose-100 animate-pulse"
                             title={`Vous avez ${barCount} pion${barCount > 1 ? 's' : ''} sur la barre : rentrée obligatoire dans le camp adverse (${entryTargetText})`}
                         >
                             <span aria-hidden="true">⚠️</span>
@@ -201,26 +196,24 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                     {lastMoveNotation && (
                         <span
                             data-testid="hud-last-move"
-                            className="whitespace-nowrap truncate rounded-lg border border-[#d4af37]/35 bg-[#0c0603]/90 px-2.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-[#f5d78e] shadow-[inset_0_2px_4px_rgba(0,0,0,0.85)]"
+                            className="whitespace-nowrap truncate rounded-lg border border-white/10 bg-slate-900 px-2.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-amber-200"
                             title={`Dernier coup adverse : ${lastMoveNotation}`}
                         >
-                            <span className="hidden xl:inline font-serif font-normal text-[#d4af37]/75 mr-1">Dernier coup :</span>
+                            <span className="hidden xl:inline font-sans font-normal text-slate-400 mr-1">Dernier coup :</span>
                             {lastMoveNotation}
                         </span>
                     )}
                 </div>
 
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                    {(serverSeedHash || onOpenDiceAudit) && (
+                    {!isGameActive && (serverSeedHash || onOpenDiceAudit) && (
                         <button
                             type="button" onClick={onOpenDiceAudit} data-testid="hud-provably-fair-btn"
-                            title={isGameActive && serverSeedHash ? `Empreinte SHA-256 : ${serverSeedHash} (cliquer pour auditer)` : 'Vérifier les Dés en 1 Clic (Provably Fair)'}
-                            className={isGameActive
-                                ? 'hidden xl:flex h-8 items-center gap-1 shrink-0 whitespace-nowrap rounded-xl border border-emerald-500/35 bg-[#0a1811]/90 px-2 font-mono text-[11px] font-semibold tabular-nums text-emerald-300/90 transition hover:border-emerald-400 hover:text-emerald-200 active:scale-95'
-                                : 'flex h-8 items-center gap-1.5 shrink-0 whitespace-nowrap rounded-xl border border-emerald-400/65 bg-gradient-to-b from-[#0f3b28] to-[#081f15] px-2.5 text-[11px] font-bold text-emerald-200 shadow-[inset_0_1px_0_rgba(212,175,55,0.3)] transition hover:border-[#f3c65f] hover:text-white active:scale-95'}
+                            title="Vérifier les Dés en 1 Clic (Provably Fair)"
+                            className="flex h-7 items-center gap-1.5 shrink-0 whitespace-nowrap rounded-lg border border-emerald-500/50 bg-emerald-950/60 px-2.5 text-[11px] font-bold text-emerald-200 transition hover:border-emerald-400 hover:text-white active:scale-95"
                         >
-                            <span aria-hidden="true">{isGameActive ? '🔒' : '🛡'}</span>
-                            <span>{isGameActive && serverSeedHash ? `SHA-256 · ${serverSeedHash.slice(0, 4)}` : 'Vérifier les Dés'}</span>
+                            <span aria-hidden="true">🛡</span>
+                            <span>Vérifier les Dés</span>
                         </button>
                     )}
 
@@ -228,15 +221,15 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                         <button
                             type="button" onClick={onTriggerCoach} data-testid="hud-coach-btn"
                             title={coachQuotaBadge ? `Coach IA (${isVip ? 'VIP Illimité' : `${coachQuotaBadge} analyses aujourd'hui`})` : "Ouvrir l'analyse du Coach IA"}
-                            className="hidden md:flex h-7 sm:h-8 items-center gap-1 sm:gap-1.5 rounded-xl border border-[#e5c158]/55 bg-gradient-to-b from-[#33230f] to-[#1a1106] px-1.5 sm:px-2.5 text-[11px] sm:text-xs font-bold text-[#fce8b2] shadow-[inset_0_1px_0_rgba(255,245,205,0.28),0_2px_6px_rgba(0,0,0,0.6)] transition hover:border-[#f3c65f] hover:text-white active:scale-95 touch-manipulation"
+                            className="hidden md:flex h-7 items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900 px-2 text-[11px] font-bold text-slate-100 transition hover:border-white/25 hover:bg-slate-800 hover:text-white active:scale-95 touch-manipulation"
                         >
-                            <span aria-hidden="true" className="[filter:sepia(0.9)_saturate(2.5)_hue-rotate(5deg)]">🎓</span>
-                            <span className="hidden sm:inline font-serif tracking-wide">Coach</span>
+                            <span aria-hidden="true">🎓</span>
+                            <span className="hidden sm:inline">Coach</span>
                             {coachQuotaBadge && (
                                 <span
                                     data-testid="hud-coach-quota-badge"
-                                    className={`rounded-md px-1 sm:px-1.5 py-0.5 font-mono text-[10px] sm:text-[11px] font-black tabular-nums tracking-tight ${
-                                        isVip ? 'border border-amber-300/60 bg-gradient-to-r from-amber-400/25 to-yellow-500/35 text-amber-200' : 'border border-white/20 bg-black/60 text-[#f5d78e]'
+                                    className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-black tabular-nums ${
+                                        isVip ? 'bg-amber-400/20 text-amber-300' : 'bg-white/10 text-amber-200'
                                     }`}
                                 >
                                     {coachQuotaBadge}
@@ -252,9 +245,9 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                             ref={settingsToggleBtnRef} type="button" onClick={() => setIsSettingsOpen((prev) => !prev)}
                             aria-expanded={isSettingsOpen} aria-haspopup="dialog" aria-controls="hud-settings-menu"
                             data-testid="hud-settings-toggle-btn" title="Paramètres : Son, Orientation, Thème"
-                            className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl border text-xs sm:text-sm transition touch-manipulation ${isSettingsOpen ? 'border-[#f3c65f] bg-[#33230f] text-[#fce8b2]' : 'border-[#d4af37]/40 bg-[#180c06] text-amber-200/80 hover:border-[#e5c158] hover:text-white'}`}
+                            className={`flex h-7 w-7 items-center justify-center rounded-lg border text-xs transition touch-manipulation ${isSettingsOpen ? 'border-[#f3c65f] bg-slate-800 text-white' : 'border-white/10 bg-slate-900 text-slate-300 hover:border-white/25 hover:text-white'}`}
                         >
-                            <span aria-hidden="true" className="[filter:sepia(0.9)_saturate(2.5)_hue-rotate(5deg)]">⚙️</span>
+                            <span aria-hidden="true">⚙️</span>
                         </button>
 
                         <HudSettingsMenu
@@ -270,11 +263,6 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                         />
                     </div>
                 </div>
-
-                <span
-                    aria-hidden="true"
-                    className="pointer-events-none hidden md:block h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-br from-[#fff3c4] via-[#d4af37] to-[#6b480a] shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
-                />
             </header>
 
             <InGameMenuModal

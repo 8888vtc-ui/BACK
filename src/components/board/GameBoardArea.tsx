@@ -15,6 +15,7 @@ import { useInteractiveReplay } from '../../hooks/useInteractiveReplay';
 import Board from './Board';
 import BoardHorologyBar from './BoardHorologyBar';
 import CoachSidebar, { type CoachSidebarProps } from '../coach/CoachSidebar';
+import MobilePortraitCoachBanner from '../coach/MobilePortraitCoachBanner';
 import ErrorBoundary from '../common/ErrorBoundary';
 import type { GameSpeed } from '../../lib/gameFeel/speedPresets';
 
@@ -219,37 +220,36 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                 </div>
 
                 {isMatchStarted && (
-                    <div className="hidden md:block w-full shrink-0 h-8">
-                        <BoardHorologyBar
-                            totalTurns={effectiveTurns.length}
-                            replayIndex={replay.replayIndex}
-                            isLive={replay.isLive}
-                            selectedTurn={replay.selectedTurn}
-                            officialNotation={replay.officialNotation}
-                            viewPhase={replayViewPhase}
-                            canStepPrev={replay.canStepPrev}
-                            canStepNext={replay.canStepNext}
-                            swapColors={playerColor === 'O'}
-                            onStepFirst={() => { setReplayViewPhase('before'); replay.stepFirst(); }}
-                            onStepPrev={() => { setReplayViewPhase('before'); replay.stepPrev(); }}
-                            onStepNext={() => { setReplayViewPhase('before'); replay.stepNext(); }}
-                            onReturnToLive={() => { setPreviewBoardMode('live'); replay.returnToLive(); }}
-                            onToggleViewPhase={() => setReplayViewPhase((prev) => (prev === 'before' ? 'after' : 'before'))}
-                            onRewindHere={handleSyncedReplayMove}
-                            difficulty={game.difficulty}
-                            coachHistory={coachHistory}
-                            cubeValue={game.state.cubeValue}
-                            doublingOfferedBy={game.doublingOfferedBy}
-                            onTriggerGhostChallenge={(turnIdx) => {
-                                game.rewindToLogTurn?.(turnIdx);
-                                replay.returnToLive();
-                                setPreviewBoardMode('live');
-                                onSelectCoachHistoryIndex?.(null);
-                                onDismissCoach();
-                            }}
-                            locale={locale}
+                    <>
+                        <MobilePortraitCoachBanner
+                            coach={displayCoach} isAnalyzing={isAnalyzing} difficulty={game.difficulty}
+                            isShowingBestMoveArrows={previewBoardMode === 'before'}
+                            onToggleBestMoveArrows={() => setPreviewBoardMode((m) => (m === 'before' ? 'live' : 'before'))}
+                            onReplayMove={handleSyncedReplayMove} onOpenDrawer={onTriggerCoach}
                         />
-                    </div>
+                        <div className="hidden md:block w-full shrink-0 h-8">
+                            <BoardHorologyBar
+                                totalTurns={effectiveTurns.length} replayIndex={replay.replayIndex} isLive={replay.isLive}
+                                selectedTurn={replay.selectedTurn} officialNotation={replay.officialNotation} viewPhase={replayViewPhase}
+                                canStepPrev={replay.canStepPrev} canStepNext={replay.canStepNext} swapColors={playerColor === 'O'}
+                                onStepFirst={() => { setReplayViewPhase('before'); replay.stepFirst(); }}
+                                onStepPrev={() => { setReplayViewPhase('before'); replay.stepPrev(); }}
+                                onStepNext={() => { setReplayViewPhase('before'); replay.stepNext(); }}
+                                onReturnToLive={() => { setPreviewBoardMode('live'); replay.returnToLive(); }}
+                                onToggleViewPhase={() => setReplayViewPhase((prev) => (prev === 'before' ? 'after' : 'before'))}
+                                onRewindHere={handleSyncedReplayMove} difficulty={game.difficulty}
+                                coachHistory={coachHistory} cubeValue={game.state.cubeValue} doublingOfferedBy={game.doublingOfferedBy}
+                                onTriggerGhostChallenge={(turnIdx) => {
+                                    game.rewindToLogTurn?.(turnIdx);
+                                    replay.returnToLive();
+                                    setPreviewBoardMode('live');
+                                    onSelectCoachHistoryIndex?.(null);
+                                    onDismissCoach();
+                                }}
+                                locale={locale}
+                            />
+                        </div>
+                    </>
                 )}
             </div>
 
@@ -280,6 +280,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     gameId={gameId}
                     dice={displayState.dice}
                     board={displayState.board}
+                    difficulty={game.difficulty}
                 />
             </div>
         </div>

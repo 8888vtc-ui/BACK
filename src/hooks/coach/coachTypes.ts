@@ -144,6 +144,7 @@ export const CUBE_PLAYED_LABEL: Record<CubeAction, string> = {
     double: 'Videau : Doubler (×2)',
     take: 'Videau : Prendre (Take)',
     pass: 'Videau : Passer (Pass)',
+    missed_double: 'Videau : Non doublé (Lancer direct)',
 };
 
 export function extractCandidateMoveList(candidate: unknown): Move[] {

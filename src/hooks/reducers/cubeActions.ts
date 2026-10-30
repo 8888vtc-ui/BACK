@@ -6,6 +6,7 @@
 import type { BackgammonGameState, GameAction } from '../gameStateReducer';
 import type { Player } from '../../engine/backgammonEngine';
 import type { GameResult } from '../../engine/aiHeuristics';
+import { canPlayerOfferDouble } from '../../engine/cubeRules';
 import { revealSessionServerSeed, createProvablyFairSession } from '../../lib/crypto/provablyFairRng';
 
 export type CubeAction = Extract<GameAction, { type: 'OFFER_DOUBLE' | 'TAKE_DOUBLE' | 'PASS_DOUBLE' }>;
@@ -25,29 +26,29 @@ export function handleCubeAction(
             const isBotPreRollOffer =
                 state.phase === 'OPPONENT_THINKING' && state.boardState.turn === 'O' && !state.boardState.dice;
             if (state.phase !== 'WAITING_FOR_ROLL' && !isBotPreRollOffer) return state;
-            if (state.boardState.crawford) return state;
 
-            const isDmp =
-                state.matchLength > 0 &&
-                state.boardState.scoreX === state.matchLength - 1 &&
-                state.boardState.scoreO === state.matchLength - 1;
-            if (isDmp) return state;
-
-            if (state.boardState.cubeOwner !== null && state.boardState.cubeOwner !== state.boardState.turn) {
-                return state;
-            }
-            if (
-                state.matchLength > 0 &&
-                (state.boardState.scoreX >= state.matchLength || state.boardState.scoreO >= state.matchLength)
-            ) {
-                return state;
-            }
+            const isEligible = canPlayerOfferDouble({
+                turn: state.boardState.turn,
+                cubeValue: state.boardState.cubeValue,
+                cubeOwner: state.boardState.cubeOwner,
+                hasRolledDice: Boolean(state.boardState.dice),
+                isCrawford: state.boardState.crawford,
+                scoreX: state.boardState.scoreX,
+                scoreO: state.boardState.scoreO,
+                matchLength: state.matchLength,
+                board: state.boardState.board,
+            });
+            if (!isEligible) return state;
 
             return {
                 ...state,
                 phase: 'DOUBLING_OFFERED',
                 doublingOfferedBy: state.boardState.turn,
                 opponentHighlight: null,
+                opponentStatusMessage:
+                    state.boardState.turn === 'O'
+                        ? (action.statusMessage ?? "L'ordinateur propose de doubler le videau !")
+                        : state.opponentStatusMessage,
             };
         }
 
@@ -66,6 +67,7 @@ export function handleCubeAction(
                 },
                 phase: state.boardState.turn === 'O' && state.autoOpponent ? 'OPPONENT_THINKING' : 'WAITING_FOR_ROLL',
                 doublingOfferedBy: null,
+                opponentStatusMessage: null,
             };
         }
 
@@ -96,6 +98,7 @@ export function handleCubeAction(
                 },
                 phase: 'GAME_OVER',
                 doublingOfferedBy: null,
+                opponentStatusMessage: null,
                 gameResult: result,
                 provablyFair: revealSessionServerSeed(currentPf),
             };

@@ -121,7 +121,7 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
     const colorX: CheckerColor = swapColors ? 'black' : 'white';
     return (
     <div
-        className="relative row-span-2 w-6 sm:w-14 md:w-20 flex flex-col justify-between items-center rounded-xl mx-0.5 sm:mx-1 py-1 sm:py-2 select-none"
+        className="relative row-span-2 w-[19px] sm:w-14 md:w-20 flex flex-col justify-between items-center rounded-xl mx-0.5 sm:mx-1 py-1 sm:py-2 select-none"
         style={{
             background: bar.background,
             boxShadow: bar.boxShadow,
@@ -147,6 +147,16 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
             style={{
                 background:
                     'linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 100%)',
+            }}
+        />
+
+        {/* Charnière d'orfèvrerie supérieure en laiton brossé (Geoffrey Parker / Hector Saxe) */}
+        <div
+            aria-hidden="true"
+            data-testid="central-bar-hinge-top"
+            className="pointer-events-none w-3.5 sm:w-6 h-1.5 sm:h-2 rounded-[2px] border border-amber-300/50 shadow-[0_1px_3px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.45)] shrink-0"
+            style={{
+                background: 'linear-gradient(90deg, #78592b 0%, #d4af37 32%, #fef08a 50%, #d4af37 68%, #78592b 100%)',
             }}
         />
 
@@ -188,6 +198,16 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
                 onCheckerPointerDown={onCheckerPointerDown}
             />
         </div>
+
+        {/* Charnière d'orfèvrerie inférieure en laiton brossé (Geoffrey Parker / Hector Saxe) */}
+        <div
+            aria-hidden="true"
+            data-testid="central-bar-hinge-bottom"
+            className="pointer-events-none w-3.5 sm:w-6 h-1.5 sm:h-2 rounded-[2px] border border-amber-300/50 shadow-[0_1px_3px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.45)] shrink-0"
+            style={{
+                background: 'linear-gradient(90deg, #78592b 0%, #d4af37 32%, #fef08a 50%, #d4af37 68%, #78592b 100%)',
+            }}
+        />
     </div>
     );
 };

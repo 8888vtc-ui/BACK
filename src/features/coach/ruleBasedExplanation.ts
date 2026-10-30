@@ -245,13 +245,49 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         keyConcept = isEn ? 'Advanced Anchor' : 'Ancre avancée';
         advice = isEn ? 'Never dismantle an advanced anchor without overwhelming immediate compensation.' : 'Ne démontez jamais une ancre avancée sans une compensation immédiate écrasante.';
         conceptId = 'advanced-anchor';
+    } else if (
+        /\b(?:24|1)\/(?:20|21|22|5|4|3)\b/.test(optimalMove) &&
+        !/\b(?:24|1)\/(?:20|21|22|5|4|3)\b/.test(playedMove)
+    ) {
+        summary = isEn
+            ? `Splitting your rear checkers with ${optimalMove} prepares an advanced anchor and duplicates opponent hitting numbers.`
+            : `Séparer vos pions arrières avec ${optimalMove} prépare une ancre avancée et duplique les dés d'attaque adverses.`;
+        whyFailed = isEn
+            ? `Playing ${playedMove} leaves your back checkers stacked and passive on point 24 without defensive counterplay.`
+            : `Jouer ${playedMove} laisse vos deux pions arrières passifs sur la case 24 sans préparer d'ancre défensive.`;
+        whyOptimal = isEn
+            ? `The optimal move ${optimalMove} splits a rear checker toward point 20/21 while bringing down an outfield builder.`
+            : `Le coup optimal ${optimalMove} avance un pion arrière vers la case 20/21 tout en descendant un bâtisseur actif.`;
+        keyConcept = isEn ? 'Back Checker Split & Builders' : 'Split Arrière & Bâtisseurs';
+        advice = isEn
+            ? 'Splitting back checkers early creates anchor threats and forces your opponent into awkward choices.'
+            : 'Séparer ses pions arrières tôt multiplie les lancers d’ancrage et gêne le développement adverse.';
+        conceptId = 'opening-philosophy';
+    } else if (
+        /\b(?:13|12)\/(?:8|9|10|11|17|16|15|14)\b/.test(optimalMove) &&
+        !/\b(?:13|12)\/(?:8|9|10|11|17|16|15|14)\b/.test(playedMove)
+    ) {
+        summary = isEn
+            ? `Unstacking the Midpoint (13-point) with ${optimalMove} brings down active builders for the next roll.`
+            : `Dégorger le Midpoint (point 13) avec ${optimalMove} active vos bâtisseurs pour couvrir une porte au prochain tour.`;
+        whyFailed = isEn
+            ? `Playing ${playedMove} leaves a rigid stack on the midpoint and starves your next roll of constructive numbers.`
+            : `Jouer ${playedMove} conserve une pile rigide sur le point 13 et réduit vos bons lancers constructeurs sur 36.`;
+        whyOptimal = isEn
+            ? `The optimal move ${optimalMove} deploys an outfield builder (points 8–11) to maximize point-making rolls next turn.`
+            : `Le coup optimal ${optimalMove} place un bâtisseur actif (cases 8 à 11) qui multiplie vos dés de fermeture au tour suivant.`;
+        keyConcept = isEn ? 'Unstacking Midpoint & Builders' : 'Dégorgement du Midpoint & Bâtisseurs';
+        advice = isEn
+            ? 'Unstack the 5-checker midpoint pile to feed builders into your outer board.'
+            : 'Dégorgez la pile de 5 pions du point 13 pour alimenter vos bâtisseurs d’attaque.';
+        conceptId = 'pure-play';
     } else {
         whyFailed = isEn
-            ? `Playing ${playedMove} weakens your tactical coordination without securing key points or escaping rear checkers.`
-            : `Le coup joué ${playedMove} disperse vos pions sans construire de porte protectrice et affaiblit votre position.`;
+            ? `Playing ${playedMove} reduces your builder flexibility and weakens checker coordination for the next roll.`
+            : `Le coup joué ${playedMove} réduit la flexibilité de vos bâtisseurs et diminue vos bons dés au tour suivant.`;
         whyOptimal = isEn
-            ? `The optimal move ${optimalMove} consolidates your structure and maximizes connectivity between your checkers.`
-            : `Le coup optimal ${optimalMove} consolide votre structure et maximise la sécurité et l'efficacité de vos pions.`;
+            ? `The optimal move ${optimalMove} distributes your spare checkers smoothly and maximizes constructive rolls out of 36.`
+            : `Le coup optimal ${optimalMove} répartit mieux vos pions de réserve (spares) et maximise vos lancers constructifs sur 36.`;
         conceptId = 'pure-play';
     }
 

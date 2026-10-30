@@ -169,33 +169,20 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
 
             const leftDests = leftDieTargets.get(point) ?? [];
             const rightDests = rightDieTargets.get(point) ?? [];
-            if (selectedPoint === point) {
-                if (selectedDie === 1 && !usedDice[1] && rightDests.length > 0) {
-                    handlePlayMove(point, rightDests[0], 1);
-                    return;
-                }
-                if (!usedDice[0] && leftDests.length > 0) {
-                    handlePlayMove(point, leftDests[0], 0);
-                    return;
-                }
-                if (!usedDice[1] && rightDests.length > 0) {
-                    handlePlayMove(point, rightDests[0], 1);
-                    return;
-                }
-                setSelectedPoint(null);
-                setSelectedDie(null);
+            if (selectedDie === 1 && !usedDice[1] && rightDests.length > 0) {
+                handlePlayMove(point, rightDests[0], 1);
                 return;
             }
-            impactLight();
-            if (leftDests.length > 0 && (rightDests.length === 0 || !usedDice[0])) {
-                setSelectedPoint(point);
-                setSelectedDie(0);
-            } else if (rightDests.length > 0) {
-                setSelectedPoint(point);
-                setSelectedDie(1);
+            if (!usedDice[0] && leftDests.length > 0) {
+                handlePlayMove(point, leftDests[0], 0);
+                return;
+            }
+            if (!usedDice[1] && rightDests.length > 0) {
+                handlePlayMove(point, rightDests[0], 1);
+                return;
             }
         },
-        [currentBlunder, validationResult, currentBoard, selectedPoint, selectedDie, leftDieTargets, rightDieTargets, usedDice, handlePlayMove],
+        [currentBlunder, validationResult, currentBoard, selectedDie, leftDieTargets, rightDieTargets, usedDice, handlePlayMove],
     );
 
     const handleDestinationClick = useCallback(
@@ -258,7 +245,7 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
                         onNextBlunder={handleNextBlunder}
                     />
 
-                    <div className="w-full flex justify-center overflow-x-auto rounded-2xl border border-white/10 bg-[#080a0f] p-2 sm:p-3 shadow-2xl">
+                    <div className="w-full flex justify-center overflow-x-auto rounded-2xl border border-white/10 bg-[#080a0f] p-0 sm:p-3 max-sm:rounded-none max-sm:border-x-0 shadow-2xl">
                         <Board
                             state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets}
                             selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice}

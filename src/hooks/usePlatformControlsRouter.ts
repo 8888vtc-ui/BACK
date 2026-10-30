@@ -43,8 +43,8 @@ export function usePlatformControlsRouter({
 
     return {
         isTouchDevice,
-        routedCheckerClick: isTouchDevice ? mobileControls.handleTapPoint : desktopControls.handleOneClick,
-        routedCheckerRightClick: isTouchDevice ? mobileControls.handleTapPoint : desktopControls.handleOneRightClick,
+        routedCheckerClick: desktopControls.handleOneClick,
+        routedCheckerRightClick: isTouchDevice ? desktopControls.handleOneClick : desktopControls.handleOneRightClick,
         routedDiceClick: isTouchDevice ? mobileControls.handleTapDice : desktopControls.handleDiceClick,
     };
 }

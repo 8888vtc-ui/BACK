@@ -141,16 +141,6 @@ const BoardComponent: React.FC<BoardProps> = ({
     );
 
     const {
-        dragState, overlayRef, onCheckerDragStart,
-        handlePointerMove, handlePointerUp, handlePointerCancel,
-        boardGhostDestinations, dragSourcePoint, suppressClickAfterDragRef,
-    } = useBoardDragAndDrop({
-        ghostDestinations, leftDieTargets, rightDieTargets, legalSequences,
-        selectedPoint, board, player, prepareFlipForStep,
-        handlePlayMoveWithFlip, handleDestinationClickWithFlip,
-    });
-
-    const {
         focusedPoint, handlePointClick, handlePointRightClick,
         handleBarClick, handleBarRightClick, handleOffClick, handleOffRightClick, handlePointFocus, handlePointKeyDown,
     } = useBoardPointInteractions({
@@ -158,6 +148,17 @@ const BoardComponent: React.FC<BoardProps> = ({
         leftDieTargets, rightDieTargets, dice: state.dice, selectedDie, legalSequences,
         onCheckerClick, onCheckerRightClick, onDestinationClick: handleDestinationClickWithFlip,
         onPlayMove: handlePlayMoveWithFlip, onDeselect,
+    });
+
+    const {
+        dragState, overlayRef, onCheckerDragStart,
+        handlePointerMove, handlePointerUp, handlePointerCancel,
+        boardGhostDestinations, dragSourcePoint, suppressClickAfterDragRef,
+    } = useBoardDragAndDrop({
+        ghostDestinations, leftDieTargets, rightDieTargets, legalSequences,
+        selectedPoint, board, player, prepareFlipForStep,
+        handlePlayMoveWithFlip, handleDestinationClickWithFlip,
+        onTapCheckerPoint: (pt) => handlePointClick(pt, { stopPropagation: () => {} } as React.MouseEvent),
     });
 
     const isAwaitingRoll = gamePhase === 'HUMAN_WAITING_ROLL' && !state.dice;

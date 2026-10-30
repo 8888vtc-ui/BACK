@@ -24,7 +24,7 @@ const BoardFrameComponent: React.FC<BoardFrameProps> = ({ children, theme }) => 
     const tokens = getBoardThemeTokens(theme).frame;
     return (
         <div
-            className="board-adaptive-shell relative w-full h-full max-w-full max-h-full min-w-0 min-h-0 md:max-w-[min(100%,calc((100dvh-130px)*1.375))] md:aspect-[11/8] mx-auto max-sm:rounded-none max-sm:border-x-0 rounded-[20px] sm:rounded-[28px] p-0.5 sm:p-2.5 md:p-3.5 [@media(max-height:500px)]:!p-1.5 flex flex-col shadow-2xl select-none"
+            className="board-adaptive-shell relative w-full h-full max-md:h-auto aspect-[1.16/1] landscape:aspect-[1.28/1] min-h-[260px] max-w-full max-h-full min-w-0 md:min-h-0 md:max-w-[min(100%,calc((100dvh-130px)*1.375))] md:aspect-[11/8] mx-auto max-sm:rounded-none max-sm:border-x-0 rounded-[20px] sm:rounded-[28px] p-0.5 sm:p-2.5 md:p-3.5 [@media(max-height:500px)]:!p-1 flex flex-col shadow-2xl select-none"
             style={{
                 background: tokens.background,
                 boxShadow: tokens.boxShadow,

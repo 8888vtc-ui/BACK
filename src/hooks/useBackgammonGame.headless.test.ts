@@ -139,6 +139,16 @@ describe('useBackgammonGame - Headless Full Game Loop & End-of-Game Flow', () =>
         // Score 3-0 en 5 pts : pas encore Crawford
         expect(result.current.isCrawfordNext).toBe(false);
         expect(result.current.state.crawford).toBe(false);
+        // Règle WBF 5.1 : pas de videau sur la position d'ouverture avant le 1er coup
+        expect(result.current.canDouble).toBe(false);
+
+        // Dès qu'un coup a modifié la position initiale, le videau est autorisé hors Crawford
+        act(() => {
+            const activeBoard = [...result.current.state.board];
+            activeBoard[6] = 4;
+            activeBoard[5] = 1;
+            result.current.applyRemoteState({ board: activeBoard });
+        });
         expect(result.current.canDouble).toBe(true);
 
         // X gagne 1 point supplémentaire -> score 4-0 (1 pt du match)
@@ -199,8 +209,19 @@ describe('useBackgammonGame - Headless Full Game Loop & End-of-Game Flow', () =>
             result.current.startNewGame();
         });
 
-        // 2. Post-Crawford : le videau est de nouveau utilisable
+        // 2. Post-Crawford : X est à 4-1 (1-away = Dead Cube pour X), mais le mené O (4-away) peut doubler dès le 1er coup
         expect(result.current.state.crawford).toBe(false);
+        expect(result.current.canDouble).toBe(false); // Position d'ouverture WBF 5.1 / Dead Cube pour X
+        act(() => {
+            const postCrawfordActiveBoard = [...result.current.state.board];
+            postCrawfordActiveBoard[6] = 4;
+            postCrawfordActiveBoard[5] = 1;
+            result.current.applyRemoteState({
+                board: postCrawfordActiveBoard,
+                turn: 'O',
+                phase: 'WAITING_FOR_ROLL',
+            });
+        });
         expect(result.current.canDouble).toBe(true);
         expect(result.current.state.scoreX).toBe(4);
         expect(result.current.state.scoreO).toBe(1);

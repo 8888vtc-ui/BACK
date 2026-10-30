@@ -23,6 +23,7 @@ export interface UseBoardDragAndDropOptions {
     prepareFlipForStep: (from?: number) => void;
     handlePlayMoveWithFlip?: (from: number, to: number, die?: 0 | 1) => void;
     handleDestinationClickWithFlip: (to: number) => void;
+    onTapCheckerPoint?: (pointNumber: number) => void;
 }
 
 export function useBoardDragAndDrop({
@@ -36,6 +37,7 @@ export function useBoardDragAndDrop({
     prepareFlipForStep,
     handlePlayMoveWithFlip,
     handleDestinationClickWithFlip,
+    onTapCheckerPoint,
 }: UseBoardDragAndDropOptions) {
     const [dragSourcePoint, setDragSourcePoint] = useState<number | null>(null);
     const suppressClickAfterDragRef = useRef(false);
@@ -76,6 +78,7 @@ export function useBoardDragAndDrop({
         },
         onDropMove: (from, to) => {
             suppressClickAfterDragRef.current = true;
+            setTimeout(() => { suppressClickAfterDragRef.current = false; }, 60);
             setDragSourcePoint(null);
             prepareFlipForStep(from);
             if (!handlePlayMoveWithFlip) {
@@ -93,9 +96,15 @@ export function useBoardDragAndDrop({
             );
             if (res.kind !== 'none') res.moves.forEach((m) => handlePlayMoveWithFlip(m.from, m.to));
         },
-        onTapPoint: () => setDragSourcePoint(null),
+        onTapPoint: (pt) => {
+            suppressClickAfterDragRef.current = true;
+            setTimeout(() => { suppressClickAfterDragRef.current = false; }, 60);
+            setDragSourcePoint(null);
+            onTapCheckerPoint?.(pt);
+        },
         onCancelDrag: () => {
             suppressClickAfterDragRef.current = true;
+            setTimeout(() => { suppressClickAfterDragRef.current = false; }, 60);
             setDragSourcePoint(null);
         },
     });

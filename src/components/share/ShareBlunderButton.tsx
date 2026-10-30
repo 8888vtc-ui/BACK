@@ -9,6 +9,7 @@ import React, { useCallback, useState } from 'react';
 import type { BlunderQuizCardData } from '../../features/share/blunderShareCard';
 import { generateSocialShareText, getViralQuizHeadline } from '../../features/share/blunderShareCard';
 import { renderBlunderQuizPng, downloadBlunderQuizPng } from '../../features/share/renderBlunderQuizPng';
+import { KarmaClipEngine, type KarmaClipPayload } from '../../features/share/karmaClipGenerator';
 import { trackSaasLifecycleEvent } from '../../lib/subscription/lifecycleEvents';
 import { toast } from '../toast/ToastContext';
 
@@ -26,7 +27,42 @@ const ShareBlunderButtonComponent: React.FC<ShareBlunderButtonProps> = ({
     className = '',
 }) => {
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isGeneratingClip, setIsGeneratingClip] = useState(false);
     const [includeSolution, setIncludeSolution] = useState(defaultIncludeSolution);
+
+    const handleShareKarmaClip = useCallback(async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (isGeneratingClip) return;
+        setIsGeneratingClip(true);
+        try {
+            const generator = new KarmaClipEngine();
+            const payload: KarmaClipPayload = {
+                matchSeed: `${data.dice[0]}${data.dice[1]}X`,
+                botName: 'Maxime « Le Mauvais Joueur »',
+                botTrashTalk: 'Encore un double miraculeux ? Les dés sont truqués !',
+                originalBotRoll: [6, 6],
+                swappedPlayerRoll: [data.dice[0], data.dice[1]],
+                cubeValue: data.cubeValue ?? 2,
+                winProbBefore: 3.6,
+                winProbAfter: 89.2,
+                equitySwing: Number(Math.max(0.45, Math.abs(data.equityLoss ?? 0.85)).toFixed(3)),
+            };
+            const outcome = await generator.shareClipNatively(payload, () => {});
+            toast.success(
+                outcome === 'shared'
+                    ? 'Clip Karma 9:16 partagé sur TikTok / Reels / WhatsApp !'
+                    : 'Clip Karma 9:16 téléchargé avec succès !',
+                'Clip Karma Swap 9:16',
+            );
+        } catch (err: unknown) {
+            toast.error(
+                err instanceof Error ? err.message : 'Erreur lors du rendu du Clip Karma 9:16.',
+                'Clip 9:16',
+            );
+        } finally {
+            setIsGeneratingClip(false);
+        }
+    }, [data, isGeneratingClip]);
 
     const handleShare = useCallback(async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -106,7 +142,7 @@ const ShareBlunderButtonComponent: React.FC<ShareBlunderButtonProps> = ({
                 disabled={isGenerating}
                 data-testid="share-blunder-btn"
                 title={isEn ? 'Share HD Quiz (1200x630)' : 'Partager ce Quiz (HD 1200x630)'}
-                className={`flex h-8 w-8 items-center justify-center rounded-lg border border-[#d4af37]/40 bg-[#1e1309] text-amber-200 transition hover:border-[#f3c65f] hover:text-white active:scale-95 disabled:opacity-50 ${className}`}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-slate-900 text-slate-200 transition hover:border-amber-400/50 hover:text-white active:scale-95 disabled:opacity-50 ${className}`}
             >
                 <span className="text-sm">{isGenerating ? '⏳' : '📸'}</span>
             </button>
@@ -114,13 +150,13 @@ const ShareBlunderButtonComponent: React.FC<ShareBlunderButtonProps> = ({
     }
 
     return (
-        <div className={`inline-flex items-center gap-1.5 ${className}`}>
+        <div className={`inline-flex flex-wrap items-center gap-1.5 ${className}`}>
             <button
                 type="button"
                 onClick={handleShare}
                 disabled={isGenerating}
                 data-testid="share-blunder-btn"
-                className="inline-flex min-h-[36px] items-center justify-center gap-2 rounded-xl border border-[#d4af37]/50 bg-gradient-to-r from-[#2a1b0d] to-[#1c1208] px-3 py-1.5 text-xs font-bold text-[#fce8b2] shadow-sm transition hover:border-[#f3c65f] hover:text-white active:scale-95 disabled:opacity-50"
+                className="inline-flex min-h-[36px] items-center justify-center gap-2 rounded-xl border border-white/10 bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-200 shadow-sm transition hover:border-amber-400/50 hover:text-white active:scale-95 disabled:opacity-50"
             >
                 <span className="text-sm">{isGenerating ? '⏳' : '📸'}</span>
                 <span>
@@ -129,16 +165,27 @@ const ShareBlunderButtonComponent: React.FC<ShareBlunderButtonProps> = ({
                         : (isEn ? "Share This Quiz (HD)" : 'Partager ce Quiz (HD)')}
                 </span>
             </button>
+            <button
+                type="button"
+                onClick={handleShareKarmaClip}
+                disabled={isGeneratingClip}
+                data-testid="share-karma-clip-btn"
+                title={isEn ? 'Export 9:16 Karma Swap Clip (TikTok / Reels / WhatsApp)' : 'Exporter le Clip Karma 9:16 (TikTok / Reels / WhatsApp)'}
+                className="inline-flex min-h-[36px] items-center justify-center gap-1.5 rounded-xl border border-amber-400/50 bg-amber-500/15 px-3 py-1.5 text-xs font-bold text-amber-200 shadow-sm transition hover:border-amber-400 hover:text-white active:scale-95 disabled:opacity-50"
+            >
+                <span className="text-sm">{isGeneratingClip ? '⏳' : '🎬'}</span>
+                <span>{isGeneratingClip ? 'Clip 9:16…' : 'Clip Karma 9:16'}</span>
+            </button>
             <label
                 data-testid="include-solution-label"
-                className="hidden sm:flex items-center gap-1 text-[11px] text-amber-200/80 cursor-pointer select-none"
+                className="hidden sm:flex items-center gap-1 text-[11px] text-slate-300 cursor-pointer select-none"
             >
                 <input
                     type="checkbox"
                     checked={includeSolution}
                     onChange={(e) => setIncludeSolution(e.target.checked)}
                     data-testid="include-solution-checkbox"
-                    className="rounded border-[#d4af37]/40 bg-black/40 text-amber-500 focus:ring-0"
+                    className="rounded border-white/20 bg-slate-900 text-amber-500 focus:ring-0"
                 />
                 <span>{isEn ? 'With solution' : 'Avec solution'}</span>
             </label>

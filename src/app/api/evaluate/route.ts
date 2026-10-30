@@ -21,7 +21,7 @@ import { analyzeBoardMoves, analyzeBoardCube } from '../../../lib/engine/evaluat
 export const dynamic = 'force-dynamic';
 
 const DEFAULT_CLOUD_RUN_URL = 'https://bgsage-service-468274233732.europe-west1.run.app';
-const CLOUD_RUN_TIMEOUT_MS = process.env.NODE_ENV === 'test' ? 1500 : 3200;
+const CLOUD_RUN_TIMEOUT_MS = process.env.NODE_ENV === 'test' ? 1500 : 6000;
 const REMOTE_BACKEND_COOLDOWN_MS = 10_000;
 const BACKEND_URL =
     process.env.NODE_ENV === 'test'

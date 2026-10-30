@@ -16,6 +16,11 @@ import {
 
 export { serializeCanonicalXGID };
 import type { AIDifficulty } from '../../engine/aiHeuristics';
+import {
+    BLUNDER_CAP_EMG_BY_DIFFICULTY,
+    computePersonaBiasDelta,
+    isVisuallyObviousBestMove,
+} from '../../features/personas/botPersonas';
 import { formatMoveSequenceNotationAbsolute } from './evaluator';
 import {
     movesFromBoardDiff,
@@ -301,7 +306,7 @@ export async function evaluateWithBgsage(
         }
 
         const data = (await response.json()) as BgsageEvaluateResponse;
-        if (data && Array.isArray(data.chequerPlay)) {
+        if (data && Array.isArray(data.chequerPlay) && data.source !== 'typescript-tri-phase') {
             setCachedBgsageEvaluation(cacheKey, data);
         }
         return data;
@@ -360,21 +365,45 @@ export async function selectBotMoveWithBgsage(
         return null;
     }
 
-    if (difficulty === 'beginner' && matchedCandidates.length > 1) {
-        let bestChoice = matchedCandidates[0];
-        let bestNoisyEq = -Infinity;
-        for (const cand of matchedCandidates) {
-            const baseEq = cand.move.cubelessEquity ?? cand.move.equity;
-            const noisyEq = baseEq + (randomFn() - 0.5) * 0.28;
-            if (noisyEq > bestNoisyEq) {
-                bestNoisyEq = noisyEq;
-                bestChoice = cand;
-            }
-        }
-        return { sequence: bestChoice.seq, cubeDecision: resp.cubeDecision, evalLevel: 'bgsage-1ply-beginner' };
+    const bestCand = matchedCandidates[0];
+    // 1. Grandmaster ou Coup d'Évidence Visuelle (Point d'Or 5/20, Point de Barre 7/18, Frappe sûre) : verrouillage 100 % optimal
+    if (
+        difficulty === 'grandmaster' ||
+        matchedCandidates.length === 1 ||
+        isVisuallyObviousBestMove(stateWithDice.board, bestCand.seq.board, player)
+    ) {
+        return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply` };
     }
 
-    return { sequence: matchedCandidates[0].seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply` };
+    // 2. Filtrage déterministe « Premier Principe » (Zéro bruit gaussien) : Plafond Blunder Cap ΔE_max + Biais Cognitif Persona
+    const topEq = bestCand.move.cubelessEquity ?? bestCand.move.equity;
+    const blunderCap = BLUNDER_CAP_EMG_BY_DIFFICULTY[difficulty] ?? 0.035;
+    const biasScale = difficulty === 'beginner' ? 0.35 : difficulty === 'intermediate' ? 0.22 : 0.08;
+    const jitter = (randomFn() - 0.5) * (difficulty === 'beginner' ? 0.008 : 0.002);
+
+    const plausiblePool = matchedCandidates.filter((c, idx) => {
+        if (idx === 0) return true;
+        const eq = c.move.cubelessEquity ?? c.move.equity;
+        return Math.max(0, topEq - eq) <= blunderCap;
+    });
+
+    let chosen = bestCand;
+    let bestScore = -Infinity;
+    for (const cand of plausiblePool) {
+        const baseEq = cand.move.cubelessEquity ?? cand.move.equity;
+        const personaBias = computePersonaBiasDelta(stateWithDice.board, cand.seq.board, difficulty) * biasScale;
+        const score = baseEq + personaBias + (cand === bestCand ? 0 : jitter);
+        if (score > bestScore) {
+            bestScore = score;
+            chosen = cand;
+        }
+    }
+
+    return {
+        sequence: chosen.seq,
+        cubeDecision: resp.cubeDecision,
+        evalLevel: difficulty === 'beginner' ? 'bgsage-1ply-beginner' : `bgsage-${ply}ply`,
+    };
 }
 
 /** Évalue la décision de videau (Cube : Double / Take / Pass) via Open Sage. */

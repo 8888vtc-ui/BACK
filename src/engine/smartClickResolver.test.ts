@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createInitialState } from './backgammonEngine';
 import {
     computeRemainingSequences,
@@ -9,6 +9,7 @@ import {
     subMoveDistance,
     type SmartClickContext,
 } from './smartClickResolver';
+import { executeBoardPointClick } from '../hooks/boardPointClickHelpers';
 
 function ctxFor(dice: [number, number], opts: Partial<SmartClickContext> = {}, usedDice: boolean[] = [false, false]): SmartClickContext {
     const { board } = createInitialState();
@@ -114,5 +115,89 @@ describe('smartClickResolver — heuristique de source & clic sur les dés', () 
         expect(resolveDiceClick({ subMovesPlayed: 2, hasRemainingLegalMove: false, isDouble: false, autoConfirm: false })).toBe('confirm');
         expect(resolveDiceClick({ subMovesPlayed: 1, hasRemainingLegalMove: true, isDouble: false, autoConfirm: false })).toBe('noop');
         expect(resolveDiceClick({ subMovesPlayed: 2, hasRemainingLegalMove: false, isDouble: false, autoConfirm: true })).toBe('noop');
+    });
+
+    it('executeBoardPointClick respecte preferredDie (Pick and Pass vs Pass) et Ctrl+Clic XG2', () => {
+        const board = new Array<number>(26).fill(0);
+        board[8] = 1; // X sur 8
+        board[6] = -1; // Blot adverse O sur 6 (2 d'abord = Pick and Pass 8/6*/2 ; 4 d'abord = Pass 8/4/2)
+        const dice: [number, number] = [4, 2];
+        const legalSequences = computeRemainingSequences(board, 'X', dice, [false, false]);
+
+        const playedHighFirst: Array<{ from: number; to: number }> = [];
+        executeBoardPointClick({
+            pointNumber: 2,
+            board,
+            isX: true,
+            player: 'X',
+            bar: { X: 0, O: 0 },
+            xBarPoint: 0,
+            oBarPoint: 25,
+            ghostDestinations: new Set<number>(),
+            selectedPoint: null,
+            leftDieTargets: new Map([[8, [4]]]),
+            rightDieTargets: new Map([[8, [6]]]),
+            dice,
+            preferredDie: 0, // dé 4 actif -> passe par 4 sans frapper
+            legalSequences,
+            onCheckerClick: vi.fn(),
+            onDestinationClick: vi.fn(),
+            onPlayMove: (from, to) => playedHighFirst.push({ from, to }),
+        });
+        expect(playedHighFirst).toEqual([
+            { from: 8, to: 4 },
+            { from: 4, to: 2 },
+        ]);
+
+        const playedLowFirst: Array<{ from: number; to: number }> = [];
+        executeBoardPointClick({
+            pointNumber: 2,
+            board,
+            isX: true,
+            player: 'X',
+            bar: { X: 0, O: 0 },
+            xBarPoint: 0,
+            oBarPoint: 25,
+            ghostDestinations: new Set<number>(),
+            selectedPoint: null,
+            leftDieTargets: new Map([[8, [4]]]),
+            rightDieTargets: new Map([[8, [6]]]),
+            dice,
+            preferredDie: 1, // dé 2 actif -> frappe en 6 au passage (8/6*/2)
+            legalSequences,
+            onCheckerClick: vi.fn(),
+            onDestinationClick: vi.fn(),
+            onPlayMove: (from, to) => playedLowFirst.push({ from, to }),
+        });
+        expect(playedLowFirst).toEqual([
+            { from: 8, to: 6 },
+            { from: 6, to: 2 },
+        ]);
+
+        const playedCtrlClick: Array<{ from: number; to: number }> = [];
+        executeBoardPointClick({
+            pointNumber: 8,
+            board,
+            isX: true,
+            player: 'X',
+            bar: { X: 0, O: 0 },
+            xBarPoint: 0,
+            oBarPoint: 25,
+            ghostDestinations: new Set<number>(),
+            selectedPoint: null,
+            leftDieTargets: new Map([[8, [4]]]),
+            rightDieTargets: new Map([[8, [6]]]),
+            dice,
+            preferredDie: 1, // dé 2 actif + Ctrl+Clic sur le pion 8
+            ctrlKey: true,
+            legalSequences,
+            onCheckerClick: vi.fn(),
+            onDestinationClick: vi.fn(),
+            onPlayMove: (from, to) => playedCtrlClick.push({ from, to }),
+        });
+        expect(playedCtrlClick).toEqual([
+            { from: 8, to: 6 },
+            { from: 6, to: 2 },
+        ]);
     });
 });

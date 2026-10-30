@@ -14,9 +14,13 @@
  *     "Débloquer l'Analyse avec le Coach Illimité (Essai 7 jours)" ouvrant `SubscriptionModal`.
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
 import { buildOpenSageTeaser } from '../../lib/subscription/quotaService';
+import {
+    computeSixAxesDiagnostic,
+    evaluateSwapDiceCounterfactual,
+} from '../../features/coach/sixAxesDiagnostic';
 import SubscriptionModal from './SubscriptionModal';
 
 export interface SoftPaywallCardProps {
@@ -40,6 +44,8 @@ export const SoftPaywallCard: React.FC<SoftPaywallCardProps> = ({
     const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState<boolean>(false);
 
     const teaser = buildOpenSageTeaser(analysis, locale);
+    const swapDiceMoment = useMemo(() => evaluateSwapDiceCounterfactual(analysis), [analysis]);
+    const sixAxes = useMemo(() => computeSixAxesDiagnostic(analysis ? [analysis] : []), [analysis]);
     const prValue = (analysis?.performanceRating ?? 4.85).toFixed(2);
     const prCategory = analysis?.prCategory ?? (isEn ? 'Master' : 'Maître');
     const formattedCategoryFr = prCategory.toLowerCase().startsWith('niveau')
@@ -153,6 +159,35 @@ export const SoftPaywallCard: React.FC<SoftPaywallCardProps> = ({
                     {teaser.brilliantMovesCount !== 2 && !isEn && (
                         <p className="text-xs text-[#e8dcc6]/75">{teaser.teaserTextFr}</p>
                     )}
+
+                    {/* Déclencheur Aha Moment 1 : Moment Swap Dice & Anatomie du Blunder */}
+                    <div
+                        data-testid="soft-paywall-swap-dice-moment"
+                        className="rounded-xl border border-white/10 bg-[#140a05]/90 p-3 text-xs text-[#fce8b2]"
+                    >
+                        <span className="font-mono text-[10px] font-extrabold uppercase tracking-wider text-amber-300">
+                            🎲 Moment Swap Dice · Simulation Contre-Factuelle Locale
+                        </span>
+                        <p className="mt-1 text-xs leading-relaxed text-[#fdf8eb]/90">
+                            {swapDiceMoment.ahaHeadlineFr}
+                        </p>
+                    </div>
+
+                    {/* Déclencheur Aha Moment 2 : Diagnostic 6 Axes (Modèle Aimchess) */}
+                    <div
+                        data-testid="soft-paywall-six-axes"
+                        className="rounded-xl border border-white/10 bg-[#110804]/90 p-3 text-xs"
+                    >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span className="font-mono text-[10px] font-extrabold uppercase tracking-wider text-emerald-300">
+                                📊 Diagnostic sur 6 Axes · Pions ({sixAxes.checkerEstimatedElo} Elo) vs Videau ({sixAxes.cubeEstimatedElo} Elo)
+                            </span>
+                            <span className="text-[11px] font-bold text-[#f3c65f]">
+                                Axe à travailler : {sixAxes.weakestAxis.labelFr}
+                            </span>
+                        </div>
+                        <p className="mt-1 text-xs text-[#e8dcc6]/85">{sixAxes.ahaDiagnosisFr}</p>
+                    </div>
                 </div>
 
                 {/* 3. Bouton d'action doré ouvrant la modale d'abonnement */}

@@ -15,6 +15,7 @@ import { isValidRoomCode } from '../features/multiplayer/realtimeSchema';
 
 export interface UsePrivateRoomInviteOptions {
     onAutoJoinRoom?: (code: string) => void;
+    onAutoStartTournamentMatch?: (matchLength: number, tournamentName: string | null) => void;
 }
 
 export interface UsePrivateRoomInviteReturn {
@@ -45,6 +46,26 @@ export function extractRoomCodeFromUrl(searchOrUrl: string): string | null {
     }
 }
 
+export function extractTournamentTrainingFromUrl(searchOrUrl: string): {
+    matchLength: number;
+    tournamentName: string | null;
+} | null {
+    try {
+        const queryString = searchOrUrl.includes('?')
+            ? searchOrUrl.slice(searchOrUrl.indexOf('?') + 1)
+            : searchOrUrl;
+        const params = new URLSearchParams(queryString);
+        const rawLength = params.get('matchLength');
+        if (!rawLength) return null;
+        const parsed = Number.parseInt(rawLength, 10);
+        if (!Number.isFinite(parsed) || parsed < 1 || parsed > 25) return null;
+        const tournamentName = params.get('tournament')?.trim() || null;
+        return { matchLength: parsed, tournamentName };
+    } catch {
+        return null;
+    }
+}
+
 /**
  * Nettoie proprement les paramètres d'invitation de l'URL sans rechargement de page.
  */
@@ -53,7 +74,7 @@ export function cleanUrlRoomParams(): void {
     try {
         const url = new URL(window.location.href);
         let changed = false;
-        for (const key of ['join', 'room', 'code']) {
+        for (const key of ['join', 'room', 'code', 'matchLength', 'tournament']) {
             if (url.searchParams.has(key)) {
                 url.searchParams.delete(key);
                 changed = true;
@@ -76,6 +97,8 @@ export function usePrivateRoomInvite(
     const hasCheckedRef = useRef<boolean>(false);
     const onAutoJoinRoomRef = useRef(options.onAutoJoinRoom);
     onAutoJoinRoomRef.current = options.onAutoJoinRoom;
+    const onAutoStartTournamentRef = useRef(options.onAutoStartTournamentMatch);
+    onAutoStartTournamentRef.current = options.onAutoStartTournamentMatch;
 
     useEffect(() => {
         if (hasCheckedRef.current || typeof window === 'undefined') return;
@@ -87,6 +110,15 @@ export function usePrivateRoomInvite(
             cleanUrlRoomParams();
             if (onAutoJoinRoomRef.current) {
                 onAutoJoinRoomRef.current(code);
+            }
+            return;
+        }
+
+        const training = extractTournamentTrainingFromUrl(window.location.search);
+        if (training) {
+            cleanUrlRoomParams();
+            if (onAutoStartTournamentRef.current) {
+                onAutoStartTournamentRef.current(training.matchLength, training.tournamentName);
             }
         }
     }, []);

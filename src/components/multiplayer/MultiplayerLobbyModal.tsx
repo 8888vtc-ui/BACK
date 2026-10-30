@@ -34,10 +34,12 @@ export interface MultiplayerLobbyModalProps {
 }
 
 const MATCH_FORMATS: ReadonlyArray<{ pts: number; label: string; sub: string }> = [
+    { pts: 0, label: 'Money', sub: 'Jacoby' },
     { pts: 1, label: '1 pt', sub: 'Blitz' },
     { pts: 3, label: '3 pts', sub: 'Rapide' },
     { pts: 5, label: '5 pts', sub: 'Standard' },
     { pts: 7, label: '7 pts', sub: 'Tournoi' },
+    { pts: 11, label: '11 pts', sub: 'Master' },
 ];
 
 export default function MultiplayerLobbyModal({
@@ -82,7 +84,7 @@ export default function MultiplayerLobbyModal({
             data-testid="multiplayer-lobby-modal"
         >
             <div
-                className="relative w-full max-w-xl rounded-3xl border border-white/10 bg-gradient-to-b from-[#17110b]/98 via-[#0d121d]/98 to-[#070a10]/98 p-6 text-[#fdf8eb] shadow-[0_28px_80px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,245,205,0.18)] transition-all"
+                className="relative w-full max-w-xl rounded-2xl border border-white/10 bg-slate-950/98 p-6 text-slate-100 shadow-2xl transition-all"
             >
                 {/* Bouton Fermer */}
                 <button
@@ -98,7 +100,7 @@ export default function MultiplayerLobbyModal({
                 {/* 1. En-tête du Joueur Local */}
                 <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4 pr-10">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-lg font-bold text-slate-950 shadow-md">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500 text-base font-black text-slate-950 shadow-sm">
                             {localProfile.displayName.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -107,7 +109,7 @@ export default function MultiplayerLobbyModal({
                                     {localProfile.displayName}
                                 </h2>
                                 {localProfile.isGuest && (
-                                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-medium text-slate-300">
+                                    <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-slate-300">
                                         Invité
                                     </span>
                                 )}
@@ -116,7 +118,7 @@ export default function MultiplayerLobbyModal({
                                 <span>{localTier.badge}</span>
                                 <span className={localTier.colorClass}>{localTier.title}</span>
                                 <span className="text-slate-600">•</span>
-                                <span className="font-mono font-bold text-amber-400">
+                                <span className="font-mono font-bold text-amber-300">
                                     {localProfile.rating} Elo
                                 </span>
                             </div>
@@ -151,7 +153,7 @@ export default function MultiplayerLobbyModal({
                                 Recherche d&apos;un adversaire...
                             </div>
                             <div className="text-xs text-slate-300 font-mono">
-                                Temps écoulé : {elapsedSeconds}s • Format : {selectedLength} pts
+                                Temps écoulé : {elapsedSeconds}s • Format : {selectedLength === 0 ? 'Money Game' : `${selectedLength} pts`}
                             </div>
                             <div className="text-xs text-amber-300/90">
                                 {elapsedSeconds < 5
@@ -172,14 +174,19 @@ export default function MultiplayerLobbyModal({
                         </button>
                     </div>
                 ) : (
-                    <div className="space-y-5">
-                        {/* Sélecteur de format commun (affiché avant génération d'un code privé) */}
+                    <div className="space-y-4">
+                        {/* Sélecteur de format commun : Match (Crawford) vs Money Game (Jacoby) */}
                         {!privateRoomCode && (
                             <div>
-                                <label className="block text-xs font-semibold text-slate-300 mb-2">
-                                    Format du match :
-                                </label>
-                                <div className="grid grid-cols-4 gap-2">
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                                        Formule de jeu :
+                                    </label>
+                                    <span className="font-mono text-xs text-amber-300">
+                                        {selectedLength === 0 ? '💰 Money Game · Règle de Jacoby' : `🏆 Match ${selectedLength} pts · Règle de Crawford`}
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
                                     {MATCH_FORMATS.map((format) => {
                                         const active = selectedLength === format.pts;
                                         return (
@@ -187,13 +194,13 @@ export default function MultiplayerLobbyModal({
                                                 key={format.pts}
                                                 type="button"
                                                 onClick={() => setSelectedLength(format.pts)}
-                                                className={`flex flex-col items-center justify-center rounded-xl border p-2.5 transition-all ${
+                                                className={`flex flex-col items-center justify-center rounded-xl border p-2 transition-all ${
                                                     active
-                                                        ? 'border-[#f3c65f] bg-[#f3c65f]/15 text-white ring-1 ring-[#f3c65f]/40 shadow-sm'
+                                                        ? 'border-[#f3c65f] bg-[#f3c65f]/15 text-white shadow-sm'
                                                         : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'
                                                 }`}
                                             >
-                                                <span className="text-sm font-bold">{format.label}</span>
+                                                <span className="text-xs font-bold">{format.label}</span>
                                                 <span className="text-[11px] text-slate-400">{format.sub}</span>
                                             </button>
                                         );
@@ -206,18 +213,18 @@ export default function MultiplayerLobbyModal({
                         {!privateRoomCode && (
                             <section
                                 data-testid="lobby-action-matchmaking"
-                                className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                                className="rounded-xl border border-white/10 bg-slate-900/70 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                             >
                                 <div className="space-y-1">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <span className="text-sm font-bold text-[#fdf8eb] whitespace-nowrap">
+                                        <span className="text-sm font-bold text-white whitespace-nowrap">
                                             ⚡ Matchmaking Rapide
                                         </span>
-                                        <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-semibold text-[#e5c158] whitespace-nowrap shrink-0">
+                                        <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-amber-300 whitespace-nowrap shrink-0">
                                             Classé Elo
                                         </span>
                                     </div>
-                                    <p className="text-xs text-slate-300">
+                                    <p className="text-xs text-slate-400">
                                         Trouvez immédiatement un adversaire en ligne de niveau proche ({localProfile.rating} Elo).
                                     </p>
                                 </div>
@@ -226,9 +233,9 @@ export default function MultiplayerLobbyModal({
                                     type="button"
                                     onClick={() => onStartSearch?.(selectedLength)}
                                     data-testid="start-matchmaking-button"
-                                    className="shrink-0 rounded-xl border border-[#f3c65f] bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#1c1004] shadow-[0_4px_14px_rgba(212,175,55,0.3)] hover:brightness-105 transition-all"
+                                    className="shrink-0 rounded-xl border border-[#f3c65f] bg-[#f3c65f] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow-sm hover:bg-[#f7d37c] transition-all"
                                 >
-                                    ⚡ Lancer la recherche ({selectedLength} pts)
+                                    ⚡ Lancer la recherche ({selectedLength === 0 ? 'Money' : `${selectedLength} pts`})
                                 </button>
                             </section>
                         )}
@@ -236,7 +243,7 @@ export default function MultiplayerLobbyModal({
                         {/* ACTION PRINCIPALE 2 : Salon Privé par Code (BG-XXXX) */}
                         <section
                             data-testid="lobby-action-private-room"
-                            className="space-y-2.5"
+                            className="space-y-2"
                         >
                             <div className="flex items-center justify-between">
                                 <span className="text-xs font-bold uppercase tracking-wider text-slate-200">

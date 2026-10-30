@@ -1,5 +1,6 @@
 """API FastAPI d'analyse de positions de backgammon via le moteur Open Sage (bgsage)."""
 
+from collections import OrderedDict
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -216,33 +217,73 @@ def _extract_xgid_metadata(xgid: str) -> tuple[tuple[int, int], int, str, int, i
     return dice, cube_value, cube_owner, away1, away2
 
 
+_EVAL_LRU_CACHE: OrderedDict[tuple, EvaluateResponse] = OrderedDict()
+_EVAL_LRU_MAX_SIZE = 4096
+
+
 @app.post("/api/evaluate", response_model=EvaluateResponse)
 def evaluate(req: EvaluateRequest):
-    """Endpoint compatible avec le contrat du frontend Next.js."""
+    """Endpoint compatible avec le contrat du frontend Next.js (avec cache LRU et criblage rapide 2P -> 3P)."""
     try:
         board = xgid_to_board(req.xgid)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
 
     (die1, die2), cube_value, cube_owner, away1, away2 = _extract_xgid_metadata(req.xgid)
+    norm_d1, norm_d2 = (die1, die2) if die1 >= die2 else (die2, die1)
+    cache_key = (tuple(board), norm_d1, norm_d2, cube_value, cube_owner, away1, away2, req.ply)
+
+    cached = _EVAL_LRU_CACHE.get(cache_key)
+    if cached is not None:
+        _EVAL_LRU_CACHE.move_to_end(cache_key)
+        return cached
 
     try:
         analyzer = _get_analyzer(req.ply)
-        checker = (
-            analyzer.checker_play(
-                board,
-                die1,
-                die2,
-                cube_value=cube_value,
-                cube_owner=cube_owner,
-                away1=away1,
-                away2=away2,
-                include_game_plans=True,
-            )
-            if die1 > 0 and die2 > 0
-            else None
-        )
-        cube = analyzer.cube_action(
+        has_dice = die1 > 0 and die2 > 0
+        if has_dice:
+            if req.ply >= 3:
+                analyzer_2p = _get_analyzer(2)
+                checker_2p = analyzer_2p.checker_play(
+                    board,
+                    die1,
+                    die2,
+                    cube_value=cube_value,
+                    cube_owner=cube_owner,
+                    away1=away1,
+                    away2=away2,
+                    include_game_plans=True,
+                )
+                moves_2p = list(checker_2p.moves)
+                if len(moves_2p) <= 1 or abs(moves_2p[0].equity - moves_2p[1].equity) >= 0.060:
+                    checker = checker_2p
+                else:
+                    checker = analyzer.checker_play(
+                        board,
+                        die1,
+                        die2,
+                        cube_value=cube_value,
+                        cube_owner=cube_owner,
+                        away1=away1,
+                        away2=away2,
+                        include_game_plans=True,
+                    )
+            else:
+                checker = analyzer.checker_play(
+                    board,
+                    die1,
+                    die2,
+                    cube_value=cube_value,
+                    cube_owner=cube_owner,
+                    away1=away1,
+                    away2=away2,
+                    include_game_plans=True,
+                )
+        else:
+            checker = None
+
+        cube_analyzer = _get_analyzer(1) if has_dice else analyzer
+        cube = cube_analyzer.cube_action(
             board,
             cube_value,
             cube_owner,
@@ -296,12 +337,16 @@ def evaluate(req: EvaluateRequest):
         optimalAction=cube.optimal_action,
     )
 
-    return EvaluateResponse(
+    resp_obj = EvaluateResponse(
         chequerPlay=chequer_play,
         cubeDecision=cube_decision,
         gamePlans=GamePlans(player=game_plans.player, opponent=game_plans.opponent),
         isRace=race,
     )
+    _EVAL_LRU_CACHE[cache_key] = resp_obj
+    if len(_EVAL_LRU_CACHE) > _EVAL_LRU_MAX_SIZE:
+        _EVAL_LRU_CACHE.popitem(last=False)
+    return resp_obj
 
 
 @app.post("/api/evaluate-board", response_model=EvaluateResponse)

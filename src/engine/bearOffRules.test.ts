@@ -7,6 +7,10 @@ import {
     resolveDeterministicBearOffMove,
     isQuickBearOffSwipe,
     formatBearOffCounter,
+    isPureBearOffWithoutContact,
+    areAllCheckersOnAcePoint,
+    detectGreedyBearOffStep,
+    shouldSmartAutoRoll,
 } from './bearOffRules';
 
 describe('bearOffRules (Audit 4/20 — Sortie des Pions & Sur-lancer)', () => {
@@ -100,5 +104,78 @@ describe('bearOffRules (Audit 4/20 — Sortie des Pions & Sur-lancer)', () => {
         expect(formatBearOffCounter(0)).toBe('0/15');
         expect(formatBearOffCounter(7)).toBe('7/15');
         expect(formatBearOffCounter(15)).toBe('15/15');
+    });
+
+    it('détecte l’Auto-Bearoff sur l’As (point 1) et le Greedy Bearoff sans contact (Checklist Points 4 & 5)', () => {
+        // 1. Tous les pions restants sur le point 1 (l'As)
+        const aceBoard = new Array<number>(26).fill(0);
+        aceBoard[1] = 4;
+        expect(areAllCheckersOnAcePoint(aceBoard, 'X')).toBe(true);
+        expect(isPureBearOffWithoutContact(aceBoard, 'X')).toBe(true);
+        expect(
+            detectGreedyBearOffStep({
+                board: aceBoard,
+                player: 'X',
+                dice: [6, 2],
+                usedDice: [false, false],
+                leftDieTargets: new Map([[1, [X_OFF]]]),
+                rightDieTargets: new Map([[1, [X_OFF]]]),
+            }),
+        ).toEqual({ from: 1, to: X_OFF, die: 0 });
+
+        // 2. Greedy Bearoff sans contact (1 seule structure finale permet de sortir 2 pions avec 5-3)
+        const raceBoard = new Array<number>(26).fill(0);
+        raceBoard[5] = 1;
+        raceBoard[3] = 1;
+        raceBoard[2] = 2;
+        raceBoard[24] = -5; // Adversaire O dans son propre jan (aucun contact)
+        expect(isPureBearOffWithoutContact(raceBoard, 'X')).toBe(true);
+        expect(
+            detectGreedyBearOffStep({
+                board: raceBoard,
+                player: 'X',
+                dice: [5, 3],
+                usedDice: [false, false],
+                leftDieTargets: new Map([[5, [X_OFF]]]),
+                rightDieTargets: new Map([[3, [X_OFF]], [5, [2]]]),
+            }),
+        ).toEqual({ from: 5, to: X_OFF, die: 0 });
+
+        // 3. Si un pion adverse est en contact dans le jan intérieur (ou sur la barre), Greedy Bearoff est suspendu
+        raceBoard[1] = -2;
+        expect(isPureBearOffWithoutContact(raceBoard, 'X')).toBe(false);
+        expect(
+            detectGreedyBearOffStep({
+                board: raceBoard,
+                player: 'X',
+                dice: [5, 3],
+                usedDice: [false, false],
+                leftDieTargets: new Map([[5, [X_OFF]]]),
+                rightDieTargets: new Map([[3, [X_OFF]]]),
+            }),
+        ).toBeNull();
+    });
+
+    it('shouldSmartAutoRoll ne confisque jamais une décision de Videau (y compris closed out avec cube disponible)', () => {
+        expect(
+            shouldSmartAutoRoll({
+                autoRollEnabled: true,
+                gamePhase: 'HUMAN_WAITING_ROLL',
+                hasDice: false,
+                canDouble: false, // 1er coup, Crawford, videau adverse ou Dead Cube
+                doublingOfferedBy: null,
+            }),
+        ).toBe(true);
+
+        // Si le joueur possède le droit de doubler (même fermé sur la barre), jamais d'auto-roll aveugle
+        expect(
+            shouldSmartAutoRoll({
+                autoRollEnabled: true,
+                gamePhase: 'HUMAN_WAITING_ROLL',
+                hasDice: false,
+                canDouble: true,
+                doublingOfferedBy: null,
+            }),
+        ).toBe(false);
     });
 });

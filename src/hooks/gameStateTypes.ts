@@ -131,7 +131,7 @@ export type GameAction =
     | { type: 'MOVE_CHECKER'; destination: number; from?: number; die?: 0 | 1; deferCommit?: boolean }
     | { type: 'PLAY_MOVE'; from: number; to: number; die?: 0 | 1; deferCommit?: boolean }
     | { type: 'COMMIT_HUMAN_TURN' }
-    | { type: 'OFFER_DOUBLE' }
+    | { type: 'OFFER_DOUBLE'; statusMessage?: string }
     | { type: 'TAKE_DOUBLE' }
     | { type: 'PASS_DOUBLE' }
     | { type: 'PLAY_OPPONENT'; dice?: [number, number] }

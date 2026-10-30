@@ -4,7 +4,7 @@
  * Rôle :
  *   Isole hors de `useBoardPointInteractions.ts` (LOI 5 / SCALABILITY.md <= 200 lignes)
  *   les calculs déterministes sans dépendance React :
- *   - `executeBoardPointClick` : résout l'action de clic sur une flèche (barre, direct, port, combiné).
+ *   - `executeBoardPointClick` : résout l'action de clic sur une flèche (barre, direct, port, combiné, Ctrl+Clic).
  *   - `executeBarRightClick` : résout le clic droit sur la barre centrale.
  *   - `computeKeyboardNavTarget` & `keyboardNavSelector` : navigation clavier.
  *
@@ -14,7 +14,7 @@
 import { getSafestDestination, type Player } from '../engine/backgammonEngine';
 import { TOP_ROW_NAV, BOT_ROW_NAV } from '../components/board/boardAria';
 import { findPortMove, findDirectMoveToDestination } from '../engine/checkerMoveHelpers';
-import { resolveDestinationClick, type SubMove } from '../engine/smartClickResolver';
+import { resolveCombinedFromSource, resolveDestinationClick, type SubMove } from '../engine/smartClickResolver';
 
 export interface ExecuteBoardPointClickParams {
     pointNumber: number;
@@ -30,6 +30,7 @@ export interface ExecuteBoardPointClickParams {
     rightDieTargets?: Map<number, number[]>;
     dice: [number, number] | null;
     preferredDie: 0 | 1;
+    ctrlKey?: boolean;
     legalSequences?: ReadonlyArray<ReadonlyArray<SubMove>>;
     onCheckerClick: (point: number) => void;
     onDestinationClick: (point: number) => void;
@@ -41,7 +42,7 @@ export function executeBoardPointClick(params: ExecuteBoardPointClickParams): vo
     const {
         pointNumber, board, isX, player, bar, xBarPoint, oBarPoint,
         ghostDestinations, selectedPoint, leftDieTargets, rightDieTargets,
-        dice, preferredDie, legalSequences,
+        dice, preferredDie, ctrlKey = false, legalSequences,
         onCheckerClick, onDestinationClick, onPlayMove, onDeselect,
     } = params;
 
@@ -49,6 +50,7 @@ export function executeBoardPointClick(params: ExecuteBoardPointClickParams): vo
     const hasPlayerChecker = isX ? count > 0 : count < 0;
     const ownBarCount = isX ? bar.X : bar.O;
     const ownBarPoint = isX ? xBarPoint : oBarPoint;
+    const higherDieFirst = dice ? dice[preferredDie] >= dice[1 - preferredDie] : true;
 
     if (ownBarCount > 0) {
         if (leftDieTargets && rightDieTargets && onPlayMove) {
@@ -62,10 +64,19 @@ export function executeBoardPointClick(params: ExecuteBoardPointClickParams): vo
             onDestinationClick(pointNumber);
             return;
         }
-        if (hasPlayerChecker) {
-            onCheckerClick(ownBarPoint);
-        }
+        if (hasPlayerChecker) onCheckerClick(ownBarPoint);
         return;
+    }
+
+    if (ctrlKey && hasPlayerChecker && legalSequences && onPlayMove) {
+        const combo = resolveCombinedFromSource(
+            { legalSequences, board, player, selectedSource: pointNumber, higherDieFirst },
+            pointNumber,
+        );
+        if (combo.kind === 'combined') {
+            combo.moves.forEach((m) => onPlayMove(m.from, m.to));
+            return;
+        }
     }
 
     if (ghostDestinations.has(pointNumber)) {
@@ -83,7 +94,7 @@ export function executeBoardPointClick(params: ExecuteBoardPointClickParams): vo
     const playCombined = (selectedSource: number | null): boolean => {
         if (!legalSequences || legalSequences.length === 0 || !onPlayMove) return false;
         const res = resolveDestinationClick(
-            { legalSequences, board, player, selectedSource, higherDieFirst: true },
+            { legalSequences, board, player, selectedSource, higherDieFirst },
             pointNumber,
         );
         if (res.kind !== 'combined') return false;
@@ -91,9 +102,7 @@ export function executeBoardPointClick(params: ExecuteBoardPointClickParams): vo
         return true;
     };
 
-    if (selectedPoint !== null && selectedPoint !== pointNumber && playCombined(selectedPoint)) {
-        return;
-    }
+    if (selectedPoint !== null && selectedPoint !== pointNumber && playCombined(selectedPoint)) return;
 
     const isMovableSource = (leftDieTargets?.has(pointNumber) ?? false) || (rightDieTargets?.has(pointNumber) ?? false);
     if (hasPlayerChecker && (isMovableSource || !onPlayMove || !leftDieTargets || !rightDieTargets)) {
@@ -118,15 +127,11 @@ export function executeBoardPointClick(params: ExecuteBoardPointClickParams): vo
         }
     }
 
-    if (playCombined(null)) {
-        return;
-    }
-
+    if (playCombined(null)) return;
     if (hasPlayerChecker) {
         onCheckerClick(pointNumber);
         return;
     }
-
     if (ghostDestinations.size > 0 && (ghostDestinations.has(pointNumber - 1) || ghostDestinations.has(pointNumber + 1))) {
         return;
     }
@@ -152,37 +157,28 @@ export function executeBarRightClick(params: {
         onDeselect?.();
         return;
     }
-
     if (leftDieTargets && rightDieTargets && onPlayMove) {
         const secondaryDie: 0 | 1 = (1 - preferredDie) as 0 | 1;
         const secondaryTargets = secondaryDie === 0 ? leftDieTargets : rightDieTargets;
         const primaryTargets = preferredDie === 0 ? leftDieTargets : rightDieTargets;
         const secondaryDests = secondaryTargets.get(barPoint) ?? [];
         const primaryDests = primaryTargets.get(barPoint) ?? [];
-
         if (secondaryDests.length > 0) {
-            const dest = getSafestDestination(barPoint, secondaryDests, board, player);
-            onPlayMove(barPoint, dest, secondaryDie);
+            onPlayMove(barPoint, getSafestDestination(barPoint, secondaryDests, board, player), secondaryDie);
             return;
         }
         if (primaryDests.length > 0) {
-            const dest = getSafestDestination(barPoint, primaryDests, board, player);
-            onPlayMove(barPoint, dest, preferredDie);
+            onPlayMove(barPoint, getSafestDestination(barPoint, primaryDests, board, player), preferredDie);
             return;
         }
     }
-
     onCheckerRightClick(barPoint);
 }
 
-/**
- * Calcule le prochain point à focus lors d'une navigation clavier (flèches, Home, End).
- */
 export function computeKeyboardNavTarget(pointNumber: number, key: string): number | null {
     const navRow = pointNumber >= 13 ? TOP_ROW_NAV : BOT_ROW_NAV;
     const idx = navRow.indexOf(pointNumber);
     if (idx === -1) return null;
-
     if (key === 'ArrowLeft') return navRow[Math.max(0, idx - 1)];
     if (key === 'ArrowRight') return navRow[Math.min(navRow.length - 1, idx + 1)];
     if (key === 'Home') return navRow[0];
@@ -190,9 +186,6 @@ export function computeKeyboardNavTarget(pointNumber: number, key: string): numb
     return null;
 }
 
-/**
- * Construit le sélecteur DOM (`data-testid`) du point cible pour le focus clavier.
- */
 export function keyboardNavSelector(point: number): string {
     if (point === 101) return '[data-testid="tray-zone-o"]';
     if (point === 100) return '[data-testid="tray-zone-x"]';

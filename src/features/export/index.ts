@@ -1,4 +1,4 @@
-﻿export * from './types';
+export * from './types';
 export * from './sgfSerializer';
 export * from './sgfExporter';
 export * from './matSerializer';
@@ -6,3 +6,4 @@ export * from './matExporter';
 export * from './xgidSerializer';
 export * from './matchImporter';
 export * from './shareLink';
+export * from './positionPhotoParser';

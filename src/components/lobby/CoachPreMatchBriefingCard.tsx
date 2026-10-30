@@ -1,12 +1,7 @@
 'use client';
 
 /**
- * Briefing Pré-Match Personnalisé du Grand-Maître Coach (Lobby).
- *
- * Rôle :
- *   Synthétise avant le coup d'envoi l'erreur récurrente n°1 du joueur
- *   (lue depuis Supabase `recurring_errors` ou le fallback IndexedDB local
- *   `recurrent_mistakes` pour les invités) et propose un accès direct aux Drills.
+ * Briefing Pré-Match Personnalisé du Coach (Lobby — Barre compacte 1 ligne).
  */
 
 import React, { useEffect, useState } from 'react';
@@ -70,40 +65,38 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
 
     const adviceText =
         matchedConcept?.recommendation ??
-        'Comptez systématiquement les tirs directs (1 à 6) et surveillez votre fenêtre de videau (Market Window) avant chaque décision.';
+        'Comptez systématiquement les tirs directs (1 à 6) et surveillez votre fenêtre de videau avant chaque décision.';
 
     return (
         <section
             data-testid="lobby-prematch-briefing"
             aria-label="Briefing pré-match du Coach"
-            className="w-full rounded-2xl border border-white/10 bg-[#0c111d]/75 px-4 py-3 shadow-md"
+            className="w-full rounded-2xl border border-white/10 bg-slate-900/40 px-3.5 py-2"
         >
-            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0 space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
-                            🎓 Conseil du Coach
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 shrink-0">
+                        🎓 Coach
+                    </span>
+                    {topError ? (
+                        <span
+                            data-testid="lobby-briefing-error-badge"
+                            className="rounded-md border border-white/10 bg-rose-950/60 px-2 py-0.5 text-[11px] font-semibold text-rose-200 shrink-0"
+                        >
+                            Point faible : {topError.concept_label} (×{topError.occurrence_count} · -
+                            {Math.abs(Number(topError.total_equity_loss)).toFixed(3)} ΔEq)
                         </span>
-                        {topError ? (
-                            <span
-                                data-testid="lobby-briefing-error-badge"
-                                className="rounded-full border border-white/10 bg-rose-950/70 px-2.5 py-0.5 text-[11px] font-bold text-rose-200"
-                            >
-                                Point faible n°1 : {topError.concept_label} (×{topError.occurrence_count} · -
-                                {Math.abs(Number(topError.total_equity_loss)).toFixed(3)} ΔEq)
-                            </span>
-                        ) : (
-                            <span className="rounded-full border border-white/10 bg-emerald-950/60 px-2.5 py-0.5 text-[11px] font-bold text-emerald-200">
-                                Focus du jour : {matchedConcept?.name}
-                            </span>
-                        )}
-                        {isLocalGuest && (
-                            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-slate-300">
-                                Profil Local
-                            </span>
-                        )}
-                    </div>
-                    <p className="text-xs text-slate-300 leading-relaxed">{adviceText}</p>
+                    ) : (
+                        <span className="rounded-md border border-white/10 bg-emerald-950/40 px-2 py-0.5 text-[11px] font-semibold text-emerald-200 shrink-0">
+                            Focus : {matchedConcept?.name}
+                        </span>
+                    )}
+                    {isLocalGuest && (
+                        <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-slate-400 shrink-0">
+                            Local
+                        </span>
+                    )}
+                    <p className="text-xs text-slate-400 truncate flex-1 min-w-[180px]">{adviceText}</p>
                 </div>
 
                 {onOpenDrills && (
@@ -111,7 +104,7 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
                         type="button"
                         data-testid="lobby-briefing-drill-btn"
                         onClick={() => onOpenDrills(topError?.concept_id)}
-                        className="shrink-0 rounded-xl border border-white/10 bg-white/[0.06] px-3.5 py-2 text-xs font-bold text-[#f3c65f] transition hover:border-white/25 hover:bg-white/10 hover:text-amber-100"
+                        className="shrink-0 rounded-lg border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-slate-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
                     >
                         🎯 {topError ? 'Corriger en Drill' : 'Lancer un Drill'}
                     </button>

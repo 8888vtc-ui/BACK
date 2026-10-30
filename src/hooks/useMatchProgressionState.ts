@@ -4,6 +4,7 @@
  */
 import { useMemo } from 'react';
 import type { BoardState, Player } from '../engine/backgammonEngine';
+import { canPlayerOfferDouble } from '../engine/cubeRules';
 import type { GamePhase } from './gameStateReducer';
 
 export interface UseMatchProgressionParams {
@@ -33,13 +34,32 @@ export function useMatchProgressionState({
     }, [matchLength, boardState.scoreX, boardState.scoreO]);
 
     const canDouble = useMemo(() => {
-        if (boardState.crawford) return false;
-        if (isDMP) return false;
         if (phase !== 'WAITING_FOR_ROLL') return false;
-        if (boardState.cubeOwner !== null && boardState.cubeOwner !== boardState.turn) return false;
-        if (matchLength > 0 && (boardState.scoreX >= matchLength || boardState.scoreO >= matchLength)) return false;
-        return true;
-    }, [boardState.crawford, isDMP, phase, boardState.cubeOwner, boardState.turn, boardState.scoreX, boardState.scoreO, matchLength]);
+        if (isDMP) return false;
+        return canPlayerOfferDouble({
+            turn: boardState.turn,
+            cubeValue: boardState.cubeValue,
+            cubeOwner: boardState.cubeOwner,
+            hasRolledDice: Boolean(boardState.dice),
+            isCrawford: boardState.crawford,
+            scoreX: boardState.scoreX,
+            scoreO: boardState.scoreO,
+            matchLength,
+            board: boardState.board,
+        });
+    }, [
+        phase,
+        isDMP,
+        boardState.turn,
+        boardState.cubeValue,
+        boardState.cubeOwner,
+        boardState.dice,
+        boardState.crawford,
+        boardState.scoreX,
+        boardState.scoreO,
+        matchLength,
+        boardState.board,
+    ]);
 
     const isMatchOver = useMemo(() => {
         if (matchLength <= 0) return false;

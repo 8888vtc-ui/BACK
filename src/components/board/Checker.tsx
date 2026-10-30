@@ -44,7 +44,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
     const isWhite = color === 'white';
     const isInteractive = isPlayable && isTopChecker;
 
-    // Identifiants uniques par instance SVG pour isoler filtres et dégradés
+    // Identifiants uniques par instance SVG pour isoler filtres, dégradés et angle de marbrure Crisloid
     const uid = useId().replace(/:/g, '');
     const shadowId = `chk-shadow-${uid}`;
     const bodyGradId = `chk-body-${uid}`;
@@ -52,6 +52,9 @@ const CheckerComponent: React.FC<CheckerProps> = ({
     const outerBevelId = `chk-bevel-${uid}`;
     const mainGlossId = `chk-gloss-${uid}`;
     const bounceGlossId = `chk-bounce-${uid}`;
+    let hash = 0;
+    for (let i = 0; i < uid.length; i++) hash = (hash * 31 + uid.charCodeAt(i)) | 0;
+    const marblingAngle = ((Math.abs(hash) % 12) * 30) - 180;
 
     return (
         <div
@@ -64,8 +67,8 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                 }`}
             onPointerDown={isInteractive ? onPointerDown : undefined}
             style={{
-                width: 'clamp(22px, min(calc(6.2vw + 1.5px), calc((100dvh - 165px) / 11.2)), 46px)',
-                height: 'clamp(22px, min(calc(6.2vw + 1.5px), calc((100dvh - 165px) / 11.2)), 46px)',
+                width: 'clamp(26.5px, min(7.4vw, calc((100dvh - 135px) / 11.2)), 46px)',
+                height: 'clamp(26.5px, min(7.4vw, calc((100dvh - 135px) / 11.2)), 46px)',
                 borderRadius: '9999px',
                 touchAction: 'manipulation',
                 transform: 'translate3d(0, 0, 0)',
@@ -203,7 +206,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                     strokeWidth="1.1"
                 />
 
-                {/* 4. Cuvette concave centrale (« finger-dish ») + motif différencié Daltonisme WCAG AAA (Audit 17/20) */}
+                {/* 4. Cuvette concave centrale (« finger-dish ») + marbrure rotative unique Crisloid + motif Daltonisme WCAG AAA */}
                 <circle
                     cx="50"
                     cy="50"
@@ -211,6 +214,15 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                     fill={`url(#${dishGradId})`}
                     stroke={isWhite ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.1)'}
                     strokeWidth="0.75"
+                />
+                <path
+                    data-testid="checker-marbling-swirl"
+                    d="M32 46 C40 34, 60 36, 67 49 C60 61, 41 62, 34 52"
+                    fill="none"
+                    stroke={isWhite ? 'rgba(255, 252, 240, 0.42)' : 'rgba(255, 255, 255, 0.11)'}
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    transform={`rotate(${marblingAngle} 50 50)`}
                 />
                 {isWhite ? (
                     <circle

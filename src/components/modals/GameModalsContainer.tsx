@@ -50,8 +50,8 @@ export interface GameModalsContainerProps {
 }
 
 const BOT_DIFFICULTY_PR_MAP: Record<string, { pr: number; fr: string; en: string }> = {
-    beginner: { pr: 14.5, fr: 'Débutant', en: 'Beginner' },
-    easy: { pr: 12.0, fr: 'Amateur', en: 'Casual' },
+    beginner: { pr: 10.0, fr: 'Débutant', en: 'Beginner' },
+    easy: { pr: 9.2, fr: 'Amateur', en: 'Casual' },
     intermediate: { pr: 8.2, fr: 'Intermédiaire', en: 'Intermediate' },
     medium: { pr: 8.2, fr: 'Intermédiaire', en: 'Intermediate' },
     hard: { pr: 4.5, fr: 'Expert', en: 'Expert' },
@@ -77,11 +77,18 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
     const isEn = Boolean(locale && locale !== 'fr');
     const botDiffKey = (latestGameAnalysis?.opponentDifficulty ?? game.difficulty ?? 'intermediate').toLowerCase();
     const botMeta = BOT_DIFFICULTY_PR_MAP[botDiffKey] ?? BOT_DIFFICULTY_PR_MAP.intermediate;
+    const isAnySecondaryModalOpen =
+        modals.isGameReviewModalOpen ||
+        modals.isExportImportModalOpen ||
+        modals.isDiceAuditModalOpen ||
+        modals.isKnowledgeModalOpen ||
+        modals.isOpeningBookModalOpen ||
+        modals.isSubscriptionModalOpen;
 
     return (
         <>
-            {/* 1. Rapport de Formation Post-Match (si manche terminée en mode Solo et que le modal Bilan détaillé n'est pas ouvert) */}
-            {!isMultiplayerActive && game.phase === 'GAME_OVER' && game.gameResult && !modals.isGameReviewModalOpen && (
+            {/* 1. Rapport de Formation Post-Match (masqué si une sous-modale d'inspection est ouverte pour éviter tout empilement) */}
+            {!isMultiplayerActive && game.phase === 'GAME_OVER' && game.gameResult && !isAnySecondaryModalOpen && (
                 <PostMatchTrainingReport
                     analysis={latestGameAnalysis}
                     winner={game.gameResult.winner}
@@ -92,7 +99,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                     matchLength={game.state.matchLength}
                     isMatchOver={game.isMatchOver}
                     gameId={latestGameAnalysis?.gameId ?? `game_${game.state.scoreX}_${game.state.scoreO}`}
-                    botPr={prO ?? botMeta.pr}
+                    botPr={Math.min(10.0, prO ?? botMeta.pr)}
                     botCategory={isEn ? botMeta.en : botMeta.fr}
                     onNextGame={() => {
                         onResetGameHistory();

@@ -4,9 +4,12 @@
  * Rôle :
  *   1. Enregistre le bilan complet dans IndexedDB (`coach_explanations` + `games`).
  *   2. Enregistre l'analyse dans le stockage local des analyses (`saveGameAnalysis`).
- *   3. Enfile les mutations Supabase (`games`, `coach_explanations`) via la Sync Queue,
+ *   3. Alimente automatiquement la Blunder Bank locale (`recordBlunder`) avec les erreurs
+ *      et micro-erreurs du joueur afin que le bouton « Entraîner mes Blunders » cible
+ *      immédiatement les positions réelles de la partie.
+ *   4. Enfile les mutations Supabase (`games`, `coach_explanations`) via la Sync Queue,
  *      qui les dépile dès que la connexion est rétablie.
- *   4. Agrège les erreurs récurrentes par concept pour alimenter les Drills personnalisés.
+ *   5. Agrège les erreurs récurrentes par concept pour alimenter les Drills personnalisés.
  *
  * Module sans état React : appelé une seule fois par manche terminée.
  *
@@ -17,6 +20,7 @@
 import { putRecord } from '../../lib/offline/idb';
 import { enqueueSync } from '../../lib/offline/syncQueue';
 import { saveGameAnalysis } from '../../features/rating/gameAnalysisStorage';
+import { recordBlunder } from '../../features/drills/blunderBank';
 import { upsertRecurringError } from '../../lib/supabase/db';
 import { getCurrentUser } from '../../lib/supabase/auth';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
@@ -88,12 +92,38 @@ export async function persistPostMatchReport(
         console.warn('[PostMatch] Échec écriture IndexedDB du bilan :', e);
     }
 
-    // 2. Stockage local des analyses (courbe de PR).
+    // 2. Stockage local des analyses (courbe de PR) + alimentation directe de la Blunder Bank (drills).
     if (analysis) {
         try {
             saveGameAnalysis(analysis);
         } catch (e) {
             console.warn('[PostMatch] Échec enregistrement analyse locale :', e);
+        }
+
+        try {
+            for (const m of analysis.evaluatedMoves) {
+                const absLoss = Math.abs(m.equityLoss);
+                if (m.player === 'X' && absLoss >= 0.04 && Array.isArray(m.boardBefore) && m.boardBefore.length >= 26) {
+                    const normalizedBoard = m.boardBefore.length >= 28
+                        ? m.boardBefore.slice(0, 28)
+                        : [...m.boardBefore, 0, 0].slice(0, 28);
+                    recordBlunder({
+                        board: normalizedBoard,
+                        dice: m.dice,
+                        player: 'X',
+                        playedMove: m.playedNotation,
+                        optimalMove: m.optimalNotation,
+                        equityLoss: absLoss,
+                        verdict: absLoss >= 0.15 ? 'howler' : absLoss >= 0.08 ? 'blunder' : 'doubtful',
+                        conceptId: m.conceptId || 'blot_safety',
+                        conceptName: m.conceptId ? `Concept : ${m.conceptId}` : 'Précision tactique & Sécurité',
+                        explanation: m.explanation || `Le coup ${m.optimalNotation} préservait mieux votre structure que ${m.playedNotation}.`,
+                        gameId,
+                    });
+                }
+            }
+        } catch (e) {
+            console.warn('[PostMatch] Échec alimentation BlunderBank :', e);
         }
     }
 

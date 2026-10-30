@@ -13,10 +13,10 @@
 import type { BoardState } from '../../engine/backgammonEngine';
 import { analyzeBoardCube } from '../../lib/engine/evaluator';
 
-export type CubeAction = 'double' | 'take' | 'pass';
+export type CubeAction = 'double' | 'take' | 'pass' | 'missed_double';
 
 /** Types d'actions moteur associées aux décisions de videau du joueur. */
-export type CubeActionType = 'OFFER_DOUBLE' | 'TAKE_DOUBLE' | 'PASS_DOUBLE';
+export type CubeActionType = 'OFFER_DOUBLE' | 'TAKE_DOUBLE' | 'PASS_DOUBLE' | 'MISSED_DOUBLE';
 
 export interface CubeCoachResult {
     /** Verdict pédagogique : optimal / bon / imprécision / blunder. */
@@ -52,6 +52,8 @@ export function mapGameCubeAction(rawAction: string | null | undefined): CubeAct
         case 'PASS_DOUBLE':
         case 'PASS':
             return 'pass';
+        case 'MISSED_DOUBLE':
+            return 'missed_double';
         default:
             return null;
     }
@@ -77,6 +79,21 @@ export function classifyCubeResponse(optimal: string, action: CubeAction): CubeC
         : optimal.includes('take')
           ? 'take'
           : null;
+
+    if (action === 'missed_double') {
+        if (optimalIsDouble) {
+            return {
+                verdict: 'blunder',
+                explanation: '🔔 Videau oublié avant de lancer : votre position était assez forte pour doubler (×2) avant les dés.',
+                advice: 'Pensez à vérifier le Videau avant chaque lancer quand votre attaque ou votre course domine.',
+            };
+        }
+        return {
+            verdict: 'optimal',
+            explanation: 'Bon choix de garder le dé : le videau n’était pas encore mûr.',
+            advice: 'Continuez à construire votre position avant de doubler.',
+        };
+    }
 
     if (action === 'double') {
         if (optimalIsDouble) {
@@ -182,5 +199,36 @@ export function analyzeCubeDecision(
         explanation,
         advice,
         equityLoss,
+    };
+}
+
+/**
+ * Détecte si le joueur a oublié de proposer le Videau avant de lancer les dés ("Missed Cube").
+ * Retourne `null` si le videau n'était pas disponible ou si ne pas doubler était correct.
+ */
+export function detectMissedCubeBeforeRoll(state: BoardState): CubeCoachResult | null {
+    const canOfferCube =
+        !state.crawford &&
+        state.cubeValue < 64 &&
+        (state.cubeOwner === null || state.cubeOwner === state.turn);
+    if (!canOfferCube) return null;
+
+    const cube = analyzeBoardCube(state);
+    const optimal = cube.optimalAction ?? 'No double, take';
+    if (!optimal.startsWith('Double')) return null;
+
+    const noDouble = cube.noDouble ?? 0;
+    const bestDoubleEq = Math.min(cube.doubleTake ?? 1, cube.doublePass ?? 1);
+    const missedLoss = Math.max(0, bestDoubleEq - noDouble);
+    if (missedLoss < 0.05) return null;
+
+    const { explanation, advice } = classifyCubeResponse(optimal, 'missed_double');
+    return {
+        verdict: missedLoss >= 0.08 ? 'blunder' : 'inaccuracy',
+        optimalAction: optimal,
+        playedAction: 'missed_double',
+        explanation,
+        advice,
+        equityLoss: -Number(missedLoss.toFixed(4)),
     };
 }

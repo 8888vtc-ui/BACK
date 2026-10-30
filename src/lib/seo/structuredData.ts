@@ -16,6 +16,8 @@
 import { ACADEMY_CONTENT } from '../../features/academy/academyTranslations';
 import { OPENING_ROLLS_15 } from '../../features/academy/academyData';
 import { BACKGAMMON_TERMINOLOGY_MATRIX, type BackgammonTermKey } from '../i18n/terminologyMatrix';
+import type { TournamentRecord } from '../../features/tournaments/tournamentTypes';
+import { WORLD_BACKGAMMON_VENUES, type WorldBackgammonVenue } from '../../features/tournaments/worldBackgammonVenues';
 
 export const DEFAULT_SITE_URL = 'https://backgammontour.com';
 
@@ -215,7 +217,106 @@ export function buildGlobalStructuredData(siteUrl: string = DEFAULT_SITE_URL): R
                         name: 'Progression & Performance Rating (PR)',
                         item: `${cleanUrl}/progression`,
                     },
+                    {
+                        '@type': 'ListItem',
+                        position: 6,
+                        name: 'Base de Données Mondiale & Agenda des Tournois Backgammon',
+                        item: `${cleanUrl}/tournaments`,
+                    },
                 ],
+            },
+        ],
+    };
+}
+
+/**
+ * Génère le graphe JSON-LD Schema.org `ItemList` + `SportsEvent` pour la page `/tournaments`.
+ */
+export function buildTournamentsStructuredData(
+    tournaments: ReadonlyArray<TournamentRecord>,
+    siteUrl: string = DEFAULT_SITE_URL,
+): Record<string, unknown> {
+    const cleanUrl = siteUrl.replace(/\/+$/, '');
+    const eventEntities = tournaments.map((t, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        item: {
+            '@type': 'SportsEvent',
+            '@id': `${cleanUrl}/tournaments#${t.slug}`,
+            name: t.name,
+            description: t.descriptionFr,
+            startDate: t.startDate,
+            endDate: t.endDate,
+            eventStatus: 'https://schema.org/EventScheduled',
+            eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+            sport: 'Backgammon',
+            url: t.officialUrl,
+            location: {
+                '@type': 'Place',
+                name: t.venueName,
+                address: {
+                    '@type': 'PostalAddress',
+                    addressLocality: t.city,
+                    addressCountry: t.countryCode,
+                },
+            },
+            organizer: {
+                '@type': 'Organization',
+                name: `${t.organizerName} (${t.federation})`,
+                url: t.officialUrl,
+            },
+            offers: {
+                '@type': 'Offer',
+                price: String(t.entryFeeMain),
+                priceCurrency: t.currency,
+                url: t.registrationUrl ?? t.officialUrl,
+                availability: 'https://schema.org/InStock',
+            },
+        },
+    }));
+
+    const venueEntities = WORLD_BACKGAMMON_VENUES.map((v) => ({
+        '@type': 'SportsActivityLocation',
+        '@id': `${cleanUrl}/tournaments#venue-${v.slug}`,
+        name: v.name,
+        description: v.seoSummaryFr,
+        url: v.officialUrl,
+        address: {
+            '@type': 'PostalAddress',
+            streetAddress: v.address,
+            addressLocality: v.city,
+            addressCountry: v.countryCode,
+        },
+        geo: {
+            '@type': 'GeoCoordinates',
+            latitude: v.coordinates.lat,
+            longitude: v.coordinates.lng,
+        },
+    }));
+
+    return {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'ItemList',
+                '@id': `${cleanUrl}/tournaments#calendar`,
+                name: 'Calendrier Mondial Officiel des Tournois de Backgammon (MEGA, GRAND, MOYEN)',
+                description:
+                    'Base de données mondiale et agenda officiel des tournois de Backgammon WBGF, USBGF, FFB, UKBGF, EUBGF et WBA classés par catégorie (Mega Majors, Grand Masters, Opens Moyens).',
+                numberOfItems: tournaments.length,
+                itemListElement: eventEntities,
+            },
+            {
+                '@type': 'ItemList',
+                '@id': `${cleanUrl}/tournaments#venues-directory`,
+                name: 'Guide & Carte Mondiale des Clubs et Lieux où Jouer au Backgammon',
+                description: 'Répertoire mondial des clubs, salons et cafés mythiques pour jouer au backgammon en réel avec pendule.',
+                numberOfItems: venueEntities.length,
+                itemListElement: venueEntities.map((ve, idx) => ({
+                    '@type': 'ListItem',
+                    position: idx + 1,
+                    item: ve,
+                })),
             },
         ],
     };

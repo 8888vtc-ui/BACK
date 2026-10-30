@@ -249,4 +249,47 @@ describe('MatchBlunderReport Component', () => {
         fireEvent.keyDown(window, { key: 'Escape' });
         expect(onBackToLobby).toHaveBeenCalledTimes(1);
     });
+
+    it('affiche la carte Caméléon 3 Strates (Débutant / Club / Pro) et la ventilation PR-Positional vs PR-Cube au tap', () => {
+        const analysis = buildSampleAnalysis();
+        analysis.checkerPR = 4.1;
+        analysis.cubePR = 6.3;
+
+        render(
+            <PostMatchTrainingReport
+                analysis={analysis}
+                winner="X"
+                winType="single"
+                pointsWon={1}
+                scoreX={5}
+                scoreO={3}
+                matchLength={7}
+                isMatchOver={false}
+                gameId="game-gm-1"
+                botPr={5.2}
+                botCategory="Maître"
+                isOffline={true}
+                onNextGame={vi.fn()}
+                onBackToLobby={vi.fn()}
+                locale="fr"
+            />,
+        );
+
+        // PR = 4.85 (< 5.0) => Couche 2 (Pro) sélectionnée automatiquement (Étape 5)
+        expect(screen.getByTestId('chameleon-post-match-card')).toBeTruthy();
+        expect(screen.getByTestId('chameleon-layer2-pro-metrics')).toBeTruthy();
+
+        // Bascule en Couche 1 (Club : Jauge de Videau 25% / 75% / Loi de Woolsey)
+        fireEvent.click(screen.getByTestId('chameleon-layer-btn-1'));
+        expect(screen.getByTestId('chameleon-layer1-cube-gauge').textContent).toContain('Loi de Woolsey');
+
+        // Bascule en Couche 0 (Débutant : 4 Fondamentaux sans jargon)
+        fireEvent.click(screen.getByTestId('chameleon-layer-btn-0'));
+        expect(screen.getByTestId('chameleon-layer0-four-factors').textContent).toContain('Structure');
+
+        // Tap sur le badge PR joueur -> révèle le Split PR-Positional (Dames) vs PR-Cube (Videau)
+        fireEvent.click(screen.getByTestId('post-match-pr-player'));
+        expect(screen.getByTestId('post-match-pr-split').textContent).toContain('4.10');
+        expect(screen.getByTestId('post-match-pr-split').textContent).toContain('6.30');
+    });
 });

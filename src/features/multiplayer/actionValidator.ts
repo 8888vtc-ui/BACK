@@ -20,6 +20,7 @@ import {
     X_OFF,
     O_OFF,
 } from '../../engine/backgammonEngine';
+import { isInitialBoardPosition } from '../openings/openingDatabase';
 import type { RealtimeBroadcastAction } from './types';
 
 export type ValidationErrorCode =
@@ -36,6 +37,7 @@ export type ValidationErrorCode =
     | 'ILLEGAL_MOVE_DISTANCE'
     | 'INVALID_MOVE_SEQUENCE'
     | 'CRAWFORD_RESTRICTION'
+    | 'OPENING_POSITION_NO_DOUBLE'
     | 'CUBE_NOT_OWNED'
     | 'DOUBLE_ALREADY_OFFERED'
     | 'CANNOT_DOUBLE_AFTER_ROLL'
@@ -246,6 +248,14 @@ export function validateGameAction(ctx: ActionValidationContext): ValidationResu
                     valid: false,
                     code: 'DOUBLE_ALREADY_OFFERED',
                     reason: 'Une offre de videau est déjà en attente de réponse.',
+                };
+            }
+
+            if (isInitialBoardPosition(room.board)) {
+                return {
+                    valid: false,
+                    code: 'OPENING_POSITION_NO_DOUBLE',
+                    reason: 'Règle officielle WBF 5.1 : impossible de proposer le videau au démarrage avant le premier coup.',
                 };
             }
 

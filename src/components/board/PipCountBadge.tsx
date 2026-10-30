@@ -50,6 +50,33 @@ export function getSavedPipCountVisibility(defaultValue = true): boolean {
     return defaultValue;
 }
 
+/**
+ * Enregistre la préférence d'affichage du pip count (Mode Tournoi Live = `false`)
+ * et notifie tous les composants abonnés via `PIP_VISIBILITY_CHANGE_EVENT`.
+ */
+export function setSavedPipCountVisibility(visible: boolean): void {
+    try {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(PIP_COUNT_STORAGE_KEY, String(visible));
+        }
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent<boolean>(PIP_VISIBILITY_CHANGE_EVENT, { detail: visible }));
+        }
+    } catch {
+        // ignore
+    }
+}
+
+/**
+ * Bascule en 1 clic la visibilité du pip count et retourne le nouvel état.
+ */
+export function toggleSavedPipCountVisibility(currentVisible?: boolean): boolean {
+    const base = typeof currentVisible === 'boolean' ? currentVisible : getSavedPipCountVisibility(true);
+    const next = !base;
+    setSavedPipCountVisibility(next);
+    return next;
+}
+
 export interface PipCountBadgeProps {
     /** Pip count du joueur X (Humain côté moteur). */
     pipX: number;
@@ -102,6 +129,12 @@ const PipCountBadgeComponent: React.FC<PipCountBadgeProps> = ({
     useEffect(() => {
         const saved = getSavedPipCountVisibility(true);
         if (saved !== true) setVisible(saved);
+        const onSync = (e: Event) => {
+            const detail = (e as CustomEvent<boolean>).detail;
+            if (typeof detail === 'boolean') setVisible(detail);
+        };
+        window.addEventListener(PIP_VISIBILITY_CHANGE_EVENT, onSync);
+        return () => window.removeEventListener(PIP_VISIBILITY_CHANGE_EVENT, onSync);
     }, []);
 
     const humanIsBlack = swapColors || playerColor === 'O';
@@ -121,14 +154,7 @@ const PipCountBadgeComponent: React.FC<PipCountBadgeProps> = ({
     const toggleVisibility = useCallback(() => {
         setVisible((prev) => {
             const next = !prev;
-            try {
-                localStorage.setItem(PIP_COUNT_STORAGE_KEY, String(next));
-                if (typeof window !== 'undefined') {
-                    window.dispatchEvent(new CustomEvent<boolean>(PIP_VISIBILITY_CHANGE_EVENT, { detail: next }));
-                }
-            } catch {
-                // ignore
-            }
+            setSavedPipCountVisibility(next);
             return next;
         });
     }, []);

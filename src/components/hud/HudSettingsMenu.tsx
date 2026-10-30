@@ -9,13 +9,13 @@ import React, { useEffect, useState } from 'react';
 import type { ThemeName } from '../board/boardThemes';
 import type { CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
 import { getSavedOrientation, saveOrientation, toggleOrientation, ORIENTATION_CHANGE_EVENT, type BoardOrientation } from '../board/boardOrientation';
+import { getSavedPipCountVisibility, setSavedPipCountVisibility, PIP_VISIBILITY_CHANGE_EVENT } from '../board/PipCountBadge';
 import { getNextAutoConfirmMode, getSavedAutoConfirmMode, getSavedGameSpeed, saveAutoConfirmMode, saveGameSpeed, type AutoConfirmMode } from '../../lib/settings/gameplaySettings';
 import { GAME_SPEED_ORDER, type GameSpeed } from '../../lib/gameFeel/speedPresets';
 import { AUTO_CONFIRM_MODE_LABELS, SPEED_LABELS } from '../board/BoardActions';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { soundEngine } from '../../lib/sound/soundEngine';
 import { useI18n, PRIMARY_LOCALES, LOCALE_METADATA, type Locale } from '../../i18n';
-import AuthButton from '../auth/AuthButton';
 
 export interface HudSettingsMenuProps {
     isOpen: boolean;
@@ -57,19 +57,29 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
     const { locale, setLocale } = useI18n();
     const [volumePct, setVolumePct] = useState<number>(80);
     const [boardOrientation, setBoardOrientation] = useState<BoardOrientation>('normal');
+    const [pipVisible, setPipVisible] = useState<boolean>(true);
     const [localAutoMode, setLocalAutoMode] = useState<AutoConfirmMode>('forced_only');
     const [localSpeed, setLocalSpeed] = useState<GameSpeed>('tournament');
 
     useEffect(() => {
         setBoardOrientation(getSavedOrientation('normal'));
+        setPipVisible(getSavedPipCountVisibility(true));
         setLocalAutoMode(getSavedAutoConfirmMode());
         setLocalSpeed(getSavedGameSpeed());
         const onSync = (e: Event) => {
             const detail = (e as CustomEvent<BoardOrientation>).detail;
             if (detail === 'normal' || detail === 'inverted') setBoardOrientation(detail);
         };
+        const onPipSync = (e: Event) => {
+            const detail = (e as CustomEvent<boolean>).detail;
+            if (typeof detail === 'boolean') setPipVisible(detail);
+        };
         window.addEventListener(ORIENTATION_CHANGE_EVENT, onSync);
-        return () => window.removeEventListener(ORIENTATION_CHANGE_EVENT, onSync);
+        window.addEventListener(PIP_VISIBILITY_CHANGE_EVENT, onPipSync);
+        return () => {
+            window.removeEventListener(ORIENTATION_CHANGE_EVENT, onSync);
+            window.removeEventListener(PIP_VISIBILITY_CHANGE_EVENT, onPipSync);
+        };
     }, []);
 
     const effectiveAutoMode = autoConfirmMode ?? localAutoMode;
@@ -111,28 +121,22 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
 
     return (
         <div
-            id="hud-settings-menu"
-            role="dialog"
-            aria-modal={isOpen}
-            aria-hidden={!isOpen}
-            aria-label="Paramètres et outils de la table"
-            data-testid="hud-settings-menu"
-            className={`absolute right-0 top-full mt-2 z-50 w-72 sm:w-80 max-h-[calc(100dvh-64px)] overflow-y-auto overscroll-y-contain rounded-2xl border border-[#d4af37]/45 bg-[#0f131d]/98 p-4 text-[#fdf8eb] shadow-[0_24px_60px_rgba(0,0,0,0.92)] backdrop-blur-xl space-y-3.5 transition-all ${
-                isOpen ? 'block' : 'hidden'
-            }`}
+            id="hud-settings-menu" role="dialog" aria-modal={isOpen} aria-hidden={!isOpen}
+            aria-label="Paramètres et outils de la table" data-testid="hud-settings-menu" data-translucent="60"
+            className={`absolute right-0 top-full mt-2 z-50 w-72 sm:w-80 max-h-[calc(100dvh-64px)] overflow-y-auto overscroll-y-contain rounded-2xl border border-white/15 bg-slate-950/65 p-4 text-slate-100 shadow-2xl backdrop-blur-md space-y-3.5 transition-all ${isOpen ? 'block' : 'hidden'}`}
         >
             {/* En-tête épuré */}
             <div className="flex items-center justify-between pb-2.5 border-b border-white/10">
                 <div className="flex items-center gap-2">
                     <span className="text-sm" aria-hidden="true">⚙️</span>
-                    <span className="font-serif text-xs font-extrabold uppercase tracking-[0.14em] text-[#fdf8eb]">Réglages de Table</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-white">Réglages de Table</span>
                 </div>
-                <button type="button" onClick={onClose} aria-label="Fermer les paramètres" className="h-7 w-7 rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:border-[#f3c65f]/60 flex items-center justify-center text-xs transition">✕</button>
+                <button type="button" onClick={onClose} aria-label="Fermer les paramètres" className="h-7 w-7 rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:border-white/25 flex items-center justify-center text-xs transition">✕</button>
             </div>
 
             {/* SECTION 1 : THÈME & PLATEAU */}
             <div className="flex flex-col gap-2">
-                <span className="text-[11px] font-bold text-[#e5c158] uppercase tracking-[0.14em]">Thème &amp; Plateau</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Thème &amp; Plateau</span>
                 <div className="grid grid-cols-2 gap-1.5" role="group" aria-label="Thèmes du plateau">
                     {THEME_OPTIONS.map((opt) => {
                         const active = theme === opt.id;
@@ -141,7 +145,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                                 key={opt.id} type="button" onClick={() => handleThemeSelect(opt.id)} title={opt.title}
                                 data-testid={active ? 'hud-theme-toggle-btn' : `hud-theme-${opt.id}`} aria-pressed={active}
                                 className={`flex items-center gap-2 rounded-xl border px-2.5 py-2 text-xs font-bold transition ${
-                                    active ? 'border-[#f3c65f] bg-[#2c200e] text-[#fff8e1] shadow-sm' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'
+                                    active ? 'border-[#f3c65f] bg-[#f3c65f]/15 text-white shadow-sm' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'
                                 }`}
                             >
                                 <span aria-hidden="true" className={`h-3 w-3 rounded-full ring-1 shrink-0 ${opt.swatchClass}`} />
@@ -151,21 +155,24 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                     })}
                 </div>
 
-                <button
-                    type="button" data-testid="orientation-toggle-btn" title="Inverser l'orientation et la numérotation 1..24"
-                    onClick={() => {
-                        const next = toggleOrientation(boardOrientation);
-                        setBoardOrientation(next);
-                        saveOrientation(next);
-                        onToggleOrientation?.();
-                    }}
-                    className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 transition"
-                >
-                    <span>⇄ Numérotation 1..24</span>
-                    <span className="rounded border border-[#d4af37]/35 bg-[#23190c] px-2 py-0.5 text-[11px] font-mono font-bold text-[#f3c65f]">
-                        {boardOrientation === 'inverted' ? 'Miroir' : 'Standard'}
-                    </span>
-                </button>
+                <div className="grid grid-cols-2 gap-1.5">
+                    <button
+                        type="button" data-testid="orientation-toggle-btn" title="Inverser l'orientation et la numérotation 1..24"
+                        onClick={() => { const next = toggleOrientation(boardOrientation); setBoardOrientation(next); saveOrientation(next); onToggleOrientation?.(); }}
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 transition"
+                    >
+                        <span>⇄ Sens</span>
+                        <span className="font-mono text-[11px] font-bold text-amber-300">{boardOrientation === 'inverted' ? 'Miroir' : 'Std'}</span>
+                    </button>
+                    <button
+                        type="button" data-testid="hud-pip-visibility-btn" title="Masquer ou afficher le Pip Count pour l'entraînement sur table (OTB)"
+                        onClick={() => { const next = !pipVisible; setPipVisible(next); setSavedPipCountVisibility(next); }}
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 transition"
+                    >
+                        <span>👁 Pips</span>
+                        <span className="font-mono text-[11px] font-bold text-amber-300">{pipVisible ? 'Visible' : 'OTB'}</span>
+                    </button>
+                </div>
 
                 <div className="grid grid-cols-2 gap-1.5">
                     <button
@@ -174,7 +181,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                         className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 transition"
                     >
                         <span>⚡ Auto</span>
-                        <span className="font-mono text-[11px] font-bold text-[#f3c65f]">{AUTO_CONFIRM_MODE_LABELS[effectiveAutoMode].badge}</span>
+                        <span className="font-mono text-[11px] font-bold text-amber-300">{AUTO_CONFIRM_MODE_LABELS[effectiveAutoMode].badge}</span>
                     </button>
                     <button
                         type="button" onClick={handleCycleSpeed} data-testid="hud-game-speed-btn"
@@ -182,7 +189,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                         className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 transition"
                     >
                         <span>{SPEED_LABELS[effectiveSpeed].icon} Cadence</span>
-                        <span className="font-mono text-[11px] font-bold text-[#f3c65f]">{SPEED_LABELS[effectiveSpeed].label}</span>
+                        <span className="font-mono text-[11px] font-bold text-amber-300">{SPEED_LABELS[effectiveSpeed].label}</span>
                     </button>
                 </div>
             </div>
@@ -190,18 +197,14 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
             {/* SECTION 2 : SON & LANGUE */}
             <div className="flex flex-col gap-2 pt-2.5 border-t border-white/10">
                 <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-[#e5c158] uppercase tracking-[0.14em]">Son &amp; Langue</span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Son &amp; Langue</span>
                     <select
-                        id="hud-locale-select"
-                        name="hudLocale"
-                        value={locale}
-                        onChange={(e) => setLocale(e.target.value as Locale)}
-                        aria-label="Langue"
-                        data-testid="hud-locale-select"
-                        className="rounded-lg border border-white/10 bg-[#0b101b] px-2 py-0.5 text-[11px] font-bold text-slate-200 hover:border-[#f3c65f]/50 hover:text-white focus:outline-none cursor-pointer transition"
+                        id="hud-locale-select" name="hudLocale" value={locale}
+                        onChange={(e) => setLocale(e.target.value as Locale)} aria-label="Langue" data-testid="hud-locale-select"
+                        className="rounded-lg border border-white/10 bg-slate-900 px-2 py-0.5 text-[11px] font-bold text-slate-200 hover:border-white/25 hover:text-white focus:outline-none cursor-pointer transition"
                     >
                         {PRIMARY_LOCALES.map((loc) => (
-                            <option key={loc} value={loc} className="bg-[#0b101b] text-slate-100">
+                            <option key={loc} value={loc} className="bg-slate-950 text-slate-100">
                                 {LOCALE_METADATA[loc].flag} {loc.toUpperCase()}
                             </option>
                         ))}
@@ -211,16 +214,14 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                 <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
                     <button
                         type="button" onClick={onToggleSound} data-testid="audio-toggle-btn"
-                        className="flex items-center gap-1.5 text-xs font-bold text-[#fdf8eb] hover:text-[#f3c65f] transition shrink-0"
+                        className="flex items-center gap-1.5 text-xs font-bold text-slate-100 hover:text-amber-300 transition shrink-0"
                         title={isSoundMuted ? 'Activer le son' : 'Couper le son'} aria-label={isSoundMuted ? 'Activer le son' : 'Couper le son'}
                     >
                         <span>{isSoundMuted ? '🔇' : '🔊'}</span>
                         <span>{isSoundMuted ? 'Muet' : `${volumePct}%`}</span>
                     </button>
                     <input
-                        id="audio-volume-slider"
-                        name="audioVolume"
-                        type="range" min={0} max={100} step={10} value={isSoundMuted ? 0 : volumePct} onChange={handleVolumeChange}
+                        id="audio-volume-slider" name="audioVolume" type="range" min={0} max={100} step={10} value={isSoundMuted ? 0 : volumePct} onChange={handleVolumeChange}
                         aria-label="Volume sonore" data-testid="audio-volume-slider"
                         className="w-full accent-[#f3c65f] h-1.5 bg-slate-800 rounded-lg cursor-pointer"
                     />
@@ -229,10 +230,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
 
             {/* SECTION 3 : ALERTES COACH & OUTILS */}
             <div className="flex flex-col gap-2 pt-2.5 border-t border-white/10">
-                <span className="text-[11px] font-bold text-[#e5c158] uppercase tracking-[0.14em]">
-                    Alertes Coach &amp; Outils
-                </span>
-
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Alertes Coach &amp; Outils</span>
                 <div className="grid grid-cols-4 gap-1" role="group" aria-label="Seuil d'alerte du Coach">
                     {([
                         { id: 'all' as const, label: '🟢 Tous', title: 'Coach continu sur tous les coups (PR 1–5)' },
@@ -241,14 +239,10 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                         { id: 'silent' as const, label: '🔇 Muet', title: 'Mode silencieux (aucune alerte automatique)' },
                     ]).map((lvl) => (
                         <button
-                            key={lvl.id} type="button" title={lvl.title}
-                            data-testid={`coach-threshold-${lvl.id}`}
-                            aria-pressed={notificationLevel === lvl.id}
+                            key={lvl.id} type="button" title={lvl.title} data-testid={`coach-threshold-${lvl.id}`} aria-pressed={notificationLevel === lvl.id}
                             onClick={() => onChangeNotificationLevel?.(lvl.id)}
                             className={`rounded-lg border px-1.5 py-1.5 text-[11px] font-bold transition ${
-                                notificationLevel === lvl.id
-                                    ? 'border-[#f3c65f] bg-[#2c200e] text-[#fff8e1]'
-                                    : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'
+                                notificationLevel === lvl.id ? 'border-[#f3c65f] bg-[#f3c65f]/15 text-white' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'
                             }`}
                         >
                             {lvl.label}
@@ -258,53 +252,33 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
 
                 {onTriggerCoach && (
                     <button
-                        type="button" onClick={() => { onClose(); onTriggerCoach(); }}
+                        type="button" onClick={() => { onClose(); onTriggerCoach(); }} data-testid="coach-hud-trigger"
                         title="Demander une analyse Coach Monte-Carlo 3-Ply sur la position courante"
-                        className="flex items-center justify-between w-full rounded-xl border border-[#f3c65f]/45 bg-[#241a0c] px-3 py-2 text-xs font-bold text-[#fdf8eb] hover:border-[#f3c65f] transition"
-                        data-testid="coach-hud-trigger"
+                        className="flex items-center justify-between w-full rounded-xl border border-[#f3c65f]/50 bg-[#f3c65f]/10 px-3 py-2 text-xs font-bold text-white hover:border-[#f3c65f] transition"
                     >
-                        <span>🎓 Analyser avec le Coach IA</span>
-                        <span className="font-mono text-[11px] font-extrabold text-[#f3c65f]">3-PLY</span>
+                        <span>🎓 Analyser avec le Coach IA</span><span className="font-mono text-[11px] font-extrabold text-amber-300">3-PLY</span>
                     </button>
                 )}
-
                 {onOpenExportImport && (
                     <button
-                        type="button" onClick={() => { onClose(); onOpenExportImport(); }}
+                        type="button" onClick={() => { onClose(); onOpenExportImport(); }} data-testid="export-import-hud-btn"
                         title="Exporter, importer ou partager la position (XGID) ou le match (SGF)"
                         className="flex items-center justify-between w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 hover:text-white transition"
-                        data-testid="export-import-hud-btn"
                     >
-                        <span>💾 Partager / XGID</span>
-                        <span className="text-[11px] text-[#e5c158] font-mono">XG / SGF</span>
+                        <span>💾 Partager / XGID</span><span className="text-[11px] text-amber-300 font-mono">XG / SGF</span>
                     </button>
                 )}
-
-                <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-white/[0.02] border border-white/10">
-                    <AuthButton />
-                </div>
             </div>
 
             {/* SECTION 4 : ARBITRAGE DE MANCHE */}
             {(onResetGame || onResign) && (
                 <div className="flex flex-col gap-1.5 pt-2.5 border-t border-white/10">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-slate-300 uppercase tracking-[0.12em]">
-                            Concéder la manche
-                        </span>
-                        {onResetGame && (
-                            <button
-                                type="button"
-                                onClick={() => { onClose(); onResetGame(); }}
-                                className="text-[11px] font-semibold text-slate-400 hover:text-amber-200 transition"
-                                title="Réinitialiser le match"
-                            >
-                                ↺ Reset
-                            </button>
-                        )}
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Concéder la manche</span>
+                        {onResetGame && <button type="button" onClick={() => { onClose(); onResetGame(); }} className="text-[11px] font-semibold text-slate-400 hover:text-amber-200 transition" title="Réinitialiser le match">↺ Reset</button>}
                     </div>
                     <div className="grid grid-cols-3 gap-1.5">
-                        <button type="button" data-testid="resign-simple-btn" onClick={() => handleResignClick(1)} className="whitespace-nowrap rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 text-[11px] font-bold text-amber-100 hover:border-[#f3c65f] transition" title="Concéder la manche (Simple — 1x)">1× Simple</button>
+                        <button type="button" data-testid="resign-simple-btn" onClick={() => handleResignClick(1)} className="whitespace-nowrap rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 text-[11px] font-bold text-slate-200 hover:border-[#f3c65f] transition" title="Concéder la manche (Simple — 1x)">1× Simple</button>
                         <button type="button" data-testid="resign-gammon-btn" onClick={() => handleResignClick(2)} className="whitespace-nowrap rounded-lg border border-amber-500/40 bg-amber-950/30 px-2 py-1.5 text-[11px] font-bold text-amber-200 hover:border-amber-400 transition" title="Concéder la manche (Gammon — 2x)">2× Gammon</button>
                         <button type="button" data-testid="resign-bg-btn" onClick={() => handleResignClick(3)} className="whitespace-nowrap rounded-lg border border-rose-500/45 bg-rose-950/35 px-2 py-1.5 text-[11px] font-bold text-rose-200 hover:border-rose-400 transition" title="Concéder la manche (Backgammon — 3x)">3× BG</button>
                     </div>

@@ -73,3 +73,44 @@
    - ✅ Nettoyage fluide de l'URL via `window.history.replaceState` sans rechargement.
    - ✅ Ouverture automatique de `PrivateRoomModal.tsx`, pré-remplissage du code et connexion en 1 clic.
    - ✅ Boutons « Copier le lien direct » et « Partager (WhatsApp / Club) » via Web Share API (`navigator.share`) avec repli presse-papiers dans `PrivateRoomModal.tsx` et `LobbyPrivateRoomTab.tsx`.
+
+---
+
+## 5. 🟣 P4 — Écosystème de Bots Personnifiés, Interface Adaptative (« UI Caméléon ») & Addiction Positive (Nouveau Cahier des Charges)
+
+> **Objectif Stratégique** : Transformer le face-à-face actuel (« 1 Joueur contre 1 Robot muet ») en une expérience vivante, émotionnelle et adaptative qui séduit simultanément **le Débutant (qui vient s'amuser et apprendre sans jargon)** et **le Joueur Confirmé / Pro (qui vient s'entraîner contre des styles typés et affiner son PR)**.
+
+### 5.1. Remplacement des 4 Bots Muets par les 4 Archétypes Vivants (`LobbyScreen.tsx` + `evaluator.ts`)
+
+| Archétype | Registre Conversationnel & Ton | Biais Tactique du Moteur (`evaluator.ts`) | Compétence Enseignée | Garde-fous Psychologiques & Conformité |
+| :--- | :--- | :--- | :--- | :--- |
+| **1. Le Mauvais Joueur**<br>*(Colérique / Provocateur)* | Comique, de mauvaise foi, accuse uniquement les dés et la chance (« *Dés truqués !* »). | **Blitz Agressif** : Frappe chaque pion isolé (+bonus hit), casse ses propres portes pour attaquer. | Punir la sur-agressivité (Débutant) / Défendre sous un Blitz intense (Pro). | **Interdiction absolue d'insulter le joueur** (évite la chute de performance observée par l'étude CMU). |
+| **2. La Dragueuse**<br>*(Joueuse Riviera Monte-Carlo)* | Élégance « Casino de Monte-Carlo », taquine, joue sur le bluff et le charme. | **Holding & Pièges (Back-game)** : Conserve des ancres hautes, laisse des pions appâts (*blots* calculés). | Évaluer le danger d'un pion isolé (*hit-or-not*) & gérer le *timing* contre une ancre. | **Conformité App Store 1.2** : filtrage strict d'entrée/sortie, boutons obligatoires *Signaler* et *Muet*. |
+| **3. L'Homme d'Affaires**<br>*(Stratège High-Roller)* | Pragmatique, orienté ROI, négocie chaque point comme un contrat financier. | **Course Pure (Race) & Videau Actif** : Optimise le *pip count*, fuit le contact, double fréquemment. | Démystifier le Videau (*Doubling Cube*), seuils d'acceptation (*Take/Pass* 25 %) et course. | Adapter la fréquence des doubles au niveau du joueur pour ne pas intimider les novices. |
+| **4. L'Intellectuel**<br>*(Philosophe & Grand-Maître)* | Érudit, bienveillant, citations stratégiques et humour sec. | **Positionnel & Barricade (Prime)** : Construit méthodiquement des murs de 5–6 portes consécutives. | Probabilités sur 36, gestion des constructeurs (*builders*) et lecture des phases. | Limiter les explications à **moins de 3 phrases** pour ne jamais ralentir le rythme de la partie. |
+
+### 5.2. Interface Caméléon à 3 Modes (`gameplaySettings.ts` + `MatchHud.tsx` + `CoachPanel.tsx`)
+1. **🌱 Mode Découverte (Débutant — « Apprendre en s'amusant »)** :
+   - Affichage épuré : masquage des tableaux EMG/PR complexes, mise en évidence visuelle des portes fermées et des pions isolés (*blots*).
+   - **Tuteur Préventif Incarné** : Lorsqu'un débutant s'apprête à commettre une gaffe majeure (> 0,12 EMG), le Bot réagit en temps réel *avant* validation (« *Oh oui, laisse ce pion tout seul, je vais me régaler !* » ou « *Un instant, tu ouvres ta barricade !* ») avec option de reprendre le coup en 1 clic.
+   - Format par défaut en **1 point (DMP)** ou **Défi Tactique en 3 minutes** pour réduire la friction d'entrée.
+2. **🎲 Mode Club (Intermédiaire)** :
+   - Affichage du *Pip Count*, activation du **Videau assisté** avec jauge visuelle de risque (Vert / Orange / Rouge) et matchs en 3–5 points.
+3. **🏆 Mode Master / Pro (Expert — « S'entraîner & Performer »)** :
+   - HUD analytique complet (Équité EMG en millipoints, *Performance Rating* $\text{PR} = 500 \times \overline{\Delta \text{EMG}}$, Keith Count, distribution sur 36).
+   - Aucune interruption pendant le coup ; débrief chirurgical post-coup/post-match et sparring contre les 4 archétypes calibrés à pleine puissance (2-ply / 3-ply Open Sage).
+
+### 5.3. Neutralisation du « Syndrome des Dés Truqués » & Rétention Quotidienne
+1. **Bouton « 🔄 Rejouer en Inversant les Dés (Swap Dice) »** (`DiceAuditModal.tsx` & `PostMatchTrainingReport.tsx`) :
+   - Permet au joueur de rejouer exactement la même graine `provablyFairRng.ts` mais en inversant ses tirages avec ceux du Bot, prouvant que la victoire de l'IA venait du placement de ses constructeurs et non des dés.
+2. **Mode « 🎯 Gammon36 (Zéro Hasard) »** :
+   - Grille d'initiation $6 \times 6$ des 36 combinaisons où le joueur choisit ses dés à chaque tour jusqu'à épuisement.
+3. **Pipeline Conversationnel Hybride (< 500 ms) & Profil « ADN de Backgammon »** :
+   - Couplage d'un Constructeur de Contexte JSON compact (fenêtré aux 10 derniers échanges + *Luck Rating* + *Nardex Pattern*) avec un dictionnaire de réactions instantanées (0 ms) et `gemini-3.8-flash` en streaming.
+   - Radar évolutif **« ADN de Backgammon »** sur 4 axes (Agressivité Blitz, Construction Prime, Efficacité Course, Maîtrise du Videau) intégré à `/progression`.
+
+### 5.4. Séquençage Opérationnel « Solopreneur Augmenté » (Algorithme en 5 Étapes & Master Plan)
+- **Étape 1 & 2 (Questionner & Supprimer 10 %)** : Zéro développement superflu hors cœur de valeur ; priorité à la fluidité du plateau et aux réactions vivantes des 4 Bots.
+- **Palier 1 (Validation & Distribution-First)** : Utiliser les réactions théâtrales des bots et le défi *Inverser les Dés* pour l'acquisition organique (vidéos courtes TikTok/Reels/Shorts) et valider l'interface Caméléon auprès de 10 joueurs (5 débutants + 5 joueurs de club).
+- **Palier 2 (Monétisation par la Valeur — 10k€ à 20k€ MRR avec > 75 % de marge)** : Conversion vers les formules VIP (`coach_monthly` / `coach_yearly` / `club_chouette`) autour d'une promesse mesurable de progression et de plaisir.
+- **Palier 3 (Revue de Pivot à 90 Jours)** : Audit trimestriel de la rétention J+7 par profil (Débutant vs Club/Pro) et du taux de conversion sans épuisement opérationnel du fondateur.

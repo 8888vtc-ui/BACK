@@ -258,6 +258,27 @@ const CoachPrDashboardComponent: React.FC<CoachPrDashboardProps> = ({
                     );
                 })}
             </div>
+
+            {/* 3. Cap de Progression en direct (0 Blunder = Pro, 1 Blunder = Bon Joueur) */}
+            {decisionsCount > 0 && (
+                <div
+                    data-testid="coach-live-blunder-target"
+                    className="flex items-center justify-between rounded-lg border border-slate-800/90 bg-slate-900/70 px-2.5 py-1 text-[10px] font-semibold text-slate-300"
+                >
+                    <span>
+                        {counters.blunder === 0
+                            ? '🏆 Exécution Pro en cours : 0 Blunder'
+                            : counters.blunder === 1
+                              ? '🎯 Palier Bon Joueur : 1 seul Blunder (visez 0 de plus !)'
+                              : `⚡ Cap Manche : ${counters.blunder} Blunders — verrouillez vos portes & le Videau`}
+                    </span>
+                    <span className="font-mono text-[10px] font-bold text-indigo-300">
+                        {counters.blunder === 0 && counters.inaccuracy > 0
+                            ? `${counters.inaccuracy} micro-blunder(s)`
+                            : `Cap ≤ 1`}
+                    </span>
+                </div>
+            )}
         </section>
     );
 };

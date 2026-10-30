@@ -78,19 +78,19 @@ export const DailyPuzzleBoard: React.FC<DailyPuzzleBoardProps> = ({
         : null;
 
     return (
-        <section data-testid="daily-puzzle-board-section" className="w-full space-y-2">
-            {/* 1. Barre de Contrôle & Validation immédiatement visible sans scroller */}
-            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 rounded-2xl border border-white/10 bg-[#0e121b]/95 px-3.5 py-2 shadow-xl">
-                <div className="flex flex-wrap items-center gap-2 text-xs">
+        <section data-testid="daily-puzzle-board-section" className="w-full flex flex-col gap-1.5 sm:gap-2">
+            {/* 1. Barre de Contrôle & Validation : placée sous le plateau sur mobile (zone du pouce) et au-dessus sur desktop */}
+            <div className="order-2 md:order-1 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-1.5 sm:gap-2 rounded-2xl border border-white/10 bg-[#0e121b]/95 px-2.5 sm:px-3.5 py-1.5 sm:py-2 shadow-xl">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs">
                     <span className="font-bold uppercase tracking-wider text-[#c7b89c]">Séquence jouée :</span>
                     {playedMoves.length === 0 ? (
-                        <span className="italic text-[#8e8270]">Cliquez ou glissez vos dames (Smart Click / Drag)</span>
+                        <span className="italic text-[#8e8270]">Touchez ou glissez vos dames (1-Tap / Drag)</span>
                     ) : (
                         playedMoves.map((m, idx) => (
                             <span
                                 key={`${m.from}-${m.to}-${idx}`}
                                 data-testid={`played-submove-pill-${idx}`}
-                                className="rounded-lg border border-white/10 bg-[#2b140a] px-2.5 py-0.5 font-mono text-xs font-extrabold text-[#fdf8eb]"
+                                className="rounded-lg border border-white/10 bg-[#2b140a] px-2 py-0.5 font-mono text-xs font-extrabold text-[#fdf8eb]"
                             >
                                 {m.from === X_BAR ? 'bar' : m.from}/{m.to === 0 ? 'off' : m.to}
                             </span>
@@ -98,13 +98,13 @@ export const DailyPuzzleBoard: React.FC<DailyPuzzleBoardProps> = ({
                     )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center justify-between sm:justify-end gap-1.5 sm:gap-2">
                     <button
                         type="button"
                         data-testid="daily-puzzle-undo-btn"
                         onClick={onUndoLastMove}
                         disabled={playedMoves.length === 0 || isSolved}
-                        className="rounded-xl border border-white/10 bg-[#160c07] px-3 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition"
+                        className="rounded-xl border border-white/10 bg-[#160c07] px-2.5 sm:px-3 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition touch-manipulation"
                     >
                         ↶ Annuler
                     </button>
@@ -114,7 +114,7 @@ export const DailyPuzzleBoard: React.FC<DailyPuzzleBoardProps> = ({
                         data-testid="daily-puzzle-reset-btn"
                         onClick={onResetAttempt}
                         disabled={playedMoves.length === 0}
-                        className="rounded-xl border border-white/10 bg-[#160c07] px-3 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition"
+                        className="rounded-xl border border-white/10 bg-[#160c07] px-2.5 sm:px-3 py-1.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition touch-manipulation"
                     >
                         🔄 Réinitialiser
                     </button>
@@ -124,7 +124,7 @@ export const DailyPuzzleBoard: React.FC<DailyPuzzleBoardProps> = ({
                         data-testid="daily-puzzle-hint-btn"
                         onClick={onUnlockNextHint}
                         disabled={hintLevel >= 2 || isSolved}
-                        className="rounded-xl border border-white/10 bg-[#1a1109] px-3 py-1.5 text-xs font-extrabold text-[#f3c65f] hover:border-white/25 disabled:opacity-45 disabled:cursor-not-allowed transition"
+                        className="rounded-xl border border-white/10 bg-[#1a1109] px-2.5 sm:px-3 py-1.5 text-xs font-extrabold text-[#f3c65f] hover:border-white/25 disabled:opacity-45 disabled:cursor-not-allowed transition touch-manipulation"
                     >
                         {hintLevel === 0
                             ? '💡 Indice 1 : Plan (-25% XP)'
@@ -146,7 +146,7 @@ export const DailyPuzzleBoard: React.FC<DailyPuzzleBoardProps> = ({
                         data-testid="daily-puzzle-submit-btn"
                         onClick={onSubmitCheckerSolution}
                         disabled={playedMoves.length === 0 || isSolved}
-                        className="rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#b88218] px-4 py-1.5 font-serif text-xs sm:text-sm font-black uppercase tracking-wider text-[#1a0d05] shadow-md hover:brightness-105 active:scale-95 disabled:opacity-45 disabled:cursor-not-allowed transition"
+                        className="rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#b88218] px-3.5 sm:px-4 py-1.5 font-serif text-xs sm:text-sm font-black uppercase tracking-wider text-[#1a0d05] shadow-md hover:brightness-105 active:scale-95 disabled:opacity-45 disabled:cursor-not-allowed transition touch-manipulation"
                     >
                         ✦ Valider mon coup
                     </button>
@@ -196,8 +196,8 @@ export const DailyPuzzleBoard: React.FC<DailyPuzzleBoardProps> = ({
                 </div>
             )}
 
-            {/* 4. Plateau de Tournoi */}
-            <div className="relative rounded-2xl border border-white/10 bg-[#080a0f] p-2 sm:p-3 shadow-2xl">
+            {/* 4. Plateau de Tournoi (affiché en haut sur mobile pour visibilité immédiate et contrôle au pouce en bas) */}
+            <div className="order-1 md:order-4 relative rounded-2xl border border-white/10 bg-[#080a0f] p-0 sm:p-3 max-sm:rounded-none max-sm:border-x-0 shadow-2xl">
                 <Board
                     state={boardState}
                     gamePhase="HUMAN_MOVING"

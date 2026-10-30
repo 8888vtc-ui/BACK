@@ -112,18 +112,18 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
     const isBlunder = verdict === 'blunder';
     const isEn = Boolean(locale && locale !== 'fr');
     const accent = isBlunder
-        ? 'border-rose-500/75 bg-gradient-to-b from-[#1e0b0f]/95 to-[#0b0e17]/95 text-rose-300 shadow-[0_12px_32px_rgba(0,0,0,0.8)]'
-        : 'border-[#d4af37]/65 bg-gradient-to-b from-[#1c150b]/95 to-[#0b0e17]/95 text-[#f3c65f] shadow-[0_12px_32px_rgba(0,0,0,0.8)]';
+        ? 'border-rose-500/60 bg-slate-950/95 text-rose-300 shadow-[0_12px_32px_rgba(0,0,0,0.8)]'
+        : 'border-white/15 bg-slate-950/95 text-amber-300 shadow-[0_12px_32px_rgba(0,0,0,0.8)]';
 
     return (
         <div role="region" aria-live="polite" className={`w-full max-w-5xl rounded-xl border p-2.5 backdrop-blur-md transition-all ${accent}`}>
             <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <span className="flex h-2.5 w-2.5 relative">
-                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isBlunder ? 'bg-rose-400' : 'bg-[#f3c65f]'}`}></span>
-                        <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isBlunder ? 'bg-rose-500' : 'bg-[#d4af37]'}`}></span>
+                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isBlunder ? 'bg-rose-400' : 'bg-amber-400'}`}></span>
+                        <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isBlunder ? 'bg-rose-500' : 'bg-amber-400'}`}></span>
                     </span>
-                    <h2 className="font-serif text-base font-bold tracking-wide text-[#fdf8eb]">{labels.title}</h2>
+                    <h2 className="font-sans text-base font-bold tracking-tight text-white">{labels.title}</h2>
                 </div>
                 <div className="flex items-center gap-1.5">
                     {onToggleVoice && (
@@ -136,16 +136,16 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                             title={isVoiceEnabled ? 'Désactiver la voix du Coach' : 'Activer la voix du Coach'}
                             className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[11px] font-bold transition active:scale-95 ${
                                 isVoiceEnabled
-                                    ? 'border-[#f3c65f]/70 bg-[#2a1c0b]/90 text-[#fce8b2] shadow-[0_0_10px_rgba(243,198,95,0.2)]'
-                                    : 'border-[#d4af37]/30 bg-black/40 text-slate-400 hover:border-[#f3c65f]/50 hover:text-slate-200'
+                                    ? 'border-amber-400/60 bg-amber-400/15 text-amber-300'
+                                    : 'border-white/10 bg-slate-900 text-slate-400 hover:border-white/25 hover:text-slate-200'
                             }`}
                         >
                             <span>{isVoiceEnabled ? '🔊 Voix Coach' : '🔇 Voix muette'}</span>
                             {isSpeaking && (
                                 <span data-testid="coach-voice-wave" aria-hidden="true" className="inline-flex items-end gap-0.5 h-2.5 ml-0.5 animate-pulse">
-                                    <span className="w-0.5 h-1.5 bg-[#f3c65f] rounded-full animate-pulse" />
-                                    <span className="w-0.5 h-2.5 bg-[#f3c65f] rounded-full animate-pulse" />
-                                    <span className="w-0.5 h-1 bg-[#f3c65f] rounded-full animate-pulse" />
+                                    <span className="w-0.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
+                                    <span className="w-0.5 h-2.5 bg-amber-400 rounded-full animate-pulse" />
+                                    <span className="w-0.5 h-1 bg-amber-400 rounded-full animate-pulse" />
                                 </span>
                             )}
                         </button>
@@ -167,7 +167,7 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                     )}
                     <button
                         onClick={onDismiss}
-                        className="rounded-lg border border-[#d4af37]/30 bg-black/40 p-1 text-slate-300 hover:border-[#f3c65f] hover:text-white transition"
+                        className="rounded-lg border border-white/10 bg-slate-900 p-1 text-slate-300 hover:border-amber-400/50 hover:text-white transition"
                         aria-label={labels.close}
                     >
                         ✕
@@ -214,7 +214,11 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
             {/* 2. Diagnostic pédagogique (sans répéter whyFailed / whyOptimal / summary déjà affichés dans la carte ci-dessus) */}
             <div className="mt-3">
                 <CoachDiagnosticBox
-                    tacticalSummary={tacticalSummary}
+                    tacticalSummary={
+                        tacticalSummary && tacticalSummary !== (parsed.summary || propSummary)
+                            ? tacticalSummary
+                            : null
+                    }
                     explanation={parsed.explanation || parsed.rawText}
                     advice={parsed.advice}
                     keyConcept={parsed.keyConcept}
@@ -225,6 +229,7 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                     bestMoveNotation={optimalMove}
                     playedMoveNotation={playedMove}
                     onOpenKnowledgeConcept={onOpenKnowledgeConcept}
+                    onRetryMove={onReplayMove}
                     isStreaming={isStreaming}
                     locale={locale}
                 />

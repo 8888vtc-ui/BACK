@@ -177,12 +177,14 @@ export function useCheckerInteractions({
         }
     }, [playMove, currentTurnMovesRef, isMultiplayerActive, gameUsedDice, multiplayer, gameBoard, gameTurn]);
 
-    // Auto-play du coup forcé unique (actif uniquement si autoConfirmTurn est activé)
+    // Auto-play du coup forcé unique, de l'Auto-Bearoff sur l'As et du Greedy Bearoff (actif si autoConfirmTurn est activé)
     useForcedMoveAutoPlay({
         phase: gamePhase,
         turn: gameTurn,
         isHumanTurn: gameIsHumanTurn,
+        board: gameBoard,
         dice: gameDice,
+        usedDice: gameUsedDice,
         leftDieTargets,
         rightDieTargets,
         onPlayMove: handlePlayMove,

@@ -111,7 +111,55 @@
   <url><loc>https://backgammontour.com/academy/concepts/opening-philosophy</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
   <url><loc>https://backgammontour.com/academy/concepts/mochy-golden-rules</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
 
-  <!-- 8. Référentiels GEO (Generative Engine Optimization) pour ChatGPT / Perplexity / Claude / Gemini -->
+  <!-- 8. Hub Mondial des Tournois & Carte Où Jouer (/tournaments) -->
+  <url>
+    <loc>https://backgammontour.com/tournaments</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://backgammontour.com/tournaments" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://backgammontour.com/tournaments?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://backgammontour.com/tournaments" />
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- 9. Les 18 Pages Programmatiques des Tournois Mondiaux (/tournaments/[slug]) -->
+  <url><loc>https://backgammontour.com/tournaments/monte-carlo-world-championship-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/merit-open-cyprus-2026</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/las-vegas-open-2026</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/nordic-open-copenhagen-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/istanbul-international-open-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/texas-championships-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/paris-masters-ffb-2026</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/uk-backgammon-open-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/chicago-open-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/german-backgammon-open-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/tokyo-backgammon-festival-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/gibraltar-championship-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/riviera-cup-nice-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/grand-prix-lyon-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/geneva-lake-classic-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/london-weekend-open-2026</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/sao-paulo-open-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/dubai-creek-masters-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+
+  <!-- 10. Les 16 Pages Programmatiques des Clubs & Salons Où Jouer (/tournaments/clubs/[slug]) -->
+  <url><loc>https://backgammontour.com/tournaments/clubs/paris-vie-deau</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/backgammon-social-paris</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/monte-carlo-society</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/ancre-marseillaise</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/lyon-backgammon-club</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/backgammon-london</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/kobenhavns-backgammon-klub</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/association-genevoise-backgammon</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/new-york-metro-club</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/chicago-backgammon-league</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/social-point-rooftop-miami</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/elite-tr-istanbul</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/mindskillz-dubai</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/saka-athenes</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/jba-tokyo-lounge</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/sydney-backgammon-club</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+
+  <!-- 11. Référentiels GEO (Generative Engine Optimization) pour ChatGPT / Perplexity / Claude / Gemini -->
   <url><loc>https://backgammontour.com/llms.txt</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://backgammontour.com/llms-full.txt</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
 </urlset>
