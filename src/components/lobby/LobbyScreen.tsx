@@ -126,7 +126,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                 onUserResolved={handleUserResolved}
             />
 
-            <div className="relative z-10 flex flex-1 w-full min-h-0">
+            <div className="relative z-10 flex flex-1 w-full">
                 {/* 1. BARRE LATÉRALE GAUCHE RÉTRACTABLE (Cercle Monte-Carlo) */}
                 <LobbyLeftSidebar
                     selectedMode={selectedMode}

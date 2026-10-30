@@ -7,6 +7,7 @@ import {
     type CubeCoachResult,
 } from '../../features/coach/cubeCoach';
 import { getTheoryConceptById } from '../../features/knowledge/knowledgeBaseData';
+import { pickVariedCubeErrorCopy, type VariedCubeCategory } from '../../features/coach/coachVariedMessagesBank';
 import { buildCubeNotification } from '../../features/coach/cubeNotification';
 import { toast } from '../../components/toast/ToastContext';
 import { shouldNotify, type CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
@@ -59,17 +60,48 @@ export function executeCubeEvaluation({
         ? `\n\n📚 Théorie (${kbCube.title.fr} — ${kbCube.author}) : ${kbCube.keyTakeaway.fr} ${kbCube.goldenRule.fr}`
         : '';
 
+    const cubeCategory: VariedCubeCategory =
+        normalizedAction === 'missed_double'
+            ? 'MISSED_DOUBLE'
+            : normalizedAction === 'take'
+              ? 'OPTIMISTIC_TAKE'
+              : normalizedAction === 'pass'
+                ? 'TIMID_PASS'
+                : 'PREMATURE_DOUBLE';
+    const xgid = serializeXGID(evalState);
+    const variedCube =
+        cubeRes.verdict !== 'optimal' && !evalState.crawford
+            ? pickVariedCubeErrorCopy(cubeCategory, {
+                  playedMove: playedLabel,
+                  optimalMove: cubeRes.optimalAction,
+                  equityLoss: rawLoss,
+                  seedExtra: `${historyLength}:${xgid}`,
+              })
+            : null;
+
+    const summaryText = variedCube ? variedCube.summary : cubeRes.explanation;
+    const whyFailedText =
+        cubeRes.verdict !== 'optimal'
+            ? variedCube
+                ? variedCube.whyFailed
+                : cubeRes.explanation
+            : undefined;
+    const whyOptimalText = variedCube
+        ? variedCube.whyOptimal
+        : `${cubeRes.optimalAction} — ${cubeRes.advice}`;
+    const adviceText = variedCube ? variedCube.advice : cubeRes.advice;
+
     const cubeCoachState: CoachState = {
         verdict: cubeRes.verdict,
         equityLoss: rawLoss,
         playedMove: playedLabel,
         optimalMove: cubeRes.optimalAction,
-        explanation: `${cubeRes.explanation} ${cubeRes.advice}${kbText}`.trim(),
-        whyFailed: cubeRes.verdict !== 'optimal' ? cubeRes.explanation : undefined,
-        whyOptimal: `${cubeRes.optimalAction} — ${cubeRes.advice}`,
-        summary: cubeRes.explanation,
-        tacticalSummary: cubeRes.advice,
-        positionKey: serializeXGID(evalState),
+        explanation: `${summaryText} ${whyFailedText ?? ''} ${whyOptimalText} ${adviceText}${kbText}`.trim(),
+        whyFailed: whyFailedText,
+        whyOptimal: whyOptimalText,
+        summary: summaryText,
+        tacticalSummary: adviceText,
+        positionKey: xgid,
         boardBefore: [...evalState.board],
     };
 

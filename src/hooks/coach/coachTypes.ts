@@ -75,6 +75,19 @@ export interface LastMoveFeedback {
     optimalMove?: string;
     turnIndex?: number;
     timestamp?: number;
+    decisionType?: 'cube' | 'checker';
+    errorCategoryLabel?: string;
+    errorAdvice?: string;
+}
+
+export function isCubeDecisionNotation(moveStr?: string | null): boolean {
+    if (!moveStr) return false;
+    const trimmed = moveStr.trim();
+    return (
+        trimmed.startsWith('Videau') ||
+        /^(Double|No double|Take|Pass|Redouble|Beaver)\b/i.test(trimmed) ||
+        /^(OFFER_DOUBLE|TAKE_DOUBLE|PASS_DOUBLE|MISSED_DOUBLE)$/i.test(trimmed)
+    );
 }
 
 export interface CoachAnalysisHistoryEntry {

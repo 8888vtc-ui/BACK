@@ -103,6 +103,7 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
 
         const baseUrl = rawBaseUrl.replace(/\/+$/, '');
         let model =
+            process.env.COACH_DEEP_MODEL ||
             process.env.COACH_MODEL ||
             process.env.OPENAI_MODEL ||
             process.env.GEMINI_MODEL ||
@@ -126,6 +127,9 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             stream: true,
             response_format: { type: 'json_object' },
         };
+        if (model.includes('gemini-3.8') || model.includes('gemini-3.7')) {
+            requestPayload.reasoning_effort = 'low';
+        }
 
         const abortController = new AbortController();
         const timeoutId = setTimeout(() => abortController.abort(), UPSTREAM_LLM_TIMEOUT_MS);

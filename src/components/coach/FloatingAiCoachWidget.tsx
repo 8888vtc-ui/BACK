@@ -11,7 +11,7 @@
  */
 
 import React, { useState } from 'react';
-import type { CoachState, LastMoveFeedback } from '../../hooks/coach/coachTypes';
+import { isCubeDecisionNotation, type CoachState, type LastMoveFeedback } from '../../hooks/coach/coachTypes';
 
 export type ChameleonCoachLayer = 'L0' | 'L1' | 'L2';
 
@@ -64,27 +64,57 @@ function buildTeslaThreeSecondLines(
     const isOptimal = verdict === 'optimal' || loss <= 0.005;
     const bestMove = coach?.optimalMove ?? lastMoveFeedback?.optimalMove ?? '24/20 13/8';
     const playedMove = coach?.playedMove ?? lastMoveFeedback?.playedMove ?? bestMove;
+    const isCube =
+        lastMoveFeedback?.decisionType === 'cube' ||
+        isCubeDecisionNotation(playedMove) ||
+        isCubeDecisionNotation(bestMove);
 
     if (isOptimal) {
         return {
-            line1: '✅ Coup Optimal — Vous jouez comme un Grand-Maître',
+            line1: isCube ? '✅ Décision de Videau Optimale' : '✅ Coup Optimal — Vous jouez comme un Grand-Maître',
             line2:
-                layer === 'L0'
+                coach?.summary ??
+                (layer === 'L0'
                     ? 'Votre mur est solide et aucun pion isolé n’est laissé en danger direct.'
-                    : `Exécution parfaite (${bestMove}) : maximale sur les 36 lancers adverses.`,
+                    : `Exécution parfaite (${bestMove}) : maximale sur les 36 lancers adverses.`),
             line3:
-                layer === 'L2'
+                coach?.whyOptimal ??
+                (layer === 'L2'
                     ? `Perte 0.000 EMG · ΔMWC 0.0 % · Priorité : maintenir les spares sur les points 5 et 7.`
-                    : 'Plan suivant : verrouillez le point 5 (Point d’Or) dès le prochain jet.',
+                    : 'Plan suivant : verrouillez le point 5 (Point d’Or) dès le prochain jet.'),
             isOptimal: true,
+        };
+    }
+
+    if (isCube) {
+        return {
+            line1:
+                layer === 'L0'
+                    ? '⚠️ Attention : mauvais timing sur le Videau (×2)'
+                    : layer === 'L1'
+                      ? `🎲 Erreur de Videau (${formatMwcPercent(loss)})`
+                      : `🔬 Videau · ΔMWC ${formatMwcPercent(loss)} · ΔEMG -${loss.toFixed(3)}`,
+            line2:
+                coach?.whyFailed ??
+                lastMoveFeedback?.errorAdvice ??
+                `Décision jouée : ${playedMove} (hors fenêtre de marché Janowski).`,
+            line3:
+                coach?.whyOptimal ??
+                `Action recommandée : ${bestMove} (vérifiez le Take Point à 21,5 %–25 %).`,
+            isOptimal: false,
         };
     }
 
     if (layer === 'L0') {
         return {
-            line1: `⚠️ Attention : ce choix fragilise votre mur`,
-            line2: `Jouer ${playedMove} laisse une ouverture directe à votre adversaire (environ 11 lancers sur 36).`,
-            line3: `Idée gagnante : ${bestMove} garde vos pions groupés et prépare une barricade.`,
+            line1: `⚠️ Attention : ce choix (${playedMove}) perd du terrain`,
+            line2:
+                coach?.whyFailed ??
+                lastMoveFeedback?.errorAdvice ??
+                `Jouer ${playedMove} laisse une ouverture directe à votre adversaire.`,
+            line3:
+                coach?.whyOptimal ??
+                `Idée gagnante : ${bestMove} consolide vos portes et prépare la suite.`,
             isOptimal: false,
         };
     }
@@ -92,8 +122,13 @@ function buildTeslaThreeSecondLines(
     if (layer === 'L1') {
         return {
             line1: `🎯 ${verdict === 'blunder' ? 'Erreur coûteuse' : 'Imprécision'} (${formatMwcPercent(loss)})`,
-            line2: coach?.whyFailed ?? `Avec ${playedMove}, vous cédez l’initiative sur le champ extérieur.`,
-            line3: coach?.whyOptimal ?? `Le coup ${bestMove} couvre 18 lancers constructifs sur 36 au tour suivant.`,
+            line2:
+                coach?.whyFailed ??
+                lastMoveFeedback?.errorAdvice ??
+                `Avec ${playedMove}, vous cédez l’initiative tactique.`,
+            line3:
+                coach?.whyOptimal ??
+                `Le coup recommandé ${bestMove} maximise vos bons dés au tour suivant.`,
             isOptimal: false,
         };
     }

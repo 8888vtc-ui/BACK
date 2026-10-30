@@ -12,7 +12,7 @@ import { parseStreamedExplanation, type CoachDisplayVerdict, type ParsedExplanat
 import { persistExplanation, resolveL2CachedExplanation } from './coachExplanationPersistence';
 import type { Locale } from '../../lib/i18n/types';
 
-export const LLM_TIMEOUT_MS = 8000;
+export const LLM_TIMEOUT_MS = 14000;
 export type ExplanationSource = 'llm' | 'rule-based' | 'cache' | null;
 
 export interface UseCoachExplanationParams {
@@ -75,7 +75,7 @@ export function useCoachExplanation({
 
     const cacheKey = (() => {
         if (!playedMove) return '';
-        const baseKey = computeExplanationCacheKey({
+        return computeExplanationCacheKey({
             positionKey,
             xgid,
             board,
@@ -85,12 +85,11 @@ export function useCoachExplanation({
             crawford: matchCtx?.crawford,
             playedMove,
             optimalMove,
-            verdict: verdict ?? undefined,
+            verdict: isBlunder ? 'blunder' : 'doubtful',
             matchLength: matchCtx?.matchLength,
             scoreX: matchCtx?.scoreX,
             scoreO: matchCtx?.scoreO,
         });
-        return `${baseKey}::lang[${locale}]`;
     })();
 
     const abort = useCallback(() => {
@@ -232,6 +231,10 @@ export function useCoachExplanation({
 
             try {
                 const payload = {
+                    positionKey: positionKey ?? undefined,
+                    xgid: xgid ?? undefined,
+                    board: board ?? undefined,
+                    dice: dice ? ([dice[0], dice[1]] as [number, number]) : undefined,
                     verdict:
                         verdict === 'optimal'
                             ? 'optimal'

@@ -277,6 +277,13 @@ export function shouldAutoTriggerExplanation(
     autoThreshold: 'blunder' | 'doubtful',
 ): boolean {
     if (!verdict || !playedMove || triggerMode !== 'auto') return false;
+    const trimmed = playedMove.trim();
+    if (
+        trimmed.startsWith('Videau') ||
+        /^(Double|No double|Take|Pass|Redouble|Beaver)\b/i.test(trimmed)
+    ) {
+        return false;
+    }
     if (verdict === 'blunder') return true;
     return autoThreshold === 'doubtful' && (verdict === 'doubtful' || verdict === 'inaccuracy');
 }

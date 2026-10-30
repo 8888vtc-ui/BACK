@@ -8,11 +8,16 @@
  */
 
 import React, { useEffect, useState, useMemo } from 'react';
-import type { LastMoveFeedback } from '../../hooks/coach/coachTypes';
+import { isCubeDecisionNotation, type LastMoveFeedback } from '../../hooks/coach/coachTypes';
 import {
     detectClassicalBlunderPattern,
     type ClassicalBlunderPattern,
 } from '../../features/personas/botEcosystemEngine';
+import {
+    pickVariedCheckerErrorCopy,
+    pickVariedCubeErrorCopy,
+    type VariedCheckerCategory,
+} from '../../features/coach/coachVariedMessagesBank';
 
 export interface MoveErrorPopToastProps {
     readonly feedback?: LastMoveFeedback | null;
@@ -64,14 +69,66 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
         const isBlunder = feedback.verdict === 'blunder' || absLoss >= 0.080;
         const isError = !isBlunder && absLoss >= 0.040;
         const isInaccuracy = !isBlunder && !isError;
+        const isCubeError =
+            feedback.decisionType === 'cube' ||
+            isCubeDecisionNotation(feedback.playedMove) ||
+            isCubeDecisionNotation(feedback.optimalMove);
 
-        const pattern: ClassicalBlunderPattern =
-            boardBefore && boardAfter
-                ? detectClassicalBlunderPattern({ boardBefore, boardAfter })
-                : 'GENERAL_POSITIONAL_LOSS';
+        let patternName: string;
+        let patternAdvice: string;
+
+        if (isCubeError) {
+            const playedLower = (feedback.playedMove ?? '').toLowerCase();
+            const isMissed = playedLower.includes('non doublé') || playedLower.includes('missed');
+            const isTake = playedLower.includes('prendre') || playedLower.includes('take');
+            const isPass = playedLower.includes('passer') || playedLower.includes('pass');
+            const cubeCat = isMissed
+                ? 'MISSED_DOUBLE'
+                : isTake
+                  ? 'OPTIMISTIC_TAKE'
+                  : isPass
+                    ? 'TIMID_PASS'
+                    : 'PREMATURE_DOUBLE';
+            const variedCube = pickVariedCubeErrorCopy(cubeCat, {
+                playedMove: feedback.playedMove ?? 'Videau',
+                optimalMove: feedback.optimalMove ?? 'No double, take',
+                equityLoss: feedback.equityLoss,
+                seedExtra: feedback.turnIndex ?? '',
+            });
+            patternName =
+                feedback.errorCategoryLabel ??
+                (isMissed
+                    ? 'Videau oublié (Missed Double)'
+                    : isTake
+                      ? 'Erreur de Videau — Take trop optimiste'
+                      : isPass
+                        ? 'Erreur de Videau — Pass trop frileux'
+                        : 'Erreur de Videau — Double prématuré');
+            patternAdvice = feedback.errorAdvice ?? variedCube.whyFailed;
+        } else {
+            const pattern: ClassicalBlunderPattern =
+                boardBefore && boardAfter
+                    ? detectClassicalBlunderPattern({ boardBefore, boardAfter })
+                    : 'GENERAL_POSITIONAL_LOSS';
+            const patternInfo = PATTERN_LABELS[pattern] ?? PATTERN_LABELS.GENERAL_POSITIONAL_LOSS;
+            const catMap: Record<ClassicalBlunderPattern, VariedCheckerCategory> = {
+                PREMATURE_PRIME_BREAKUP: 'PRIME_EXTEND',
+                BAR_REENTRY_MISCALCULATION: 'REAR_ESCAPE',
+                RECKLESS_HIT_EXPOSURE: 'SHOT_EXPOSURE',
+                RACE_VS_CONTACT_CONFUSION: 'PURE_RACE',
+                GENERAL_POSITIONAL_LOSS: 'POSITIONAL_FLEXIBILITY',
+            };
+            const variedChecker = pickVariedCheckerErrorCopy(catMap[pattern], {
+                playedMove: feedback.playedMove ?? 'Coup joué',
+                optimalMove: feedback.optimalMove ?? 'Coup optimal',
+                equityLoss: feedback.equityLoss,
+                seedExtra: feedback.turnIndex ?? '',
+            });
+            patternName = feedback.errorCategoryLabel ?? patternInfo.name;
+            patternAdvice = feedback.errorAdvice ?? variedChecker.whyFailed;
+        }
 
         const mwcLossPct = Math.max(1, Math.round(absLoss * 50));
-        const patternInfo = PATTERN_LABELS[pattern] ?? PATTERN_LABELS.GENERAL_POSITIONAL_LOSS;
 
         return {
             isBlunder,
@@ -79,9 +136,11 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
             isInaccuracy,
             absLoss,
             mwcLossPct,
-            patternName: patternInfo.name,
-            patternAdvice: patternInfo.advice,
-            title: isBlunder ? 'GAFFE / BLUNDER MAJEUR' : isError ? 'ERREUR TACTIQUE' : 'IMPRÉCISION',
+            patternName,
+            patternAdvice,
+            title: isCubeError
+                ? isBlunder ? 'BLUNDER DE VIDEAU (CUBE)' : 'IMPRÉCISION DE VIDEAU'
+                : isBlunder ? 'GAFFE / BLUNDER MAJEUR' : isError ? 'ERREUR TACTIQUE' : 'IMPRÉCISION',
             badgeBg: isBlunder
                 ? 'border-rose-500/80 bg-rose-950/95 text-rose-100 shadow-[0_0_24px_rgba(244,63,94,0.35)]'
                 : isError

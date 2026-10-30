@@ -22,7 +22,7 @@ import {
 } from './symbolicAudit';
 import { evaluateAiMarginGuardrail } from '../subscription/retentionEngine';
 
-export const UPSTREAM_LLM_TIMEOUT_MS = 8000;
+export const UPSTREAM_LLM_TIMEOUT_MS = 14000;
 
 export const SSE_HEADERS: Record<string, string> = {
     'Content-Type': 'text/event-stream',
@@ -34,12 +34,14 @@ export interface LlmEndpointConfig {
     apiKey: string;
     baseUrl: string;
     model: string;
+    deepModel: string;
     marginGuardrailBreached?: boolean;
 }
 
 export function resolveLlmEndpointConfig(marginContext?: {
     readonly periodInferenceCostUsd?: number;
     readonly monthlyRevenueUsd?: number;
+    readonly useDeepModel?: boolean;
 }): LlmEndpointConfig {
     const apiKey =
         process.env.GEMINI_API_KEY ||
@@ -52,12 +54,17 @@ export function resolveLlmEndpointConfig(marginContext?: {
         process.env.LLM_BASE_URL ||
         'https://generativelanguage.googleapis.com/v1beta/openai/';
     const baseUrl = rawBaseUrl.replace(/\/+$/, '');
-    let model =
+    const fastModel =
+        process.env.COACH_FAST_MODEL ||
         process.env.COACH_MODEL ||
         process.env.OPENAI_MODEL ||
         process.env.GEMINI_MODEL ||
         process.env.LLM_MODEL ||
+        'gemini-3.5-flash-lite';
+    const deepModel =
+        process.env.COACH_DEEP_MODEL ||
         'gemini-3.8-flash';
+    let model = marginContext?.useDeepModel ? deepModel : fastModel;
 
     let marginGuardrailBreached = false;
     if (
@@ -76,7 +83,7 @@ export function resolveLlmEndpointConfig(marginContext?: {
         }
     }
 
-    return { apiKey, baseUrl, model, marginGuardrailBreached };
+    return { apiKey, baseUrl, model, deepModel, marginGuardrailBreached };
 }
 
 export function resolveRequestLocale(rawLanguage: string | undefined, acceptLanguageHeader: string | null): Locale {
@@ -296,7 +303,7 @@ export async function handlePostMatchSynthesisStream(
     encoder: TextEncoder
 ): Promise<Response> {
     const fallbackSynthesis = buildRuleBasedSynthesis(summary, lang);
-    const { apiKey, baseUrl, model } = resolveLlmEndpointConfig();
+    const { apiKey, baseUrl, deepModel: model } = resolveLlmEndpointConfig({ useDeepModel: true });
     if (!apiKey) {
         return createJsonFallbackStream(fallbackSynthesis, encoder);
     }
@@ -309,6 +316,7 @@ export async function handlePostMatchSynthesisStream(
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
             body: JSON.stringify({
                 model,
+                reasoning_effort: 'low',
                 messages: [
                     { role: 'system', content: getGameReviewSystemPrompt(lang) },
                     { role: 'user', content: buildPostMatchSummaryUserPrompt(summary, lang) },

@@ -16,6 +16,7 @@ export type {
 export {
     CUBE_PLAYED_LABEL,
     extractCandidateMoveList,
+    isCubeDecisionNotation,
 } from './coach/coachTypes';
 
 export {

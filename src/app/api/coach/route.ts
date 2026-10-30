@@ -83,7 +83,10 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
 
         const params = buildCoachPromptParams(body, req.headers.get('accept-language'));
 
-        const { apiKey, baseUrl, model: initialModel } = resolveLlmEndpointConfig();
+        const isDeepGrandmaster = body.playerLevel === 'grandmaster';
+        const { apiKey, baseUrl, model: initialModel } = resolveLlmEndpointConfig({
+            useDeepModel: isDeepGrandmaster,
+        });
         let model = initialModel;
 
         const cacheKey = computeExplanationCacheKey({
@@ -124,10 +127,13 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                 { role: 'system', content: getCoachSystemPrompt(params.language) },
                 { role: 'user', content: userPrompt },
             ],
-            temperature: 0.3,
+            temperature: 0.25,
             stream: true,
             response_format: { type: 'json_object' },
         };
+        if (model.includes('gemini-3.8') || model.includes('gemini-3.7')) {
+            requestPayload.reasoning_effort = 'low';
+        }
 
         const abortController = new AbortController();
         const timeoutId = setTimeout(() => abortController.abort(), UPSTREAM_LLM_TIMEOUT_MS);
@@ -145,8 +151,13 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             });
 
             if (llmResponse.status === 404 && model.includes('gemini')) {
-                model = 'gemini-3.8-flash';
+                model = model === 'gemini-3.5-flash-lite' ? 'gemini-3.8-flash' : 'gemini-3.5-flash-lite';
                 requestPayload.model = model;
+                if (model.includes('gemini-3.8')) {
+                    requestPayload.reasoning_effort = 'low';
+                } else {
+                    delete requestPayload.reasoning_effort;
+                }
                 const retryResp = await fetch(`${baseUrl}/chat/completions`, {
                     method: 'POST',
                     headers: {
@@ -230,6 +241,18 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                     controller.close();
 
                     if (accumulatedJson.trim()) {
+                        let parsedLlmTopLevel: {
+                            summary?: string;
+                            explanation?: string;
+                            keyConcept?: string;
+                            key_concept?: string;
+                            advice?: string;
+                        } = {};
+                        try {
+                            parsedLlmTopLevel = JSON.parse(accumulatedJson) as typeof parsedLlmTopLevel;
+                        } catch {
+                            // Repli sur verifiedAudit
+                        }
                         void Promise.resolve(
                             saveCoachExplanationRecord({
                                 position_key: cacheKey,
@@ -237,10 +260,10 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                                 optimal_move: body.optimalMove,
                                 verdict: params.verdict,
                                 equity_loss: body.equityLoss,
-                                summary: verifiedAudit.pedagogical_explanation.headline,
-                                explanation: verifiedAudit.pedagogical_explanation.tactical_rationale,
-                                key_concept: verifiedAudit.symbolic_audit.dominant_theme,
-                                advice: verifiedAudit.pedagogical_explanation.zare_luck_vs_skill,
+                                summary: parsedLlmTopLevel.summary || verifiedAudit.pedagogical_explanation.headline,
+                                explanation: parsedLlmTopLevel.explanation || verifiedAudit.pedagogical_explanation.tactical_rationale,
+                                key_concept: parsedLlmTopLevel.keyConcept || parsedLlmTopLevel.key_concept || verifiedAudit.symbolic_audit.dominant_theme,
+                                advice: parsedLlmTopLevel.advice || verifiedAudit.pedagogical_explanation.zare_luck_vs_skill,
                                 source: 'llm',
                             }),
                         ).catch((err) => {

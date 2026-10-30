@@ -6,7 +6,8 @@
  */
 
 import { buildMatchContext } from './matchContext';
-import { localizeOfflineExplanation } from './coachMultiLangPrompts';
+import { buildCubeRuleBasedExplanation, localizeOfflineExplanation } from './coachMultiLangPrompts';
+import { pickVariedCheckerErrorCopy, type VariedCheckerCategory } from './coachVariedMessagesBank';
 import { getTheoryConceptById } from '../knowledge/knowledgeBaseData';
 import { buildNeuroSymbolicAudit } from '../../lib/coach/symbolicAudit';
 import { buildMichyMagrielWoolseySynthesis } from '../../lib/coach/prompts';
@@ -43,6 +44,9 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         matchContext,
         language = 'fr',
     } = params;
+
+    const cubeExplanationResult = buildCubeRuleBasedExplanation(params);
+    if (cubeExplanationResult) return cubeExplanationResult;
 
     const isEn = language === 'en';
     const diff = features?.pipCountDiff ?? { player: 150, opponent: 150, leader: 'tie', diff: 0 };
@@ -131,163 +135,172 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
     // Le conseil de rompre le contact n'est pertinent que si le coup optimal rompt réellement
     // le contact vers une course pure en fin de partie (<= 100 pips), jamais en début/milieu de partie.
     const contactBrokenInEndgame = tacDiff ? tacDiff.contactBrokenByBest : false;
+    const primeLen = bestBoard?.longestPrime ?? board.longestPrime;
+    const copyCtx = {
+        playedMove,
+        optimalMove,
+        equityLoss,
+        userShots,
+        bestShots,
+        playerPips: diff.player,
+        opponentPips: diff.opponent,
+        primeLength: primeLen,
+        blotsCount: userBlots.length,
+    };
+
+    const applyFrCopy = (cat: VariedCheckerCategory) => {
+        const varied = pickVariedCheckerErrorCopy(cat, copyCtx);
+        summary = varied.summary;
+        whyFailed = varied.whyFailed;
+        whyOptimal = varied.whyOptimal;
+        advice = varied.advice;
+    };
 
     if (userShots > bestShots && userBlots.length > 0) {
-        summary = isEn
-            ? `The move concedes ${userShots} direct shots compared to only ${bestShots} for the best move.`
-            : `Le coup concède ${userShots} tirs directs contre seulement ${bestShots} pour le meilleur coup.`;
-        whyFailed = isEn
-            ? `By playing ${playedMove}, you leave a vulnerable blot giving the opponent ${userShots} rolls out of 36 to hit.`
-            : `En jouant ${playedMove}, vous laissez un blot vulnérable offrant à l'adversaire ${userShots} chances sur 36 de frapper.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} reduces this exposure to ${bestShots} shots while securing structure.`
-            : `Le coup optimal ${optimalMove} réduit cette exposition à ${bestShots} tirs tout en consolidant votre structure.`;
+        if (isEn) {
+            summary = `The move concedes ${userShots} direct shots compared to only ${bestShots} for the best move.`;
+            whyFailed = `By playing ${playedMove}, you leave a vulnerable blot giving the opponent ${userShots} rolls out of 36 to hit.`;
+            whyOptimal = `The optimal move ${optimalMove} reduces this exposure to ${bestShots} shots while securing structure.`;
+            advice = 'When your opponent has a strong home board, every blot left is a major gammon risk.';
+        } else {
+            applyFrCopy('SHOT_EXPOSURE');
+        }
         keyConcept = isEn ? 'Shot Minimization' : 'Minimisation des tirs';
-        advice = isEn
-            ? 'When your opponent has a strong home board, every blot left is a major gammon risk.'
-            : 'Quand votre adversaire a un jan intérieur solide, chaque blot concédé est un risque majeur de gammon.';
         conceptId = 'duplication';
     } else if (goldenPointCreated) {
-        summary = isEn
-            ? `The 5-point (Golden Point) is the single most valuable strategic point on the entire backgammon board.`
-            : `Faire la porte du 5 (Golden Point) est le coup le plus précieux et fondamental du Backgammon.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} completely misses securing the master 5-point, leaving an uncoordinated structure.`
-            : `Jouer ${playedMove} passe à côté de la création du Golden Point et disperse vos pions sans rien construire.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} constructs the 5-point, immediately blocking opponent escapes and establishing dominance.`
-            : `Le coup optimal ${optimalMove} verrouille la porte du 5 : il bloque la sortie adverse et installe une forteresse imprenable.`;
+        if (isEn) {
+            summary = `The 5-point (Golden Point) is the single most valuable strategic point on the entire backgammon board.`;
+            whyFailed = `Playing ${playedMove} completely misses securing the master 5-point, leaving an uncoordinated structure.`;
+            whyOptimal = `The optimal move ${optimalMove} constructs the 5-point, immediately blocking opponent escapes and establishing dominance.`;
+            advice = 'The 5-point is the cornerstone of both offense and defense: secure it whenever the dice allow!';
+        } else {
+            applyFrCopy('GOLDEN_POINT');
+        }
         keyConcept = isEn ? 'Golden Point Control' : 'Contrôle du Golden Point';
-        advice = isEn ? 'The 5-point is the cornerstone of both offense and defense: secure it whenever the dice allow!' : 'Le Point 5 est la clé de voûte de toute attaque et défense : sécurisez-le dès que les dés le permettent !';
         conceptId = 'golden-point';
     } else if (barPointCreated) {
-        summary = isEn
-            ? `Securing the 7-point (Bar Point) establishes a dominant block against opponent rear checkers.`
-            : `Faire la porte du 7 (Bar Point) bloque la fuite des pions adverses et amorce une prime.`;
-        whyFailed = isEn ? `Playing ${playedMove} misses constructing the crucial 7-point barricade.` : `Jouer ${playedMove} néglige de verrouiller la barricade du 7.`;
-        whyOptimal = isEn ? `The optimal move ${optimalMove} locks down the 7-point to restrict opponent escapes by 6s.` : `Le coup optimal ${optimalMove} verrouille le point 7 pour interdire les fuites par un 6.`;
+        if (isEn) {
+            summary = `Securing the 7-point (Bar Point) establishes a dominant block against opponent rear checkers.`;
+            whyFailed = `Playing ${playedMove} misses constructing the crucial 7-point barricade.`;
+            whyOptimal = `The optimal move ${optimalMove} locks down the 7-point to restrict opponent escapes by 6s.`;
+            advice = 'The bar point bridges your home board and outfield to contain opposing checkers.';
+        } else {
+            applyFrCopy('BAR_POINT');
+        }
         keyConcept = isEn ? 'Bar Point Control' : 'Contrôle du Bar Point';
-        advice = isEn ? 'The bar point bridges your home board and outfield to contain opposing checkers.' : 'La porte du Bar (7) fait le pont et piège les pions adverses à 6 cases.';
         conceptId = 'bar-point';
     } else if (primeExtended) {
-        const primeLen = bestBoard?.longestPrime ?? board.longestPrime;
-        summary = isEn
-            ? `A prime of ${primeLen} consecutive points offers a decisive strategic lock.`
-            : `Une prime de ${primeLen} portes consécutives offre un verrouillage stratégique décisif.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} weakens or misses extending your ${primeLen}-point prime barricade.`
-            : `Jouer ${playedMove} affaiblit ou manque d'étendre votre mur de prime de ${primeLen} portes.`;
-        whyOptimal = isEn
-            ? `Playing ${optimalMove} preserves or extends the prime to completely paralyze opponent escape.`
-            : `Le coup ${optimalMove} consolide ou prolonge la prime pour paralyser totalement l'évasion adverse.`;
+        if (isEn) {
+            summary = `A prime of ${primeLen} consecutive points offers a decisive strategic lock.`;
+            whyFailed = `Playing ${playedMove} weakens or misses extending your ${primeLen}-point prime barricade.`;
+            whyOptimal = `Playing ${optimalMove} preserves or extends the prime to completely paralyze opponent escape.`;
+            advice = 'Against trapped opponent checkers, extending your prime always trumps racing.';
+        } else {
+            applyFrCopy('PRIME_EXTEND');
+        }
         keyConcept = isEn ? 'Prime Construction' : 'Construction de Prime';
-        advice = isEn ? 'Against trapped opponent checkers, extending your prime always trumps racing.' : 'Face à des pions adverses piégés, étendre votre prime prime toujours sur la course.';
         conceptId = 'prime-vs-prime';
     } else if (hitMadeByBest) {
-        summary = isEn
-            ? `Hitting the opponent blot with ${optimalMove} gains crucial tempo and sets back their race.`
-            : `Frapper le blot adverse avec ${optimalMove} gagne un tempo décisif et brise la course adverse.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} plays too passively and lets the opponent consolidate their position unchallenged.`
-            : `Jouer ${playedMove} est trop passif et laisse l'adversaire consolider sa position sans être inquiété.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} sends an opponent checker to the bar, seizing the initiative.`
-            : `Le coup optimal ${optimalMove} envoie un pion adverse à la barre et reprend l'initiative tactique.`;
+        if (isEn) {
+            summary = `Hitting the opponent blot with ${optimalMove} gains crucial tempo and sets back their race.`;
+            whyFailed = `Playing ${playedMove} plays too passively and lets the opponent consolidate their position unchallenged.`;
+            whyOptimal = `The optimal move ${optimalMove} sends an opponent checker to the bar, seizing the initiative.`;
+            advice = 'Hitting in the outfield or inner board steals tempo and forces the opponent to enter from the bar.';
+        } else {
+            applyFrCopy('TEMPO_HIT');
+        }
         keyConcept = isEn ? 'Tempo Hit & Initiative' : 'Frappe de Tempo & Initiative';
-        advice = isEn ? 'Hitting in the outfield or inner board steals tempo and forces the opponent to enter from the bar.' : 'Frapper un pion exposé vole un demi-tour à l’adversaire et l’oblige à réentrer depuis la barre.';
         conceptId = 'tempo-hit';
     } else if (rearCheckerEscaped) {
-        summary = isEn
-            ? `Escaping a rear checker with ${optimalMove} is the urgent priority before the opponent builds a prime.`
-            : `Évader un pion arrière avec ${optimalMove} est la priorité absolue avant que l'adversaire ne ferme sa prime.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} leaves ${userBlots.length} exposed blot(s) (${userShots}/36 shots) and leaves your rear checkers trapped.`
-            : `Jouer ${playedMove} disperse vos pions au milieu (${userBlots.length} blot(s), ${userShots}/36 tirs) en laissant vos pions arrières piégés sur la case 24.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} immediately runs a back checker into the outfield to break containment.`
-            : `Le coup optimal ${optimalMove} fait courir immédiatement un pion arrière hors du camp adverse vers un relais sécurisé.`;
+        if (isEn) {
+            summary = `Escaping a rear checker with ${optimalMove} is the urgent priority before the opponent builds a prime.`;
+            whyFailed = `Playing ${playedMove} leaves ${userBlots.length} exposed blot(s) (${userShots}/36 shots) and leaves your rear checkers trapped.`;
+            whyOptimal = `The optimal move ${optimalMove} immediately runs a back checker into the outfield to break containment.`;
+            advice = 'With big rolls in the opening or early game, prioritize escaping your back checkers from point 24.';
+        } else {
+            applyFrCopy('REAR_ESCAPE');
+        }
         keyConcept = isEn ? 'Back Checker Escape' : 'Évasion des pions arrières';
-        advice = isEn ? 'With big rolls in the opening or early game, prioritize escaping your back checkers from point 24.' : 'Sur les gros lancers en début de partie, donnez la priorité à l’évasion de vos pions arrières (case 24).';
         conceptId = 'back-checker-escape';
     } else if (contactBrokenInEndgame) {
-        summary = isEn
-            ? `In the endgame (${diff.player} pips left), ${optimalMove} cleanly breaks contact to enter a pure race.`
-            : `En fin de partie (${diff.player} pips restants), ${optimalMove} rompt réellement le contact pour entrer en course pure.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} prolongs contact unnecessarily when a clean transition to the bear-off race was available.`
-            : `Jouer ${playedMove} maintient le contact alors qu'une transition nette vers la course pure était disponible.`;
-        whyOptimal = isEn
-            ? `The move ${optimalMove} clears the last contact point to steer safely towards the bear-off.`
-            : `Le coup ${optimalMove} dépasse le dernier pion adverse et sécurise la course de sortie.`;
+        if (isEn) {
+            summary = `In the endgame (${diff.player} pips left), ${optimalMove} cleanly breaks contact to enter a pure race.`;
+            whyFailed = `Playing ${playedMove} prolongs contact unnecessarily when a clean transition to the bear-off race was available.`;
+            whyOptimal = `The move ${optimalMove} clears the last contact point to steer safely towards the bear-off.`;
+            advice = 'When ahead in the endgame and able to clear the last opposing checker safely, break contact cleanly.';
+        } else {
+            applyFrCopy('ENDGAME_CONTACT_BREAK');
+        }
         keyConcept = isEn ? 'Endgame Contact Break' : 'Rupture du contact en fin de partie';
-        advice = isEn ? 'When ahead in the endgame and able to clear the last opposing checker safely, break contact cleanly.' : 'En fin de partie avec l’avantage à la course, dépassez le dernier blocus adverse dès que possible.';
         conceptId = 'running-game';
     } else if (contactStatus === 'pureRace') {
-        summary = isEn
-            ? `In a pure race (${diff.player} vs ${diff.opponent} pips), minimize wastage and optimize crossovers.`
-            : `En course pure (${diff.player} contre ${diff.opponent} pips), minimisez le gaspillage (EPC) et optimisez vos sorties.`;
-        whyFailed = isEn ? `Playing ${playedMove} increases low-point wastage or leaves stragglers behind.` : `Jouer ${playedMove} augmente le gaspillage sur les points bas ou retarde le regroupement de vos pions.`;
-        whyOptimal = isEn ? `The optimal move ${optimalMove} maximizes bear-off efficiency and improves your Keith Count.` : `Le coup optimal ${optimalMove} maximise l'efficacité de sortie (EPC) et améliore votre Keith Count.`;
+        if (isEn) {
+            summary = `In a pure race (${diff.player} vs ${diff.opponent} pips), minimize wastage and optimize crossovers.`;
+            whyFailed = `Playing ${playedMove} increases low-point wastage or leaves stragglers behind.`;
+            whyOptimal = `The optimal move ${optimalMove} maximizes bear-off efficiency and improves your Keith Count.`;
+            advice = 'In a pure race, bring rear checkers home smoothly and avoid stacking points 1 and 2.';
+        } else {
+            applyFrCopy('PURE_RACE');
+        }
         keyConcept = isEn ? 'Keith Count & Pure Race' : 'Keith Count & Course Pure';
-        advice = isEn ? 'In a pure race, bring rear checkers home smoothly and avoid stacking points 1 and 2.' : 'En course pure, ramenez vos pions arrières sans empiler les flèches 1 et 2.';
         conceptId = 'keith-count';
     } else if (homeGateCreated) {
-        summary = isEn ? `Closing gates in the home board increases hitting threats and restricts opponent reentry.` : `Fermer une porte intérieure renforce votre jan et complique la réentrée adverse.`;
-        whyFailed = isEn ? `Playing ${playedMove} fails to close a defensive home gate.` : `Jouer ${playedMove} disperse vos pions au lieu de fermer une porte protectrice.`;
-        whyOptimal = isEn ? `The optimal move ${optimalMove} builds a solid home board gate.` : `Le coup optimal ${optimalMove} construit une solide porte dans votre jan intérieur.`;
+        if (isEn) {
+            summary = `Closing gates in the home board increases hitting threats and restricts opponent reentry.`;
+            whyFailed = `Playing ${playedMove} fails to close a defensive home gate.`;
+            whyOptimal = `The optimal move ${optimalMove} builds a solid home board gate.`;
+            advice = 'Making home board gates protects against hits and sets up gammon pressure.';
+        } else {
+            applyFrCopy('HOME_GATE');
+        }
         keyConcept = isEn ? 'Home Board Gate' : 'Porte Intérieure';
-        advice = isEn ? 'Making home board gates protects against hits and sets up gammon pressure.' : 'Fermer des portes dans son jan intérieur protège vos pions et prépare le verrouillage.';
         conceptId = 'pure-play';
     } else if (anchorCreatedOrKept) {
-        summary = isEn ? `The advanced anchor guarantees safety and restricts your opponent.` : `L'ancre avancée assure votre sécurité et bride l'adversaire.`;
-        whyFailed = isEn ? `Playing ${playedMove} gives up or neglects the advanced anchor without overwhelming compensation.` : `Jouer ${playedMove} délaisse l'ancre avancée sans compensation majeure immédiate.`;
-        whyOptimal = isEn ? `Playing ${optimalMove} maintains strong anchor connectivity and outfield control.` : `Jouer ${optimalMove} maintient l'ancre avancée et le contrôle du jan adverse.`;
+        if (isEn) {
+            summary = `The advanced anchor guarantees safety and restricts your opponent.`;
+            whyFailed = `Playing ${playedMove} gives up or neglects the advanced anchor without overwhelming compensation.`;
+            whyOptimal = `Playing ${optimalMove} maintains strong anchor connectivity and outfield control.`;
+            advice = 'Never dismantle an advanced anchor without overwhelming immediate compensation.';
+        } else {
+            applyFrCopy('ADVANCED_ANCHOR');
+        }
         keyConcept = isEn ? 'Advanced Anchor' : 'Ancre avancée';
-        advice = isEn ? 'Never dismantle an advanced anchor without overwhelming immediate compensation.' : 'Ne démontez jamais une ancre avancée sans une compensation immédiate écrasante.';
         conceptId = 'advanced-anchor';
     } else if (
         /\b(?:24|1)\/(?:20|21|22|5|4|3)\b/.test(optimalMove) &&
         !/\b(?:24|1)\/(?:20|21|22|5|4|3)\b/.test(playedMove)
     ) {
-        summary = isEn
-            ? `Splitting your rear checkers with ${optimalMove} prepares an advanced anchor and duplicates opponent hitting numbers.`
-            : `Séparer vos pions arrières avec ${optimalMove} prépare une ancre avancée et duplique les dés d'attaque adverses.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} leaves your back checkers stacked and passive on point 24 without defensive counterplay.`
-            : `Jouer ${playedMove} laisse vos deux pions arrières passifs sur la case 24 sans préparer d'ancre défensive.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} splits a rear checker toward point 20/21 while bringing down an outfield builder.`
-            : `Le coup optimal ${optimalMove} avance un pion arrière vers la case 20/21 tout en descendant un bâtisseur actif.`;
+        if (isEn) {
+            summary = `Splitting your rear checkers with ${optimalMove} prepares an advanced anchor and duplicates opponent hitting numbers.`;
+            whyFailed = `Playing ${playedMove} leaves your back checkers stacked and passive on point 24 without defensive counterplay.`;
+            whyOptimal = `The optimal move ${optimalMove} splits a rear checker toward point 20/21 while bringing down an outfield builder.`;
+            advice = 'Splitting back checkers early creates anchor threats and forces your opponent into awkward choices.';
+        } else {
+            applyFrCopy('BACK_SPLIT');
+        }
         keyConcept = isEn ? 'Back Checker Split & Builders' : 'Split Arrière & Bâtisseurs';
-        advice = isEn
-            ? 'Splitting back checkers early creates anchor threats and forces your opponent into awkward choices.'
-            : 'Séparer ses pions arrières tôt multiplie les lancers d’ancrage et gêne le développement adverse.';
         conceptId = 'opening-philosophy';
     } else if (
         /\b(?:13|12)\/(?:8|9|10|11|17|16|15|14)\b/.test(optimalMove) &&
         !/\b(?:13|12)\/(?:8|9|10|11|17|16|15|14)\b/.test(playedMove)
     ) {
-        summary = isEn
-            ? `Unstacking the Midpoint (13-point) with ${optimalMove} brings down active builders for the next roll.`
-            : `Dégorger le Midpoint (point 13) avec ${optimalMove} active vos bâtisseurs pour couvrir une porte au prochain tour.`;
-        whyFailed = isEn
-            ? `Playing ${playedMove} leaves a rigid stack on the midpoint and starves your next roll of constructive numbers.`
-            : `Jouer ${playedMove} conserve une pile rigide sur le point 13 et réduit vos bons lancers constructeurs sur 36.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} deploys an outfield builder (points 8–11) to maximize point-making rolls next turn.`
-            : `Le coup optimal ${optimalMove} place un bâtisseur actif (cases 8 à 11) qui multiplie vos dés de fermeture au tour suivant.`;
+        if (isEn) {
+            summary = `Unstacking the Midpoint (13-point) with ${optimalMove} brings down active builders for the next roll.`;
+            whyFailed = `Playing ${playedMove} leaves a rigid stack on the midpoint and starves your next roll of constructive numbers.`;
+            whyOptimal = `The optimal move ${optimalMove} deploys an outfield builder (points 8–11) to maximize point-making rolls next turn.`;
+            advice = 'Unstack the 5-checker midpoint pile to feed builders into your outer board.';
+        } else {
+            applyFrCopy('MIDPOINT_UNSTACK');
+        }
         keyConcept = isEn ? 'Unstacking Midpoint & Builders' : 'Dégorgement du Midpoint & Bâtisseurs';
-        advice = isEn
-            ? 'Unstack the 5-checker midpoint pile to feed builders into your outer board.'
-            : 'Dégorgez la pile de 5 pions du point 13 pour alimenter vos bâtisseurs d’attaque.';
         conceptId = 'pure-play';
     } else {
-        whyFailed = isEn
-            ? `Playing ${playedMove} reduces your builder flexibility and weakens checker coordination for the next roll.`
-            : `Le coup joué ${playedMove} réduit la flexibilité de vos bâtisseurs et diminue vos bons dés au tour suivant.`;
-        whyOptimal = isEn
-            ? `The optimal move ${optimalMove} distributes your spare checkers smoothly and maximizes constructive rolls out of 36.`
-            : `Le coup optimal ${optimalMove} répartit mieux vos pions de réserve (spares) et maximise vos lancers constructifs sur 36.`;
+        if (isEn) {
+            whyFailed = `Playing ${playedMove} reduces your builder flexibility and weakens checker coordination for the next roll.`;
+            whyOptimal = `The optimal move ${optimalMove} distributes your spare checkers smoothly and maximizes constructive rolls out of 36.`;
+        } else {
+            applyFrCopy('POSITIONAL_FLEXIBILITY');
+        }
         conceptId = 'pure-play';
     }
 

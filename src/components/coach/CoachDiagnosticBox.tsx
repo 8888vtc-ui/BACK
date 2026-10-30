@@ -79,8 +79,11 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
                 recurringErrorCount,
                 isBrilliantMove: evaluateBrilliantMoveCriteria({ equityLossEmg: effectiveEquityLoss, directShotsConceded: directShots, level: levelMode }),
                 locale,
+                playedMoveNotation,
+                bestMoveNotation: bestMoveNotation ?? pedagogicalExplanation?.correct_play_canonical,
+                keyConcept,
             }),
-        [effectiveEquityLoss, directShots, symbolicAudit?.dominant_theme, gamePhase, recurringErrorCount, levelMode, locale],
+        [effectiveEquityLoss, directShots, symbolicAudit?.dominant_theme, gamePhase, recurringErrorCount, levelMode, locale, playedMoveNotation, bestMoveNotation, pedagogicalExplanation?.correct_play_canonical, keyConcept],
     );
 
     const socraticChallenge = useMemo(

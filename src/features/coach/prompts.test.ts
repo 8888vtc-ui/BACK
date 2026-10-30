@@ -6,6 +6,12 @@ import {
     CoachPromptParams,
 } from './prompts';
 import { buildMatchContext } from './matchContext';
+import {
+    pickVariedCheckerErrorCopy,
+    pickVariedCubeErrorCopy,
+    type VariedCheckerCategory,
+    type VariedCubeCategory,
+} from './coachVariedMessagesBank';
 
 const SAMPLE_PARAMS: CoachPromptParams = {
     verdict: 'blunder',
@@ -195,6 +201,19 @@ describe('Coach Prompts & Instructions', () => {
             expect(prompt).toContain('Compte de Keith (après le coup joué) : Joueur 70, Adversaire 78 (écart -8)');
             expect(prompt).toContain('Gain +5.0, Gammon 0.0, Risque de gammon adverse -3.0');
         });
+
+        it('génère un prompt spécialisé VIDEAU (sans parler de déplacement de pions) lors d’une décision de Cube', () => {
+            const cubePrompt = buildCoachUserPrompt({
+                ...SAMPLE_PARAMS,
+                playedMove: 'Videau : Doubler (×2)',
+                optimalMove: 'No double, take',
+            });
+            expect(cubePrompt).toContain('DÉCISION DE VIDEAU / CUBE');
+            expect(cubePrompt).toContain('INTERDICTION ABSOLUE de parler de déplacements de pions');
+            expect(cubePrompt).toContain('"Videau : Doubler (×2)"');
+            expect(cubePrompt).toContain('"No double, take"');
+            expect(cubePrompt).not.toContain('Exposition des blots après le coup joué');
+        });
     });
 
     describe('generateRuleBasedExplanation (repli heuristique)', () => {
@@ -306,6 +325,59 @@ describe('Coach Prompts & Instructions', () => {
 
             expect(res.conceptId).toBe('golden-point');
             expect(res.keyConcept).toBe('Contrôle du Golden Point');
+        });
+
+        it('fournit 10 variantes distinctes de style Grand-Maître IA pour chaque catégorie d’erreur (Cube et Pions)', () => {
+            const cubeCats: VariedCubeCategory[] = [
+                'PREMATURE_DOUBLE',
+                'OPTIMISTIC_TAKE',
+                'TIMID_PASS',
+                'MISSED_DOUBLE',
+            ];
+            for (const cat of cubeCats) {
+                const seen = new Set<string>();
+                for (let i = 0; i < 60; i++) {
+                    const copy = pickVariedCubeErrorCopy(cat, {
+                        playedMove: 'Videau : Doubler (×2)',
+                        optimalMove: 'No double, take',
+                        equityLoss: -0.12,
+                        seedExtra: `turn-${i}`,
+                    });
+                    seen.add(copy.summary);
+                }
+                expect(seen.size).toBe(10);
+            }
+
+            const checkerCats: VariedCheckerCategory[] = [
+                'SHOT_EXPOSURE',
+                'GOLDEN_POINT',
+                'BAR_POINT',
+                'PRIME_EXTEND',
+                'TEMPO_HIT',
+                'REAR_ESCAPE',
+                'ENDGAME_CONTACT_BREAK',
+                'PURE_RACE',
+                'HOME_GATE',
+                'ADVANCED_ANCHOR',
+                'BACK_SPLIT',
+                'MIDPOINT_UNSTACK',
+                'POSITIONAL_FLEXIBILITY',
+            ];
+            for (const cat of checkerCats) {
+                const seen = new Set<string>();
+                for (let i = 0; i < 60; i++) {
+                    const copy = pickVariedCheckerErrorCopy(cat, {
+                        playedMove: '13/7',
+                        optimalMove: '8/5 6/5',
+                        equityLoss: -0.11,
+                        userShots: 6,
+                        bestShots: 0,
+                        seedExtra: `turn-${i}`,
+                    });
+                    seen.add(copy.summary);
+                }
+                expect(seen.size).toBe(10);
+            }
         });
     });
 });

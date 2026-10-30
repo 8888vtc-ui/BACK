@@ -254,6 +254,7 @@ export async function generateProtectedCoachSynthesisAction(
     ).replace(/\/+$/, '');
 
     const model =
+        process.env.COACH_DEEP_MODEL ||
         process.env.COACH_MODEL ||
         process.env.OPENAI_MODEL ||
         process.env.GEMINI_MODEL ||
@@ -264,22 +265,26 @@ export async function generateProtectedCoachSynthesisAction(
     const timeoutId = setTimeout(() => abortController.abort(), UPSTREAM_GEMINI_TIMEOUT_MS);
 
     try {
+        const reqBody: Record<string, unknown> = {
+            model,
+            messages: [
+                { role: 'system', content: getGameReviewSystemPrompt(lang) },
+                { role: 'user', content: buildPostMatchSummaryUserPrompt(input.summary, lang) },
+            ],
+            temperature: 0.3,
+            stream: false,
+            response_format: { type: 'json_object' },
+        };
+        if (model.includes('gemini-3.8') || model.includes('gemini-3.7')) {
+            reqBody.reasoning_effort = 'low';
+        }
         const resp = await fetch(`${baseUrl}/chat/completions`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${apiKey}`,
             },
-            body: JSON.stringify({
-                model,
-                messages: [
-                    { role: 'system', content: getGameReviewSystemPrompt(lang) },
-                    { role: 'user', content: buildPostMatchSummaryUserPrompt(input.summary, lang) },
-                ],
-                temperature: 0.3,
-                stream: false,
-                response_format: { type: 'json_object' },
-            }),
+            body: JSON.stringify(reqBody),
             signal: abortController.signal,
         });
 

@@ -6,6 +6,7 @@
 
 import type { Locale } from '../../lib/i18n/types';
 import type { CoachPromptParams, CoachStructuredResponse } from './prompts';
+import { pickVariedCubeErrorCopy, type VariedCubeCategory } from './coachVariedMessagesBank';
 
 const SYSTEM_LANGUAGE_DIRECTIVES: Partial<Record<Locale, string>> = {
     es: `\n\n### IDIOMA DE RESPUESTA OBLIGATORIO: ESPAÑOL (ES)
@@ -126,4 +127,115 @@ export function localizeOfflineExplanation(
     }
 
     return enResponse;
+}
+
+export function buildCubeRuleBasedExplanation(params: CoachPromptParams): CoachStructuredResponse | null {
+    const {
+        verdict = 'doubtful',
+        equityLoss = -0.05,
+        playedMove = 'Coup joué',
+        optimalMove = 'Coup optimal',
+        features,
+        language = 'fr',
+    } = params;
+
+    const isCubeDecision =
+        playedMove.trim().startsWith('Videau') ||
+        /^(Double|No double|Take|Pass|Redouble|Beaver)\b/i.test(playedMove.trim()) ||
+        /^(Double|No double|Take|Pass|Redouble|Beaver)\b/i.test(optimalMove.trim());
+
+    if (!isCubeDecision) return null;
+
+    const isEn = language === 'en';
+    const diff = features?.pipCountDiff ?? { player: 150, opponent: 150, leader: 'tie', diff: 0 };
+    const playedLower = playedMove.toLowerCase();
+    const isOptimalCube = verdict === 'optimal' || Math.abs(equityLoss) <= 0.01;
+    const isMissedDouble = playedLower.includes('non doublé') || playedLower.includes('missed');
+    const isTakeAction = playedLower.includes('prendre') || playedLower.includes('take');
+    const isPassAction = playedLower.includes('passer') || playedLower.includes('pass');
+
+    const cubeCategory: VariedCubeCategory = isMissedDouble
+        ? 'MISSED_DOUBLE'
+        : isTakeAction
+          ? 'OPTIMISTIC_TAKE'
+          : isPassAction
+            ? 'TIMID_PASS'
+            : 'PREMATURE_DOUBLE';
+    const variedCubeFr = !isEn && !isOptimalCube
+        ? pickVariedCubeErrorCopy(cubeCategory, {
+              playedMove,
+              optimalMove,
+              equityLoss,
+              playerPips: diff.player,
+              opponentPips: diff.opponent,
+          })
+        : null;
+
+    const cubeSummary = isOptimalCube
+        ? isEn
+            ? `Optimal Cube Decision ✅: ${optimalMove} masters the Market Window (${diff.player}/${diff.opponent} pips).`
+            : `Décision de Videau optimale ✅ : ${optimalMove} maîtrise la fenêtre de marché (${diff.player}/${diff.opponent} pips).`
+        : variedCubeFr
+          ? variedCubeFr.summary
+          : isMissedDouble
+            ? `Missed Double (${playedMove} vs ${optimalMove}): your equity and volatility justified doubling before rolling.`
+            : isTakeAction
+              ? `Optimistic Take (${playedMove} vs ${optimalMove}): your winning chances fell below the ~21.5%–25% Take Point.`
+              : isPassAction
+                ? `Premature Pass (${playedMove} vs ${optimalMove}): you still held enough equity above the Take Point to accept.`
+                : `Premature Double (${playedMove} vs ${optimalMove}): your position has not yet reached the ~66% Market Window.`;
+
+    const cubeWhyFailed = isOptimalCube
+        ? ''
+        : variedCubeFr
+          ? variedCubeFr.whyFailed
+          : isMissedDouble
+            ? `Rolling directly (${playedMove}) risks losing your market on constructive rolls (-${Math.abs(equityLoss).toFixed(3)} EMG).`
+            : isTakeAction
+              ? `Accepting the cube (${playedMove}) doubles the stakes in a position where gammons and race deficit (-${Math.abs(equityLoss).toFixed(3)} EMG) are too severe.`
+              : isPassAction
+                ? `Dropping the cube (${playedMove}) surrenders 1.000 EMG immediately when playing on lost less.`
+                : `Offering the cube (${playedMove}) gives away cube ownership for free without sufficient market losers (-${Math.abs(equityLoss).toFixed(3)} EMG).`;
+
+    const cubeWhyOptimal = isEn
+        ? `Optimal cube action "${optimalMove}" respects Janowski's Cube Model and Kit Woolsey's Law.`
+        : variedCubeFr
+          ? variedCubeFr.whyOptimal
+          : `La décision optimale « ${optimalMove} » respecte le modèle de Janowski et la Loi de Kit Woolsey.`;
+
+    const cubeAdvice = isEn
+        ? 'Woolsey’s Law: When in doubt about doubling, ask whether your opponent is close to their 21.5%–25% Take Point.'
+        : variedCubeFr
+          ? variedCubeFr.advice
+          : 'Loi de Kit Woolsey : Avant de doubler ou prendre, vérifiez si l’adversaire approche de son Take Point (21,5 % en cubeful, 25 % en cubeless).';
+
+    const cubeExplanation = `${cubeWhyFailed ? `${cubeWhyFailed} ` : ''}${cubeWhyOptimal} [Videau : ΔEq ${equityLoss.toFixed(3)} | Pips : ${diff.player} vs ${diff.opponent}].\n\n📚 Théorie (Loi de Kit Woolsey & Modèle de Janowski) : ${cubeAdvice}`;
+
+    const baseCubeResult: CoachStructuredResponse = {
+        verdict,
+        summary: cubeSummary,
+        explanation: cubeExplanation,
+        keyConcept: isEn ? 'Doubling Cube & Market Window' : 'Maîtrise du Videau & Market Window',
+        advice: cubeAdvice,
+        whyFailed: cubeWhyFailed || undefined,
+        whyOptimal: cubeWhyOptimal,
+        conceptId: 'woolsey-law',
+        symbolic_audit: {
+            player_pip: diff.player,
+            opponent_pip: diff.opponent,
+            direct_shots_conceded: 0,
+            blunder_delta_equity: Number((-Math.abs(equityLoss)).toFixed(3)),
+            dominant_theme: (features?.contactStatus ?? 'contact') === 'pureRace' ? 'RACE' : 'HOLDING',
+        },
+        pedagogical_explanation: {
+            headline: cubeSummary.slice(0, 90),
+            tactical_rationale: cubeExplanation,
+            correct_play_canonical: optimalMove,
+            zare_luck_vs_skill: cubeAdvice,
+        },
+    };
+
+    return language !== 'fr' && language !== 'en'
+        ? localizeOfflineExplanation(baseCubeResult, params)
+        : baseCubeResult;
 }

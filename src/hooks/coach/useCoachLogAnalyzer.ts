@@ -136,15 +136,6 @@ export function useCoachLogAnalyzer({
                 }
                 if (isStale()) return;
 
-                setLastMoveFeedback({
-                    verdict,
-                    equityLoss,
-                    playedMove: playedNotation,
-                    optimalMove: result.optimalNotation,
-                    turnIndex: lastEntry.turnIndex,
-                    timestamp: Date.now(),
-                });
-
                 const { coachState, highlight } = buildCoachStateFromLogResult({
                     lastEntry,
                     result,
@@ -153,6 +144,20 @@ export function useCoachLogAnalyzer({
                     gameState,
                 });
                 if (isStale()) return;
+
+                setLastMoveFeedback({
+                    verdict,
+                    equityLoss,
+                    playedMove: playedNotation,
+                    optimalMove: result.optimalNotation,
+                    turnIndex: lastEntry.turnIndex,
+                    decisionType: 'checker',
+                    errorCategoryLabel: coachState.tacticalSummary && coachState.tacticalSummary.length < 48
+                        ? coachState.tacticalSummary
+                        : undefined,
+                    errorAdvice: coachState.whyFailed || coachState.tacticalSummary || coachState.summary || undefined,
+                    timestamp: Date.now(),
+                });
 
                 setCoachHistory((prev) => {
                     const filtered = prev.filter((h) => h.turnIndex !== lastEntry.turnIndex);

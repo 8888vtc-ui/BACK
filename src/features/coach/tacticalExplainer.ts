@@ -314,15 +314,23 @@ export function buildBiLevelCoachMicroCopy(params: {
     readonly recurringErrorCount?: number;
     readonly isBrilliantMove?: boolean;
     readonly locale?: string;
+    readonly playedMoveNotation?: string | null;
+    readonly bestMoveNotation?: string | null;
+    readonly keyConcept?: string | null;
 }): BiLevelCoachMicroCopy {
     const {
         equityLossEmg, directShotsConceded = 0, dominantTheme = 'CONSTRUCTION',
         recurringErrorCount = 0, isBrilliantMove = false, locale = 'fr',
+        playedMoveNotation, bestMoveNotation, keyConcept,
     } = params;
     const isEn = locale === 'en';
     const absLoss = Math.abs(equityLossEmg);
     const mEmg = Math.round(absLoss * 1000);
     const winPctDelta = Math.min(45, Math.max(1, Math.round(absLoss * 85)));
+
+    const isCube =
+        Boolean(playedMoveNotation && /^(Videau|Double|No double|Take|Pass)/i.test(playedMoveNotation.trim())) ||
+        Boolean(bestMoveNotation && /^(Videau|Double|No double|Take|Pass)/i.test(bestMoveNotation.trim()));
 
     const headerBadge = isBrilliantMove
         ? isEn ? '😱 Brilliant Move (+11% win)' : '😱 Coup Brillant (+11 % de victoire)'
@@ -334,16 +342,44 @@ export function buildBiLevelCoachMicroCopy(params: {
               ? isEn ? `❓ Mistake (-${winPctDelta}% win)` : `❓ Erreur (-${winPctDelta} % de victoire)`
               : isEn ? `😵 Blunder (-${winPctDelta}% win)` : `😵 Gaffe (-${winPctDelta} % de victoire)`;
 
-    const bulletDiagnostic = directShotsConceded > 0
-        ? isEn ? `This lone checker gives ${directShotsConceded} rolls out of 36 to hit you.` : `Ce pion isolé donne ${directShotsConceded} lancers sur 36 pour te frapper.`
-        : isEn ? 'Your checkers are stacked too high: they sleep instead of helping.' : 'Tes pions sont empilés trop haut : ils dorment au lieu d’aider.';
+    let bulletDiagnostic: string;
+    let bulletAction: string;
 
-    const themeUpper = (dominantTheme ?? '').toUpperCase();
-    const bulletAction = themeUpper.includes('RACE') || themeUpper.includes('COURSE')
-        ? isEn ? 'Run your back checkers quickly to win the race.' : 'Avance vite tes pions arrières pour gagner la course.'
-        : themeUpper.includes('HOLD') || themeUpper.includes('ANCR')
-          ? isEn ? 'Keep your back base to set an ambush.' : 'Garde ta base arrière pour tendre une embuscade.'
-          : isEn ? 'Take point 5 instead to build an unbreakable wall.' : 'Prends plutôt la case 5 pour bâtir un mur.';
+    if (isCube) {
+        bulletDiagnostic = isEn
+            ? `This cube decision (${playedMoveNotation ?? 'Cube'}) misjudges the Market Window.`
+            : `Cette décision de videau (${playedMoveNotation ?? 'Videau'}) évalue mal la fenêtre de marché.`;
+        bulletAction = isEn
+            ? `Correct cube play: ${bestMoveNotation ?? 'No double, take'} (Woolsey / Janowski rule).`
+            : `Décision optimale : ${bestMoveNotation ?? 'No double, take'} (Loi de Woolsey / Janowski).`;
+    } else if (playedMoveNotation || bestMoveNotation) {
+        const conceptHint = keyConcept ? ` (${keyConcept})` : '';
+        bulletDiagnostic = directShotsConceded > 0
+            ? isEn
+                ? `This lone checker gives ${directShotsConceded} rolls out of 36 to hit you.`
+                : `Ce pion isolé donne ${directShotsConceded} lancers sur 36 pour te frapper.`
+            : isEn
+              ? `Playing ${playedMoveNotation ?? 'this move'} loses tempo and weakens your plan${conceptHint}.`
+              : `Jouer ${playedMoveNotation ?? 'ce coup'} perd un tempo précieux sur le plan${conceptHint}.`;
+        bulletAction = bestMoveNotation
+            ? isEn
+                ? `Play ${bestMoveNotation} instead to maximize constructive rolls out of 36.`
+                : `Privilégie ${bestMoveNotation} pour maximiser tes lancers constructifs sur 36.`
+            : isEn
+              ? 'Consolidate your key points and keep your checkers connected.'
+              : 'Consolide tes portes clés et garde tes pions bien connectés.';
+    } else {
+        bulletDiagnostic = directShotsConceded > 0
+            ? isEn ? `This lone checker gives ${directShotsConceded} rolls out of 36 to hit you.` : `Ce pion isolé donne ${directShotsConceded} lancers sur 36 pour te frapper.`
+            : isEn ? 'Your checkers are stacked too high: they sleep instead of helping.' : 'Tes pions sont empilés trop haut : ils dorment au lieu d’aider.';
+
+        const themeUpper = (dominantTheme ?? '').toUpperCase();
+        bulletAction = themeUpper.includes('RACE') || themeUpper.includes('COURSE')
+            ? isEn ? 'Run your back checkers quickly to win the race.' : 'Avance vite tes pions arrières pour gagner la course.'
+            : themeUpper.includes('HOLD') || themeUpper.includes('ANCR')
+              ? isEn ? 'Keep your back base to set an ambush.' : 'Garde ta base arrière pour tendre une embuscade.'
+              : isEn ? 'Take point 5 instead to build an unbreakable wall.' : 'Prends plutôt la case 5 pour bâtir un mur.';
+    }
 
     const bulletHabitHook = recurringErrorCount >= 2
         ? isEn ? `⚠️ Your ${recurringErrorCount}th similar mistake this week.` : `⚠️ C'est ta ${recurringErrorCount}e erreur similaire cette semaine.`

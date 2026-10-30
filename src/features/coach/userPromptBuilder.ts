@@ -26,6 +26,10 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
 
     const diff = features.pipCountDiff;
     const isEn = language === 'en';
+    const isCubeDecision =
+        playedMove.trim().startsWith('Videau') ||
+        /^(Double|No double|Take|Pass|Redouble|Beaver)\b/i.test(playedMove.trim()) ||
+        /^(Double|No double|Take|Pass|Redouble|Beaver)\b/i.test(optimalMove.trim());
 
     const raceLeaderStr = isEn
         ? diff.leader === 'tie'
@@ -270,6 +274,84 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
         }`
         : '';
 
+    if (isCubeDecision) {
+        if (isEn) {
+            return `Here is the verified data for the DOUBLING CUBE decision (STRICT RULE: analyze ONLY the Doubling Cube decision, Market Window, Take Point, Gammon Price, Woolsey's Law, and Janowski's Model — NEVER mention checker moves or point numbers):
+
+## ENGINE CUBE DIAGNOSIS:
+- Decision Type: DOUBLING CUBE (VIDEAU)
+- Verdict: ${verdict.toUpperCase()} (Equity loss: ${equityLoss.toFixed(3)})
+- Cube action played by player: "${playedMove}"
+- Optimal cube action recommended by engine: "${optimalMove}"
+- Pip count race: ${raceLeaderStr}${keithEn}
+
+## MATCH CONTEXT & MARKET WINDOW:
+${matchInfo}${marketSectionEn}${bgsageSectionEn}
+
+Write your Cube-specialized explanation in the requested strict JSON format (conceptId must be "woolsey-law", "take-point", "market-loss", or "crawford-rule").`;
+        }
+
+        return `Voici les données vérifiées pour cette DÉCISION DE VIDEAU / CUBE (RÈGLE STRICTE : analyse EXCLUSIVEMENT la décision de Videau, la Fenêtre de Marché / Market Window, le Take Point, le Prix du Gammon, la Loi de Kit Woolsey et le Modèle de Janowski — INTERDICTION ABSOLUE de parler de déplacements de pions ou de portes 5/7) :
+
+## DIAGNOSTIC DU MOTEUR SUR LE VIDEAU :
+- Type de décision : VIDEAU (DOUBLING CUBE)
+- Verdict : ${verdict.toUpperCase()} (Perte d'équité : ${equityLoss.toFixed(3)})
+- Action de videau jouée par le joueur : "${playedMove}"
+- Action de videau optimale recommandée par le moteur : "${optimalMove}"
+- Course aux pips : ${raceLeaderStr}${keithFr}
+
+## CONTEXTE DE MATCH & FENÊTRE DE MARCHÉ :
+${matchInfo}${marketSectionFr}${bgsageSectionFr}
+
+Rédige ton explication spécialisée Videau au format JSON strict demandé (conceptId doit être "woolsey-law", "take-point", "market-loss" ou "crawford-rule").`;
+    }
+
+    const diffFlags = features.tacticalDiff;
+    const activeFlagsFr: string[] = [];
+    const activeFlagsEn: string[] = [];
+    if (diffFlags) {
+        if (diffFlags.goldenPointCreatedByBest) {
+            activeFlagsFr.push('Le coup optimal crée réellement le Golden Point (porte 5/20 avec >= 2 pions)');
+            activeFlagsEn.push('Optimal move creates the Golden Point (point 5/20 with >= 2 checkers)');
+        }
+        if (diffFlags.barPointCreatedByBest) {
+            activeFlagsFr.push('Le coup optimal crée réellement le Bar Point (porte 7/18 avec >= 2 pions)');
+            activeFlagsEn.push('Optimal move creates the Bar Point (point 7/18 with >= 2 checkers)');
+        }
+        if (diffFlags.homeGateCreatedByBest) {
+            activeFlagsFr.push('Le coup optimal ferme une nouvelle porte dans le jan intérieur');
+            activeFlagsEn.push('Optimal move closes a new inner-board gate');
+        }
+        if (diffFlags.primeExtendedByBest) {
+            activeFlagsFr.push('Le coup optimal étend la barricade de prime');
+            activeFlagsEn.push('Optimal move extends the prime barricade');
+        }
+        if (diffFlags.hitMadeByBest) {
+            activeFlagsFr.push("Le coup optimal frappe un blot adverse et prend l'initiative");
+            activeFlagsEn.push('Optimal move hits an opponent blot and seizes tempo');
+        }
+        if (diffFlags.rearCheckerEscapedByBest) {
+            activeFlagsFr.push('Le coup optimal évade un pion arrière hors du camp adverse');
+            activeFlagsEn.push('Optimal move escapes a rear checker from the opponent home board');
+        }
+        if (diffFlags.anchorCreatedOrKeptByBest) {
+            activeFlagsFr.push("Le coup optimal sécurise ou conserve une ancre avancée");
+            activeFlagsEn.push('Optimal move secures or preserves an advanced anchor');
+        }
+        if (diffFlags.contactBrokenByBest) {
+            activeFlagsFr.push('Le coup optimal rompt le contact vers une course pure');
+            activeFlagsEn.push('Optimal move cleanly breaks contact into a pure race');
+        }
+    }
+    const exactDiffDirectiveFr =
+        activeFlagsFr.length > 0
+            ? `\n- FAIT GÉOMÉTRIQUE DÉCISIF VÉRIFIÉ : ${activeFlagsFr.join(' ; ')}.`
+            : `\n- RÈGLE STRICTE : Aucune création du Golden Point (case 5) ni du Bar Point (case 7) sur ce coup — ne mentionne PAS la création du point 5 si le coup optimal (${optimalMove}) n'y forme pas une porte.`;
+    const exactDiffDirectiveEn =
+        activeFlagsEn.length > 0
+            ? `\n- VERIFIED DECISIVE GEOMETRIC FACT: ${activeFlagsEn.join('; ')}.`
+            : `\n- STRICT RULE: Neither the Golden Point (5-point) nor the Bar Point (7-point) is newly created on this turn — do NOT claim the optimal move (${optimalMove}) makes the 5-point.`;
+
     if (isEn) {
         return `Here is the verified data for the position and analyzed move:
 
@@ -277,7 +359,7 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
 - Verdict: ${verdict.toUpperCase()} (Equity loss: ${equityLoss.toFixed(3)})
 - Move played by player: "${playedMove}"
 - Optimal move recommended by engine: "${optimalMove}"
-- Declared player level: ${playerLevel}
+- Declared player level: ${playerLevel}${exactDiffDirectiveEn}
 
 ## MATCH CONTEXT:
 ${matchInfo}${marketSectionEn}
@@ -305,7 +387,7 @@ Write your explanation in the requested strict JSON format.`;
 - Verdict : ${verdict.toUpperCase()} (Perte d'équité : ${equityLoss.toFixed(3)})
 - Coup joué par le joueur : "${playedMove}"
 - Coup optimal recommandé par le moteur : "${optimalMove}"
-- Niveau déclaré du joueur : ${playerLevel}
+- Niveau déclaré du joueur : ${playerLevel}${exactDiffDirectiveFr}
 
 ## CONTEXTE DE MATCH :
 ${matchInfo}${marketSectionFr}

@@ -78,4 +78,23 @@ describe('MoveErrorPopToast — Pop Erreur Tactique & Détection de Type', () =>
         fireEvent.click(screen.getByTestId('error-toast-close-btn'));
         expect(queryByTestId('move-error-pop-toast')).toBeNull();
     });
+
+    it('affiche le type Erreur de Videau (et non Erreur positionnelle) lors d’un Blunder de Cube', () => {
+        const feedback: LastMoveFeedback = {
+            verdict: 'blunder',
+            equityLoss: -0.180,
+            playedMove: 'Videau : Doubler (×2)',
+            optimalMove: 'No double, take',
+            decisionType: 'cube',
+            errorCategoryLabel: 'Erreur de Videau — Double prématuré',
+            errorAdvice: 'Double prématuré : votre position n’est pas assez forte pour justifier le videau.',
+        };
+        render(
+            React.createElement(MoveErrorPopToast, { feedback }),
+        );
+
+        expect(screen.getByText('BLUNDER DE VIDEAU (CUBE)')).toBeDefined();
+        expect(screen.getByText('Erreur de Videau — Double prématuré')).toBeDefined();
+        expect(screen.queryByText(/Erreur positionnelle/i)).toBeNull();
+    });
 });

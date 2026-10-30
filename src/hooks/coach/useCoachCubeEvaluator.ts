@@ -48,8 +48,25 @@ export function useCoachCubeEvaluator({
                 historyLength: coachHistoryLength,
             });
 
+            const cubeCategory = res.cubeRes.playedAction === 'missed_double'
+                ? 'Videau oublié (Missed Double)'
+                : res.cubeRes.playedAction === 'double'
+                  ? 'Erreur de Videau — Double prématuré'
+                  : res.cubeRes.playedAction === 'take'
+                    ? 'Erreur de Videau — Take trop optimiste'
+                    : 'Erreur de Videau — Pass trop frileux';
+
             recordDecisionStats(res.cubeRes.verdict, res.rawLoss, res.playedLabel, res.cubeRes.optimalAction);
-            setLastMoveFeedback({ verdict: res.cubeRes.verdict, equityLoss: res.rawLoss, playedMove: res.playedLabel, timestamp: Date.now() });
+            setLastMoveFeedback({
+                verdict: res.cubeRes.verdict,
+                equityLoss: res.rawLoss,
+                playedMove: res.playedLabel,
+                optimalMove: res.cubeRes.optimalAction,
+                decisionType: 'cube',
+                errorCategoryLabel: cubeCategory,
+                errorAdvice: `${res.cubeRes.explanation} ${res.cubeRes.advice}`.trim(),
+                timestamp: Date.now(),
+            });
             setCoachHistory((prev) => [...prev, res.historyEntry]);
             setSelectedCoachHistoryIndex(null);
 

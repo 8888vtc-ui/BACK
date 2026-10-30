@@ -51,7 +51,10 @@ const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ to
     const trainHref = `/?matchLength=${tournament.matchLengthMain}&tournament=${encodeURIComponent(tournament.name)}`;
 
     return (
-        <div className="min-h-screen bg-[#070b13] text-slate-100 flex flex-col" data-testid="tournament-detail-view">
+        <div
+            className="h-dvh max-h-dvh w-full overflow-y-auto overflow-x-hidden overscroll-y-contain bg-[#070b13] text-slate-100 flex flex-col"
+            data-testid="tournament-detail-view"
+        >
             <AppNavbar activeTab="tournaments" />
 
             <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 flex flex-col gap-6">

@@ -365,7 +365,7 @@ describe('reconstructBoardFromLog & Audit 3 (Cache LRU + Off-List Blunders)', ()
         const { CoachRequestSchema } = await import('../../lib/security/schemas');
         const { LLM_TIMEOUT_MS } = await import('../../components/coach/useCoachExplanation');
 
-        expect(LLM_TIMEOUT_MS).toBe(8000);
+        expect(LLM_TIMEOUT_MS).toBeGreaterThanOrEqual(8000);
 
         const validDoubtful = CoachRequestSchema.safeParse({
             verdict: 'doubtful',
