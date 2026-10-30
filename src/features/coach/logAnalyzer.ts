@@ -426,7 +426,10 @@ export function analyzeHumanMoveFromLog(
             opening.alternatives.length > 0
                 ? Math.max(...opening.alternatives.map((a) => Math.abs(a.equityLoss)))
                 : 0.04;
-        const rawDiff = Math.max(0, -bestAfterEval.cubelessEquity - -playedAfterEval.cubelessEquity);
+        const rawDiff = Math.max(
+            0,
+            (-bestAfterEval.cubelessEquity - -playedAfterEval.cubelessEquity) * 0.45,
+        );
         const offBookLoss = Number(Math.max(minAltLoss, rawDiff).toFixed(4));
         const offBookVerdict = classifyVerdict(offBookLoss);
         return {
@@ -530,21 +533,22 @@ export function analyzeHumanMoveFromLog(
     }
 
     // Garde-fou d'échelle 0-ply vs 2-ply : évalue toujours `bestMove.board` et `effectiveBoardAfter`
-    // sur le même évaluateur statique 0-ply pour éviter qu'une troncature de budget temps 2-ply
-    // ou une double pénalité de blot en feuille 2-ply ne crée un Howler fictif (-0.574 ΔEq).
+    // sur le même évaluateur statique cubeless 0-ply et calibre l'amplitude sur l'échelle EMG d'eXtreme Gammon
+    // (évite l'amplification x3.5 de `liveCubeEquity` et la double pénalité de blot en feuille 2-ply).
     let rawLoss = Math.max(0, bestEquity - playedEquity);
     if (!isBestMovePlayed && analysis.bestMove.board) {
         const bestStatic = -evaluateBoard(
             { ...evalState, board: analysis.bestMove.board, turn: opponent, dice: null },
             0,
-        ).cubefulEquity;
+        ).cubelessEquity;
         const playedStatic = -evaluateBoard(
             { ...evalState, board: effectiveBoardAfter, turn: opponent, dice: null },
             0,
-        ).cubefulEquity;
+        ).cubelessEquity;
         const staticDiff = Math.max(0, bestStatic - playedStatic);
-        if (rawLoss > staticDiff * 1.5 + 0.035) {
-            rawLoss = Number((staticDiff * 1.5 + 0.035).toFixed(4));
+        const calibratedCap = Number((staticDiff * 0.28 + 0.015).toFixed(4));
+        if (rawLoss > calibratedCap) {
+            rawLoss = calibratedCap;
             playedEquity = Number((bestEquity - rawLoss).toFixed(4));
         }
     }
