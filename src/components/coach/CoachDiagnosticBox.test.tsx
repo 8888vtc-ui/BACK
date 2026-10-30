@@ -129,4 +129,47 @@ describe('CoachDiagnosticBox', () => {
         fireEvent.click(retryBtn);
         expect(onRetryMove).toHaveBeenCalledTimes(1);
     });
+
+    it('affiche le plateau interactif Débutant, permet de toucher une case et de simuler le coup Avant/Après sur le plateau', () => {
+        window.localStorage.setItem('bg_experience_mode_v1', 'fun');
+        const initialBoard = new Array<number>(26).fill(0);
+        initialBoard[8] = 3;
+        initialBoard[6] = 5;
+        initialBoard[13] = 5;
+        initialBoard[24] = 2;
+
+        render(
+            <CoachDiagnosticBox
+                summary="Oubli de la Porte d'Or"
+                equityLoss={0.085}
+                playedMove="13/10 13/12"
+                optimalMove="8/5 6/5"
+                board={initialBoard}
+                dice={[3, 1]}
+                symbolicAudit={{
+                    player_pip: 167,
+                    opponent_pip: 167,
+                    direct_shots_conceded: 11,
+                    blunder_delta_equity: -0.085,
+                    dominant_theme: 'PRIME',
+                }}
+            />,
+        );
+
+        const interactiveBoard = screen.getByTestId('coach-beginner-interactive-board');
+        expect(interactiveBoard).toBeDefined();
+
+        // Clic sur la case 5 du MiniBoardDiagram
+        const point5 = screen.getByTestId('mini-point-5');
+        fireEvent.click(point5);
+
+        const pointFeedback = screen.getByTestId('coach-board-point-feedback');
+        expect(pointFeedback.textContent).toContain('Bien vu ! La case 5 est la cible clé du coup de Maître');
+
+        // Bouton Avant/Après sur le plateau
+        const simBtn = screen.getByTestId('coach-board-sim-toggle-btn');
+        expect(simBtn.textContent).toContain('Revoir avant le coup');
+        fireEvent.click(simBtn);
+        expect(simBtn.textContent).toContain('Simuler le coup sur le plateau');
+    });
 });
