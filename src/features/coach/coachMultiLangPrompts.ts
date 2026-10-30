@@ -7,6 +7,7 @@
 import type { Locale } from '../../lib/i18n/types';
 import type { CoachPromptParams, CoachStructuredResponse } from './prompts';
 import { pickVariedCubeErrorCopy, type VariedCubeCategory } from './coachVariedMessagesBank';
+import { truncateToSwellerHeadline } from '../../lib/coach/symbolicAudit';
 
 const SYSTEM_LANGUAGE_DIRECTIVES: Partial<Record<Locale, string>> = {
     es: `\n\n### IDIOMA DE RESPUESTA OBLIGATORIO: ESPAÑOL (ES)
@@ -34,7 +35,9 @@ export function localizeOfflineExplanation(
     const lang = (params.language ?? 'fr') as Locale;
     const played = params.playedMove || 'Move';
     const optimal = params.optimalMove || 'Optimal';
-    const loss = Math.abs(params.equityLoss ?? 0.05).toFixed(3);
+    const absLoss = Math.abs(params.equityLoss ?? (params.verdict === 'optimal' || played === optimal ? 0 : 0.05));
+    const isOptimal = params.verdict === 'optimal' || played === optimal || absLoss < 0.001;
+    const loss = absLoss.toFixed(3);
     const userShots =
         params.features?.shotExposure?.user.totalRolls ??
         Math.min(36, (params.features?.blotsAndShots?.user ?? []).reduce((a, b) => a + b.totalShots, 0));
@@ -43,84 +46,100 @@ export function localizeOfflineExplanation(
         Math.min(36, (params.features?.blotsAndShots?.best ?? []).reduce((a, b) => a + b.totalShots, 0));
 
     if (lang === 'es') {
-        const hasShotDiff = userShots > bestShots;
-        const whyFailed = hasShotDiff
-            ? `Al jugar ${played}, dejas un blot vulnerable que concede ${userShots} tiros de 36 al rival.`
-            : `La jugada ${played} pierde -${loss} de equidad frente al plan estratégico de la posición.`;
+        const hasShotDiff = !isOptimal && userShots > bestShots;
+        const whyFailed = isOptimal
+            ? ''
+            : hasShotDiff
+              ? `Al jugar ${played}, dejas un blot vulnerable que concede ${userShots} tiros de 36 al rival.`
+              : `La jugada ${played} pierde -${loss} de equidad frente al plan estratégico de la posición.`;
         const whyOptimal = hasShotDiff
             ? `La jugada óptima ${optimal} reduce la exposición a ${bestShots} tiros y asegura tu estructura.`
             : `La jugada óptima ${optimal} maximiza tu equidad 3-Ply y consolida los puntos clave.`;
         return {
             ...enResponse,
-            summary: hasShotDiff
-                ? `Tu jugada concede ${userShots} tiros directos frente a solo ${bestShots} de la mejor jugada.`
-                : `Tu jugada ${played} pierde -${loss} de equidad comparada con ${optimal}.`,
+            summary: isOptimal
+                ? `Jugada óptima ✅: ${optimal} es la línea n.° 1 del motor (ΔEq 0.000, ${bestShots}/36 tiros).`
+                : hasShotDiff
+                  ? `Tu jugada concede ${userShots} tiros directos frente a solo ${bestShots} de la mejor jugada.`
+                  : `Tu jugada ${played} pierde -${loss} de equidad comparada con ${optimal}.`,
             whyFailed,
             whyOptimal,
-            explanation: `${whyFailed} ${whyOptimal}`,
+            explanation: isOptimal ? whyOptimal : `${whyFailed} ${whyOptimal}`,
             keyConcept: hasShotDiff ? 'Minimización de tiros' : 'Estructura y Equidad 3-Ply',
             advice: 'Antes de dispersar tus fichas, cuenta siempre cuántos tiros directos concedes sobre 36.',
         };
     }
 
     if (lang === 'pt') {
-        const hasShotDiff = userShots > bestShots;
-        const whyFailed = hasShotDiff
-            ? `Ao jogar ${played}, você deixa um blot vulnerável concedendo ${userShots} tiros em 36 ao adversário.`
-            : `O lance ${played} perde -${loss} de equidade em relação ao plano estratégico da posição.`;
+        const hasShotDiff = !isOptimal && userShots > bestShots;
+        const whyFailed = isOptimal
+            ? ''
+            : hasShotDiff
+              ? `Ao jogar ${played}, você deixa um blot vulnerável concedendo ${userShots} tiros em 36 ao adversário.`
+              : `O lance ${played} perde -${loss} de equidade em relação ao plano estratégico da posição.`;
         const whyOptimal = hasShotDiff
             ? `O lance ótimo ${optimal} reduz a exposição para ${bestShots} tiros e protege sua estrutura.`
             : `O lance ótimo ${optimal} maximiza sua equidade 3-Ply e controla as casas-chave.`;
         return {
             ...enResponse,
-            summary: hasShotDiff
-                ? `O lance concede ${userShots} tiros diretos contra apenas ${bestShots} do melhor lance.`
-                : `Seu lance ${played} perde -${loss} de equidade em comparação a ${optimal}.`,
+            summary: isOptimal
+                ? `Lance ótimo ✅: ${optimal} é a linha n.° 1 do motor (ΔEq 0.000, ${bestShots}/36 tiros).`
+                : hasShotDiff
+                  ? `O lance concede ${userShots} tiros diretos contra apenas ${bestShots} do melhor lance.`
+                  : `Seu lance ${played} perde -${loss} de equidade em comparação a ${optimal}.`,
             whyFailed,
             whyOptimal,
-            explanation: `${whyFailed} ${whyOptimal}`,
+            explanation: isOptimal ? whyOptimal : `${whyFailed} ${whyOptimal}`,
             keyConcept: hasShotDiff ? 'Minimização de tiros' : 'Estrutura e Equidade 3-Ply',
             advice: 'Avalie sempre o número de tiros diretos concedidos em 36 antes de deixar pedras expostas.',
         };
     }
 
     if (lang === 'de') {
-        const hasShotDiff = userShots > bestShots;
-        const whyFailed = hasShotDiff
-            ? `Mit ${played} hinterlassen Sie ein verwundbares Blot und geben dem Gegner ${userShots} von 36 Treffern.`
-            : `Der Zug ${played} verliert -${loss} Equity gegenüber dem optimalen Spielplan.`;
+        const hasShotDiff = !isOptimal && userShots > bestShots;
+        const whyFailed = isOptimal
+            ? ''
+            : hasShotDiff
+              ? `Mit ${played} hinterlassen Sie ein verwundbares Blot und geben dem Gegner ${userShots} von 36 Treffern.`
+              : `Der Zug ${played} verliert -${loss} Equity gegenüber dem optimalen Spielplan.`;
         const whyOptimal = hasShotDiff
             ? `Der optimale Zug ${optimal} reduziert das Risiko auf ${bestShots} Würfe und sichert Ihre Struktur.`
             : `Der optimale Zug ${optimal} maximiert Ihre 3-Ply-Equity und sichert wichtige Punkte.`;
         return {
             ...enResponse,
-            summary: hasShotDiff
-                ? `Der Zug erlaubt ${userShots} direkte Treffer im Vergleich zu nur ${bestShots} beim besten Zug.`
-                : `Ihr Zug ${played} kostet -${loss} Equity im Vergleich zu ${optimal}.`,
+            summary: isOptimal
+                ? `Optimaler Zug ✅: ${optimal} ist die Nr.-1-Linie der Engine (ΔEq 0.000, ${bestShots}/36 Treffer).`
+                : hasShotDiff
+                  ? `Der Zug erlaubt ${userShots} direkte Treffer im Vergleich zu nur ${bestShots} beim besten Zug.`
+                  : `Ihr Zug ${played} kostet -${loss} Equity im Vergleich zu ${optimal}.`,
             whyFailed,
             whyOptimal,
-            explanation: `${whyFailed} ${whyOptimal}`,
+            explanation: isOptimal ? whyOptimal : `${whyFailed} ${whyOptimal}`,
             keyConcept: hasShotDiff ? 'Treffer-Minimierung' : 'Struktur & 3-Ply-Equity',
             advice: 'Prüfen Sie vor jedem Zug, wie viele der 36 Würfe Ihre Blots direkt treffen können.',
         };
     }
 
     if (lang === 'ar') {
-        const hasShotDiff = userShots > bestShots;
-        const whyFailed = hasShotDiff
-            ? `بلعبك ${played}، تترك حجراً مكشوفاً (Blot) يمنح الخصم ${userShots} فرصة من أصل 36 للضرب.`
-            : `النقلة ${played} تخسر -${loss} من القيمة المتوقعة (Equity) مقارنة بالخطة المثلى.`;
+        const hasShotDiff = !isOptimal && userShots > bestShots;
+        const whyFailed = isOptimal
+            ? ''
+            : hasShotDiff
+              ? `بلعبك ${played}، تترك حجراً مكشوفاً (Blot) يمنح الخصم ${userShots} فرصة من أصل 36 للضرب.`
+              : `النقلة ${played} تخسر -${loss} من القيمة المتوقعة (Equity) مقارنة بالخطة المثلى.`;
         const whyOptimal = hasShotDiff
             ? `النقلة المثلى ${optimal} تقلل هذا الخطر إلى ${bestShots} رميات وتؤمّن هيكل البوابات.`
             : `النقلة المثلى ${optimal} تعظم القيمة المتوقعة 3-Ply وتسيطر على النقاط الاستراتيجية.`;
         return {
             ...enResponse,
-            summary: hasShotDiff
-                ? `النقلة تمنح الخصم ${userShots} رمية مباشرة مقابل ${bestShots} فقط للنقلة المثلى.`
-                : `نقلتك ${played} تفقد -${loss} من القيمة المتوقعة مقارنة بـ ${optimal}.`,
+            summary: isOptimal
+                ? `نقلة مثالية ✅: ${optimal} هي الخيار الأول للمحرك (ΔEq 0.000، ${bestShots}/36 رمية).`
+                : hasShotDiff
+                  ? `النقلة تمنح الخصم ${userShots} رمية مباشرة مقابل ${bestShots} فقط للنقلة المثلى.`
+                  : `نقلتك ${played} تفقد -${loss} من القيمة المتوقعة مقارنة بـ ${optimal}.`,
             whyFailed,
             whyOptimal,
-            explanation: `${whyFailed} ${whyOptimal}`,
+            explanation: isOptimal ? whyOptimal : `${whyFailed} ${whyOptimal}`,
             keyConcept: hasShotDiff ? 'تقليل الرميات المباشرة' : 'الهيكل والقيمة المتوقعة 3-Ply',
             advice: 'احسب دائماً عدد الرميات المواتية للخصم من أصل 36 قبل ترك أي حجر مكشوف.',
         };
@@ -228,7 +247,7 @@ export function buildCubeRuleBasedExplanation(params: CoachPromptParams): CoachS
             dominant_theme: (features?.contactStatus ?? 'contact') === 'pureRace' ? 'RACE' : 'HOLDING',
         },
         pedagogical_explanation: {
-            headline: cubeSummary.slice(0, 90),
+            headline: truncateToSwellerHeadline(cubeSummary, 15),
             tactical_rationale: cubeExplanation,
             correct_play_canonical: optimalMove,
             zare_luck_vs_skill: cubeAdvice,

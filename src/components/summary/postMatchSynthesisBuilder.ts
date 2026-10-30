@@ -196,7 +196,7 @@ export function buildRuleBasedSynthesis(payload: MatchSummaryPayload, locale: st
         weaknesses.push(
             isEn
                 ? `${counters.blunder} major blunder${counters.blunder > 1 ? 's' : ''} cost ${payload.totalEquityLoss.toFixed(3)} equity.`
-                : `${counters.blunder} blunder${counters.blunder > 1 ? 's' : ''} majeur${counters.blunder > 1 ? 's' : ''} ont coûté ${payload.totalEquityLoss.toFixed(3)} d’équité.`,
+                : `${counters.blunder} blunder${counters.blunder > 1 ? 's' : ''} majeur${counters.blunder > 1 ? 's' : ''} ${counters.blunder > 1 ? 'ont' : 'a'} coûté ${payload.totalEquityLoss.toFixed(3)} d’équité.`,
         );
     }
     if (counters.inaccuracy > 0) {

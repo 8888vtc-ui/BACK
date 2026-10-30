@@ -169,7 +169,9 @@ export function explainTacticalDifference(
         );
     } else if (blotsPlayed < blotsOptimal) {
         concepts.push('Sécurité');
-        reasons.push('votre coup sécurise davantage de pions que le coup optimal');
+        reasons.push(
+            'le coup optimal prend l’initiative (bâtisseur actif ou split dynamique) au lieu d’une sécurité trop passive',
+        );
     }
 
     // 2. Construction (points clés)
@@ -191,7 +193,7 @@ export function explainTacticalDifference(
         const optimalHas = hasKeyPoint(boardOptimal, player, kp.point);
         const playedHas = hasKeyPoint(boardPlayed, player, kp.point);
         if (optimalHas && !playedHas) {
-            concepts.push('Point clé');
+            if (!concepts.includes('Point clé')) concepts.push('Point clé');
             reasons.push(`le coup optimal construit le ${kp.name}, essentiel pour la suite`);
         }
     }
@@ -265,7 +267,11 @@ export function explainTacticalDifference(
         summary =
             'Le coup optimal est légèrement supérieur, mais la différence est subtile (positionnement à long terme).';
     } else {
-        summary = `Le coup optimal est meilleur car ${reasons.join(', et ')}.`;
+        const joinedReasons =
+            reasons.length === 1
+                ? reasons[0]
+                : `${reasons.slice(0, -1).join(', ')} et ${reasons[reasons.length - 1]}`;
+        summary = `Le coup optimal est meilleur car ${joinedReasons}.`;
     }
 
     return {

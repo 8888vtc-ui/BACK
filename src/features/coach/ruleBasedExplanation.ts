@@ -37,7 +37,7 @@ function moveNotationCreatesGateOnPoint(moveNotation: string, targetPoints: numb
 export function generateRuleBasedExplanation(params: CoachPromptParams): CoachStructuredResponse {
     const {
         verdict = 'doubtful',
-        equityLoss = -0.05,
+        equityLoss: rawEquityLoss,
         playedMove = 'Coup joué',
         optimalMove = 'Coup optimal',
         features,
@@ -45,7 +45,14 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         language = 'fr',
     } = params;
 
-    const cubeExplanationResult = buildCubeRuleBasedExplanation(params);
+    const defaultLoss = verdict === 'optimal' || playedMove === optimalMove ? 0 : -0.05;
+    const absLoss = Math.abs(rawEquityLoss ?? defaultLoss);
+    const equityLoss = absLoss < 0.0005 ? 0 : -absLoss;
+
+    const cubeExplanationResult = buildCubeRuleBasedExplanation({
+        ...params,
+        equityLoss,
+    });
     if (cubeExplanationResult) return cubeExplanationResult;
 
     const isEn = language === 'en';
@@ -305,7 +312,7 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
     }
 
     let explanation = `${whyFailed} ${whyOptimal}`;
-    const isOptimalVerdict = verdict === 'optimal' || playedMove === optimalMove || Math.abs(equityLoss) <= 0.01;
+    const isOptimalVerdict = verdict === 'optimal' || playedMove === optimalMove || absLoss < 0.001;
     if (isOptimalVerdict) {
         whyFailed = '';
         summary = isEn

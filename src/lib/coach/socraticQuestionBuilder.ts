@@ -290,16 +290,17 @@ export function buildSocraticQuestion(input: SocraticQuestionInput): SocraticCha
     ];
 
     const shots = input.directShotsConceded ?? 0;
+    const lossTag = absLoss < 0.0005 ? '0.000 Eq' : `-${absLoss.toFixed(3)} Eq`;
     const threePillars: GrandmasterThreePillars = isEn
         ? {
               connectivity: `Connectivity (Michy / Magriel): ${bestMove} keeps checkers within 6-pip mutual support and secures key structural points (${proverbEntry.name}).`,
               timingAndRace: `Timing & Race (Trice / Magriel): At ${playerPips} vs ${opponentPips} pips (${pipLead >= 0 ? `+${pipLead}` : pipLead} pips), ${pipLead >= 8 ? 'Magriel dictates safe contact-breaking' : 'maintain timing to outlast the opponent structure'}.`,
-              duplicationAndPurity: `Duplication & Purity (Mochy / Woolsey): Pure ${choices[optimalChoiceIndex]} execution (${shots}/36 direct shots) avoids impure hybrid plays (-${absLoss.toFixed(3)} Eq).`,
+              duplicationAndPurity: `Duplication & Purity (Mochy / Woolsey): Pure ${choices[optimalChoiceIndex]} execution (${shots}/36 direct shots) avoids impure hybrid plays (${lossTag}).`,
           }
         : {
               connectivity: `Connectivité (Michy / Magriel) : ${bestMove} maintient tes pions à portée mutuelle (< 6 cases) et verrouille les portes maîtresses (${proverbEntry.name}).`,
               timingAndRace: `Timing & Course (Trice / Magriel) : À ${playerPips} contre ${opponentPips} pips (${pipLead >= 0 ? `+${pipLead}` : pipLead} pips), ${pipLead >= 8 ? 'la règle de Magriel impose la sécurité et la fuite' : 'préserve ton timing pour étouffer la structure adverse'}.`,
-              duplicationAndPurity: `Duplication & Pureté (Mochy / Woolsey) : La pureté du plan « ${choices[optimalChoiceIndex]} » (${shots}/36 tirs directs) élimine toute perte d’équité hybride (-${absLoss.toFixed(3)} Eq).`,
+              duplicationAndPurity: `Duplication & Pureté (Mochy / Woolsey) : La pureté du plan « ${choices[optimalChoiceIndex]} » (${shots}/36 tirs directs) élimine toute perte d’équité hybride (${lossTag}).`,
           };
 
     return {
