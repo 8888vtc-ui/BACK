@@ -1,15 +1,8 @@
 'use client';
 
 /**
- * Videau (doubling cube) de tournoi — Bloc d'ivoire patiné vintage avec chiffres
- * sérigraphiés rétro et surbrillance dorée dynamique (style Snowie 4 Pro).
- *
- * Rôle :
- *   Affiche le videau selon sa valeur (64, 2, 4, 8…) et sa position (haut si O,
- *   bas si X, centré si neutre).
- *
- * Dépendances :
- *   Aucune (composant pur). Mémoïsé via React.memo (LOI 5).
+ * Videau (doubling cube) Haute-Horlogerie Cercle Monte-Carlo — Bloc d'Onyx & Laiton Or 24k.
+ * Éradique définitivement le violet/indigo Galaxy au profit de la charte Or Champagne & Ébène.
  */
 
 import React from 'react';
@@ -35,13 +28,12 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
 }) => {
     const display = cubeValue === 1 ? '64' : cubeValue;
 
-    // Position verticale selon le propriétaire : haut (O), bas (X), centré (null)
     const positionClass =
         cubeOwner === 'O'
             ? 'self-start'
             : cubeOwner === 'X'
-                ? 'self-end'
-                : 'self-center';
+              ? 'self-end'
+              : 'self-center';
 
     return (
         <div
@@ -57,18 +49,19 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
             }}
         >
             <div
-                className={`relative w-7 h-7 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center transition-all duration-150 overflow-hidden ${canDouble
-                    ? 'ring-2 sm:ring-4 ring-amber-400/90 shadow-[0_0_20px_rgba(251,191,36,0.75)] cursor-pointer hover:scale-105 active:scale-95'
-                    : 'hover:scale-105'
-                    }`}
+                className={`relative w-7 h-7 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center transition-all duration-150 overflow-hidden ${
+                    canDouble
+                        ? 'ring-2 sm:ring-4 ring-amber-400/90 shadow-[0_0_22px_rgba(212,175,55,0.75)] cursor-pointer hover:scale-105 active:scale-95'
+                        : 'hover:scale-105'
+                }`}
                 style={{
                     background: canDouble
-                        ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-                        : 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.55)',
+                        ? 'linear-gradient(135deg, #f5dfa0 0%, #d4af37 55%, #9a6f18 100%)'
+                        : 'linear-gradient(145deg, #241a10 0%, #140e08 60%, #0b0805 100%)',
+                    boxShadow: '0 6px 16px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 240, 195, 0.35)',
                     border: canDouble
-                        ? '1.5px solid #fef08a'
-                        : '1px solid rgba(255, 255, 255, 0.22)',
+                        ? '1.5px solid #fff7d6'
+                        : '1.5px solid rgba(212, 175, 55, 0.75)',
                 }}
                 title={
                     cubeOwner === null
@@ -77,7 +70,9 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
                 }
             >
                 <span
-                    className="relative z-10 text-xs sm:text-lg md:text-xl font-black tabular-nums tracking-tight text-white"
+                    className={`relative z-10 font-display text-xs sm:text-lg md:text-xl font-bold tabular-nums tracking-tight ${
+                        canDouble ? 'text-[#090806]' : 'text-[#f5dfa0]'
+                    }`}
                 >
                     {display}
                 </span>

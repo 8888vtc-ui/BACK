@@ -228,14 +228,14 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
             )}
 
             {!isWaitingRoll && !isOpponentOfferingDouble && (showUndo || showConfirm || hasAutoControl) && (
-                <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/15 bg-slate-950/95 px-2.5 py-1.5 shadow-[0_12px_30px_rgba(0,0,0,0.85)] backdrop-blur-md">
+                <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-[#d4af37]/35 bg-[#0e0b08]/95 px-2.5 py-1.5 shadow-[0_12px_30px_rgba(0,0,0,0.85)] backdrop-blur-md">
                     {showUndo && (
                         <button
                             type="button"
                             data-testid="center-undo-button"
                             title="Annuler le dernier dé joué (Ctrl+Z)"
                             onClick={(e) => { e.stopPropagation(); void impactLight(); onUndo(); }}
-                            className="rounded-full border border-white/10 bg-slate-900 min-h-[38px] px-3.5 py-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-200 shadow-inner transition hover:border-amber-400/50 hover:text-white active:scale-95 flex items-center justify-center touch-manipulation"
+                            className="rounded-full border border-[#d4af37]/30 bg-[#18130e] min-h-[38px] px-3.5 py-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#f7f3e8] shadow-inner transition hover:border-[#d4af37] hover:text-white active:scale-95 flex items-center justify-center touch-manipulation"
                         >
                             ↶ Annuler
                         </button>

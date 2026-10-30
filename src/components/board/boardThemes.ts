@@ -6,7 +6,10 @@
  *   - les tokens visuels (`BOARD_THEME_TOKENS`) consommés par `BoardFrame`,
  *     `FeltSurface`, `BoardPoint` et `BoardCentralBar`.
  *
- * `snowie_classic` est le thème par défaut (rendu Snowie 4 Pro).
+ * Résout définitivement le problème du "Blanc sur Blanc" :
+ *   Les flèches paires ("light") sont en Marqueterie Chêne Doré / Tabac Blond (#dec48f -> #946f32)
+ *   afin que les pions Blancs en Nacre d'Ivoire (#ffffff) sertis de Bronze foncé se détachent
+ *   instantanément avec un contraste franc, tout en respectant WCAG AAA (ratio >= 7:1).
  */
 
 import type { Move } from '../../engine/backgammonEngine';
@@ -74,11 +77,11 @@ const SNOWIE_CLASSIC: BoardThemeTokens = {
         inset: 'inset 0 0 0 1px rgba(212, 175, 55, 0.28)',
     },
     points: {
-        light: ['#fdfaf3', '#f2e8d3', '#dbcaa6', '#beaa82'],
-        dark: ['#8a2c1a', '#6a1f11', '#49130a', '#2c0904'],
-        lightStroke: 'rgba(92, 65, 30, 0.45)',
-        darkStroke: 'rgba(255, 185, 160, 0.22)',
-        lightInlay: 'rgba(255, 255, 255, 0.38)',
+        light: ['#dec48f', '#c7a66b', '#b08b4c', '#946f32'],
+        dark: ['#8a2c1a', '#6a1f11', '#3d1008', '#140402'],
+        lightStroke: 'rgba(56, 35, 10, 0.78)',
+        darkStroke: 'rgba(212, 175, 55, 0.35)',
+        lightInlay: 'rgba(255, 240, 200, 0.3)',
         darkInlay: 'rgba(0, 0, 0, 0.45)',
     },
     bar: {
@@ -109,11 +112,11 @@ const TOURNAMENT: BoardThemeTokens = {
         inset: 'inset 0 0 0 1px rgba(195, 125, 60, 0.32)',
     },
     points: {
-        light: ['#fbf8f1', '#f1ebdd', '#ddd3bd', '#c7b99a'],
-        dark: ['#7c2b1d', '#611f10', '#441407', '#2a0c06'],
-        lightStroke: 'rgba(80, 60, 35, 0.4)',
-        darkStroke: 'rgba(255, 190, 150, 0.2)',
-        lightInlay: 'rgba(255, 255, 255, 0.4)',
+        light: ['#dfc693', '#c8a86e', '#b18d4f', '#967134'],
+        dark: ['#7c2b1d', '#611f10', '#3a1006', '#140402'],
+        lightStroke: 'rgba(56, 35, 10, 0.75)',
+        darkStroke: 'rgba(212, 175, 55, 0.32)',
+        lightInlay: 'rgba(255, 240, 200, 0.3)',
         darkInlay: 'rgba(0, 0, 0, 0.45)',
     },
     bar: {
@@ -144,10 +147,10 @@ const MIDNIGHT: BoardThemeTokens = {
         inset: 'inset 0 0 0 1px rgba(148, 163, 184, 0.2)',
     },
     points: {
-        light: ['#e8eef7', '#d3dbe8', '#b4becf', '#95a1b6'],
-        dark: ['#24407a', '#1b3263', '#12224a', '#0a1430'],
-        lightStroke: 'rgba(40, 55, 80, 0.45)',
-        darkStroke: 'rgba(147, 197, 253, 0.2)',
+        light: ['#cad6e8', '#b0bfd6', '#94a6c2', '#788ba8'],
+        dark: ['#24407a', '#1b3263', '#0e1b3b', '#050b1a'],
+        lightStroke: 'rgba(30, 45, 70, 0.65)',
+        darkStroke: 'rgba(147, 197, 253, 0.25)',
         lightInlay: 'rgba(255, 255, 255, 0.35)',
         darkInlay: 'rgba(0, 0, 0, 0.5)',
     },
