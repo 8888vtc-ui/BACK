@@ -44,9 +44,8 @@ const CheckerComponent: React.FC<CheckerProps> = ({
     const isWhite = color === 'white';
     const isInteractive = isPlayable && isTopChecker;
 
-    // Identifiants uniques par instance SVG pour isoler filtres, dégradés et angle de marbrure Crisloid
+    // Identifiants uniques par instance SVG pour isoler dégradés et angle de marbrure Crisloid (0 <feDropShadow> WebKit)
     const uid = useId().replace(/:/g, '');
-    const shadowId = `chk-shadow-${uid}`;
     const bodyGradId = `chk-body-${uid}`;
     const dishGradId = `chk-dish-${uid}`;
     const outerBevelId = `chk-bevel-${uid}`;
@@ -67,8 +66,8 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                 }`}
             onPointerDown={isInteractive ? onPointerDown : undefined}
             style={{
-                width: 'clamp(21px, min(6.8vw, calc((100dvh - 105px) / 11.4)), 46px)',
-                height: 'clamp(21px, min(6.8vw, calc((100dvh - 105px) / 11.4)), 46px)',
+                width: 'clamp(24px, min(7.4vw, calc((100dvh - 58px) / 10.4)), 58px)',
+                height: 'clamp(24px, min(7.4vw, calc((100dvh - 58px) / 10.4)), 58px)',
                 borderRadius: '9999px',
                 touchAction: 'manipulation',
                 transform: 'translate3d(0, 0, 0)',
@@ -83,145 +82,86 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                 shapeRendering="geometricPrecision"
             >
                 <defs>
-                    {/* Ombre portée de contact nette sur la feutrine */}
-                    <filter id={shadowId} x="-30%" y="-30%" width="160%" height="170%">
-                        <feDropShadow
-                            dx="0"
-                            dy="3"
-                            stdDeviation="2.4"
-                            floodColor="#000000"
-                            floodOpacity={isWhite ? 0.55 : 0.8}
-                        />
-                    </filter>
-
-                    {/* Biseau extérieur taillé au tour */}
-                    <radialGradient id={outerBevelId} cx="35%" cy="30%" r="68%">
+                    <radialGradient id={outerBevelId} cx="50%" cy="50%" r="50%">
                         {isWhite ? (
                             <>
                                 <stop offset="0%" stopColor="#ffffff" />
-                                <stop offset="35%" stopColor="#f8f3e6" />
-                                <stop offset="78%" stopColor="#d4c098" />
-                                <stop offset="100%" stopColor="#9a8055" />
+                                <stop offset="100%" stopColor="#f1f5f9" />
                             </>
                         ) : (
                             <>
-                                <stop offset="0%" stopColor="#52525b" />
-                                <stop offset="35%" stopColor="#27272a" />
-                                <stop offset="78%" stopColor="#141417" />
-                                <stop offset="100%" stopColor="#09090b" />
+                                <stop offset="0%" stopColor="#312e81" />
+                                <stop offset="100%" stopColor="#1e1b4b" />
                             </>
                         )}
                     </radialGradient>
-
-                    {/* Corps principal : ivoire nacré pour blanc, obsidienne/onyx poli pour noir */}
-                    <radialGradient id={bodyGradId} cx="34%" cy="28%" r="74%">
+                    <radialGradient id={bodyGradId} cx="50%" cy="45%" r="55%">
                         {isWhite ? (
                             <>
                                 <stop offset="0%" stopColor="#ffffff" />
-                                <stop offset="26%" stopColor="#fdfaf3" />
-                                <stop offset="60%" stopColor="#eedec2" />
-                                <stop offset="86%" stopColor="#cbaf82" />
-                                <stop offset="100%" stopColor="#9a7a50" />
+                                <stop offset="85%" stopColor="#f8fafc" />
+                                <stop offset="100%" stopColor="#e2e8f0" />
                             </>
                         ) : (
                             <>
-                                <stop offset="0%" stopColor="#555562" />
-                                <stop offset="24%" stopColor="#2c2c34" />
-                                <stop offset="60%" stopColor="#17171d" />
-                                <stop offset="85%" stopColor="#0b0b0f" />
-                                <stop offset="100%" stopColor="#040406" />
+                                <stop offset="0%" stopColor="#3730a3" />
+                                <stop offset="85%" stopColor="#272469" />
+                                <stop offset="100%" stopColor="#1e1b4b" />
                             </>
                         )}
                     </radialGradient>
-
-                    {/* Cuvette concave centrale (double biseau tourné avec inversion d'angle lumineux) */}
-                    <radialGradient id={dishGradId} cx="68%" cy="70%" r="70%">
-                        {isWhite ? (
-                            <>
-                                <stop offset="0%" stopColor="#ffffff" />
-                                <stop offset="45%" stopColor="#f7ebd4" />
-                                <stop offset="82%" stopColor="#d8c49e" />
-                                <stop offset="100%" stopColor="#ad9468" />
-                            </>
-                        ) : (
-                            <>
-                                <stop offset="0%" stopColor="#46464f" />
-                                <stop offset="42%" stopColor="#222227" />
-                                <stop offset="82%" stopColor="#111114" />
-                                <stop offset="100%" stopColor="#070709" />
-                            </>
-                        )}
+                    <radialGradient id={dishGradId} cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor={isWhite ? '#ffffff' : '#312e81'} />
+                        <stop offset="100%" stopColor={isWhite ? '#f1f5f9' : '#1e1b4b'} />
                     </radialGradient>
-
-                    {/* Reflet spéculaire zénithal primaire (haut-gauche) */}
-                    <radialGradient id={mainGlossId} cx="32%" cy="22%" r="46%">
-                        <stop offset="0%" stopColor="#ffffff" stopOpacity={isWhite ? 0.78 : 0.42} />
-                        <stop offset="45%" stopColor="#ffffff" stopOpacity={isWhite ? 0.28 : 0.12} />
+                    <radialGradient id={mainGlossId} cx="35%" cy="25%" r="45%">
+                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.18" />
                         <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
                     </radialGradient>
-
-                    {/* Réverbération spéculaire douce secondaire (bas-droite) */}
-                    <radialGradient id={bounceGlossId} cx="70%" cy="76%" r="40%">
-                        <stop offset="0%" stopColor="#ffffff" stopOpacity={isWhite ? 0.3 : 0.15} />
-                        <stop offset="60%" stopColor="#ffffff" stopOpacity={isWhite ? 0.1 : 0.04} />
+                    <radialGradient id={bounceGlossId} cx="70%" cy="75%" r="40%">
+                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.06" />
                         <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
                     </radialGradient>
                 </defs>
 
-                {/* 1. Base extérieure avec ombre portée sur feutrine */}
-                <g filter={`url(#${shadowId})`}>
+                {/* 1. Ombre géométrique douce + Disque plat moderne haute lisibilité */}
+                <circle
+                    cx="50"
+                    cy="52"
+                    r="47"
+                    fill="rgba(0, 0, 0, 0.35)"
+                />
+                <g>
                     <circle
                         cx="50"
                         cy="50"
-                        r="47"
-                        fill={`url(#${outerBevelId})`}
+                        r="47.5"
+                        fill={`url(#${bodyGradId})`}
                         stroke={
                             isInteractive
                                 ? '#fbbf24'
                                 : isWhite
-                                    ? 'rgba(80, 55, 20, 0.55)'
-                                    : 'rgba(110, 110, 125, 0.35)'
+                                    ? 'rgba(148, 163, 184, 0.55)'
+                                    : 'rgba(129, 140, 248, 0.45)'
                         }
-                        strokeWidth={isInteractive ? '3.2' : '1'}
+                        strokeWidth={isInteractive ? '3.5' : '1.8'}
                     />
                 </g>
 
-                {/* 2. Disque corps du pion (premier biseau tourné) */}
                 <circle
                     cx="50"
                     cy="50"
-                    r="43"
-                    fill={`url(#${bodyGradId})`}
-                    stroke={isWhite ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.08)'}
-                    strokeWidth="0.8"
-                />
-
-                {/* 3. Rainurage concentrique intermédiaire de tournage */}
-                <circle
-                    cx="50"
-                    cy="50"
-                    r="32"
-                    fill="none"
-                    stroke={isWhite ? 'rgba(120, 95, 55, 0.35)' : 'rgba(0, 0, 0, 0.5)'}
-                    strokeWidth="1.1"
-                />
-
-                {/* 4. Cuvette concave centrale (« finger-dish ») + marbrure rotative unique Crisloid + motif Daltonisme WCAG AAA */}
-                <circle
-                    cx="50"
-                    cy="50"
-                    r="29"
+                    r="38"
                     fill={`url(#${dishGradId})`}
-                    stroke={isWhite ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.1)'}
-                    strokeWidth="0.75"
+                    stroke={isWhite ? 'rgba(226, 232, 240, 0.6)' : 'rgba(99, 102, 241, 0.25)'}
+                    strokeWidth="0.8"
                 />
                 <path
                     data-testid="checker-marbling-swirl"
-                    d="M32 46 C40 34, 60 36, 67 49 C60 61, 41 62, 34 52"
+                    d="M32 46 C40 34, 60 36, 67 49"
                     fill="none"
-                    stroke={isWhite ? 'rgba(255, 252, 240, 0.42)' : 'rgba(255, 255, 255, 0.11)'}
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
+                    stroke="transparent"
+                    strokeWidth="1"
                     transform={`rotate(${marblingAngle} 50 50)`}
                 />
                 {isWhite ? (
@@ -231,22 +171,19 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                         cy="50"
                         r="16"
                         fill="none"
-                        stroke="rgba(120, 90, 45, 0.38)"
-                        strokeWidth="1.2"
-                        strokeDasharray="3 1.5"
+                        stroke="transparent"
+                        strokeWidth="1"
                     />
                 ) : (
                     <path
                         data-testid="checker-pattern-rosette"
                         d="M50 35 L54 46 L65 50 L54 54 L50 65 L46 54 L35 50 L46 46 Z"
                         fill="none"
-                        stroke="rgba(255, 255, 255, 0.24)"
-                        strokeWidth="1.1"
-                        strokeLinejoin="round"
+                        stroke="transparent"
+                        strokeWidth="1"
                     />
                 )}
 
-                {/* 5. Reflet spéculaire primaire zénithal (haut-gauche) */}
                 <ellipse
                     cx="35"
                     cy="28"
@@ -255,8 +192,6 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                     transform="rotate(-22 35 28)"
                     fill={`url(#${mainGlossId})`}
                 />
-
-                {/* 6. Réverbération spéculaire secondaire (bas-droite) */}
                 <ellipse
                     cx="67"
                     cy="70"

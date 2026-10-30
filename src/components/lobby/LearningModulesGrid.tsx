@@ -135,43 +135,19 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
                 href="/academy#learn-rules"
                 prefetch
                 data-testid="lobby-beginner-rules-link"
-                className="group flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-emerald-950/30 px-3.5 py-2.5 transition hover:border-emerald-400/40 hover:bg-emerald-950/50"
+                className="group flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-500/25 bg-emerald-950/30 px-3.5 py-2.5 transition hover:border-emerald-400/50 hover:bg-emerald-950/50"
             >
                 <div className="flex flex-wrap items-center gap-2 min-w-0">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
-                        🌱 Débutant · Jamais joué ?
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">
+                        🌱 Nouveau au Backgammon ?
                     </span>
                     <span className="text-slate-600">·</span>
                     <span className="text-xs font-bold text-slate-100 group-hover:text-white transition truncate">
-                        Apprendre les Règles en 5 Étapes Ludiques (Diagrammes, Quiz &amp; Bravos 🎉)
+                        Apprendre les règles en 5 étapes interactives (3 min)
                     </span>
                 </div>
-                <span className="shrink-0 rounded-lg border border-white/10 bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-200 group-hover:border-emerald-400/50 group-hover:text-white transition">
-                    Commencer (5 min) →
-                </span>
-            </Link>
-
-            {/* Barre compacte SEO & Encyclopédie Gammon Academy (/academy) */}
-            <Link
-                href="/academy"
-                prefetch
-                data-testid="lobby-academy-hub-link"
-                className="group flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-slate-900/40 px-3.5 py-2.5 transition hover:border-white/25 hover:bg-slate-800/60"
-            >
-                <div className="flex flex-wrap items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300">
-                        🏛️ {ui.lobby.academyBannerBadge}
-                    </span>
-                    <span className="text-slate-600">·</span>
-                    <h2 className="text-xs font-bold text-slate-100 group-hover:text-white transition truncate">
-                        {ui.lobby.academyBannerTitle}
-                    </h2>
-                    <span className="hidden md:inline text-xs text-slate-400 truncate">
-                        — {ui.lobby.academyBannerDesc}
-                    </span>
-                </div>
-                <span className="shrink-0 rounded-lg border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[11px] font-bold text-slate-200 group-hover:border-white/25 group-hover:text-white transition">
-                    {ui.lobby.academyBannerCta}
+                <span className="shrink-0 rounded-lg border border-emerald-400/30 bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-100 group-hover:border-emerald-400/60 group-hover:text-white transition">
+                    Découvrir →
                 </span>
             </Link>
         </section>

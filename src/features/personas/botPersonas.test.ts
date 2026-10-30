@@ -108,4 +108,43 @@ describe('botPersonas — 4 Archétypes & Mode Adaptatif (Fun vs Pro)', () => {
         expect(BLUNDER_CAP_EMG_BY_DIFFICULTY.expert).toBe(0.035);
         expect(BLUNDER_CAP_EMG_BY_DIFFICULTY.grandmaster).toBe(0.0);
     });
+
+    it('supporte l’internationalisation complète des personas et répliques sur 7 langues (Zéro Drapeau)', () => {
+        // EN
+        const enBeginner = getBotPersona('beginner', 'en');
+        expect(enBeginner.name).toBe('Arthur "The Sore Loser"');
+        expect(enBeginner.shortName).toBe('The Sore Loser');
+        expect(enBeginner.dialogues.opening.fun).toContain('hunting down');
+
+        const enExpert = getBotPersona('expert', 'en');
+        expect(enExpert.name).toBe('Marcus "The High-Roller"');
+
+        // ES
+        const esBeginner = getBotPersona('beginner', 'es');
+        expect(esBeginner.name).toBe('Arturo «El Mal Perdedor»');
+
+        // DE
+        const deGm = getBotPersona('grandmaster', 'de');
+        expect(deGm.name).toBe('Spinoza „Der Großmeister“');
+
+        // JA
+        const jaBeginner = getBotPersona('beginner', 'ja');
+        expect(jaBeginner.name).toContain('アーサー');
+
+        // Chat reply in English
+        const enChatReply = generateBotChatReply('Can I get some advice on what to play?', 'expert', 'fun', null, 'en');
+        expect(enChatReply.text).toContain('Tip from The High-Roller');
+
+        // Guardrail in German
+        const deGuardrail = generateBotChatReply('idiot', 'intermediate', 'fun', null, 'de');
+        expect(deGuardrail.filteredByGuardrail).toBe(true);
+        expect(deGuardrail.text).toContain('Monte-Carlo');
+
+        // Swap Dice verdict in Japanese
+        const jaSwap = computeSwapDiceComparison([
+            { die1: 6, die2: 6 },
+            { die1: 2, die2: 3 },
+        ], 'ja');
+        expect(jaSwap.verdictText).toContain('ピップ');
+    });
 });

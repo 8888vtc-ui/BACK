@@ -147,10 +147,10 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
             {chameleonLayer !== 0 && (
                 <span
                     data-testid={`${testId}-pr`}
-                    title={`Performance Rating (PR) : ${pr !== null && pr !== undefined ? pr.toFixed(1) : '--'} — Niveau : ${prCategory} (plus bas = meilleur)`}
-                    className={`inline-block ml-0.5 shrink-0 whitespace-nowrap rounded border px-1 py-0.5 font-mono text-[10px] sm:text-[11px] font-bold tabular-nums transition-shadow duration-300 ${prBadgeClass(pr)}`}
+                    title={`Performance Rating (PR) : ${pr !== null && pr !== undefined ? pr.toFixed(2) : '--'} — Niveau : ${prCategory} (plus bas = meilleur)`}
+                    className={`inline-flex ml-1 shrink-0 whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[11px] font-black tabular-nums transition-shadow duration-300 ${prBadgeClass(pr)}`}
                 >
-                    PR {pr !== null && pr !== undefined ? pr.toFixed(1) : '--'}
+                    PR {pr !== null && pr !== undefined ? pr.toFixed(2) : '0.00'}
                 </span>
             )}
         </div>

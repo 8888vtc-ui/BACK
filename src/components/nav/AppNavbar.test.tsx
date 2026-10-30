@@ -26,11 +26,8 @@ describe('Audits 1, 2 & 5 — AppNavbar & InGameMenuModal', () => {
         expect(screen.getByTestId('nav-tab-openings')).toBeDefined();
         expect(screen.getByTestId('nav-tab-progression')).toBeDefined();
 
-        // Sélecteur de langue 6 marchés
-        const localeSelect = screen.getByTestId('navbar-locale-select') as HTMLSelectElement;
-        expect(localeSelect).toBeDefined();
-        expect(localeSelect.options.length).toBe(6);
-        fireEvent.change(localeSelect, { target: { value: 'en' } });
+        // Zéro sélecteur à drapeaux années 80 (auto-détection pure du navigateur)
+        expect(screen.queryByTestId('navbar-locale-select')).toBeNull();
 
         // Ouverture du tiroir mobile
         fireEvent.click(screen.getByTestId('navbar-mobile-burger'));

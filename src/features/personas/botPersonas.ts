@@ -4,6 +4,16 @@
  */
 
 import type { AIDifficulty } from '../../engine/aiHeuristics';
+import type { Locale } from '../../lib/i18n/types';
+import { PERSONA_TEXTS_BY_DIFFICULTY } from './botPersonaTranslations';
+import {
+    CHAT_GUARDRAIL_TEXTS,
+    CHAT_DICE_AUDIT_TEXTS,
+    CHAT_CUBE_TEXTS,
+    formatAdviceReply,
+    formatDefaultProReply,
+    formatSwapDiceVerdict,
+} from './botChatTranslations';
 
 export type ExperienceMode = 'fun' | 'pro';
 
@@ -52,150 +62,69 @@ export interface BotPersonaSpec {
     };
 }
 
-const EXPERIENCE_MODE_STORAGE_KEY = 'bg_experience_mode_v1';
-
-export const BOT_PERSONAS_BY_DIFFICULTY: Record<AIDifficulty, BotPersonaSpec> = {
+const BOT_PERSONA_BASE_CONFIG: Record<AIDifficulty, {
+    readonly avatar: string;
+    readonly targetErrorRate: number;
+    readonly weights: {
+        readonly hitBonus: number;
+        readonly ownBlotPenalty: number;
+        readonly primeBonus: number;
+        readonly anchorBonus: number;
+        readonly raceBonus: number;
+    };
+}> = {
     beginner: {
-        id: 'beginner',
-        name: 'Maxime « Le Mauvais Joueur »',
-        shortName: 'Le Mauvais Joueur',
-        archetypeTitle: 'Colérique Théâtral & Blitz Agressif',
         avatar: '🤬',
-        lobbyHint: 'Maxime · Blitz & Mauvaise foi',
-        styleBadge: 'Blitz Ultra-Agressif',
-        skillTaught: 'Punir la sur-agressivité & gérer la barre',
         targetErrorRate: 7.8,
         weights: { hitBonus: 0.22, ownBlotPenalty: -0.01, primeBonus: 0.01, anchorBonus: 0.0, raceBonus: -0.02 },
-        dialogues: {
-            opening: {
-                fun: "Prépare-toi ! Aujourd'hui les dés sont avec moi, je vais chasser chacun de tes pions isolés !",
-                pro: 'Mode Blitz engagé. Voyons si ta défense du jan intérieur résiste à une pression maximale sur le tempo.',
-            },
-            playerDoubleRoll: {
-                fun: 'Encore un double ?! C’est statistiquement absurde, tu as soudoyé le serveur SHA-256 ou quoi ?!',
-                pro: 'Un Huge Joker pile sur ce tempo ?! Même le générateur Provably Fair complote contre mon Blitz !',
-            },
-            playerBlunder: {
-                fun: 'Oh oui, laisse ce pion exposé devant mes portes, je me frotte déjà les mains ! (Clique sur Reprendre si tu veux te protéger !)',
-                pro: 'Attention, cette ligne lâche de l’équité EMG en m’offrant des tirs directs gratuits au prochain jet.',
-            },
-            playerOptimal: {
-                fun: 'Pfff, tu fermes pile la porte que je visais... Tu as de la chance que mes dés dorment !',
-                pro: 'Coup optimal (0 perte EMG). Tu verrouilles mes tirs directs et conserves l’initiative.',
-            },
-            botHitPlayer: {
-                fun: 'BAM ! Direction la barre ! Tu croyais vraiment que j’allais laisser ce pion tout seul tranquille ?',
-                pro: 'Frappe directe sur le tempo : tu perds 22 pips à la course et l’initiative sur le jan.',
-            },
-        },
     },
     intermediate: {
-        id: 'intermediate',
-        name: 'Sofia « La Joueuse Riviera »',
-        shortName: 'Sofia « La Riviera »',
-        archetypeTitle: 'Charme Monte-Carlo & Jeu de Pièges',
         avatar: '🕶️',
-        lobbyHint: 'Sofia · Pièges & Holding Monte-Carlo',
-        styleBadge: 'Holding Game & Appâts',
-        skillTaught: 'Déjouer les pions appâts & gérer une ancre',
         targetErrorRate: 4.2,
         weights: { hitBonus: 0.06, ownBlotPenalty: -0.02, primeBonus: 0.04, anchorBonus: 0.16, raceBonus: 0.0 },
-        dialogues: {
-            opening: {
-                fun: 'Bonsoir ! Une partie sous les lustres de Monte-Carlo ? Promis, mes pions isolés sont... presque tous innocents.',
-                pro: 'Voyons comment tu gères ton timing face à une ancre haute et des pions appâts calculés.',
-            },
-            playerDoubleRoll: {
-                fun: 'Oh, quel lancer audacieux ! Les dés ont visiblement un faible pour toi ce soir.',
-                pro: 'Un double à haute équité qui résout élégamment ta sortie d’arrière-garde.',
-            },
-            playerBlunder: {
-                fun: 'Un conseil d’amie : ce coup découvre ta maison alors que mon ancre attend dans l’ombre. Tu veux le rejouer ?',
-                pro: 'Piège tactique : ce coup dégrade ton équité EMG en exposant ta structure à une contre-attaque depuis mon ancre.',
-            },
-            playerOptimal: {
-                fun: 'Élégant et prudent ! Tu n’es pas tombé dans mon petit piège sur ce tour.',
-                pro: 'Lecture chirurgicale : tu refuses l’appât et préserves la pureté de ta structure.',
-            },
-            botHitPlayer: {
-                fun: 'Tu as mordu à l’appât ! Ce pion semblait vulnérable, mais mon ancre attendait ton ouverture.',
-                pro: 'Contre-attaque depuis le point d’ancrage : ton timing recule pendant que ma structure tient.',
-            },
-        },
     },
     expert: {
-        id: 'expert',
-        name: 'Victor « L’Homme d’Affaires »',
-        shortName: 'L’Homme d’Affaires',
-        archetypeTitle: 'Stratège High-Roller, Course & Videau',
         avatar: '💼',
-        lobbyHint: 'Victor · Videau & Course High-Roller',
-        styleBadge: 'Course Pure & Videau Actif',
-        skillTaught: 'Maîtrise du Videau (Take/Pass 25%) & Course',
         targetErrorRate: 1.8,
         weights: { hitBonus: 0.03, ownBlotPenalty: -0.12, primeBonus: 0.04, anchorBonus: 0.02, raceBonus: 0.18 },
-        dialogues: {
-            opening: {
-                fun: 'Le temps c’est de l’équité ! Surveille la course et prépare-toi à négocier le Videau comme un contrat.',
-                pro: 'Marché ouvert. On joue l’espérance mathématique pure : chaque pip et chaque fenêtre de Cube comptent.',
-            },
-            playerDoubleRoll: {
-                fun: 'Sacré dividende sur ce lancer ! Ton portefeuille de pips vient de bondir d’un coup.',
-                pro: 'Volatilité maximale : ce double déplace brusquement la fenêtre de Cube en ta faveur.',
-            },
-            playerBlunder: {
-                fun: 'Halte là, mauvais investissement ! Tu exposes ton capital sans couverture. Reprends ce coup tant qu’il est temps !',
-                pro: 'Erreur d’allocation EMG : mauvaise gestion du ratio risque/rendement par rapport à la ligne optimale.',
-            },
-            playerOptimal: {
-                fun: 'Investissement rentable ! Tu sécurises tes pions avec un retour sur investissement impeccable.',
-                pro: 'Exécution optimale : tu maximises l’équité sans gammon et consolides ton différentiel de course.',
-            },
-            botHitPlayer: {
-                fun: 'Liquidation immédiate de ton pion isolé ! Ça te coûte 20 pips de pénalité au bilan.',
-                pro: 'Opération à ROI positif : gain net au différentiel de course et neutralisation de ton tempo.',
-            },
-        },
     },
     grandmaster: {
-        id: 'grandmaster',
-        name: 'Viktor « L’Intellectuel »',
-        shortName: 'Viktor « L’Intellectuel »',
-        archetypeTitle: 'Philosophe Grand-Maître & Architecte 5-Prime',
         avatar: '🧐',
-        lobbyHint: 'Viktor · Barricade 3-ply & Mentor',
-        styleBadge: 'Jeu Positionnel & Barricade (Prime)',
-        skillTaught: 'Probabilités sur 36, constructeurs & 5-Prime',
         targetErrorRate: 0.3,
         weights: { hitBonus: 0.07, ownBlotPenalty: -0.08, primeBonus: 0.20, anchorBonus: 0.06, raceBonus: 0.05 },
-        dialogues: {
-            opening: {
-                fun: 'Comme l’écrivait Sun Tzu, la victoire se construit avant la bataille. Construisons nos portes avec harmonie.',
-                pro: 'Concentrons-nous sur la pureté structurelle : duplication des dés, constructeurs et contrôle du point 5.',
-            },
-            playerDoubleRoll: {
-                fun: 'Le hasard sourit aux esprits préparés ! Ce double ne représentait que 1 chance sur 36, savoure-le.',
-                pro: 'Événement à haute équité qui résout ta duplication. La variance fait toute la poésie du Backgammon.',
-            },
-            playerBlunder: {
-                fun: 'Un instant ! Si tu joues ainsi, tu affaiblis ta barricade et m’offres une route d’évasion. Veux-tu reconsidérer ?',
-                pro: 'Perte d’équité significative : la ligne optimale préservait tes constructeurs et maximisait la couverture sur 36.',
-            },
-            playerOptimal: {
-                fun: 'Belle harmonie géométrique ! Tes pions se protègent mutuellement comme une vraie phalange.',
-                pro: 'Précision Grand-Maître : couverture optimale des constructeurs et duplication parfaite des tirs adverses.',
-            },
-            botHitPlayer: {
-                fun: 'En laissant ce pion à portée directe, tu m’offrais plus de 11 combinaisons sur 36 de te frapper.',
-                pro: 'Frappe positionnelle permettant de verrouiller le tempo tout en préparant la fermeture du Prime.',
-            },
-        },
     },
 };
 
-export function getBotPersona(difficulty: AIDifficulty = 'expert'): BotPersonaSpec {
-    return BOT_PERSONAS_BY_DIFFICULTY[difficulty] ?? BOT_PERSONAS_BY_DIFFICULTY.expert;
+const EXPERIENCE_MODE_STORAGE_KEY = 'bg_experience_mode_v1';
+
+export function getBotPersona(difficulty: AIDifficulty = 'expert', locale: Locale = 'fr'): BotPersonaSpec {
+    const diff = BOT_PERSONA_BASE_CONFIG[difficulty] ? difficulty : 'expert';
+    const base = BOT_PERSONA_BASE_CONFIG[diff];
+    const texts = PERSONA_TEXTS_BY_DIFFICULTY[diff]?.[locale]
+        ?? PERSONA_TEXTS_BY_DIFFICULTY[diff]?.fr
+        ?? PERSONA_TEXTS_BY_DIFFICULTY.expert.fr;
+
+    return {
+        id: diff,
+        name: texts.name,
+        shortName: texts.shortName,
+        archetypeTitle: texts.archetypeTitle,
+        avatar: base.avatar,
+        lobbyHint: texts.lobbyHint,
+        styleBadge: texts.styleBadge,
+        skillTaught: texts.skillTaught,
+        targetErrorRate: base.targetErrorRate,
+        weights: base.weights,
+        dialogues: texts.dialogues,
+    };
 }
+
+export const BOT_PERSONAS_BY_DIFFICULTY: Record<AIDifficulty, BotPersonaSpec> = {
+    beginner: getBotPersona('beginner', 'fr'),
+    intermediate: getBotPersona('intermediate', 'fr'),
+    expert: getBotPersona('expert', 'fr'),
+    grandmaster: getBotPersona('grandmaster', 'fr'),
+};
 
 export function readStoredExperienceMode(): ExperienceMode {
     if (typeof window === 'undefined') return 'fun';
@@ -312,47 +241,64 @@ export function generateBotChatReply(
     difficulty: AIDifficulty,
     mode: ExperienceMode,
     prX?: number | null,
+    locale: Locale = 'fr',
 ): { readonly text: string; readonly filteredByGuardrail: boolean } {
-    const persona = getBotPersona(difficulty);
+    const persona = getBotPersona(difficulty, locale);
+    const loc = CHAT_GUARDRAIL_TEXTS[locale] ? locale : 'fr';
     const clean = userMessage.trim();
+
     if (APPSTORE_GUARDRAIL_REGEX.test(clean)) {
+        const guardrail = CHAT_GUARDRAIL_TEXTS[loc];
         return {
             filteredByGuardrail: true,
-            text: difficulty === 'intermediate'
-                ? 'Restons élégants, nous sommes au salon privé de Monte-Carlo ! Concentrons-nous plutôt sur tes portes et ton prochain lancer.'
-                : 'Gardons l’esprit sportif autour du plateau ! Concentrons-nous sur la stratégie de ce tour.',
+            text: difficulty === 'intermediate' ? guardrail.intermediate : guardrail.default,
         };
     }
+
     const lower = clean.toLowerCase();
-    if (lower.includes('dé') || lower.includes('triche') || lower.includes('truqué') || lower.includes('chance')) {
+    if (
+        lower.includes('dé') || lower.includes('dice') || lower.includes('dado') ||
+        lower.includes('würfel') || lower.includes('نرد') || lower.includes('サイコロ') ||
+        lower.includes('triche') || lower.includes('cheat') || lower.includes('trampa') ||
+        lower.includes('truqué') || lower.includes('rigged') || lower.includes('chance') ||
+        lower.includes('luck') || lower.includes('イカサマ')
+    ) {
+        const diceTexts = CHAT_DICE_AUDIT_TEXTS[loc];
         return {
             filteredByGuardrail: false,
-            text: difficulty === 'beginner'
-                ? 'Ah, toi aussi tu trouves que ces dés sont louches ?! Ouvre « 🛡️ Audit Dés » en haut et teste l’inversion des dés, tu verras que c’est moi la victime !'
-                : 'Zéro triche ici : chaque lancer est scellé par HMAC-SHA256 avant la partie. Clique sur « 🛡️ Audit Dés » pour comparer ou inverser nos tirages !',
+            text: difficulty === 'beginner' ? diceTexts.beginner : diceTexts.default,
         };
     }
-    if (lower.includes('videau') || lower.includes('double') || lower.includes('cube')) {
+
+    if (
+        lower.includes('videau') || lower.includes('double') || lower.includes('cube') ||
+        lower.includes('doblador') || lower.includes('verdopplung') || lower.includes('مكعب') ||
+        lower.includes('ダブリング')
+    ) {
+        const cubeTexts = CHAT_CUBE_TEXTS[loc];
         return {
             filteredByGuardrail: false,
-            text: mode === 'pro'
-                ? 'Règle du Videau : en Money Game, le seuil d’acceptation (Take Point) est à 21,5 % – 25 % de chances de gain nettes de gammons. Double dès que tu dépasses 65 % avec volatilité.'
-                : 'Le Videau permet de doubler la mise quand tu as un bon avantage ! Si l’adversaire a peur et refuse, tu gagnes tout de suite.',
+            text: mode === 'pro' ? cubeTexts.pro : cubeTexts.fun,
         };
     }
-    if (lower.includes('conseil') || lower.includes('aide') || lower.includes('jouer') || lower.includes('avis')) {
-        const prInfo = typeof prX === 'number' ? ` (ton PR actuel est de ${prX.toFixed(1)})` : '';
+
+    if (
+        lower.includes('conseil') || lower.includes('aide') || lower.includes('jouer') ||
+        lower.includes('avis') || lower.includes('advice') || lower.includes('help') ||
+        lower.includes('tip') || lower.includes('consejo') || lower.includes('ayuda') ||
+        lower.includes('dica') || lower.includes('tipp') || lower.includes('نصيحة') ||
+        lower.includes('مساعدة') || lower.includes('アドバイス') || lower.includes('ヒント')
+    ) {
         return {
             filteredByGuardrail: false,
-            text: mode === 'pro'
-                ? `${persona.shortName}${prInfo} : surveille mon biais « ${persona.styleBadge} ». Évite de me laisser des tirs directs à moins de 6 cases et verrouille ton point 5.`
-                : `Astuce de ${persona.shortName} : essaie toujours de poser 2 pions sur la même flèche pour créer une porte infranchissable !`,
+            text: formatAdviceReply(loc, persona.shortName, persona.styleBadge, mode, prX),
         };
     }
+
     return {
         filteredByGuardrail: false,
         text: mode === 'pro'
-            ? `${persona.shortName} (${persona.styleBadge}) : j’analyse chaque écart d’équité EMG. Joue ton coup et voyons si tu tiens la cadence !`
+            ? formatDefaultProReply(loc, persona.shortName, persona.styleBadge)
             : `${persona.shortName} : ${persona.dialogues.opening.fun}`,
     };
 }
@@ -367,11 +313,18 @@ export interface SwapDiceComparisonSummary {
     readonly verdictText: string;
 }
 
-/** Calcule le bilan comparatif et l'effet d'inversion des dés (Swap Dice) entre le Joueur (tours pairs) et le Bot (tours impairs) */
+/** Calcule le bilan comparatif et l'effet d'inversion des dés (Swap Dice) entre le Joueur et le Bot */
 export function computeSwapDiceComparison(
     rolls: ReadonlyArray<{ readonly die1: number; readonly die2: number }>,
+    locale: Locale = 'fr',
 ): SwapDiceComparisonSummary {
-    let playerRollsCount = 0, botRollsCount = 0, playerTotalPips = 0, botTotalPips = 0, playerDoubles = 0, botDoubles = 0;
+    let playerRollsCount = 0;
+    let botRollsCount = 0;
+    let playerTotalPips = 0;
+    let botTotalPips = 0;
+    let playerDoubles = 0;
+    let botDoubles = 0;
+
     rolls.forEach((r, idx) => {
         const isDouble = r.die1 === r.die2;
         const pips = isDouble ? (r.die1 + r.die2) * 2 : r.die1 + r.die2;
@@ -385,9 +338,16 @@ export function computeSwapDiceComparison(
             if (isDouble) botDoubles++;
         }
     });
+
     const diff = playerTotalPips - botTotalPips;
-    const verdictText = diff >= 0
-        ? `En inversant les dés avec le Bot, vous auriez reçu ${botTotalPips} pips (${botDoubles} double(s)) contre vos ${playerTotalPips} pips (${playerDoubles} double(s)) : les dés ne vous ont pas désavantagé !`
-        : `En inversant les dés avec le Bot, vous auriez reçu +${Math.abs(diff)} pips de course supplémentaires (${botTotalPips} pips contre ${playerTotalPips}), mais rappelez-vous que c’est le placement des portes qui convertit les dés en victoire !`;
+    const verdictText = formatSwapDiceVerdict(
+        locale,
+        botTotalPips,
+        botDoubles,
+        playerTotalPips,
+        playerDoubles,
+        diff,
+    );
+
     return { playerRollsCount, botRollsCount, playerTotalPips, botTotalPips, playerDoubles, botDoubles, verdictText };
 }

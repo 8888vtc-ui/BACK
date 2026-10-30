@@ -46,6 +46,10 @@ export interface BoardCentralBarProps {
     isDanced?: boolean;
     /** Message explicite affiché en cas de danse sur la barre. */
     dancedMessage?: string | null;
+    /** Compteur de course (pips) du joueur X (affiché en bas de la barre centrale). */
+    pipX?: number;
+    /** Compteur de course (pips) de l'adversaire O (affiché en haut de la barre centrale). */
+    pipO?: number;
 }
 
 /** Rend une pile de pions frappés pour une couleur donnée. */
@@ -115,18 +119,20 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
     swapColors = false,
     isDanced = false,
     dancedMessage = null,
+    pipX,
+    pipO,
 }) => {
     const bar = getBoardThemeTokens(theme).bar;
     const colorO: CheckerColor = swapColors ? 'white' : 'black';
     const colorX: CheckerColor = swapColors ? 'black' : 'white';
     return (
     <div
-        className="relative row-span-2 w-[19px] sm:w-12 md:w-16 [@media(max-height:540px)]:!w-8 flex flex-col justify-between items-center rounded-xl mx-0.5 sm:mx-1 py-1 sm:py-2 [@media(max-height:540px)]:py-0.5 select-none"
+        className="relative row-span-2 w-8 sm:w-12 md:w-14 [@media(max-height:600px)]:!w-9 flex flex-col justify-between items-center py-2 sm:py-4 select-none"
         style={{
             background: bar.background,
             boxShadow: bar.boxShadow,
-            borderLeft: `2px solid ${bar.borderColor}`,
-            borderRight: `2px solid ${bar.borderColor}`,
+            borderLeft: `1px solid ${bar.borderColor}`,
+            borderRight: `1px solid ${bar.borderColor}`,
         }}
         data-testid="central-bar-container"
     >
@@ -140,28 +146,20 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
                 {dancedMessage ?? 'Aucun coup possible — Portes fermées (Danse)'}
             </div>
         )}
-        {/* Reflet zénithal doux sur l'arête de la barre */}
-        <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-16 rounded-t-xl"
-            style={{
-                background:
-                    'linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 100%)',
-            }}
-        />
 
-        {/* Charnière d'orfèvrerie supérieure en laiton brossé (Geoffrey Parker / Hector Saxe) */}
-        <div
-            aria-hidden="true"
-            data-testid="central-bar-hinge-top"
-            className="pointer-events-none w-3.5 sm:w-6 h-1.5 sm:h-2 rounded-[2px] border border-amber-300/50 shadow-[0_1px_3px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.45)] shrink-0"
-            style={{
-                background: 'linear-gradient(90deg, #78592b 0%, #d4af37 32%, #fef08a 50%, #d4af37 68%, #78592b 100%)',
-            }}
-        />
+        <div aria-hidden="true" data-testid="central-bar-hinge-top" className="sr-only" />
 
-        {/* Zone Haut (Côté Joueur O / Noir) */}
-        <div className="flex flex-col items-center gap-1.5 w-full min-h-[48px] z-10" data-testid="bar-zone-top">
+        {/* Zone Haut (Côté Adversaire O + Pip Count Haut style 167) */}
+        <div className="flex flex-col items-center justify-start gap-2 w-full min-h-[56px] z-10 pt-2 sm:pt-4" data-testid="bar-zone-top">
+            {typeof pipO === 'number' && (
+                <span
+                    data-testid="central-bar-pip-o"
+                    className="font-sans text-[11px] sm:text-sm md:text-base font-bold tabular-nums text-white tracking-tight select-none"
+                    title={`Course adversaire : ${pipO} pips`}
+                >
+                    {pipO}
+                </span>
+            )}
             <BarStack
                 color={colorO}
                 count={barO}
@@ -176,15 +174,15 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
             )}
         </div>
 
-        {/* Zone Centre (Neutre au milieu : avant le premier double) */}
-        <div className="flex items-center justify-center min-h-[48px] z-10" data-testid="bar-zone-middle">
+        {/* Zone Centre (Videau centré style 64) */}
+        <div className="flex items-center justify-center min-h-[48px] z-10 my-auto" data-testid="bar-zone-middle">
             {cubeOwner === null && (
                 <DoublingCube cubeValue={cubeValue} cubeOwner={cubeOwner} canDouble={canDouble} onOfferDouble={onOfferDouble} />
             )}
         </div>
 
-        {/* Zone Bas (Côté Joueur X / Blanc) */}
-        <div className="flex flex-col items-center gap-1.5 w-full min-h-[48px] z-10" data-testid="bar-zone-bottom">
+        {/* Zone Bas (Côté Joueur X + Pip Count Bas style 167) */}
+        <div className="flex flex-col items-center justify-end gap-2 w-full min-h-[56px] z-10 pb-2 sm:pb-4" data-testid="bar-zone-bottom">
             {cubeOwner === 'X' && (
                 <DoublingCube cubeValue={cubeValue} cubeOwner={cubeOwner} canDouble={canDouble} onOfferDouble={onOfferDouble} />
             )}
@@ -197,17 +195,18 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
                 onBarRightClick={onBarRightClick}
                 onCheckerPointerDown={onCheckerPointerDown}
             />
+            {typeof pipX === 'number' && (
+                <span
+                    data-testid="central-bar-pip-x"
+                    className="font-sans text-[11px] sm:text-sm md:text-base font-bold tabular-nums text-white tracking-tight select-none"
+                    title={`Votre course : ${pipX} pips`}
+                >
+                    {pipX}
+                </span>
+            )}
         </div>
 
-        {/* Charnière d'orfèvrerie inférieure en laiton brossé (Geoffrey Parker / Hector Saxe) */}
-        <div
-            aria-hidden="true"
-            data-testid="central-bar-hinge-bottom"
-            className="pointer-events-none w-3.5 sm:w-6 h-1.5 sm:h-2 rounded-[2px] border border-amber-300/50 shadow-[0_1px_3px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.45)] shrink-0"
-            style={{
-                background: 'linear-gradient(90deg, #78592b 0%, #d4af37 32%, #fef08a 50%, #d4af37 68%, #78592b 100%)',
-            }}
-        />
+        <div aria-hidden="true" data-testid="central-bar-hinge-bottom" className="sr-only" />
     </div>
     );
 };

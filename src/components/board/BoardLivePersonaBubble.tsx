@@ -12,6 +12,7 @@
 import React, { useMemo, useState } from 'react';
 import type { AIDifficulty } from '../../engine/aiHeuristics';
 import { getBotPersona, readStoredExperienceMode } from '../../features/personas/botPersonas';
+import { useTranslation } from '../../i18n';
 import {
     detectClassicalBlunderPattern,
     resolveMuskBotOrchestration,
@@ -43,7 +44,8 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
     onOpenCoach,
 }) => {
     const [dismissedKey, setDismissedKey] = useState<string | null>(null);
-    const persona = getBotPersona(difficulty);
+    const { locale } = useTranslation();
+    const persona = getBotPersona(difficulty, locale);
     const mode = readStoredExperienceMode();
 
     const bubbleState = useMemo(() => {
@@ -66,6 +68,7 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
                 equityLossEmg: isPlayerBlunder ? absLoss : 0,
                 pattern,
                 luckDeltaEquity: isBotDoubleJoker ? 0.65 : 0,
+                locale: locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja',
             });
             if (decision.shouldSpeak && decision.parsedMessage) {
                 return {
@@ -87,14 +90,14 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
         }
 
         return null;
-    }, [isPlayerThinking, opponentDice, equityLoss, verdict, boardBefore, boardAfter, difficulty, mode, turnsCount, persona]);
+    }, [isPlayerThinking, opponentDice, equityLoss, verdict, boardBefore, boardAfter, difficulty, mode, turnsCount, persona, locale]);
 
     if (!bubbleState || dismissedKey === bubbleState.key) return null;
 
     return (
         <div
             data-testid="board-bot-speech-bubble"
-            className="hidden md:flex items-center gap-2.5 max-w-md absolute top-1.5 left-2 z-30 rounded-2xl border border-amber-400/35 bg-slate-950/90 px-3 py-1.5 text-xs text-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.75)] backdrop-blur-md transition-all"
+            className="sr-only"
         >
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-base">
                 {persona.avatar}

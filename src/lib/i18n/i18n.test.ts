@@ -7,7 +7,7 @@ import { de } from './translations/de';
 import { ar } from './translations/ar';
 import { ja } from './translations/ja';
 import { resolveTranslation, getTranslation, detectLocale } from './I18nContext';
-import { isRtlLocale, PRIMARY_LOCALES } from './types';
+import { isRtlLocale, PRIMARY_LOCALES, LOCALE_METADATA } from './types';
 import { BACKGAMMON_TERMINOLOGY_MATRIX, getTerminologyRow } from './terminologyMatrix';
 
 function getAllKeys(obj: Record<string, unknown>, prefix = ''): string[] {
@@ -117,6 +117,14 @@ describe('i18n Dictionary Parity & Interpolation (6 Primary Languages: FR, EN, E
         expect(cubeRow?.de).toBe('Dopplungswürfel');
         expect(cubeRow?.ar).toBe('مكعب المضاعفة (Doubling Cube)');
     });
+
+    it('bannit les émojis drapeaux dans LOCALE_METADATA au profit de codes ISO propres', () => {
+        for (const meta of Object.values(LOCALE_METADATA)) {
+            // Pas d'émojis de drapeaux régionaux (code points U+1F1E6 à U+1F1FF)
+            expect(meta.flag).not.toMatch(/[\uD83C][\uDDE6-\uDDFF]/);
+            expect(meta.flag).toBe(meta.shortLabel);
+        }
+    });
 });
 
 describe('detectLocale — détection automatique de la langue (6 langues + JA)', () => {
@@ -129,7 +137,7 @@ describe('detectLocale — détection automatique de la langue (6 langues + JA)'
             setItem: (k: string, v: string) => { storage[k] = v; },
             clear: () => { storage = {}; },
         };
-        vi.stubGlobal('window', { localStorage: localStorageMock });
+        vi.stubGlobal('window', { localStorage: localStorageMock, location: { search: '' } });
         vi.stubGlobal('navigator', { language: 'en-US', languages: ['en-US'] });
         vi.stubGlobal('Intl', { DateTimeFormat: () => ({ resolvedOptions: () => ({ timeZone: 'UTC' }) }) });
     });
@@ -138,14 +146,31 @@ describe('detectLocale — détection automatique de la langue (6 langues + JA)'
         vi.unstubAllGlobals();
     });
 
-    it('priorise le choix manuel sauvegardé dans localStorage pour toutes les langues', () => {
-        for (const loc of ['fr', 'en', 'es', 'pt', 'de', 'ar', 'ja'] as const) {
-            storage['bg_locale'] = loc;
-            expect(detectLocale()).toBe(loc);
-        }
+    it('priorise le paramètre d’URL ?lang= sur le navigateur et le stockage', () => {
+        vi.stubGlobal('window', {
+            localStorage: { getItem: (k: string) => storage[k] ?? null, setItem: (k: string, v: string) => { storage[k] = v; } },
+            location: { search: '?lang=ja' },
+        });
+        vi.stubGlobal('navigator', { language: 'fr-FR', languages: ['fr-FR'] });
+        expect(detectLocale()).toBe('ja');
     });
 
-    it('détecte la langue via navigator.language', () => {
+    it('ne reste jamais bloqué sur un vieux localStorage fr quand le navigateur est dans une autre langue', () => {
+        storage['bg_locale'] = 'fr';
+        vi.stubGlobal('navigator', { language: 'en-US', languages: ['en-US'] });
+        expect(detectLocale()).toBe('en');
+
+        vi.stubGlobal('navigator', { language: 'es-ES', languages: ['es-ES'] });
+        expect(detectLocale()).toBe('es');
+    });
+
+    it('détecte fidèlement toutes les langues supportées via le navigateur', () => {
+        vi.stubGlobal('navigator', { language: 'fr-FR', languages: ['fr-FR'] });
+        expect(detectLocale()).toBe('fr');
+
+        vi.stubGlobal('navigator', { language: 'en-GB', languages: ['en-GB'] });
+        expect(detectLocale()).toBe('en');
+
         vi.stubGlobal('navigator', { language: 'es-ES', languages: ['es-ES'] });
         expect(detectLocale()).toBe('es');
 

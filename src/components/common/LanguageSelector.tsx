@@ -26,11 +26,11 @@ interface LanguageOption {
 }
 
 const LANGUAGES: LanguageOption[] = [
-    { code: 'fr', flag: '🇫🇷', label: 'FR', ariaLabel: 'Passer en français' },
-    { code: 'en', flag: '🇬🇧', label: 'EN', ariaLabel: 'Switch to English' },
-    { code: 'es', flag: '🇪🇸', label: 'ES', ariaLabel: 'Cambiar a español' },
-    { code: 'de', flag: '🇩🇪', label: 'DE', ariaLabel: 'Auf Deutsch wechseln' },
-    { code: 'ja', flag: '🇯🇵', label: 'JA', ariaLabel: '日本語に切り替え' },
+    { code: 'fr', flag: 'FR', label: 'FR', ariaLabel: 'Passer en français' },
+    { code: 'en', flag: 'EN', label: 'EN', ariaLabel: 'Switch to English' },
+    { code: 'es', flag: 'ES', label: 'ES', ariaLabel: 'Cambiar a español' },
+    { code: 'de', flag: 'DE', label: 'DE', ariaLabel: 'Auf Deutsch wechseln' },
+    { code: 'ja', flag: 'JA', label: 'JA', ariaLabel: '日本語に切り替え' },
 ];
 
 export default function LanguageSelector({ className = '', variant = 'compact' }: LanguageSelectorProps) {

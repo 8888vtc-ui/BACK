@@ -17,7 +17,7 @@ import type { User } from '@supabase/supabase-js';
 import type { Profile } from '../../lib/supabase/types';
 import UserAccountMenu, { type AuthStatus } from './UserAccountMenu';
 import type { LobbyModuleId } from '../lobby/LobbyScreen';
-import { useTranslation, PRIMARY_LOCALES, LOCALE_METADATA, type Locale } from '../../i18n';
+import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
 import IosInstallModal from '../pwa/IosInstallModal';
 
@@ -48,7 +48,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
     onUserResolved,
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { t, ui, locale, setLocale } = useTranslation();
+    const { t, ui } = useTranslation();
     const { canInstall, isInstalled, showIosModal, setShowIosModal, handleInstallClick } = usePwaInstall();
 
     const navItems = useMemo<ReadonlyArray<NavItem>>(
@@ -189,21 +189,6 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             <span>{ui.pwa.installApp}</span>
                         </button>
                     )}
-                    <select
-                        id="navbar-locale-select"
-                        name="locale"
-                        value={locale}
-                        onChange={(e) => setLocale(e.target.value as Locale)}
-                        aria-label="Langue"
-                        data-testid="navbar-locale-select"
-                        className="rounded-lg border border-white/10 bg-slate-900 px-2 py-1 text-xs font-semibold text-slate-200 transition hover:border-white/25 hover:text-white focus:outline-none cursor-pointer"
-                    >
-                        {PRIMARY_LOCALES.map((loc) => (
-                            <option key={loc} value={loc} className="bg-slate-950 text-slate-100">
-                                {LOCALE_METADATA[loc].flag} {loc.toUpperCase()}
-                            </option>
-                        ))}
-                    </select>
                     <UserAccountMenu
                         onNavigateModule={onOpenModule}
                         onOpenSettings={onOpenSettings}

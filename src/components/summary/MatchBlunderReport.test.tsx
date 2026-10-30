@@ -236,10 +236,10 @@ describe('MatchBlunderReport Component', () => {
         expect(screen.queryByTestId('match-blunder-banner')).toBeNull();
         expect(screen.getByTestId('post-match-accuracy').textContent).toContain('%');
 
-        // Bordures apaisées border-white/10 et aucun texte 8px/9px
-        expect(header.className).toContain('border-white/10');
-        expect(screen.getByTestId('post-match-pr-player').className).toContain('border-white/10');
-        expect(screen.getByTestId('post-match-pr-bot').className).toContain('border-white/10');
+        // Bordures horlogères Or Champagne ou apaisées et aucun texte 8px/9px
+        expect(header.className).toContain('border-[#d4af37]/30');
+        expect(screen.getByTestId('post-match-pr-player').className).toContain('border-[#d4af37]/15');
+        expect(screen.getByTestId('post-match-pr-bot').className).toContain('border-[#d4af37]/15');
         expect(header.innerHTML).not.toContain('text-[8px]');
         expect(header.innerHTML).not.toContain('text-[9px]');
         expect(report.innerHTML).not.toContain('text-[8px]');

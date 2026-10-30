@@ -17,13 +17,13 @@ export interface LocaleMetadata {
 }
 
 export const LOCALE_METADATA: Record<Locale, LocaleMetadata> = {
-    fr: { code: 'fr', label: 'Français', nativeLabel: 'Français', shortLabel: 'FR', flag: '🇫🇷', dir: 'ltr', hreflang: 'fr-FR' },
-    en: { code: 'en', label: 'English', nativeLabel: 'English', shortLabel: 'EN', flag: '🇬🇧', dir: 'ltr', hreflang: 'en-US' },
-    es: { code: 'es', label: 'Español', nativeLabel: 'Español', shortLabel: 'ES', flag: '🇪🇸', dir: 'ltr', hreflang: 'es-ES' },
-    pt: { code: 'pt', label: 'Português', nativeLabel: 'Português', shortLabel: 'PT', flag: '🇵🇹', dir: 'ltr', hreflang: 'pt-BR' },
-    de: { code: 'de', label: 'Deutsch', nativeLabel: 'Deutsch', shortLabel: 'DE', flag: '🇩🇪', dir: 'ltr', hreflang: 'de-DE' },
-    ar: { code: 'ar', label: 'Arabic', nativeLabel: 'العربية', shortLabel: 'AR', flag: '🇸🇦', dir: 'rtl', hreflang: 'ar-SA' },
-    ja: { code: 'ja', label: 'Japanese', nativeLabel: '日本語', shortLabel: 'JA', flag: '🇯🇵', dir: 'ltr', hreflang: 'ja-JP' },
+    fr: { code: 'fr', label: 'Français', nativeLabel: 'Français', shortLabel: 'FR', flag: 'FR', dir: 'ltr', hreflang: 'fr-FR' },
+    en: { code: 'en', label: 'English', nativeLabel: 'English', shortLabel: 'EN', flag: 'EN', dir: 'ltr', hreflang: 'en-US' },
+    es: { code: 'es', label: 'Español', nativeLabel: 'Español', shortLabel: 'ES', flag: 'ES', dir: 'ltr', hreflang: 'es-ES' },
+    pt: { code: 'pt', label: 'Português', nativeLabel: 'Português', shortLabel: 'PT', flag: 'PT', dir: 'ltr', hreflang: 'pt-BR' },
+    de: { code: 'de', label: 'Deutsch', nativeLabel: 'Deutsch', shortLabel: 'DE', flag: 'DE', dir: 'ltr', hreflang: 'de-DE' },
+    ar: { code: 'ar', label: 'Arabic', nativeLabel: 'العربية', shortLabel: 'AR', flag: 'AR', dir: 'rtl', hreflang: 'ar-SA' },
+    ja: { code: 'ja', label: 'Japanese', nativeLabel: '日本語', shortLabel: 'JA', flag: 'JA', dir: 'ltr', hreflang: 'ja-JP' },
 };
 
 export const PRIMARY_LOCALES: readonly PrimaryLocale[] = ['fr', 'en', 'es', 'pt', 'de', 'ar'] as const;

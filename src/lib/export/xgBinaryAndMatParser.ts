@@ -483,3 +483,4 @@ export function applyMatCheckerPlay(board: Int8Array, player: 1 | -1, diceStr: s
         }
     }
 }
+

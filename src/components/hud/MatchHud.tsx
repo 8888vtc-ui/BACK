@@ -21,59 +21,51 @@ import InGameMenuModal from './InGameMenuModal';
 import { useSoundManager } from '../../hooks/useSoundManager';
 import { getHudThemeClasses, useBoardTheme } from '../../hooks/useBoardTheme';
 import { getBotPersona } from '../../features/personas/botPersonas';
+import { useTranslation } from '../../i18n';
+import {
+    readStoredChameleonLayer,
+    writeStoredChameleonLayer,
+    CHAMELEON_LAYER_CHANGE_EVENT,
+    type ChameleonLayer,
+} from '../../features/chameleon/chameleonProfile';
 
 export interface MatchHudProps {
-    matchLength: number;
-    scoreX: number;
-    scoreO: number;
-    turn: Player;
-    crawford?: boolean;
-    dice: [number, number] | null;
-    usedDice: [boolean, boolean] | boolean[];
-    cubeValue: number;
-    cubeOwner: Player | null;
-    theme: ThemeName;
-    onThemeToggle: () => void;
-    onDoubleCube?: () => void;
-    onRollDice?: () => void;
-    onResetGame?: () => void;
-    onResign?: (multiplier: 1 | 2 | 3) => void;
-    onOpenExportImport?: () => void;
-    onTriggerCoach?: () => void;
-    canDouble?: boolean;
-    prX?: number | null;
-    prO?: number | null;
-    isAiThinking?: boolean;
-    difficulty?: AIDifficulty;
-    pipX?: number | null;
-    pipO?: number | null;
-    lastMoveNotation?: string | null;
-    onBackToLobby?: () => void;
-    playerColor?: Player;
-    isGameActive?: boolean;
-    boardState?: BoardState;
-    serverSeedHash?: string;
-    onOpenDiceAudit?: () => void;
-    lastMoveFeedback?: LastMoveFeedback | null;
-    notificationLevel?: CoachNotificationLevel;
-    onChangeNotificationLevel?: (level: CoachNotificationLevel) => void;
-    coachQuotaBadge?: string;
-    isVip?: boolean;
-    autoConfirmMode?: AutoConfirmMode;
-    onSelectAutoConfirmMode?: (mode: AutoConfirmMode) => void;
-    gameSpeed?: GameSpeed;
+    matchLength: number; scoreX: number; scoreO: number; turn: Player; crawford?: boolean;
+    dice: [number, number] | null; usedDice: [boolean, boolean] | boolean[];
+    cubeValue: number; cubeOwner: Player | null; theme: ThemeName; onThemeToggle: () => void;
+    onDoubleCube?: () => void; onRollDice?: () => void; onResetGame?: () => void;
+    onResign?: (multiplier: 1 | 2 | 3) => void; onOpenExportImport?: () => void;
+    onTriggerCoach?: () => void; canDouble?: boolean; prX?: number | null; prO?: number | null;
+    isAiThinking?: boolean; difficulty?: AIDifficulty; pipX?: number | null; pipO?: number | null;
+    lastMoveNotation?: string | null; onBackToLobby?: () => void; playerColor?: Player;
+    isGameActive?: boolean; boardState?: BoardState; serverSeedHash?: string;
+    onOpenDiceAudit?: () => void; lastMoveFeedback?: LastMoveFeedback | null;
+    notificationLevel?: CoachNotificationLevel; onChangeNotificationLevel?: (level: CoachNotificationLevel) => void;
+    coachQuotaBadge?: string; isVip?: boolean; autoConfirmMode?: AutoConfirmMode;
+    onSelectAutoConfirmMode?: (mode: AutoConfirmMode) => void; gameSpeed?: GameSpeed;
     onSelectGameSpeed?: (speed: GameSpeed) => void;
 }
 
-const DIFFICULTY_LABEL: Record<AIDifficulty, string> = {
-    beginner: '🤬 Maxime',
-    intermediate: '🕶️ Sofia',
-    expert: '💼 Victor',
-    grandmaster: '🧐 Viktor',
+const FR_BOT_DISPLAY_NAMES: Record<AIDifficulty, string> = {
+    beginner: 'Maxime',
+    intermediate: 'Sofia',
+    expert: 'Victor',
+    grandmaster: 'Viktor',
 };
 
-function getHudVerdictConfig(fb: LastMoveFeedback): { icon: string; label: string; badgeClass: string } {
-    const lossStr = `(-${Math.abs(fb.equityLoss).toFixed(3)})`;
+const CHAMELEON_PILL_LABELS: Record<ChameleonLayer, string> = {
+    0: '🌱 Essentiel',
+    1: '♟️ Club',
+    2: '🔬 Pro',
+};
+
+function getHudVerdictConfig(
+    fb: LastMoveFeedback,
+    layer: ChameleonLayer = 1,
+): { icon: string; label: string; badgeClass: string } {
+    const absLoss = Math.abs(fb.equityLoss);
+    const mwcPct = Math.max(1, Math.round(absLoss * 50));
+    const lossStr = layer === 0 ? `(-${mwcPct}% chances)` : `(-${absLoss.toFixed(3)}) · -${mwcPct}%`;
     if (fb.verdict === 'optimal') return { icon: '🟢', label: 'COUP OPTIMAL', badgeClass: 'border-emerald-400/70 bg-emerald-950/90 text-emerald-100' };
     if (fb.verdict === 'good') return { icon: '👍', label: 'BON COUP', badgeClass: 'border-emerald-500/55 bg-emerald-950/75 text-emerald-200' };
     if (fb.verdict === 'inaccuracy') return { icon: '🟡', label: `IMPRÉCISION ${lossStr}`, badgeClass: 'border-amber-400/75 bg-amber-950/90 text-amber-100' };
@@ -93,10 +85,33 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
 }) => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+    const [chameleonLayer, setChameleonLayer] = useState<ChameleonLayer>(1);
+    const { locale } = useTranslation();
     const { isMuted, toggleMute } = useSoundManager();
     const { setTheme } = useBoardTheme(theme);
     const settingsMenuRef = useRef<HTMLDivElement>(null);
     const settingsToggleBtnRef = useRef<HTMLButtonElement>(null);
+
+    useEffect(() => {
+        const stored = readStoredChameleonLayer();
+        if (stored !== null) setChameleonLayer(stored);
+        const onSync = (e: Event) => {
+            const detail = (e as CustomEvent<ChameleonLayer | null>).detail;
+            setChameleonLayer(detail ?? 1);
+        };
+        window.addEventListener(CHAMELEON_LAYER_CHANGE_EVENT, onSync);
+        return () => window.removeEventListener(CHAMELEON_LAYER_CHANGE_EVENT, onSync);
+    }, []);
+
+    const handleCycleChameleon = () => {
+        const next: ChameleonLayer = chameleonLayer === 0 ? 1 : chameleonLayer === 1 ? 2 : 0;
+        setChameleonLayer(next);
+        writeStoredChameleonLayer(next);
+    };
+
+    const activePersona = getBotPersona(difficulty, locale);
+    const botFirstName = locale === 'fr' ? FR_BOT_DISPLAY_NAMES[difficulty] : activePersona.shortName;
+    const opponentDisplayLabel = `${activePersona.avatar} ${botFirstName}`;
 
     const isHumanTurn = turn === playerColor;
     const barCount = boardState ? (turn === 'X' ? boardState.board[0] : Math.abs(boardState.board[25])) : 0;
@@ -164,22 +179,18 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                             isAiThinking={isAiThinking ?? turn === 'O'} pipX={pipX} pipO={pipO}
                             borneOffX={boardState ? borneOffCount(boardState.board, 'X') : 0}
                             borneOffO={boardState ? borneOffCount(boardState.board, 'O') : 0}
-                            opponentLabel={DIFFICULTY_LABEL[difficulty]} playerColor={playerColor}
+                            opponentLabel={opponentDisplayLabel} playerColor={playerColor}
                             cubeValue={cubeValue} cubeOwner={cubeOwner}
+                            chameleonLayer={chameleonLayer}
                         />
-                        {(() => {
-                            const p = getBotPersona(difficulty);
-                            return (
-                                <span
-                                    data-testid="hud-bot-persona-badge"
-                                    title={`${p.name} — ${p.styleBadge} (${p.skillTaught})`}
-                                    className="hidden xl:inline-flex items-center gap-1 shrink-0 rounded-lg border border-amber-400/35 bg-amber-500/10 px-2 py-0.5 text-[11px] font-bold text-amber-200"
-                                >
-                                    <span aria-hidden="true">{p.avatar}</span>
-                                    <span>{p.shortName}</span>
-                                </span>
-                            );
-                        })()}
+                        <span
+                            data-testid="hud-bot-persona-badge"
+                            title={`${activePersona.name} — ${activePersona.styleBadge} (${activePersona.skillTaught})`}
+                            className="hidden xl:inline-flex items-center gap-1 shrink-0 rounded-lg border border-amber-400/35 bg-amber-500/10 px-2 py-0.5 text-[11px] font-bold text-amber-200"
+                        >
+                            <span aria-hidden="true">{activePersona.avatar}</span>
+                            <span>{activePersona.shortName}</span>
+                        </span>
                     </div>
                 </div>
 
@@ -195,7 +206,7 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                         </span>
                     )}
                     {lastMoveFeedback && (() => {
-                        const v = getHudVerdictConfig(lastMoveFeedback);
+                        const v = getHudVerdictConfig(lastMoveFeedback, chameleonLayer);
                         return (
                             <button
                                 type="button" onClick={onTriggerCoach} data-testid="hud-verdict-badge"
@@ -220,14 +231,24 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                 </div>
 
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                    {!isGameActive && (serverSeedHash || onOpenDiceAudit) && (
+                    <button
+                        type="button"
+                        onClick={handleCycleChameleon}
+                        data-testid="hud-chameleon-layer-btn"
+                        title="Affichage Caméléon : basculer entre Essentiel (0% jargon), Club (Course ±) et Pro (Pips exacts & MWC)"
+                        className="hidden sm:inline-flex h-7 items-center gap-1 shrink-0 rounded-lg border border-white/10 bg-slate-900 px-2 text-[11px] font-bold text-amber-200 transition hover:border-[#f3c65f]/50 hover:text-white active:scale-95"
+                    >
+                        <span>{CHAMELEON_PILL_LABELS[chameleonLayer]}</span>
+                    </button>
+
+                    {(serverSeedHash || onOpenDiceAudit) && (
                         <button
                             type="button" onClick={onOpenDiceAudit} data-testid="hud-provably-fair-btn"
-                            title="Vérifier les Dés en 1 Clic (Provably Fair)"
-                            className="flex h-7 items-center gap-1.5 shrink-0 whitespace-nowrap rounded-lg border border-emerald-500/50 bg-emerald-950/60 px-2.5 text-[11px] font-bold text-emerald-200 transition hover:border-emerald-400 hover:text-white active:scale-95"
+                            title="Audit Anti-Tricherie SHA-256 & Mode Gammon36 en 1 Clic"
+                            className="flex h-7 items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border border-emerald-500/45 bg-emerald-950/60 px-2 text-[11px] font-bold text-emerald-200 transition hover:border-emerald-400 hover:text-white active:scale-95"
                         >
                             <span aria-hidden="true">🛡</span>
-                            <span>Vérifier les Dés</span>
+                            <span className="hidden lg:inline">Dés Certifiés</span>
                         </button>
                     )}
 

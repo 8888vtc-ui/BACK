@@ -39,8 +39,8 @@ describe('HudSettingsMenu Component', () => {
         expect(html).toContain('Tournament');
         expect(html).toContain('Midnight');
         expect(html).toContain('Obsidienne');
-        expect(html).toContain('Son');
-        expect(html).toContain('Langue');
+        expect(html).toContain('Acoustique');
+        expect(html).toContain('AUTO (FR)');
         expect(html).toContain('Partager / XGID');
         expect(html).toContain('Analyser avec le Coach');
         expect(html).toContain('1× Simple');

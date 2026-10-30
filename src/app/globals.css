@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,6 +13,8 @@
     margin: 0;
     padding: 0;
     -webkit-overflow-scrolling: touch;
+    font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: 0.005em;
   }
 
   /* Style de focus visible global et contrasté pour l'accessibilité clavier (WCAG 2.1 AA) */
@@ -57,6 +61,16 @@
   .die-roll { animation: dice-roll 0.37s cubic-bezier(0.16, 1, 0.3, 1) both; }
   .die-roll-alt { animation: dice-roll-alt 0.40s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
+  /* Typographie Signature Cercle Monte-Carlo & Haute Horlogerie */
+  .font-display {
+    font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    letter-spacing: 0.02em;
+  }
+  .font-numbers {
+    font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
   /* Atterrissage d'un pion sur sa flèche (rebond court 100 % GPU translate3d). */
   @keyframes checker-land {
     0% { transform: translate3d(0, -14px, 0) scale3d(1.12, 1.12, 1); opacity: 0.6; }
@@ -93,7 +107,7 @@
   }
 
   /* Conteneur Paysage Mobile : Pleine Largeur Panoramique & Pleine Hauteur (Zero-Clipping) */
-  @media (max-height: 540px) and (orientation: landscape) {
+  @media (max-height: 600px) and (orientation: landscape) {
     .landscape-full-bleed {
       padding-top: max(1px, env(safe-area-inset-top, 0px));
       padding-bottom: max(1px, env(safe-area-inset-bottom, 0px));
@@ -106,7 +120,7 @@
       max-height: 100% !important;
       min-height: 0 !important;
       width: 100% !important;
-      max-width: min(100%, calc((100dvh - 36px) * 2.35)) !important;
+      max-width: 100% !important;
       aspect-ratio: auto !important;
       padding: 2px 6px !important;
       border-radius: 14px !important;

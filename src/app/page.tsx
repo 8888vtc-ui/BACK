@@ -165,7 +165,7 @@ export default function Home() {
         }, [game, resetGameHistory]),
     });
 
-    /** Démarre le match depuis le lobby et bascule sur la vue GAME. */
+    /** Démarre le match depuis le lobby et bascule sur la vue GAME avec lancer d'ouverture immédiat (< 2.5s Time-to-Fun). */
     const handleLobbyStart = useCallback((selection: LobbySelection) => {
         userInitiatedMultiplayerRef.current = false;
         if (selection.playerColor) {
@@ -177,6 +177,9 @@ export default function Home() {
             toggleLiveAdvice();
         }
         setAppScreen('GAME');
+        window.setTimeout(() => {
+            game.rollDice();
+        }, 160);
         const formatLabel = selection.matchLength === 0 ? 'Money Game' : `Match en ${selection.matchLength} pts`;
         toast.success(`${formatLabel} — ${selection.coachEnabled ? 'Mode Formation' : 'Mode Tournoi'}.`, 'Match lancé');
     }, [game, resetGameHistory, isLiveAdviceEnabled, toggleLiveAdvice]);
@@ -212,6 +215,9 @@ export default function Home() {
                 break;
             case 'import_export':
                 modals.openExportImport();
+                break;
+            case 'tournaments':
+                navigateTo('/tournaments');
                 break;
         }
     }, [modals, navigateTo, latestGameAnalysis]);

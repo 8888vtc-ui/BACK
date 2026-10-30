@@ -16,10 +16,11 @@ import type { Player } from '../../engine/backgammonEngine';
 import type { RawGameTurn } from '../../features/rating';
 import type { CoachAnalysisHistoryEntry } from '../../hooks/useCoachHelpers';
 import {
-    AI_RIVALS_BY_DIFFICULTY,
+    getAiRivalForDifficulty,
     computeDopamineMetricsFromHistory,
     resolveAiRivalQuote,
 } from '../../lib/gameFeel/aiRivals';
+import { useTranslation } from '../../i18n';
 
 export interface BoardHorologyBarProps {
     readonly totalTurns: number;
@@ -52,18 +53,20 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
     onStepNext, onReturnToLive, onToggleViewPhase, onRewindHere,
     swapColors = false, difficulty = 'expert', coachHistory = [],
     cubeValue = 1, doublingOfferedBy = null, onTriggerGhostChallenge,
-    onInstantRematch, locale = 'fr',
+    onInstantRematch, locale,
 }) => {
-    const isEn = locale === 'en';
-    const rival = AI_RIVALS_BY_DIFFICULTY[difficulty] ?? AI_RIVALS_BY_DIFFICULTY.expert;
+    const { locale: contextLocale } = useTranslation();
+    const activeLocale = (locale ?? contextLocale) as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja';
+    const isEn = activeLocale !== 'fr';
+    const rival = useMemo(() => getAiRivalForDifficulty(difficulty, activeLocale), [difficulty, activeLocale]);
     const currentStepNumber = isLive ? totalTurns : (replayIndex ?? 0) + 1;
-    const humanColorLabel = swapColors ? 'Noir' : 'Blanc';
-    const aiColorLabel = swapColors ? 'Blanc' : 'Noir';
+    const humanColorLabel = swapColors ? (isEn ? 'Black' : 'Noir') : (isEn ? 'White' : 'Blanc');
+    const aiColorLabel = swapColors ? (isEn ? 'White' : 'Blanc') : (isEn ? 'Black' : 'Noir');
 
     const metrics = useMemo(() => computeDopamineMetricsFromHistory(coachHistory), [coachHistory]);
     const rivalQuote = useMemo(
-        () => resolveAiRivalQuote({ rival, metrics, cubeValue, doublingOffered: doublingOfferedBy !== null, locale }),
-        [rival, metrics, cubeValue, doublingOfferedBy, locale],
+        () => resolveAiRivalQuote({ rival, metrics, cubeValue, doublingOffered: doublingOfferedBy !== null, locale: activeLocale }),
+        [rival, metrics, cubeValue, doublingOfferedBy, activeLocale],
     );
 
     const isHighStakes = doublingOfferedBy !== null || cubeValue >= 2;

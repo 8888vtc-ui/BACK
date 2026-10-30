@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Résumé des derniers matchs joués dans le Hub Joueur (Audit 3 / 5 — RecentMatchesSummary).
@@ -24,30 +24,13 @@ const RecentMatchesSummaryComponent: React.FC<RecentMatchesSummaryProps> = ({
     onReviewMatch,
     onOpenImportExport,
 }) => {
-    if (matches.length === 0) {
-        if (!onOpenImportExport) return null;
-        return (
-            <section
-                aria-label="Importation de partie"
-                data-testid="recent-matches-summary-empty"
-                className="w-full rounded-2xl border border-white/10 bg-black/25 p-3 flex items-center justify-between"
-            >
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                    <span className="text-base">⏱️</span>
-                    <span>Revue de match externe (.mat / XGID)</span>
-                </div>
-                {onOpenImportExport && (
-                    <button
-                        type="button"
-                        onClick={onOpenImportExport}
-                        data-testid="recent-matches-empty-import-btn"
-                        className="rounded-xl border border-[#d4af37]/40 bg-[#25180c] px-3 py-1.5 text-xs font-bold text-amber-200 hover:border-[#f3c65f] hover:text-white transition"
-                    >
-                        Importer une partie
-                    </button>
-                )}
-            </section>
-        );
+    // Algorithme Elon Musk : exclure les parties abandonnées à 0-0 qui polluent l'écran avec de fausses "DÉFAITES"
+    const meaningfulMatches = matches.filter(
+        (m) => m.scoreX > 0 || m.scoreO > 0 || m.pr !== null,
+    );
+
+    if (meaningfulMatches.length === 0) {
+        return null;
     }
 
     return (
@@ -58,7 +41,7 @@ const RecentMatchesSummaryComponent: React.FC<RecentMatchesSummaryProps> = ({
         >
             <div className="mb-2.5 flex items-center justify-between px-1">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-amber-400/85">
-                    Historique Récent ({matches.length})
+                    {`Historique Récent (${meaningfulMatches.length})`}
                 </span>
                 <div className="flex items-center gap-3">
                     {onOpenImportExport && (
@@ -66,10 +49,10 @@ const RecentMatchesSummaryComponent: React.FC<RecentMatchesSummaryProps> = ({
                             type="button"
                             onClick={onOpenImportExport}
                             data-testid="recent-matches-import-btn"
-                            className="rounded-lg border border-[#d4af37]/35 bg-black/40 px-2 py-0.5 text-[10px] font-bold text-amber-200 hover:border-[#f3c65f] hover:text-white transition flex items-center gap-1"
+                            className="rounded-lg border border-[#d4af37]/35 bg-black/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-200 hover:border-[#f3c65f] hover:text-white transition flex items-center gap-1"
                         >
-                            <span>⏱️</span>
-                            <span>Importer (.mat)</span>
+                            <span>📂</span>
+                            <span>Importer</span>
                         </button>
                     )}
                     <button
@@ -78,16 +61,15 @@ const RecentMatchesSummaryComponent: React.FC<RecentMatchesSummaryProps> = ({
                         data-testid="recent-matches-view-all-btn"
                         className="text-[11px] font-bold text-emerald-300 hover:text-emerald-200 transition"
                     >
-                        Revoir les analyses →
+                        Voir le bilan →
                     </button>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                {matches.slice(0, 3).map((match) => {
+                {meaningfulMatches.slice(0, 3).map((match) => {
                     const isWin = match.isVictory === true;
-                    const prDisplay = match.pr !== null ? match.pr.toFixed(1) : '—';
-                    const relativeTime = match.relativeDate || match.dateIso;
+                    const relativeTime = match.relativeDate || formatRelativeTime(match.dateIso);
 
                     return (
                         <button
@@ -95,19 +77,19 @@ const RecentMatchesSummaryComponent: React.FC<RecentMatchesSummaryProps> = ({
                             type="button"
                             data-testid={`review-match-btn-${match.id}`}
                             onClick={() => onReviewMatch(match.id)}
-                            className="flex flex-col items-start gap-1 rounded-xl border border-white/5 bg-white/[0.03] p-2.5 text-left transition hover:border-[#f3c65f]/50 hover:bg-white/[0.06] active:scale-[0.98]"
+                            className="flex flex-col items-start gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-2.5 text-left transition hover:border-[#f3c65f]/50 hover:bg-white/[0.06] active:scale-[0.98]"
                         >
                             <div className="flex w-full items-center justify-between">
                                 <span
-                                    className={`rounded px-1.5 py-0.5 text-[10px] font-extrabold uppercase ${
+                                    className={`rounded px-2 py-0.5 text-[11px] font-extrabold uppercase ${
                                         isWin
                                             ? 'bg-emerald-500/20 text-emerald-300'
-                                            : 'bg-rose-500/20 text-rose-300'
+                                            : 'bg-amber-500/15 text-amber-200'
                                     }`}
                                 >
                                     {isWin ? 'Victoire' : 'Défaite'}
                                 </span>
-                                <span className="text-[10px] text-slate-400">{relativeTime}</span>
+                                <span className="text-[11px] text-slate-400">{relativeTime}</span>
                             </div>
 
                             <div className="mt-1 flex w-full items-center justify-between font-mono text-xs">
@@ -116,11 +98,11 @@ const RecentMatchesSummaryComponent: React.FC<RecentMatchesSummaryProps> = ({
                                 </span>
                                 <span className="font-bold text-amber-300">{`${match.scoreX} – ${match.scoreO}`}</span>
                             </div>
-
-                            <div className="flex w-full items-center justify-between text-[10px] text-slate-400">
-                                <span>Longueur: {match.matchLength} pts</span>
-                                <span className="font-mono text-slate-300">PR {prDisplay}</span>
-                            </div>
+                            {match.pr !== null && (
+                                <div className="mt-0.5 flex w-full items-center justify-end font-mono text-[10px] text-emerald-300">
+                                    <span>{`PR ${match.pr.toFixed(1)}`}</span>
+                                </div>
+                            )}
                         </button>
                     );
                 })}

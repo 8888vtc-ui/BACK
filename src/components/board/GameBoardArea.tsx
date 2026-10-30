@@ -11,12 +11,15 @@ import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
 import type { BuildMatchContextParams } from '../../features/coach/matchContext';
 import type { RawGameTurn } from '../../features/rating';
 import type { CoachAnalysisHistoryEntry } from '../../hooks/useCoach';
+import type { LastMoveFeedback } from '../../hooks/coach/coachTypes';
 import { useInteractiveReplay } from '../../hooks/useInteractiveReplay';
 import Board from './Board';
 import BoardHorologyBar from './BoardHorologyBar';
 import BoardLivePersonaBubble from './BoardLivePersonaBubble';
+import { BoardLeftPlayerRail, BoardRightActionRail } from './BoardSideRails';
 import CoachSidebar, { type CoachSidebarProps } from '../coach/CoachSidebar';
 import MobilePortraitCoachBanner from '../coach/MobilePortraitCoachBanner';
+import MoveErrorPopToast from '../coach/MoveErrorPopToast';
 import ErrorBoundary from '../common/ErrorBoundary';
 import type { GameSpeed } from '../../lib/gameFeel/speedPresets';
 
@@ -50,11 +53,16 @@ export interface GameBoardAreaProps {
     onTriggerCoach: () => void;
     matchStats?: CoachSidebarProps['matchStats'];
     matchStatsO?: CoachSidebarProps['matchStatsO'];
+    prX?: number | null;
+    prO?: number | null;
+    lastMoveFeedback?: LastMoveFeedback | null;
     locale?: string;
     gameId: string;
     matchContext?: Partial<BuildMatchContextParams>;
     isMatchStarted?: boolean;
     playerColor?: 'X' | 'O';
+    onBackToLobby?: () => void;
+    onToggleTheme?: () => void;
 }
 
 const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
@@ -63,9 +71,10 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     onSelectDie, onDiceClick, onDeselect, coach, isAnalyzing,
     onDismissCoach, onReplayMove, onOpenKnowledgeConcept, onBlunderClick,
     onCandidateHover, turnsHistory, coachHistory = [], selectedCoachHistoryIndex = null,
-    onSelectCoachHistoryIndex, onTriggerCoach, matchStats, matchStatsO, locale,
-    gameId, matchContext, isMatchStarted = true, playerColor = 'X',
+    onSelectCoachHistoryIndex, onTriggerCoach, matchStats, matchStatsO, prX, prO, lastMoveFeedback, locale,
+    gameId, matchContext, isMatchStarted = true, playerColor = 'X', onBackToLobby, onToggleTheme,
 }) => {
+    const isXTurn = game.state.turn === 'X';
     const [replayViewPhase, setReplayViewPhase] = useState<'before' | 'after'>('before');
     const [previewBoardMode, setPreviewBoardMode] = useState<'live' | 'before'>('live');
     const [isFocusFullBoard, setIsFocusFullBoard] = useState<boolean>(true);
@@ -184,9 +193,17 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
 
             <div
                 data-testid="board-main-column"
-                className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 flex flex-col items-center justify-center gap-0.5 sm:gap-1 overflow-hidden w-full relative z-10 transition-all duration-200`}
+                className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 flex flex-col items-center justify-center gap-0 overflow-hidden w-full relative z-10 transition-all duration-200`}
             >
-                <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full flex items-center justify-center">
+                <MoveErrorPopToast
+                    feedback={lastMoveFeedback}
+                    boardBefore={displayCoach?.boardBefore}
+                    boardAfter={game.state.board}
+                    onReplayMove={handleSyncedReplayMove}
+                    onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
+                />
+
+                <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full flex items-stretch justify-center gap-2 sm:gap-4 px-1 sm:px-3 py-0.5 sm:py-1.5">
                     <BoardLivePersonaBubble
                         difficulty={game.difficulty}
                         isPlayerThinking={Boolean(game.state.turn === 'X' && game.state.dice)}
@@ -199,48 +216,56 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         onReplayMove={handleSyncedReplayMove}
                         onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
                     />
-                    <div className="hidden lg:flex items-center gap-1.5 absolute top-1.5 right-2 z-30">
-                        <button
-                            type="button" data-testid="board-focus-toggle-btn"
-                            onClick={() => setIsFocusFullBoard((v) => !v)}
-                            title={isFocusFullBoard ? 'Réafficher le panneau Coach & Bot' : 'Masquer le panneau latéral pour agrandir le plateau à 100%'}
-                            className="rounded-lg border border-white/15 bg-slate-950/85 px-2.5 py-1 text-[11px] font-bold text-slate-200 shadow-md backdrop-blur-md transition hover:border-[#f3c65f] hover:text-white active:scale-95"
-                        >
-                            {isFocusFullBoard ? '🎓 Ouvrir Coach' : '⇔ Plateau 100%'}
-                        </button>
-                        <button
-                            type="button" data-testid="board-fullscreen-toggle-btn"
-                            onClick={handleToggleBrowserFullscreen}
-                            title="Basculer le mode Plein Écran intégral (F11)"
-                            className="rounded-lg border border-[#f3c65f]/50 bg-slate-950/85 px-2.5 py-1 text-[11px] font-bold text-[#f3c65f] shadow-md backdrop-blur-md transition hover:border-[#f3c65f] hover:bg-[#f3c65f]/15 active:scale-95"
-                        >
-                            {isBrowserFullscreen ? '🗗 Quitter Plein Écran' : '⛶ Plein Écran'}
-                        </button>
+
+                    <BoardLeftPlayerRail
+                        difficulty={game.difficulty}
+                        locale={locale}
+                        isXTurn={isXTurn}
+                        scoreX={game.state.scoreX}
+                        scoreO={game.state.scoreO}
+                        cubeValue={game.state.cubeValue}
+                        matchLength={game.state.matchLength}
+                        turn={game.state.turn}
+                        prX={prX}
+                        prO={prO}
+                    />
+
+                    {/* COLONNE CENTRALE : Plateau 100 % Hauteur */}
+                    <div className="flex-1 min-w-0 min-h-0 h-full flex items-center justify-center">
+                        <ErrorBoundary name="Plateau de jeu">
+                            <Board
+                                state={displayState}
+                                leftDieTargets={replay.isLive ? game.leftDieTargets : new Map()} rightDieTargets={replay.isLive ? game.rightDieTargets : new Map()}
+                                selectedPoint={replay.isLive ? (game.selected?.point ?? null) : null} selectedDie={game.selected ? game.selected.die : activeDie}
+                                usedDice={replay.isLive ? game.usedDice : [false, false]} opponentDice={!displayState.dice ? game.lastOpponentDice : null}
+                                onCheckerClick={replay.isLive ? (pt) => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); onCheckerClick(pt); } : NOOP}
+                                onCheckerRightClick={replay.isLive ? onCheckerRightClick : NOOP} onDestinationClick={replay.isLive ? onDestinationClick : NOOP}
+                                onPlayMove={replay.isLive ? onPlayMove : NOOP} onSelectDie={replay.isLive ? onSelectDie : NOOP}
+                                onDiceClick={replay.isLive ? onDiceClick : NOOP} onDeselect={replay.isLive ? onDeselect : NOOP} onUndo={replay.isLive ? game.undoMove : NOOP}
+                                coachHighlight={displayCoachHighlight}
+                                opponentHighlight={!replay.isLive && replay.selectedTurn?.player === 'O' && replayViewPhase === 'before' ? [...replay.selectedTurn.moves] : game.opponentHighlight}
+                                canDouble={replay.isLive && game.canDouble} doublingOfferedBy={game.doublingOfferedBy}
+                                onOfferDouble={replay.isLive ? game.offerDouble : NOOP} onTakeDouble={replay.isLive ? game.takeDouble : NOOP} onPassDouble={replay.isLive ? game.passDouble : NOOP}
+                                theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? game.gamePhase : 'REPLAY_VIEW'}
+                                onRoll={replay.isLive ? () => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); game.rollDice(); } : replay.returnToLive}
+                                onConfirm={replay.isLive ? () => game.commitHumanMove() : replay.returnToLive}
+                                canUndo={replay.isLive && game.canUndo} canConfirm={replay.isLive && game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
+                                autoConfirmEnabled={game.autoConfirmTurn} onToggleAutoConfirm={game.toggleAutoConfirmTurn}
+                                autoConfirmMode={game.autoConfirmMode} onSelectAutoConfirmMode={game.setAutoConfirmMode} onCycleAutoConfirmMode={game.cycleAutoConfirmMode}
+                                gameSpeed={game.gameSpeed} onCycleGameSpeed={game.setGameSpeed ? () => game.setGameSpeed(NEXT_SPEED[game.gameSpeed ?? 'tournament']) : undefined}
+                                isMatchStarted={isMatchStarted} swapColors={playerColor === 'O'} showPipCount={false}
+                            />
+                        </ErrorBoundary>
                     </div>
-                    <ErrorBoundary name="Plateau de jeu">
-                        <Board
-                            state={displayState}
-                            leftDieTargets={replay.isLive ? game.leftDieTargets : new Map()} rightDieTargets={replay.isLive ? game.rightDieTargets : new Map()}
-                            selectedPoint={replay.isLive ? (game.selected?.point ?? null) : null} selectedDie={game.selected ? game.selected.die : activeDie}
-                            usedDice={replay.isLive ? game.usedDice : [false, false]} opponentDice={!displayState.dice ? game.lastOpponentDice : null}
-                            onCheckerClick={replay.isLive ? (pt) => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); onCheckerClick(pt); } : NOOP}
-                            onCheckerRightClick={replay.isLive ? onCheckerRightClick : NOOP} onDestinationClick={replay.isLive ? onDestinationClick : NOOP}
-                            onPlayMove={replay.isLive ? onPlayMove : NOOP} onSelectDie={replay.isLive ? onSelectDie : NOOP}
-                            onDiceClick={replay.isLive ? onDiceClick : NOOP} onDeselect={replay.isLive ? onDeselect : NOOP} onUndo={replay.isLive ? game.undoMove : NOOP}
-                            coachHighlight={displayCoachHighlight}
-                            opponentHighlight={!replay.isLive && replay.selectedTurn?.player === 'O' && replayViewPhase === 'before' ? [...replay.selectedTurn.moves] : game.opponentHighlight}
-                            canDouble={replay.isLive && game.canDouble} doublingOfferedBy={game.doublingOfferedBy}
-                            onOfferDouble={replay.isLive ? game.offerDouble : NOOP} onTakeDouble={replay.isLive ? game.takeDouble : NOOP} onPassDouble={replay.isLive ? game.passDouble : NOOP}
-                            theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? game.gamePhase : 'REPLAY_VIEW'}
-                            onRoll={replay.isLive ? () => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); game.rollDice(); } : replay.returnToLive}
-                            onConfirm={replay.isLive ? () => game.commitHumanMove() : replay.returnToLive}
-                            canUndo={replay.isLive && game.canUndo} canConfirm={replay.isLive && game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
-                            autoConfirmEnabled={game.autoConfirmTurn} onToggleAutoConfirm={game.toggleAutoConfirmTurn}
-                            autoConfirmMode={game.autoConfirmMode} onSelectAutoConfirmMode={game.setAutoConfirmMode} onCycleAutoConfirmMode={game.cycleAutoConfirmMode}
-                            gameSpeed={game.gameSpeed} onCycleGameSpeed={game.setGameSpeed ? () => game.setGameSpeed(NEXT_SPEED[game.gameSpeed ?? 'tournament']) : undefined}
-                            isMatchStarted={isMatchStarted} swapColors={playerColor === 'O'} showPipCount={false}
-                        />
-                    </ErrorBoundary>
+
+                    <BoardRightActionRail
+                        isBrowserFullscreen={isBrowserFullscreen}
+                        isFocusFullBoard={isFocusFullBoard}
+                        onToggleFullscreen={handleToggleBrowserFullscreen}
+                        onToggleCoach={() => { setIsFocusFullBoard((v) => !v); onTriggerCoach(); }}
+                        onToggleTheme={onToggleTheme}
+                        onBackToLobby={onBackToLobby}
+                    />
                 </div>
 
                 {isMatchStarted && (
@@ -251,7 +276,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                             onToggleBestMoveArrows={() => setPreviewBoardMode((m) => (m === 'before' ? 'live' : 'before'))}
                             onReplayMove={handleSyncedReplayMove} onOpenDrawer={onTriggerCoach}
                         />
-                        <div className="hidden md:block [@media(max-height:540px)]:!hidden w-full shrink-0 h-8">
+                        <div className={`${replay.isLive ? 'sr-only' : 'hidden md:block'} shrink-0 h-8 w-full`}>
                             <BoardHorologyBar
                                 totalTurns={effectiveTurns.length} replayIndex={replay.replayIndex} isLive={replay.isLive}
                                 selectedTurn={replay.selectedTurn} officialNotation={replay.officialNotation} viewPhase={replayViewPhase}

@@ -254,6 +254,7 @@ const BoardComponent: React.FC<BoardProps> = ({
                             onBarClick: handleBarClick, onBarRightClick: handleBarRightClick, onOfferDouble,
                             xBarPoint: X_BAR, oBarPoint: O_BAR, theme, swapColors,
                             isDanced: barReentry.isDanced, dancedMessage: barReentry.dancedMessage,
+                            pipX: pipCounts.X, pipO: pipCounts.O,
                         }}
                     />
 

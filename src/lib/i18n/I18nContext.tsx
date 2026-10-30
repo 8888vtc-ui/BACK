@@ -153,30 +153,27 @@ const ARABIC_TIMEZONES = new Set([
 const VALID_LOCALES = new Set<Locale>(['fr', 'en', 'es', 'pt', 'de', 'ar', 'ja']);
 
 /**
- * Détecte la langue initiale selon l'ordre de priorité :
- * 1. Choix manuel sauvegardé (localStorage 'bg_locale').
- * 2. Paramètre d'URL (?lang=fr|en|es|pt|de|ar|ja).
- * 3. Langue du navigateur.
- * 4. Fuseau horaire.
- * 5. Défaut : 'en' (Anglais international).
+ * Détecte la langue initiale selon l'ordre de priorité strict :
+ * 1. Paramètre explicite d'URL (?lang=fr|en|es|pt|de|ar|ja).
+ * 2. Préférences linguistiques du navigateur (navigator.languages / navigator.language).
+ * 3. Fuseau horaire Intl.
+ * 4. Choix en localStorage si navigateur non résolu.
+ * 5. Défaut universel : 'en' (Anglais international).
  */
 export function detectLocale(): Locale {
-    if (typeof window === 'undefined') return 'fr';
+    if (typeof window === 'undefined') return 'en';
 
-    try {
-        const saved = window.localStorage.getItem('bg_locale') as Locale | null;
-        if (saved && VALID_LOCALES.has(saved)) {
-            return saved;
-        }
-    } catch {
-        // localStorage indisponible
-    }
-
+    // 1. Paramètre d'URL (?lang=fr|en|es|pt|de|ar|ja)
     try {
         if (typeof window.location?.search === 'string' && window.location.search.length > 1) {
             const params = new URLSearchParams(window.location.search);
             const urlLang = params.get('lang')?.toLowerCase() as Locale | undefined;
             if (urlLang && VALID_LOCALES.has(urlLang)) {
+                try {
+                    window.localStorage?.setItem('bg_locale', urlLang);
+                } catch {
+                    // localStorage indisponible
+                }
                 return urlLang;
             }
         }
@@ -184,6 +181,7 @@ export function detectLocale(): Locale {
         // URLSearchParams indisponible
     }
 
+    // 2. Détection automatique pure selon les langues du navigateur
     try {
         const candidateLangs: string[] = [];
         if (Array.isArray(navigator.languages)) {
@@ -196,17 +194,18 @@ export function detectLocale(): Locale {
         for (const candidate of candidateLangs) {
             const navLang = (candidate || '').toLowerCase().trim();
             if (navLang.startsWith('fr')) return 'fr';
+            if (navLang.startsWith('en')) return 'en';
             if (navLang.startsWith('es')) return 'es';
             if (navLang.startsWith('pt')) return 'pt';
             if (navLang.startsWith('de')) return 'de';
             if (navLang.startsWith('ar')) return 'ar';
             if (navLang.startsWith('ja')) return 'ja';
-            if (navLang.startsWith('en')) return 'en';
         }
     } catch {
         // navigator indisponible
     }
 
+    // 3. Fuseau horaire Intl
     try {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         if (timeZone) {
@@ -219,6 +218,16 @@ export function detectLocale(): Locale {
         }
     } catch {
         // Intl indisponible
+    }
+
+    // 4. Choix manuel sauvegardé en localStorage si navigateur non résolu
+    try {
+        const saved = window.localStorage.getItem('bg_locale') as Locale | null;
+        if (saved && VALID_LOCALES.has(saved)) {
+            return saved;
+        }
+    } catch {
+        // localStorage indisponible
     }
 
     return 'en';

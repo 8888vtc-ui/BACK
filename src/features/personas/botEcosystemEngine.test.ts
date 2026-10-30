@@ -165,5 +165,38 @@ describe('botEcosystemEngine — Gammon36, Grille Nardex EMG, Mode Tuteur & Cont
             luckDeltaEquity: 0,
         });
         expect(proBlunder.shouldSpeak).toBe(false);
+
+        // 5. Orchestration multilingue en anglais
+        const enBotJoker = resolveMuskBotOrchestration({
+            isPlayerThinking: false,
+            difficulty: 'beginner',
+            mode: 'fun',
+            actor: 'bot',
+            equityLossEmg: 0,
+            pattern: 'GENERAL_POSITIONAL_LOSS',
+            luckDeltaEquity: 0.78,
+            locale: 'en',
+        });
+        expect(enBotJoker.shouldSpeak).toBe(true);
+        expect(enBotJoker.parsedMessage?.cleanText).toContain('Off to the bar');
+
+        const enTutor = buildTutorModeInterjection({
+            difficulty: 'grandmaster',
+            equityLossEmg: 0.25,
+            pattern: 'PREMATURE_PRIME_BREAKUP',
+            locale: 'en',
+        });
+        expect(enTutor.shouldInterrupt).toBe(true);
+        expect(enTutor.parsed?.cleanText).toContain('five-prime barricade');
+
+        const enPayload = buildBotLlmContextPayload({
+            difficulty: 'expert',
+            equityLossEmg: 0.15,
+            pattern: 'GENERAL_POSITIONAL_LOSS',
+            luckDeltaEquity: 0,
+            chatHistory: [],
+            locale: 'en',
+        });
+        expect(enPayload.persona.name).toBe('Marcus "The High-Roller"');
     });
 });

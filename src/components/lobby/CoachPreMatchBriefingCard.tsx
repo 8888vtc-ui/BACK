@@ -63,9 +63,19 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
           )
         : STRATEGIC_CONCEPTS_CATALOG[0];
 
+    const humanConceptTitle =
+        matchedConcept?.name ??
+        (topError?.concept_label
+            ? topError.concept_label.replace(/_/g, ' ')
+            : 'Sécurité des pions isolés');
+
+    const humanWinLossPct = topError
+        ? Math.max(1, Math.min(49, Math.round(Math.abs(Number(topError.total_equity_loss)) * 50)))
+        : 4;
+
     const adviceText =
         matchedConcept?.recommendation ??
-        'Comptez systématiquement les tirs directs (1 à 6) et surveillez votre fenêtre de videau avant chaque décision.';
+        'Ne laissez pas de pion isolé à portée directe (1 à 6 cases) devant le jan adverse.';
 
     return (
         <section
@@ -75,28 +85,22 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
         >
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 shrink-0">
-                        🎓 Coach
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-300 shrink-0">
+                        🎓 Conseil du Coach
                     </span>
                     {topError ? (
                         <span
                             data-testid="lobby-briefing-error-badge"
-                            className="rounded-md border border-white/10 bg-rose-950/60 px-2 py-0.5 text-[11px] font-semibold text-rose-200 shrink-0"
+                            className="rounded-md border border-rose-400/30 bg-rose-950/60 px-2 py-0.5 text-[11px] font-bold text-rose-200 shrink-0"
                         >
-                            Point faible : {topError.concept_label} (×{topError.occurrence_count} · -
-                            {Math.abs(Number(topError.total_equity_loss)).toFixed(3)} ΔEq)
+                            À surveiller : {humanConceptTitle} (-{humanWinLossPct}% de chances)
                         </span>
                     ) : (
-                        <span className="rounded-md border border-white/10 bg-emerald-950/40 px-2 py-0.5 text-[11px] font-semibold text-emerald-200 shrink-0">
-                            Focus : {matchedConcept?.name}
+                        <span className="rounded-md border border-emerald-400/30 bg-emerald-950/40 px-2 py-0.5 text-[11px] font-bold text-emerald-200 shrink-0">
+                            Point clé : {humanConceptTitle}
                         </span>
                     )}
-                    {isLocalGuest && (
-                        <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-slate-400 shrink-0">
-                            Local
-                        </span>
-                    )}
-                    <p className="text-xs text-slate-400 truncate flex-1 min-w-[180px]">{adviceText}</p>
+                    <p className="text-xs text-slate-300 truncate flex-1 min-w-[180px]">{adviceText}</p>
                 </div>
 
                 {onOpenDrills && (
@@ -104,9 +108,9 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
                         type="button"
                         data-testid="lobby-briefing-drill-btn"
                         onClick={() => onOpenDrills(topError?.concept_id)}
-                        className="shrink-0 rounded-lg border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold text-slate-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+                        className="shrink-0 rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-200 transition hover:border-amber-400/60 hover:bg-amber-500/20 hover:text-white"
                     >
-                        🎯 {topError ? 'Corriger en Drill' : 'Lancer un Drill'}
+                        🎯 {topError ? 'Corriger en 2 min' : 'S’entraîner'}
                     </button>
                 )}
             </div>

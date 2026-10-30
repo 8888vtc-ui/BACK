@@ -84,8 +84,7 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
     const showLevel3 = !showLevel1 && !showLevel2 && isHoverCombinedTarget;
     const isAnyTarget = isTargetDestination || showLevel1 || showLevel2 || showLevel3;
 
-    const mainPoints = isTopRow ? '3,0 97,0 50,288' : '3,300 97,300 50,12';
-    const innerInlayPoints = isTopRow ? '6,1 94,1 50,280' : '6,299 94,299 50,20';
+    const mainPoints = isTopRow ? '1,0 99,0 50,292' : '1,300 99,300 50,8';
 
     const ghostNode = (
         <BoardPointGhostChecker
@@ -148,7 +147,7 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                 viewBox="0 0 100 300"
                 preserveAspectRatio="none"
                 shapeRendering="geometricPrecision"
-                className="absolute inset-0 w-full h-[84%] pointer-events-none"
+                className="absolute inset-0 w-full h-[90%] pointer-events-none"
                 style={{ top: isTopRow ? 0 : 'auto', bottom: isTopRow ? 'auto' : 0 }}
             >
                 <defs>
@@ -170,14 +169,7 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                     points={mainPoints}
                     fill={isEven ? `url(#ivoryPoint-${pointNumber})` : `url(#burgundyPoint-${pointNumber})`}
                     stroke={isEven ? pt.lightStroke : pt.darkStroke}
-                    strokeWidth="0.9"
-                    strokeLinejoin="round"
-                />
-                <polygon
-                    points={innerInlayPoints}
-                    fill="none"
-                    stroke={isEven ? pt.lightInlay : pt.darkInlay}
-                    strokeWidth="0.5"
+                    strokeWidth="0.6"
                     strokeLinejoin="round"
                 />
                 {showLevel1 && (

@@ -16,10 +16,11 @@ import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { Player } from '../../engine/backgammonEngine';
 import type { CoachAnalysisHistoryEntry } from '../../hooks/useCoachHelpers';
 import {
-    AI_RIVALS_BY_DIFFICULTY,
+    getAiRivalForDifficulty,
     computeDopamineMetricsFromHistory,
     resolveAiRivalQuote,
 } from '../../lib/gameFeel/aiRivals';
+import { useTranslation } from '../../i18n';
 
 export interface DopamineJuiceBannerProps {
     readonly difficulty?: AIDifficulty;
@@ -38,10 +39,12 @@ const DopamineJuiceBannerComponent: React.FC<DopamineJuiceBannerProps> = ({
     doublingOfferedBy = null,
     onTriggerGhostChallenge,
     onInstantRematch,
-    locale = 'fr',
+    locale,
 }) => {
-    const isEn = locale === 'en';
-    const rival = AI_RIVALS_BY_DIFFICULTY[difficulty] ?? AI_RIVALS_BY_DIFFICULTY.expert;
+    const { locale: contextLocale } = useTranslation();
+    const activeLocale = (locale ?? contextLocale) as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja';
+    const isEn = activeLocale !== 'fr';
+    const rival = useMemo(() => getAiRivalForDifficulty(difficulty, activeLocale), [difficulty, activeLocale]);
 
     const metrics = useMemo(
         () => computeDopamineMetricsFromHistory(coachHistory),
@@ -55,9 +58,9 @@ const DopamineJuiceBannerComponent: React.FC<DopamineJuiceBannerProps> = ({
                 metrics,
                 cubeValue,
                 doublingOffered: doublingOfferedBy !== null,
-                locale,
+                locale: activeLocale,
             }),
-        [rival, metrics, cubeValue, doublingOfferedBy, locale],
+        [rival, metrics, cubeValue, doublingOfferedBy, activeLocale],
     );
 
     const isHighStakes = doublingOfferedBy !== null || cubeValue >= 2;

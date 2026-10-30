@@ -15,7 +15,7 @@ import { GAME_SPEED_ORDER, type GameSpeed } from '../../lib/gameFeel/speedPreset
 import { AUTO_CONFIRM_MODE_LABELS, SPEED_LABELS } from '../board/BoardActions';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { soundEngine } from '../../lib/sound/soundEngine';
-import { useI18n, PRIMARY_LOCALES, LOCALE_METADATA, type Locale } from '../../i18n';
+import { useI18n } from '../../i18n';
 
 export interface HudSettingsMenuProps {
     isOpen: boolean;
@@ -54,7 +54,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
     autoConfirmMode, onSelectAutoConfirmMode, gameSpeed, onSelectGameSpeed,
 }) => {
     const { setTheme } = useBoardTheme(theme);
-    const { locale, setLocale } = useI18n();
+    const { locale } = useI18n();
     const [volumePct, setVolumePct] = useState<number>(80);
     const [boardOrientation, setBoardOrientation] = useState<BoardOrientation>('normal');
     const [pipVisible, setPipVisible] = useState<boolean>(true);
@@ -194,21 +194,13 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                 </div>
             </div>
 
-            {/* SECTION 2 : SON & LANGUE */}
+            {/* SECTION 2 : SON & AUDIO (Langue auto-détectée par le navigateur) */}
             <div className="flex flex-col gap-2 pt-2.5 border-t border-white/10">
                 <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Son &amp; Langue</span>
-                    <select
-                        id="hud-locale-select" name="hudLocale" value={locale}
-                        onChange={(e) => setLocale(e.target.value as Locale)} aria-label="Langue" data-testid="hud-locale-select"
-                        className="rounded-lg border border-white/10 bg-slate-900 px-2 py-0.5 text-[11px] font-bold text-slate-200 hover:border-white/25 hover:text-white focus:outline-none cursor-pointer transition"
-                    >
-                        {PRIMARY_LOCALES.map((loc) => (
-                            <option key={loc} value={loc} className="bg-slate-950 text-slate-100">
-                                {LOCALE_METADATA[loc].flag} {loc.toUpperCase()}
-                            </option>
-                        ))}
-                    </select>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Audio &amp; Acoustique</span>
+                    <span className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 font-mono text-[10px] font-bold text-slate-400">
+                        AUTO ({locale.toUpperCase()})
+                    </span>
                 </div>
 
                 <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">

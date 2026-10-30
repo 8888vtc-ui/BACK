@@ -1,34 +1,19 @@
 /**
  * Écosystème des Bots Personnifiés, Mode Sans Hasard « Gammon36 », Grille Nardex EMG
  * & Pipeline Conversationnel Hybride < 500 ms (`botEcosystemEngine.ts`).
- *
- * Rôle :
- *   Implémente les spécifications du Dossier #6 :
- *   1. Mode d'entraînement sans hasard « Gammon36 » (grille 6×6 des 36 combinaisons de deux dés
- *      choisies par le joueur jusqu'à épuisement de la grille).
- *   2. Indice de chance GNU Backgammon (`VERY_LUCKY` > +0.6, `LUCKY` +0.3..+0.6, `UNMARKED` -0.3..+0.3,
- *      `UNLUCKY` -0.6..-0.3, `VERY_UNLUCKY` < -0.6) pour déclencher les réactions au « Huge Joker ».
- *   3. Grille Nardex de perte d'équité EMG (`OPTIMAL_OR_OK` < 0.02, `DOUBTFUL` 0.02..0.08 ignoré
- *      pour préserver le rythme, `ERROR` 0.08..0.20, `BLUNDER` >= 0.20) et détection des 4 erreurs
- *      classiques (frappe exposée, rupture de 5-prime, mauvais calcul de barre, confusion course/contact).
- *   4. Constructeur de Contexte JSON compact (fenêtré aux 10 derniers échanges = 20 messages max,
- *      contrainte < 3 phrases) et Analyseur Regex de balises `[emotion:...]` / `[action:...]` avec
- *      garde-fous CMU (zéro insulte) et App Store Section 1.2.
- *
  * Strictement 0 `any`, ≤ 400 lignes.
  */
 
 import type { AIDifficulty } from '../../engine/aiHeuristics';
+import type { Locale } from '../../lib/i18n/types';
 import { getBotPersona } from './botPersonas';
+import { PRIME_BREAKUP_TUTOR_LINES } from './botChatTranslations';
 
 export type LuckCategory = 'VERY_LUCKY' | 'LUCKY' | 'UNMARKED' | 'UNLUCKY' | 'VERY_UNLUCKY';
 export type NardexMoveGrade = 'OPTIMAL_OR_OK' | 'DOUBTFUL' | 'ERROR' | 'BLUNDER';
 export type ClassicalBlunderPattern =
-    | 'PREMATURE_PRIME_BREAKUP'
-    | 'RECKLESS_HIT_EXPOSURE'
-    | 'BAR_REENTRY_MISCALCULATION'
-    | 'RACE_VS_CONTACT_CONFUSION'
-    | 'GENERAL_POSITIONAL_LOSS';
+    | 'PREMATURE_PRIME_BREAKUP' | 'RECKLESS_HIT_EXPOSURE' | 'BAR_REENTRY_MISCALCULATION'
+    | 'RACE_VS_CONTACT_CONFUSION' | 'GENERAL_POSITIONAL_LOSS';
 export type BotEmotionTag = 'neutral' | 'happy' | 'smug' | 'panic' | 'thinking' | 'shocked' | 'respect';
 export type BotActionTag = 'none' | 'wave' | 'adjust_glasses' | 'rub_hands' | 'sweat' | 'slam_cube';
 
@@ -201,27 +186,28 @@ export function buildTutorModeInterjection(params: {
     readonly difficulty: AIDifficulty;
     readonly equityLossEmg: number;
     readonly pattern: ClassicalBlunderPattern;
+    readonly locale?: Locale;
 }): { readonly shouldInterrupt: boolean; readonly taggedLine: string | null; readonly parsed: ParsedBotResponse | null } {
     const grade = classifyMoveGradeNardex(params.equityLossEmg);
     if (grade === 'OPTIMAL_OR_OK' || grade === 'DOUBTFUL') {
         return { shouldInterrupt: false, taggedLine: null, parsed: null };
     }
 
+    const loc = params.locale ?? 'fr';
+    const persona = getBotPersona(params.difficulty, loc);
     let rawTagged = '';
+
     if (params.difficulty === 'beginner') {
-        rawTagged =
-            '[emotion:smug][action:rub_hands] Oh oui, valide ce coup ! Laisse ce pion tout seul devant mes portes, je vais me régaler !';
+        rawTagged = `[emotion:smug][action:rub_hands] ${persona.dialogues.playerBlunder.fun}`;
     } else if (params.difficulty === 'intermediate') {
-        rawTagged =
-            '[emotion:happy][action:wave] Un conseil d’amie au salon de Monte-Carlo : ce coup découvre ta maison face à mon ancre. Tu veux le rejouer ?';
+        rawTagged = `[emotion:happy][action:wave] ${persona.dialogues.playerBlunder.fun}`;
     } else if (params.difficulty === 'expert') {
-        rawTagged =
-            '[emotion:thinking][action:slam_cube] Mauvaise couverture de risque sur ton capital de pips, mon ami. Ce placement dégrade ton espérance de gain !';
+        rawTagged = `[emotion:thinking][action:slam_cube] ${persona.dialogues.playerBlunder.fun}`;
     } else {
-        rawTagged =
-            params.pattern === 'PREMATURE_PRIME_BREAKUP'
-                ? '[emotion:thinking][action:adjust_glasses] Un instant. Si tu brises ta barricade de cinq portes maintenant, tu m’offres une autoroute pour m’échapper au prochain jet. Veux-tu vraiment ouvrir cette porte ?'
-                : '[emotion:thinking][action:adjust_glasses] Un instant. Ce déplacement expose ta structure sur trop de combinaisons parmi les 36. Veux-tu reconsidérer ce coup ?';
+        const line = params.pattern === 'PREMATURE_PRIME_BREAKUP'
+            ? (PRIME_BREAKUP_TUTOR_LINES[loc] ?? PRIME_BREAKUP_TUTOR_LINES.fr)
+            : persona.dialogues.playerBlunder.fun;
+        rawTagged = `[emotion:thinking][action:adjust_glasses] ${line}`;
     }
 
     return {
@@ -242,8 +228,10 @@ export function buildBotLlmContextPayload(params: {
     readonly luckDeltaEquity: number;
     readonly memoryHighlights?: readonly string[];
     readonly chatHistory: readonly ChatTurnExchange[];
+    readonly locale?: Locale;
 }): BotLlmContextPayload {
-    const persona = getBotPersona(params.difficulty);
+    const loc = params.locale ?? 'fr';
+    const persona = getBotPersona(params.difficulty, loc);
     const loss = -Math.abs(Number((params.equityLossEmg || 0).toFixed(3)));
     const recentHistory = params.chatHistory.slice(-MAX_SLIDING_WINDOW_MESSAGES);
 
@@ -267,12 +255,8 @@ export function buildBotLlmContextPayload(params: {
     };
 }
 
-const VALID_EMOTIONS: ReadonlySet<BotEmotionTag> = new Set([
-    'neutral', 'happy', 'smug', 'panic', 'thinking', 'shocked', 'respect',
-]);
-const VALID_ACTIONS: ReadonlySet<BotActionTag> = new Set([
-    'none', 'wave', 'adjust_glasses', 'rub_hands', 'sweat', 'slam_cube',
-]);
+const VALID_EMOTIONS: ReadonlySet<BotEmotionTag> = new Set(['neutral', 'happy', 'smug', 'panic', 'thinking', 'shocked', 'respect']);
+const VALID_ACTIONS: ReadonlySet<BotActionTag> = new Set(['none', 'wave', 'adjust_glasses', 'rub_hands', 'sweat', 'slam_cube']);
 const GUARDRAIL_VIOLATION_REGEX = /\b(idiot|stupide|imbécile|nul|con|merde|sex|nude|nsfw)\b/i;
 
 /**
@@ -351,14 +335,16 @@ export function resolveMuskBotOrchestration(params: {
     readonly equityLossEmg: number;
     readonly pattern: ClassicalBlunderPattern;
     readonly luckDeltaEquity: number;
+    readonly locale?: Locale;
 }): MuskBotOrchestrationDecision {
     if (params.isPlayerThinking) return SILENT_MUSK_DECISION;
 
     const luck = classifyRollLuckRating(params.luckDeltaEquity);
+    const loc = params.locale ?? 'fr';
 
     // Cas A : Le Bot vient de réaliser un « Huge Joker » (> +0.60 d'équité) -> Provocation + Karma Swap CTA !
     if (params.actor === 'bot' && luck === 'VERY_LUCKY') {
-        const persona = getBotPersona(params.difficulty);
+        const persona = getBotPersona(params.difficulty, loc);
         const raw = `[emotion:smug][action:rub_hands] ${persona.dialogues.botHitPlayer[params.mode]}`;
         return {
             shouldSpeak: true,
@@ -377,6 +363,7 @@ export function resolveMuskBotOrchestration(params: {
             difficulty: params.difficulty,
             equityLossEmg: params.equityLossEmg,
             pattern: params.pattern,
+            locale: loc,
         });
         if (tutor.shouldInterrupt && tutor.parsed) {
             return {

@@ -10,6 +10,7 @@ import MatchHeader from '../hud/MatchHeader';
 import MobileThumbDock from './MobileThumbDock';
 import GameBoardArea from './GameBoardArea';
 import CoachMobileDrawer from '../coach/CoachMobileDrawer';
+import FloatingAiCoachWidget from '../coach/FloatingAiCoachWidget';
 import GameModalsContainer from '../modals/GameModalsContainer';
 import CubeBottomSheet from '../modals/CubeBottomSheet';
 import { useCoachQuota } from '../../hooks/useCoachQuota';
@@ -101,9 +102,11 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     const quotaBadge = quota.isVip ? 'VIP ∞' : `${quota.remainingToday}/${quota.maxDaily}`;
     const isBlockedTurn =
         Boolean(game.dice) &&
+        game.isHumanTurn &&
+        !game.canUndo &&
         game.leftDieTargets.size === 0 &&
         game.rightDieTargets.size === 0 &&
-        game.gamePhase === 'HUMAN_READY_TO_COMMIT';
+        (game.gamePhase === 'HUMAN_READY_TO_COMMIT' || game.gamePhase === 'HUMAN_MOVING');
 
     const matchContext = {
         scoreX: game.state.scoreX,
@@ -119,33 +122,35 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
             data-testid="app-game-view"
             className={`mobile-game-viewport-lock landscape-full-bleed h-dvh max-h-dvh w-full grid grid-rows-[minmax(0,auto)_minmax(0,1fr)_minmax(0,auto)] overflow-hidden p-0 sm:p-2 select-none transition-colors duration-500 ${ambianceClass}`}
         >
-            {/* 1. HUD Compact Mobile (< 44px) & Actions de jeu */}
-            <MatchHeader
-                t={t}
-                theme={theme}
-                onToggleTheme={onToggleTheme}
-                game={game}
-                isMultiplayerActive={isMultiplayerActive}
-                multiplayer={multiplayer}
-                onOpenExportImport={modals.openExportImport}
-                onTriggerCoach={() => {
-                    onTriggerCoach();
-                    modals.openMobileDrawer();
-                }}
-                turnsCount={turnsCount}
-                prX={prX}
-                prO={prO}
-                onBackToLobby={onBackToLobby}
-                playerColor={playerColor}
-                onOpenDiceAudit={modals.openDiceAudit}
-                lastMoveFeedback={lastMoveFeedback}
-                notificationLevel={notificationLevel}
-                onChangeNotificationLevel={onChangeNotificationLevel}
-                coachQuotaBadge={quotaBadge}
-                isVip={quota.isVip}
-            />
+            {/* 1. HUD Compact Mobile (< 44px, masqué sur Desktop/Paysage où les colonnes latérales prennent le relais) */}
+            <div className="md:hidden shrink-0">
+                <MatchHeader
+                    t={t}
+                    theme={theme}
+                    onToggleTheme={onToggleTheme}
+                    game={game}
+                    isMultiplayerActive={isMultiplayerActive}
+                    multiplayer={multiplayer}
+                    onOpenExportImport={modals.openExportImport}
+                    onTriggerCoach={() => {
+                        onTriggerCoach();
+                        modals.openMobileDrawer();
+                    }}
+                    turnsCount={turnsCount}
+                    prX={prX}
+                    prO={prO}
+                    onBackToLobby={onBackToLobby}
+                    playerColor={playerColor}
+                    onOpenDiceAudit={modals.openDiceAudit}
+                    lastMoveFeedback={lastMoveFeedback}
+                    notificationLevel={notificationLevel}
+                    onChangeNotificationLevel={onChangeNotificationLevel}
+                    coachQuotaBadge={quotaBadge}
+                    isVip={quota.isVip}
+                />
+            </div>
 
-            {/* 2. Plateau 100% visible (Zero-Scroll) et Panneau Coach latéral */}
+            {/* 2. Plateau 100% visible (Zero-Scroll, 3 Colonnes sur Desktop/Paysage) */}
             <GameBoardArea
                 theme={theme}
                 game={game}
@@ -170,6 +175,9 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 onTriggerCoach={onTriggerCoach}
                 matchStats={matchStats}
                 matchStatsO={matchStatsO}
+                prX={prX}
+                prO={prO}
+                lastMoveFeedback={lastMoveFeedback}
                 locale={locale}
                 gameId={gameId}
                 matchContext={matchContext}
@@ -178,6 +186,8 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 coachHistory={coachHistory}
                 selectedCoachHistoryIndex={selectedCoachHistoryIndex}
                 onSelectCoachHistoryIndex={onSelectCoachHistoryIndex}
+                onBackToLobby={onBackToLobby}
+                onToggleTheme={onToggleTheme}
             />
 
             {/* 3. Thumb-Dock Flottant Inférieur (MobileThumbDock) */}
@@ -267,6 +277,20 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 onBackToLobby={onBackToLobby}
                 prO={prO}
                 locale={locale}
+            />
+
+            {/* 6. Bouton flottant Coach IA en bas à droite */}
+            <FloatingAiCoachWidget
+                coach={coach}
+                isAnalyzing={isAnalyzing}
+                lastMoveFeedback={lastMoveFeedback}
+                onTriggerCoach={onTriggerCoach}
+                onReplayMove={onReplayMove}
+                onOpenFullCoach={() => {
+                    onTriggerCoach();
+                    modals.openMobileDrawer();
+                }}
+                isInGame
             />
         </main>
     );

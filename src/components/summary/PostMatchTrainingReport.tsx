@@ -85,6 +85,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
 }) => {
     const isEn = Boolean(locale && locale !== 'fr');
     const [persistStatus, setPersistStatus] = useState<'idle' | 'saved' | 'error'>('idle');
+    const [isDetailedReviewOpen, setIsDetailedReviewOpen] = useState<boolean>(false);
     const persistedKeyRef = useRef<string | null>(null);
 
     // Erreurs majeures extraites des coups évalués.
@@ -151,41 +152,53 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
             aria-modal="true"
             aria-labelledby="post-match-report-title"
             data-testid="post-match-training-report"
-            className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto bg-slate-950/85 p-3 backdrop-blur-md sm:p-6"
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-3 backdrop-blur-md sm:p-5"
         >
-            <div className="w-full max-w-4xl max-h-[92vh] overflow-y-auto space-y-3 rounded-3xl border border-white/15 bg-slate-950/95 p-3 shadow-[0_28px_80px_rgba(0,0,0,0.92)] sm:p-5">
-                {/* Titre du rapport */}
+            <div
+                className={`w-full ${
+                    isDetailedReviewOpen ? 'max-w-3xl max-h-[92vh] overflow-y-auto' : 'max-w-lg'
+                } space-y-3 rounded-3xl border border-white/10 bg-[#121526] p-4 shadow-[0_28px_80px_rgba(0,0,0,0.92)] sm:p-5 transition-all duration-200`}
+            >
+                {/* Titre discret + Statut de sauvegarde */}
                 <header className="flex items-center justify-between gap-2 px-1">
                     <div className="flex items-center gap-2">
-                        <span aria-hidden="true" className="text-lg text-amber-400">
-                            🏆
-                        </span>
                         <h1
                             id="post-match-report-title"
-                            className="font-sans text-sm font-black uppercase tracking-wider text-white sm:text-base"
+                            className="font-sans text-xs font-black uppercase tracking-wider text-slate-300"
                         >
-                            {isEn ? 'Post-match training report' : 'Rapport de Formation Post-Match'}
+                            {isEn ? 'Match Summary' : 'Bilan de la Partie'}
                         </h1>
                     </div>
-                    <span
-                        data-testid="post-match-persist-status"
-                        className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${
-                            persistStatus === 'saved'
-                                ? 'border-emerald-600/60 bg-emerald-950/60 text-emerald-300'
+                    <div className="flex items-center gap-2">
+                        <span
+                            data-testid="post-match-persist-status"
+                            className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${
+                                persistStatus === 'saved'
+                                    ? 'border-emerald-600/60 bg-emerald-950/60 text-emerald-300'
+                                    : persistStatus === 'error'
+                                      ? 'border-rose-700/60 bg-rose-950/60 text-rose-300'
+                                      : 'border-white/10 bg-slate-900 text-slate-400'
+                            }`}
+                        >
+                            {persistStatus === 'saved'
+                                ? (isEn ? '💾 Saved' : '💾 Enregistré')
                                 : persistStatus === 'error'
-                                  ? 'border-rose-700/60 bg-rose-950/60 text-rose-300'
-                                  : 'border-white/10 bg-slate-900 text-slate-400'
-                        }`}
-                    >
-                        {persistStatus === 'saved'
-                            ? (isEn ? '💾 Saved' : '💾 Enregistré')
-                            : persistStatus === 'error'
-                              ? (isEn ? '⚠️ Local only' : '⚠️ Local seul')
-                              : (isEn ? '⏳ Saving…' : '⏳ Enregistrement…')}
-                    </span>
+                                  ? (isEn ? '⚠️ Local only' : '⚠️ Local seul')
+                                  : (isEn ? '⏳ Saving…' : '⏳ Enregistrement…')}
+                        </span>
+                        <button
+                            type="button"
+                            onClick={onBackToLobby}
+                            data-testid="post-match-back-lobby-btn"
+                            aria-label={isEn ? 'Back to lobby' : 'Retour au Lobby'}
+                            className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:bg-white/10 hover:text-white transition"
+                        >
+                            ✕ {isEn ? 'Lobby' : 'Salon'}
+                        </button>
+                    </div>
                 </header>
 
-                {/* Section 1 — En-tête & comparatif PR */}
+                {/* Section 1 — Carte de Bilan "Tout d'une traite" (Duel 7-0, Taux d'erreur, Chance, Performance) */}
                 <PostMatchHeader
                     winner={winner} winType={winType} pointsWon={pointsWon}
                     scoreX={scoreX} scoreO={scoreO} matchLength={matchLength}
@@ -197,78 +210,79 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                     locale={locale}
                 />
 
-                {/* Section 2 — Barre d'actions principale (immédiatement visible sans scroller) */}
-                <div className="flex flex-col gap-2 pt-0.5 sm:flex-row sm:flex-wrap">
+                {/* Section 2 — Barre des 3 actions principales sur 1 seule ligne (Partager | Revue | Revanche) */}
+                <div className="grid grid-cols-3 gap-2.5 pt-0.5">
                     <button
-                        type="button" onClick={onNextGame} data-testid="post-match-next-game-btn"
-                        className="flex-1 inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-amber-300 bg-gradient-to-r from-amber-400 to-amber-500 px-4 py-2.5 text-sm font-black uppercase tracking-wider text-slate-950 shadow-[0_8px_24px_rgba(245,158,11,0.3)] transition hover:brightness-105 active:scale-[0.98]"
+                        type="button"
+                        onClick={onOpenExportImport ?? onOpenDiceAudit ?? onBackToLobby}
+                        data-testid="post-match-export-import-btn"
+                        className="inline-flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-[#1c223a] px-3 py-2.5 text-xs font-extrabold text-slate-100 transition hover:bg-[#252d4d] active:scale-95"
                     >
-                        <span aria-hidden="true">▶</span>
-                        <span>{isMatchOver ? (isEn ? 'New match' : 'Nouveau match') : (isEn ? 'Next game' : 'Manche suivante')}</span>
+                        <span aria-hidden="true">📤</span>
+                        <span>{isEn ? 'Share' : 'Partager'}</span>
                     </button>
 
-                    {(onOpenReview || analysis) && (
-                        <button
-                            type="button" onClick={onOpenReview ?? onBackToLobby} data-testid="open-game-review-btn"
-                            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/10 bg-slate-900 px-4 py-2.5 text-xs font-bold text-slate-100 transition hover:border-amber-400/50 hover:text-white active:scale-95"
-                        >
-                            <span aria-hidden="true">📊</span>
-                            <span>{isEn ? 'Full PR Review' : 'Bilan & Courbe PR'}</span>
-                        </button>
-                    )}
-
-                    {onTrainBlunders && (!analysis || blunders.length > 0) && (
-                        <button
-                            type="button" onClick={onTrainBlunders} data-testid="post-match-train-blunders-btn"
-                            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-2.5 text-xs font-bold text-amber-300 transition hover:bg-amber-400/20 active:scale-95"
-                        >
-                            <span aria-hidden="true">🎯</span>
-                            <span>{isEn ? 'Train my blunders' : 'Entraîner mes Blunders'}</span>
-                        </button>
-                    )}
-
-                    {onOpenExportImport && (
-                        <button
-                            type="button" onClick={onOpenExportImport} data-testid="post-match-export-import-btn"
-                            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/10 bg-slate-900 px-3.5 py-2.5 text-xs font-bold text-slate-200 transition hover:border-amber-400/50 hover:text-white active:scale-95"
-                        >
-                            <span aria-hidden="true">⏱️</span>
-                            <span>{isEn ? 'Export / Import' : 'Exporter / Importer'}</span>
-                        </button>
-                    )}
-
-                    {onOpenDiceAudit && (
-                        <button
-                            type="button" onClick={onOpenDiceAudit} data-testid="post-match-dice-audit-btn"
-                            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-950/40 px-3.5 py-2.5 text-xs font-bold text-emerald-300 transition hover:border-emerald-400 hover:text-white active:scale-95"
-                        >
-                            <span aria-hidden="true">🛡</span>
-                            <span>{isEn ? 'Verify Dice' : 'Vérifier les Dés'}</span>
-                        </button>
-                    )}
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setIsDetailedReviewOpen((prev) => !prev);
+                            onOpenReview?.();
+                        }}
+                        data-testid="open-game-review-btn"
+                        className="inline-flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-[#1c223a] px-3 py-2.5 text-xs font-extrabold text-slate-100 transition hover:bg-[#252d4d] active:scale-95"
+                    >
+                        <span aria-hidden="true">🔍</span>
+                        <span>{isEn ? 'Review' : 'Revue'}</span>
+                    </button>
 
                     <button
-                        type="button" onClick={onBackToLobby} data-testid="post-match-back-lobby-btn"
-                        className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/10 bg-slate-900 px-4 py-2.5 text-xs font-semibold text-slate-300 transition hover:border-white/25 hover:text-white active:scale-95"
+                        type="button"
+                        onClick={onNextGame}
+                        data-testid="post-match-next-game-btn"
+                        className="inline-flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl bg-emerald-400 px-3 py-2.5 text-xs sm:text-sm font-black text-slate-950 shadow-[0_6px_20px_rgba(52,211,153,0.35)] transition hover:bg-emerald-300 active:scale-95"
                     >
-                        <span aria-hidden="true" className="text-amber-400">←</span>
-                        <span>{isEn ? 'Back to lobby' : 'Retour au Lobby'}</span>
+                        <span aria-hidden="true">↻</span>
+                        <span>{isMatchOver ? (isEn ? 'Rematch' : 'Revanche') : (isEn ? 'Next game' : 'Manche suivante')}</span>
                     </button>
                 </div>
 
-                {/* Section 2b — Synthèse Caméléon à divulgation progressive (Couche 0 / 1 / 2) */}
-                <ChameleonPostMatchCard analysis={analysis} locale={locale} />
+                {/* Actions secondaires (Drills / Audit Dés) accessibles si blunders ou en 1 clic discret */}
+                {(onTrainBlunders || onOpenDiceAudit) && (
+                    <div className="flex items-center justify-between gap-2 pt-0.5">
+                        {onTrainBlunders && (!analysis || blunders.length > 0) && (
+                            <button
+                                type="button" onClick={onTrainBlunders} data-testid="post-match-train-blunders-btn"
+                                className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 text-[11px] font-bold text-amber-300 transition hover:bg-amber-400/20"
+                            >
+                                <span aria-hidden="true">🎯</span>
+                                <span>{isEn ? 'Train my blunders' : 'Corriger mes erreurs en Drill'}</span>
+                            </button>
+                        )}
+                        {onOpenDiceAudit && (
+                            <button
+                                type="button" onClick={onOpenDiceAudit} data-testid="post-match-dice-audit-btn"
+                                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-950/30 px-3 py-1.5 text-[11px] font-bold text-emerald-300 transition hover:border-emerald-400"
+                            >
+                                <span aria-hidden="true">🛡</span>
+                                <span>{isEn ? 'Verify Dice' : 'Audit Dés SHA-256'}</span>
+                            </button>
+                        )}
+                    </div>
+                )}
 
-                {/* Section 3 — Revue unifiée des erreurs et synthèse du Coach */}
-                <MatchBlunderReport
-                    analysis={analysis}
-                    opponentPr={botPr}
-                    isOffline={isOffline}
-                    apiUrl={apiUrl}
-                    locale={locale}
-                    onTrainBlunders={onTrainBlunders}
-                    hideSummaryBanner={true}
-                />
+                {/* Section 3 — Détail Coup par Coup (masqué visuellement par défaut pour garder la carte 100% lisible d'une traite, déplié au clic sur Revue) */}
+                <div className={isDetailedReviewOpen ? 'space-y-3 pt-2 border-t border-white/10' : 'sr-only'}>
+                    <ChameleonPostMatchCard analysis={analysis} locale={locale} />
+                    <MatchBlunderReport
+                        analysis={analysis}
+                        opponentPr={botPr}
+                        isOffline={isOffline}
+                        apiUrl={apiUrl}
+                        locale={locale}
+                        onTrainBlunders={onTrainBlunders}
+                        hideSummaryBanner={true}
+                    />
+                </div>
             </div>
         </div>
     );

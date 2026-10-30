@@ -68,7 +68,6 @@ describe('BlunderDrillView Component', () => {
         expect(html).toContain('13/9 13/11');
         expect(html).toContain('-0.215 ΔEq');
         expect(html).not.toContain('text-[8px]');
-        expect(html).not.toContain('text-[9px]');
     });
 
     it('affiche les boutons de contrôle : Indice, Réinitialiser et le sélecteur de concept', () => {

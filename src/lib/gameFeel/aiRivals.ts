@@ -14,6 +14,8 @@
 
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { CoachAnalysisHistoryEntry } from '../../hooks/useCoachHelpers';
+import type { Locale } from '../i18n/types';
+import { getBotPersona } from '../../features/personas/botPersonas';
 
 export interface AiRivalPersona {
     readonly id: AIDifficulty;
@@ -200,6 +202,13 @@ export function resolveAiRivalQuote(params: {
     locale?: string;
 }): string {
     const { rival, metrics, cubeValue, doublingOffered, locale = 'fr' } = params;
+    if (locale !== 'fr' && locale !== 'en') {
+        const persona = getBotPersona(rival.id, locale as Locale);
+        if (doublingOffered || cubeValue >= 2) return persona.dialogues.playerDoubleRoll.fun;
+        if (metrics.isBrilliantMove || metrics.optimalStreak >= 2) return persona.dialogues.playerOptimal.fun;
+        if (metrics.lastVerdict === 'blunder') return persona.dialogues.playerBlunder.fun;
+        return persona.dialogues.opening.fun;
+    }
     const q = locale === 'en' ? rival.quotesEn : rival.quotesFr;
 
     if (doublingOffered || cubeValue >= 4) return q.onHighStakesCube;
@@ -208,4 +217,16 @@ export function resolveAiRivalQuote(params: {
     if (metrics.lastVerdict === 'blunder') return q.onPlayerBlunder;
     if (cubeValue >= 2) return q.onHighStakesCube;
     return q.greeting;
+}
+
+export function getAiRivalForDifficulty(
+    difficulty: AIDifficulty,
+    locale: Locale = 'fr',
+): AiRivalPersona {
+    const base = AI_RIVALS_BY_DIFFICULTY[difficulty] ?? AI_RIVALS_BY_DIFFICULTY.expert;
+    const persona = getBotPersona(difficulty, locale);
+    return {
+        ...base,
+        name: persona.name,
+    };
 }

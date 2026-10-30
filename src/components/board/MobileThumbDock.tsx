@@ -80,11 +80,11 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
         if (!isHumanTurn || gamePhase === 'AI_TURN_ROLLING' || gamePhase === 'AI_TURN_SHOWING_ARROWS') {
             return 'WAITING_OPPONENT';
         }
-        if (gamePhase === 'HUMAN_WAITING_ROLL' && !hasDice) return 'ROLL';
-        if (isBlockedTurn) return 'NO_MOVE';
+        if (gamePhase === 'HUMAN_WAITING_ROLL') return 'ROLL';
+        if (isBlockedTurn && !canConfirm) return 'NO_MOVE';
         if (gamePhase === 'HUMAN_READY_TO_COMMIT' && canConfirm) return 'CONFIRM';
         return 'CONFIRM';
-    }, [doublingOfferedBy, isHumanTurn, gamePhase, hasDice, isBlockedTurn, canConfirm]);
+    }, [doublingOfferedBy, isHumanTurn, gamePhase, isBlockedTurn, canConfirm]);
 
     const nextCubeValue = cubeValue === 1 ? 2 : cubeValue * 2;
     const isLeftHanded = effectiveHandedness === 'left';
