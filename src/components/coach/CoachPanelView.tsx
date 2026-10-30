@@ -228,10 +228,8 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                     equityLoss={equityLoss}
                     bestMoveNotation={optimalMove}
                     playedMoveNotation={playedMove}
-                    onOpenKnowledgeConcept={onOpenKnowledgeConcept}
-                    onRetryMove={onReplayMove}
-                    isStreaming={isStreaming}
-                    locale={locale}
+                    onOpenKnowledgeConcept={onOpenKnowledgeConcept} onRetryMove={onReplayMove}
+                    isStreaming={isStreaming} locale={locale} board={board} dice={dice}
                 />
             </div>
 

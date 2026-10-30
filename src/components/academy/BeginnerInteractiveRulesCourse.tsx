@@ -3,13 +3,7 @@
 /**
  * @file src/components/academy/BeginnerInteractiveRulesCourse.tsx
  * @description Parcours Interactif « Apprendre à Jouer au Backgammon en 5 Minutes » (Spécial Débutant).
- *
- * Combine :
- *   - 5 leçons visuelles avec diagramme vectoriel temps réel (`MiniBoardDiagram`)
- *   - Quiz interactif de mise en pratique immédiate à chaque étape
- *   - Célébration « 🎉 Bravo ! » + déblocage de badges + synchronisation Supabase / localStorage
- *
- * Loi de Scalabilité : React.memo, < 250 lignes, 0 `any`.
+ * Loi de Scalabilité : React.memo, < 300 lignes, 0 `any`.
  */
 
 import React, { useEffect, useState } from 'react';
@@ -22,31 +16,113 @@ import {
     type BeginnerLessonQuizOption,
 } from '../../features/academy/beginnerRulesCourse';
 
+interface InteractiveBoardMission {
+    readonly optimalMove: string;
+    readonly highlightedPoints: ReadonlyArray<number>;
+    readonly prompt: string;
+    readonly successFeedback: string;
+    readonly delta: Readonly<Record<number, number>>;
+}
+
+const LESSON_BOARD_MISSIONS: Readonly<Record<string, InteractiveBoardMission>> = {
+    'lesson-1-horseshoe': {
+        optimalMove: '8/5 6/5',
+        highlightedPoints: [8, 6, 5],
+        prompt: '👆 Touchez la Case 5 (ou 8 / 6) sur le plateau pour avancer 2 dames et bâtir votre 1re Porte !',
+        successFeedback: '✨ Coup joué sur le plateau (8/5 6/5) ! Vos deux dames se rejoignent sur la Case 5 en avançant vers votre Maison.',
+        delta: { 8: -1, 6: -1, 5: 2 },
+    },
+    'lesson-2-dice-doubles': {
+        optimalMove: '24/18 13/7',
+        highlightedPoints: [24, 18, 13, 7],
+        prompt: '👆 Touchez la Case 18 ou 7 sur le plateau pour jouer votre Double 6 Turbo (4 déplacements de 6 cases) !',
+        successFeedback: '🚀 Turbo Double 6 exécuté sur le plateau ! Vos 2 dames du fond (24→18) et 2 dames du milieu (13→7) ont bondi de 24 cases au total.',
+        delta: { 24: -2, 18: 2, 13: -2, 7: 2 },
+    },
+    'lesson-3-doors-and-hits': {
+        optimalMove: '6/3 6/5',
+        highlightedPoints: [6, 5, 3, 1],
+        prompt: '👆 Touchez la Case 5 (Porte blindée 🛡️) ou la Case 1 (Pion adverse isolé ⚠️) sur le plateau !',
+        successFeedback: '🏰 Bien vu sur le plateau ! Vos Portes (2+ dames) forment un bouclier imprenable tandis que le pion adverse isolé est envoyé sur la Barre.',
+        delta: { 6: -2, 5: 1, 3: 1 },
+    },
+    'lesson-4-bearoff': {
+        optimalMove: '6/0 4/0',
+        highlightedPoints: [6, 4],
+        prompt: '👆 Touchez la Case 6 ou la Case 4 sur le plateau pour sortir 2 dames hors du tablier avec le 6 et le 4 !',
+        successFeedback: '🏁 Sortie effectuée sur le plateau ! Vos dames des cases 6 et 4 rejoignent le râtelier de victoire.',
+        delta: { 6: -1, 4: -1 },
+    },
+    'lesson-5-cube-and-gammon': {
+        optimalMove: '3/0 2/0',
+        highlightedPoints: [3, 2],
+        prompt: '👆 Touchez la Case 3 ou la Case 2 sur le plateau pour vider votre Maison et décrocher le Gammon (x2) !',
+        successFeedback: '💎 Coup gagnant simulé sur le plateau ! Vous sortez vos dames avant que l’adversaire n’en ait sorti une seule : c’est un Gammon (2 pts) !',
+        delta: { 3: -1, 2: -1 },
+    },
+};
+
 const BeginnerInteractiveRulesCourseComponent: React.FC = () => {
     const [activeStepIdx, setActiveStepIdx] = useState<number>(0);
     const [completedIds, setCompletedIds] = useState<ReadonlyArray<string>>([]);
     const [selectedOption, setSelectedOption] = useState<BeginnerLessonQuizOption | null>(null);
+    const [isBoardSimulated, setIsBoardSimulated] = useState<boolean>(false);
+    const [boardFeedback, setBoardFeedback] = useState<string | null>(null);
 
     useEffect(() => {
         setCompletedIds(getCompletedBeginnerLessons());
     }, []);
 
     const activeLesson = BEGINNER_RULES_LESSONS[activeStepIdx] ?? BEGINNER_RULES_LESSONS[0];
+    const mission = LESSON_BOARD_MISSIONS[activeLesson.id] ?? LESSON_BOARD_MISSIONS['lesson-1-horseshoe'];
     const isLessonCompleted = completedIds.includes(activeLesson.id);
     const totalCompleted = completedIds.length;
     const progressPct = Math.round((totalCompleted / BEGINNER_RULES_LESSONS.length) * 100);
 
+    const displayedBoard = React.useMemo(() => {
+        const copy = [...activeLesson.board];
+        if (!isBoardSimulated) return copy;
+        for (const [pt, d] of Object.entries(mission.delta)) {
+            const idx = Number(pt);
+            if (idx >= 0 && idx <= 25) copy[idx] = (copy[idx] ?? 0) + d;
+        }
+        return copy;
+    }, [activeLesson.board, isBoardSimulated, mission.delta]);
+
     const handleSelectStep = (idx: number) => {
         setActiveStepIdx(idx);
         setSelectedOption(null);
+        setIsBoardSimulated(false);
+        setBoardFeedback(null);
+    };
+
+    const handleBoardPointClick = (point: number) => {
+        if (mission.highlightedPoints.includes(point)) {
+            setIsBoardSimulated(true);
+            setBoardFeedback(mission.successFeedback);
+            return;
+        }
+        const count = displayedBoard[point] ?? 0;
+        const zone = point <= 6 ? 'votre Maison 🏠' : point >= 19 ? 'la Maison adverse' : 'le parcours';
+        const status =
+            count >= 2
+                ? `Porte protégée (${count} dames à vous 🛡️)`
+                : count === 1
+                  ? 'Pion isolé à vous (attention, frappable ⚠️)'
+                  : count === -1
+                    ? 'Pion adverse isolé (cible de frappe 🎯)'
+                    : count <= -2
+                      ? `Porte adverse (${Math.abs(count)} dames ennemies ⛔)`
+                      : 'Case libre';
+        setBoardFeedback(`📍 Case ${point} (${zone}) : ${status}. Touchez la case ${mission.highlightedPoints[0]} pour jouer le coup de la leçon !`);
     };
 
     const handleAnswerQuiz = (option: BeginnerLessonQuizOption) => {
         setSelectedOption(option);
         if (option.isCorrect) {
-            void markBeginnerLessonCompleted(activeLesson.id).then((updated) => {
-                setCompletedIds(updated);
-            });
+            setIsBoardSimulated(true);
+            setBoardFeedback(mission.successFeedback);
+            void markBeginnerLessonCompleted(activeLesson.id).then((updated) => setCompletedIds(updated));
         }
     };
 
@@ -54,6 +130,8 @@ const BeginnerInteractiveRulesCourseComponent: React.FC = () => {
         if (activeStepIdx < BEGINNER_RULES_LESSONS.length - 1) {
             setActiveStepIdx((prev) => prev + 1);
             setSelectedOption(null);
+            setIsBoardSimulated(false);
+            setBoardFeedback(null);
         }
     };
 
@@ -64,7 +142,6 @@ const BeginnerInteractiveRulesCourseComponent: React.FC = () => {
             data-testid="beginner-interactive-rules-course"
             className="rounded-3xl border border-amber-400/35 bg-gradient-to-b from-[#1a1308]/95 via-[#0f1626]/95 to-[#080c15]/95 p-5 sm:p-7 shadow-2xl space-y-5"
         >
-            {/* En-tête & Barre de progression gamifiée */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
                 <div className="space-y-1">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-950/60 px-3 py-0.5 text-xs font-extrabold uppercase tracking-wider text-emerald-300">
@@ -74,27 +151,19 @@ const BeginnerInteractiveRulesCourseComponent: React.FC = () => {
                         Apprendre les Règles en 5 Étapes Ludiques (Diagrammes &amp; Quiz)
                     </h2>
                     <p className="text-xs sm:text-sm text-slate-300">
-                        Aucune connaissance requise : observez le plateau, répondez au mini-quiz et débloquez vos badges avec le Coach !
+                        Aucune connaissance requise : touchez le plateau, répondez au mini-quiz et débloquez vos badges avec le Coach !
                     </p>
                 </div>
-
-                <div
-                    data-testid="beginner-course-progress-badge"
-                    className="flex flex-col items-end rounded-2xl border border-white/10 bg-black/40 px-4 py-2"
-                >
+                <div data-testid="beginner-course-progress-badge" className="flex flex-col items-end rounded-2xl border border-white/10 bg-black/40 px-4 py-2">
                     <span className="text-xs font-extrabold text-amber-300">
                         🏆 Progression : {totalCompleted}/{BEGINNER_RULES_LESSONS.length} ({progressPct} %)
                     </span>
                     <div className="mt-1.5 h-2 w-36 overflow-hidden rounded-full bg-slate-800">
-                        <div
-                            className="h-full bg-gradient-to-r from-emerald-400 to-amber-400 transition-all duration-300"
-                            style={{ width: `${progressPct}%` }}
-                        />
+                        <div className="h-full bg-gradient-to-r from-emerald-400 to-amber-400 transition-all duration-300" style={{ width: `${progressPct}%` }} />
                     </div>
                 </div>
             </div>
 
-            {/* Sélecteur des 5 étapes */}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5" role="tablist" aria-label="Les 5 leçons débutant">
                 {BEGINNER_RULES_LESSONS.map((lesson, idx) => {
                     const done = completedIds.includes(lesson.id);
@@ -115,43 +184,65 @@ const BeginnerInteractiveRulesCourseComponent: React.FC = () => {
                                       : 'border-white/10 bg-[#080c15] text-slate-300 hover:border-white/25'
                             }`}
                         >
-                            <span className="text-xs font-bold truncate">
-                                {lesson.icon} Étape {lesson.stepNumber}
-                            </span>
-                            <span className="ml-1 text-xs font-black">
-                                {done ? '✅' : active ? '👉' : '○'}
-                            </span>
+                            <span className="text-xs font-bold truncate">{lesson.icon} Étape {lesson.stepNumber}</span>
+                            <span className="ml-1 text-xs font-black">{done ? '✅' : active ? '👉' : '○'}</span>
                         </button>
                     );
                 })}
             </div>
 
-            {/* Grille principale : Diagramme visuel à gauche + Règles & Quiz interactif à droite */}
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 items-start">
-                <div className="lg:col-span-5 rounded-2xl border border-white/10 bg-[#080c15]/90 p-4 space-y-2.5">
-                    <div className="flex items-center justify-between text-xs font-bold text-amber-200">
-                        <span>{activeLesson.icon} Démonstration Visuelle</span>
-                        <span className="rounded bg-amber-500/20 px-2 py-0.5 font-mono text-[11px] text-amber-300">
-                            Dés : {activeLesson.dice[0]}-{activeLesson.dice[1]}
-                        </span>
+                <div className="lg:col-span-5 rounded-2xl border border-amber-400/25 bg-[#080c15]/90 p-4 space-y-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-200">
+                        <span>{activeLesson.icon} Plateau Interactif</span>
+                        <div className="flex items-center gap-1.5">
+                            <span className="rounded bg-amber-500/20 px-2 py-0.5 font-mono text-[11px] text-amber-300">
+                                Dés : {activeLesson.dice[0]}-{activeLesson.dice[1]}
+                            </span>
+                            <button
+                                type="button"
+                                data-testid="beginner-board-sim-toggle-btn"
+                                onClick={() => {
+                                    const next = !isBoardSimulated;
+                                    setIsBoardSimulated(next);
+                                    setBoardFeedback(next ? mission.successFeedback : null);
+                                }}
+                                className={`rounded-lg border px-2.5 py-0.5 text-[11px] font-extrabold transition ${
+                                    isBoardSimulated
+                                        ? 'border-emerald-400/70 bg-emerald-950/80 text-emerald-200'
+                                        : 'border-amber-400/60 bg-amber-500/20 text-amber-200 hover:bg-amber-500/30'
+                                }`}
+                            >
+                                {isBoardSimulated ? '⏮ Position avant' : '▶ Jouer sur le plateau'}
+                            </button>
+                        </div>
                     </div>
                     <MiniBoardDiagram
-                        board={[...activeLesson.board]}
+                        board={displayedBoard}
                         dice={[activeLesson.dice[0], activeLesson.dice[1]]}
                         turn="X"
+                        optimalMove={mission.optimalMove}
+                        hideOptimalArrow={isBoardSimulated}
+                        highlightedPoints={mission.highlightedPoints}
+                        onPointClick={handleBoardPointClick}
                     />
-                    <p className="text-xs leading-relaxed text-slate-300 italic">
-                        💡 {activeLesson.visualCaption}
-                    </p>
+                    <div
+                        data-testid="beginner-board-interactive-feedback"
+                        className={`rounded-xl border px-3 py-2 text-xs leading-relaxed transition ${
+                            boardFeedback
+                                ? 'border-emerald-400/50 bg-emerald-950/50 text-emerald-100 font-semibold'
+                                : 'border-amber-400/30 bg-amber-950/30 text-amber-200'
+                        }`}
+                    >
+                        {boardFeedback ?? mission.prompt}
+                    </div>
+                    <p className="text-xs leading-relaxed text-slate-300 italic">💡 {activeLesson.visualCaption}</p>
                 </div>
 
                 <div className="lg:col-span-7 space-y-4">
                     <div className="rounded-2xl border border-white/10 bg-[#080c15]/90 p-4 space-y-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                            <h3
-                                data-testid="beginner-active-lesson-title"
-                                className="font-serif text-base sm:text-lg font-black text-white"
-                            >
+                            <h3 data-testid="beginner-active-lesson-title" className="font-serif text-base sm:text-lg font-black text-white">
                                 {activeLesson.title}
                             </h3>
                             {isLessonCompleted && (
@@ -171,16 +262,9 @@ const BeginnerInteractiveRulesCourseComponent: React.FC = () => {
                         </ul>
                     </div>
 
-                    {/* Quiz Interactif façon Chess.com / Duolingo */}
-                    <div
-                        data-testid="beginner-lesson-quiz-box"
-                        className="rounded-2xl border border-indigo-500/40 bg-indigo-950/25 p-4 space-y-3"
-                    >
-                        <div className="text-xs font-extrabold uppercase tracking-wider text-indigo-300">
-                            🎯 Quiz Express — À vous de jouer !
-                        </div>
+                    <div data-testid="beginner-lesson-quiz-box" className="rounded-2xl border border-indigo-500/40 bg-indigo-950/25 p-4 space-y-3">
+                        <div className="text-xs font-extrabold uppercase tracking-wider text-indigo-300">🎯 Quiz Express — À vous de jouer !</div>
                         <p className="text-xs sm:text-sm font-bold text-white">{activeLesson.quizQuestion}</p>
-
                         <div className="space-y-2">
                             {activeLesson.quizOptions.map((opt) => {
                                 const isChosen = selectedOption?.id === opt.id;
@@ -203,7 +287,6 @@ const BeginnerInteractiveRulesCourseComponent: React.FC = () => {
                                 );
                             })}
                         </div>
-
                         {selectedOption && (
                             <div
                                 data-testid="beginner-quiz-feedback"
@@ -214,9 +297,7 @@ const BeginnerInteractiveRulesCourseComponent: React.FC = () => {
                                 }`}
                             >
                                 {selectedOption.isCorrect && (
-                                    <div className="text-xs sm:text-sm font-black text-emerald-300">
-                                        {activeLesson.bravoTitle}
-                                    </div>
+                                    <div className="text-xs sm:text-sm font-black text-emerald-300">{activeLesson.bravoTitle}</div>
                                 )}
                                 <p className="text-xs sm:text-sm leading-relaxed">{selectedOption.feedbackText}</p>
                                 {selectedOption.isCorrect && activeStepIdx < BEGINNER_RULES_LESSONS.length - 1 && (
