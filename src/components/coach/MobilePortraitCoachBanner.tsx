@@ -16,6 +16,7 @@ import React from 'react';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { CoachSidebarProps } from './CoachSidebar';
 import { getBotPersona } from '../../features/personas/botPersonas';
+import { BotPortraitMedallion } from '../common/MonteCarloIcons';
 
 export interface MobilePortraitCoachBannerProps {
     readonly coach: CoachSidebarProps['coach'];
@@ -83,19 +84,17 @@ const MobilePortraitCoachBannerComponent: React.FC<MobilePortraitCoachBannerProp
                 type="button"
                 data-testid="mobile-banner-open-drawer-btn"
                 onClick={onOpenDrawer}
-                className="flex-1 min-w-0 flex items-center gap-2 text-left focus:outline-none active: opacity-90 touch-manipulation"
+                className="flex-1 min-w-0 flex items-center gap-2.5 text-left focus:outline-none active:opacity-90 touch-manipulation"
             >
-                <span
-                    aria-hidden="true"
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#f3c65f]/55 bg-[#26160a] text-base shadow-inner"
-                >
-                    {persona.avatar}
-                </span>
+                <BotPortraitMedallion character={difficulty} size="sm" isActive />
 
                 <div className="min-w-0 flex-1 flex flex-col justify-center">
                     <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="font-serif text-[11px] font-bold text-[#f3c65f] truncate">
+                        <span className="font-serif text-xs font-bold text-[#f3c65f] truncate">
                             {persona.shortName}
+                        </span>
+                        <span className="hidden xs:inline text-[10px] font-semibold text-amber-200/80 truncate">
+                            · {persona.styleBadge}
                         </span>
                         {badgeConfig && (
                             <span

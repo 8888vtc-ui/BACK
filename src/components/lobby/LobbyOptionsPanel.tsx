@@ -15,6 +15,7 @@ import type { Player } from '../../engine/backgammonEngine';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import { setSavedPipCountVisibility } from '../board/PipCountBadge';
 import { LobbyInteractiveBoardPreview } from './LobbyInteractiveBoardPreview';
+import { BotPortraitMedallion } from '../common/MonteCarloIcons';
 
 export type LobbyClockPreset = 'blitz' | 'speed' | 'normal' | 'unlimited';
 
@@ -197,11 +198,12 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
                             <span>Adversaire Virtuel</span>
                             <span className="font-mono text-amber-300 font-bold">{currentBot.title} ({currentBot.elo} Elo)</span>
                         </legend>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             {opponents.map((opt) => {
                                 const active = difficulty === opt.value;
                                 return (
-                                    <button key={opt.value} type="button" data-testid={`lobby-opponent-${opt.value}`} aria-pressed={active} onClick={() => setDifficulty(opt.value)} className={`flex flex-col items-start rounded-xl p-2 text-left transition active:scale-95 ${active ? ACTIVE_GOLD : INACTIVE_CARD}`}>
+                                    <button key={opt.value} type="button" data-testid={`lobby-opponent-${opt.value}`} aria-pressed={active} onClick={() => setDifficulty(opt.value)} className={`flex flex-col items-center gap-1 rounded-xl p-2.5 text-center transition active:scale-95 ${active ? ACTIVE_GOLD : INACTIVE_CARD}`}>
+                                        <BotPortraitMedallion character={opt.value} size="sm" isActive={active} />
                                         <span className="text-xs font-bold truncate w-full">{opt.label}</span>
                                         <span className="text-[11px] text-slate-400 truncate w-full">{opt.hint}</span>
                                     </button>
