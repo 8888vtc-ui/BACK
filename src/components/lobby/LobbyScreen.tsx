@@ -40,6 +40,13 @@ export interface LobbyScreenProps {
     initialMatchLength?: number; initialDifficulty?: AIDifficulty; initialCoachEnabled?: boolean; initialClockPreset?: LobbyClockPreset;
 }
 
+const BOT_ELO_BY_DIFF: Record<AIDifficulty, string> = {
+    beginner: '1420 Elo',
+    intermediate: '1680 Elo',
+    expert: '1950 Elo',
+    grandmaster: '2150 Elo',
+};
+
 const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     onStart, onOpenModule, initialMatchLength = 7, initialDifficulty = 'expert', initialCoachEnabled = true, initialClockPreset = 'normal',
 }) => {
@@ -84,6 +91,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
         { id: 'training', icon: '🎯', badge: ui.lobby.cardTrainingBadge, title: ui.lobby.cardTrainingTitle, subtitle: ui.lobby.cardTrainingSubtitle },
     ], [ui.lobby]);
 
+    const selectedPersona = useMemo(() => getBotPersona(difficulty, locale) ?? BOT_PERSONAS_BY_DIFFICULTY[difficulty], [difficulty, locale]);
+
     useEffect(() => {
         setMatchLength(readStoredMatchFormat());
         setPlayerColor(readStoredPlayerColor());
@@ -127,22 +136,17 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
             />
 
             <div className="relative z-10 flex flex-1 w-full">
-                {/* 1. BARRE LATÉRALE GAUCHE RÉTRACTABLE (Cercle Monte-Carlo) */}
                 <LobbyLeftSidebar
-                    selectedMode={selectedMode}
-                    matchLength={matchLength}
-                    isSubmenuOpen={showOptions}
+                    selectedMode={selectedMode} matchLength={matchLength} isSubmenuOpen={showOptions}
                     onQuickPlay={() => onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset })}
                     onSelectMoneyGame={() => { setSelectedMode('ai'); setMatchLength(0); setShowOptions(true); }}
                     onSelectMatchGame={() => { setSelectedMode('ai'); setMatchLength((prev) => (prev === 0 ? 7 : prev)); setShowOptions(true); }}
                     onSelectAiMode={() => { setSelectedMode('ai'); setShowOptions(true); }}
                     onSelectMultiplayerMode={() => { setSelectedMode('multiplayer'); setShowOptions(false); }}
-                    onOpenModule={onOpenModule}
-                    onOpenTableClock={() => setIsTableClockOpen(true)}
+                    onOpenModule={onOpenModule} onOpenTableClock={() => setIsTableClockOpen(true)}
                     onOpenSettings={() => { setSelectedMode('ai'); setShowOptions(true); }}
                 />
 
-                {/* 2. ESPACE CENTRAL AÉRÉ + VITRINE DROITE */}
                 <div className="mx-auto flex flex-1 w-full max-w-6xl items-start justify-center gap-6 px-4 py-5 sm:px-8 sm:py-6">
                     <div className={`flex flex-1 min-w-0 ${showOptions ? 'max-w-5xl' : 'max-w-3xl'} flex-col gap-4`}>
                         <header className="flex w-full flex-col sm:flex-row items-center justify-between gap-1 border-b border-[#d4af37]/20 pb-3">
@@ -156,7 +160,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                             </span>
                         </header>
 
-                        {/* En mode Sous-Menu Jouer (showOptions === true), le configurateur Split-Screen + Grand Plateau occupe toute la scène */}
                         {selectedMode === 'ai' && showOptions && (
                             <section className="w-full">
                                 <LobbyOptionsPanel
@@ -164,8 +167,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                     coachEnabled={coachEnabled} setCoachEnabled={setCoachEnabled}
                                     playerColor={playerColor} onSelectPlayerColor={(c) => { setPlayerColor(c); storePlayerColor(c); }}
                                     matchFormats={matchFormats} opponents={opponents} clockPreset={clockPreset} setClockPreset={setClockPreset}
-                                    onClose={() => setShowOptions(false)}
-                                    onStartGame={handlePlay}
+                                    onClose={() => setShowOptions(false)} onStartGame={handlePlay}
                                 />
                             </section>
                         )}
@@ -186,30 +188,88 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 })}
                             </section>
 
-                            <div className="flex w-full flex-col gap-3.5 rounded-2xl border border-[#d4af37]/25 bg-[#120e0b] p-4 shadow-2xl">
+                            <div className="flex w-full flex-col gap-3.5 rounded-2xl border border-[#d4af37]/30 bg-gradient-to-b from-[#17110b] to-[#0e0b08] p-4 shadow-2xl">
                                 {selectedMode === 'ai' && (
                                     <>
-                                        <div data-testid="lobby-persona-quickbar" className="grid grid-cols-2 sm:grid-cols-5 gap-2" role="group" aria-label="Adversaire Bot Personnifié">
+                                        {/* Galerie de Portraits Haute-Couture des 5 Adversaires du Cercle Monte-Carlo */}
+                                        <div data-testid="lobby-persona-quickbar" className="grid grid-cols-2 sm:grid-cols-5 gap-2.5" role="group" aria-label="Adversaire Bot Personnifié">
                                             {(['beginner', 'intermediate', 'expert', 'grandmaster'] as const).map((lvl) => {
                                                 const p = getBotPersona(lvl, locale) ?? BOT_PERSONAS_BY_DIFFICULTY[lvl];
                                                 const active = !isMittensActive && difficulty === lvl;
                                                 return (
-                                                    <button key={lvl} type="button" data-testid={`lobby-persona-pill-${lvl}`} aria-pressed={active} onClick={() => { setIsMittensActive(false); setDifficulty(lvl); }} className={`flex items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${active ? 'border-[#d4af37] bg-gradient-to-br from-[#d4af37]/20 to-[#1f160a] text-white shadow-[0_0_16px_rgba(212,175,55,0.25)]' : 'border-white/10 bg-white/[0.03] text-stone-300 hover:border-[#d4af37]/40 hover:text-white'}`}>
-                                                        <BotPortraitMedallion character={lvl} size="sm" isActive={active} />
-                                                        <span className="min-w-0 flex-1">
-                                                            <span className="block truncate font-display text-sm italic font-bold text-[#f7f3e8]">{p.shortName}</span>
-                                                            <span className="block truncate text-[11px] font-medium text-[#d4af37]">{p.styleBadge}</span>
+                                                    <button
+                                                        key={lvl}
+                                                        type="button"
+                                                        data-testid={`lobby-persona-pill-${lvl}`}
+                                                        aria-pressed={active}
+                                                        onClick={() => { setIsMittensActive(false); setDifficulty(lvl); }}
+                                                        className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-center transition-all duration-200 ${
+                                                            active
+                                                                ? 'border-2 border-[#f3c65f] bg-gradient-to-b from-[#d4af37]/25 via-[#241a0d] to-[#120d07] text-white shadow-[0_0_24px_rgba(243,198,95,0.35)] -translate-y-0.5'
+                                                                : 'border-white/10 bg-black/45 text-stone-300 hover:border-[#d4af37]/50 hover:bg-[#1a130b] hover:text-white'
+                                                        }`}
+                                                    >
+                                                        <BotPortraitMedallion character={lvl} size="md" isActive={active} />
+                                                        <span className="w-full truncate font-display text-sm italic font-black text-[#f7f3e8] leading-tight">
+                                                            {p.shortName}
+                                                        </span>
+                                                        <span className="w-full truncate text-[10px] font-bold uppercase tracking-wider text-[#f3c65f]">
+                                                            {p.styleBadge}
+                                                        </span>
+                                                        <span className="rounded-md border border-[#d4af37]/35 bg-black/60 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-200">
+                                                            {BOT_ELO_BY_DIFF[lvl]} · PR {p.targetErrorRate}
                                                         </span>
                                                     </button>
                                                 );
                                             })}
-                                            <button type="button" data-testid="lobby-persona-pill-mittens" aria-pressed={isMittensActive} onClick={() => { setIsMittensActive(true); setDifficulty('grandmaster'); }} className={`flex items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${isMittensActive ? 'border-[#d4af37] bg-gradient-to-br from-rose-500/25 to-[#1f160a] text-white shadow-[0_0_16px_rgba(212,175,55,0.25)]' : 'border-white/10 bg-white/[0.03] text-stone-300 hover:border-[#d4af37]/40 hover:text-white'}`}>
-                                                <BotPortraitMedallion character="mittens" size="sm" isActive={isMittensActive} />
-                                                <span className="min-w-0 flex-1">
-                                                    <span className="block truncate font-display text-sm italic font-bold text-[#f7f3e8]">Mittens</span>
-                                                    <span className="block truncate text-[11px] font-medium text-rose-300">Elo ? · Énigme</span>
+                                            <button
+                                                type="button"
+                                                data-testid="lobby-persona-pill-mittens"
+                                                aria-pressed={isMittensActive}
+                                                onClick={() => { setIsMittensActive(true); setDifficulty('grandmaster'); }}
+                                                className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-center transition-all duration-200 ${
+                                                    isMittensActive
+                                                        ? 'border-2 border-rose-400 bg-gradient-to-b from-rose-500/30 via-[#241016] to-[#12080b] text-white shadow-[0_0_24px_rgba(244,63,94,0.4)] -translate-y-0.5'
+                                                        : 'border-white/10 bg-black/45 text-stone-300 hover:border-rose-400/50 hover:bg-[#1a0d12] hover:text-white'
+                                                }`}
+                                            >
+                                                <BotPortraitMedallion character="mittens" size="md" isActive={isMittensActive} />
+                                                <span className="w-full truncate font-display text-sm italic font-black text-[#f7f3e8] leading-tight">
+                                                    Lord Mittens
+                                                </span>
+                                                <span className="w-full truncate text-[10px] font-bold uppercase tracking-wider text-rose-300">
+                                                    Boss Secret
+                                                </span>
+                                                <span className="rounded-md border border-rose-400/40 bg-black/60 px-2 py-0.5 font-mono text-[10px] font-bold text-rose-200">
+                                                    Elo ??? · PR 0.1
                                                 </span>
                                             </button>
+                                        </div>
+
+                                        {/* Focus Grand Portrait & Réplique de Caractère de l'Adversaire Sélectionné */}
+                                        <div
+                                            data-testid="lobby-persona-spotlight"
+                                            className="flex flex-col sm:flex-row items-center gap-3.5 rounded-2xl border border-[#d4af37]/35 bg-gradient-to-r from-[#1c140b] via-[#120e09] to-[#1c140b] p-3.5 shadow-inner"
+                                        >
+                                            <BotPortraitMedallion character={isMittensActive ? 'mittens' : difficulty} size="lg" isActive />
+                                            <div className="flex-1 min-w-0 text-center sm:text-left space-y-1">
+                                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                                                    <span className="font-display text-lg sm:text-xl italic font-black text-[#f7f3e8]">
+                                                        {isMittensActive ? 'Lord Mittens — Le Sphynx de Monte-Carlo' : selectedPersona.name}
+                                                    </span>
+                                                    <span className="rounded-full border border-[#f3c65f]/50 bg-[#f3c65f]/15 px-2.5 py-0.5 font-mono text-[11px] font-extrabold text-[#f3c65f]">
+                                                        {isMittensActive ? 'Elo ??? · PR 0.1' : `${BOT_ELO_BY_DIFF[difficulty]} · PR ${selectedPersona.targetErrorRate}`}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs sm:text-sm italic text-amber-100/95 leading-snug">
+                                                    « {isMittensActive
+                                                        ? 'Miaou… Tes portes sont charmantes, mais j’ai déjà calculé tes 36 prochains lancers.'
+                                                        : selectedPersona.dialogues.opening.fun} »
+                                                </p>
+                                                <div className="text-[11px] font-semibold text-emerald-300">
+                                                    🎯 Défi tactique : {isMittensActive ? 'Survie contre le réseau neuronal 3-ply sans concession' : `${selectedPersona.skillTaught} (${selectedPersona.lobbyHint})`}
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div data-testid="lobby-direct-format-bar" className="flex flex-wrap items-center justify-between gap-2 pt-1">
@@ -300,11 +360,9 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                         </section>
                     </div>
 
-                    {/* 3. VITRINE DROITE (Table En Direct & Classement, masquée quand le grand plateau de configuration est ouvert) */}
                     {!showOptions && (
                         <LobbyRightShowcaseColumn
-                            eloRating={snapshot.eloRating}
-                            averagePR={snapshot.averagePR}
+                            eloRating={snapshot.eloRating} averagePR={snapshot.averagePR}
                             onQuickPlay={() => onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset })}
                             onOpenStats={() => onOpenModule?.('stats')}
                         />
@@ -312,7 +370,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                 </div>
             </div>
 
-            {/* 4. BOUTON FLOTTANT BAS-DROITE COACH IA */}
             <FloatingAiCoachWidget onOpenFullCoach={() => onOpenModule?.('drills')} />
 
             <TournamentTableClockModal

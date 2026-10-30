@@ -142,8 +142,8 @@ describe('CoachDiagnosticBox', () => {
             <CoachDiagnosticBox
                 summary="Oubli de la Porte d'Or"
                 equityLoss={0.085}
-                playedMove="13/10 13/12"
-                optimalMove="8/5 6/5"
+                playedMoveNotation="13/10 13/12"
+                bestMoveNotation="8/5 6/5"
                 board={initialBoard}
                 dice={[3, 1]}
                 symbolicAudit={{

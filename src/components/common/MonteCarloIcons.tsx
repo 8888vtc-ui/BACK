@@ -125,12 +125,12 @@ export const PERSONA_PHOTO_BY_ID: Record<Exclude<PortraitCharacterId, 'player'>,
 
 export interface BotPortraitMedallionProps {
     readonly character: PortraitCharacterId;
-    readonly size?: 'sm' | 'md' | 'lg';
+    readonly size?: 'sm' | 'md' | 'lg' | 'xl';
     readonly isActive?: boolean;
 }
 
 /**
- * Médaillon Octogonal Haute-Horlogerie à 8 vis d'or 24k sertissant les VRAIES photographies
+ * Médaillon Octogonal Haute-Horlogerie à ouverture panoramique 92 % sertissant les VRAIES photographies
  * de portraits Monte-Carlo (Maxime Le Mauvais Joueur, Sofia La Riviera, Victor L'Homme d'Affaires,
  * Viktor L'Intellectuel, Lord Mittens) + Blason Membre pour le joueur.
  */
@@ -139,7 +139,7 @@ export const BotPortraitMedallion: React.FC<BotPortraitMedallionProps> = React.m
     size = 'md',
     isActive = false,
 }) => {
-    const dim = size === 'lg' ? 64 : size === 'md' ? 48 : 38;
+    const dim = size === 'xl' ? 116 : size === 'lg' ? 92 : size === 'md' ? 68 : 52;
     const clipId = `octagonal-clip-${character}-${size}`;
     const photoUrl = character !== 'player' ? PERSONA_PHOTO_BY_ID[character] : null;
 
@@ -147,45 +147,58 @@ export const BotPortraitMedallion: React.FC<BotPortraitMedallionProps> = React.m
         <div
             data-testid={`portrait-medallion-${character}`}
             style={{ width: dim, height: dim }}
-            className={`relative shrink-0 inline-flex items-center justify-center transition-transform duration-200 ${
-                isActive ? 'scale-105 drop-shadow-[0_0_16px_rgba(212,175,55,0.45)]' : 'opacity-95'
+            className={`relative shrink-0 inline-flex items-center justify-center transition-all duration-300 ${
+                isActive
+                    ? 'scale-[1.04] drop-shadow-[0_0_22px_rgba(243,198,95,0.65)]'
+                    : 'drop-shadow-[0_6px_14px_rgba(0,0,0,0.75)]'
             }`}
         >
-            <svg viewBox="0 0 80 80" className="w-full h-full" aria-hidden="true">
+            <svg viewBox="0 0 80 80" className="w-full h-full overflow-visible" aria-hidden="true">
                 <defs>
                     <linearGradient id="goldBezel" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#f5dfa0" />
+                        <stop offset="0%" stopColor="#fff3c4" />
                         <stop offset="45%" stopColor="#d4af37" />
                         <stop offset="100%" stopColor="#7c5813" />
                     </linearGradient>
                     <clipPath id={clipId}>
-                        <polygon points="26,7 54,7 73,26 73,54 54,73 26,73 7,54 7,26" />
+                        <polygon points="22,4 58,4 76,22 76,58 58,76 22,76 4,58 4,22" />
                     </clipPath>
                 </defs>
 
+                {/* Halo de tour actif type Grand Cercle Monte-Carlo */}
+                {isActive && (
+                    <polygon
+                        points="21,1 59,1 79,21 79,59 59,79 21,79 1,59 1,21"
+                        fill="none"
+                        stroke="#fef08a"
+                        strokeWidth="2.2"
+                        strokeOpacity="0.9"
+                    />
+                )}
+
                 {/* Lunette Octogonale Haute-Horlogerie */}
                 <polygon
-                    points="24,3 56,3 77,24 77,56 56,77 24,77 3,56 3,24"
+                    points="22,2 58,2 78,22 78,58 58,78 22,78 2,58 2,22"
                     fill="url(#goldBezel)"
-                    stroke={isActive ? '#fff7d6' : '#8c6b23'}
-                    strokeWidth={isActive ? '2.2' : '1.2'}
+                    stroke={isActive ? '#fffbeb' : '#9a7322'}
+                    strokeWidth={isActive ? '2.4' : '1.4'}
                 />
                 {/* Fond intérieur en émail sombre */}
                 <polygon
-                    points="26,7 54,7 73,26 73,54 54,73 26,73 7,54 7,26"
+                    points="22,4 58,4 76,22 76,58 58,76 22,76 4,58 4,22"
                     fill="#0c0906"
                     stroke="#1c150c"
-                    strokeWidth="1.5"
+                    strokeWidth="1"
                 />
 
-                {/* Vraie Photographie de Portrait Haute-Couture Monte-Carlo */}
+                {/* Vraie Photographie de Portrait Haute-Couture Monte-Carlo plein cadre (92 %) */}
                 {photoUrl && (
                     <image
                         href={photoUrl}
-                        x="6"
-                        y="6"
-                        width="68"
-                        height="68"
+                        x="3"
+                        y="3"
+                        width="74"
+                        height="74"
                         preserveAspectRatio="xMidYMin slice"
                         clipPath={`url(#${clipId})`}
                     />
@@ -194,36 +207,36 @@ export const BotPortraitMedallion: React.FC<BotPortraitMedallionProps> = React.m
                 {/* Joueur Humain (Membre d'Honneur du Cercle Monte-Carlo) */}
                 {character === 'player' && (
                     <g clipPath={`url(#${clipId})`}>
-                        <rect x="6" y="6" width="68" height="68" fill="#062c1e" />
-                        <path d="M18,74 C21,55 59,55 62,74 Z" fill="#064e3b" stroke="#f5dfa0" strokeWidth="1.2" />
-                        <path d="M35,56 L40,68 L45,56" fill="#f8fafc" />
-                        <polygon points="37,60 43,60 40,63" fill="#d4af37" />
-                        <ellipse cx="40" cy="38" rx="11.5" ry="13.5" fill="#e6be9a" />
-                        <path d="M28.5,34 C29,21 51,21 51.5,34 C47,27 33,27 28.5,34 Z" fill="#271f1b" />
-                        <circle cx="35.5" cy="37" r="1.4" fill="#1c1917" />
-                        <circle cx="44.5" cy="37" r="1.4" fill="#1c1917" />
-                        <path d="M36,45 Q40,47.5 44,45" fill="none" stroke="#5c3a21" strokeWidth="1.4" strokeLinecap="round" />
+                        <rect x="3" y="3" width="74" height="74" fill="#062c1e" />
+                        <path d="M14,77 C18,54 62,54 66,77 Z" fill="#064e3b" stroke="#f5dfa0" strokeWidth="1.4" />
+                        <path d="M34,55 L40,69 L46,55" fill="#f8fafc" />
+                        <polygon points="36.5,59.5 43.5,59.5 40,63.5" fill="#d4af37" />
+                        <ellipse cx="40" cy="36" rx="13" ry="15" fill="#e6be9a" />
+                        <path d="M27,32 C28,18 52,18 53,32 C48,24 32,24 27,32 Z" fill="#271f1b" />
+                        <circle cx="35" cy="35" r="1.6" fill="#1c1917" />
+                        <circle cx="45" cy="35" r="1.6" fill="#1c1917" />
+                        <path d="M35.5,44 Q40,46.8 44.5,44" fill="none" stroke="#5c3a21" strokeWidth="1.5" strokeLinecap="round" />
                     </g>
                 )}
 
                 {/* Contour intérieur ciselé or */}
                 <polygon
-                    points="26,7 54,7 73,26 73,54 54,73 26,73 7,54 7,26"
+                    points="22,4 58,4 76,22 76,58 58,76 22,76 4,58 4,22"
                     fill="none"
-                    stroke="#d4af37"
-                    strokeOpacity="0.45"
-                    strokeWidth="1"
+                    stroke="#f5dfa0"
+                    strokeOpacity={isActive ? '0.85' : '0.45'}
+                    strokeWidth="1.1"
                 />
 
                 {/* Vis de sertissage horlogères aux 8 pans */}
-                <circle cx="25" cy="5.5" r="1.1" fill="#291d06" />
-                <circle cx="55" cy="5.5" r="1.1" fill="#291d06" />
-                <circle cx="74.5" cy="25" r="1.1" fill="#291d06" />
-                <circle cx="74.5" cy="55" r="1.1" fill="#291d06" />
-                <circle cx="55" cy="74.5" r="1.1" fill="#291d06" />
-                <circle cx="25" cy="74.5" r="1.1" fill="#291d06" />
-                <circle cx="5.5" cy="55" r="1.1" fill="#291d06" />
-                <circle cx="5.5" cy="25" r="1.1" fill="#291d06" />
+                <circle cx="22.5" cy="3.2" r="0.95" fill="#291d06" />
+                <circle cx="57.5" cy="3.2" r="0.95" fill="#291d06" />
+                <circle cx="76.8" cy="22.5" r="0.95" fill="#291d06" />
+                <circle cx="76.8" cy="57.5" r="0.95" fill="#291d06" />
+                <circle cx="57.5" cy="76.8" r="0.95" fill="#291d06" />
+                <circle cx="22.5" cy="76.8" r="0.95" fill="#291d06" />
+                <circle cx="3.2" cy="57.5" r="0.95" fill="#291d06" />
+                <circle cx="3.2" cy="22.5" r="0.95" fill="#291d06" />
             </svg>
         </div>
     );
