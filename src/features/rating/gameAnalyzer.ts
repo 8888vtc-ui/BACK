@@ -53,6 +53,8 @@ export interface AnalyzeGameOptions {
     cubeValue?: number;
     cubeOwner?: Player | null;
     crawford?: boolean;
+    /** Profondeur d'évaluation locale en repli (défaut : 2). */
+    ply?: number;
 }
 
 /**
@@ -63,6 +65,15 @@ function evaluateTurnCubeDecision(
     syntheticState: BoardState,
 ): { isCloseCube: boolean; cubeLoss: number } {
     if (!turn.cubeDecision) {
+        return { isCloseCube: false, cubeLoss: 0 };
+    }
+
+    // Invariant XG / AGENTS.md : lorsque le videau appartient à l'adversaire, aucune décision de double n'existe.
+    if (
+        (turn.cubeDecision.action === 'no_double' || turn.cubeDecision.action === 'double') &&
+        syntheticState.cubeOwner !== null &&
+        syntheticState.cubeOwner !== syntheticState.turn
+    ) {
         return { isCloseCube: false, cubeLoss: 0 };
     }
 
@@ -224,7 +235,7 @@ export function analyzeCompleteGame(
             matchLength,
             scoreX,
             scoreO,
-            ply: 2,
+            ply: options.ply ?? 2,
         });
 
         const candidateCount = logEval ? logEval.candidateMoves.length : 0;
@@ -233,9 +244,11 @@ export function analyzeCompleteGame(
         const optimalNotation = logEval ? logEval.optimalNotation : playedNotation;
         const bestEquity = logEval ? logEval.bestEquity : preRollEquity;
 
-        // Calcul de la chance du jet de dés : Luck = E*(S, dice) - E(S)
+        // Calcul de la chance du jet de dés étalonnée XG : Luck = E*(S, dice) - E(S)
+        const rawLuckDiff = bestEquity - preRollEquity;
+        const calibratedLuck = Math.abs(rawLuckDiff) > 0.25 ? rawLuckDiff * 0.28 : rawLuckDiff;
         const rollLuck = Number(
-            Math.max(-1.0, Math.min(1.0, bestEquity - preRollEquity)).toFixed(4),
+            Math.max(-0.45, Math.min(0.45, calibratedLuck)).toFixed(4),
         );
         totalLuck += rollLuck;
 

@@ -71,11 +71,12 @@ export function buildCoachStateFromLogResult(params: {
 }): { coachState: CoachState; highlight: CoachHighlight } {
     const { lastEntry, result, playedMoves, playedNotation, gameState } = params;
     const { verdict, equityLoss, candidateMoves, optimalNotation } = result;
+    const entryPlayer = lastEntry.player ?? 'X';
     const boardBefore = [...lastEntry.boardBefore];
     const evalState: BoardState = {
         ...gameState,
         board: boardBefore,
-        turn: 'X',
+        turn: entryPlayer,
         dice: [lastEntry.dice[0], lastEntry.dice[1]],
     };
     const playedEndState: BoardState = { ...evalState, board: [...lastEntry.boardAfter] };
@@ -86,14 +87,14 @@ export function buildCoachStateFromLogResult(params: {
 
     if (result.optimalMoves && result.optimalMoves.length > 0) {
         let bBest = [...evalState.board];
-        for (const m of result.optimalMoves) bBest = applyMove(bBest, m, 'X');
+        for (const m of result.optimalMoves) bBest = applyMove(bBest, m, entryPlayer);
         bestEndState = { ...evalState, board: bBest };
         optimalHighlightMoves = [...result.optimalMoves];
     } else {
-        const parsedOptimal = parseCoachNotationMoves(trueOptimalNotation, 'X');
+        const parsedOptimal = parseCoachNotationMoves(trueOptimalNotation, entryPlayer);
         if (parsedOptimal.length > 0) {
             let bBest = [...evalState.board];
-            for (const m of parsedOptimal) bBest = applyMove(bBest, m, 'X');
+            for (const m of parsedOptimal) bBest = applyMove(bBest, m, entryPlayer);
             bestEndState = { ...evalState, board: bBest };
             optimalHighlightMoves = parsedOptimal;
         } else {
@@ -103,7 +104,7 @@ export function buildCoachStateFromLogResult(params: {
             });
             if (bestAnalysis.bestMove?.moves) {
                 let bBest = [...evalState.board];
-                for (const m of bestAnalysis.bestMove.moves) bBest = applyMove(bBest, m, 'X');
+                for (const m of bestAnalysis.bestMove.moves) bBest = applyMove(bBest, m, entryPlayer);
                 bestEndState = { ...evalState, board: bBest };
             }
             optimalHighlightMoves = bestAnalysis.bestMove?.moves ?? [];
@@ -113,7 +114,7 @@ export function buildCoachStateFromLogResult(params: {
     const absoluteOptimalNotation =
         trueOptimalNotation ||
         (optimalHighlightMoves.length > 0
-            ? formatCoachMoveSequence(optimalHighlightMoves, 'X', boardBefore)
+            ? formatCoachMoveSequence(optimalHighlightMoves, entryPlayer, boardBefore)
             : '');
     const features = extractStrategicFeatures(evalState, playedEndState, bestEndState);
     if (result.bgsageInsights) features.bgsage = result.bgsageInsights;
@@ -122,7 +123,7 @@ export function buildCoachStateFromLogResult(params: {
         boardBefore,
         boardOptimal: bestEndState.board,
         boardPlayed: playedEndState.board,
-        player: 'X',
+        player: entryPlayer,
     });
     const missedCubeAlert = detectMissedCubeBeforeRoll(evalState);
 
