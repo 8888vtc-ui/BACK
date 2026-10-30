@@ -111,7 +111,7 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
             aria-disabled={isLockedByBar && !isAnyTarget ? true : undefined}
             tabIndex={0}
             style={{ touchAction: 'none' }}
-            className={`relative flex-1 min-w-0 sm:min-w-[36px] md:min-w-[44px] min-h-[44px] h-full flex flex-col items-center select-none group cursor-pointer transition-all duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] touch-none ${
+            className={`relative flex-1 min-w-0 min-h-[44px] [@media(max-height:540px)]:min-h-0 h-full flex flex-col items-center select-none group cursor-pointer transition-all duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] touch-none ${
                 isSelected
                     ? 'ring-2 ring-amber-400/90 rounded-lg bg-amber-400/5 shadow-[0_0_16px_rgba(251,191,36,0.4)]'
                     : showLevel1

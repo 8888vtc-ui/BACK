@@ -251,7 +251,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                             onToggleBestMoveArrows={() => setPreviewBoardMode((m) => (m === 'before' ? 'live' : 'before'))}
                             onReplayMove={handleSyncedReplayMove} onOpenDrawer={onTriggerCoach}
                         />
-                        <div className="hidden md:block w-full shrink-0 h-8">
+                        <div className="hidden md:block [@media(max-height:540px)]:!hidden w-full shrink-0 h-8">
                             <BoardHorologyBar
                                 totalTurns={effectiveTurns.length} replayIndex={replay.replayIndex} isLive={replay.isLive}
                                 selectedTurn={replay.selectedTurn} officialNotation={replay.officialNotation} viewPhase={replayViewPhase}

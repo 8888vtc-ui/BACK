@@ -92,21 +92,24 @@
     }
   }
 
-  /* Conteneur Paysage Mobile : Full-Height (calc(100dvh - 8px), ratio 1.18:1, Side-HUD) */
-  @media (max-height: 500px) and (orientation: landscape) {
+  /* Conteneur Paysage Mobile : Pleine Largeur Panoramique & Pleine Hauteur (Zero-Clipping) */
+  @media (max-height: 540px) and (orientation: landscape) {
     .landscape-full-bleed {
-      padding-top: max(2px, env(safe-area-inset-top, 0px));
-      padding-bottom: max(2px, env(safe-area-inset-bottom, 0px));
-      padding-left: max(6px, env(safe-area-inset-left, 0px));
-      padding-right: max(6px, env(safe-area-inset-right, 0px));
+      padding-top: max(1px, env(safe-area-inset-top, 0px));
+      padding-bottom: max(1px, env(safe-area-inset-bottom, 0px));
+      padding-left: max(4px, env(safe-area-inset-left, 0px));
+      padding-right: max(4px, env(safe-area-inset-right, 0px));
     }
 
     .board-adaptive-shell {
-      height: calc(100dvh - 8px) !important;
-      max-height: calc(100dvh - 8px) !important;
-      width: auto !important;
-      aspect-ratio: 1.18 / 1 !important;
-      padding: 2px !important;
+      height: 100% !important;
+      max-height: 100% !important;
+      min-height: 0 !important;
+      width: 100% !important;
+      max-width: min(100%, calc((100dvh - 36px) * 2.35)) !important;
+      aspect-ratio: auto !important;
+      padding: 2px 6px !important;
+      border-radius: 14px !important;
     }
   }
 }

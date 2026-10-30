@@ -35,10 +35,10 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
                 </span>
             ))}
         </div>
-        <div className="w-6 sm:w-14 md:w-20 mx-0.5 sm:mx-1 shrink-0 text-center text-[10px] font-mono text-amber-200/40 sm:hidden">
+        <div className="w-6 sm:w-12 md:w-16 [@media(max-height:540px)]:!w-8 mx-0.5 sm:mx-1 shrink-0 text-center text-[10px] font-mono text-amber-200/40 sm:hidden">
             BAR
         </div>
-        <div className="hidden sm:block sm:w-14 md:w-20 sm:mx-1 shrink-0" />
+        <div className="hidden sm:block sm:w-12 md:w-16 [@media(max-height:540px)]:!w-8 sm:mx-1 shrink-0" />
         <div className="flex min-w-0">
             {row.slice(6).map((p) => (
                 <span
@@ -49,7 +49,7 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
                 </span>
             ))}
         </div>
-        <div className="w-4 sm:w-14 md:w-20 pl-0.5 ml-0.5 sm:pl-1.5 sm:ml-1 shrink-0 flex items-center justify-center">
+        <div className="w-4 sm:w-12 md:w-16 [@media(max-height:540px)]:!w-8 pl-0.5 ml-0.5 sm:pl-1 sm:ml-1 shrink-0 flex items-center justify-center">
             {onToggleOrientation && (
                 <button
                     type="button"

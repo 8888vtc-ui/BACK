@@ -148,7 +148,7 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
 
     return (
         <div className="contents">
-            <div className="flex min-h-0">{points.map(renderPoint)}</div>
+            <div className="flex min-h-0 min-w-0">{points.map(renderPoint)}</div>
             <div
                 data-bearoff-expanded={isBearOffExpanded ? 'true' : 'false'}
                 className={`${
@@ -157,7 +157,7 @@ const BoardQuadrantRowComponent: React.FC<BoardQuadrantRowProps> = ({
                         : isBearOffExpanded
                           ? 'w-4 max-sm:pl-0.5 max-sm:ml-0 border-l'
                           : 'max-sm:w-0 max-sm:p-0 max-sm:m-0 max-sm:border-0 max-sm:overflow-hidden w-0'
-                } sm:w-14 md:w-20 sm:pl-1.5 sm:ml-1 sm:border-l border-amber-500/25 flex flex-col transition-[width] duration-200 ${
+                } sm:w-12 md:w-16 [@media(max-height:540px)]:!w-8 sm:pl-1 sm:ml-1 sm:border-l border-amber-500/25 flex flex-col transition-[width] duration-200 ${
                     isTopRow ? 'justify-start pt-0.5 sm:pt-1 pb-0.5 sm:pb-2' : 'justify-end pt-0.5 sm:pt-2 pb-0.5 sm:pb-1'
                 }`}
             >

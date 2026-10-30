@@ -332,3 +332,75 @@ export function computeJanowskiCubeEvaluation(
         optimalCubeAction,
     };
 }
+
+/**
+ * Formule fermée d'approximation de la Table d'Équité de Match (MET) de Rick Janowski (Révisée 2013).
+ *
+ * - Pré-Crawford normal (L_away >= 2, T_away >= 2) :
+ *     M_leader = 0.5 + 0.87 * (D / (T + 6))
+ *   avec L_eff = 3.1 si L_away === 3, et écrêtage M' = 0.66*M + 0.33 lorsque M > 0.88.
+ * - Partie de Crawford (L_away = 1, T_away >= 2) :
+ *     M_Crawford = 0.525 + 0.57 * ((T - 1) / (T + 2))
+ * - Post-Crawford (L_away = 1, T_away >= 2) :
+ *     À 1-away 2-away Post-Crawford, M(1, 2) = 0.512 (allocation Free Drop de 1.2 %
+ *     qui diminue de 20 % de sa valeur maximale à chaque score pair subséquent jusqu'à T = 14).
+ */
+export function computeJanowskiMatchEquity(params: {
+    readonly playerAway: number;
+    readonly opponentAway: number;
+    readonly crawfordState?: 'PRE_CRAWFORD' | 'CRAWFORD' | 'POST_CRAWFORD';
+}): number {
+    const pAway = Math.max(1, Math.round(params.playerAway));
+    const oAway = Math.max(1, Math.round(params.opponentAway));
+    if (pAway === oAway) return 0.5;
+
+    const playerIsLeader = pAway < oAway;
+    const leaderAway = playerIsLeader ? pAway : oAway;
+    const trailerAway = playerIsLeader ? oAway : pAway;
+    const state = params.crawfordState ?? 'PRE_CRAWFORD';
+
+    let leaderMwc: number;
+    if (leaderAway === 1 && state === 'CRAWFORD') {
+        leaderMwc = 0.525 + 0.57 * ((trailerAway - 1) / (trailerAway + 2));
+    } else if (leaderAway === 1 && state === 'POST_CRAWFORD') {
+        if (trailerAway === 2) {
+            leaderMwc = 0.512;
+        } else {
+            const base = 0.5 + 0.57 * ((trailerAway - 1.5) / (trailerAway + 2));
+            const evenBonus =
+                trailerAway % 2 === 0 && trailerAway < 14
+                    ? 0.012 * Math.max(0, 1 - 0.2 * ((trailerAway - 2) / 2))
+                    : 0;
+            leaderMwc = base + evenBonus;
+        }
+    } else {
+        const effectiveLeader = leaderAway === 3 ? 3.1 : leaderAway;
+        const d = trailerAway - effectiveLeader;
+        const rawM = 0.5 + 0.87 * (d / (trailerAway + 6));
+        leaderMwc = rawM > 0.88 ? 0.66 * rawM + 0.33 : rawM;
+    }
+
+    const clampedLeader = clamp(leaderMwc, 0.5, 0.995);
+    return Number((playerIsLeader ? clampedLeader : 1 - clampedLeader).toFixed(4));
+}
+
+/**
+ * Calcule le Take Point à videau vivant au niveau 1 en Match Play par induction rétrograde
+ * sur les niveaux de videau [TP_1, TP_2, TP_4, TP_8, TP_16] :
+ *   TP_1^live = TP_1 - TP_1*TP_2 + TP_1*TP_2*TP_4 - TP_1*TP_2*TP_4*TP_8 + TP_1*TP_2*TP_4*TP_8*TP_16
+ */
+export function computeRetrogradeLiveCubeTakePoint(
+    deadTakePointsByCubeLevel: ReadonlyArray<number>,
+): number {
+    if (deadTakePointsByCubeLevel.length === 0) return 0.2;
+    let total = 0;
+    let product = 1;
+    for (let i = 0; i < Math.min(5, deadTakePointsByCubeLevel.length); i++) {
+        const tpK = clamp(deadTakePointsByCubeLevel[i] ?? 0.25, 0, 1);
+        product *= tpK;
+        const sign = i % 2 === 0 ? 1 : -1;
+        total += sign * product;
+    }
+    return Number(clamp(total, 0.05, 0.95).toFixed(4));
+}
+
