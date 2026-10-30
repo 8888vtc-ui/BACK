@@ -62,13 +62,15 @@ const MobilePortraitCoachBannerComponent: React.FC<MobilePortraitCoachBannerProp
               }
             : null;
 
+    const concreteMoveReason = isBlunder || isInaccuracy
+        ? coach?.whyFailed || coach?.tacticalSummary || coach?.summary || persona.dialogues.playerBlunder.fun
+        : coach?.whyOptimal || coach?.tacticalSummary || persona.dialogues.playerOptimal.fun;
+
     const quoteText = isAnalyzing
         ? 'Analyse neuronale Open Sage en cours…'
-        : isBlunder
-          ? persona.dialogues.playerBlunder.fun
-          : coach
-            ? `${coach.playedMove ?? ''}${hasComparison ? ` → Meilleur : ${coach.optimalMove}` : ` · ${persona.dialogues.playerOptimal.fun}`}`
-            : persona.dialogues.opening.fun;
+        : coach
+          ? `${coach.playedMove ?? ''}${hasComparison ? ` → ${coach.optimalMove}` : ''} · ${concreteMoveReason}`
+          : persona.dialogues.opening.fun;
 
     return (
         <section

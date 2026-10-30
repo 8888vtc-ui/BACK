@@ -70,38 +70,18 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
     const effectiveEquityLoss = Math.abs(equityLoss ?? symbolicAudit?.blunder_delta_equity ?? 0);
     const directShots = symbolicAudit?.direct_shots_conceded ?? 0;
 
-    const biLevelMicroCopy = useMemo(
-        () =>
-            buildBiLevelCoachMicroCopy({
-                equityLossEmg: effectiveEquityLoss,
-                directShotsConceded: directShots,
-                dominantTheme: symbolicAudit?.dominant_theme ?? gamePhase,
-                recurringErrorCount,
-                isBrilliantMove: evaluateBrilliantMoveCriteria({ equityLossEmg: effectiveEquityLoss, directShotsConceded: directShots, level: levelMode }),
-                locale,
-                playedMoveNotation,
-                bestMoveNotation: bestMoveNotation ?? pedagogicalExplanation?.correct_play_canonical,
-                keyConcept,
-            }),
-        [effectiveEquityLoss, directShots, symbolicAudit?.dominant_theme, gamePhase, recurringErrorCount, levelMode, locale, playedMoveNotation, bestMoveNotation, pedagogicalExplanation?.correct_play_canonical, keyConcept],
-    );
+    const biLevelMicroCopy = useMemo(() => buildBiLevelCoachMicroCopy({
+        equityLossEmg: effectiveEquityLoss, directShotsConceded: directShots, dominantTheme: symbolicAudit?.dominant_theme ?? gamePhase,
+        recurringErrorCount, isBrilliantMove: evaluateBrilliantMoveCriteria({ equityLossEmg: effectiveEquityLoss, directShotsConceded: directShots, level: levelMode }),
+        locale, playedMoveNotation, bestMoveNotation: bestMoveNotation ?? pedagogicalExplanation?.correct_play_canonical, keyConcept,
+    }), [effectiveEquityLoss, directShots, symbolicAudit?.dominant_theme, gamePhase, recurringErrorCount, levelMode, locale, playedMoveNotation, bestMoveNotation, pedagogicalExplanation?.correct_play_canonical, keyConcept]);
 
-    const socraticChallenge = useMemo(
-        () =>
-            buildSocraticQuestion({
-                gamePhase: gamePhase ?? symbolicAudit?.dominant_theme ?? undefined,
-                playerPips: playerPips ?? symbolicAudit?.player_pip ?? undefined,
-                opponentPips: opponentPips ?? symbolicAudit?.opponent_pip ?? undefined,
-                pipDiff: pipDiff ?? undefined,
-                equityLoss: effectiveEquityLoss,
-                bestMoveNotation: bestMoveNotation ?? pedagogicalExplanation?.correct_play_canonical ?? undefined,
-                playedMoveNotation: playedMoveNotation ?? undefined,
-                directShotsConceded: symbolicAudit?.direct_shots_conceded,
-                concepts: concepts ?? (conceptId ? [conceptId] : keyConcept ? [keyConcept] : undefined),
-                locale,
-            }),
-        [gamePhase, symbolicAudit, playerPips, opponentPips, pipDiff, effectiveEquityLoss, bestMoveNotation, pedagogicalExplanation?.correct_play_canonical, playedMoveNotation, concepts, conceptId, keyConcept, locale],
-    );
+    const socraticChallenge = useMemo(() => buildSocraticQuestion({
+        gamePhase: gamePhase ?? symbolicAudit?.dominant_theme ?? undefined, playerPips: playerPips ?? symbolicAudit?.player_pip ?? undefined,
+        opponentPips: opponentPips ?? symbolicAudit?.opponent_pip ?? undefined, pipDiff: pipDiff ?? undefined, equityLoss: effectiveEquityLoss,
+        bestMoveNotation: bestMoveNotation ?? pedagogicalExplanation?.correct_play_canonical ?? undefined, playedMoveNotation: playedMoveNotation ?? undefined,
+        directShotsConceded: symbolicAudit?.direct_shots_conceded, concepts: concepts ?? (conceptId ? [conceptId] : keyConcept ? [keyConcept] : undefined), locale,
+    }), [gamePhase, symbolicAudit, playerPips, opponentPips, pipDiff, effectiveEquityLoss, bestMoveNotation, pedagogicalExplanation?.correct_play_canonical, playedMoveNotation, concepts, conceptId, keyConcept, locale]);
 
     const hasTextContent = Boolean(tacticalSummary || explanation || summary || whyFailed || whyOptimal || advice || pedagogicalExplanation);
     const hasSocraticTrigger = Boolean((equityLoss !== undefined && equityLoss !== null && socraticChallenge.shouldTrigger) || (symbolicAudit && socraticChallenge.shouldTrigger));
@@ -213,19 +193,29 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
             )}
 
             {mode === 'flash' && levelMode === 'fun' && (symbolicAudit || effectiveEquityLoss > 0.015) && (
-                <div data-testid="coach-bilevel-bullets" className="rounded-lg border border-slate-800/80 bg-slate-900/65 p-2 space-y-1 text-[11px] text-slate-100">
-                    <p>• {biLevelMicroCopy.bulletDiagnostic}</p>
-                    <p className="text-emerald-300 font-semibold">• {biLevelMicroCopy.bulletAction}</p>
+                <div data-testid="coach-bilevel-bullets" className="rounded-lg border border-slate-800/80 bg-slate-900/65 p-2.5 space-y-1.5 text-[11px] text-slate-100">
+                    <p>• <strong className="text-rose-300">{isEn ? 'What happened:' : 'Le piège :'}</strong> {biLevelMicroCopy.bulletDiagnostic}</p>
+                    <p className="text-emerald-300 font-semibold">• <strong className="text-emerald-200">{isEn ? 'Better idea:' : 'La bonne idée :'}</strong> {biLevelMicroCopy.bulletAction}</p>
                     {biLevelMicroCopy.bulletHabitHook && <p className="text-amber-300 font-bold">• {biLevelMicroCopy.bulletHabitHook}</p>}
                     <div data-testid="coach-bilevel-cta-row" className="flex flex-wrap items-center gap-1.5 pt-1">
                         <button type="button" data-testid="coach-cta-danger-btn" onClick={() => setActiveVisualCta((v) => (v === 'danger' ? null : 'danger'))} className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold transition ${activeVisualCta === 'danger' ? 'border-rose-400 bg-rose-500/25 text-rose-100' : 'border-rose-500/40 bg-slate-950/70 text-rose-300 hover:bg-rose-950/50'}`}>{biLevelMicroCopy.ctaPills[0]}</button>
                         <button type="button" data-testid="coach-cta-idea-btn" onClick={() => setActiveVisualCta((v) => (v === 'idea' ? null : 'idea'))} className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold transition ${activeVisualCta === 'idea' ? 'border-emerald-400 bg-emerald-500/25 text-emerald-100' : 'border-emerald-500/40 bg-slate-950/70 text-emerald-300 hover:bg-emerald-950/50'}`}>{biLevelMicroCopy.ctaPills[1]}</button>
                         <button type="button" data-testid="coach-cta-retry-btn" onClick={() => onRetryMove?.()} className="rounded-full border border-amber-500/40 bg-slate-950/70 px-2.5 py-0.5 text-[10px] font-bold text-amber-300 hover:bg-amber-950/50 transition">{biLevelMicroCopy.ctaPills[2]}</button>
                     </div>
+                    {activeVisualCta === 'danger' && (
+                        <div data-testid="coach-cta-danger-detail" className="mt-1.5 rounded-lg border border-rose-500/40 bg-rose-950/40 p-2 text-[11px] leading-relaxed text-rose-100">
+                            ⚠️ <strong>{isEn ? 'Why it is risky:' : 'Pourquoi c’est risqué :'}</strong> {whyFailed || biLevelMicroCopy.dangerDetail}
+                        </div>
+                    )}
+                    {activeVisualCta === 'idea' && (
+                        <div data-testid="coach-cta-idea-detail" className="mt-1.5 rounded-lg border border-emerald-500/40 bg-emerald-950/40 p-2 text-[11px] leading-relaxed text-emerald-100">
+                            💡 <strong>{isEn ? 'Why the best move works:' : 'Pourquoi ce coup est meilleur :'}</strong> {whyOptimal || biLevelMicroCopy.ideaDetail}
+                        </div>
+                    )}
                 </div>
             )}
 
-            {mode === 'flash' && pedagogicalExplanation?.headline && (
+            {mode === 'flash' && levelMode === 'pro' && pedagogicalExplanation?.headline && (
                 <p data-testid="coach-sweller-headline" className="text-xs font-extrabold tracking-wide text-amber-100">⚡ {pedagogicalExplanation.headline}</p>
             )}
 

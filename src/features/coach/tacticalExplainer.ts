@@ -307,6 +307,8 @@ export interface BiLevelCoachMicroCopy {
     readonly bulletDiagnostic: string;
     readonly bulletAction: string;
     readonly bulletHabitHook: string | null;
+    readonly dangerDetail: string;
+    readonly ideaDetail: string;
     readonly ctaPills: readonly [string, string, string];
     readonly proTelemetryLine: string;
     readonly wordCountLevel1: number;
@@ -350,30 +352,86 @@ export function buildBiLevelCoachMicroCopy(params: {
 
     let bulletDiagnostic: string;
     let bulletAction: string;
+    let dangerDetail: string;
+    let ideaDetail: string;
+
+    const conceptLower = (keyConcept ?? '').toLowerCase();
+    const pld = playedMoveNotation ?? (isEn ? 'this move' : 'ce coup');
+    const bst = bestMoveNotation ?? (isEn ? 'the best move' : 'le meilleur coup');
 
     if (isCube) {
-        bulletDiagnostic = isEn
-            ? `This cube decision (${playedMoveNotation ?? 'Cube'}) misjudges the Market Window.`
-            : `Cette décision de videau (${playedMoveNotation ?? 'Videau'}) évalue mal la fenêtre de marché.`;
-        bulletAction = isEn
-            ? `Correct cube play: ${bestMoveNotation ?? 'No double, take'} (Woolsey / Janowski rule).`
-            : `Décision optimale : ${bestMoveNotation ?? 'No double, take'} (Loi de Woolsey / Janowski).`;
+        const pldLower = pld.toLowerCase();
+        if (pldLower.includes('prendre') || pldLower.includes('take')) {
+            bulletDiagnostic = isEn ? 'Accepting this double is a trap: you are too far behind.' : 'Accepter de doubler ici est un piège : ton retard est trop grand.';
+            bulletAction = isEn ? 'Refuse the double (Pass) to save your points for next game.' : 'Refuse le double (Pass) pour ne perdre qu’un seul point.';
+            dangerDetail = isEn ? 'Staying in this game risks losing 2 or 4 points with less than 1 chance in 5 to win.' : 'En acceptant, tu risques de perdre 2 ou 4 points avec moins d’une chance sur 5 de gagner.';
+            ideaDetail = isEn ? 'Folding now costs only 1 point and keeps you alive in the match.' : 'Abandonner cette manche te coûte 1 seul point et protège la suite de ton match.';
+        } else if (pldLower.includes('pass')) {
+            bulletDiagnostic = isEn ? 'You gave up too early while you still had real winning chances!' : 'Tu abandonnes trop tôt alors que tu as encore toutes tes chances !';
+            bulletAction = isEn ? 'Accept the double (Take): one good roll puts you back ahead.' : 'Accepte le double (Take) : un bon lancer relance toute la partie.';
+            dangerDetail = isEn ? 'Passing gives your opponent a free point without making them earn it.' : 'Passer offre un point gratuit à l’adversaire sans le forcer à gagner sur le plateau.';
+            ideaDetail = isEn ? 'By taking the cube, only you can redouble to 4 if the dice turn in your favor.' : 'En acceptant le dé ×2, tu deviens le seul à pouvoir doubler à ×4 si la chance tourne.';
+        } else if (pldLower.includes('missed') || pldLower.includes('non doublé')) {
+            bulletDiagnostic = isEn ? 'You had a big lead: you should have doubled the stakes before rolling!' : 'Tu avais une belle avance : il fallait doubler la mise avant de lancer !';
+            bulletAction = isEn ? 'Offer the ×2 cube as soon as your position clearly dominates.' : 'Propose le dé ×2 dès que ta position domine clairement le plateau.';
+            dangerDetail = isEn ? 'If you roll a huge number now, your opponent will quit for just 1 point.' : 'Si tu fais un très bon lancer maintenant, l’adversaire abandonnera pour 1 seul point.';
+            ideaDetail = isEn ? 'Doubling before your big roll forces the opponent to pay double to keep playing.' : 'Doubler avant ton lancer force l’adversaire à jouer pour 2 points ou à te donner le point tout de suite.';
+        } else {
+            bulletDiagnostic = isEn ? 'You doubled too early: the game is still too close.' : 'Tu doubles trop tôt : la partie est encore trop serrée.';
+            bulletAction = isEn ? 'Keep the doubling cube and play one more turn first.' : 'Garde le dé multiplicateur en réserve et joue un tour de plus.';
+            dangerDetail = isEn ? 'Giving the cube away lets your opponent redouble you to 4 if they roll well.' : 'Donner le dé ×2 à l’adversaire lui permet de te punir à ×4 s’il fait un bon lancer.';
+            ideaDetail = isEn ? 'Wait until your wall or race lead is stronger before raising the stakes.' : 'Attends d’avoir un mur plus solide ou une vraie avance avant de monter les enchères.';
+        }
     } else if (playedMoveNotation || bestMoveNotation) {
-        const conceptHint = keyConcept ? ` (${keyConcept})` : '';
-        bulletDiagnostic = directShotsConceded > 0
-            ? isEn
-                ? `This lone checker gives ${directShotsConceded} rolls out of 36 to hit you.`
-                : `Ce pion isolé donne ${directShotsConceded} lancers sur 36 pour te frapper.`
-            : isEn
-              ? `Playing ${playedMoveNotation ?? 'this move'} loses tempo and weakens your plan${conceptHint}.`
-              : `Jouer ${playedMoveNotation ?? 'ce coup'} perd un tempo précieux sur le plan${conceptHint}.`;
-        bulletAction = bestMoveNotation
-            ? isEn
-                ? `Play ${bestMoveNotation} instead to maximize constructive rolls out of 36.`
-                : `Privilégie ${bestMoveNotation} pour maximiser tes lancers constructifs sur 36.`
-            : isEn
-              ? 'Consolidate your key points and keep your checkers connected.'
-              : 'Consolide tes portes clés et garde tes pions bien connectés.';
+        if (directShotsConceded > 0) {
+            bulletDiagnostic = isEn
+                ? `Playing ${pld} leaves a lone checker exposed to ${directShotsConceded} rolls out of 36.`
+                : `Jouer ${pld} laisse un pion seul exposé à ${directShotsConceded} lancers sur 36.`;
+            bulletAction = isEn
+                ? `Play ${bst} to protect your checkers and lock your key points.`
+                : `Joue plutôt ${bst} pour mettre tes pions à l’abri et fermer tes portes.`;
+            dangerDetail = isEn
+                ? `${directShotsConceded} dice combinations out of 36 send your lone checker to the bar and cost you a full turn.`
+                : `L’adversaire a ${directShotsConceded} combinaisons de dés sur 36 pour frapper ton pion isolé et te faire perdre un tour complet.`;
+            ideaDetail = isEn
+                ? `The move ${bst} stacks two checkers together so the opponent cannot hit you.`
+                : `Le coup ${bst} rassemble tes pions par deux : une case avec 2 pions devient un bouclier imprenable.`;
+        } else if (conceptLower.includes('golden') || conceptLower.includes('or')) {
+            bulletDiagnostic = isEn ? `Playing ${pld} leaves the crucial 5-point wide open.` : `Jouer ${pld} laisse la fameuse case 5 grande ouverte devant ta maison.`;
+            bulletAction = isEn ? `Play ${bst} to lock point 5, the strongest shield on the board!` : `Joue ${bst} pour fermer la case 5 : c’est le meilleur bouclier du plateau !`;
+            dangerDetail = isEn ? 'Leaving point 5 open gives the opponent an easy landing spot in your home board.' : 'Laisser la case 5 ouverte offre un refuge idéal aux pions adverses dans ton camp.';
+            ideaDetail = isEn ? `Closing point 5 with ${bst} blocks opponent escapes and builds your attack.` : `Fermer la case 5 avec ${bst} bloque la sortie adverse et prépare ton mur intérieur.`;
+        } else if (conceptLower.includes('bar')) {
+            bulletDiagnostic = isEn ? `With ${pld}, opponent rear checkers can escape with a 6.` : `Avec ${pld}, les pions arrières adverses peuvent s’échapper avec un 6.`;
+            bulletAction = isEn ? `Play ${bst} to lock point 7 and trap their back checkers.` : `Joue ${bst} pour fermer la case 7 et couper leur route d’évasion.`;
+            dangerDetail = isEn ? 'If point 7 stays open, any 6 lets the opponent jump out of danger.' : 'Tant que la case 7 est libre, le moindre 6 permet à l’adversaire de s’enfuir.';
+            ideaDetail = isEn ? `Securing point 7 with ${bst} builds a wall right at the exit of your home board.` : `Bloquer la case 7 avec ${bst} dresse une barrière juste à la sortie de ta maison.`;
+        } else if (conceptLower.includes('prime')) {
+            bulletDiagnostic = isEn ? `Playing ${pld} leaves a gap in your wall of consecutive points.` : `Jouer ${pld} laisse un trou dans ton mur de portes consécutives.`;
+            bulletAction = isEn ? `Play ${bst} to extend your wall and trap the opponent behind it.` : `Joue ${bst} pour allonger ton mur continu et enfermer l’adversaire.`;
+            dangerDetail = isEn ? 'A wall with a gap lets the opponent jump through on a single fortunate roll.' : 'Un mur avec un trou permet aux pions adverses de sauter par-dessus au prochain dé.';
+            ideaDetail = isEn ? `By chaining consecutive closed points with ${bst}, no die from 1 to 6 can pass.` : `En alignant plusieurs cases fermées d’affilée avec ${bst}, l’adversaire est pris au piège.`;
+        } else if (conceptLower.includes('tempo') || conceptLower.includes('frappe') || conceptLower.includes('hit')) {
+            bulletDiagnostic = isEn ? `Playing ${pld} is too passive and lets the opponent blot survive.` : `Jouer ${pld} est trop doux et laisse un pion adverse tranquille.`;
+            bulletAction = isEn ? `Hit with ${bst} to send their checker to the bar and gain a turn!` : `Frappe avec ${bst} pour envoyer son pion sur la barre et gagner un tour !`;
+            dangerDetail = isEn ? 'Leaving an enemy checker untouched lets them close a point on their next roll.' : 'Si tu ne frappes pas ce pion isolé, l’adversaire s’en servira au prochain tour pour fermer une porte.';
+            ideaDetail = isEn ? `Hitting with ${bst} forces your opponent to waste their next dice re-entering from the bar.` : `Frapper avec ${bst} oblige l’adversaire à dépenser ses prochains dés pour rentrer depuis la barre.`;
+        } else if (conceptLower.includes('évasion') || conceptLower.includes('escape')) {
+            bulletDiagnostic = isEn ? `With ${pld}, your back checkers stay trapped in the enemy home board.` : `Avec ${pld}, tes pions du fond restent coincés dans le camp adverse.`;
+            bulletAction = isEn ? `Run with ${bst} to free your back checker before the trap closes.` : `Avance vite avec ${bst} pour libérer ton pion arrière avant d’être bloqué.`;
+            dangerDetail = isEn ? 'Staying behind too long lets the opponent build a wall and lock you in for a gammon.' : 'Rester coincé au fond permet à l’adversaire de construire un mur et de te gagner double (Gammon).';
+            ideaDetail = isEn ? `Running early with ${bst} brings your rear checker to safety in the open field.` : `Fuir dès maintenant avec ${bst} met ton pion arrière hors de portée du barrage adverse.`;
+        } else if (conceptLower.includes('course') || conceptLower.includes('race') || conceptLower.includes('keith')) {
+            bulletDiagnostic = isEn ? `In a pure race, ${pld} wastes distance and slows your bear-off.` : `Dans la course vers la sortie, ${pld} fait perdre du temps à tes pions.`;
+            bulletAction = isEn ? `Play ${bst} to bring and bear off your checkers as fast as possible.` : `Joue ${bst} pour ramener et sortir tes pions de façon plus fluide.`;
+            dangerDetail = isEn ? 'Piling checkers on points 1 and 2 wastes big dice later during bear-off.' : 'Empiler trop de pions sur les cases 1 et 2 te fera gaspiller tes gros dés au moment de sortir.';
+            ideaDetail = isEn ? `The move ${bst} spreads your checkers evenly across points 4, 5, and 6.` : `Le coup ${bst} répartit mieux tes pions pour en sortir deux à chaque lancer.`;
+        } else {
+            bulletDiagnostic = isEn ? `Playing ${pld} stacks your checkers instead of preparing new gates.` : `Jouer ${pld} entasse tes pions au même endroit au lieu de préparer la suite.`;
+            bulletAction = isEn ? `Play ${bst} to place active reserve checkers for your next roll.` : `Joue ${bst} pour mieux répartir tes pions et fermer une case au prochain tour.`;
+            dangerDetail = isEn ? 'Checkers piled 5-high on a single point sleep and cannot cover new points.' : 'Quand 4 ou 5 pions dorment sur la même flèche, tu manques de pions libres au tour suivant.';
+            ideaDetail = isEn ? `Spreading your reserve checkers with ${bst} gives you many more good dice next turn.` : `Bien placer tes pions de réserve avec ${bst} te donne beaucoup plus de bons dés au tour suivant.`;
+        }
     } else {
         bulletDiagnostic = directShotsConceded > 0
             ? isEn ? `This lone checker gives ${directShotsConceded} rolls out of 36 to hit you.` : `Ce pion isolé donne ${directShotsConceded} lancers sur 36 pour te frapper.`
@@ -385,6 +443,17 @@ export function buildBiLevelCoachMicroCopy(params: {
             : themeUpper.includes('HOLD') || themeUpper.includes('ANCR')
               ? isEn ? 'Keep your back base to set an ambush.' : 'Garde ta base arrière pour tendre une embuscade.'
               : isEn ? 'Take point 5 instead to build an unbreakable wall.' : 'Prends plutôt la case 5 pour bâtir un mur.';
+
+        dangerDetail = directShotsConceded > 0
+            ? isEn
+                ? `${directShotsConceded} dice rolls out of 36 hit your lone checker and send it back to the bar.`
+                : `Sur les 36 combinaisons de deux dés, ${directShotsConceded} frappent ton pion isolé et le renvoient à zéro sur la barre.`
+            : isEn
+              ? 'Stacked checkers leave your key points open for the opponent.'
+              : 'Empiler tes pions sur une seule case laisse les cases importantes grandes ouvertes.';
+        ideaDetail = isEn
+            ? 'Two checkers on the same point form an unbreakable shield and block the opponent.'
+            : 'Deux pions sur la même case forment un bouclier imprenable qui bloque le passage adverse.';
     }
 
     const bulletHabitHook = recurringErrorCount >= 2
@@ -394,7 +463,7 @@ export function buildBiLevelCoachMicroCopy(params: {
     const proTelemetryLine = `-${absLoss.toFixed(3)} EMG (-${mEmg} mEMG) | Shots: ${directShotsConceded}/36 | 3-ply`;
     const wordCountLevel1 = `${bulletDiagnostic} ${bulletAction}`.trim().split(/\s+/).length;
 
-    return { headerBadge, bulletDiagnostic, bulletAction, bulletHabitHook, ctaPills, proTelemetryLine, wordCountLevel1 };
+    return { headerBadge, bulletDiagnostic, bulletAction, bulletHabitHook, dangerDetail, ideaDetail, ctaPills, proTelemetryLine, wordCountLevel1 };
 }
 
 /** Section 2.4 (Garde-Fou #2 Anti-Paranoïa) : Tuteur Silencieux expliquant la « Chance Préparée » du Bot (/36). */
