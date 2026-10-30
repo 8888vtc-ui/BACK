@@ -57,9 +57,19 @@ export function useCoachLogAnalyzer({
         const log = matchLog ?? [];
         if (log.length === 0) return;
 
-        const lastEntry = log[log.length - 1];
-        if (lastEntry.player !== 'X') return;
-        const entryKey = `${lastEntry.turnIndex}:${lastEntry.dice[0]}-${lastEntry.dice[1]}`;
+        // Trouve le dernier coup joué par le joueur humain 'X' dans le journal actuel
+        let lastXIndex = -1;
+        for (let i = log.length - 1; i >= 0; i--) {
+            if (log[i].player === 'X') {
+                lastXIndex = i;
+                break;
+            }
+        }
+        if (lastXIndex < 0) return;
+
+        const lastEntry = log[lastXIndex];
+        const playedSig = lastEntry.notation ?? lastEntry.movePlayed.map((m) => `${m.from}-${m.to}`).join(',');
+        const entryKey = `${lastEntry.turnIndex}:${lastEntry.dice[0]}-${lastEntry.dice[1]}:${playedSig}:${lastEntry.timestamp ?? lastXIndex}`;
         if (lastPlayerEvalRef.current === entryKey) return;
         lastPlayerEvalRef.current = entryKey;
 
@@ -126,7 +136,14 @@ export function useCoachLogAnalyzer({
                 }
                 if (isStale()) return;
 
-                setLastMoveFeedback({ verdict, equityLoss, playedMove: playedNotation, timestamp: Date.now() });
+                setLastMoveFeedback({
+                    verdict,
+                    equityLoss,
+                    playedMove: playedNotation,
+                    optimalMove: result.optimalNotation,
+                    turnIndex: lastEntry.turnIndex,
+                    timestamp: Date.now(),
+                });
 
                 const { coachState, highlight } = buildCoachStateFromLogResult({
                     lastEntry,
@@ -137,18 +154,22 @@ export function useCoachLogAnalyzer({
                 });
                 if (isStale()) return;
 
-                setCoachHistory((prev) => [
-                    ...prev,
-                    {
-                        turnIndex: lastEntry.turnIndex,
-                        dice: [lastEntry.dice[0], lastEntry.dice[1]],
-                        coachState,
-                        highlight,
-                        boardBefore: [...lastEntry.boardBefore],
-                        boardAfter: [...lastEntry.boardAfter],
-                        timestamp: Date.now(),
-                    },
-                ]);
+                setCoachHistory((prev) => {
+                    const filtered = prev.filter((h) => h.turnIndex !== lastEntry.turnIndex);
+                    return [
+                        ...filtered,
+                        {
+                            turnIndex: lastEntry.turnIndex,
+                            dice: [lastEntry.dice[0], lastEntry.dice[1]],
+                            coachState,
+                            highlight,
+                            boardBefore: [...lastEntry.boardBefore],
+                            boardAfter: [...lastEntry.boardAfter],
+                            timestamp: Date.now(),
+                            isUnforced,
+                        },
+                    ];
+                });
                 setSelectedCoachHistoryIndex(null);
 
                 if (shouldNotify(verdict, notificationLevel)) {

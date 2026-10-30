@@ -74,7 +74,7 @@ export function executeCubeEvaluation({
     };
 
     const historyEntry: CoachAnalysisHistoryEntry = {
-        turnIndex: historyLength + 1,
+        turnIndex: -Date.now() - historyLength - 1,
         dice: null,
         coachState: cubeCoachState,
         highlight: null,

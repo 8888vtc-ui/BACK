@@ -85,6 +85,7 @@ export interface CoachAnalysisHistoryEntry {
     readonly boardBefore: number[];
     readonly boardAfter: number[];
     readonly timestamp: number;
+    readonly isUnforced?: boolean;
 }
 
 export interface CoachMoveHistoryItem {

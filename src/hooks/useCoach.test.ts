@@ -334,4 +334,85 @@ describe('useCoach hook', () => {
         expect(result.current.selectedCoachHistoryIndex).toBe(0);
         expect(result.current.coachHighlight).not.toBeNull();
     });
+
+    it('ne relance jamais la même erreur et ne dégrade pas le PR lors des mises à jour d’état IA ou de Rejouer ce coup (replayMove)', async () => {
+        const initial = createInitialState(7);
+        const spyAnalyze = vi.spyOn(logAnalyzer, 'analyzeHumanMoveFromLogWithBgsage').mockResolvedValue({
+            turnIndex: 1,
+            player: 'X',
+            verdict: 'blunder',
+            equityLoss: -0.16,
+            playedNotation: '24/23 24/22',
+            optimalNotation: '8/5 6/5',
+            optimalMoves: [{ from: 8, to: 5 }, { from: 6, to: 5 }],
+            isBlunder: true,
+            isUnforced: true,
+            playedEquity: -0.04,
+            bestEquity: 0.12,
+            source: 'bgsage',
+            candidateMoves: [
+                { notation: '8/5 6/5', equity: 0.12, equityLoss: 0 },
+                { notation: '24/23 24/22', equity: -0.04, equityLoss: -0.16 },
+            ],
+        });
+
+        const rewindToLogTurn = vi.fn(() => true);
+        const xBlunderLog: MatchLogEntry = {
+            turnIndex: 1,
+            player: 'X',
+            dice: [3, 1],
+            boardBefore: initial.board,
+            movePlayed: [{ from: 24, to: 23 }, { from: 24, to: 22 }],
+            boardAfter: initial.board,
+            notation: '24/23 24/22',
+        };
+        const oReplyLog: MatchLogEntry = {
+            turnIndex: 2,
+            player: 'O',
+            dice: [6, 1],
+            boardBefore: initial.board,
+            movePlayed: [{ from: 13, to: 7 }, { from: 8, to: 7 }],
+            boardAfter: initial.board,
+            notation: '13/7 8/7',
+        };
+
+        const baseGame = {
+            state: { ...initial, turn: 'O' as 'X' | 'O' },
+            dice: null as [number, number] | null,
+            undoMove: vi.fn(),
+            rewindToLogTurn,
+            difficulty: 'expert' as const,
+            matchLog: [xBlunderLog] as MatchLogEntry[],
+        };
+
+        const { result, rerender } = renderHook(
+            ({ g }) => useCoach({ game: g, ...createEmptyRefs() }),
+            { initialProps: { g: baseGame } },
+        );
+
+        await waitFor(() => expect(result.current.matchStats.decisionsCount).toBe(1));
+        expect(result.current.matchStats.totalErrorRate).toBeCloseTo(0.16 * 500, 2);
+        expect(result.current.lastMoveFeedback?.verdict).toBe('blunder');
+        expect(spyAnalyze).toHaveBeenCalledTimes(1);
+
+        // L'IA joue son tour (matchLog s'allonge avec le tour O et state change) : aucune ré-analyse de X, PR inchangé
+        rerender({
+            g: {
+                ...baseGame,
+                state: { ...initial, turn: 'X' },
+                matchLog: [xBlunderLog, oReplyLog],
+            },
+        });
+        expect(spyAnalyze).toHaveBeenCalledTimes(1);
+        expect(result.current.matchStats.decisionsCount).toBe(1);
+        expect(result.current.matchStats.totalErrorRate).toBeCloseTo(0.16 * 500, 2);
+
+        // Même si notificationLevel === 'none' (coach === null), replayMove cible turnIndex=1 via lastMoveFeedback/coachHistory
+        act(() => result.current.replayMove());
+        expect(rewindToLogTurn).toHaveBeenCalledWith(1);
+        expect(result.current.lastMoveFeedback).toBeNull();
+        expect(result.current.coach).toBeNull();
+        expect(result.current.matchStats.decisionsCount).toBe(0);
+        expect(result.current.matchStats.totalErrorRate).toBe(0);
+    });
 });

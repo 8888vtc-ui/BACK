@@ -115,6 +115,7 @@ export function useCoach({
         stateBeforeCubeOfferRef,
         setCoach,
         setCoachHighlight,
+        setLastMoveFeedback,
         setCoachHistory,
         setSelectedCoachHistoryIndex,
         evaluateCubeAction,
@@ -144,12 +145,14 @@ export function useCoach({
         selectedCoachHistoryIndex,
         coachHistory,
         coach,
+        lastMoveFeedback,
         game,
         lastPlayerEvalRef,
         setCoachHistory,
         setSelectedCoachHistoryIndex,
         setCoach,
         setCoachHighlight,
+        setLastMoveFeedback,
         setIsAnalyzing,
     });
 

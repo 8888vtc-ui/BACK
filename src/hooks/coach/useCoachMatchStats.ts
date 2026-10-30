@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import type { CoachVerdict } from '../../features/coach/logAnalyzer';
 import {
     appendDecisionToMatchStats,
@@ -15,44 +15,48 @@ const INITIAL_MATCH_STATS: MatchStats = {
 };
 
 export function useCoachMatchStats(coachHistory: ReadonlyArray<CoachAnalysisHistoryEntry> = []) {
-    const [matchStats, setMatchStats] = useState<MatchStats>(INITIAL_MATCH_STATS);
     const [matchStatsO] = useState<MatchStats>(INITIAL_MATCH_STATS);
     const [optimalStreak, setOptimalStreak] = useState(0);
     const [brilliantMove, setBrilliantMove] = useState(false);
     const [lastMoveFeedback, setLastMoveFeedback] = useState<LastMoveFeedback | null>(null);
-    const prevHistoryLenRef = useRef<number>(0);
 
-    // Synchronise matchStats lors d'une nouvelle manche (reset) ou d'un Rewind (« Rejouer ce coup »)
-    useEffect(() => {
-        const currLen = coachHistory.length;
-        const prevLen = prevHistoryLenRef.current;
-        prevHistoryLenRef.current = currLen;
+    // Source unique de vérité pour matchStats : reconstruit de manière déterministe depuis coachHistory
+    // dédupliqué par turnIndex. Empêche tout double comptage (PR gonflé) ou désynchronisation lors d'un Rewind.
+    const matchStats = useMemo<MatchStats>(() => {
+        if (coachHistory.length === 0) return INITIAL_MATCH_STATS;
 
-        if (currLen < prevLen) {
-            if (currLen === 0) {
-                setMatchStats(INITIAL_MATCH_STATS);
-                setOptimalStreak(0);
-                setBrilliantMove(false);
-                setLastMoveFeedback(null);
-            } else {
-                let rebuilt = INITIAL_MATCH_STATS;
-                for (const entry of coachHistory) {
-                    rebuilt = appendDecisionToMatchStats(
-                        rebuilt,
-                        entry.coachState.verdict,
-                        entry.coachState.equityLoss,
-                        entry.coachState.playedMove,
-                        entry.coachState.optimalMove,
-                    );
-                }
-                setMatchStats(rebuilt);
-            }
+        const deduplicatedByTurn = new Map<string, CoachAnalysisHistoryEntry>();
+        let cubeFallbackIdx = 0;
+        for (const entry of coachHistory) {
+            const key = entry.turnIndex > 0 ? `turn:${entry.turnIndex}` : `cube:${cubeFallbackIdx++}:${entry.timestamp}`;
+            deduplicatedByTurn.set(key, entry);
         }
+
+        let rebuilt = INITIAL_MATCH_STATS;
+        for (const entry of deduplicatedByTurn.values()) {
+            if (entry.isUnforced === false) continue;
+            rebuilt = appendDecisionToMatchStats(
+                rebuilt,
+                entry.coachState.verdict,
+                entry.coachState.equityLoss,
+                entry.coachState.playedMove,
+                entry.coachState.optimalMove,
+            );
+        }
+        return rebuilt;
     }, [coachHistory]);
 
+    // Réinitialise les indicateurs visuels lors d'une nouvelle manche
+    useEffect(() => {
+        if (coachHistory.length === 0) {
+            setOptimalStreak(0);
+            setBrilliantMove(false);
+            setLastMoveFeedback(null);
+        }
+    }, [coachHistory.length]);
+
     const recordDecisionStats = useCallback(
-        (verdict: CoachVerdict, rawEquityLoss: number, playedMove: string, optimalMove: string) => {
-            setMatchStats((prev) => appendDecisionToMatchStats(prev, verdict, rawEquityLoss, playedMove, optimalMove));
+        (verdict: CoachVerdict, _rawEquityLoss: number, _playedMove: string, _optimalMove: string) => {
             if (verdict === 'optimal') setOptimalStreak((prev) => prev + 1);
             else if (verdict === 'blunder') setOptimalStreak(0);
         },
