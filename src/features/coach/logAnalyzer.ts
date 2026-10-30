@@ -27,8 +27,10 @@ import {
     boardsMatchOnPoints,
     boardsMatchOnPointsAndBar,
     bgsageMoveBoardToProjectBoard,
+    type BgsageEvaluateResponse,
     type BgsageMove,
 } from '../../lib/engine/bgsageClient';
+import { bgsageCacheKey, getCachedBgsageEvaluation } from '../../lib/engine/bgsageCache';
 import {
     formatCoachMoveSequence,
     formatCoachMoveSequenceFromBoard,
@@ -456,6 +458,35 @@ export function analyzeHumanMoveFromLog(
     }
 
     // Appariement du coup joué avec un candidat évalué :
+    // 0. Priorité absolue : si le cache LRU Open Sage (`bgsage`) contient déjà l'évaluation
+    //    neuronale 3-ply/2-ply/1-ply de cette position (calculée en direct par le Coach),
+    //    on l'utilise directement pour garantir 100 % de parité entre le Coach en direct et le Bilan PR !
+    const xgidForCache = serializeCanonicalXGID(evalState);
+    const cachedBgsage =
+        getCachedBgsageEvaluation(bgsageCacheKey(xgidForCache, 3)) ??
+        getCachedBgsageEvaluation(bgsageCacheKey(xgidForCache, 2)) ??
+        getCachedBgsageEvaluation(bgsageCacheKey(xgidForCache, 1));
+    if (
+        cachedBgsage &&
+        cachedBgsage.chequerPlay.length > 0 &&
+        cachedBgsage.source !== 'typescript-tri-phase' &&
+        cachedBgsage.source !== 'local'
+    ) {
+        const legalSeqs = generateLegalMoves(evalState, dice);
+        const fromCache = buildHumanMoveAnalysisFromBgsageResult({
+            bgsageResult: cachedBgsage,
+            logEntry,
+            evalState,
+            legalSeqs,
+            boardBefore,
+            effectiveBoardAfter,
+            targetPly: 3,
+        });
+        if (fromCache) {
+            return fromCache;
+        }
+    }
+
     // 1. Sur le plateau résultant exact (flèches + barres, puis flèches seules)
     // 2. Sur la clé de séquence canonique insensible à l'ordre
     // 3. Sur la notation équivalente insensible à l'ordre
@@ -473,6 +504,7 @@ export function analyzeHumanMoveFromLog(
         notationsAreEquivalent(analysis.bestMove.notation, playedNotation, logEntry.player) ||
         notationsAreEquivalent(analysis.bestMove.notation, canonicalNotation, logEntry.player);
 
+    const opponent: Player = logEntry.player === 'X' ? 'O' : 'X';
     let playedEquity: number;
     if (isBestMovePlayed) {
         playedEquity = bestEquity;
@@ -481,7 +513,6 @@ export function analyzeHumanMoveFromLog(
     } else {
         // Évaluation directe de la position finale jouée sur la même échelle (2-ply Expectiminimax ou 0-ply)
         // que `bestEquity`, sans pénalité artificielle de queue (`minEvaluated2Ply`).
-        const opponent: Player = logEntry.player === 'X' ? 'O' : 'X';
         const resultingState: BoardState = {
             ...evalState,
             board: effectiveBoardAfter,
@@ -497,8 +528,29 @@ export function analyzeHumanMoveFromLog(
             playedEquity = -evaluateBoard(resultingState, 0).cubefulEquity;
         }
     }
+
+    // Garde-fou d'échelle 0-ply vs 2-ply : évalue toujours `bestMove.board` et `effectiveBoardAfter`
+    // sur le même évaluateur statique 0-ply pour éviter qu'une troncature de budget temps 2-ply
+    // ou une double pénalité de blot en feuille 2-ply ne crée un Howler fictif (-0.574 ΔEq).
+    let rawLoss = Math.max(0, bestEquity - playedEquity);
+    if (!isBestMovePlayed && analysis.bestMove.board) {
+        const bestStatic = -evaluateBoard(
+            { ...evalState, board: analysis.bestMove.board, turn: opponent, dice: null },
+            0,
+        ).cubefulEquity;
+        const playedStatic = -evaluateBoard(
+            { ...evalState, board: effectiveBoardAfter, turn: opponent, dice: null },
+            0,
+        ).cubefulEquity;
+        const staticDiff = Math.max(0, bestStatic - playedStatic);
+        if (rawLoss > staticDiff * 1.5 + 0.035) {
+            rawLoss = Number((staticDiff * 1.5 + 0.035).toFixed(4));
+            playedEquity = Number((bestEquity - rawLoss).toFixed(4));
+        }
+    }
+
     // Règle d'or n°3 : perte d'équité bornée à zéro (jamais négative).
-    const equityLoss = Math.max(0, bestEquity - playedEquity);
+    const equityLoss = Math.max(0, rawLoss);
 
     const verdict = classifyVerdict(equityLoss);
 
@@ -613,7 +665,61 @@ export async function analyzeHumanMoveFromLogWithBgsage(
         }
     }
 
-    // Résout la séquence légale exacte (coups + notation avec frappes intermédiaires) pour un candidat bgsage
+    // 1. Tentative via le bgsage-service (réseau de neurones Open Sage, 3-ply niveau ultime par défaut).
+    if (params.signal?.aborted) {
+        return null;
+    }
+    const targetPly = params.ply ?? 3;
+    try {
+        const bgsageResult = await evaluateWithBgsage(xgid, targetPly, 4000);
+        if (params.signal?.aborted) {
+            return null;
+        }
+        const isRealBgsage = Boolean(
+            bgsageResult &&
+            bgsageResult.chequerPlay.length > 0 &&
+            bgsageResult.source !== 'typescript-tri-phase' &&
+            bgsageResult.source !== 'local',
+        );
+
+        if (isRealBgsage && bgsageResult) {
+            const built = buildHumanMoveAnalysisFromBgsageResult({
+                bgsageResult,
+                logEntry,
+                evalState,
+                legalSeqs,
+                boardBefore,
+                effectiveBoardAfter,
+                targetPly,
+            });
+            if (built) {
+                return built;
+            }
+        }
+    } catch (err) {
+        console.warn('[Coach] bgsage-service indisponible, bascule sur l\'évaluateur local :', err);
+    }
+
+    // 2. Repli sur l'évaluateur local déterministe.
+    const localResult = analyzeHumanMoveFromLog(params);
+    if (!localResult) {
+        return null;
+    }
+    return { ...localResult, source: 'local' };
+}
+
+function buildHumanMoveAnalysisFromBgsageResult(params: {
+    bgsageResult: BgsageEvaluateResponse;
+    logEntry: MatchLogEntry;
+    evalState: BoardState;
+    legalSeqs: ReturnType<typeof generateLegalMoves>;
+    boardBefore: number[];
+    effectiveBoardAfter: number[];
+    targetPly: number;
+}): (HumanMoveAnalysis & { source: 'bgsage' }) | null {
+    const { bgsageResult, logEntry, evalState, legalSeqs, boardBefore, effectiveBoardAfter, targetPly } = params;
+    if (!bgsageResult || bgsageResult.chequerPlay.length === 0) return null;
+
     const resolveBgsageCandidateSeq = (m: BgsageMove, source?: string | null) => {
         if (m.board && m.board.length === 26) {
             const engineBoard = bgsageMoveBoardToProjectBoard(m.board, logEntry.player, source);
@@ -659,157 +765,126 @@ export async function analyzeHumanMoveFromLogWithBgsage(
         };
     };
 
-    // 1. Tentative via le bgsage-service (réseau de neurones Open Sage, 3-ply niveau ultime par défaut).
-    if (params.signal?.aborted) {
-        return null;
-    }
-    const targetPly = params.ply ?? 3;
-    try {
-        const bgsageResult = await evaluateWithBgsage(xgid, targetPly, 4000);
-        if (params.signal?.aborted) {
-            return null;
-        }
-        const isRealBgsage = Boolean(
-            bgsageResult &&
-            bgsageResult.chequerPlay.length > 0 &&
-            bgsageResult.source !== 'typescript-tri-phase' &&
-            bgsageResult.source !== 'local',
-        );
+    const playedMoves = resolvePlayedMoves(logEntry);
+    const playedNotation = formatCoachMoveSequence(
+        [...playedMoves],
+        logEntry.player,
+        boardBefore,
+    );
+    const canonicalMoves = movesFromBoardDiff(boardBefore, effectiveBoardAfter, logEntry.player);
+    const canonicalNotation = formatCoachMoveSequence(canonicalMoves, logEntry.player, boardBefore);
 
-        if (isRealBgsage && bgsageResult && bgsageResult.chequerPlay.length > 0) {
-            const playedMoves = resolvePlayedMoves(logEntry);
-            const playedNotation = formatCoachMoveSequence(
-                [...playedMoves],
+    const bestMove = bgsageResult.chequerPlay[0];
+    const resolvedBest = resolveBgsageCandidateSeq(bestMove, bgsageResult.source);
+
+    const matched = bgsageResult.chequerPlay.find((m) => {
+        if (m.board && m.board.length === 26) {
+            const engineBoard = bgsageMoveBoardToProjectBoard(
+                m.board,
                 logEntry.player,
-                boardBefore,
+                bgsageResult.source,
             );
-            const canonicalMoves = movesFromBoardDiff(boardBefore, effectiveBoardAfter, logEntry.player);
-            const canonicalNotation = formatCoachMoveSequence(canonicalMoves, logEntry.player, boardBefore);
-
-            const bestMove = bgsageResult.chequerPlay[0];
-            const resolvedBest = resolveBgsageCandidateSeq(bestMove, bgsageResult.source);
-
-            const matched = bgsageResult.chequerPlay.find((m) => {
-                if (m.board && m.board.length === 26) {
-                    const engineBoard = bgsageMoveBoardToProjectBoard(
-                        m.board,
-                        logEntry.player,
-                        bgsageResult.source,
-                    );
-                    if (
-                        boardsMatchOnPointsAndBar(engineBoard, effectiveBoardAfter) ||
-                        boardsMatchOnPoints(engineBoard, effectiveBoardAfter)
-                    ) {
-                        return true;
-                    }
-                }
-                const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
-                const absMoveNotation = relativeNotationToAbsolute(m.notation, logEntry.player);
-                if (
-                    notationsAreEquivalent(resolvedCand.notation, playedNotation, logEntry.player) ||
-                    notationsAreEquivalent(resolvedCand.notation, canonicalNotation, logEntry.player) ||
-                    notationsAreEquivalent(absMoveNotation, playedNotation, logEntry.player) ||
-                    notationsAreEquivalent(absMoveNotation, canonicalNotation, logEntry.player) ||
-                    notationsAreEquivalent(m.notation, playedNotation, logEntry.player) ||
-                    notationsAreEquivalent(m.notation, canonicalNotation, logEntry.player)
-                ) {
-                    return true;
-                }
-                const parsed = parseCoachNotationMoves(absMoveNotation, logEntry.player);
-                if (parsed.length > 0) {
-                    let sim = [...boardBefore];
-                    for (const mv of parsed) sim = applyMove(sim, mv, logEntry.player);
-                    if (
-                        boardsMatchOnPointsAndBar(sim, effectiveBoardAfter) ||
-                        boardsMatchOnPoints(sim, effectiveBoardAfter)
-                    ) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-
-            const optimalNotation = resolvedBest.notation;
-            const bestEquity = bestMove.equity;
-
-            let playedEquity: number;
-            if (matched) {
-                playedEquity = matched.equity;
-            } else {
-                // Coup hors de la liste top renvoyée par bgsage : différentiel local
-                // + plancher neuronal + plancher catastrophe (jamais de forfait).
-                const offList = estimateOffListEquityLoss({
-                    evalState,
-                    playedBoard: effectiveBoardAfter,
-                    legalSeqs,
-                    candidates: bgsageResult.chequerPlay,
-                    bestEquity,
-                    ply: 2,
-                });
-                playedEquity = bestEquity - offList.equityLoss;
+            if (
+                boardsMatchOnPointsAndBar(engineBoard, effectiveBoardAfter) ||
+                boardsMatchOnPoints(engineBoard, effectiveBoardAfter)
+            ) {
+                return true;
             }
-
-            const equityLoss = Math.max(0, bestEquity - playedEquity);
-            const verdict = classifyVerdict(equityLoss);
-
-            const candidateMoves = bgsageResult.chequerPlay.map((m) => {
-                const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
-                const isMatch = m === matched;
-                return {
-                    notation: isMatch ? playedNotation : resolvedCand.notation,
-                    equity: m.equity,
-                    equityLoss: m.equityLoss,
-                    winProbability: m.probabilities?.win,
-                    gammonProbability: m.probabilities?.winGammon,
-                    backgammonProbability: m.probabilities?.winBackgammon,
-                };
-            });
-
-            if (!matched && !candidateMoves.some((m) => notationsAreEquivalent(m.notation, playedNotation, logEntry.player))) {
-                candidateMoves.push({
-                    notation: playedNotation,
-                    equity: playedEquity,
-                    equityLoss: Number((playedEquity - bestEquity).toFixed(4)),
-                    winProbability: undefined,
-                    gammonProbability: undefined,
-                    backgammonProbability: undefined,
-                });
-            }
-
-            const bgsageInsights: BgsageStrategicInsights = {
-                isRace: Boolean(bgsageResult.isRace),
-                playerGamePlan: bgsageResult.gamePlans?.player ?? bestMove.playerGamePlan ?? 'contact',
-                opponentGamePlan: bgsageResult.gamePlans?.opponent ?? bestMove.opponentGamePlan ?? 'contact',
-                evalLevel: bestMove.evalLevel ?? `${targetPly}-ply`,
-                optimalMetrics: toBgsageMoveMetrics(bestMove),
-                playedMetrics: matched ? toBgsageMoveMetrics(matched) : undefined,
-            };
-
-            return {
-                turnIndex: logEntry.turnIndex,
-                player: logEntry.player,
-                verdict,
-                equityLoss,
-                playedNotation,
-                optimalNotation,
-                playedEquity,
-                bestEquity,
-                isUnforced: Math.max(bgsageResult.chequerPlay.length, legalSeqs.length) > 1,
-                isBlunder: verdict === 'blunder',
-                optimalMoves: resolvedBest.moves.length > 0 ? resolvedBest.moves : undefined,
-                bgsageInsights,
-                candidateMoves,
-                source: 'bgsage',
-            };
         }
-    } catch (err) {
-        console.warn('[Coach] bgsage-service indisponible, bascule sur l\'évaluateur local :', err);
+        const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
+        const absMoveNotation = relativeNotationToAbsolute(m.notation, logEntry.player);
+        if (
+            notationsAreEquivalent(resolvedCand.notation, playedNotation, logEntry.player) ||
+            notationsAreEquivalent(resolvedCand.notation, canonicalNotation, logEntry.player) ||
+            notationsAreEquivalent(absMoveNotation, playedNotation, logEntry.player) ||
+            notationsAreEquivalent(absMoveNotation, canonicalNotation, logEntry.player) ||
+            notationsAreEquivalent(m.notation, playedNotation, logEntry.player) ||
+            notationsAreEquivalent(m.notation, canonicalNotation, logEntry.player)
+        ) {
+            return true;
+        }
+        const parsed = parseCoachNotationMoves(absMoveNotation, logEntry.player);
+        if (parsed.length > 0) {
+            let sim = [...boardBefore];
+            for (const mv of parsed) sim = applyMove(sim, mv, logEntry.player);
+            if (
+                boardsMatchOnPointsAndBar(sim, effectiveBoardAfter) ||
+                boardsMatchOnPoints(sim, effectiveBoardAfter)
+            ) {
+                return true;
+            }
+        }
+        return false;
+    });
+
+    const optimalNotation = resolvedBest.notation;
+    const bestEquity = bestMove.equity;
+
+    let playedEquity: number;
+    if (matched) {
+        playedEquity = matched.equity;
+    } else {
+        const offList = estimateOffListEquityLoss({
+            evalState,
+            playedBoard: effectiveBoardAfter,
+            legalSeqs,
+            candidates: bgsageResult.chequerPlay,
+            bestEquity,
+            ply: 2,
+        });
+        playedEquity = bestEquity - offList.equityLoss;
     }
 
-    // 2. Repli sur l'évaluateur local déterministe.
-    const localResult = analyzeHumanMoveFromLog(params);
-    if (!localResult) {
-        return null;
+    const equityLoss = Math.max(0, bestEquity - playedEquity);
+    const verdict = classifyVerdict(equityLoss);
+
+    const candidateMoves = bgsageResult.chequerPlay.map((m) => {
+        const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
+        const isMatch = m === matched;
+        return {
+            notation: isMatch ? playedNotation : resolvedCand.notation,
+            equity: m.equity,
+            equityLoss: m.equityLoss,
+            winProbability: m.probabilities?.win,
+            gammonProbability: m.probabilities?.winGammon,
+            backgammonProbability: m.probabilities?.winBackgammon,
+        };
+    });
+
+    if (!matched && !candidateMoves.some((m) => notationsAreEquivalent(m.notation, playedNotation, logEntry.player))) {
+        candidateMoves.push({
+            notation: playedNotation,
+            equity: playedEquity,
+            equityLoss: Number((playedEquity - bestEquity).toFixed(4)),
+            winProbability: undefined,
+            gammonProbability: undefined,
+            backgammonProbability: undefined,
+        });
     }
-    return { ...localResult, source: 'local' };
+
+    const bgsageInsights: BgsageStrategicInsights = {
+        isRace: Boolean(bgsageResult.isRace),
+        playerGamePlan: bgsageResult.gamePlans?.player ?? bestMove.playerGamePlan ?? 'contact',
+        opponentGamePlan: bgsageResult.gamePlans?.opponent ?? bestMove.opponentGamePlan ?? 'contact',
+        evalLevel: bestMove.evalLevel ?? `${targetPly}-ply`,
+        optimalMetrics: toBgsageMoveMetrics(bestMove),
+        playedMetrics: matched ? toBgsageMoveMetrics(matched) : undefined,
+    };
+
+    return {
+        turnIndex: logEntry.turnIndex,
+        player: logEntry.player,
+        verdict,
+        equityLoss,
+        playedNotation,
+        optimalNotation,
+        playedEquity,
+        bestEquity,
+        isUnforced: Math.max(bgsageResult.chequerPlay.length, legalSeqs.length) > 1,
+        isBlunder: verdict === 'blunder',
+        optimalMoves: resolvedBest.moves.length > 0 ? resolvedBest.moves : undefined,
+        bgsageInsights,
+        candidateMoves,
+        source: 'bgsage',
+    };
 }

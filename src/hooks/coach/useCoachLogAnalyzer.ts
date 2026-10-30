@@ -25,7 +25,9 @@ export interface UseCoachLogAnalyzerParams {
     evaluateCubeAction: (action: CubeActionType | CubeAction, stateOverride?: BoardState) => void;
     recordDecisionStats: (verdict: CoachVerdict, rawEquityLoss: number, playedMove: string, optimalMove: string) => void;
     setBrilliantMove: (brilliant: boolean) => void;
-    setLastMoveFeedback: (feedback: LastMoveFeedback) => void;
+    setLastMoveFeedback: (
+        feedback: LastMoveFeedback | null | ((prev: LastMoveFeedback | null) => LastMoveFeedback | null),
+    ) => void;
     setCoachHistory: (updater: (prev: CoachAnalysisHistoryEntry[]) => CoachAnalysisHistoryEntry[]) => void;
     setSelectedCoachHistoryIndex: (index: number | null) => void;
     notificationLevel: CoachNotificationLevel;
@@ -145,7 +147,7 @@ export function useCoachLogAnalyzer({
                 });
                 if (isStale()) return;
 
-                setLastMoveFeedback({
+                const nextFeedback: LastMoveFeedback = {
                     verdict,
                     equityLoss,
                     playedMove: playedNotation,
@@ -157,6 +159,17 @@ export function useCoachLogAnalyzer({
                         : undefined,
                     errorAdvice: coachState.whyFailed || coachState.tacticalSummary || coachState.summary || undefined,
                     timestamp: Date.now(),
+                };
+                const isNewError =
+                    verdict === 'blunder' || verdict === 'inaccuracy' || Math.abs(equityLoss) >= 0.02;
+                setLastMoveFeedback((prev) => {
+                    if (isNewError) return nextFeedback;
+                    const prevIsOpenError =
+                        prev !== null &&
+                        (prev.verdict === 'blunder' ||
+                            prev.verdict === 'inaccuracy' ||
+                            Math.abs(prev.equityLoss) >= 0.02);
+                    return prevIsOpenError ? prev : nextFeedback;
                 });
 
                 setCoachHistory((prev) => {
@@ -189,7 +202,10 @@ export function useCoachLogAnalyzer({
                         onCoachTriggered?.();
                     }
                 } else {
-                    setCoach((prev) => (prev !== null ? coachState : null));
+                    setCoach((prev) => {
+                        if (prev === null) return null;
+                        return prev.verdict === 'optimal' ? coachState : prev;
+                    });
                     setCoachHighlight(null);
                 }
             } catch (err) {

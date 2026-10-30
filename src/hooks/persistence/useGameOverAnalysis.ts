@@ -1,6 +1,7 @@
 import { useCallback, type MutableRefObject } from 'react';
 import { persistGameUpdate } from '../../lib/offline/persistenceService';
 import { analyzeCompleteGame, saveGameAnalysis, type CompleteGameAnalysis, type RawGameTurn } from '../../features/rating';
+import { analyzeHumanMoveFromLogWithBgsage } from '../../features/coach/logAnalyzer';
 import { parseFromXGID } from '../../features/export';
 import type { GameResult, UseBackgammonGameReturn } from '../useBackgammonGame';
 import type { Player } from '../../engine/backgammonEngine';
@@ -100,10 +101,11 @@ export function useGameOverAnalysis({
         }
 
         try {
-            const analysis = analyzeCompleteGame(turnsForAnalysis, {
-                targetPlayer: 'X',
-                gameId: gameIdRef.current || `game_${Date.now()}`,
-                opponentType: isMultiplayerActive ? 'human' : 'ai',
+            const targetGameId = gameIdRef.current || `game_${Date.now()}`;
+            const analysisOptions = {
+                targetPlayer: 'X' as const,
+                gameId: targetGameId,
+                opponentType: (isMultiplayerActive ? 'human' : 'ai') as 'human' | 'ai',
                 opponentDifficulty: isMultiplayerActive ? null : gameDifficulty,
                 winner: result.winner,
                 winType: result.winType,
@@ -114,9 +116,47 @@ export function useGameOverAnalysis({
                 cubeValue: gameCubeValue,
                 cubeOwner: gameCubeOwner,
                 crawford: gameCrawford,
-            });
+            };
+            const analysis = analyzeCompleteGame(turnsForAnalysis, analysisOptions);
             saveGameAnalysis(analysis);
             setLatestGameAnalysis(analysis);
+
+            // Passe d'enrichissement neuronal Open Sage (`bgsage` 3-ply) pour tout coup de X
+            // qui ne serait pas encore dans `bgsageCache` (ex. le tout dernier coup de la manche).
+            const xTurns = turnsForAnalysis.filter((t) => t.player === 'X');
+            if (xTurns.length > 0) {
+                void Promise.all(
+                    xTurns.map((t, idx) =>
+                        analyzeHumanMoveFromLogWithBgsage({
+                            logEntry: {
+                                turnIndex: t.turnNumber || idx + 1,
+                                player: 'X',
+                                dice: [t.dice[0], t.dice[1]],
+                                boardBefore: t.boardBefore,
+                                movePlayed: t.moves ?? [],
+                                boardAfter: t.boardAfter,
+                                timestamp: 0,
+                            },
+                            localPlayer: 'X',
+                            cubeValue: t.cubeValue ?? gameCubeValue,
+                            cubeOwner: t.cubeOwner !== undefined ? t.cubeOwner : gameCubeOwner,
+                            crawford: t.crawford ?? gameCrawford,
+                            matchLength: gameMatchLength,
+                            scoreX: gameScoreX,
+                            scoreO: gameScoreO,
+                            ply: 3,
+                        }),
+                    ),
+                )
+                    .then((results) => {
+                        if (results.some((r) => r?.source === 'bgsage')) {
+                            const refined = analyzeCompleteGame(turnsForAnalysis, analysisOptions);
+                            saveGameAnalysis(refined);
+                            setLatestGameAnalysis(refined);
+                        }
+                    })
+                    .catch(() => {});
+            }
         } catch (e) {
             console.warn('[Persistence] Échec analyse fin de partie :', e);
         }

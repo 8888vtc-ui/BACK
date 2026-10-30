@@ -418,7 +418,9 @@ function countShotsOnBlot(
  */
 function opponentHomeBoardStrength(board: number[], player: Player): number {
     let strength = 0;
-    for (let p = 1; p <= 6; p++) {
+    const start = player === 'X' ? 1 : 19;
+    const end = player === 'X' ? 6 : 24;
+    for (let p = start; p <= end; p++) {
         const v = board[p];
         const count = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
         if (count >= 2) strength++;

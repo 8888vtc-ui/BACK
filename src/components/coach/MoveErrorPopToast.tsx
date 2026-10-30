@@ -7,7 +7,7 @@
  * Strictly < 220 lignes, 0 `any`, textes >= 11px.
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { isCubeDecisionNotation, type LastMoveFeedback } from '../../hooks/coach/coachTypes';
 import {
     detectClassicalBlunderPattern,
@@ -149,15 +149,6 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
             icon: isBlunder ? '🔴' : isError ? '🟠' : '🟡',
         };
     }, [feedback, boardBefore, boardAfter]);
-
-    // Fermeture automatique après 8.5 secondes si non interagie
-    useEffect(() => {
-        if (!errorDetails || !feedback) return;
-        const timer = setTimeout(() => {
-            setDismissedFeedback(feedback);
-        }, 8500);
-        return () => clearTimeout(timer);
-    }, [feedback, errorDetails]);
 
     if (!errorDetails || dismissedFeedback === feedback) {
         return null;

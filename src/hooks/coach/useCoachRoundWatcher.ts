@@ -75,7 +75,6 @@ export function useCoachRoundWatcher({
             setSelectedCoachHistoryIndex(null);
         } else if (isNewHumanRoll) {
             setCoachHighlight(null);
-            setLastMoveFeedback(null);
             setSelectedCoachHistoryIndex(null);
         }
     }, [moveHistory, matchLog, doublingOfferedBy, phase, state.turn, dice, cancelActiveOperation, currentTurnMovesRef, lastCubeEvalKeyRef, lastPlayerEvalRef, prevHumanRollKeyRef, setCoach, setCoachHighlight, setLastMoveFeedback, setCoachHistory, setSelectedCoachHistoryIndex]);
