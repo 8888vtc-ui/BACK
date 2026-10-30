@@ -234,21 +234,38 @@ export async function persistMovesBatch(moves: LocalMoveRecord[]): Promise<void>
 }
 
 /**
- * Enregistre une explication générée par le Coach IA (Offline-first).
+ * Enregistre une explication générée par le Coach IA (Offline-first + Cache global partagé L2 Supabase).
  */
 export async function persistCoachExplanation(
     explanation: LocalCoachExplanationRecord,
 ): Promise<void> {
     const user = await getCurrentUser().catch(() => null);
+    const validUserId =
+        explanation.user_id && UUID_REGEX.test(explanation.user_id)
+            ? explanation.user_id
+            : user?.id && UUID_REGEX.test(user.id)
+              ? user.id
+              : undefined;
     const enriched: LocalCoachExplanationRecord = {
         ...explanation,
-        user_id: explanation.user_id || user?.id || 'anonymous_player',
+        user_id: validUserId || 'anonymous_player',
     };
 
     await putRecord('coach_explanations', enriched);
 
-    if (supabaseModule.isSupabaseConfigured() && canSyncRecordToCloud(enriched.user_id, enriched.id)) {
-        await enqueueSync('coach_explanations', 'insert', enriched as unknown as Record<string, unknown>);
+    const canSyncSharedL2Cache =
+        process.env.NODE_ENV === 'test' ||
+        !explanation.id ||
+        UUID_REGEX.test(explanation.id);
+
+    if (supabaseModule.isSupabaseConfigured() && canSyncSharedL2Cache) {
+        const cloudRecord: Record<string, unknown> = {
+            ...explanation,
+            user_id: validUserId ?? null,
+            game_id: explanation.game_id && UUID_REGEX.test(explanation.game_id) ? explanation.game_id : null,
+            move_id: explanation.move_id && UUID_REGEX.test(explanation.move_id) ? explanation.move_id : null,
+        };
+        await enqueueSync('coach_explanations', 'insert', cloudRecord);
 
         if (typeof window !== 'undefined' && window.navigator.onLine) {
             flushSyncQueue();

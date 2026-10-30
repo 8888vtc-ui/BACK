@@ -27,6 +27,11 @@ import {
     buildBiLevelCoachMicroCopy,
 } from '../coach/tacticalExplainer';
 import { generateRuleBasedGameReview } from '../coach/gameReviewPrompts';
+import {
+    runMillionGamesCoachAudit,
+    syncCoachExplanationsToSupabase,
+} from '../../lib/coach/supabaseCoachCacheSeeder';
+import { isSupabaseConfigured } from '../../lib/supabase/client';
 import { analyzeCompleteGame } from './gameAnalyzer';
 import type { RawGameTurn, CompleteGameAnalysis } from './types';
 
@@ -1183,6 +1188,34 @@ describe('Audit en boucle (20 parties simulées) — Bilan PR & Comptes Rendus C
             expect(cubeCheckerConfusionCount).toBe(0);
             expect(missingMoveReferenceCount).toBe(0);
             expect(swellerHeadlineViolations).toBe(0);
+        },
+        120000,
+    );
+
+    it(
+        '6. Simulation Coach & PR sur 1 000 000 de parties (5 000 000 de décisions) et synchronisation complète vers Supabase (public.coach_explanations)',
+        async () => {
+            const report = runMillionGamesCoachAudit(1_000_000);
+
+            expect(report.gamesAudited).toBe(1_000_000);
+            expect(report.totalDecisionsAudited).toBe(5_000_000);
+            expect(report.uniqueCanonicalPositionsCount).toBeGreaterThan(1500);
+            expect(report.cacheHitRatePercent).toBe(100);
+            expect(report.qualityDefectsCount).toBe(0);
+            expect(report.nanOrInfinityCount).toBe(0);
+
+            // Hiérarchie stricte des PR sur 1 000 000 de parties
+            expect(report.prByArchetype.gmAvg).toBe(0);
+            expect(report.prByArchetype.clubAvg).toBeGreaterThan(0);
+            expect(report.prByArchetype.clubAvg).toBeLessThan(15);
+            expect(report.prByArchetype.amateurAvg).toBeGreaterThan(report.prByArchetype.clubAvg);
+            expect(report.prByArchetype.beginnerAvg).toBeGreaterThan(report.prByArchetype.amateurAvg);
+            expect(report.prByArchetype.maxObservedPr).toBeLessThan(65);
+
+            if (isSupabaseConfigured()) {
+                const syncResult = await syncCoachExplanationsToSupabase(report.recordsToSync);
+                expect(syncResult.totalInDatabase).toBeGreaterThanOrEqual(report.uniqueCanonicalPositionsCount);
+            }
         },
         120000,
     );
