@@ -73,4 +73,24 @@ describe('forcedMoveDetector — Détection Mathématique des Coups Forcés (Aud
         saveForcedMoveAutoPlay(true);
         expect(getSavedForcedMoveAutoPlay(false)).toBe(true);
     });
+
+    it('détecte un coup forcé (isForced = true) lorsque le joueur a 2 pions sur la barre et lance deux dés distincts ouverts', () => {
+        const board = new Array(28).fill(0);
+        board[0] = 2; // 2 pions de X sur la barre
+        const result = detectForcedMove({
+            leftDieTargets: new Map([[0, [20]]]),
+            rightDieTargets: new Map([[0, [23]]]),
+            dice: [5, 2],
+            board,
+            turn: 'X',
+        });
+
+        expect(result.isForced).toBe(true);
+        expect(result.forcedMove).toEqual({
+            from: 0,
+            to: 20,
+            die: 0,
+            dieValue: 5,
+        });
+    });
 });

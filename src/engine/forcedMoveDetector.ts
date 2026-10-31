@@ -27,6 +27,8 @@ export interface ForcedMoveDetectionParams {
     readonly rightDieTargets: Map<number, number[]>;
     readonly dice: [number, number] | null;
     readonly usedDice?: readonly boolean[];
+    readonly board?: readonly number[];
+    readonly turn?: 'X' | 'O';
 }
 
 export interface ForcedMoveDetectionResult {
@@ -45,6 +47,8 @@ export function detectForcedMove({
     leftDieTargets,
     rightDieTargets,
     dice,
+    board,
+    turn,
 }: ForcedMoveDetectionParams): ForcedMoveDetectionResult {
     if (!dice) {
         return {
@@ -96,6 +100,29 @@ export function detectForcedMove({
             highlightOrigin: single.from,
             highlightDestination: single.to,
         };
+    }
+
+    // Lorsque le joueur a >= 2 pions sur la barre (0 pour X, 25 pour O), tous les dés
+    // jouables doivent obligatoirement servir à rentrer depuis la barre : l'ordre d'entrée
+    // (d1 puis d2 vs d2 puis d1) est commutatif et 100 % forcé.
+    if (
+        uniqueLegalMoves.length >= 2 &&
+        board &&
+        uniqueLegalMoves.every((m) => m.from === 0 || m.from === 25)
+    ) {
+        const activeTurn = turn ?? (uniqueLegalMoves[0]?.from === 25 ? 'O' : 'X');
+        const barCount = activeTurn === 'X' ? Math.max(0, board[0] ?? 0) : Math.max(0, -(board[25] ?? 0));
+        if (barCount >= 2) {
+            const sorted = [...uniqueLegalMoves].sort((a, b) => (b.dieValue ?? 0) - (a.dieValue ?? 0));
+            const firstBarMove = sorted[0];
+            return {
+                isForced: true,
+                forcedMove: firstBarMove,
+                uniqueLegalMoves,
+                highlightOrigin: firstBarMove.from,
+                highlightDestination: firstBarMove.to,
+            };
+        }
     }
 
     return {

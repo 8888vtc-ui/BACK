@@ -36,7 +36,7 @@ export const PERSONA_TEXTS_BY_DIFFICULTY: Record<
       shortName: 'Le Mauvais Joueur',
       archetypeTitle: 'Colérique Théâtral & Blitz Agressif',
       lobbyHint: 'Maxime · Blitz & Mauvaise foi',
-      styleBadge: 'Blitz Ultra-Agressif',
+      styleBadge: 'Blitz Agressif',
       skillTaught: 'Punir la sur-agressivité & gérer la barre',
       dialogues: {
         opening: {
@@ -248,7 +248,7 @@ export const PERSONA_TEXTS_BY_DIFFICULTY: Record<
       shortName: 'Sofia « La Riviera »',
       archetypeTitle: 'Charme Monte-Carlo & Jeu de Pièges',
       lobbyHint: 'Sofia · Pièges & Holding Monte-Carlo',
-      styleBadge: 'Holding Game & Appâts',
+      styleBadge: 'Holding Game',
       skillTaught: 'Déjouer les pions appâts & gérer une ancre',
       dialogues: {
         opening: {
@@ -460,7 +460,7 @@ export const PERSONA_TEXTS_BY_DIFFICULTY: Record<
       shortName: 'L’Homme d’Affaires',
       archetypeTitle: 'Stratège High-Roller, Course & Videau',
       lobbyHint: 'Victor · Videau & Course High-Roller',
-      styleBadge: 'Course Pure & Videau Actif',
+      styleBadge: 'Course & Videau',
       skillTaught: 'Maîtrise du Videau (Take/Pass 25%) & Course',
       dialogues: {
         opening: {
@@ -669,10 +669,10 @@ export const PERSONA_TEXTS_BY_DIFFICULTY: Record<
   grandmaster: {
     fr: {
       name: 'Viktor « L’Intellectuel »',
-      shortName: 'Viktor « L’Intellectuel »',
+      shortName: 'L’Intellectuel',
       archetypeTitle: 'Philosophe Grand-Maître & Architecte 5-Prime',
       lobbyHint: 'Viktor · Barricade 3-ply & Mentor',
-      styleBadge: 'Jeu Positionnel & Barricade (Prime)',
+      styleBadge: 'Jeu Positionnel',
       skillTaught: 'Probabilités sur 36, constructeurs & 5-Prime',
       dialogues: {
         opening: {
