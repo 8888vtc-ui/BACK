@@ -1,0 +1,47 @@
+{
+  "auditedAt": "2026-10-31T16:12:19.045Z",
+  "elapsedSeconds": 6.5,
+  "totalQuizzesInBank": 19413,
+  "gnuBackgammonCertification": {
+    "erQuizzesTotal": 18613,
+    "erLegalIntegrityCount": 18613,
+    "erLegalIntegrityPct": 100,
+    "liveGnubgSpotCheckSampleSize": 69,
+    "liveGnubgSpotCheckConfirmedCount": 67,
+    "liveGnubgSpotCheckConfirmedPct": 97.1
+  },
+  "btCoreGoliathMoE6ReliabilityVsGnu": {
+    "model": "BT-Neural v5.0 Goliath MoE-6 (6 Complete Networks x 41,959 = 251,754 float32)",
+    "testedErQuizzes": 18613,
+    "prefersGnuOptimalOverBlunderCount": 17067,
+    "prefersGnuOptimalOverBlunderPct": 91.69,
+    "selectsGnuTopChoiceAmongOptionsCount": 11091,
+    "selectsGnuTopChoiceAmongOptionsPct": 59.59,
+    "equivalentQuizPR": 2.69,
+    "breakdownByQuizCollection": {
+      "foundational36": {
+        "total": 36,
+        "agreesWithGnuCount": 35,
+        "agreesWithGnuPct": 97.22
+      },
+      "bgtMultiPly15577": {
+        "total": 16260,
+        "agreesWithGnuCount": 15094,
+        "agreesWithGnuPct": 92.83
+      },
+      "factory3Ply3000": {
+        "total": 2317,
+        "agreesWithGnuCount": 1938,
+        "agreesWithGnuPct": 83.64
+      }
+    }
+  },
+  "btErhV3ReliabilityAudit": {
+    "testedErhQuizzes": 800,
+    "legalIntegrityPct": 100,
+    "erSafetyCapRespectedCount": 755,
+    "erSafetyCapRespectedPct": 94.38,
+    "selectsOptimalHumanTrapMoveCount": 788,
+    "selectsOptimalHumanTrapMovePct": 98.5
+  }
+}

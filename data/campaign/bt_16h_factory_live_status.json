@@ -1,0 +1,26 @@
+{
+  "daemonStatus": "RUNNING_16H_8CORE_GOLIATH_MOE6_251754_FLOATS",
+  "modelArchitecture": "BT-Neural v5.0 Goliath MoE-6 (6 Complete Networks x 41,959 = 251,754 float32)",
+  "startedAt": "2026-10-31T14:26:55.313Z",
+  "lastWaveUpdatedAt": "2026-10-31T16:08:59.538Z",
+  "elapsedHours": 1.701,
+  "remainingHours": 14.299,
+  "wavesCompleted": 159,
+  "waveDurationSeconds": 49.4,
+  "totalSupervised3PlyVectors": 308430,
+  "totalCertifiedTacticalPairs": 56928,
+  "phaseSupervisedCounts": {
+    "CONTACT": 35078,
+    "PRIME": 508,
+    "BLITZ": 42432,
+    "CRASHED": 111092,
+    "BACKGAME": 49816,
+    "RACE": 69504
+  },
+  "totalCertified3PlyQuizzes": 3000,
+  "newQuizzesHarvestedInSession": 1920,
+  "lastGateDuplicateWinRatePct": 55,
+  "lastGateDuplicateNetPoints": 23,
+  "lastWavePromoted": true,
+  "totalChampionPromotions": 128
+}
