@@ -17,6 +17,7 @@ export interface SignUpParams {
     password: string;
     displayName?: string;
     username?: string;
+    avatarUrl?: string;
 }
 
 export interface SignInParams {
@@ -26,10 +27,51 @@ export interface SignInParams {
 
 export type PlayerExperienceTier = 'beginner' | 'intermediate' | 'expert';
 
+export interface StandardUserAvatarOption {
+    readonly id: string;
+    readonly labelFr: string;
+    readonly labelEn: string;
+    readonly url: string;
+}
+
+export const STANDARD_USER_AVATARS: ReadonlyArray<StandardUserAvatarOption> = [
+    {
+        id: 'gentleman_riviera',
+        labelFr: 'Gentleman',
+        labelEn: 'Gentleman',
+        url: '/avatars/user-avatar-1.jpg',
+    },
+    {
+        id: 'stratege_mediterranee',
+        labelFr: 'Stratège',
+        labelEn: 'Strategist',
+        url: '/avatars/user-avatar-2.jpg',
+    },
+    {
+        id: 'jeune_prodige',
+        labelFr: 'Prodige',
+        labelEn: 'Prodigy',
+        url: '/avatars/user-avatar-3.jpg',
+    },
+    {
+        id: 'as_cosmopolite',
+        labelFr: 'Cosmopolite',
+        labelEn: 'Cosmopolitan',
+        url: '/avatars/user-avatar-4.jpg',
+    },
+    {
+        id: 'ecusson_monte_carlo',
+        labelFr: 'Blason Royal',
+        labelEn: 'Royal Crest',
+        url: '/avatars/user-avatar-5.jpg',
+    },
+] as const;
+
 export interface PlayerPassport {
     readonly pseudo: string;
     readonly email: string;
     readonly experienceLevel: PlayerExperienceTier;
+    readonly avatarUrl?: string;
     readonly registeredAt: string;
     readonly supabaseSynced?: boolean;
 }
@@ -58,6 +100,10 @@ export function readPlayerPassport(): PlayerPassport | null {
                 pseudo: parsed.pseudo.trim(),
                 email: parsed.email.trim().toLowerCase(),
                 experienceLevel: level,
+                avatarUrl:
+                    typeof parsed.avatarUrl === 'string' && parsed.avatarUrl.trim().length > 0
+                        ? parsed.avatarUrl.trim()
+                        : STANDARD_USER_AVATARS[0].url,
                 registeredAt: parsed.registeredAt ?? new Date().toISOString(),
                 supabaseSynced: Boolean(parsed.supabaseSynced),
             };
@@ -163,19 +209,21 @@ export async function registerPlayerPassportLead(params: {
     pseudo: string;
     email: string;
     experienceLevel: PlayerExperienceTier;
+    avatarUrl?: string;
     password?: string;
 }): Promise<{ passport: PlayerPassport; error: Error | null }> {
     const cleanPseudo = params.pseudo.trim();
     const cleanEmail = params.email.trim().toLowerCase();
+    const chosenAvatar = params.avatarUrl?.trim() || STANDARD_USER_AVATARS[0].url;
     if (cleanPseudo.length < 2) {
         return {
-            passport: { pseudo: cleanPseudo, email: cleanEmail, experienceLevel: params.experienceLevel, registeredAt: new Date().toISOString() },
+            passport: { pseudo: cleanPseudo, email: cleanEmail, experienceLevel: params.experienceLevel, avatarUrl: chosenAvatar, registeredAt: new Date().toISOString() },
             error: new Error('Veuillez indiquer un pseudo (2 caractères minimum).'),
         };
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
         return {
-            passport: { pseudo: cleanPseudo, email: cleanEmail, experienceLevel: params.experienceLevel, registeredAt: new Date().toISOString() },
+            passport: { pseudo: cleanPseudo, email: cleanEmail, experienceLevel: params.experienceLevel, avatarUrl: chosenAvatar, registeredAt: new Date().toISOString() },
             error: new Error('Veuillez indiquer une adresse email valide.'),
         };
     }
@@ -195,6 +243,7 @@ export async function registerPlayerPassportLead(params: {
                         full_name: cleanPseudo,
                         username: cleanPseudo,
                         experience_level: params.experienceLevel,
+                        avatar_url: chosenAvatar,
                     },
                 },
             });
@@ -213,6 +262,7 @@ export async function registerPlayerPassportLead(params: {
         pseudo: cleanPseudo,
         email: cleanEmail,
         experienceLevel: params.experienceLevel,
+        avatarUrl: chosenAvatar,
         registeredAt: new Date().toISOString(),
         supabaseSynced,
     });

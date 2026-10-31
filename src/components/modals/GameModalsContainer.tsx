@@ -174,7 +174,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                     localProfile={multiplayer.localProfile}
                     opponentProfile={multiplayer.opponentProfile}
                     eloResult={multiplayer.eloResult}
-                    onRematch={() => multiplayer.startMatchmaking(multiplayer.matchInfo?.matchLength || 7)}
+                    onRematch={() => multiplayer.startMatchmaking(multiplayer.matchInfo?.matchLength || 7, { isRematch: true })}
                     onOpenReview={modals.openGameReview}
                     onClose={() => {
                         multiplayer.leaveMatch();

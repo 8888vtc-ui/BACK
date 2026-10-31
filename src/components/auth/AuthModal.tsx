@@ -10,6 +10,7 @@ import {
     registerPlayerPassportLead,
     resetPasswordForEmail,
     savePlayerPassport,
+    STANDARD_USER_AVATARS,
     type PlayerExperienceTier,
 } from '../../lib/supabase/auth';
 import { useTranslation } from '../../i18n';
@@ -34,6 +35,7 @@ export default function AuthModal({
     const [password, setPassword] = useState('');
     const [displayName, setDisplayName] = useState('');
     const [experienceLevel, setExperienceLevel] = useState<PlayerExperienceTier>('intermediate');
+    const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(STANDARD_USER_AVATARS[0].url);
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [infoMsg, setInfoMsg] = useState<string | null>(null);
@@ -58,6 +60,7 @@ export default function AuthModal({
                     pseudo: displayName,
                     email,
                     experienceLevel,
+                    avatarUrl: selectedAvatarUrl,
                 });
                 if (error) throw error;
                 if (onSuccess) onSuccess();
@@ -87,6 +90,7 @@ export default function AuthModal({
                     pseudo: userPseudo,
                     email,
                     experienceLevel,
+                    avatarUrl: selectedAvatarUrl,
                     registeredAt: new Date().toISOString(),
                     supabaseSynced: true,
                 });
@@ -97,6 +101,7 @@ export default function AuthModal({
                     email,
                     password,
                     displayName,
+                    avatarUrl: selectedAvatarUrl,
                 });
                 if (error) throw error;
 
@@ -104,6 +109,7 @@ export default function AuthModal({
                     pseudo: displayName.trim() || email.split('@')[0] || 'Joueur',
                     email,
                     experienceLevel,
+                    avatarUrl: selectedAvatarUrl,
                     registeredAt: new Date().toISOString(),
                     supabaseSynced: true,
                 });
@@ -270,6 +276,43 @@ export default function AuthModal({
                 )}
 
                 <form onSubmit={handleEmailSubmit} className="space-y-3">
+                    {(mode === 'passport' || mode === 'signup') && (
+                        <div>
+                            <label className="block text-xs font-bold text-amber-100 mb-1.5">
+                                {isEn ? 'Choose Your Club Avatar (5 Standard Profiles)' : 'Choisissez votre Photo de Profil (5 Avatars Club)'}
+                            </label>
+                            <div className="grid grid-cols-5 gap-2" role="radiogroup" aria-label="Avatar du joueur">
+                                {STANDARD_USER_AVATARS.map((av) => {
+                                    const active = selectedAvatarUrl === av.url;
+                                    return (
+                                        <button
+                                            key={av.id}
+                                            type="button"
+                                            data-testid={`passport-avatar-${av.id}`}
+                                            aria-checked={active}
+                                            role="radio"
+                                            onClick={() => setSelectedAvatarUrl(av.url)}
+                                            className={`group flex flex-col items-center gap-1 rounded-xl p-1 transition cursor-pointer ${
+                                                active
+                                                    ? 'bg-[#f3c65f]/15 ring-2 ring-[#f3c65f]'
+                                                    : 'bg-black/30 hover:bg-white/5 opacity-75 hover:opacity-100'
+                                            }`}
+                                        >
+                                            <img
+                                                src={av.url}
+                                                alt={isEn ? av.labelEn : av.labelFr}
+                                                className="h-11 w-11 rounded-full object-cover border border-[#f3c65f]/40 shadow"
+                                            />
+                                            <span className="text-[9px] font-bold text-slate-200 truncate max-w-full">
+                                                {isEn ? av.labelEn : av.labelFr}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
                     {(mode === 'passport' || mode === 'signup') && (
                         <div>
                             <label className="block text-xs font-bold text-amber-100 mb-1">

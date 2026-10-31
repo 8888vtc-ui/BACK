@@ -127,10 +127,67 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
         setTimeout(() => connectToRealtime(info), 1800);
     }
 
-    function scheduleClubChallengerMatch(preferredMatchLength: number) {
+    const opponentProfileRef = useRef<PlayerEloProfile | null>(null);
+
+    async function tryMatchHumanFromQueue(preferredMatchLength: number): Promise<boolean> {
+        if (!isSupabaseConfigured()) return false;
+        try {
+            const myTicket = createMatchmakingTicket(localProfile, preferredMatchLength, Date.now());
+            const { data: waitingTickets } = await supabase
+                .from('matchmaking_queue')
+                .select('*')
+                .eq('status', 'waiting')
+                .neq('user_id', localProfile.id)
+                .order('created_at', { ascending: true })
+                .limit(10);
+            if (!waitingTickets?.length) return false;
+            const candidates = waitingTickets.map((t) => ({
+                id: t.id,
+                userId: t.user_id || t.guest_id || 'remote',
+                username: t.display_name,
+                displayName: t.display_name,
+                rating: t.rating,
+                matchLength: t.match_length,
+                joinedAt: new Date(t.created_at).getTime(),
+                searchTolerance: 200,
+            }));
+            const match = findMatchInQueue(myTicket, candidates, Date.now());
+            if (!match) return false;
+            const opp = { id: match.userId, username: match.username, displayName: match.displayName, rating: match.rating };
+            const roomId = generateRoomId(localProfile.id, opp.id);
+            const roles = assignPlayerRoles(localProfile, opp);
+            const info = createMultiplayerMatchInfo(roomId, roles.playerX, roles.playerO, preferredMatchLength, localProfile.id);
+            await supabase
+                .from('matchmaking_queue')
+                .update({
+                    status: 'matched',
+                    matched_room_id: roomId,
+                    matched_opponent_id: localProfile.id,
+                    matched_opponent_name: localProfile.displayName,
+                    matched_role: roles.playerO.id === opp.id ? 'O' : 'X',
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', match.id);
+            opponentProfileRef.current = opp;
+            initMatchedRoom(info, opp);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    function scheduleClubChallengerMatch(preferredMatchLength: number, isRematch: boolean = false) {
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-        searchTimeoutRef.current = setTimeout(() => {
-            const opp = selectClubChallengerForRating(localProfile.rating);
+        searchTimeoutRef.current = setTimeout(async () => {
+            // Priorité Humain contre Humain : ultime vérification de la file humaine avant d'engager un Bot actif
+            if (!isRematch && (await tryMatchHumanFromQueue(preferredMatchLength))) {
+                return;
+            }
+            const opp = selectClubChallengerForRating(localProfile.rating, {
+                isRematch,
+                previousChallenger: opponentProfileRef.current,
+            });
+            opponentProfileRef.current = opp;
             const roomId = generateRoomId(localProfile.id, opp.id);
             const info: MultiplayerMatchInfo = {
                 ...createMultiplayerMatchInfo(roomId, localProfile, opp, preferredMatchLength, localProfile.id),
@@ -139,48 +196,32 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
             setMatchInfo(info);
             setOpponentProfile(opp);
             setStatus('matched');
-        }, computeRealisticMatchmakingDelayMs());
+        }, isRematch ? 600 : computeRealisticMatchmakingDelayMs());
     }
 
-    const startMatchmaking = useCallback(async (preferredMatchLength = 7) => {
+    const startMatchmaking = useCallback(async (preferredMatchLength = 7, options?: { isRematch?: boolean }) => {
+        const isRematch = options?.isRematch === true;
         setStatus('searching'); setEloResult(null); setQuickChatMessage(null); setDisconnectCountdown(null);
-        const myTicket = createMatchmakingTicket(localProfile, preferredMatchLength, Date.now());
+        if (isRematch && opponentProfileRef.current?.clubBotDifficulty) {
+            scheduleClubChallengerMatch(preferredMatchLength, true);
+            return;
+        }
         if (!isSupabaseConfigured()) {
-            scheduleClubChallengerMatch(preferredMatchLength);
+            scheduleClubChallengerMatch(preferredMatchLength, false);
             return;
         }
         try {
-            const { data: waitingTickets } = await supabase.from('matchmaking_queue').select('*')
-                .eq('status', 'waiting').neq('user_id', localProfile.id).order('created_at', { ascending: true }).limit(10);
-            if (waitingTickets?.length) {
-                const candidates = waitingTickets.map((t) => ({
-                    id: t.id, userId: t.user_id || t.guest_id || 'remote', username: t.display_name,
-                    displayName: t.display_name, rating: t.rating, matchLength: t.match_length,
-                    joinedAt: new Date(t.created_at).getTime(), searchTolerance: 200,
-                }));
-                const match = findMatchInQueue(myTicket, candidates, Date.now());
-                if (match) {
-                    const opp = { id: match.userId, username: match.username, displayName: match.displayName, rating: match.rating };
-                    const roomId = generateRoomId(localProfile.id, opp.id);
-                    const roles = assignPlayerRoles(localProfile, opp);
-                    const info = createMultiplayerMatchInfo(roomId, roles.playerX, roles.playerO, preferredMatchLength, localProfile.id);
-                    await supabase.from('matchmaking_queue').update({
-                        status: 'matched', matched_room_id: roomId, matched_opponent_id: localProfile.id,
-                        matched_opponent_name: localProfile.displayName, matched_role: roles.playerO.id === opp.id ? 'O' : 'X',
-                        updated_at: new Date().toISOString(),
-                    }).eq('id', match.id);
-                    initMatchedRoom(info, opp);
-                    return;
-                }
+            if (await tryMatchHumanFromQueue(preferredMatchLength)) {
+                return;
             }
             await supabase.from('matchmaking_queue').insert({
                 user_id: localProfile.isGuest ? null : localProfile.id, guest_id: localProfile.isGuest ? localProfile.id : null,
                 display_name: localProfile.displayName, rating: localProfile.rating, match_length: preferredMatchLength, status: 'waiting',
             });
-            scheduleClubChallengerMatch(preferredMatchLength);
+            scheduleClubChallengerMatch(preferredMatchLength, false);
         } catch (err) {
             console.warn('[Matchmaking] Erreur queue Supabase :', err);
-            scheduleClubChallengerMatch(preferredMatchLength);
+            scheduleClubChallengerMatch(preferredMatchLength, false);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [localProfile]);

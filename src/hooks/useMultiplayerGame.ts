@@ -31,7 +31,7 @@ export interface UseMultiplayerGameReturn {
     clockState: MatchClockState | null;
     isReconnecting: boolean;
     recoverableSession: ActiveGameSession | null;
-    startMatchmaking: (preferredMatchLength?: number) => Promise<void>;
+    startMatchmaking: (preferredMatchLength?: number, options?: { isRematch?: boolean }) => Promise<void>;
     createPrivateRoom: (matchLength?: number) => Promise<string>;
     joinPrivateRoom: (code: string) => Promise<void>;
     cancelMatchmaking: () => void;

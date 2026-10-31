@@ -17,7 +17,7 @@ import {
 } from '../features/multiplayer/elo';
 import { clearActiveSession, type ActiveGameSession } from '../features/multiplayer/sessionRecovery';
 import { supabase, isSupabaseConfigured } from '../lib/supabase/client';
-import { getCurrentUser, getUserProfile } from '../lib/supabase/auth';
+import { getCurrentUser, getUserProfile, readPlayerPassport, STANDARD_USER_AVATARS } from '../lib/supabase/auth';
 
 export interface UseMultiplayerLocalProfileParams {
     matchInfo: MultiplayerMatchInfo | null;
@@ -38,12 +38,14 @@ export function useMultiplayerLocalProfile({
                 : 'guest_local';
         if (typeof window !== 'undefined') localStorage.setItem('bg_guest_id', guestId);
 
+        const passport = readPlayerPassport();
         return {
             id: guestId,
-            username: `Joueur_${guestId.slice(-4)}`,
-            displayName: `Joueur #${guestId.slice(-4)}`,
+            username: passport?.pseudo || `Joueur_${guestId.slice(-4)}`,
+            displayName: passport?.pseudo || `Joueur #${guestId.slice(-4)}`,
             rating: DEFAULT_INITIAL_ELO,
             averagePr: readPublicAveragePr(),
+            avatarUrl: passport?.avatarUrl || STANDARD_USER_AVATARS[0].url,
             isGuest: true,
         };
     });
