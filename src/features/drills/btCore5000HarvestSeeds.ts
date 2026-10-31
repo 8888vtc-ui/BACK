@@ -1,5 +1,5 @@
 /**
- * Quizz Tactiques Certifiés 3-Ply issus de la Campagne 5 000 Parties & Usine 8 Cœurs (BT-Neural v3.0 & GNU Backgammon 3-Ply [world class]).
+ * Quizz Tactiques Certifiés 3-Ply issus de la Campagne 5 000 Parties & Usine 8 Cœurs (BT-Neural v4.0 MoE-6 & GNU Backgammon 3-Ply [world class]).
  * Zéro donnée perdue — Généré automatiquement et vérifié sur les 6 formats de match (Money Game, 3, 5, 7, 9, 11 pts).
  */
 import type { HarvestedSeedInput } from './benchmarkBlunders';
@@ -20510,6 +20510,6707 @@ export const BTCORE_5000_HARVEST_SEEDS: HarvestedSeedInput[] = [
             "Certifié 3-ply [world class] : bar/23* 6/3* domine bar/23*/20 de +0.070 EMG.",
             "En Match en 7 pts (0-3, Videau à 1), bar/23* 6/3* maximise votre équité cubeful (+0.447 EMG).",
             "Évitez bar/23*/20 (-0.070 EMG) ; jouez la ligne maîtresse bar/23* 6/3*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_660_12",
+        "tier": 2,
+        "xgid": "XGID=--A--aDACA--eB-a-b-a-aacBA:0:0:1:12:0:0:0:0:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/24 7/5*",
+        "optimalMove": "bar/22*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22*",
+            "bar/24 7/5*",
+            "bar/24 9/7",
+            "bar/24 6/4"
+        ],
+        "equityLoss": 0.192,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 7/5* (Money Game), vous concédez -0.192 EMG face au coup 3-ply bar/22*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Money Game : bar/22* surpasse bar/24 7/5* de +0.192 EMG (55.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* domine bar/24 7/5* de +0.192 EMG.",
+            "En Money Game, bar/22* maximise votre équité cubeful (+0.208 EMG).",
+            "Évitez bar/24 7/5* (-0.192 EMG) ; jouez la ligne maîtresse bar/22*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_661_32",
+        "tier": 2,
+        "xgid": "XGID=-bG-aE--bA---A-----cab-d-A:0:0:1:32:0:0:0:0:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "bar/22 13/11",
+        "optimalMove": "bar/20*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20*",
+            "bar/22 13/11",
+            "bar/22 9/7",
+            "bar/22 5/3"
+        ],
+        "equityLoss": 0.546,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 13/11 (Money Game), vous concédez -0.546 EMG face au coup 3-ply bar/20*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Money Game : bar/20* surpasse bar/22 13/11 de +0.546 EMG (47.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* domine bar/22 13/11 de +0.546 EMG.",
+            "En Money Game, bar/20* maximise votre équité cubeful (+0.006 EMG).",
+            "Évitez bar/22 13/11 (-0.546 EMG) ; jouez la ligne maîtresse bar/20*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_662_24",
+        "tier": 2,
+        "xgid": "XGID=aBFAABa--Aa-------aAcA-ec-:0:0:1:24:0:0:0:0:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "9/5 4/2",
+        "optimalMove": "9/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/3",
+            "9/5 4/2",
+            "9/5 3/1",
+            "21/17 4/2"
+        ],
+        "equityLoss": 0.443,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 9/5 4/2 (Money Game), vous concédez -0.443 EMG face au coup 3-ply 9/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Money Game : 9/3 surpasse 9/5 4/2 de +0.443 EMG (67.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 9/3 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/3 domine 9/5 4/2 de +0.443 EMG.",
+            "En Money Game, 9/3 maximise votre équité cubeful (+0.736 EMG).",
+            "Évitez 9/5 4/2 (-0.443 EMG) ; jouez la ligne maîtresse 9/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_663_31",
+        "tier": 3,
+        "xgid": "XGID=-AA-AcDBa--Ba-aaAaBdba--A-:0:0:1:31:1:1:0:3:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "16/15* 4/1",
+        "optimalMove": "24/21* 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21* 2/1",
+            "16/15* 4/1",
+            "16/15*/12*",
+            "24/21* 16/15*"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 16/15* 4/1 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.089 EMG face au coup 3-ply 24/21* 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 3 pts (1-1, Videau à 1) : 24/21* 2/1 surpasse 16/15* 4/1 de +0.089 EMG (54.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/21* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* 2/1 domine 16/15* 4/1 de +0.089 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 24/21* 2/1 maximise votre équité cubeful (+0.247 EMG).",
+            "Évitez 16/15* 4/1 (-0.089 EMG) ; jouez la ligne maîtresse 24/21* 2/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_664_54",
+        "tier": 3,
+        "xgid": "XGID=----aCCbAbB--AaA--adCAaab-:0:0:1:54:1:1:0:3:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "15/10 8/4*",
+        "optimalMove": "20/15 8/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/15 8/4*",
+            "15/10 8/4*",
+            "13/4*",
+            "15/11 13/8"
+        ],
+        "equityLoss": 0.093,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 15/10 8/4* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.093 EMG face au coup 3-ply 20/15 8/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 3 pts (1-1, Videau à 1) : 20/15 8/4* surpasse 15/10 8/4* de +0.093 EMG (59.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/15 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/15 8/4* domine 15/10 8/4* de +0.093 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 20/15 8/4* maximise votre équité cubeful (+0.528 EMG).",
+            "Évitez 15/10 8/4* (-0.093 EMG) ; jouez la ligne maîtresse 20/15 8/4*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_665_65",
+        "tier": 2,
+        "xgid": "XGID=-CA--aF---b-aAabAaAacAaaaA:0:0:1:65:1:1:0:3:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "bar/19* 18/13",
+        "optimalMove": "bar/19*/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19*/14*",
+            "bar/19* 18/13",
+            "bar/19* 21/16",
+            "bar/19* 13/8"
+        ],
+        "equityLoss": 0.471,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19* 18/13 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.471 EMG face au coup 3-ply bar/19*/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 3 pts (1-1, Videau à 1) : bar/19*/14* surpasse bar/19* 18/13 de +0.471 EMG (59.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/19*/14* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19*/14* domine bar/19* 18/13 de +0.471 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/19*/14* maximise votre équité cubeful (+0.537 EMG).",
+            "Évitez bar/19* 18/13 (-0.471 EMG) ; jouez la ligne maîtresse bar/19*/14*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_666_45",
+        "tier": 3,
+        "xgid": "XGID=--B--E---c---baA---fC-BAcA:0:0:1:45:1:1:0:3:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "bar/21 15/10",
+        "optimalMove": "bar/21 20/15",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 20/15",
+            "bar/21 15/10",
+            "bar/20 15/11",
+            "bar/16"
+        ],
+        "equityLoss": 0.1,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 15/10 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.100 EMG face au coup 3-ply bar/21 20/15.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 3 pts (1-1, Videau à 1) : bar/21 20/15 surpasse bar/21 15/10 de +0.100 EMG (45.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 20/15 domine bar/21 15/10 de +0.100 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/21 20/15 maximise votre équité cubeful (-0.282 EMG).",
+            "Évitez bar/21 15/10 (-0.100 EMG) ; jouez la ligne maîtresse bar/21 20/15."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_667_36",
+        "tier": 2,
+        "xgid": "XGID=-bA---EABA--cC---a-eAa-baA:0:0:1:36:2:2:0:5:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "bar/22 8/2",
+        "optimalMove": "bar/22 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 13/7",
+            "bar/22 8/2",
+            "bar/22 9/3",
+            "bar/16"
+        ],
+        "equityLoss": 0.351,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 8/2 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.351 EMG face au coup 3-ply bar/22 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 5 pts (2-2, Videau à 1) : bar/22 13/7 surpasse bar/22 8/2 de +0.351 EMG (50.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 13/7 domine bar/22 8/2 de +0.351 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/22 13/7 maximise votre équité cubeful (-0.068 EMG).",
+            "Évitez bar/22 8/2 (-0.351 EMG) ; jouez la ligne maîtresse bar/22 13/7."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_668_15",
+        "tier": 2,
+        "xgid": "XGID=-CAa--E-Ba-acA-A--Ae-aaaaA:0:0:1:15:2:2:0:5:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/24* 18/13",
+        "optimalMove": "bar/24* 8/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 8/3*",
+            "bar/24* 18/13",
+            "bar/24* 13/8",
+            "bar/24* 15/10"
+        ],
+        "equityLoss": 0.221,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 18/13 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.221 EMG face au coup 3-ply bar/24* 8/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 5 pts (2-2, Videau à 1) : bar/24* 8/3* surpasse bar/24* 18/13 de +0.221 EMG (61.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 8/3* domine bar/24* 18/13 de +0.221 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/24* 8/3* maximise votre équité cubeful (+0.847 EMG).",
+            "Évitez bar/24* 18/13 (-0.221 EMG) ; jouez la ligne maîtresse bar/24* 8/3*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_669_24",
+        "tier": 2,
+        "xgid": "XGID=-CdbAAEA--Aa--aa-A-e-aB---:0:0:1:24:2:2:0:5:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "17/13 7/5",
+        "optimalMove": "17/15*/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "17/15*/11*",
+            "17/13 7/5",
+            "22/18 7/5",
+            "10/6 7/5"
+        ],
+        "equityLoss": 0.245,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 17/13 7/5 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.245 EMG face au coup 3-ply 17/15*/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 5 pts (2-2, Videau à 1) : 17/15*/11* surpasse 17/13 7/5 de +0.245 EMG (51.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 17/15*/11* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 17/15*/11* domine 17/13 7/5 de +0.245 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 17/15*/11* maximise votre équité cubeful (+0.333 EMG).",
+            "Évitez 17/13 7/5 (-0.245 EMG) ; jouez la ligne maîtresse 17/15*/11*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_670_51",
+        "tier": 4,
+        "xgid": "XGID=---bAAC-aAa-a-Aa--AdAbCCc-:0:0:1:51:2:2:0:5:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "20/15* 9/8*",
+        "optimalMove": "20/15* 5/4",
+        "acceptableMoves": [
+            "14/9 5/4",
+            "14/9 6/5"
+        ],
+        "quizChoices": [
+            "20/15* 5/4",
+            "20/15* 9/8*",
+            "20/15* 6/5",
+            "14/9 5/4"
+        ],
+        "equityLoss": 0.041,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15* 9/8* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.041 EMG face au coup 3-ply 20/15* 5/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 5 pts (2-2, Videau à 1) : 20/15* 5/4 surpasse 20/15* 9/8* de +0.041 EMG (52.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/15* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/15* 5/4 domine 20/15* 9/8* de +0.041 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 20/15* 5/4 maximise votre équité cubeful (-0.102 EMG).",
+            "Évitez 20/15* 9/8* (-0.041 EMG) ; jouez la ligne maîtresse 20/15* 5/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_671_11",
+        "tier": 3,
+        "xgid": "XGID=-DababDa-aBB------Adb-A-aA:0:0:1:11:2:2:0:5:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "bar/24* 18/17 10/9*(2)",
+        "optimalMove": "bar/24* 10/9*/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 10/9*/7*",
+            "bar/24* 18/17 10/9*(2)",
+            "bar/24* 22/21 10/9*(2)",
+            "bar/24*/23 10/9*(2)"
+        ],
+        "equityLoss": 0.074,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 18/17 10/9*(2) (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.074 EMG face au coup 3-ply bar/24* 10/9*/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 5 pts (2-2, Videau à 1) : bar/24* 10/9*/7* surpasse bar/24* 18/17 10/9*(2) de +0.074 EMG (40.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 10/9*/7* domine bar/24* 18/17 10/9*(2) de +0.074 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/24* 10/9*/7* maximise votre équité cubeful (-0.241 EMG).",
+            "Évitez bar/24* 18/17 10/9*(2) (-0.074 EMG) ; jouez la ligne maîtresse bar/24* 10/9*/7*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_672_26",
+        "tier": 2,
+        "xgid": "XGID=--A---D--a-a--bbaABdC-BAdA:0:0:1:26:2:2:0:5:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "bar/23 22/16*",
+        "optimalMove": "bar/23 17/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 17/11*",
+            "bar/23 22/16*",
+            "bar/23 18/12",
+            "bar/17"
+        ],
+        "equityLoss": 0.219,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23 22/16* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.219 EMG face au coup 3-ply bar/23 17/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 5 pts (2-2, Videau à 1) : bar/23 17/11* surpasse bar/23 22/16* de +0.219 EMG (62.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 17/11* domine bar/23 22/16* de +0.219 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/23 17/11* maximise votre équité cubeful (+0.380 EMG).",
+            "Évitez bar/23 22/16* (-0.219 EMG) ; jouez la ligne maîtresse bar/23 17/11*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_673_53",
+        "tier": 2,
+        "xgid": "XGID=abC-AAC-A--BbB-Bb--d---bb-:0:0:1:53:3:3:0:7:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "15/10 8/5",
+        "optimalMove": "11/6 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/6 8/5",
+            "15/10 8/5",
+            "13/5",
+            "8/3 6/3"
+        ],
+        "equityLoss": 0.146,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 15/10 8/5 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.146 EMG face au coup 3-ply 11/6 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 7 pts (3-3, Videau à 1) : 11/6 8/5 surpasse 15/10 8/5 de +0.146 EMG (65.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 11/6 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/6 8/5 domine 15/10 8/5 de +0.146 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 11/6 8/5 maximise votre équité cubeful (+0.671 EMG).",
+            "Évitez 15/10 8/5 (-0.146 EMG) ; jouez la ligne maîtresse 11/6 8/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_674_36",
+        "tier": 2,
+        "xgid": "XGID=-BB-A-C--B--bBa---ae--aeBA:0:0:1:36:3:3:0:7:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "bar/22* 13/7",
+        "optimalMove": "bar/22* 24/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 24/18*",
+            "bar/22* 13/7",
+            "bar/22*/16",
+            "bar/22* 9/3"
+        ],
+        "equityLoss": 0.32,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 13/7 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.320 EMG face au coup 3-ply bar/22* 24/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 7 pts (3-3, Videau à 1) : bar/22* 24/18* surpasse bar/22* 13/7 de +0.320 EMG (73.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 24/18* domine bar/22* 13/7 de +0.320 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/22* 24/18* maximise votre équité cubeful (+1.046 EMG).",
+            "Évitez bar/22* 13/7 (-0.320 EMG) ; jouez la ligne maîtresse bar/22* 24/18*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_675_51",
+        "tier": 3,
+        "xgid": "XGID=-aGc-BD--A------c-aa-a-bcA:0:0:1:51:3:3:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "bar/20 2/1*",
+        "optimalMove": "bar/19*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19*",
+            "bar/20 2/1*",
+            "bar/20 6/5",
+            "bar/20 9/8"
+        ],
+        "equityLoss": 0.1,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 2/1* (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.100 EMG face au coup 3-ply bar/19*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 7 pts (3-3, Videau à 1) : bar/19* surpasse bar/20 2/1* de +0.100 EMG (71.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/19* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19* domine bar/20 2/1* de +0.100 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/19* maximise votre équité cubeful (+1.153 EMG).",
+            "Évitez bar/20 2/1* (-0.100 EMG) ; jouez la ligne maîtresse bar/19*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_676_44",
+        "tier": 3,
+        "xgid": "XGID=-DBA-aA--B--A----A-cdAAgA-:0:0:1:44:3:3:0:7:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "21/17 9/5*(2) 6/2",
+        "optimalMove": "22/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/6",
+            "21/17 9/5*(2) 6/2",
+            "21/17 12/8 9/5*(2)",
+            "22/18 9/5*(2) 6/2"
+        ],
+        "equityLoss": 0.115,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/17 9/5*(2) 6/2 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.115 EMG face au coup 3-ply 22/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 7 pts (3-3, Videau à 1) : 22/6 surpasse 21/17 9/5*(2) 6/2 de +0.115 EMG (23.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 22/6 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/6 domine 21/17 9/5*(2) 6/2 de +0.115 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 22/6 maximise votre équité cubeful (-1.084 EMG).",
+            "Évitez 21/17 9/5*(2) 6/2 (-0.115 EMG) ; jouez la ligne maîtresse 22/6."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_677_12",
+        "tier": 4,
+        "xgid": "XGID=-G---aA--BAAA--A-----A-ib-:0:0:1:12:3:3:0:7:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "12/10 11/10",
+        "optimalMove": "12/10 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "12/10 6/5*",
+            "12/10 11/10",
+            "11/10 6/4",
+            "21/19 11/10"
+        ],
+        "equityLoss": 0.032,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 12/10 11/10 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.032 EMG face au coup 3-ply 12/10 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 7 pts (3-3, Videau à 1) : 12/10 6/5* surpasse 12/10 11/10 de +0.032 EMG (7.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 12/10 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 12/10 6/5* domine 12/10 11/10 de +0.032 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 12/10 6/5* maximise votre équité cubeful (-1.317 EMG).",
+            "Évitez 12/10 11/10 (-0.032 EMG) ; jouez la ligne maîtresse 12/10 6/5*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_678_11",
+        "tier": 2,
+        "xgid": "XGID=-aABa-D-BAA-d-a--c-abAbB-A:0:0:1:11:4:4:0:9:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "bar/24 6/5(2) 2/1*",
+        "optimalMove": "bar/24 6/4* 2/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 6/4* 2/1*",
+            "bar/24 6/5(2) 2/1*",
+            "bar/24 10/9 6/5(2)",
+            "bar/24 10/9 6/4*"
+        ],
+        "equityLoss": 0.124,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 6/5(2) 2/1* (Match en 9 pts (4-4, Videau à 1)), vous concédez -0.124 EMG face au coup 3-ply bar/24 6/4* 2/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 9 pts (4-4, Videau à 1) : bar/24 6/4* 2/1* surpasse bar/24 6/5(2) 2/1* de +0.124 EMG (50.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 9 pts (4-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 6/4* 2/1* domine bar/24 6/5(2) 2/1* de +0.124 EMG.",
+            "En Match en 9 pts (4-4, Videau à 1), bar/24 6/4* 2/1* maximise votre équité cubeful (+0.100 EMG).",
+            "Évitez bar/24 6/5(2) 2/1* (-0.124 EMG) ; jouez la ligne maîtresse bar/24 6/4* 2/1*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_679_24",
+        "tier": 4,
+        "xgid": "XGID=---DB-BaBA---b--a-AAdaccB-:0:0:1:24:4:4:0:9:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "19/15 18/16*",
+        "optimalMove": "18/16*/12",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/16*/12",
+            "19/15 18/16*",
+            "18/16* 9/5",
+            "19/15 9/7*"
+        ],
+        "equityLoss": 0.044,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 19/15 18/16* (Match en 9 pts (4-4, Videau à 1)), vous concédez -0.044 EMG face au coup 3-ply 18/16*/12.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 9 pts (4-4, Videau à 1) : 18/16*/12 surpasse 19/15 18/16* de +0.044 EMG (58.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 18/16*/12 en Match en 9 pts (4-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/16*/12 domine 19/15 18/16* de +0.044 EMG.",
+            "En Match en 9 pts (4-4, Videau à 1), 18/16*/12 maximise votre équité cubeful (+0.344 EMG).",
+            "Évitez 19/15 18/16* (-0.044 EMG) ; jouez la ligne maîtresse 18/16*/12."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_680_24",
+        "tier": 2,
+        "xgid": "XGID=-A--a-EAa-a-bD--ac-f-A--BA:0:0:1:24:5:5:0:11:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/21 7/5",
+        "optimalMove": "bar/21 6/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 6/4*",
+            "bar/21 7/5",
+            "bar/21 13/11",
+            "bar/21 24/22"
+        ],
+        "equityLoss": 0.123,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 7/5 (Match en 11 pts (5-5, Videau à 1)), vous concédez -0.123 EMG face au coup 3-ply bar/21 6/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 11 pts (5-5, Videau à 1) : bar/21 6/4* surpasse bar/21 7/5 de +0.123 EMG (42.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 11 pts (5-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 6/4* domine bar/21 7/5 de +0.123 EMG.",
+            "En Match en 11 pts (5-5, Videau à 1), bar/21 6/4* maximise votre équité cubeful (-0.412 EMG).",
+            "Évitez bar/21 7/5 (-0.123 EMG) ; jouez la ligne maîtresse bar/21 6/4*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_681_23",
+        "tier": 2,
+        "xgid": "XGID=-aCAcbE-AA--a--bBA-b--baaA:0:0:1:23:5:5:0:11:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/23* 9/6",
+        "optimalMove": "bar/23* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 6/3",
+            "bar/23* 9/6",
+            "bar/23*/20",
+            "bar/23* 17/14"
+        ],
+        "equityLoss": 0.371,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 9/6 (Match en 11 pts (5-5, Videau à 1)), vous concédez -0.371 EMG face au coup 3-ply bar/23* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 11 pts (5-5, Videau à 1) : bar/23* 6/3 surpasse bar/23* 9/6 de +0.371 EMG (59.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 11 pts (5-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 6/3 domine bar/23* 9/6 de +0.371 EMG.",
+            "En Match en 11 pts (5-5, Videau à 1), bar/23* 6/3 maximise votre équité cubeful (+0.627 EMG).",
+            "Évitez bar/23* 9/6 (-0.371 EMG) ; jouez la ligne maîtresse bar/23* 6/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_682_53",
+        "tier": 2,
+        "xgid": "XGID=-AABaA---bBaA---a--fBCacAA:0:0:1:53:5:5:0:11:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/22* 10/5",
+        "optimalMove": "bar/22* 21/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 21/16*",
+            "bar/22* 10/5",
+            "bar/20 5/2",
+            "bar/22* 12/7"
+        ],
+        "equityLoss": 0.15,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 10/5 (Match en 11 pts (5-5, Videau à 1)), vous concédez -0.150 EMG face au coup 3-ply bar/22* 21/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 11 pts (5-5, Videau à 1) : bar/22* 21/16* surpasse bar/22* 10/5 de +0.150 EMG (47.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22* en Match en 11 pts (5-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 21/16* domine bar/22* 10/5 de +0.150 EMG.",
+            "En Match en 11 pts (5-5, Videau à 1), bar/22* 21/16* maximise votre équité cubeful (-0.273 EMG).",
+            "Évitez bar/22* 10/5 (-0.150 EMG) ; jouez la ligne maîtresse bar/22* 21/16*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_683_63",
+        "tier": 2,
+        "xgid": "XGID=-ACa--DC--b-cAA---beaB-a--:0:0:1:63:0:0:0:0:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "14/8 6/3*",
+        "optimalMove": "7/1 6/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/1 6/3*",
+            "14/8 6/3*",
+            "14/11 7/1",
+            "14/11 13/7"
+        ],
+        "equityLoss": 0.216,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 14/8 6/3* (Money Game), vous concédez -0.216 EMG face au coup 3-ply 7/1 6/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Money Game : 7/1 6/3* surpasse 14/8 6/3* de +0.216 EMG (52.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 7/1 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/1 6/3* domine 14/8 6/3* de +0.216 EMG.",
+            "En Money Game, 7/1 6/3* maximise votre équité cubeful (+0.250 EMG).",
+            "Évitez 14/8 6/3* (-0.216 EMG) ; jouez la ligne maîtresse 7/1 6/3*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_684_12",
+        "tier": 2,
+        "xgid": "XGID=-C-acACA--AaaC-A---bB--cd-:0:0:1:12:0:0:0:0:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "13/11* 6/5",
+        "optimalMove": "13/12* 7/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/12* 7/5",
+            "13/11* 6/5",
+            "13/12* 5/3*",
+            "13/12* 13/11*"
+        ],
+        "equityLoss": 0.184,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11* 6/5 (Money Game), vous concédez -0.184 EMG face au coup 3-ply 13/12* 7/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Money Game : 13/12* 7/5 surpasse 13/11* 6/5 de +0.184 EMG (75.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/12* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/12* 7/5 domine 13/11* 6/5 de +0.184 EMG.",
+            "En Money Game, 13/12* 7/5 maximise votre équité cubeful (+1.016 EMG).",
+            "Évitez 13/11* 6/5 (-0.184 EMG) ; jouez la ligne maîtresse 13/12* 7/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_685_56",
+        "tier": 2,
+        "xgid": "XGID=-FBaAc-aa-a---a--Aba-CaAcA:0:0:1:56:0:0:0:0:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "bar/19* 21/16",
+        "optimalMove": "bar/19*/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19*/14*",
+            "bar/19* 21/16",
+            "bar/14*",
+            "bar/19* 17/12"
+        ],
+        "equityLoss": 0.217,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19* 21/16 (Money Game), vous concédez -0.217 EMG face au coup 3-ply bar/19*/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Money Game : bar/19*/14* surpasse bar/19* 21/16 de +0.217 EMG (44.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/19*/14* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19*/14* domine bar/19* 21/16 de +0.217 EMG.",
+            "En Money Game, bar/19*/14* maximise votre équité cubeful (-0.051 EMG).",
+            "Évitez bar/19* 21/16 (-0.217 EMG) ; jouez la ligne maîtresse bar/19*/14*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_686_56",
+        "tier": 3,
+        "xgid": "XGID=-C-A--bBbbaB---AAAA-C--bf-:0:0:1:56:0:0:0:0:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "20/15 16/10*",
+        "optimalMove": "16/10* 15/10",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/10* 15/10",
+            "20/15 16/10*",
+            "20/15 17/11",
+            "17/11 15/10*"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15 16/10* (Money Game), vous concédez -0.090 EMG face au coup 3-ply 16/10* 15/10.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Money Game : 16/10* 15/10 surpasse 20/15 16/10* de +0.090 EMG (64.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 16/10* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/10* 15/10 domine 20/15 16/10* de +0.090 EMG.",
+            "En Money Game, 16/10* 15/10 maximise votre équité cubeful (+0.549 EMG).",
+            "Évitez 20/15 16/10* (-0.090 EMG) ; jouez la ligne maîtresse 16/10* 15/10."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_687_13",
+        "tier": 2,
+        "xgid": "XGID=-a--b-EaC---dD---cAdA---A-:0:0:1:13:1:1:0:3:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "24/20",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/20",
+            "24/21 8/7*",
+            "18/15 8/7*"
+        ],
+        "equityLoss": 0.136,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.136 EMG face au coup 3-ply 8/5 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 3 pts (1-1, Videau à 1) : 8/5 6/5 surpasse 24/20 de +0.136 EMG (54.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 8/5 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5 6/5 domine 24/20 de +0.136 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 8/5 6/5 maximise votre équité cubeful (+0.252 EMG).",
+            "Évitez 24/20 (-0.136 EMG) ; jouez la ligne maîtresse 8/5 6/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_688_62",
+        "tier": 4,
+        "xgid": "XGID=-AbA-aDABA--dB---aBdaAb---:0:0:1:62:1:1:0:3:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "21/15 9/7",
+        "optimalMove": "9/3 7/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/3 7/5*",
+            "21/15 9/7",
+            "13/7 3/1",
+            "13/7 9/7"
+        ],
+        "equityLoss": 0.047,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/15 9/7 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.047 EMG face au coup 3-ply 9/3 7/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 3 pts (1-1, Videau à 1) : 9/3 7/5* surpasse 21/15 9/7 de +0.047 EMG (53.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 9/3 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/3 7/5* domine 21/15 9/7 de +0.047 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 9/3 7/5* maximise votre équité cubeful (+0.171 EMG).",
+            "Évitez 21/15 9/7 (-0.047 EMG) ; jouez la ligne maîtresse 9/3 7/5*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_689_34",
+        "tier": 2,
+        "xgid": "XGID=aBAB-AA-a-bBbB----acbabCA-:0:0:1:34:1:1:0:3:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "11/8* 6/2",
+        "optimalMove": "24/21* 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21* 6/2",
+            "11/8* 6/2",
+            "6/2 5/2",
+            "13/9 5/2"
+        ],
+        "equityLoss": 0.276,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 11/8* 6/2 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.276 EMG face au coup 3-ply 24/21* 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 3 pts (1-1, Videau à 1) : 24/21* 6/2 surpasse 11/8* 6/2 de +0.276 EMG (41.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/21* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* 6/2 domine 11/8* 6/2 de +0.276 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 24/21* 6/2 maximise votre équité cubeful (-0.479 EMG).",
+            "Évitez 11/8* 6/2 (-0.276 EMG) ; jouez la ligne maîtresse 24/21* 6/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_690_52",
+        "tier": 2,
+        "xgid": "XGID=-aBa--DAA---cE--bb-e-AaA--:0:0:1:52:0:0:0:5:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "23/21 13/8",
+        "optimalMove": "8/3*/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3*/1*",
+            "23/21 13/8",
+            "23/21 8/3*",
+            "23/21 6/1*"
+        ],
+        "equityLoss": 0.151,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 23/21 13/8 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.151 EMG face au coup 3-ply 8/3*/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 5 pts (0-0, Videau à 1) : 8/3*/1* surpasse 23/21 13/8 de +0.151 EMG (50.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 8/3*/1* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3*/1* domine 23/21 13/8 de +0.151 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 8/3*/1* maximise votre équité cubeful (+0.099 EMG).",
+            "Évitez 23/21 13/8 (-0.151 EMG) ; jouez la ligne maîtresse 8/3*/1*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_691_56",
+        "tier": 2,
+        "xgid": "XGID=-BbAa-CABB---Ba--aaeb-AbA-:0:0:1:56:0:0:0:5:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "22/17* 9/3",
+        "optimalMove": "24/18* 22/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 22/17*",
+            "22/17* 9/3",
+            "22/17* 13/7",
+            "24/18* 8/3"
+        ],
+        "equityLoss": 0.276,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 22/17* 9/3 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.276 EMG face au coup 3-ply 24/18* 22/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 5 pts (0-0, Videau à 1) : 24/18* 22/17* surpasse 22/17* 9/3 de +0.276 EMG (66.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 22/17* domine 22/17* 9/3 de +0.276 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/18* 22/17* maximise votre équité cubeful (+0.726 EMG).",
+            "Évitez 22/17* 9/3 (-0.276 EMG) ; jouez la ligne maîtresse 24/18* 22/17*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_692_21",
+        "tier": 3,
+        "xgid": "XGID=-BcC--CAC-------a-Bdb-acaA:0:0:1:21:0:0:0:5:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "bar/24* 18/16*",
+        "optimalMove": "bar/24*/22*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24*/22*",
+            "bar/24* 18/16*",
+            "bar/24* 8/6",
+            "bar/24* 3/1"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 18/16* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.065 EMG face au coup 3-ply bar/24*/22*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 5 pts (0-0, Videau à 1) : bar/24*/22* surpasse bar/24* 18/16* de +0.065 EMG (76.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24*/22* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24*/22* domine bar/24* 18/16* de +0.065 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/24*/22* maximise votre équité cubeful (+1.102 EMG).",
+            "Évitez bar/24* 18/16* (-0.065 EMG) ; jouez la ligne maîtresse bar/24*/22*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_693_46",
+        "tier": 3,
+        "xgid": "XGID=--DC-aCb----a--A-c-a--eDb-:0:0:1:46:0:0:0:5:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "23/19*/13",
+        "optimalMove": "23/19* 15/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/19* 15/9",
+            "23/19*/13",
+            "15/5*",
+            "15/9 6/2"
+        ],
+        "equityLoss": 0.066,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 23/19*/13 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.066 EMG face au coup 3-ply 23/19* 15/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 5 pts (0-0, Videau à 1) : 23/19* 15/9 surpasse 23/19*/13 de +0.066 EMG (56.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 23/19* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/19* 15/9 domine 23/19*/13 de +0.066 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 23/19* 15/9 maximise votre équité cubeful (+0.380 EMG).",
+            "Évitez 23/19*/13 (-0.066 EMG) ; jouez la ligne maîtresse 23/19* 15/9."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_694_62",
+        "tier": 4,
+        "xgid": "XGID=-BbF--c-B----A--A-B-Aabfa-:0:0:1:62:0:0:0:5:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "18/16 18/12",
+        "optimalMove": "20/14 18/16",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/14 18/16",
+            "18/16 18/12",
+            "16/8",
+            "20/14 16/14"
+        ],
+        "equityLoss": 0.053,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 18/16 18/12 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.053 EMG face au coup 3-ply 20/14 18/16.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 5 pts (0-0, Videau à 1) : 20/14 18/16 surpasse 18/16 18/12 de +0.053 EMG (66.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/14 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/14 18/16 domine 18/16 18/12 de +0.053 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 20/14 18/16 maximise votre équité cubeful (+0.693 EMG).",
+            "Évitez 18/16 18/12 (-0.053 EMG) ; jouez la ligne maîtresse 20/14 18/16."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_695_21",
+        "tier": 2,
+        "xgid": "XGID=-AFBBa-a---a-----b-BBafab-:0:0:1:21:0:0:0:5:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "20/19 20/18",
+        "optimalMove": "20/18 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/18 2/1",
+            "20/19 20/18",
+            "20/18 19/18",
+            "20/19 3/1"
+        ],
+        "equityLoss": 0.24,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/19 20/18 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.240 EMG face au coup 3-ply 20/18 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 5 pts (0-0, Videau à 1) : 20/18 2/1 surpasse 20/19 20/18 de +0.240 EMG (49.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/18 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/18 2/1 domine 20/19 20/18 de +0.240 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 20/18 2/1 maximise votre équité cubeful (-0.005 EMG).",
+            "Évitez 20/19 20/18 (-0.240 EMG) ; jouez la ligne maîtresse 20/18 2/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_696_64",
+        "tier": 3,
+        "xgid": "XGID=--ab-aD-aa--dD---bAbACa-AA:0:0:1:64:3:3:0:7:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "bar/21 24/18",
+        "optimalMove": "bar/15",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/15",
+            "bar/21 24/18",
+            "bar/21 20/14",
+            "bar/21 13/7"
+        ],
+        "equityLoss": 0.061,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 24/18 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.061 EMG face au coup 3-ply bar/15.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 7 pts (3-3, Videau à 1) : bar/15 surpasse bar/21 24/18 de +0.061 EMG (48.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/15 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/15 domine bar/21 24/18 de +0.061 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/15 maximise votre équité cubeful (-0.108 EMG).",
+            "Évitez bar/21 24/18 (-0.061 EMG) ; jouez la ligne maîtresse bar/15."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_697_34",
+        "tier": 3,
+        "xgid": "XGID=-aA-baCbB-aBcC--a--dA-BA--:0:0:1:34:3:3:0:7:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "20/16*/13",
+        "optimalMove": "20/16* 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/16* 13/10*",
+            "20/16*/13",
+            "20/16* 6/3",
+            "23/16*"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/16*/13 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.113 EMG face au coup 3-ply 20/16* 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 7 pts (3-3, Videau à 1) : 20/16* 13/10* surpasse 20/16*/13 de +0.113 EMG (57.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/16* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/16* 13/10* domine 20/16*/13 de +0.113 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 20/16* 13/10* maximise votre équité cubeful (+0.489 EMG).",
+            "Évitez 20/16*/13 (-0.113 EMG) ; jouez la ligne maîtresse 20/16* 13/10*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_698_12",
+        "tier": 2,
+        "xgid": "XGID=--cDbAA-BAaA-bB---adA-Baa-:0:0:1:12:3:3:0:7:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "11/9 6/5",
+        "optimalMove": "20/18* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/18* 6/5",
+            "11/9 6/5",
+            "9/6",
+            "22/20 6/5"
+        ],
+        "equityLoss": 0.129,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 11/9 6/5 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.129 EMG face au coup 3-ply 20/18* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 7 pts (3-3, Videau à 1) : 20/18* 6/5 surpasse 11/9 6/5 de +0.129 EMG (59.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/18* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/18* 6/5 domine 11/9 6/5 de +0.129 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 20/18* 6/5 maximise votre équité cubeful (+0.713 EMG).",
+            "Évitez 11/9 6/5 (-0.129 EMG) ; jouez la ligne maîtresse 20/18* 6/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_699_11",
+        "tier": 3,
+        "xgid": "XGID=--AaAAB-B--acEa--b-e-aa-C-:0:0:1:11:6:2:0:9:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/22* 4/3*/2",
+        "optimalMove": "24/22*/21* 5/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/22*/21* 5/4",
+            "24/22* 4/3*/2",
+            "24/22* 24/23 5/4",
+            "24/22*/21* 4/3*"
+        ],
+        "equityLoss": 0.072,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22* 4/3*/2 (Match en 9 pts (6-2, Videau à 1)), vous concédez -0.072 EMG face au coup 3-ply 24/22*/21* 5/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 9 pts (6-2, Videau à 1) : 24/22*/21* 5/4 surpasse 24/22* 4/3*/2 de +0.072 EMG (56.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/22*/21* en Match en 9 pts (6-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/22*/21* 5/4 domine 24/22* 4/3*/2 de +0.072 EMG.",
+            "En Match en 9 pts (6-2, Videau à 1), 24/22*/21* 5/4 maximise votre équité cubeful (+0.060 EMG).",
+            "Évitez 24/22* 4/3*/2 (-0.072 EMG) ; jouez la ligne maîtresse 24/22*/21* 5/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_700_22",
+        "tier": 3,
+        "xgid": "XGID=-aAaabEbaBABc-aA-b-B--a--A:0:0:1:22:2:6:0:9:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "bar/23 6/4*(3)",
+        "optimalMove": "bar/23 10/8* 6/4*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 10/8* 6/4*(2)",
+            "bar/23 6/4*(3)",
+            "bar/23 15/13 6/4*(2)",
+            "bar/21 6/4*(2)"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23 6/4*(3) (Match en 9 pts (2-6, Videau à 1)), vous concédez -0.083 EMG face au coup 3-ply bar/23 10/8* 6/4*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 9 pts (2-6, Videau à 1) : bar/23 10/8* 6/4*(2) surpasse bar/23 6/4*(3) de +0.083 EMG (58.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 9 pts (2-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 10/8* 6/4*(2) domine bar/23 6/4*(3) de +0.083 EMG.",
+            "En Match en 9 pts (2-6, Videau à 1), bar/23 10/8* 6/4*(2) maximise votre équité cubeful (+0.964 EMG).",
+            "Évitez bar/23 6/4*(3) (-0.083 EMG) ; jouez la ligne maîtresse bar/23 10/8* 6/4*(2)."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_701_44",
+        "tier": 4,
+        "xgid": "XGID=-A--BAab---BA--Ab-aeBACcaA:0:0:1:44:6:2:0:9:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21 22/18* 15/11 12/8",
+        "optimalMove": "bar/21 22/18*/14 15/11",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 22/18*/14 15/11",
+            "bar/21 22/18* 15/11 12/8",
+            "bar/21 22/18*/14 5/1",
+            "bar/21 22/18*/14 12/8"
+        ],
+        "equityLoss": 0.045,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 22/18* 15/11 12/8 (Match en 9 pts (6-2, Videau à 1)), vous concédez -0.045 EMG face au coup 3-ply bar/21 22/18*/14 15/11.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 9 pts (6-2, Videau à 1) : bar/21 22/18*/14 15/11 surpasse bar/21 22/18* 15/11 12/8 de +0.045 EMG (51.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 9 pts (6-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 22/18*/14 15/11 domine bar/21 22/18* 15/11 12/8 de +0.045 EMG.",
+            "En Match en 9 pts (6-2, Videau à 1), bar/21 22/18*/14 15/11 maximise votre équité cubeful (-0.398 EMG).",
+            "Évitez bar/21 22/18* 15/11 12/8 (-0.045 EMG) ; jouez la ligne maîtresse bar/21 22/18*/14 15/11."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_702_13",
+        "tier": 4,
+        "xgid": "XGID=----aADAD---dC--Ac-da--b-A:0:0:1:13:3:1:0:11:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "bar/22 6/5",
+        "optimalMove": "bar/24 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 8/5",
+            "bar/22 6/5",
+            "bar/22 5/4*",
+            "bar/22 8/7"
+        ],
+        "equityLoss": 0.039,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 6/5 (Match en 11 pts (3-1, Videau à 1)), vous concédez -0.039 EMG face au coup 3-ply bar/24 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 11 pts (3-1, Videau à 1) : bar/24 8/5 surpasse bar/22 6/5 de +0.039 EMG (42.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 11 pts (3-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 8/5 domine bar/22 6/5 de +0.039 EMG.",
+            "En Match en 11 pts (3-1, Videau à 1), bar/24 8/5 maximise votre équité cubeful (-0.384 EMG).",
+            "Évitez bar/22 6/5 (-0.039 EMG) ; jouez la ligne maîtresse bar/24 8/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_703_15",
+        "tier": 4,
+        "xgid": "XGID=--B-aAD-D-aAbA---cac-AabaA:0:0:1:15:1:3:0:11:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/24* 11/6",
+        "optimalMove": "bar/24* 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 13/8",
+            "bar/24* 11/6",
+            "bar/20 5/4*",
+            "bar/20 11/10*"
+        ],
+        "equityLoss": 0.053,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 11/6 (Match en 11 pts (1-3, Videau à 1)), vous concédez -0.053 EMG face au coup 3-ply bar/24* 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 11 pts (1-3, Videau à 1) : bar/24* 13/8 surpasse bar/24* 11/6 de +0.053 EMG (49.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 11 pts (1-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 13/8 domine bar/24* 11/6 de +0.053 EMG.",
+            "En Match en 11 pts (1-3, Videau à 1), bar/24* 13/8 maximise votre équité cubeful (+0.035 EMG).",
+            "Évitez bar/24* 11/6 (-0.053 EMG) ; jouez la ligne maîtresse bar/24* 13/8."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_704_12",
+        "tier": 2,
+        "xgid": "XGID=-ABAb-DaEa----A--ac-bAabb-:0:0:1:12:1:3:0:11:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "14/13 3/1",
+        "optimalMove": "8/7* 3/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/7* 3/1",
+            "14/13 3/1",
+            "6/3",
+            "14/12 8/7*"
+        ],
+        "equityLoss": 0.815,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 14/13 3/1 (Match en 11 pts (1-3, Videau à 1)), vous concédez -0.815 EMG face au coup 3-ply 8/7* 3/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 11 pts (1-3, Videau à 1) : 8/7* 3/1 surpasse 14/13 3/1 de +0.815 EMG (67.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 8/7* en Match en 11 pts (1-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/7* 3/1 domine 14/13 3/1 de +0.815 EMG.",
+            "En Match en 11 pts (1-3, Videau à 1), 8/7* 3/1 maximise votre équité cubeful (+0.772 EMG).",
+            "Évitez 14/13 3/1 (-0.815 EMG) ; jouez la ligne maîtresse 8/7* 3/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_705_45",
+        "tier": 2,
+        "xgid": "XGID=-BDAA--BA---AA--ad-acB-ea-:0:0:1:45:3:1:0:11:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "21/16* 7/3",
+        "optimalMove": "21/16* 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16* 8/4",
+            "21/16* 7/3",
+            "21/16* 12/8",
+            "21/16*/12"
+        ],
+        "equityLoss": 0.276,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/16* 7/3 (Match en 11 pts (3-1, Videau à 1)), vous concédez -0.276 EMG face au coup 3-ply 21/16* 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 11 pts (3-1, Videau à 1) : 21/16* 8/4 surpasse 21/16* 7/3 de +0.276 EMG (46.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 21/16* en Match en 11 pts (3-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16* 8/4 domine 21/16* 7/3 de +0.276 EMG.",
+            "En Match en 11 pts (3-1, Videau à 1), 21/16* 8/4 maximise votre équité cubeful (-0.224 EMG).",
+            "Évitez 21/16* 7/3 (-0.276 EMG) ; jouez la ligne maîtresse 21/16* 8/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_706_43",
+        "tier": 2,
+        "xgid": "XGID=-Aa-B-CaCA--dC---aaba-bbB-:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "24/20* 9/6",
+        "optimalMove": "24/20*/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20*/17*",
+            "24/20* 9/6",
+            "24/21 24/20*",
+            "24/20* 13/10"
+        ],
+        "equityLoss": 0.348,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20* 9/6 (Money Game), vous concédez -0.348 EMG face au coup 3-ply 24/20*/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Money Game : 24/20*/17* surpasse 24/20* 9/6 de +0.348 EMG (63.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/20*/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20*/17* domine 24/20* 9/6 de +0.348 EMG.",
+            "En Money Game, 24/20*/17* maximise votre équité cubeful (+0.663 EMG).",
+            "Évitez 24/20* 9/6 (-0.348 EMG) ; jouez la ligne maîtresse 24/20*/17*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_707_22",
+        "tier": 4,
+        "xgid": "XGID=--BB--BaA-a-aDaaaaAd-a-abC:0:0:1:22:0:0:0:0:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "bar/23*(3) 18/16*",
+        "optimalMove": "bar/23*/21* bar/23(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23*/21* bar/23(2)",
+            "bar/23*(3) 18/16*",
+            "bar/23*(3) 13/11",
+            "bar/23*(3) 8/6"
+        ],
+        "equityLoss": 0.05,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23*(3) 18/16* (Money Game), vous concédez -0.050 EMG face au coup 3-ply bar/23*/21* bar/23(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Money Game : bar/23*/21* bar/23(2) surpasse bar/23*(3) 18/16* de +0.050 EMG (80.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/23*/21* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23*/21* bar/23(2) domine bar/23*(3) 18/16* de +0.050 EMG.",
+            "En Money Game, bar/23*/21* bar/23(2) maximise votre équité cubeful (+1.757 EMG).",
+            "Évitez bar/23*(3) 18/16* (-0.050 EMG) ; jouez la ligne maîtresse bar/23*/21* bar/23(2)."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_708_45",
+        "tier": 2,
+        "xgid": "XGID=-cEa-A-aBA---A--A-aeaaABbA:0:0:1:45:0:0:0:0:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "bar/20* 22/18*",
+        "optimalMove": "bar/20* 9/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 9/5",
+            "bar/20* 22/18*",
+            "bar/21* 23/18*",
+            "bar/20* 13/9"
+        ],
+        "equityLoss": 0.276,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 22/18* (Money Game), vous concédez -0.276 EMG face au coup 3-ply bar/20* 9/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Money Game : bar/20* 9/5 surpasse bar/20* 22/18* de +0.276 EMG (54.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 9/5 domine bar/20* 22/18* de +0.276 EMG.",
+            "En Money Game, bar/20* 9/5 maximise votre équité cubeful (+0.262 EMG).",
+            "Évitez bar/20* 22/18* (-0.276 EMG) ; jouez la ligne maîtresse bar/20* 9/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_709_44",
+        "tier": 4,
+        "xgid": "XGID=-Bb-aaEA--a-a---aa-AbAAeCA:0:0:1:44:0:0:0:0:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/17* 21/17 19/15",
+        "optimalMove": "bar/17* 22/18 21/17",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/17* 22/18 21/17",
+            "bar/17* 21/17 19/15",
+            "bar/17*/9",
+            "bar/17* 21/17 7/3"
+        ],
+        "equityLoss": 0.049,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/17* 21/17 19/15 (Money Game), vous concédez -0.049 EMG face au coup 3-ply bar/17* 22/18 21/17.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Money Game : bar/17* 22/18 21/17 surpasse bar/17* 21/17 19/15 de +0.049 EMG (63.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/17* 22/18 21/17 domine bar/17* 21/17 19/15 de +0.049 EMG.",
+            "En Money Game, bar/17* 22/18 21/17 maximise votre équité cubeful (+0.571 EMG).",
+            "Évitez bar/17* 21/17 19/15 (-0.049 EMG) ; jouez la ligne maîtresse bar/17* 22/18 21/17."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_710_31",
+        "tier": 2,
+        "xgid": "XGID=-dEAbB-aA----A-AA--cb-aBbA:0:0:1:31:0:0:0:0:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "bar/22* 16/15",
+        "optimalMove": "bar/22* 8/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 8/7*",
+            "bar/22* 16/15",
+            "bar/22* 3/2",
+            "bar/22* 23/22"
+        ],
+        "equityLoss": 0.202,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 16/15 (Money Game), vous concédez -0.202 EMG face au coup 3-ply bar/22* 8/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Money Game : bar/22* 8/7* surpasse bar/22* 16/15 de +0.202 EMG (44.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 8/7* domine bar/22* 16/15 de +0.202 EMG.",
+            "En Money Game, bar/22* 8/7* maximise votre équité cubeful (-0.184 EMG).",
+            "Évitez bar/22* 16/15 (-0.202 EMG) ; jouez la ligne maîtresse bar/22* 8/7*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_711_34",
+        "tier": 3,
+        "xgid": "XGID=-Bb--BC---a--A--Bc--a-ceE-:0:0:1:34:0:0:0:0:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "24/21 24/20*",
+        "optimalMove": "24/20* 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20* 13/10*",
+            "24/21 24/20*",
+            "24/20* 16/13",
+            "24/20* 6/3"
+        ],
+        "equityLoss": 0.119,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21 24/20* (Money Game), vous concédez -0.119 EMG face au coup 3-ply 24/20* 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Money Game : 24/20* 13/10* surpasse 24/21 24/20* de +0.119 EMG (71.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/20* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20* 13/10* domine 24/21 24/20* de +0.119 EMG.",
+            "En Money Game, 24/20* 13/10* maximise votre équité cubeful (+0.882 EMG).",
+            "Évitez 24/21 24/20* (-0.119 EMG) ; jouez la ligne maîtresse 24/20* 13/10*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_712_21",
+        "tier": 2,
+        "xgid": "XGID=-aAb-DB-B---cD-a-c-abaaA-A:0:0:1:21:1:1:0:3:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "bar/22*",
+        "optimalMove": "bar/24 23/21*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 23/21*",
+            "bar/22*",
+            "bar/23 2/1*",
+            "bar/24 13/11"
+        ],
+        "equityLoss": 0.134,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.134 EMG face au coup 3-ply bar/24 23/21*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 3 pts (1-1, Videau à 1) : bar/24 23/21* surpasse bar/22* de +0.134 EMG (58.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 23/21* domine bar/22* de +0.134 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/24 23/21* maximise votre équité cubeful (+0.458 EMG).",
+            "Évitez bar/22* (-0.134 EMG) ; jouez la ligne maîtresse bar/24 23/21*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_713_42",
+        "tier": 3,
+        "xgid": "XGID=-b-d-EAACaa-A--Aad-AaAa-A-:0:0:1:42:1:1:0:3:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "19/15 8/6",
+        "optimalMove": "12/10*/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "12/10*/6",
+            "19/15 8/6",
+            "24/20* 8/6",
+            "15/11 8/6"
+        ],
+        "equityLoss": 0.075,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 19/15 8/6 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.075 EMG face au coup 3-ply 12/10*/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 3 pts (1-1, Videau à 1) : 12/10*/6 surpasse 19/15 8/6 de +0.075 EMG (61.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 12/10*/6 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 12/10*/6 domine 19/15 8/6 de +0.075 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 12/10*/6 maximise votre équité cubeful (+0.648 EMG).",
+            "Évitez 19/15 8/6 (-0.075 EMG) ; jouez la ligne maîtresse 12/10*/6."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_714_35",
+        "tier": 2,
+        "xgid": "XGID=-baAa-a-CAbA-a-A-b-AeAC-BA:0:0:1:35:1:1:0:3:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "bar/22 8/3",
+        "optimalMove": "bar/22 24/19",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 24/19",
+            "bar/22 8/3",
+            "bar/22 19/14",
+            "bar/22 11/6*"
+        ],
+        "equityLoss": 0.207,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 8/3 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.207 EMG face au coup 3-ply bar/22 24/19.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 3 pts (1-1, Videau à 1) : bar/22 24/19 surpasse bar/22 8/3 de +0.207 EMG (45.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 24/19 domine bar/22 8/3 de +0.207 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/22 24/19 maximise votre équité cubeful (-0.246 EMG).",
+            "Évitez bar/22 8/3 (-0.207 EMG) ; jouez la ligne maîtresse bar/22 24/19."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_715_46",
+        "tier": 2,
+        "xgid": "XGID=-cacAD-aAbA---aBac-B-AB-A-:0:0:1:46:1:1:0:3:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "19/13 8/4",
+        "optimalMove": "22/16* 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/16* 8/4",
+            "19/13 8/4",
+            "19/15 10/4",
+            "21/15 8/4"
+        ],
+        "equityLoss": 0.146,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 19/13 8/4 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.146 EMG face au coup 3-ply 22/16* 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 3 pts (1-1, Videau à 1) : 22/16* 8/4 surpasse 19/13 8/4 de +0.146 EMG (56.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 22/16* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/16* 8/4 domine 19/13 8/4 de +0.146 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 22/16* 8/4 maximise votre équité cubeful (+0.346 EMG).",
+            "Évitez 19/13 8/4 (-0.146 EMG) ; jouez la ligne maîtresse 22/16* 8/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_716_12",
+        "tier": 4,
+        "xgid": "XGID=-bbc-E-b-a-A--baA--DBaa-AA:0:0:1:12:1:1:0:3:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/23 16/15*",
+        "optimalMove": "bar/24 11/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 11/9*",
+            "bar/23 16/15*",
+            "bar/23 11/10",
+            "bar/23 5/4"
+        ],
+        "equityLoss": 0.049,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23 16/15* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.049 EMG face au coup 3-ply bar/24 11/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 3 pts (1-1, Videau à 1) : bar/24 11/9* surpasse bar/23 16/15* de +0.049 EMG (42.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 11/9* domine bar/23 16/15* de +0.049 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/24 11/9* maximise votre équité cubeful (-0.422 EMG).",
+            "Évitez bar/23 16/15* (-0.049 EMG) ; jouez la ligne maîtresse bar/24 11/9*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_717_11",
+        "tier": 4,
+        "xgid": "XGID=-AD---a-BAa--a--ae-dC-aAaC:0:0:1:11:2:2:0:5:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "bar/24*(3) 2/1",
+        "optimalMove": "bar/24*(3) 23/22*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24*(3) 23/22*",
+            "bar/24*(3) 2/1",
+            "bar/24*/23 bar/24(2)",
+            "bar/24*(3) 9/8"
+        ],
+        "equityLoss": 0.047,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24*(3) 2/1 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.047 EMG face au coup 3-ply bar/24*(3) 23/22*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 5 pts (2-2, Videau à 1) : bar/24*(3) 23/22* surpasse bar/24*(3) 2/1 de +0.047 EMG (35.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24*(3) en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24*(3) 23/22* domine bar/24*(3) 2/1 de +0.047 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/24*(3) 23/22* maximise votre équité cubeful (-0.785 EMG).",
+            "Évitez bar/24*(3) 2/1 (-0.047 EMG) ; jouez la ligne maîtresse bar/24*(3) 23/22*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_718_43",
+        "tier": 4,
+        "xgid": "XGID=-aA-adEaF-aA-----bA-A--da-:0:0:1:43:2:2:0:5:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "8/4*/1*",
+        "optimalMove": "11/7*/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/7*/4*",
+            "8/4*/1*",
+            "11/8 6/2",
+            "18/11"
+        ],
+        "equityLoss": 0.036,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4*/1* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.036 EMG face au coup 3-ply 11/7*/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 5 pts (2-2, Videau à 1) : 11/7*/4* surpasse 8/4*/1* de +0.036 EMG (78.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 11/7*/4* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/7*/4* domine 8/4*/1* de +0.036 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 11/7*/4* maximise votre équité cubeful (+1.272 EMG).",
+            "Évitez 8/4*/1* (-0.036 EMG) ; jouez la ligne maîtresse 11/7*/4*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_719_24",
+        "tier": 2,
+        "xgid": "XGID=--D--a-aCA-AaA--Aa-aa-deCA:0:0:1:24:2:2:0:5:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/21 9/7*",
+        "optimalMove": "bar/19*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19*",
+            "bar/21 9/7*",
+            "bar/21 11/9",
+            "bar/21 13/11"
+        ],
+        "equityLoss": 0.242,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 9/7* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.242 EMG face au coup 3-ply bar/19*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 5 pts (2-2, Videau à 1) : bar/19* surpasse bar/21 9/7* de +0.242 EMG (48.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/19* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19* domine bar/21 9/7* de +0.242 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/19* maximise votre équité cubeful (-0.206 EMG).",
+            "Évitez bar/21 9/7* (-0.242 EMG) ; jouez la ligne maîtresse bar/19*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_720_62",
+        "tier": 4,
+        "xgid": "XGID=--AaaaC-A-A-aC-aac-caA-bE-:0:0:1:62:3:3:0:7:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "21/15* 6/4*",
+        "optimalMove": "10/4*/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/4*/2",
+            "21/15* 6/4*",
+            "10/4* 6/4",
+            "21/15* 10/8"
+        ],
+        "equityLoss": 0.048,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/15* 6/4* (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.048 EMG face au coup 3-ply 10/4*/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 7 pts (3-3, Videau à 1) : 10/4*/2 surpasse 21/15* 6/4* de +0.048 EMG (40.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 10/4*/2 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/4*/2 domine 21/15* 6/4* de +0.048 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 10/4*/2 maximise votre équité cubeful (-0.891 EMG).",
+            "Évitez 21/15* 6/4* (-0.048 EMG) ; jouez la ligne maîtresse 10/4*/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_721_31",
+        "tier": 2,
+        "xgid": "XGID=-ABa--C-AA---A-bad-aaaAdE-:0:0:1:31:3:3:0:7:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "22/21* 6/3*",
+        "optimalMove": "24/21*/20*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21*/20*",
+            "22/21* 6/3*",
+            "24/21* 22/21",
+            "24/21* 9/8"
+        ],
+        "equityLoss": 0.358,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 22/21* 6/3* (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.358 EMG face au coup 3-ply 24/21*/20*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 7 pts (3-3, Videau à 1) : 24/21*/20* surpasse 22/21* 6/3* de +0.358 EMG (63.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/21*/20* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21*/20* domine 22/21* 6/3* de +0.358 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 24/21*/20* maximise votre équité cubeful (+0.725 EMG).",
+            "Évitez 22/21* 6/3* (-0.358 EMG) ; jouez la ligne maîtresse 24/21*/20*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_722_16",
+        "tier": 3,
+        "xgid": "XGID=-cDAA-c-D-B---A--b-c--Bbb-:0:0:1:16:3:3:0:7:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "14/8 4/3",
+        "optimalMove": "22/16 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/16 4/3",
+            "14/8 4/3",
+            "8/2 4/3",
+            "14/8 3/2"
+        ],
+        "equityLoss": 0.066,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 14/8 4/3 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.066 EMG face au coup 3-ply 22/16 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 7 pts (3-3, Videau à 1) : 22/16 4/3 surpasse 14/8 4/3 de +0.066 EMG (55.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 22/16 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/16 4/3 domine 14/8 4/3 de +0.066 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 22/16 4/3 maximise votre équité cubeful (+0.239 EMG).",
+            "Évitez 14/8 4/3 (-0.066 EMG) ; jouez la ligne maîtresse 22/16 4/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_723_66",
+        "tier": 4,
+        "xgid": "XGID=--D-B-b-C-BaaAAcAA-----fb-:0:0:1:66:3:3:0:7:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "17/11* 16/10 14/8 13/7",
+        "optimalMove": "17/11* 16/4 14/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "17/11* 16/4 14/8",
+            "17/11* 16/10 14/8 13/7",
+            "17/11* 16/10 14/2",
+            "17/11*/5 16/10 14/8"
+        ],
+        "equityLoss": 0.042,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 17/11* 16/10 14/8 13/7 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.042 EMG face au coup 3-ply 17/11* 16/4 14/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Match en 7 pts (3-3, Videau à 1) : 17/11* 16/4 14/8 surpasse 17/11* 16/10 14/8 13/7 de +0.042 EMG (72.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 17/11* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 17/11* 16/4 14/8 domine 17/11* 16/10 14/8 13/7 de +0.042 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 17/11* 16/4 14/8 maximise votre équité cubeful (+0.869 EMG).",
+            "Évitez 17/11* 16/10 14/8 13/7 (-0.042 EMG) ; jouez la ligne maîtresse 17/11* 16/4 14/8."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_724_34",
+        "tier": 3,
+        "xgid": "XGID=-D--b-CaC---b---dA-cB--cAA:0:0:1:34:0:0:0:9:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "bar/21 20/17",
+        "optimalMove": "bar/21 24/21",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 24/21",
+            "bar/21 20/17",
+            "bar/22 24/20",
+            "bar/21 17/14"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 20/17 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.089 EMG face au coup 3-ply bar/21 24/21.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 9 pts (0-0, Videau à 1) : bar/21 24/21 surpasse bar/21 20/17 de +0.089 EMG (36.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 24/21 domine bar/21 20/17 de +0.089 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/21 24/21 maximise votre équité cubeful (-0.499 EMG).",
+            "Évitez bar/21 20/17 (-0.089 EMG) ; jouez la ligne maîtresse bar/21 24/21."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_725_14",
+        "tier": 2,
+        "xgid": "XGID=-aC-abDA-B-B---A-aaaa-cAdA:0:0:1:14:0:0:0:9:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "bar/21 2/1*",
+        "optimalMove": "bar/20*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20*",
+            "bar/21 2/1*",
+            "bar/21 7/6",
+            "bar/21 15/14"
+        ],
+        "equityLoss": 0.194,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 2/1* (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.194 EMG face au coup 3-ply bar/20*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 9 pts (0-0, Videau à 1) : bar/20* surpasse bar/21 2/1* de +0.194 EMG (74.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* domine bar/21 2/1* de +0.194 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/20* maximise votre équité cubeful (+0.956 EMG).",
+            "Évitez bar/21 2/1* (-0.194 EMG) ; jouez la ligne maîtresse bar/20*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_726_32",
+        "tier": 2,
+        "xgid": "XGID=-EaBaB--AaB--ab---adAAabaA:0:0:1:32:0:0:0:9:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "bar/22*/20",
+        "optimalMove": "bar/22* 20/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 20/18*",
+            "bar/22*/20",
+            "bar/22* 10/8",
+            "bar/22* 8/6"
+        ],
+        "equityLoss": 0.312,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22*/20 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.312 EMG face au coup 3-ply bar/22* 20/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 9 pts (0-0, Videau à 1) : bar/22* 20/18* surpasse bar/22*/20 de +0.312 EMG (60.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22* en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 20/18* domine bar/22*/20 de +0.312 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/22* 20/18* maximise votre équité cubeful (+0.671 EMG).",
+            "Évitez bar/22*/20 (-0.312 EMG) ; jouez la ligne maîtresse bar/22* 20/18*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_727_44",
+        "tier": 3,
+        "xgid": "XGID=bEbBCDa------ab----dA--ba-:0:0:1:44:0:0:0:9:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "20/8 5/1",
+        "optimalMove": "20/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/4",
+            "20/8 5/1",
+            "20/12 5/1(2)",
+            "5/1(4)"
+        ],
+        "equityLoss": 0.064,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/8 5/1 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.064 EMG face au coup 3-ply 20/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 9 pts (0-0, Videau à 1) : 20/4 surpasse 20/8 5/1 de +0.064 EMG (86.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/4 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/4 domine 20/8 5/1 de +0.064 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 20/4 maximise votre équité cubeful (+1.620 EMG).",
+            "Évitez 20/8 5/1 (-0.064 EMG) ; jouez la ligne maîtresse 20/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_728_62",
+        "tier": 2,
+        "xgid": "XGID=-CAAa-BABaA-eB---a-d--baB-:0:0:1:62:1:7:0:11:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "10/2",
+        "optimalMove": "10/4*/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/4*/2",
+            "10/2",
+            "8/6 8/2",
+            "10/4* 8/6"
+        ],
+        "equityLoss": 0.547,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 10/2 (Match en 11 pts (1-7, Videau à 1)), vous concédez -0.547 EMG face au coup 3-ply 10/4*/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 11 pts (1-7, Videau à 1) : 10/4*/2 surpasse 10/2 de +0.547 EMG (54.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 10/4*/2 en Match en 11 pts (1-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/4*/2 domine 10/2 de +0.547 EMG.",
+            "En Match en 11 pts (1-7, Videau à 1), 10/4*/2 maximise votre équité cubeful (+0.569 EMG).",
+            "Évitez 10/2 (-0.547 EMG) ; jouez la ligne maîtresse 10/4*/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_729_64",
+        "tier": 4,
+        "xgid": "XGID=-bBB-AB-AA---D--B-a--bebc-:0:0:1:64:7:1:0:11:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "9/5 8/2",
+        "optimalMove": "16/10 9/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/10 9/5",
+            "9/5 8/2",
+            "13/7 9/5",
+            "13/9 8/2"
+        ],
+        "equityLoss": 0.041,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 9/5 8/2 (Match en 11 pts (7-1, Videau à 1)), vous concédez -0.041 EMG face au coup 3-ply 16/10 9/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 11 pts (7-1, Videau à 1) : 16/10 9/5 surpasse 9/5 8/2 de +0.041 EMG (73.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 16/10 en Match en 11 pts (7-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/10 9/5 domine 9/5 8/2 de +0.041 EMG.",
+            "En Match en 11 pts (7-1, Videau à 1), 16/10 9/5 maximise votre équité cubeful (+0.749 EMG).",
+            "Évitez 9/5 8/2 (-0.041 EMG) ; jouez la ligne maîtresse 16/10 9/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_730_13",
+        "tier": 3,
+        "xgid": "XGID=-DCDB--a-b--c-A---Aaa-dc--:0:0:1:13:1:7:0:11:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "14/10",
+        "optimalMove": "18/14",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/14",
+            "14/10",
+            "18/17 14/11",
+            "14/11 2/1"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 14/10 (Match en 11 pts (1-7, Videau à 1)), vous concédez -0.062 EMG face au coup 3-ply 18/14.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 11 pts (1-7, Videau à 1) : 18/14 surpasse 14/10 de +0.062 EMG (77.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 18/14 en Match en 11 pts (1-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/14 domine 14/10 de +0.062 EMG.",
+            "En Match en 11 pts (1-7, Videau à 1), 18/14 maximise votre équité cubeful (+1.005 EMG).",
+            "Évitez 14/10 (-0.062 EMG) ; jouez la ligne maîtresse 18/14."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_731_23",
+        "tier": 2,
+        "xgid": "XGID=-d-AaADACA--aB--A--bb--cbA:0:0:1:23:0:0:0:0:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/22 9/7",
+        "optimalMove": "bar/22 7/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 7/5",
+            "bar/22 9/7",
+            "bar/22 5/3",
+            "bar/22 6/4*"
+        ],
+        "equityLoss": 0.171,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 9/7 (Money Game), vous concédez -0.171 EMG face au coup 3-ply bar/22 7/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Money Game : bar/22 7/5 surpasse bar/22 9/7 de +0.171 EMG (57.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 7/5 domine bar/22 9/7 de +0.171 EMG.",
+            "En Money Game, bar/22 7/5 maximise votre équité cubeful (+0.265 EMG).",
+            "Évitez bar/22 9/7 (-0.171 EMG) ; jouez la ligne maîtresse bar/22 7/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_732_66",
+        "tier": 2,
+        "xgid": "XGID=-BD--BA--aa-bA--ab-caCbbB-:0:0:1:66:0:0:0:0:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "21/9* 21/15(2)",
+        "optimalMove": "24/18(2) 21/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18(2) 21/9*",
+            "21/9* 21/15(2)",
+            "24/18 21/9* 13/7",
+            "21/9*(2)"
+        ],
+        "equityLoss": 0.31,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/9* 21/15(2) (Money Game), vous concédez -0.310 EMG face au coup 3-ply 24/18(2) 21/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Money Game : 24/18(2) 21/9* surpasse 21/9* 21/15(2) de +0.310 EMG (34.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/18(2) en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18(2) 21/9* domine 21/9* 21/15(2) de +0.310 EMG.",
+            "En Money Game, 24/18(2) 21/9* maximise votre équité cubeful (-0.690 EMG).",
+            "Évitez 21/9* 21/15(2) (-0.310 EMG) ; jouez la ligne maîtresse 24/18(2) 21/9*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_733_33",
+        "tier": 3,
+        "xgid": "XGID=aCD-BBA---A---a---abbbccB-:0:0:1:33:0:0:0:0:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "10/4 5/2(2)",
+        "optimalMove": "10/1 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/1 6/3",
+            "10/4 5/2(2)",
+            "10/7 6/3 4/1(2)",
+            "10/7 6/3 5/2(2)"
+        ],
+        "equityLoss": 0.103,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 10/4 5/2(2) (Money Game), vous concédez -0.103 EMG face au coup 3-ply 10/1 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Money Game : 10/1 6/3 surpasse 10/4 5/2(2) de +0.103 EMG (13.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 10/1 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/1 6/3 domine 10/4 5/2(2) de +0.103 EMG.",
+            "En Money Game, 10/1 6/3 maximise votre équité cubeful (-1.077 EMG).",
+            "Évitez 10/4 5/2(2) (-0.103 EMG) ; jouez la ligne maîtresse 10/1 6/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_734_24",
+        "tier": 2,
+        "xgid": "XGID=aaB--aE-A---dDa--a-fA--AA-:0:0:1:24:1:1:0:3:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "20/14*",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "20/14*",
+            "23/17*",
+            "24/20 23/21"
+        ],
+        "equityLoss": 0.145,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.145 EMG face au coup 3-ply 8/4 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 3 pts (1-1, Videau à 1) : 8/4 6/4 surpasse 20/14* de +0.145 EMG (64.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 8/4 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/4 6/4 domine 20/14* de +0.145 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 8/4 6/4 maximise votre équité cubeful (+0.790 EMG).",
+            "Évitez 20/14* (-0.145 EMG) ; jouez la ligne maîtresse 8/4 6/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_735_66",
+        "tier": 3,
+        "xgid": "XGID=---aaaF---AAaC--a-bdABacA-:0:0:1:66:1:1:0:3:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "20/8 11/5* 10/4*",
+        "optimalMove": "13/7(2) 11/5* 10/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7(2) 11/5* 10/4*",
+            "20/8 11/5* 10/4*",
+            "21/15(2) 11/5* 10/4*",
+            "21/9 11/5* 10/4*"
+        ],
+        "equityLoss": 0.061,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/8 11/5* 10/4* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.061 EMG face au coup 3-ply 13/7(2) 11/5* 10/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Match en 3 pts (1-1, Videau à 1) : 13/7(2) 11/5* 10/4* surpasse 20/8 11/5* 10/4* de +0.061 EMG (54.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/7(2) en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/7(2) 11/5* 10/4* domine 20/8 11/5* 10/4* de +0.061 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 13/7(2) 11/5* 10/4* maximise votre équité cubeful (+0.233 EMG).",
+            "Évitez 20/8 11/5* 10/4* (-0.061 EMG) ; jouez la ligne maîtresse 13/7(2) 11/5* 10/4*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_736_52",
+        "tier": 2,
+        "xgid": "XGID=-aCAabDB---Ac-a-AAaf-AA---:0:0:1:52:1:1:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "22/17 16/14*",
+        "optimalMove": "6/1* 3/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/1* 3/1",
+            "22/17 16/14*",
+            "16/14* 6/1*",
+            "16/11 3/1*"
+        ],
+        "equityLoss": 0.164,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 22/17 16/14* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.164 EMG face au coup 3-ply 6/1* 3/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 3 pts (1-1, Videau à 1) : 6/1* 3/1 surpasse 22/17 16/14* de +0.164 EMG (58.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 6/1* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/1* 3/1 domine 22/17 16/14* de +0.164 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 6/1* 3/1 maximise votre équité cubeful (+0.450 EMG).",
+            "Évitez 22/17 16/14* (-0.164 EMG) ; jouez la ligne maîtresse 6/1* 3/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_737_65",
+        "tier": 3,
+        "xgid": "XGID=----cCE-A-a--Ba--abbCA-da-:0:0:1:65:1:1:0:3:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "20/14* 8/3",
+        "optimalMove": "20/14* 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/14* 13/8",
+            "20/14* 8/3",
+            "21/16 20/14*",
+            "20/15 20/14*"
+        ],
+        "equityLoss": 0.101,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14* 8/3 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.101 EMG face au coup 3-ply 20/14* 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 3 pts (1-1, Videau à 1) : 20/14* 13/8 surpasse 20/14* 8/3 de +0.101 EMG (73.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/14* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/14* 13/8 domine 20/14* 8/3 de +0.101 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 20/14* 13/8 maximise votre équité cubeful (+1.008 EMG).",
+            "Évitez 20/14* 8/3 (-0.101 EMG) ; jouez la ligne maîtresse 20/14* 13/8."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_738_65",
+        "tier": 3,
+        "xgid": "XGID=-BD---CA--aaba---a-ecDaA--:0:0:1:65:1:1:0:3:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "21/10*",
+        "optimalMove": "23/17* 21/16",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/17* 21/16",
+            "21/10*",
+            "23/17* 7/2",
+            "23/17* 6/1"
+        ],
+        "equityLoss": 0.106,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/10* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.106 EMG face au coup 3-ply 23/17* 21/16.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 3 pts (1-1, Videau à 1) : 23/17* 21/16 surpasse 21/10* de +0.106 EMG (44.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 23/17* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/17* 21/16 domine 21/10* de +0.106 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 23/17* 21/16 maximise votre équité cubeful (-0.332 EMG).",
+            "Évitez 21/10* (-0.106 EMG) ; jouez la ligne maîtresse 23/17* 21/16."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_739_44",
+        "tier": 2,
+        "xgid": "XGID=-cAaDAC-----dC-----db-a-BA:0:0:1:44:0:0:0:5:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/17 13/5",
+        "optimalMove": "bar/21 13/5 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 13/5 6/2",
+            "bar/17 13/5",
+            "bar/21 13/5 13/9",
+            "bar/13 6/2"
+        ],
+        "equityLoss": 0.232,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/17 13/5 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.232 EMG face au coup 3-ply bar/21 13/5 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 5 pts (0-0, Videau à 1) : bar/21 13/5 6/2 surpasse bar/17 13/5 de +0.232 EMG (58.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 13/5 6/2 domine bar/17 13/5 de +0.232 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/21 13/5 6/2 maximise votre équité cubeful (+0.528 EMG).",
+            "Évitez bar/17 13/5 (-0.232 EMG) ; jouez la ligne maîtresse bar/21 13/5 6/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_740_31",
+        "tier": 2,
+        "xgid": "XGID=-bAaaBD-C----Aa----cAd-cC-:0:0:1:31:0:0:0:5:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "6/2",
+        "optimalMove": "6/3*/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/3*/2",
+            "6/2",
+            "8/4*",
+            "13/12 6/3*"
+        ],
+        "equityLoss": 0.419,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 6/2 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.419 EMG face au coup 3-ply 6/3*/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 5 pts (0-0, Videau à 1) : 6/3*/2 surpasse 6/2 de +0.419 EMG (65.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 6/3*/2 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/3*/2 domine 6/2 de +0.419 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 6/3*/2 maximise votre équité cubeful (+0.628 EMG).",
+            "Évitez 6/2 (-0.419 EMG) ; jouez la ligne maîtresse 6/3*/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_741_62",
+        "tier": 4,
+        "xgid": "XGID=acD-CAB----aA----c-cbB-bB-:0:0:1:62:0:0:0:5:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/16",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/16",
+            "24/22 24/18",
+            "24/18 12/10",
+            "24/18 5/3"
+        ],
+        "equityLoss": 0.041,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22 24/18 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.041 EMG face au coup 3-ply 24/16.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 5 pts (0-0, Videau à 1) : 24/16 surpasse 24/22 24/18 de +0.041 EMG (40.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/16 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/16 domine 24/22 24/18 de +0.041 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/16 maximise votre équité cubeful (-0.354 EMG).",
+            "Évitez 24/22 24/18 (-0.041 EMG) ; jouez la ligne maîtresse 24/16."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_742_14",
+        "tier": 2,
+        "xgid": "XGID=-bBA-aD-Ba---AAa---bAc-eC-:0:0:1:14:0:0:0:5:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "24/20 14/13",
+        "optimalMove": "13/9* 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9* 6/5*",
+            "24/20 14/13",
+            "24/20 6/5*",
+            "13/9*/8"
+        ],
+        "equityLoss": 0.232,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 14/13 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.232 EMG face au coup 3-ply 13/9* 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 5 pts (0-0, Videau à 1) : 13/9* 6/5* surpasse 24/20 14/13 de +0.232 EMG (63.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/9* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/9* 6/5* domine 24/20 14/13 de +0.232 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 13/9* 6/5* maximise votre équité cubeful (+0.472 EMG).",
+            "Évitez 24/20 14/13 (-0.232 EMG) ; jouez la ligne maîtresse 13/9* 6/5*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_743_55",
+        "tier": 2,
+        "xgid": "XGID=-cEAB-Ba-A-a---aAa-bA--eaB:0:0:1:55:0:0:0:5:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/15*(2)",
+        "optimalMove": "bar/15* bar/20 16/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/15* bar/20 16/11*",
+            "bar/15*(2)",
+            "bar/15* bar/20 9/4",
+            "bar/15*/10 bar/20"
+        ],
+        "equityLoss": 0.186,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/15*(2) (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.186 EMG face au coup 3-ply bar/15* bar/20 16/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 5 pts (0-0, Videau à 1) : bar/15* bar/20 16/11* surpasse bar/15*(2) de +0.186 EMG (83.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/15* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/15* bar/20 16/11* domine bar/15*(2) de +0.186 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/15* bar/20 16/11* maximise votre équité cubeful (+1.306 EMG).",
+            "Évitez bar/15*(2) (-0.186 EMG) ; jouez la ligne maîtresse bar/15* bar/20 16/11*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_744_42",
+        "tier": 3,
+        "xgid": "XGID=--AAa-DAB--aeD--Aa-e--a-aA:0:0:1:42:3:3:0:7:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "bar/23 6/2",
+        "optimalMove": "bar/23 7/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 7/3",
+            "bar/23 6/2",
+            "bar/21 13/11*",
+            "bar/23 13/9"
+        ],
+        "equityLoss": 0.077,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23 6/2 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.077 EMG face au coup 3-ply bar/23 7/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 7 pts (3-3, Videau à 1) : bar/23 7/3 surpasse bar/23 6/2 de +0.077 EMG (54.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 7/3 domine bar/23 6/2 de +0.077 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/23 7/3 maximise votre équité cubeful (+0.223 EMG).",
+            "Évitez bar/23 6/2 (-0.077 EMG) ; jouez la ligne maîtresse bar/23 7/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_745_15",
+        "tier": 2,
+        "xgid": "XGID=-A-Ab-E--a--dEA--A-f--aa-A:0:0:1:15:3:3:0:7:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/24 6/1",
+        "optimalMove": "bar/24 14/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 14/9*",
+            "bar/24 6/1",
+            "bar/20 14/13",
+            "bar/24 13/8"
+        ],
+        "equityLoss": 0.134,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 6/1 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.134 EMG face au coup 3-ply bar/24 14/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 7 pts (3-3, Videau à 1) : bar/24 14/9* surpasse bar/24 6/1 de +0.134 EMG (47.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 14/9* domine bar/24 6/1 de +0.134 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/24 14/9* maximise votre équité cubeful (-0.178 EMG).",
+            "Évitez bar/24 6/1 (-0.134 EMG) ; jouez la ligne maîtresse bar/24 14/9*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_746_61",
+        "tier": 4,
+        "xgid": "XGID=---AbaFaC-a-dC--A-Ab-aa-b-:0:0:1:61:3:3:0:7:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "16/10* 8/7*",
+        "optimalMove": "16/10* 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/10* 6/5*",
+            "16/10* 8/7*",
+            "13/7* 6/5*",
+            "8/2 3/2"
+        ],
+        "equityLoss": 0.054,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 16/10* 8/7* (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.054 EMG face au coup 3-ply 16/10* 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 7 pts (3-3, Videau à 1) : 16/10* 6/5* surpasse 16/10* 8/7* de +0.054 EMG (66.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 16/10* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/10* 6/5* domine 16/10* 8/7* de +0.054 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 16/10* 6/5* maximise votre équité cubeful (+0.884 EMG).",
+            "Évitez 16/10* 8/7* (-0.054 EMG) ; jouez la ligne maîtresse 16/10* 6/5*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_747_16",
+        "tier": 2,
+        "xgid": "XGID=-B-AA-B--a-a-C-Bbc-fABA-b-:0:0:1:16:3:3:0:7:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "20/14 4/3",
+        "optimalMove": "15/9* 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/9* 4/3",
+            "20/14 4/3",
+            "13/7 4/3",
+            "22/15"
+        ],
+        "equityLoss": 0.502,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14 4/3 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.502 EMG face au coup 3-ply 15/9* 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 7 pts (3-3, Videau à 1) : 15/9* 4/3 surpasse 20/14 4/3 de +0.502 EMG (41.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 15/9* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/9* 4/3 domine 20/14 4/3 de +0.502 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 15/9* 4/3 maximise votre équité cubeful (-0.498 EMG).",
+            "Évitez 20/14 4/3 (-0.502 EMG) ; jouez la ligne maîtresse 15/9* 4/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_748_33",
+        "tier": 4,
+        "xgid": "XGID=--DC--CbAaA-dA-----bB-daa-:0:0:1:33:6:2:0:9:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "20/14 13/10 8/5",
+        "optimalMove": "20/17(2) 13/10 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/17(2) 13/10 8/5",
+            "20/14 13/10 8/5",
+            "20/11 13/10",
+            "20/17(2) 13/10 6/3"
+        ],
+        "equityLoss": 0.034,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14 13/10 8/5 (Match en 9 pts (6-2, Videau à 1)), vous concédez -0.034 EMG face au coup 3-ply 20/17(2) 13/10 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 9 pts (6-2, Videau à 1) : 20/17(2) 13/10 8/5 surpasse 20/14 13/10 8/5 de +0.034 EMG (69.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/17(2) en Match en 9 pts (6-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/17(2) 13/10 8/5 domine 20/14 13/10 8/5 de +0.034 EMG.",
+            "En Match en 9 pts (6-2, Videau à 1), 20/17(2) 13/10 8/5 maximise votre équité cubeful (+0.551 EMG).",
+            "Évitez 20/14 13/10 8/5 (-0.034 EMG) ; jouez la ligne maîtresse 20/17(2) 13/10 8/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_749_35",
+        "tier": 2,
+        "xgid": "XGID=--DFb-B-a--abaAA---b-Acba-:0:0:1:35:6:2:0:9:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "15/10 14/11*",
+        "optimalMove": "14/11*/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/11*/6",
+            "15/10 14/11*",
+            "21/16 14/11*",
+            "21/13*"
+        ],
+        "equityLoss": 0.235,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 15/10 14/11* (Match en 9 pts (6-2, Videau à 1)), vous concédez -0.235 EMG face au coup 3-ply 14/11*/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 9 pts (6-2, Videau à 1) : 14/11*/6 surpasse 15/10 14/11* de +0.235 EMG (64.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 14/11*/6 en Match en 9 pts (6-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/11*/6 domine 15/10 14/11* de +0.235 EMG.",
+            "En Match en 9 pts (6-2, Videau à 1), 14/11*/6 maximise votre équité cubeful (+0.484 EMG).",
+            "Évitez 15/10 14/11* (-0.235 EMG) ; jouez la ligne maîtresse 14/11*/6."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_750_12",
+        "tier": 3,
+        "xgid": "XGID=bACC-aA-A--Aa--A---a-BfdAA:0:0:1:12:2:6:0:9:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/24 3/1",
+        "optimalMove": "bar/24 8/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 8/6",
+            "bar/24 3/1",
+            "bar/24 21/19*",
+            "bar/24 11/9"
+        ],
+        "equityLoss": 0.102,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 3/1 (Match en 9 pts (2-6, Videau à 1)), vous concédez -0.102 EMG face au coup 3-ply bar/24 8/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 9 pts (2-6, Videau à 1) : bar/24 8/6 surpasse bar/24 3/1 de +0.102 EMG (78.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 9 pts (2-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 8/6 domine bar/24 3/1 de +0.102 EMG.",
+            "En Match en 9 pts (2-6, Videau à 1), bar/24 8/6 maximise votre équité cubeful (+1.149 EMG).",
+            "Évitez bar/24 3/1 (-0.102 EMG) ; jouez la ligne maîtresse bar/24 8/6."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_751_11",
+        "tier": 4,
+        "xgid": "XGID=-ABC--A-A--Ab-a-AaaAB-eeB-:0:0:1:11:2:6:0:9:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "19/18*/17* 3/1",
+        "optimalMove": "19/18*/17* 8/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "19/18*/17* 8/6",
+            "19/18*/17* 3/1",
+            "19/18* 11/10 3/1",
+            "19/18* 16/15 3/1"
+        ],
+        "equityLoss": 0.052,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 19/18*/17* 3/1 (Match en 9 pts (2-6, Videau à 1)), vous concédez -0.052 EMG face au coup 3-ply 19/18*/17* 8/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 9 pts (2-6, Videau à 1) : 19/18*/17* 8/6 surpasse 19/18*/17* 3/1 de +0.052 EMG (70.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 19/18*/17* en Match en 9 pts (2-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 19/18*/17* 8/6 domine 19/18*/17* 3/1 de +0.052 EMG.",
+            "En Match en 9 pts (2-6, Videau à 1), 19/18*/17* 8/6 maximise votre équité cubeful (+0.948 EMG).",
+            "Évitez 19/18*/17* 3/1 (-0.052 EMG) ; jouez la ligne maîtresse 19/18*/17* 8/6."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_752_56",
+        "tier": 3,
+        "xgid": "XGID=-baAA-EB---AdD-----eb-a-A-:0:0:1:56:9:3:0:11:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "13/7 11/6",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "13/7 11/6",
+            "24/18 11/6",
+            "13/2*"
+        ],
+        "equityLoss": 0.103,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 11/6 (Match en 11 pts (9-3, Videau à 1)), vous concédez -0.103 EMG face au coup 3-ply 24/13.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 11 pts (9-3, Videau à 1) : 24/13 surpasse 13/7 11/6 de +0.103 EMG (49.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/13 en Match en 11 pts (9-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/13 domine 13/7 11/6 de +0.103 EMG.",
+            "En Match en 11 pts (9-3, Videau à 1), 24/13 maximise votre équité cubeful (-0.355 EMG).",
+            "Évitez 13/7 11/6 (-0.103 EMG) ; jouez la ligne maîtresse 24/13."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_753_43",
+        "tier": 2,
+        "xgid": "XGID=--AB-BDA----dB---aaf--abC-:0:0:1:43:3:9:0:11:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "24/21 6/2",
+        "optimalMove": "24/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/17*",
+            "24/21 6/2",
+            "24/20 7/4",
+            "24/20 6/3"
+        ],
+        "equityLoss": 0.598,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21 6/2 (Match en 11 pts (3-9, Videau à 1)), vous concédez -0.598 EMG face au coup 3-ply 24/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 11 pts (3-9, Videau à 1) : 24/17* surpasse 24/21 6/2 de +0.598 EMG (57.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/17* en Match en 11 pts (3-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/17* domine 24/21 6/2 de +0.598 EMG.",
+            "En Match en 11 pts (3-9, Videau à 1), 24/17* maximise votre équité cubeful (+0.734 EMG).",
+            "Évitez 24/21 6/2 (-0.598 EMG) ; jouez la ligne maîtresse 24/17*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_754_31",
+        "tier": 2,
+        "xgid": "XGID=-AB-AdFA--a-bC-----cb-cA--:0:0:1:31:9:3:0:11:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "7/6 4/1",
+        "optimalMove": "7/4 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/4 2/1",
+            "7/6 4/1",
+            "7/3",
+            "6/3 4/3"
+        ],
+        "equityLoss": 0.129,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 7/6 4/1 (Match en 11 pts (9-3, Videau à 1)), vous concédez -0.129 EMG face au coup 3-ply 7/4 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 11 pts (9-3, Videau à 1) : 7/4 2/1 surpasse 7/6 4/1 de +0.129 EMG (55.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 7/4 en Match en 11 pts (9-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/4 2/1 domine 7/6 4/1 de +0.129 EMG.",
+            "En Match en 11 pts (9-3, Videau à 1), 7/4 2/1 maximise votre équité cubeful (-0.020 EMG).",
+            "Évitez 7/6 4/1 (-0.129 EMG) ; jouez la ligne maîtresse 7/4 2/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_755_23",
+        "tier": 2,
+        "xgid": "XGID=-DE-abBa-Ba-----A-aca-d-aA:0:0:1:23:9:3:0:11:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/23 16/13",
+        "optimalMove": "bar/20*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20*",
+            "bar/23 16/13",
+            "bar/23 9/6",
+            "bar/23 6/3"
+        ],
+        "equityLoss": 0.52,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23 16/13 (Match en 11 pts (9-3, Videau à 1)), vous concédez -0.520 EMG face au coup 3-ply bar/20*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 11 pts (9-3, Videau à 1) : bar/20* surpasse bar/23 16/13 de +0.520 EMG (60.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 11 pts (9-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* domine bar/23 16/13 de +0.520 EMG.",
+            "En Match en 11 pts (9-3, Videau à 1), bar/20* maximise votre équité cubeful (+0.266 EMG).",
+            "Évitez bar/23 16/13 (-0.520 EMG) ; jouez la ligne maîtresse bar/20*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_756_52",
+        "tier": 2,
+        "xgid": "XGID=-AaD--C-------a-a--CBaAgdA:0:0:1:52:3:9:0:11:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "bar/20 19/17",
+        "optimalMove": "bar/20 3/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 3/1",
+            "bar/20 19/17",
+            "bar/18",
+            "bar/20 6/4"
+        ],
+        "equityLoss": 0.221,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 19/17 (Match en 11 pts (3-9, Videau à 1)), vous concédez -0.221 EMG face au coup 3-ply bar/20 3/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 11 pts (3-9, Videau à 1) : bar/20 3/1 surpasse bar/20 19/17 de +0.221 EMG (56.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 11 pts (3-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 3/1 domine bar/20 19/17 de +0.221 EMG.",
+            "En Match en 11 pts (3-9, Videau à 1), bar/20 3/1 maximise votre équité cubeful (+0.323 EMG).",
+            "Évitez bar/20 19/17 (-0.221 EMG) ; jouez la ligne maîtresse bar/20 3/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_757_21",
+        "tier": 2,
+        "xgid": "XGID=-bAaAAEAB--AaA-a-dAcabA---:0:0:1:21:0:0:0:0:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "22/20* 13/12*",
+        "optimalMove": "13/12* 7/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/12* 7/5",
+            "22/20* 13/12*",
+            "22/20* 6/5",
+            "22/20* 5/4"
+        ],
+        "equityLoss": 0.161,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 22/20* 13/12* (Money Game), vous concédez -0.161 EMG face au coup 3-ply 13/12* 7/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Money Game : 13/12* 7/5 surpasse 22/20* 13/12* de +0.161 EMG (46.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/12* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/12* 7/5 domine 22/20* 13/12* de +0.161 EMG.",
+            "En Money Game, 13/12* 7/5 maximise votre équité cubeful (-0.128 EMG).",
+            "Évitez 22/20* 13/12* (-0.161 EMG) ; jouez la ligne maîtresse 13/12* 7/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_758_23",
+        "tier": 2,
+        "xgid": "XGID=-BAbBAB-B-A-bAa--b-dbBa-aA:0:0:1:23:0:0:0:0:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/22* 10/8",
+        "optimalMove": "bar/22* 13/11",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 13/11",
+            "bar/22* 10/8",
+            "bar/23 5/2",
+            "bar/22* 8/6"
+        ],
+        "equityLoss": 0.131,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 10/8 (Money Game), vous concédez -0.131 EMG face au coup 3-ply bar/22* 13/11.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Money Game : bar/22* 13/11 surpasse bar/22* 10/8 de +0.131 EMG (50.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 13/11 domine bar/22* 10/8 de +0.131 EMG.",
+            "En Money Game, bar/22* 13/11 maximise votre équité cubeful (+0.057 EMG).",
+            "Évitez bar/22* 10/8 (-0.131 EMG) ; jouez la ligne maîtresse bar/22* 13/11."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_759_56",
+        "tier": 2,
+        "xgid": "XGID=-DBABa---aAAa--Ba--ecB-ba-:0:0:1:56:0:0:0:0:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "21/16* 15/9*",
+        "optimalMove": "11/5* 10/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/5* 10/5",
+            "21/16* 15/9*",
+            "15/9* 10/5*",
+            "21/16* 11/5*"
+        ],
+        "equityLoss": 0.211,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/16* 15/9* (Money Game), vous concédez -0.211 EMG face au coup 3-ply 11/5* 10/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Money Game : 11/5* 10/5 surpasse 21/16* 15/9* de +0.211 EMG (56.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 11/5* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/5* 10/5 domine 21/16* 15/9* de +0.211 EMG.",
+            "En Money Game, 11/5* 10/5 maximise votre équité cubeful (+0.369 EMG).",
+            "Évitez 21/16* 15/9* (-0.211 EMG) ; jouez la ligne maîtresse 11/5* 10/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_760_14",
+        "tier": 3,
+        "xgid": "XGID=-BBbaDC--aa--AaaA-----Bbf-:0:0:1:14:0:0:0:0:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "16/15* 13/9*",
+        "optimalMove": "13/9* 5/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9* 5/4*",
+            "16/15* 13/9*",
+            "22/18 16/15*",
+            "16/15* 5/1"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 16/15* 13/9* (Money Game), vous concédez -0.067 EMG face au coup 3-ply 13/9* 5/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Money Game : 13/9* 5/4* surpasse 16/15* 13/9* de +0.067 EMG (94.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/9* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/9* 5/4* domine 16/15* 13/9* de +0.067 EMG.",
+            "En Money Game, 13/9* 5/4* maximise votre équité cubeful (+1.750 EMG).",
+            "Évitez 16/15* 13/9* (-0.067 EMG) ; jouez la ligne maîtresse 13/9* 5/4*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_761_34",
+        "tier": 3,
+        "xgid": "XGID=-DAd-DBA-b-A-AA--------ah-:0:0:1:34:0:0:0:0:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "13/10 11/7",
+        "optimalMove": "11/7 5/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/7 5/2",
+            "13/10 11/7",
+            "14/7",
+            "14/10 13/10"
+        ],
+        "equityLoss": 0.064,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10 11/7 (Money Game), vous concédez -0.064 EMG face au coup 3-ply 11/7 5/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Money Game : 11/7 5/2 surpasse 13/10 11/7 de +0.064 EMG (94.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 11/7 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/7 5/2 domine 13/10 11/7 de +0.064 EMG.",
+            "En Money Game, 11/7 5/2 maximise votre équité cubeful (+1.395 EMG).",
+            "Évitez 13/10 11/7 (-0.064 EMG) ; jouez la ligne maîtresse 11/7 5/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_762_22",
+        "tier": 3,
+        "xgid": "XGID=-cBA--C-C---cD---bAdb-Aa--:0:0:1:22:1:1:0:3:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "13/11 8/4 6/4",
+        "optimalMove": "18/16 8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/16 8/4 6/4",
+            "13/11 8/4 6/4",
+            "18/14 13/11(2)",
+            "13/9(2)"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11 8/4 6/4 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.089 EMG face au coup 3-ply 18/16 8/4 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 3 pts (1-1, Videau à 1) : 18/16 8/4 6/4 surpasse 13/11 8/4 6/4 de +0.089 EMG (52.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 18/16 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/16 8/4 6/4 domine 13/11 8/4 6/4 de +0.089 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 18/16 8/4 6/4 maximise votre équité cubeful (+0.166 EMG).",
+            "Évitez 13/11 8/4 6/4 (-0.089 EMG) ; jouez la ligne maîtresse 18/16 8/4 6/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_763_35",
+        "tier": 2,
+        "xgid": "XGID=--CBA-a-B---a-Aa---bAecbE-:0:0:1:35:1:1:0:3:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "20/15* 14/11",
+        "optimalMove": "20/15*/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/15*/12*",
+            "20/15* 14/11",
+            "20/12*",
+            "14/6*"
+        ],
+        "equityLoss": 0.283,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15* 14/11 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.283 EMG face au coup 3-ply 20/15*/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 3 pts (1-1, Videau à 1) : 20/15*/12* surpasse 20/15* 14/11 de +0.283 EMG (25.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/15*/12* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/15*/12* domine 20/15* 14/11 de +0.283 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 20/15*/12* maximise votre équité cubeful (-1.254 EMG).",
+            "Évitez 20/15* 14/11 (-0.283 EMG) ; jouez la ligne maîtresse 20/15*/12*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_764_22",
+        "tier": 3,
+        "xgid": "XGID=-eFBE----A-A------a--b-eb-:0:0:1:22:1:1:0:3:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "9/3 4/2",
+        "optimalMove": "11/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/3",
+            "9/3 4/2",
+            "11/7 9/7 4/2",
+            "11/9 4/2(3)"
+        ],
+        "equityLoss": 0.077,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 9/3 4/2 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.077 EMG face au coup 3-ply 11/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 3 pts (1-1, Videau à 1) : 11/3 surpasse 9/3 4/2 de +0.077 EMG (94.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 11/3 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/3 domine 9/3 4/2 de +0.077 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 11/3 maximise votre équité cubeful (+2.092 EMG).",
+            "Évitez 9/3 4/2 (-0.077 EMG) ; jouez la ligne maîtresse 11/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_765_51",
+        "tier": 2,
+        "xgid": "XGID=-A--aaD-B---dF-a-cAd----aA:0:0:1:51:2:2:0:5:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "bar/24* 13/8",
+        "optimalMove": "bar/24* 6/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 6/1",
+            "bar/24* 13/8",
+            "bar/24* 18/13",
+            "bar/20 6/5*"
+        ],
+        "equityLoss": 0.141,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 13/8 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.141 EMG face au coup 3-ply bar/24* 6/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 5 pts (2-2, Videau à 1) : bar/24* 6/1 surpasse bar/24* 13/8 de +0.141 EMG (50.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 6/1 domine bar/24* 13/8 de +0.141 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/24* 6/1 maximise votre équité cubeful (+0.034 EMG).",
+            "Évitez bar/24* 13/8 (-0.141 EMG) ; jouez la ligne maîtresse bar/24* 6/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_766_24",
+        "tier": 4,
+        "xgid": "XGID=-a----DAC-A-fCa--a-aaA-AdA:0:0:1:24:2:2:0:5:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/23 21/17*",
+        "optimalMove": "bar/19*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19*",
+            "bar/23 21/17*",
+            "bar/21 6/4",
+            "bar/21 7/5"
+        ],
+        "equityLoss": 0.048,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23 21/17* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.048 EMG face au coup 3-ply bar/19*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 5 pts (2-2, Videau à 1) : bar/19* surpasse bar/23 21/17* de +0.048 EMG (75.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/19* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19* domine bar/23 21/17* de +0.048 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/19* maximise votre équité cubeful (+1.054 EMG).",
+            "Évitez bar/23 21/17* (-0.048 EMG) ; jouez la ligne maîtresse bar/19*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_767_63",
+        "tier": 2,
+        "xgid": "XGID=-F-AAaa-aa--cD--AAabca-Aa-:0:0:1:63:2:2:0:5:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "16/10 13/10",
+        "optimalMove": "23/17 16/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/17 16/13",
+            "16/10 13/10",
+            "23/17 4/1",
+            "13/4"
+        ],
+        "equityLoss": 0.165,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 16/10 13/10 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.165 EMG face au coup 3-ply 23/17 16/13.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 5 pts (2-2, Videau à 1) : 23/17 16/13 surpasse 16/10 13/10 de +0.165 EMG (29.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 23/17 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/17 16/13 domine 16/10 13/10 de +0.165 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 23/17 16/13 maximise votre équité cubeful (-1.000 EMG).",
+            "Évitez 16/10 13/10 (-0.165 EMG) ; jouez la ligne maîtresse 23/17 16/13."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_768_53",
+        "tier": 3,
+        "xgid": "XGID=-BA-ABAAa-b-bC-a-A-AAa--hA:0:0:1:53:2:2:0:5:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/20 7/4",
+        "optimalMove": "bar/22 20/15*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 20/15*",
+            "bar/20 7/4",
+            "bar/22 7/2",
+            "bar/22 13/8*"
+        ],
+        "equityLoss": 0.105,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 7/4 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.105 EMG face au coup 3-ply bar/22 20/15*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 5 pts (2-2, Videau à 1) : bar/22 20/15* surpasse bar/20 7/4 de +0.105 EMG (70.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 20/15* domine bar/20 7/4 de +0.105 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/22 20/15* maximise votre équité cubeful (+1.006 EMG).",
+            "Évitez bar/20 7/4 (-0.105 EMG) ; jouez la ligne maîtresse bar/22 20/15*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_769_35",
+        "tier": 2,
+        "xgid": "XGID=-I-Aaaa-b---bBAB----c-bab-:0:0:1:35:2:2:0:5:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "15/10 13/10",
+        "optimalMove": "14/6*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/6*",
+            "15/10 13/10",
+            "15/7",
+            "14/9 13/10"
+        ],
+        "equityLoss": 0.163,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 15/10 13/10 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.163 EMG face au coup 3-ply 14/6*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 5 pts (2-2, Videau à 1) : 14/6* surpasse 15/10 13/10 de +0.163 EMG (16.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 14/6* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/6* domine 15/10 13/10 de +0.163 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 14/6* maximise votre équité cubeful (-1.322 EMG).",
+            "Évitez 15/10 13/10 (-0.163 EMG) ; jouez la ligne maîtresse 14/6*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_770_52",
+        "tier": 2,
+        "xgid": "XGID=-b---AEAC-A-cB---aafA--aaA:0:0:1:52:3:3:0:7:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "bar/20 7/5",
+        "optimalMove": "bar/23* 10/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 10/5",
+            "bar/20 7/5",
+            "bar/23*/18*",
+            "bar/18*"
+        ],
+        "equityLoss": 0.134,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 7/5 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.134 EMG face au coup 3-ply bar/23* 10/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 7 pts (3-3, Videau à 1) : bar/23* 10/5 surpasse bar/20 7/5 de +0.134 EMG (73.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 10/5 domine bar/20 7/5 de +0.134 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/23* 10/5 maximise votre équité cubeful (+1.084 EMG).",
+            "Évitez bar/20 7/5 (-0.134 EMG) ; jouez la ligne maîtresse bar/23* 10/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_771_44",
+        "tier": 3,
+        "xgid": "XGID=-ba-AFD-----aaA--a-aAAa-gA:0:0:1:44:3:3:0:7:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/17*/13* 6/2*",
+        "optimalMove": "bar/17* 6/2*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/17* 6/2*(2)",
+            "bar/17*/13* 6/2*",
+            "bar/17*/13*/9",
+            "bar/17*/13* 21/17"
+        ],
+        "equityLoss": 0.061,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/17*/13* 6/2* (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.061 EMG face au coup 3-ply bar/17* 6/2*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 7 pts (3-3, Videau à 1) : bar/17* 6/2*(2) surpasse bar/17*/13* 6/2* de +0.061 EMG (94.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/17* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/17* 6/2*(2) domine bar/17*/13* 6/2* de +0.061 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/17* 6/2*(2) maximise votre équité cubeful (+2.029 EMG).",
+            "Évitez bar/17*/13* 6/2* (-0.061 EMG) ; jouez la ligne maîtresse bar/17* 6/2*(2)."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_772_51",
+        "tier": 2,
+        "xgid": "XGID=-H---b---a--aA-A--A-h-abCA:0:0:1:51:3:3:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "bar/19",
+        "optimalMove": "bar/24 18/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 18/13",
+            "bar/19",
+            "bar/24 13/8",
+            "bar/24 15/10"
+        ],
+        "equityLoss": 0.143,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.143 EMG face au coup 3-ply bar/24 18/13.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 7 pts (3-3, Videau à 1) : bar/24 18/13 surpasse bar/19 de +0.143 EMG (14.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 18/13 domine bar/19 de +0.143 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/24 18/13 maximise votre équité cubeful (-1.381 EMG).",
+            "Évitez bar/19 (-0.143 EMG) ; jouez la ligne maîtresse bar/24 18/13."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_773_54",
+        "tier": 3,
+        "xgid": "XGID=-AABc-E-A-bAa-a-AA-cb-cB--:0:0:1:54:4:4:0:9:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "17/12* 6/2",
+        "optimalMove": "17/12*/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "17/12*/8",
+            "17/12* 6/2",
+            "16/12* 6/1",
+            "17/12* 16/12"
+        ],
+        "equityLoss": 0.069,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 17/12* 6/2 (Match en 9 pts (4-4, Videau à 1)), vous concédez -0.069 EMG face au coup 3-ply 17/12*/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 9 pts (4-4, Videau à 1) : 17/12*/8 surpasse 17/12* 6/2 de +0.069 EMG (38.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 17/12*/8 en Match en 9 pts (4-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 17/12*/8 domine 17/12* 6/2 de +0.069 EMG.",
+            "En Match en 9 pts (4-4, Videau à 1), 17/12*/8 maximise votre équité cubeful (-0.528 EMG).",
+            "Évitez 17/12* 6/2 (-0.069 EMG) ; jouez la ligne maîtresse 17/12*/8."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_774_32",
+        "tier": 4,
+        "xgid": "XGID=-aa--aF-B---aEaA-d-eA---a-:0:0:1:32:7:9:0:11:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "20/18 15/12*",
+        "optimalMove": "15/12* 13/11",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/12* 13/11",
+            "20/18 15/12*",
+            "15/12*/10",
+            "15/12* 6/4"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/18 15/12* (Match en 11 pts (7-9, Videau à 1)), vous concédez -0.038 EMG face au coup 3-ply 15/12* 13/11.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 11 pts (7-9, Videau à 1) : 15/12* 13/11 surpasse 20/18 15/12* de +0.038 EMG (60.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 15/12* en Match en 11 pts (7-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/12* 13/11 domine 20/18 15/12* de +0.038 EMG.",
+            "En Match en 11 pts (7-9, Videau à 1), 15/12* 13/11 maximise votre équité cubeful (+0.781 EMG).",
+            "Évitez 20/18 15/12* (-0.038 EMG) ; jouez la ligne maîtresse 15/12* 13/11."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_775_54",
+        "tier": 2,
+        "xgid": "XGID=-AB-a-C-D--Ad-aa-bBf-A--A-:0:0:1:54:9:7:0:11:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "8/4* 6/1",
+        "optimalMove": "18/14* 6/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/14* 6/1",
+            "8/4* 6/1",
+            "24/15*",
+            "11/6 8/4*"
+        ],
+        "equityLoss": 0.128,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4* 6/1 (Match en 11 pts (9-7, Videau à 1)), vous concédez -0.128 EMG face au coup 3-ply 18/14* 6/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 11 pts (9-7, Videau à 1) : 18/14* 6/1 surpasse 8/4* 6/1 de +0.128 EMG (57.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 18/14* en Match en 11 pts (9-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/14* 6/1 domine 8/4* 6/1 de +0.128 EMG.",
+            "En Match en 11 pts (9-7, Videau à 1), 18/14* 6/1 maximise votre équité cubeful (+0.059 EMG).",
+            "Évitez 8/4* 6/1 (-0.128 EMG) ; jouez la ligne maîtresse 18/14* 6/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_776_33",
+        "tier": 2,
+        "xgid": "XGID=--A-b-F-BAB-aB---c-bbAabb-:0:0:1:33:7:9:0:11:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "21/12* 9/6",
+        "optimalMove": "21/12*/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/12*/9",
+            "21/12* 9/6",
+            "9/3 6/3(2)",
+            "9/3 8/5(2)"
+        ],
+        "equityLoss": 0.395,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/12* 9/6 (Match en 11 pts (7-9, Videau à 1)), vous concédez -0.395 EMG face au coup 3-ply 21/12*/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 11 pts (7-9, Videau à 1) : 21/12*/9 surpasse 21/12* 9/6 de +0.395 EMG (58.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 21/12*/9 en Match en 11 pts (7-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/12*/9 domine 21/12* 9/6 de +0.395 EMG.",
+            "En Match en 11 pts (7-9, Videau à 1), 21/12*/9 maximise votre équité cubeful (+0.337 EMG).",
+            "Évitez 21/12* 9/6 (-0.395 EMG) ; jouez la ligne maîtresse 21/12*/9."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_777_26",
+        "tier": 3,
+        "xgid": "XGID=-aB---CaC--AfD---aAe-Aa---:0:0:1:26:0:0:0:0:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "18/16 13/7*",
+        "optimalMove": "13/11 13/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 13/7*",
+            "18/16 13/7*",
+            "13/7* 11/9",
+            "13/7* 8/6"
+        ],
+        "equityLoss": 0.06,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 18/16 13/7* (Money Game), vous concédez -0.060 EMG face au coup 3-ply 13/11 13/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Money Game : 13/11 13/7* surpasse 18/16 13/7* de +0.060 EMG (64.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/11 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11 13/7* domine 18/16 13/7* de +0.060 EMG.",
+            "En Money Game, 13/11 13/7* maximise votre équité cubeful (+0.707 EMG).",
+            "Évitez 18/16 13/7* (-0.060 EMG) ; jouez la ligne maîtresse 13/11 13/7*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_778_36",
+        "tier": 2,
+        "xgid": "XGID=-Ba---DA-Aa-bE---cac-AbbA-:0:0:1:36:0:0:0:0:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "24/18* 21/18",
+        "optimalMove": "24/18* 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 13/10*",
+            "24/18* 21/18",
+            "21/18* 13/7",
+            "24/21 13/7"
+        ],
+        "equityLoss": 0.225,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18* 21/18 (Money Game), vous concédez -0.225 EMG face au coup 3-ply 24/18* 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Money Game : 24/18* 13/10* surpasse 24/18* 21/18 de +0.225 EMG (48.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/18* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 13/10* domine 24/18* 21/18 de +0.225 EMG.",
+            "En Money Game, 24/18* 13/10* maximise votre équité cubeful (-0.054 EMG).",
+            "Évitez 24/18* 21/18 (-0.225 EMG) ; jouez la ligne maîtresse 24/18* 13/10*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_779_43",
+        "tier": 2,
+        "xgid": "XGID=--BB-aBaC---bB--a-beB-aAbA:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "bar/22* 8/4",
+        "optimalMove": "bar/22* 20/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 20/16*",
+            "bar/22* 8/4",
+            "bar/21 8/5*",
+            "bar/22* 13/9"
+        ],
+        "equityLoss": 0.416,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 8/4 (Money Game), vous concédez -0.416 EMG face au coup 3-ply bar/22* 20/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Money Game : bar/22* 20/16* surpasse bar/22* 8/4 de +0.416 EMG (65.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 20/16* domine bar/22* 8/4 de +0.416 EMG.",
+            "En Money Game, bar/22* 20/16* maximise votre équité cubeful (+0.719 EMG).",
+            "Évitez bar/22* 8/4 (-0.416 EMG) ; jouez la ligne maîtresse bar/22* 20/16*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_780_54",
+        "tier": 3,
+        "xgid": "XGID=-BaCacEB----aAa--bAaaAbb--:0:0:1:54:0:0:0:0:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "18/14* 7/2*",
+        "optimalMove": "7/2* 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/2* 6/2",
+            "18/14* 7/2*",
+            "18/14*/9",
+            "18/14* 13/8"
+        ],
+        "equityLoss": 0.069,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 18/14* 7/2* (Money Game), vous concédez -0.069 EMG face au coup 3-ply 7/2* 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Money Game : 7/2* 6/2 surpasse 18/14* 7/2* de +0.069 EMG (79.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 7/2* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/2* 6/2 domine 18/14* 7/2* de +0.069 EMG.",
+            "En Money Game, 7/2* 6/2 maximise votre équité cubeful (+1.452 EMG).",
+            "Évitez 18/14* 7/2* (-0.069 EMG) ; jouez la ligne maîtresse 7/2* 6/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_781_41",
+        "tier": 2,
+        "xgid": "XGID=cCBCAdE--a----A----a--bbb-:0:0:1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "6/2 4/3",
+        "optimalMove": "14/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/9*",
+            "6/2 4/3",
+            "14/10 4/3",
+            "14/13 6/2"
+        ],
+        "equityLoss": 0.155,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 6/2 4/3 (Money Game), vous concédez -0.155 EMG face au coup 3-ply 14/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Money Game : 14/9* surpasse 6/2 4/3 de +0.155 EMG (95.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 14/9* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/9* domine 6/2 4/3 de +0.155 EMG.",
+            "En Money Game, 14/9* maximise votre équité cubeful (+2.290 EMG).",
+            "Évitez 6/2 4/3 (-0.155 EMG) ; jouez la ligne maîtresse 14/9*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_782_51",
+        "tier": 4,
+        "xgid": "XGID=-ACA-bA-C---dD---c-caa-aB-:0:0:1:51:1:1:0:3:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "24/23* 6/1",
+        "optimalMove": "8/3 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 2/1",
+            "24/23* 6/1",
+            "24/23* 8/3",
+            "24/23*/18"
+        ],
+        "equityLoss": 0.04,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23* 6/1 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.040 EMG face au coup 3-ply 8/3 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 3 pts (1-1, Videau à 1) : 8/3 2/1 surpasse 24/23* 6/1 de +0.040 EMG (38.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 8/3 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3 2/1 domine 24/23* 6/1 de +0.040 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 8/3 2/1 maximise votre équité cubeful (-0.671 EMG).",
+            "Évitez 24/23* 6/1 (-0.040 EMG) ; jouez la ligne maîtresse 8/3 2/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_783_12",
+        "tier": 2,
+        "xgid": "XGID=bBB-A-B-Baa-cB---dAbA-bAA-:0:0:1:12:1:1:0:3:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "18/16 8/7",
+        "optimalMove": "13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/10*",
+            "18/16 8/7",
+            "18/15",
+            "23/20"
+        ],
+        "equityLoss": 0.154,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 18/16 8/7 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.154 EMG face au coup 3-ply 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 3 pts (1-1, Videau à 1) : 13/10* surpasse 18/16 8/7 de +0.154 EMG (62.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/10* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/10* domine 18/16 8/7 de +0.154 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 13/10* maximise votre équité cubeful (+0.712 EMG).",
+            "Évitez 18/16 8/7 (-0.154 EMG) ; jouez la ligne maîtresse 13/10*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_784_21",
+        "tier": 2,
+        "xgid": "XGID=-acBaABaC---bC-BAa-aA--ad-:0:0:1:21:1:1:0:3:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "8/5",
+        "optimalMove": "8/7*/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/7*/5",
+            "8/5",
+            "20/19*/17*",
+            "20/19* 8/6"
+        ],
+        "equityLoss": 0.17,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/5 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.170 EMG face au coup 3-ply 8/7*/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 3 pts (1-1, Videau à 1) : 8/7*/5 surpasse 8/5 de +0.170 EMG (90.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 8/7*/5 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/7*/5 domine 8/5 de +0.170 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 8/7*/5 maximise votre équité cubeful (+1.723 EMG).",
+            "Évitez 8/5 (-0.170 EMG) ; jouez la ligne maîtresse 8/7*/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_785_52",
+        "tier": 2,
+        "xgid": "XGID=--aBBba-D-BabCa-----A-Abe-:0:0:1:52:1:1:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/11* 8/3",
+        "optimalMove": "13/11*/6*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11*/6*",
+            "13/11* 8/3",
+            "22/17 13/11*",
+            "20/15 13/11*"
+        ],
+        "equityLoss": 0.174,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11* 8/3 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.174 EMG face au coup 3-ply 13/11*/6*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 3 pts (1-1, Videau à 1) : 13/11*/6* surpasse 13/11* 8/3 de +0.174 EMG (84.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/11*/6* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11*/6* domine 13/11* 8/3 de +0.174 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 13/11*/6* maximise votre équité cubeful (+1.283 EMG).",
+            "Évitez 13/11* 8/3 (-0.174 EMG) ; jouez la ligne maîtresse 13/11*/6*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_786_64",
+        "tier": 4,
+        "xgid": "XGID=-B--cAEAA---aCa-da-dA--aA-:0:0:1:64:0:0:0:5:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "24/20 13/7",
+        "optimalMove": "20/14* 5/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/14* 5/1",
+            "24/20 13/7",
+            "24/14*",
+            "20/14*/10"
+        ],
+        "equityLoss": 0.042,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 13/7 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.042 EMG face au coup 3-ply 20/14* 5/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 5 pts (0-0, Videau à 1) : 20/14* 5/1 surpasse 24/20 13/7 de +0.042 EMG (54.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/14* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/14* 5/1 domine 24/20 13/7 de +0.042 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 20/14* 5/1 maximise votre équité cubeful (+0.271 EMG).",
+            "Évitez 24/20 13/7 (-0.042 EMG) ; jouez la ligne maîtresse 20/14* 5/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_787_64",
+        "tier": 2,
+        "xgid": "XGID=-DB-bE-b---a-B--bA-Aaabbb-:0:0:1:64:0:0:0:5:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "17/11* 5/1",
+        "optimalMove": "19/15 17/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "19/15 17/11*",
+            "17/11* 5/1",
+            "19/13 17/13",
+            "17/11* 13/9"
+        ],
+        "equityLoss": 0.191,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 17/11* 5/1 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.191 EMG face au coup 3-ply 19/15 17/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 5 pts (0-0, Videau à 1) : 19/15 17/11* surpasse 17/11* 5/1 de +0.191 EMG (57.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 19/15 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 19/15 17/11* domine 17/11* 5/1 de +0.191 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 19/15 17/11* maximise votre équité cubeful (+0.365 EMG).",
+            "Évitez 17/11* 5/1 (-0.191 EMG) ; jouez la ligne maîtresse 19/15 17/11*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_788_24",
+        "tier": 4,
+        "xgid": "XGID=-A--A-EaBa-AcC---c-d--bBa-:0:0:1:24:3:3:0:7:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "13/9* 6/4",
+        "optimalMove": "11/7* 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/7* 6/4",
+            "13/9* 6/4",
+            "13/9*/7*",
+            "11/9* 8/4"
+        ],
+        "equityLoss": 0.054,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/9* 6/4 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.054 EMG face au coup 3-ply 11/7* 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 7 pts (3-3, Videau à 1) : 11/7* 6/4 surpasse 13/9* 6/4 de +0.054 EMG (47.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 11/7* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/7* 6/4 domine 13/9* 6/4 de +0.054 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 11/7* 6/4 maximise votre équité cubeful (-0.051 EMG).",
+            "Évitez 13/9* 6/4 (-0.054 EMG) ; jouez la ligne maîtresse 11/7* 6/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_789_61",
+        "tier": 2,
+        "xgid": "XGID=-bBaAABAA--bcB---A-dAAcAA-:0:0:1:61:3:3:0:7:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "13/7 5/4",
+        "optimalMove": "23/17 5/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/17 5/4",
+            "13/7 5/4",
+            "23/17 8/7",
+            "24/18 5/4"
+        ],
+        "equityLoss": 0.17,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 5/4 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.170 EMG face au coup 3-ply 23/17 5/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 7 pts (3-3, Videau à 1) : 23/17 5/4 surpasse 13/7 5/4 de +0.170 EMG (49.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 23/17 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/17 5/4 domine 13/7 5/4 de +0.170 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 23/17 5/4 maximise votre équité cubeful (-0.062 EMG).",
+            "Évitez 13/7 5/4 (-0.170 EMG) ; jouez la ligne maîtresse 23/17 5/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_790_45",
+        "tier": 4,
+        "xgid": "XGID=-BcB--CAb---aCB-aab-aaabB-:0:0:1:45:3:3:0:7:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "24/20* 24/19",
+        "optimalMove": "24/20* 14/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20* 14/9",
+            "24/20* 24/19",
+            "24/20*/15",
+            "24/20* 6/1"
+        ],
+        "equityLoss": 0.053,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20* 24/19 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.053 EMG face au coup 3-ply 24/20* 14/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 7 pts (3-3, Videau à 1) : 24/20* 14/9 surpasse 24/20* 24/19 de +0.053 EMG (69.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/20* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20* 14/9 domine 24/20* 24/19 de +0.053 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 24/20* 14/9 maximise votre équité cubeful (+1.178 EMG).",
+            "Évitez 24/20* 24/19 (-0.053 EMG) ; jouez la ligne maîtresse 24/20* 14/9."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_791_23",
+        "tier": 4,
+        "xgid": "XGID=-b-ACBC--A--cC--a-adb-b-B-:0:0:1:23:6:2:0:9:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "9/7 6/3",
+        "optimalMove": "13/11 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 6/3",
+            "9/7 6/3",
+            "6/3 4/2",
+            "13/11 9/6"
+        ],
+        "equityLoss": 0.055,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 9/7 6/3 (Match en 9 pts (6-2, Videau à 1)), vous concédez -0.055 EMG face au coup 3-ply 13/11 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 9 pts (6-2, Videau à 1) : 13/11 6/3 surpasse 9/7 6/3 de +0.055 EMG (55.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/11 en Match en 9 pts (6-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11 6/3 domine 9/7 6/3 de +0.055 EMG.",
+            "En Match en 9 pts (6-2, Videau à 1), 13/11 6/3 maximise votre équité cubeful (-0.047 EMG).",
+            "Évitez 9/7 6/3 (-0.055 EMG) ; jouez la ligne maîtresse 13/11 6/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_792_44",
+        "tier": 2,
+        "xgid": "XGID=-a-aCAC-ba-Ab-A--a-cbCbB-A:0:0:1:44:6:2:0:9:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/17* 21/17 14/10",
+        "optimalMove": "bar/17*/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/17*/9*",
+            "bar/17* 21/17 14/10",
+            "bar/17* 21/17 5/1*",
+            "bar/17* 21/17 11/7"
+        ],
+        "equityLoss": 0.231,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/17* 21/17 14/10 (Match en 9 pts (6-2, Videau à 1)), vous concédez -0.231 EMG face au coup 3-ply bar/17*/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 9 pts (6-2, Videau à 1) : bar/17*/9* surpasse bar/17* 21/17 14/10 de +0.231 EMG (45.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/17*/9* en Match en 9 pts (6-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/17*/9* domine bar/17* 21/17 14/10 de +0.231 EMG.",
+            "En Match en 9 pts (6-2, Videau à 1), bar/17*/9* maximise votre équité cubeful (-0.470 EMG).",
+            "Évitez bar/17* 21/17 14/10 (-0.231 EMG) ; jouez la ligne maîtresse bar/17*/9*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_793_36",
+        "tier": 3,
+        "xgid": "XGID=aBbCbBA-b---CB-aA-Aa-c-ab-:0:0:1:36:2:6:0:9:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "13/10 12/6",
+        "optimalMove": "18/15* 12/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/15* 12/6",
+            "13/10 12/6",
+            "12/9 12/6",
+            "16/13 12/6"
+        ],
+        "equityLoss": 0.064,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10 12/6 (Match en 9 pts (2-6, Videau à 1)), vous concédez -0.064 EMG face au coup 3-ply 18/15* 12/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 9 pts (2-6, Videau à 1) : 18/15* 12/6 surpasse 13/10 12/6 de +0.064 EMG (75.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 18/15* en Match en 9 pts (2-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/15* 12/6 domine 13/10 12/6 de +0.064 EMG.",
+            "En Match en 9 pts (2-6, Videau à 1), 18/15* 12/6 maximise votre équité cubeful (+1.187 EMG).",
+            "Évitez 13/10 12/6 (-0.064 EMG) ; jouez la ligne maîtresse 18/15* 12/6."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_794_41",
+        "tier": 3,
+        "xgid": "XGID=-EaD-AA-aabaaC-b---A-c-ab-:0:0:1:41:2:6:0:9:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "6/2* 3/2",
+        "optimalMove": "13/9* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9* 6/5",
+            "6/2* 3/2",
+            "13/9* 3/2*",
+            "13/12* 6/2*"
+        ],
+        "equityLoss": 0.102,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 6/2* 3/2 (Match en 9 pts (2-6, Videau à 1)), vous concédez -0.102 EMG face au coup 3-ply 13/9* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 9 pts (2-6, Videau à 1) : 13/9* 6/5 surpasse 6/2* 3/2 de +0.102 EMG (62.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/9* en Match en 9 pts (2-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/9* 6/5 domine 6/2* 3/2 de +0.102 EMG.",
+            "En Match en 9 pts (2-6, Videau à 1), 13/9* 6/5 maximise votre équité cubeful (+0.914 EMG).",
+            "Évitez 6/2* 3/2 (-0.102 EMG) ; jouez la ligne maîtresse 13/9* 6/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_795_31",
+        "tier": 3,
+        "xgid": "XGID=-bAA--E-A---dE-A-cad-a---A:0:0:1:31:5:5:0:11:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "bar/24 6/3",
+        "optimalMove": "bar/22 3/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 3/2",
+            "bar/24 6/3",
+            "bar/21*",
+            "bar/22 15/14"
+        ],
+        "equityLoss": 0.098,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 6/3 (Match en 11 pts (5-5, Videau à 1)), vous concédez -0.098 EMG face au coup 3-ply bar/22 3/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 11 pts (5-5, Videau à 1) : bar/22 3/2 surpasse bar/24 6/3 de +0.098 EMG (45.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 11 pts (5-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 3/2 domine bar/24 6/3 de +0.098 EMG.",
+            "En Match en 11 pts (5-5, Videau à 1), bar/22 3/2 maximise votre équité cubeful (-0.241 EMG).",
+            "Évitez bar/24 6/3 (-0.098 EMG) ; jouez la ligne maîtresse bar/22 3/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_796_33",
+        "tier": 2,
+        "xgid": "XGID=-DBBAaa-A-bBaAa----baA-ccA:0:0:1:33:5:5:0:11:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "bar/22 21/12*",
+        "optimalMove": "bar/22 11/5* 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 11/5* 8/5",
+            "bar/22 21/12*",
+            "bar/22 8/5*/2 4/1",
+            "bar/22 11/5* 11/8"
+        ],
+        "equityLoss": 0.505,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 21/12* (Match en 11 pts (5-5, Videau à 1)), vous concédez -0.505 EMG face au coup 3-ply bar/22 11/5* 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 11 pts (5-5, Videau à 1) : bar/22 11/5* 8/5 surpasse bar/22 21/12* de +0.505 EMG (64.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 11 pts (5-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 11/5* 8/5 domine bar/22 21/12* de +0.505 EMG.",
+            "En Match en 11 pts (5-5, Videau à 1), bar/22 11/5* 8/5 maximise votre équité cubeful (+0.763 EMG).",
+            "Évitez bar/22 21/12* (-0.505 EMG) ; jouez la ligne maîtresse bar/22 11/5* 8/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_797_21",
+        "tier": 2,
+        "xgid": "XGID=-CCA--B----aaa-B-b-BBaabf-:0:0:1:21:5:5:0:11:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "20/19 15/13*",
+        "optimalMove": "15/13*/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/13*/12*",
+            "20/19 15/13*",
+            "15/14 15/13*",
+            "15/12*"
+        ],
+        "equityLoss": 0.436,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/19 15/13* (Match en 11 pts (5-5, Videau à 1)), vous concédez -0.436 EMG face au coup 3-ply 15/13*/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 11 pts (5-5, Videau à 1) : 15/13*/12* surpasse 20/19 15/13* de +0.436 EMG (58.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 15/13*/12* en Match en 11 pts (5-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/13*/12* domine 20/19 15/13* de +0.436 EMG.",
+            "En Match en 11 pts (5-5, Videau à 1), 15/13*/12* maximise votre équité cubeful (+0.422 EMG).",
+            "Évitez 20/19 15/13* (-0.436 EMG) ; jouez la ligne maîtresse 15/13*/12*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_798_51",
+        "tier": 2,
+        "xgid": "XGID=aaAB--DaA---dE---aaca-AbA-:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "8/7*/2",
+        "optimalMove": "6/1* 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/1* 2/1",
+            "8/7*/2",
+            "13/8 2/1*",
+            "22/17* 2/1*"
+        ],
+        "equityLoss": 0.205,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/7*/2 (Money Game), vous concédez -0.205 EMG face au coup 3-ply 6/1* 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Money Game : 6/1* 2/1 surpasse 8/7*/2 de +0.205 EMG (74.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 6/1* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/1* 2/1 domine 8/7*/2 de +0.205 EMG.",
+            "En Money Game, 6/1* 2/1 maximise votre équité cubeful (+1.301 EMG).",
+            "Évitez 8/7*/2 (-0.205 EMG) ; jouez la ligne maîtresse 6/1* 2/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_799_53",
+        "tier": 2,
+        "xgid": "XGID=-aBb-AC-A--aeD-----cA-baBA:0:0:1:53:0:0:0:0:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/20 24/21",
+        "optimalMove": "bar/20 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 8/5",
+            "bar/20 24/21",
+            "bar/20 5/2",
+            "bar/20 13/10"
+        ],
+        "equityLoss": 0.386,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 24/21 (Money Game), vous concédez -0.386 EMG face au coup 3-ply bar/20 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Money Game : bar/20 8/5 surpasse bar/20 24/21 de +0.386 EMG (56.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 8/5 domine bar/20 24/21 de +0.386 EMG.",
+            "En Money Game, bar/20 8/5 maximise votre équité cubeful (+0.309 EMG).",
+            "Évitez bar/20 24/21 (-0.386 EMG) ; jouez la ligne maîtresse bar/20 8/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_800_36",
+        "tier": 3,
+        "xgid": "XGID=aaAB-bCa-A--dCA--AAc-AAba-:0:0:1:36:0:0:0:0:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "14/11 13/7*",
+        "optimalMove": "17/14 13/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "17/14 13/7*",
+            "14/11 13/7*",
+            "21/18 13/7*",
+            "18/15 13/7*"
+        ],
+        "equityLoss": 0.103,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 14/11 13/7* (Money Game), vous concédez -0.103 EMG face au coup 3-ply 17/14 13/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Money Game : 17/14 13/7* surpasse 14/11 13/7* de +0.103 EMG (61.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 17/14 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 17/14 13/7* domine 14/11 13/7* de +0.103 EMG.",
+            "En Money Game, 17/14 13/7* maximise votre équité cubeful (+0.538 EMG).",
+            "Évitez 14/11 13/7* (-0.103 EMG) ; jouez la ligne maîtresse 17/14 13/7*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_801_25",
+        "tier": 2,
+        "xgid": "XGID=-BBaa-Aa-A-baCa-b-acDAbA--:0:0:1:25:0:0:0:0:8",
+        "dice": [
+            2,
+            5
+        ],
+        "playedMove": "23/18* 20/18",
+        "optimalMove": "9/4* 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/4* 6/4",
+            "23/18* 20/18",
+            "23/18* 6/4*",
+            "20/18*/13"
+        ],
+        "equityLoss": 0.238,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 23/18* 20/18 (Money Game), vous concédez -0.238 EMG face au coup 3-ply 9/4* 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-5 en Money Game : 9/4* 6/4 surpasse 23/18* 20/18 de +0.238 EMG (45.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 9/4* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/4* 6/4 domine 23/18* 20/18 de +0.238 EMG.",
+            "En Money Game, 9/4* 6/4 maximise votre équité cubeful (-0.078 EMG).",
+            "Évitez 23/18* 20/18 (-0.238 EMG) ; jouez la ligne maîtresse 9/4* 6/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_802_34",
+        "tier": 2,
+        "xgid": "XGID=-DAA--a-a--adBaabBDcA---a-:0:0:1:34:0:0:0:0:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "20/17 18/14*",
+        "optimalMove": "18/15* 18/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/15* 18/14*",
+            "20/17 18/14*",
+            "20/13",
+            "18/14* 17/14"
+        ],
+        "equityLoss": 0.282,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/17 18/14* (Money Game), vous concédez -0.282 EMG face au coup 3-ply 18/15* 18/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Money Game : 18/15* 18/14* surpasse 20/17 18/14* de +0.282 EMG (35.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 18/15* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/15* 18/14* domine 20/17 18/14* de +0.282 EMG.",
+            "En Money Game, 18/15* 18/14* maximise votre équité cubeful (-0.604 EMG).",
+            "Évitez 20/17 18/14* (-0.282 EMG) ; jouez la ligne maîtresse 18/15* 18/14*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_803_24",
+        "tier": 2,
+        "xgid": "XGID=-aAaB-B-A--aaEb-A--e-BabaA:0:0:1:24:1:1:0:3:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/21 8/6",
+        "optimalMove": "bar/21 13/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 13/11*",
+            "bar/21 8/6",
+            "bar/21 4/2",
+            "bar/21 6/4"
+        ],
+        "equityLoss": 0.262,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 8/6 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.262 EMG face au coup 3-ply bar/21 13/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 3 pts (1-1, Videau à 1) : bar/21 13/11* surpasse bar/21 8/6 de +0.262 EMG (52.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 13/11* domine bar/21 8/6 de +0.262 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/21 13/11* maximise votre équité cubeful (-0.056 EMG).",
+            "Évitez bar/21 8/6 (-0.262 EMG) ; jouez la ligne maîtresse bar/21 13/11*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_804_52",
+        "tier": 2,
+        "xgid": "XGID=-ACbc-F-A---d-a----bAcAAA-:0:0:1:52:1:1:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "8/1",
+        "optimalMove": "23/18 20/18",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/18 20/18",
+            "8/1",
+            "22/20 6/1",
+            "23/18 8/6"
+        ],
+        "equityLoss": 0.121,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/1 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.121 EMG face au coup 3-ply 23/18 20/18.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 3 pts (1-1, Videau à 1) : 23/18 20/18 surpasse 8/1 de +0.121 EMG (38.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 23/18 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/18 20/18 domine 8/1 de +0.121 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 23/18 20/18 maximise votre équité cubeful (-0.630 EMG).",
+            "Évitez 8/1 (-0.121 EMG) ; jouez la ligne maîtresse 23/18 20/18."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_805_26",
+        "tier": 3,
+        "xgid": "XGID=bBFaf-Ca-a--A-AA-----c-aA-:0:0:1:26:1:1:0:3:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "15/9* 14/12",
+        "optimalMove": "15/9*/7*",
+        "acceptableMoves": [
+            "24/22 15/9*"
+        ],
+        "quizChoices": [
+            "15/9*/7*",
+            "15/9* 14/12",
+            "15/7*",
+            "15/9* 12/10"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 15/9* 14/12 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.097 EMG face au coup 3-ply 15/9*/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 3 pts (1-1, Videau à 1) : 15/9*/7* surpasse 15/9* 14/12 de +0.097 EMG (85.3 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 15/9*/7* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/9*/7* domine 15/9* 14/12 de +0.097 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 15/9*/7* maximise votre équité cubeful (+1.990 EMG).",
+            "Évitez 15/9* 14/12 (-0.097 EMG) ; jouez la ligne maîtresse 15/9*/7*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_806_45",
+        "tier": 3,
+        "xgid": "XGID=--AAB------a-AA---Af-GAfb-:0:0:1:45:1:1:0:3:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "14/10 13/8",
+        "optimalMove": "14/9 13/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/9 13/9",
+            "14/10 13/8",
+            "21/17 18/13",
+            "21/17 13/8"
+        ],
+        "equityLoss": 0.106,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 14/10 13/8 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.106 EMG face au coup 3-ply 14/9 13/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 3 pts (1-1, Videau à 1) : 14/9 13/9 surpasse 14/10 13/8 de +0.106 EMG (23.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 14/9 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/9 13/9 domine 14/10 13/8 de +0.106 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 14/9 13/9 maximise votre équité cubeful (-1.516 EMG).",
+            "Évitez 14/10 13/8 (-0.106 EMG) ; jouez la ligne maîtresse 14/9 13/9."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_807_41",
+        "tier": 2,
+        "xgid": "XGID=aBGbgaC--A------a----baA-A:0:0:1:41:1:1:0:3:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "bar/24 23/19",
+        "optimalMove": "bar/24 9/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 9/5*",
+            "bar/24 23/19",
+            "bar/24 6/2",
+            "bar/20"
+        ],
+        "equityLoss": 0.447,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 23/19 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.447 EMG face au coup 3-ply bar/24 9/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 3 pts (1-1, Videau à 1) : bar/24 9/5* surpasse bar/24 23/19 de +0.447 EMG (66.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 9/5* domine bar/24 23/19 de +0.447 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/24 9/5* maximise votre équité cubeful (+0.930 EMG).",
+            "Évitez bar/24 23/19 (-0.447 EMG) ; jouez la ligne maîtresse bar/24 9/5*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_808_21",
+        "tier": 3,
+        "xgid": "XGID=-aAaCbD-BA--b---Aa-f-aBAa-:0:0:1:21:2:2:0:5:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "23/21* 2/1*",
+        "optimalMove": "22/21* 4/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/21* 4/2",
+            "23/21* 2/1*",
+            "4/3*/1*",
+            "23/21* 4/3*"
+        ],
+        "equityLoss": 0.072,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 23/21* 2/1* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.072 EMG face au coup 3-ply 22/21* 4/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 5 pts (2-2, Videau à 1) : 22/21* 4/2 surpasse 23/21* 2/1* de +0.072 EMG (67.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 22/21* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/21* 4/2 domine 23/21* 2/1* de +0.072 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 22/21* 4/2 maximise votre équité cubeful (+1.024 EMG).",
+            "Évitez 23/21* 2/1* (-0.072 EMG) ; jouez la ligne maîtresse 22/21* 4/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_809_63",
+        "tier": 2,
+        "xgid": "XGID=-Dab--EAAbA---a--A-eAc-aA-:0:0:1:63:2:2:0:5:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "20/14* 10/7",
+        "optimalMove": "17/14* 8/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "17/14* 8/2*",
+            "20/14* 10/7",
+            "17/14*/8",
+            "10/7 8/2*"
+        ],
+        "equityLoss": 0.15,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14* 10/7 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.150 EMG face au coup 3-ply 17/14* 8/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 5 pts (2-2, Videau à 1) : 17/14* 8/2* surpasse 20/14* 10/7 de +0.150 EMG (48.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 17/14* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 17/14* 8/2* domine 20/14* 10/7 de +0.150 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 17/14* 8/2* maximise votre équité cubeful (+0.051 EMG).",
+            "Évitez 20/14* 10/7 (-0.150 EMG) ; jouez la ligne maîtresse 17/14* 8/2*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_810_51",
+        "tier": 2,
+        "xgid": "XGID=--B-CaDa-A-A----C-acc-Aae-:0:0:1:51:2:2:0:5:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "11/5*",
+        "optimalMove": "16/11 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/11 6/5*",
+            "11/5*",
+            "22/17 6/5*",
+            "9/4 6/5*"
+        ],
+        "equityLoss": 0.211,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 11/5* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.211 EMG face au coup 3-ply 16/11 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 5 pts (2-2, Videau à 1) : 16/11 6/5* surpasse 11/5* de +0.211 EMG (59.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 16/11 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/11 6/5* domine 11/5* de +0.211 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 16/11 6/5* maximise votre équité cubeful (+0.505 EMG).",
+            "Évitez 11/5* (-0.211 EMG) ; jouez la ligne maîtresse 16/11 6/5*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_811_32",
+        "tier": 3,
+        "xgid": "XGID=-EAAABCA-ba-A---b--d-c-ba-:0:0:1:32:2:2:0:5:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "7/4 5/3",
+        "optimalMove": "6/3 4/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/3 4/2",
+            "7/4 5/3",
+            "5/3 5/2",
+            "7/5 6/3"
+        ],
+        "equityLoss": 0.096,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 7/4 5/3 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.096 EMG face au coup 3-ply 6/3 4/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 5 pts (2-2, Videau à 1) : 6/3 4/2 surpasse 7/4 5/3 de +0.096 EMG (71.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 6/3 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/3 4/2 domine 7/4 5/3 de +0.096 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 6/3 4/2 maximise votre équité cubeful (+0.531 EMG).",
+            "Évitez 7/4 5/3 (-0.096 EMG) ; jouez la ligne maîtresse 6/3 4/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_812_51",
+        "tier": 4,
+        "xgid": "XGID=-ABaaBB--aAA----ac-eaDAbA-:0:0:1:51:3:3:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "21/20* 21/16*",
+        "optimalMove": "21/16* 10/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16* 10/9*",
+            "21/20* 21/16*",
+            "10/9*/4*",
+            "21/16* 11/10"
+        ],
+        "equityLoss": 0.042,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/20* 21/16* (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.042 EMG face au coup 3-ply 21/16* 10/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 7 pts (3-3, Videau à 1) : 21/16* 10/9* surpasse 21/20* 21/16* de +0.042 EMG (60.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 21/16* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16* 10/9* domine 21/20* 21/16* de +0.042 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 21/16* 10/9* maximise votre équité cubeful (+0.530 EMG).",
+            "Évitez 21/20* 21/16* (-0.042 EMG) ; jouez la ligne maîtresse 21/16* 10/9*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_813_15",
+        "tier": 2,
+        "xgid": "XGID=-BB-abE-Bd--A-a----aa-BadA:0:0:1:15:3:3:0:7:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/20* 22/21",
+        "optimalMove": "bar/20*/19*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20*/19*",
+            "bar/20* 22/21",
+            "bar/20* 12/11",
+            "bar/20* 8/7"
+        ],
+        "equityLoss": 0.12,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 22/21 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.120 EMG face au coup 3-ply bar/20*/19*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 7 pts (3-3, Videau à 1) : bar/20*/19* surpasse bar/20* 22/21 de +0.120 EMG (86.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20*/19* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20*/19* domine bar/20* 22/21 de +0.120 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/20*/19* maximise votre équité cubeful (+1.631 EMG).",
+            "Évitez bar/20* 22/21 (-0.120 EMG) ; jouez la ligne maîtresse bar/20*/19*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_814_31",
+        "tier": 2,
+        "xgid": "XGID=-D-ba-Aa---a-A-ACa-eBAaAcA:0:0:1:31:3:3:0:7:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "bar/22* 23/22",
+        "optimalMove": "bar/22* 16/15",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 16/15",
+            "bar/22* 23/22",
+            "bar/22*/21",
+            "bar/22* 15/14"
+        ],
+        "equityLoss": 0.228,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 23/22 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.228 EMG face au coup 3-ply bar/22* 16/15.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 7 pts (3-3, Videau à 1) : bar/22* 16/15 surpasse bar/22* 23/22 de +0.228 EMG (39.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 16/15 domine bar/22* 23/22 de +0.228 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/22* 16/15 maximise votre équité cubeful (-0.650 EMG).",
+            "Évitez bar/22* 23/22 (-0.228 EMG) ; jouez la ligne maîtresse bar/22* 16/15."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_815_65",
+        "tier": 2,
+        "xgid": "XGID=-a--A-D-D---eCa--a-e-B-bA-:0:0:1:65:0:0:0:9:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "13/7 6/1*",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "13/7 6/1*",
+            "13/2",
+            "24/18 13/8"
+        ],
+        "equityLoss": 0.172,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 6/1* (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.172 EMG face au coup 3-ply 24/13.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 9 pts (0-0, Videau à 1) : 24/13 surpasse 13/7 6/1* de +0.172 EMG (46.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/13 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/13 domine 13/7 6/1* de +0.172 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 24/13 maximise votre équité cubeful (-0.101 EMG).",
+            "Évitez 13/7 6/1* (-0.172 EMG) ; jouez la ligne maîtresse 24/13."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_816_63",
+        "tier": 3,
+        "xgid": "XGID=--A---B-D-a-bBAa-Aada-CdaA:0:0:1:63:0:0:0:9:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "bar/22 14/8",
+        "optimalMove": "bar/22 8/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 8/2",
+            "bar/22 14/8",
+            "bar/22 17/11",
+            "bar/16"
+        ],
+        "equityLoss": 0.115,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 14/8 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.115 EMG face au coup 3-ply bar/22 8/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 9 pts (0-0, Videau à 1) : bar/22 8/2 surpasse bar/22 14/8 de +0.115 EMG (42.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 8/2 domine bar/22 14/8 de +0.115 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/22 8/2 maximise votre équité cubeful (-0.537 EMG).",
+            "Évitez bar/22 14/8 (-0.115 EMG) ; jouez la ligne maîtresse bar/22 8/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_817_34",
+        "tier": 3,
+        "xgid": "XGID=-A---ACaD-------B----eCfcA:0:0:1:34:0:0:0:9:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "bar/22 5/1",
+        "optimalMove": "bar/18",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/18",
+            "bar/22 5/1",
+            "bar/22 8/4",
+            "bar/22 6/2"
+        ],
+        "equityLoss": 0.11,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 5/1 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.110 EMG face au coup 3-ply bar/18.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 9 pts (0-0, Videau à 1) : bar/18 surpasse bar/22 5/1 de +0.110 EMG (31.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/18 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/18 domine bar/22 5/1 de +0.110 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/18 maximise votre équité cubeful (-1.014 EMG).",
+            "Évitez bar/22 5/1 (-0.110 EMG) ; jouez la ligne maîtresse bar/18."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_818_11",
+        "tier": 2,
+        "xgid": "XGID=-EFbC-a-Aa-b-----d-c--a-a-:0:0:1:11:0:0:0:9:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "8/6*/5 1/off",
+        "optimalMove": "8/6*/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/6*/4",
+            "8/6*/5 1/off",
+            "8/6* 1/off(2)",
+            "8/6* 2/off"
+        ],
+        "equityLoss": 0.454,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/6*/5 1/off (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.454 EMG face au coup 3-ply 8/6*/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 9 pts (0-0, Videau à 1) : 8/6*/4 surpasse 8/6*/5 1/off de +0.454 EMG (94.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 8/6*/4 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/6*/4 domine 8/6*/5 1/off de +0.454 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 8/6*/4 maximise votre équité cubeful (+1.829 EMG).",
+            "Évitez 8/6*/5 1/off (-0.454 EMG) ; jouez la ligne maîtresse 8/6*/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_819_31",
+        "tier": 4,
+        "xgid": "XGID=aAAb--C-D-A-dDA--a-c-a-ba-:0:0:1:31:0:0:0:0:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "14/11 2/1",
+        "optimalMove": "13/10 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/10 2/1",
+            "14/11 2/1",
+            "10/7 2/1",
+            "8/5 2/1"
+        ],
+        "equityLoss": 0.042,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 14/11 2/1 (Money Game), vous concédez -0.042 EMG face au coup 3-ply 13/10 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Money Game : 13/10 2/1 surpasse 14/11 2/1 de +0.042 EMG (70.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/10 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/10 2/1 domine 14/11 2/1 de +0.042 EMG.",
+            "En Money Game, 13/10 2/1 maximise votre équité cubeful (+0.759 EMG).",
+            "Évitez 14/11 2/1 (-0.042 EMG) ; jouez la ligne maîtresse 13/10 2/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_820_63",
+        "tier": 2,
+        "xgid": "XGID=-ABBBAA-B---bA---aaaabBdcA:0:0:1:63:0:0:0:0:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "bar/19* 13/10",
+        "optimalMove": "bar/19* 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19* 8/5",
+            "bar/19* 13/10",
+            "bar/19*/16",
+            "bar/19* 5/2"
+        ],
+        "equityLoss": 0.891,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19* 13/10 (Money Game), vous concédez -0.891 EMG face au coup 3-ply bar/19* 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Money Game : bar/19* 8/5 surpasse bar/19* 13/10 de +0.891 EMG (71.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/19* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19* 8/5 domine bar/19* 13/10 de +0.891 EMG.",
+            "En Money Game, bar/19* 8/5 maximise votre équité cubeful (+0.944 EMG).",
+            "Évitez bar/19* 13/10 (-0.891 EMG) ; jouez la ligne maîtresse bar/19* 8/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_821_62",
+        "tier": 3,
+        "xgid": "XGID=-a--AaEAC-A-dB---a-caabaAA:0:0:1:62:1:1:0:3:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "bar/23*/17*",
+        "optimalMove": "bar/23* 10/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 10/4",
+            "bar/23*/17*",
+            "bar/23* 7/1*",
+            "bar/23* 13/7"
+        ],
+        "equityLoss": 0.069,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23*/17* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.069 EMG face au coup 3-ply bar/23* 10/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 3 pts (1-1, Videau à 1) : bar/23* 10/4 surpasse bar/23*/17* de +0.069 EMG (58.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 10/4 domine bar/23*/17* de +0.069 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/23* 10/4 maximise votre équité cubeful (+0.454 EMG).",
+            "Évitez bar/23*/17* (-0.069 EMG) ; jouez la ligne maîtresse bar/23* 10/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_822_53",
+        "tier": 3,
+        "xgid": "XGID=a-ACa-BAB---bB-a-badBa-bAA:0:0:1:53:1:1:0:3:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/22 20/15*",
+        "optimalMove": "bar/20 24/21*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 24/21*",
+            "bar/22 20/15*",
+            "bar/20 7/4*",
+            "bar/22 7/2"
+        ],
+        "equityLoss": 0.061,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 20/15* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.061 EMG face au coup 3-ply bar/20 24/21*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 3 pts (1-1, Videau à 1) : bar/20 24/21* surpasse bar/22 20/15* de +0.061 EMG (58.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 24/21* domine bar/22 20/15* de +0.061 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/20 24/21* maximise votre équité cubeful (+0.450 EMG).",
+            "Évitez bar/22 20/15* (-0.061 EMG) ; jouez la ligne maîtresse bar/20 24/21*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_823_35",
+        "tier": 2,
+        "xgid": "XGID=-dE-DAB--a------aab-BAb-d-:0:0:1:35:1:1:0:3:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "21/16* 5/2",
+        "optimalMove": "21/16* 20/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16* 20/17*",
+            "21/16* 5/2",
+            "21/16*/13",
+            "20/17*/12"
+        ],
+        "equityLoss": 0.33,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/16* 5/2 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.330 EMG face au coup 3-ply 21/16* 20/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 3 pts (1-1, Videau à 1) : 21/16* 20/17* surpasse 21/16* 5/2 de +0.330 EMG (84.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 21/16* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16* 20/17* domine 21/16* 5/2 de +0.330 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 21/16* 20/17* maximise votre équité cubeful (+1.577 EMG).",
+            "Évitez 21/16* 5/2 (-0.330 EMG) ; jouez la ligne maîtresse 21/16* 20/17*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_824_43",
+        "tier": 2,
+        "xgid": "XGID=--FaDc-aA------A---b-AAbfA:0:0:1:43:1:1:0:3:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "bar/18",
+        "optimalMove": "bar/22 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 8/4",
+            "bar/18",
+            "bar/21 15/12",
+            "bar/21 4/1"
+        ],
+        "equityLoss": 0.351,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/18 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.351 EMG face au coup 3-ply bar/22 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 3 pts (1-1, Videau à 1) : bar/22 8/4 surpasse bar/18 de +0.351 EMG (47.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 8/4 domine bar/18 de +0.351 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/22 8/4 maximise votre équité cubeful (-0.122 EMG).",
+            "Évitez bar/18 (-0.351 EMG) ; jouez la ligne maîtresse bar/22 8/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_825_62",
+        "tier": 2,
+        "xgid": "XGID=-a-AaaEABA--cC---aadA-baA-:0:0:1:62:2:2:0:5:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "9/3 7/5*",
+        "optimalMove": "20/18* 9/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/18* 9/3",
+            "9/3 7/5*",
+            "24/18* 7/5*",
+            "24/18* 3/1*"
+        ],
+        "equityLoss": 0.122,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 9/3 7/5* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.122 EMG face au coup 3-ply 20/18* 9/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 5 pts (2-2, Videau à 1) : 20/18* 9/3 surpasse 9/3 7/5* de +0.122 EMG (59.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/18* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/18* 9/3 domine 9/3 7/5* de +0.122 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 20/18* 9/3 maximise votre équité cubeful (+0.460 EMG).",
+            "Évitez 9/3 7/5* (-0.122 EMG) ; jouez la ligne maîtresse 20/18* 9/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_826_42",
+        "tier": 2,
+        "xgid": "XGID=-BaBBBAB---Aa--a-aadb-bbC-:0:0:1:42:2:2:0:5:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "7/5 6/2*",
+        "optimalMove": "11/9 6/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/9 6/2*",
+            "7/5 6/2*",
+            "6/2* 4/2",
+            "11/7 6/4"
+        ],
+        "equityLoss": 0.127,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 7/5 6/2* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.127 EMG face au coup 3-ply 11/9 6/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 5 pts (2-2, Videau à 1) : 11/9 6/2* surpasse 7/5 6/2* de +0.127 EMG (35.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 11/9 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/9 6/2* domine 7/5 6/2* de +0.127 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 11/9 6/2* maximise votre équité cubeful (-0.747 EMG).",
+            "Évitez 7/5 6/2* (-0.127 EMG) ; jouez la ligne maîtresse 11/9 6/2*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_827_54",
+        "tier": 2,
+        "xgid": "XGID=-aEDAaA----a-------A-abahA:0:0:1:54:2:2:0:5:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "bar/21*/16",
+        "optimalMove": "bar/21* 6/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 6/1*",
+            "bar/21*/16",
+            "bar/21* 19/14",
+            "bar/20 6/2"
+        ],
+        "equityLoss": 0.214,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21*/16 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.214 EMG face au coup 3-ply bar/21* 6/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 5 pts (2-2, Videau à 1) : bar/21* 6/1* surpasse bar/21*/16 de +0.214 EMG (75.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 6/1* domine bar/21*/16 de +0.214 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/21* 6/1* maximise votre équité cubeful (+1.024 EMG).",
+            "Évitez bar/21*/16 (-0.214 EMG) ; jouez la ligne maîtresse bar/21* 6/1*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_828_22",
+        "tier": 2,
+        "xgid": "XGID=-IAB------AAa---A-----fea-:0:0:1:22:2:2:0:5:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "16/12*/8",
+        "optimalMove": "16/12*/10 11/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/12*/10 11/9",
+            "16/12*/8",
+            "16/12* 11/9 10/8",
+            "16/12* 11/7"
+        ],
+        "equityLoss": 0.212,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 16/12*/8 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.212 EMG face au coup 3-ply 16/12*/10 11/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 5 pts (2-2, Videau à 1) : 16/12*/10 11/9 surpasse 16/12*/8 de +0.212 EMG (32.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 16/12*/10 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/12*/10 11/9 domine 16/12*/8 de +0.212 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 16/12*/10 11/9 maximise votre équité cubeful (-0.583 EMG).",
+            "Évitez 16/12*/8 (-0.212 EMG) ; jouez la ligne maîtresse 16/12*/10 11/9."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_829_33",
+        "tier": 2,
+        "xgid": "XGID=-b--aBC-BA--dD---a-daaAa-B:0:0:1:33:3:3:0:7:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "bar/22(2) 13/10 9/6",
+        "optimalMove": "bar/22(2) 13/10(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22(2) 13/10(2)",
+            "bar/22(2) 13/10 9/6",
+            "bar/22(2) 13/7",
+            "bar/22(2) 9/3"
+        ],
+        "equityLoss": 0.214,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22(2) 13/10 9/6 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.214 EMG face au coup 3-ply bar/22(2) 13/10(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 7 pts (3-3, Videau à 1) : bar/22(2) 13/10(2) surpasse bar/22(2) 13/10 9/6 de +0.214 EMG (62.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22(2) en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22(2) 13/10(2) domine bar/22(2) 13/10 9/6 de +0.214 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/22(2) 13/10(2) maximise votre équité cubeful (+0.725 EMG).",
+            "Évitez bar/22(2) 13/10 9/6 (-0.214 EMG) ; jouez la ligne maîtresse bar/22(2) 13/10(2)."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_830_51",
+        "tier": 3,
+        "xgid": "XGID=--aAa-D----a-Caa-bb-CdABbA:0:0:1:51:3:3:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "bar/20 23/22",
+        "optimalMove": "bar/20 3/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 3/2*",
+            "bar/20 23/22",
+            "bar/20 6/5",
+            "bar/20 13/12"
+        ],
+        "equityLoss": 0.084,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 23/22 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.084 EMG face au coup 3-ply bar/20 3/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 7 pts (3-3, Videau à 1) : bar/20 3/2* surpasse bar/20 23/22 de +0.084 EMG (50.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 3/2* domine bar/20 23/22 de +0.084 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/20 3/2* maximise votre équité cubeful (-0.272 EMG).",
+            "Évitez bar/20 23/22 (-0.084 EMG) ; jouez la ligne maîtresse bar/20 3/2*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_831_42",
+        "tier": 3,
+        "xgid": "XGID=-CAbDaaBabA-cA---A--A-e--A:0:0:1:42:3:3:0:7:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "bar/21 4/2",
+        "optimalMove": "bar/23 17/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 17/13",
+            "bar/21 4/2",
+            "bar/21 10/8*",
+            "bar/23 10/6*"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 4/2 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.073 EMG face au coup 3-ply bar/23 17/13.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 7 pts (3-3, Videau à 1) : bar/23 17/13 surpasse bar/21 4/2 de +0.073 EMG (61.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 17/13 domine bar/21 4/2 de +0.073 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/23 17/13 maximise votre équité cubeful (+0.802 EMG).",
+            "Évitez bar/21 4/2 (-0.073 EMG) ; jouez la ligne maîtresse bar/23 17/13."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_832_15",
+        "tier": 3,
+        "xgid": "XGID=----B-DaAaA-bD-a--cda--bBA:0:0:1:15:4:4:0:9:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/20* 8/7*",
+        "optimalMove": "bar/20* 10/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 10/9*",
+            "bar/20* 8/7*",
+            "bar/20* 6/5",
+            "bar/20* 4/3"
+        ],
+        "equityLoss": 0.087,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 8/7* (Match en 9 pts (4-4, Videau à 1)), vous concédez -0.087 EMG face au coup 3-ply bar/20* 10/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 9 pts (4-4, Videau à 1) : bar/20* 10/9* surpasse bar/20* 8/7* de +0.087 EMG (60.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 9 pts (4-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 10/9* domine bar/20* 8/7* de +0.087 EMG.",
+            "En Match en 9 pts (4-4, Videau à 1), bar/20* 10/9* maximise votre équité cubeful (+0.536 EMG).",
+            "Évitez bar/20* 8/7* (-0.087 EMG) ; jouez la ligne maîtresse bar/20* 10/9*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_833_56",
+        "tier": 2,
+        "xgid": "XGID=-cBA--DE-aAAbAaa---cbb----:0:0:1:56:4:4:0:9:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "13/7 11/6",
+        "optimalMove": "11/5 10/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/5 10/5",
+            "13/7 11/6",
+            "13/7 10/5",
+            "13/8 10/4"
+        ],
+        "equityLoss": 0.201,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 11/6 (Match en 9 pts (4-4, Videau à 1)), vous concédez -0.201 EMG face au coup 3-ply 11/5 10/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 9 pts (4-4, Videau à 1) : 11/5 10/5 surpasse 13/7 11/6 de +0.201 EMG (49.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 11/5 en Match en 9 pts (4-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/5 10/5 domine 13/7 11/6 de +0.201 EMG.",
+            "En Match en 9 pts (4-4, Videau à 1), 11/5 10/5 maximise votre équité cubeful (+0.162 EMG).",
+            "Évitez 13/7 11/6 (-0.201 EMG) ; jouez la ligne maîtresse 11/5 10/5."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_834_35",
+        "tier": 2,
+        "xgid": "XGID=-aB-AC-AbaA----A-A-cACAdd-:0:0:1:35:4:4:0:9:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "20/15 7/4",
+        "optimalMove": "15/10 7/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/10 7/4",
+            "20/15 7/4",
+            "20/15 10/7",
+            "22/17 7/4"
+        ],
+        "equityLoss": 0.123,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15 7/4 (Match en 9 pts (4-4, Videau à 1)), vous concédez -0.123 EMG face au coup 3-ply 15/10 7/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 9 pts (4-4, Videau à 1) : 15/10 7/4 surpasse 20/15 7/4 de +0.123 EMG (60.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 15/10 en Match en 9 pts (4-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/10 7/4 domine 20/15 7/4 de +0.123 EMG.",
+            "En Match en 9 pts (4-4, Videau à 1), 15/10 7/4 maximise votre équité cubeful (+0.311 EMG).",
+            "Évitez 20/15 7/4 (-0.123 EMG) ; jouez la ligne maîtresse 15/10 7/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_835_42",
+        "tier": 2,
+        "xgid": "XGID=-ECaacC-a-b--A-a-A--cA-baA:0:0:1:42:4:4:0:9:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "bar/21 6/4*",
+        "optimalMove": "bar/21 17/15*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 17/15*",
+            "bar/21 6/4*",
+            "bar/21 13/11",
+            "bar/19"
+        ],
+        "equityLoss": 0.253,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 6/4* (Match en 9 pts (4-4, Videau à 1)), vous concédez -0.253 EMG face au coup 3-ply bar/21 17/15*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 9 pts (4-4, Videau à 1) : bar/21 17/15* surpasse bar/21 6/4* de +0.253 EMG (49.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 9 pts (4-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 17/15* domine bar/21 6/4* de +0.253 EMG.",
+            "En Match en 9 pts (4-4, Videau à 1), bar/21 17/15* maximise votre équité cubeful (+0.265 EMG).",
+            "Évitez bar/21 6/4* (-0.253 EMG) ; jouez la ligne maîtresse bar/21 17/15*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_836_33",
+        "tier": 3,
+        "xgid": "XGID=--B-aC-Aa-bA---A---cF-A-h-:0:0:1:33:4:4:0:9:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "20/17(3) 11/8*",
+        "optimalMove": "20/17(2) 11/8* 7/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/17(2) 11/8* 7/4*",
+            "20/17(3) 11/8*",
+            "20/14 11/8* 7/4*",
+            "20/17(3) 7/4*"
+        ],
+        "equityLoss": 0.11,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/17(3) 11/8* (Match en 9 pts (4-4, Videau à 1)), vous concédez -0.110 EMG face au coup 3-ply 20/17(2) 11/8* 7/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 9 pts (4-4, Videau à 1) : 20/17(2) 11/8* 7/4* surpasse 20/17(3) 11/8* de +0.110 EMG (68.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/17(2) en Match en 9 pts (4-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/17(2) 11/8* 7/4* domine 20/17(3) 11/8* de +0.110 EMG.",
+            "En Match en 9 pts (4-4, Videau à 1), 20/17(2) 11/8* 7/4* maximise votre équité cubeful (+0.767 EMG).",
+            "Évitez 20/17(3) 11/8* (-0.110 EMG) ; jouez la ligne maîtresse 20/17(2) 11/8* 7/4*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_837_23",
+        "tier": 2,
+        "xgid": "XGID=---A-aGaA---bD-a-bada--bB-:0:0:1:23:5:5:0:11:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "6/4 6/3",
+        "optimalMove": "8/5*/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5*/3",
+            "6/4 6/3",
+            "8/3",
+            "8/5* 6/4"
+        ],
+        "equityLoss": 0.413,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 6/4 6/3 (Match en 11 pts (5-5, Videau à 1)), vous concédez -0.413 EMG face au coup 3-ply 8/5*/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 11 pts (5-5, Videau à 1) : 8/5*/3 surpasse 6/4 6/3 de +0.413 EMG (39.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 8/5*/3 en Match en 11 pts (5-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5*/3 domine 6/4 6/3 de +0.413 EMG.",
+            "En Match en 11 pts (5-5, Videau à 1), 8/5*/3 maximise votre équité cubeful (-0.396 EMG).",
+            "Évitez 6/4 6/3 (-0.413 EMG) ; jouez la ligne maîtresse 8/5*/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_838_12",
+        "tier": 2,
+        "xgid": "XGID=aeDADABB-a-----a--Ag------:0:0:1:12:5:5:0:11:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "7/6 5/3",
+        "optimalMove": "7/5 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/5 4/3",
+            "7/6 5/3",
+            "5/3 4/3",
+            "18/17 5/3"
+        ],
+        "equityLoss": 0.124,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 7/6 5/3 (Match en 11 pts (5-5, Videau à 1)), vous concédez -0.124 EMG face au coup 3-ply 7/5 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 11 pts (5-5, Videau à 1) : 7/5 4/3 surpasse 7/6 5/3 de +0.124 EMG (82.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 7/5 en Match en 11 pts (5-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/5 4/3 domine 7/6 5/3 de +0.124 EMG.",
+            "En Match en 11 pts (5-5, Videau à 1), 7/5 4/3 maximise votre équité cubeful (+1.720 EMG).",
+            "Évitez 7/6 5/3 (-0.124 EMG) ; jouez la ligne maîtresse 7/5 4/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_839_54",
+        "tier": 2,
+        "xgid": "XGID=---ab-FC--------A---adafE-:0:0:1:54:5:5:0:11:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "24/20* 16/11",
+        "optimalMove": "24/20* 24/19",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20* 24/19",
+            "24/20* 16/11",
+            "24/20*/15",
+            "24/20* 7/2"
+        ],
+        "equityLoss": 0.144,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20* 16/11 (Match en 11 pts (5-5, Videau à 1)), vous concédez -0.144 EMG face au coup 3-ply 24/20* 24/19.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 11 pts (5-5, Videau à 1) : 24/20* 24/19 surpasse 24/20* 16/11 de +0.144 EMG (68.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/20* en Match en 11 pts (5-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20* 24/19 domine 24/20* 16/11 de +0.144 EMG.",
+            "En Match en 11 pts (5-5, Videau à 1), 24/20* 24/19 maximise votre équité cubeful (+0.780 EMG).",
+            "Évitez 24/20* 16/11 (-0.144 EMG) ; jouez la ligne maîtresse 24/20* 24/19."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_840_11",
+        "tier": 2,
+        "xgid": "XGID=aA--AaF-A---bDa--d-e---aB-:0:0:1:11:0:0:0:0:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23*/22 6/5*/4",
+        "optimalMove": "6/5*/4 6/5(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/5*/4 6/5(2)",
+            "24/23*/22 6/5*/4",
+            "24/23* 8/7 6/5*/4",
+            "24/23* 6/5*(3)"
+        ],
+        "equityLoss": 0.217,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23*/22 6/5*/4 (Money Game), vous concédez -0.217 EMG face au coup 3-ply 6/5*/4 6/5(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Money Game : 6/5*/4 6/5(2) surpasse 24/23*/22 6/5*/4 de +0.217 EMG (70.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 6/5*/4 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/5*/4 6/5(2) domine 24/23*/22 6/5*/4 de +0.217 EMG.",
+            "En Money Game, 6/5*/4 6/5(2) maximise votre équité cubeful (+0.963 EMG).",
+            "Évitez 24/23*/22 6/5*/4 (-0.217 EMG) ; jouez la ligne maîtresse 6/5*/4 6/5(2)."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_841_13",
+        "tier": 3,
+        "xgid": "XGID=-AB-AbC-C--acBa---aea-C-a-:0:0:1:13:0:0:0:0:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "22/21 4/1",
+        "optimalMove": "22/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/18*",
+            "22/21 4/1",
+            "8/4",
+            "8/7 4/1"
+        ],
+        "equityLoss": 0.115,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 22/21 4/1 (Money Game), vous concédez -0.115 EMG face au coup 3-ply 22/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Money Game : 22/18* surpasse 22/21 4/1 de +0.115 EMG (53.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 22/18* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/18* domine 22/21 4/1 de +0.115 EMG.",
+            "En Money Game, 22/18* maximise votre équité cubeful (+0.190 EMG).",
+            "Évitez 22/21 4/1 (-0.115 EMG) ; jouez la ligne maîtresse 22/18*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_842_66",
+        "tier": 3,
+        "xgid": "XGID=aFBA--aA---aa---abbcc-CB--:0:0:1:66:0:0:0:0:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "22/16*/10(2)",
+        "optimalMove": "22/16*/10 22/16(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/16*/10 22/16(2)",
+            "22/16*/10(2)",
+            "22/16*(3) 7/1",
+            "22/16*/10 22/16 7/1"
+        ],
+        "equityLoss": 0.063,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 22/16*/10(2) (Money Game), vous concédez -0.063 EMG face au coup 3-ply 22/16*/10 22/16(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Money Game : 22/16*/10 22/16(2) surpasse 22/16*/10(2) de +0.063 EMG (15.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 22/16*/10 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/16*/10 22/16(2) domine 22/16*/10(2) de +0.063 EMG.",
+            "En Money Game, 22/16*/10 22/16(2) maximise votre équité cubeful (-1.129 EMG).",
+            "Évitez 22/16*/10(2) (-0.063 EMG) ; jouez la ligne maîtresse 22/16*/10 22/16(2)."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_843_46",
+        "tier": 3,
+        "xgid": "XGID=-B-abBB-DaA--a----aB-B--i-:0:0:1:46:0:0:0:0:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "19/13* 10/6",
+        "optimalMove": "19/13*/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "19/13*/9*",
+            "19/13* 10/6",
+            "21/17 19/13*",
+            "19/9*"
+        ],
+        "equityLoss": 0.072,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 19/13* 10/6 (Money Game), vous concédez -0.072 EMG face au coup 3-ply 19/13*/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Money Game : 19/13*/9* surpasse 19/13* 10/6 de +0.072 EMG (94.1 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 19/13*/9* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 19/13*/9* domine 19/13* 10/6 de +0.072 EMG.",
+            "En Money Game, 19/13*/9* maximise votre équité cubeful (+1.525 EMG).",
+            "Évitez 19/13* 10/6 (-0.072 EMG) ; jouez la ligne maîtresse 19/13*/9*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_844_64",
+        "tier": 2,
+        "xgid": "XGID=-AB-BCBAa--Bb----aaa-eacB-:0:0:1:64:1:1:0:3:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "24/18* 11/7",
+        "optimalMove": "24/18* 5/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 5/1",
+            "24/18* 11/7",
+            "24/18*/14",
+            "24/18* 7/3"
+        ],
+        "equityLoss": 0.373,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18* 11/7 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.373 EMG face au coup 3-ply 24/18* 5/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 3 pts (1-1, Videau à 1) : 24/18* 5/1 surpasse 24/18* 11/7 de +0.373 EMG (90.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 5/1 domine 24/18* 11/7 de +0.373 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 24/18* 5/1 maximise votre équité cubeful (+2.228 EMG).",
+            "Évitez 24/18* 11/7 (-0.373 EMG) ; jouez la ligne maîtresse 24/18* 5/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_845_31",
+        "tier": 3,
+        "xgid": "XGID=-GEaB-a--A--b-b------dad--:0:0:1:31:1:1:0:3:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "9/6*/5",
+        "optimalMove": "9/6* 1/off",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/6* 1/off",
+            "9/6*/5",
+            "9/6* 2/1",
+            "9/5"
+        ],
+        "equityLoss": 0.063,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 9/6*/5 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.063 EMG face au coup 3-ply 9/6* 1/off.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 3 pts (1-1, Videau à 1) : 9/6* 1/off surpasse 9/6*/5 de +0.063 EMG (86.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 9/6* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/6* 1/off domine 9/6*/5 de +0.063 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 9/6* 1/off maximise votre équité cubeful (+1.719 EMG).",
+            "Évitez 9/6*/5 (-0.063 EMG) ; jouez la ligne maîtresse 9/6* 1/off."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_846_54",
+        "tier": 4,
+        "xgid": "XGID=-bAA-bC-B---cE---b-fAA--A-:0:0:1:54:0:0:0:5:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "8/3 6/2",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20 13/8",
+            "8/3 6/2",
+            "24/20 8/3",
+            "24/20 21/16"
+        ],
+        "equityLoss": 0.035,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/3 6/2 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.035 EMG face au coup 3-ply 24/20 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 5 pts (0-0, Videau à 1) : 24/20 13/8 surpasse 8/3 6/2 de +0.035 EMG (51.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/20 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20 13/8 domine 8/3 6/2 de +0.035 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/20 13/8 maximise votre équité cubeful (+0.051 EMG).",
+            "Évitez 8/3 6/2 (-0.035 EMG) ; jouez la ligne maîtresse 24/20 13/8."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_847_63",
+        "tier": 3,
+        "xgid": "XGID=-----aFbA---cCaa-b-bBAabAA:0:0:1:63:0:0:0:5:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "bar/22* 20/14*",
+        "optimalMove": "bar/22* 21/15*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 21/15*",
+            "bar/22* 20/14*",
+            "bar/22*/16",
+            "bar/22* 24/18"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 20/14* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.065 EMG face au coup 3-ply bar/22* 21/15*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 5 pts (0-0, Videau à 1) : bar/22* 21/15* surpasse bar/22* 20/14* de +0.065 EMG (49.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 21/15* domine bar/22* 20/14* de +0.065 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/22* 21/15* maximise votre équité cubeful (+0.003 EMG).",
+            "Évitez bar/22* 20/14* (-0.065 EMG) ; jouez la ligne maîtresse bar/22* 21/15*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_848_25",
+        "tier": 4,
+        "xgid": "XGID=-aCB-c--B--acC-A--BbA-Ae--:0:0:1:25:0:0:0:5:8",
+        "dice": [
+            2,
+            5
+        ],
+        "playedMove": "15/10 13/11*",
+        "optimalMove": "20/15 13/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/15 13/11*",
+            "15/10 13/11*",
+            "18/11*",
+            "22/17 13/11*"
+        ],
+        "equityLoss": 0.046,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 15/10 13/11* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.046 EMG face au coup 3-ply 20/15 13/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-5 en Match en 5 pts (0-0, Videau à 1) : 20/15 13/11* surpasse 15/10 13/11* de +0.046 EMG (66.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/15 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/15 13/11* domine 15/10 13/11* de +0.046 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 20/15 13/11* maximise votre équité cubeful (+0.716 EMG).",
+            "Évitez 15/10 13/11* (-0.046 EMG) ; jouez la ligne maîtresse 20/15 13/11*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_849_52",
+        "tier": 3,
+        "xgid": "XGID=-AE--aBaAAaacC---a-A-accA-:0:0:1:52:0:0:0:5:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/11*/6",
+        "optimalMove": "19/17* 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "19/17* 13/8",
+            "13/11*/6",
+            "13/8 9/7*",
+            "24/17*"
+        ],
+        "equityLoss": 0.091,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11*/6 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.091 EMG face au coup 3-ply 19/17* 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 5 pts (0-0, Videau à 1) : 19/17* 13/8 surpasse 13/11*/6 de +0.091 EMG (55.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 19/17* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 19/17* 13/8 domine 13/11*/6 de +0.091 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 19/17* 13/8 maximise votre équité cubeful (+0.260 EMG).",
+            "Évitez 13/11*/6 (-0.091 EMG) ; jouez la ligne maîtresse 19/17* 13/8."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_850_34",
+        "tier": 2,
+        "xgid": "XGID=-ACCaaAA-A--bAB---aaAa-fbA:0:0:1:34:0:0:0:5:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "bar/21*/18*",
+        "optimalMove": "bar/21* 9/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 9/6",
+            "bar/21*/18*",
+            "bar/21* 7/4*",
+            "bar/21* 13/10"
+        ],
+        "equityLoss": 0.188,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21*/18* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.188 EMG face au coup 3-ply bar/21* 9/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 5 pts (0-0, Videau à 1) : bar/21* 9/6 surpasse bar/21*/18* de +0.188 EMG (72.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 9/6 domine bar/21*/18* de +0.188 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/21* 9/6 maximise votre équité cubeful (+0.930 EMG).",
+            "Évitez bar/21*/18* (-0.188 EMG) ; jouez la ligne maîtresse bar/21* 9/6."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_851_15",
+        "tier": 2,
+        "xgid": "XGID=-CF-AaAaA--b--a-aAabAAcba-:0:0:1:15:0:0:0:5:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "21/16* 8/7*",
+        "optimalMove": "21/16* 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16* 6/5*",
+            "21/16* 8/7*",
+            "21/16* 17/16",
+            "21/20 17/12"
+        ],
+        "equityLoss": 0.199,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/16* 8/7* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.199 EMG face au coup 3-ply 21/16* 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 5 pts (0-0, Videau à 1) : 21/16* 6/5* surpasse 21/16* 8/7* de +0.199 EMG (34.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 21/16* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16* 6/5* domine 21/16* 8/7* de +0.199 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 21/16* 6/5* maximise votre équité cubeful (-0.792 EMG).",
+            "Évitez 21/16* 8/7* (-0.199 EMG) ; jouez la ligne maîtresse 21/16* 6/5*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_852_36",
+        "tier": 4,
+        "xgid": "XGID=--a-ABBaDB--eB---a-b-adAA-:0:0:1:36:3:3:0:7:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "13/7*/4",
+        "optimalMove": "24/21* 23/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21* 23/17*",
+            "13/7*/4",
+            "24/21* 13/7*",
+            "24/21* 8/2*"
+        ],
+        "equityLoss": 0.045,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7*/4 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.045 EMG face au coup 3-ply 24/21* 23/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 7 pts (3-3, Videau à 1) : 24/21* 23/17* surpasse 13/7*/4 de +0.045 EMG (78.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/21* en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* 23/17* domine 13/7*/4 de +0.045 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 24/21* 23/17* maximise votre équité cubeful (+1.240 EMG).",
+            "Évitez 13/7*/4 (-0.045 EMG) ; jouez la ligne maîtresse 24/21* 23/17*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_853_43",
+        "tier": 3,
+        "xgid": "XGID=-c-EABa-A---aCA-bb-abBba--:0:0:1:43:3:3:0:7:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/10 8/4",
+        "optimalMove": "14/11 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/11 8/4",
+            "13/10 8/4",
+            "21/18 8/4",
+            "14/10 13/10"
+        ],
+        "equityLoss": 0.108,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10 8/4 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.108 EMG face au coup 3-ply 14/11 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 7 pts (3-3, Videau à 1) : 14/11 8/4 surpasse 13/10 8/4 de +0.108 EMG (53.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 14/11 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/11 8/4 domine 13/10 8/4 de +0.108 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 14/11 8/4 maximise votre équité cubeful (+0.309 EMG).",
+            "Évitez 13/10 8/4 (-0.108 EMG) ; jouez la ligne maîtresse 14/11 8/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_854_41",
+        "tier": 2,
+        "xgid": "XGID=--Ca-CA--Ba-A---Aab-cbe-CA:0:0:1:41:3:3:0:7:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "bar/24 12/8",
+        "optimalMove": "bar/24 16/12",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 16/12",
+            "bar/24 12/8",
+            "bar/24 6/2",
+            "bar/24 5/1"
+        ],
+        "equityLoss": 0.237,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 12/8 (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.237 EMG face au coup 3-ply bar/24 16/12.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 7 pts (3-3, Videau à 1) : bar/24 16/12 surpasse bar/24 12/8 de +0.237 EMG (25.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 16/12 domine bar/24 12/8 de +0.237 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), bar/24 16/12 maximise votre équité cubeful (-1.224 EMG).",
+            "Évitez bar/24 12/8 (-0.237 EMG) ; jouez la ligne maîtresse bar/24 16/12."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_855_33",
+        "tier": 4,
+        "xgid": "XGID=ae-FBCBA------A--a--e--c--:0:0:1:33:3:3:0:7:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "7/4 5/2(3)",
+        "optimalMove": "14/8 7/4 5/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/8 7/4 5/2",
+            "7/4 5/2(3)",
+            "14/5 7/4",
+            "14/11 7/4 5/2(2)"
+        ],
+        "equityLoss": 0.032,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 7/4 5/2(3) (Match en 7 pts (3-3, Videau à 1)), vous concédez -0.032 EMG face au coup 3-ply 14/8 7/4 5/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 7 pts (3-3, Videau à 1) : 14/8 7/4 5/2 surpasse 7/4 5/2(3) de +0.032 EMG (85.8 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 14/8 en Match en 7 pts (3-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/8 7/4 5/2 domine 7/4 5/2(3) de +0.032 EMG.",
+            "En Match en 7 pts (3-3, Videau à 1), 14/8 7/4 5/2 maximise votre équité cubeful (+1.947 EMG).",
+            "Évitez 7/4 5/2(3) (-0.032 EMG) ; jouez la ligne maîtresse 14/8 7/4 5/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_856_24",
+        "tier": 2,
+        "xgid": "XGID=-bCDAa--C---dD---b--c-b-a-:0:0:1:24:2:6:0:9:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "8/6 8/4",
+        "optimalMove": "13/11 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 8/4",
+            "8/6 8/4",
+            "13/9 4/2",
+            "8/2"
+        ],
+        "equityLoss": 0.319,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/6 8/4 (Match en 9 pts (2-6, Videau à 1)), vous concédez -0.319 EMG face au coup 3-ply 13/11 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 9 pts (2-6, Videau à 1) : 13/11 8/4 surpasse 8/6 8/4 de +0.319 EMG (61.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/11 en Match en 9 pts (2-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11 8/4 domine 8/6 8/4 de +0.319 EMG.",
+            "En Match en 9 pts (2-6, Videau à 1), 13/11 8/4 maximise votre équité cubeful (+0.735 EMG).",
+            "Évitez 8/6 8/4 (-0.319 EMG) ; jouez la ligne maîtresse 13/11 8/4."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_857_31",
+        "tier": 4,
+        "xgid": "XGID=-CAAbb--Ca-AAAB-----bAecA-:0:0:1:31:6:2:0:9:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "13/12 11/8",
+        "optimalMove": "12/9* 3/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "12/9* 3/2",
+            "13/12 11/8",
+            "24/21 12/11",
+            "14/11 13/12"
+        ],
+        "equityLoss": 0.041,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/12 11/8 (Match en 9 pts (6-2, Videau à 1)), vous concédez -0.041 EMG face au coup 3-ply 12/9* 3/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 9 pts (6-2, Videau à 1) : 12/9* 3/2 surpasse 13/12 11/8 de +0.041 EMG (50.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 12/9* en Match en 9 pts (6-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 12/9* 3/2 domine 13/12 11/8 de +0.041 EMG.",
+            "En Match en 9 pts (6-2, Videau à 1), 12/9* 3/2 maximise votre équité cubeful (-0.287 EMG).",
+            "Évitez 13/12 11/8 (-0.041 EMG) ; jouez la ligne maîtresse 12/9* 3/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_858_46",
+        "tier": 2,
+        "xgid": "XGID=-bAB--D-A---bE--aaad-baBa-:0:0:1:46:3:1:0:11:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "13/9 8/2",
+        "optimalMove": "23/17* 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/17* 6/2",
+            "13/9 8/2",
+            "13/7 6/2",
+            "23/17*/13"
+        ],
+        "equityLoss": 0.421,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/9 8/2 (Match en 11 pts (3-1, Videau à 1)), vous concédez -0.421 EMG face au coup 3-ply 23/17* 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 11 pts (3-1, Videau à 1) : 23/17* 6/2 surpasse 13/9 8/2 de +0.421 EMG (61.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 23/17* en Match en 11 pts (3-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/17* 6/2 domine 13/9 8/2 de +0.421 EMG.",
+            "En Match en 11 pts (3-1, Videau à 1), 23/17* 6/2 maximise votre équité cubeful (+0.493 EMG).",
+            "Évitez 13/9 8/2 (-0.421 EMG) ; jouez la ligne maîtresse 23/17* 6/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_859_26",
+        "tier": 4,
+        "xgid": "XGID=-A-BBaD-bA--dB-A--ac-AcAa-:0:0:1:26:1:3:0:11:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "9/1",
+        "optimalMove": "23/21 15/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/21 15/9",
+            "9/1",
+            "15/9 3/1",
+            "15/9 6/4"
+        ],
+        "equityLoss": 0.055,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 9/1 (Match en 11 pts (1-3, Videau à 1)), vous concédez -0.055 EMG face au coup 3-ply 23/21 15/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 11 pts (1-3, Videau à 1) : 23/21 15/9 surpasse 9/1 de +0.055 EMG (62.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 23/21 en Match en 11 pts (1-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/21 15/9 domine 9/1 de +0.055 EMG.",
+            "En Match en 11 pts (1-3, Videau à 1), 23/21 15/9 maximise votre équité cubeful (+0.620 EMG).",
+            "Évitez 9/1 (-0.055 EMG) ; jouez la ligne maîtresse 23/21 15/9."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_860_65",
+        "tier": 2,
+        "xgid": "XGID=-a-CB-B----A-Da--AbdAbcaaA:0:0:1:65:3:1:0:11:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "bar/20 17/11",
+        "optimalMove": "bar/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/14*",
+            "bar/20 17/11",
+            "bar/20 13/7",
+            "bar/20 11/5"
+        ],
+        "equityLoss": 0.298,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 17/11 (Match en 11 pts (3-1, Videau à 1)), vous concédez -0.298 EMG face au coup 3-ply bar/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 11 pts (3-1, Videau à 1) : bar/14* surpasse bar/20 17/11 de +0.298 EMG (53.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/14* en Match en 11 pts (3-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/14* domine bar/20 17/11 de +0.298 EMG.",
+            "En Match en 11 pts (3-1, Videau à 1), bar/14* maximise votre équité cubeful (-0.035 EMG).",
+            "Évitez bar/20 17/11 (-0.298 EMG) ; jouez la ligne maîtresse bar/14*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_861_34",
+        "tier": 4,
+        "xgid": "XGID=---CD--A---AB----a-cBddcB-:0:0:1:34:3:1:0:11:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "20/17* 20/16",
+        "optimalMove": "20/17* 11/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/17* 11/7",
+            "20/17* 20/16",
+            "20/17*/13",
+            "20/17* 7/3"
+        ],
+        "equityLoss": 0.042,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 20/17* 20/16 (Match en 11 pts (3-1, Videau à 1)), vous concédez -0.042 EMG face au coup 3-ply 20/17* 11/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 11 pts (3-1, Videau à 1) : 20/17* 11/7 surpasse 20/17* 20/16 de +0.042 EMG (24.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/17* en Match en 11 pts (3-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/17* 11/7 domine 20/17* 20/16 de +0.042 EMG.",
+            "En Match en 11 pts (3-1, Videau à 1), 20/17* 11/7 maximise votre équité cubeful (-1.067 EMG).",
+            "Évitez 20/17* 20/16 (-0.042 EMG) ; jouez la ligne maîtresse 20/17* 11/7."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_862_41",
+        "tier": 2,
+        "xgid": "XGID=-bAB--D-A---cFa--a-c-aabaA:0:0:1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "bar/21*/20",
+        "optimalMove": "bar/24* 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 6/2",
+            "bar/21*/20",
+            "bar/21* 3/2",
+            "bar/21* 8/7"
+        ],
+        "equityLoss": 0.419,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21*/20 (Money Game), vous concédez -0.419 EMG face au coup 3-ply bar/24* 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Money Game : bar/24* 6/2 surpasse bar/21*/20 de +0.419 EMG (63.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/24* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 6/2 domine bar/21*/20 de +0.419 EMG.",
+            "En Money Game, bar/24* 6/2 maximise votre équité cubeful (+0.651 EMG).",
+            "Évitez bar/21*/20 (-0.419 EMG) ; jouez la ligne maîtresse bar/24* 6/2."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_863_61",
+        "tier": 2,
+        "xgid": "XGID=-ACA--CB----bB-a--bca-eaC-:0:0:1:61:0:0:0:0:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "24/23*/17",
+        "optimalMove": "24/23* 7/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23* 7/1",
+            "24/23*/17",
+            "24/23* 13/7",
+            "13/7 2/1"
+        ],
+        "equityLoss": 0.203,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23*/17 (Money Game), vous concédez -0.203 EMG face au coup 3-ply 24/23* 7/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Money Game : 24/23* 7/1 surpasse 24/23*/17 de +0.203 EMG (41.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 24/23* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23* 7/1 domine 24/23*/17 de +0.203 EMG.",
+            "En Money Game, 24/23* 7/1 maximise votre équité cubeful (-0.360 EMG).",
+            "Évitez 24/23*/17 (-0.203 EMG) ; jouez la ligne maîtresse 24/23* 7/1."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_864_56",
+        "tier": 3,
+        "xgid": "XGID=ab-EAaCCA---a---A-caaaAca-:0:0:1:56:0:0:0:0:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "8/2 7/2",
+        "optimalMove": "16/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/5*",
+            "8/2 7/2",
+            "22/17 16/10",
+            "22/11"
+        ],
+        "equityLoss": 0.106,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/2 7/2 (Money Game), vous concédez -0.106 EMG face au coup 3-ply 16/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Money Game : 16/5* surpasse 8/2 7/2 de +0.106 EMG (77.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 16/5* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/5* domine 8/2 7/2 de +0.106 EMG.",
+            "En Money Game, 16/5* maximise votre équité cubeful (+1.291 EMG).",
+            "Évitez 8/2 7/2 (-0.106 EMG) ; jouez la ligne maîtresse 16/5*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_865_36",
+        "tier": 2,
+        "xgid": "XGID=-ACAB-AC----a--A--dcA-faB-:0:0:1:36:0:0:0:0:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "15/12* 7/1",
+        "optimalMove": "15/12*/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/12*/6",
+            "15/12* 7/1",
+            "15/6",
+            "20/14 15/12*"
+        ],
+        "equityLoss": 0.399,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 15/12* 7/1 (Money Game), vous concédez -0.399 EMG face au coup 3-ply 15/12*/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Money Game : 15/12*/6 surpasse 15/12* 7/1 de +0.399 EMG (47.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 15/12*/6 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/12*/6 domine 15/12* 7/1 de +0.399 EMG.",
+            "En Money Game, 15/12*/6 maximise votre équité cubeful (-0.150 EMG).",
+            "Évitez 15/12* 7/1 (-0.399 EMG) ; jouez la ligne maîtresse 15/12*/6."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_866_53",
+        "tier": 2,
+        "xgid": "XGID=-BCF-bABA---a-----ba-bbda-:0:0:1:53:0:0:0:0:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "8/3 7/4",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "8/3 7/4",
+            "7/2 6/3",
+            "7/4 7/2"
+        ],
+        "equityLoss": 0.288,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 8/3 7/4 (Money Game), vous concédez -0.288 EMG face au coup 3-ply 8/3 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Money Game : 8/3 6/3 surpasse 8/3 7/4 de +0.288 EMG (93.9 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 8/3 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3 6/3 domine 8/3 7/4 de +0.288 EMG.",
+            "En Money Game, 8/3 6/3 maximise votre équité cubeful (+0.979 EMG).",
+            "Évitez 8/3 7/4 (-0.288 EMG) ; jouez la ligne maîtresse 8/3 6/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_867_51",
+        "tier": 3,
+        "xgid": "XGID=-CDF---a--A-a----a--aA-fe-:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "21/20* 10/5",
+        "optimalMove": "21/20*/15",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/20*/15",
+            "21/20* 10/5",
+            "10/4",
+            "10/5 2/1"
+        ],
+        "equityLoss": 0.094,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/20* 10/5 (Money Game), vous concédez -0.094 EMG face au coup 3-ply 21/20*/15.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Money Game : 21/20*/15 surpasse 21/20* 10/5 de +0.094 EMG (83.6 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 21/20*/15 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/20*/15 domine 21/20* 10/5 de +0.094 EMG.",
+            "En Money Game, 21/20*/15 maximise votre équité cubeful (+0.950 EMG).",
+            "Évitez 21/20* 10/5 (-0.094 EMG) ; jouez la ligne maîtresse 21/20*/15."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_868_65",
+        "tier": 3,
+        "xgid": "XGID=-bA-AaD-C-B-dBA----d-b-aaA:0:0:1:65:1:1:0:3:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "bar/20 8/2",
+        "optimalMove": "bar/14",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/14",
+            "bar/20 8/2",
+            "bar/20 14/8",
+            "bar/20 10/4"
+        ],
+        "equityLoss": 0.115,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 8/2 (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.115 EMG face au coup 3-ply bar/14.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 3 pts (1-1, Videau à 1) : bar/14 surpasse bar/20 8/2 de +0.115 EMG (60.0 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/14 en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/14 domine bar/20 8/2 de +0.115 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), bar/14 maximise votre équité cubeful (+0.565 EMG).",
+            "Évitez bar/20 8/2 (-0.115 EMG) ; jouez la ligne maîtresse bar/14."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_869_53",
+        "tier": 2,
+        "xgid": "XGID=-BBAA-CaaA---B-b-cacAb-bB-:0:0:1:53:1:1:0:3:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "13/10 13/8*",
+        "optimalMove": "13/8* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/8* 6/3",
+            "13/10 13/8*",
+            "9/4 6/3",
+            "13/8* 9/6"
+        ],
+        "equityLoss": 0.617,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10 13/8* (Match en 3 pts (1-1, Videau à 1)), vous concédez -0.617 EMG face au coup 3-ply 13/8* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 3 pts (1-1, Videau à 1) : 13/8* 6/3 surpasse 13/10 13/8* de +0.617 EMG (47.2 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 13/8* en Match en 3 pts (1-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/8* 6/3 domine 13/10 13/8* de +0.617 EMG.",
+            "En Match en 3 pts (1-1, Videau à 1), 13/8* 6/3 maximise votre équité cubeful (-0.157 EMG).",
+            "Évitez 13/10 13/8* (-0.617 EMG) ; jouez la ligne maîtresse 13/8* 6/3."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_870_33",
+        "tier": 3,
+        "xgid": "XGID=-ABAb-C-A---bE---ead----aB:0:0:1:33:2:2:0:5:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "bar/22(2) 13/10 6/3",
+        "optimalMove": "bar/22(2) 13/10(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22(2) 13/10(2)",
+            "bar/22(2) 13/10 6/3",
+            "bar/22(2) 8/5 6/3",
+            "bar/22(2) 13/10 8/5"
+        ],
+        "equityLoss": 0.098,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22(2) 13/10 6/3 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.098 EMG face au coup 3-ply bar/22(2) 13/10(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 5 pts (2-2, Videau à 1) : bar/22(2) 13/10(2) surpasse bar/22(2) 13/10 6/3 de +0.098 EMG (44.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/22(2) en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22(2) 13/10(2) domine bar/22(2) 13/10 6/3 de +0.098 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/22(2) 13/10(2) maximise votre équité cubeful (-0.226 EMG).",
+            "Évitez bar/22(2) 13/10 6/3 (-0.098 EMG) ; jouez la ligne maîtresse bar/22(2) 13/10(2)."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_871_23",
+        "tier": 2,
+        "xgid": "XGID=a-CaB-aA-AAa-A---c-bAcCAcA:0:0:1:23:2:2:0:5:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/22 13/11*",
+        "optimalMove": "bar/23 9/6*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 9/6*",
+            "bar/22 13/11*",
+            "bar/23 10/7",
+            "bar/23 13/10"
+        ],
+        "equityLoss": 0.16,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 13/11* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.160 EMG face au coup 3-ply bar/23 9/6*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 5 pts (2-2, Videau à 1) : bar/23 9/6* surpasse bar/22 13/11* de +0.160 EMG (44.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 9/6* domine bar/22 13/11* de +0.160 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/23 9/6* maximise votre équité cubeful (-0.408 EMG).",
+            "Évitez bar/22 13/11* (-0.160 EMG) ; jouez la ligne maîtresse bar/23 9/6*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_872_35",
+        "tier": 2,
+        "xgid": "XGID=-CbdEaA-B-----BaAAa---ada-:0:0:1:35:2:2:0:5:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "16/11 14/11",
+        "optimalMove": "14/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/6",
+            "16/11 14/11",
+            "16/8",
+            "16/11 8/5*"
+        ],
+        "equityLoss": 0.281,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 16/11 14/11 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.281 EMG face au coup 3-ply 14/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 5 pts (2-2, Videau à 1) : 14/6 surpasse 16/11 14/11 de +0.281 EMG (74.7 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 14/6 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/6 domine 16/11 14/11 de +0.281 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 14/6 maximise votre équité cubeful (+1.242 EMG).",
+            "Évitez 16/11 14/11 (-0.281 EMG) ; jouez la ligne maîtresse 14/6."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_873_65",
+        "tier": 4,
+        "xgid": "XGID=-ADAaa-Aa-Bb-AA--a-A-eBacA:0:0:1:65:2:2:0:5:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "bar/20 19/13",
+        "optimalMove": "bar/20 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 13/7",
+            "bar/20 19/13",
+            "bar/19 13/8*",
+            "bar/19 22/17*"
+        ],
+        "equityLoss": 0.054,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 19/13 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.054 EMG face au coup 3-ply bar/20 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 5 pts (2-2, Videau à 1) : bar/20 13/7 surpasse bar/20 19/13 de +0.054 EMG (38.5 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 13/7 domine bar/20 19/13 de +0.054 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), bar/20 13/7 maximise votre équité cubeful (-0.585 EMG).",
+            "Évitez bar/20 19/13 (-0.054 EMG) ; jouez la ligne maîtresse bar/20 13/7."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_874_41",
+        "tier": 2,
+        "xgid": "XGID=-CacE-A-A--B---b--aaABbda-:0:0:1:41:2:2:0:5:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "21/17 20/19*",
+        "optimalMove": "20/19* 6/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/19* 6/2*",
+            "21/17 20/19*",
+            "20/19* 8/4",
+            "21/20 6/2*"
+        ],
+        "equityLoss": 0.318,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 21/17 20/19* (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.318 EMG face au coup 3-ply 20/19* 6/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 5 pts (2-2, Videau à 1) : 20/19* 6/2* surpasse 21/17 20/19* de +0.318 EMG (64.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 20/19* en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/19* 6/2* domine 21/17 20/19* de +0.318 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 20/19* 6/2* maximise votre équité cubeful (+0.758 EMG).",
+            "Évitez 21/17 20/19* (-0.318 EMG) ; jouez la ligne maîtresse 20/19* 6/2*."
+        ]
+    },
+    {
+        "id": "btmoe6_3ply_875_36",
+        "tier": 2,
+        "xgid": "XGID=-DDAdA----A------Aaa-eBAd-:0:0:1:36:2:2:0:5:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "22/19* 22/16",
+        "optimalMove": "23/17 22/19*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/17 22/19*",
+            "22/19* 22/16",
+            "22/19* 17/11",
+            "22/19*/13"
+        ],
+        "equityLoss": 0.146,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Spécialisation MoE-6 & Structure 3-Ply",
+        "whyFailed": "En jouant 22/19* 22/16 (Match en 5 pts (2-2, Videau à 1)), vous concédez -0.146 EMG face au coup 3-ply 23/17 22/19*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 5 pts (2-2, Videau à 1) : 23/17 22/19* surpasse 22/19* 22/16 de +0.146 EMG (47.4 % de gain).",
+        "proverb": "Les 6 réseaux spécialisés par phase distinguent le timing d’un Backgame de la vitesse d’un Blitz.",
+        "hint": "Regardez la ligne commençant par 23/17 en Match en 5 pts (2-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/17 22/19* domine 22/19* 22/16 de +0.146 EMG.",
+            "En Match en 5 pts (2-2, Videau à 1), 23/17 22/19* maximise votre équité cubeful (-0.130 EMG).",
+            "Évitez 22/19* 22/16 (-0.146 EMG) ; jouez la ligne maîtresse 23/17 22/19*."
         ]
     }
 ];
