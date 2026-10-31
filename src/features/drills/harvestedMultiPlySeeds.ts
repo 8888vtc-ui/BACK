@@ -2801,5 +2801,222 @@ export const HARVESTED_MULTIPLY_9CAT_SEEDS: HarvestedSeedInput[] = [
             "En Match en 3 pts (0-0, Videau à 1), 21/12 surpasse 6/3 21/15 de +0.119 EMG.",
             "Évitez 6/3 21/15 qui laisse 2 pion(s) isolé(s) (flèches 2, 15) ; privilégiez 21/12."
         ]
+    },
+    {
+        "id": "gnubg_harvest_2ply_2_32",
+        "tier": 3,
+        "xgid": "XGID=-a-aBbC-BcB--B----bcBBab--:0:0:1:32:0:0:0:0:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "6/3 3/1",
+        "optimalMove": "20/15",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/15",
+            "6/3 3/1",
+            "13/11 13/10",
+            "6/3*/1*"
+        ],
+        "equityLoss": 0.101,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 6/3 3/1 (Money Game (Videau à 1)), vous enterre inutilement un pion sur l'As (flèche 1) au lieu de garder vos pions actifs, concédant -0.101 EMG face à 20/15.",
+        "explanation": "Avec le jet 3-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 20/15 : il repositionne idéalement vos bâtisseurs (20/15) avec seulement 2 blot(s) exposé(s) (+0.101 EMG sur 6/3 3/1).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 20 (20/15...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 20/15 repositionne idéalement vos bâtisseurs (20/15) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 20/15 surpasse 6/3 3/1 de +0.101 EMG.",
+            "Évitez 6/3 3/1 qui enterre inutilement un pion sur l'As (flèche 1) au lieu de garder vos pions actifs ; privilégiez 20/15."
+        ]
+    },
+    {
+        "id": "gnubg_harvest_2ply_3_54",
+        "tier": 4,
+        "xgid": "XGID=-B--bCDB---B------b-bBfba-:0:0:1:54:0:0:0:0:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "6/1 6/2",
+        "optimalMove": "21/16 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16 6/2",
+            "6/1 6/2",
+            "11/2",
+            "7/2 6/2"
+        ],
+        "equityLoss": 0.085,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 6/1 6/2 (Money Game (Videau à 1)), vous enterre inutilement un pion sur l'As (flèche 1) au lieu de garder vos pions actifs, concédant -0.085 EMG face à 21/16 6/2.",
+        "explanation": "Avec le jet 5-4 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 21/16 6/2 : il repositionne idéalement vos bâtisseurs (21/16 6/2) avec seulement 3 blot(s) exposé(s) (+0.085 EMG sur 6/1 6/2).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 21 (21/16...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 21/16 6/2 repositionne idéalement vos bâtisseurs (21/16 6/2) avec seulement 3 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 21/16 6/2 surpasse 6/1 6/2 de +0.085 EMG.",
+            "Évitez 6/1 6/2 qui enterre inutilement un pion sur l'As (flèche 1) au lieu de garder vos pions actifs ; privilégiez 21/16 6/2."
+        ]
+    },
+    {
+        "id": "gnubg_harvest_2ply_4_62",
+        "tier": 1,
+        "xgid": "XGID=-bC---DCA---bB----Bac-cbb-:0:0:1:62:0:0:0:0:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "13/7 8/6",
+        "optimalMove": "13/11 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 13/7",
+            "13/7 8/6",
+            "8/2 6/4",
+            "8/2 7/5"
+        ],
+        "equityLoss": 0.232,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/7 8/6 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 13), concédant -0.232 EMG face à 13/11 13/7.",
+        "explanation": "Avec le jet 6-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/11 13/7 : il repositionne idéalement vos bâtisseurs (13/11 13/7) avec seulement 2 blot(s) exposé(s) (+0.232 EMG sur 13/7 8/6).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 13 (13/11...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/11 13/7 repositionne idéalement vos bâtisseurs (13/11 13/7) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 13/11 13/7 surpasse 13/7 8/6 de +0.232 EMG.",
+            "Évitez 13/7 8/6 qui laisse 1 pion(s) isolé(s) (flèches 13) ; privilégiez 13/11 13/7."
+        ]
+    },
+    {
+        "id": "gnubg_harvest_2ply_5_42",
+        "tier": 4,
+        "xgid": "XGID=a-BC-aBaBC--bB---cbe----A-:0:0:1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "9/5 5/3",
+        "optimalMove": "9/7* 9/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/7* 9/5*",
+            "9/5 5/3",
+            "9/5* 8/6",
+            "24/22 9/5*"
+        ],
+        "equityLoss": 0.081,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 9/5 5/3 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 24), concédant -0.081 EMG face à 9/7* 9/5*.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 9/7* 9/5* : il frappe deux pions adverses sur les flèches 7 et 5 (+0.081 EMG sur 9/5 5/3).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 7 (9/7*...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 9/7* 9/5* frappe deux pions adverses sur les flèches 7 et 5.",
+            "En Money Game (Videau à 1), 9/7* 9/5* surpasse 9/5 5/3 de +0.081 EMG.",
+            "Évitez 9/5 5/3 qui laisse 1 pion(s) isolé(s) (flèches 24) ; privilégiez 9/7* 9/5*."
+        ]
+    },
+    {
+        "id": "gnubg_harvest_2ply_6_45",
+        "tier": 2,
+        "xgid": "XGID=-bBA--C-E---cB---a-bBbbba-:0:0:1:45:0:0:0:0:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "6/2 8/3",
+        "optimalMove": "8/4 8/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 8/3",
+            "6/2 8/3",
+            "8/3 6/2",
+            "13/9 8/3"
+        ],
+        "equityLoss": 0.165,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 6/2 8/3 (Money Game (Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.165 EMG face à 8/4 8/3.",
+        "explanation": "Avec le jet 4-5 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 8/3 : il ferme la porte 3 (+0.165 EMG sur 6/2 8/3).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 8/3 ferme la porte 3.",
+            "En Money Game (Videau à 1), 8/4 8/3 surpasse 6/2 8/3 de +0.165 EMG.",
+            "Évitez 6/2 8/3 qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 8/4 8/3."
+        ]
+    },
+    {
+        "id": "gnubg_harvest_2ply_9_43",
+        "tier": 2,
+        "xgid": "XGID=-aBD-BB-Ba-B-------A-bcce-:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "6/2 6/3",
+        "optimalMove": "8/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/1*",
+            "6/2 6/3",
+            "19/12",
+            "19/15 8/5"
+        ],
+        "equityLoss": 0.198,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 6/2 6/3 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 1 et laisse l'initiative à l'adversaire, concédant -0.198 EMG face à 8/1*.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/1* : il frappe le blot adverse sur la flèche 1 (+0.198 EMG sur 6/2 6/3).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 1 (8/1*...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/1* frappe le blot adverse sur la flèche 1.",
+            "En Money Game (Videau à 1), 8/1* surpasse 6/2 6/3 de +0.198 EMG.",
+            "Évitez 6/2 6/3 qui refuse de frapper le blot adverse sur la flèche 1 et laisse l'initiative à l'adversaire ; privilégiez 8/1*."
+        ]
+    },
+    {
+        "id": "gnubg_harvest_2ply_10_42",
+        "tier": 3,
+        "xgid": "XGID=-BC--cC-C----B---b-e-b-cB-:0:0:1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "8/4 6/4",
+        "optimalMove": "24/18",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18",
+            "8/4 6/4",
+            "24/22 24/20",
+            "24/20 8/6"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 8/4 6/4 (Money Game (Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.092 EMG face à 24/18.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 : il repositionne idéalement vos bâtisseurs (24/18) avec seulement 2 blot(s) exposé(s) (+0.092 EMG sur 8/4 6/4).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 repositionne idéalement vos bâtisseurs (24/18) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 surpasse 8/4 6/4 de +0.092 EMG.",
+            "Évitez 8/4 6/4 qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 24/18."
+        ]
     }
 ];
