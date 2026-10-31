@@ -8,7 +8,13 @@ import type {
     MatchmakingState,
     EloCalculationResult,
 } from '../features/multiplayer/types';
-import { calculateMatchElo, DEFAULT_INITIAL_ELO } from '../features/multiplayer/elo';
+import {
+    calculateMatchElo,
+    DEFAULT_INITIAL_ELO,
+    readPublicAveragePr,
+    recordMatchIntoPublicAveragePr,
+    type MatchEloPrOptions,
+} from '../features/multiplayer/elo';
 import { clearActiveSession, type ActiveGameSession } from '../features/multiplayer/sessionRecovery';
 import { supabase, isSupabaseConfigured } from '../lib/supabase/client';
 import { getCurrentUser, getUserProfile } from '../lib/supabase/auth';
@@ -37,6 +43,7 @@ export function useMultiplayerLocalProfile({
             username: `Joueur_${guestId.slice(-4)}`,
             displayName: `Joueur #${guestId.slice(-4)}`,
             rating: DEFAULT_INITIAL_ELO,
+            averagePr: readPublicAveragePr(),
             isGuest: true,
         };
     });
@@ -53,6 +60,7 @@ export function useMultiplayerLocalProfile({
                         username: prof?.username || user.email?.split('@')[0] || 'Joueur',
                         displayName: prof?.display_name || 'Champion',
                         rating: prof?.rating || DEFAULT_INITIAL_ELO,
+                        averagePr: readPublicAveragePr(),
                         avatarUrl: prof?.avatar_url,
                         isGuest: false,
                     });
@@ -68,7 +76,7 @@ export function useMultiplayerLocalProfile({
     }, []);
 
     const handleMatchOver = useCallback(
-        (winner: Player, _winType: string, _pointsWon: number) => {
+        (winner: Player, _winType: string, _pointsWon: number, prOptions?: MatchEloPrOptions) => {
             if (!matchInfo) return;
             setStatus('game_over');
             clearActiveSession();
@@ -76,15 +84,22 @@ export function useMultiplayerLocalProfile({
 
             const ratingX = matchInfo.playerX.rating;
             const ratingO = matchInfo.playerO.rating;
-            const elo = calculateMatchElo(ratingX, ratingO, winner);
+            const elo = calculateMatchElo(ratingX, ratingO, winner, undefined, prOptions);
             setEloResult(elo);
 
             const newLocalRating =
                 matchInfo.localRole === 'X' ? elo.playerXNewRating : elo.playerONewRating;
+            const localMatchPr =
+                matchInfo.localRole === 'X' ? prOptions?.prX : prOptions?.prO;
+            const updatedAveragePr =
+                typeof localMatchPr === 'number' && Number.isFinite(localMatchPr)
+                    ? recordMatchIntoPublicAveragePr(localMatchPr)
+                    : readPublicAveragePr();
 
             setLocalProfile((prev) => ({
                 ...prev,
                 rating: newLocalRating,
+                averagePr: updatedAveragePr,
             }));
 
             if (isSupabaseConfigured() && !localProfile.isGuest) {

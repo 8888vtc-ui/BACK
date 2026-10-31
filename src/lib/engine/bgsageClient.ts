@@ -366,17 +366,35 @@ export async function selectBotMoveWithBgsage(
     }
 
     const bestCand = matchedCandidates[0];
-    // 1. Grandmaster, Expert ou Coup d'Évidence Visuelle (fermeture de porte 2..8 / 17..23 ou frappe sûre) : verrouillage 100 % optimal
+    // 1. Grandmaster ou Expert : verrouillage 100 % optimal
     if (
         difficulty === 'grandmaster' ||
         difficulty === 'expert' ||
-        matchedCandidates.length === 1 ||
-        isVisuallyObviousBestMove(stateWithDice.board, bestCand.seq.board, player)
+        matchedCandidates.length === 1
     ) {
         return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply` };
     }
 
-    // 2. Filtrage déterministe « Premier Principe » (Zéro bruit gaussien) : Plafond Blunder Cap ΔE_max + Biais Cognitif Persona
+    // 2. Calibrage Dopamine 80 % de victoires humaines contre le Bot (Beginner / Intermediate) :
+    //    Dans 80 % des décisions (Beginner) ou 65 % (Intermediate), le Bot joue un coup humain
+    //    naturellement sous-optimal (#2 à #4) pour laisser l'avantage stratégique au joueur humain.
+    const subOptimalThreshold = difficulty === 'beginner' ? 0.80 : 0.65;
+    if (matchedCandidates.length >= 2 && randomFn() < subOptimalThreshold) {
+        const subPool = matchedCandidates.slice(1, Math.min(4, matchedCandidates.length));
+        const pickIdx = difficulty === 'beginner' ? subPool.length - 1 : 0;
+        const chosenSub = subPool[pickIdx] ?? matchedCandidates[1];
+        return {
+            sequence: chosenSub.seq,
+            cubeDecision: resp.cubeDecision,
+            evalLevel: difficulty === 'beginner' ? 'bgsage-1ply-beginner' : `bgsage-${ply}ply`,
+        };
+    }
+
+    if (isVisuallyObviousBestMove(stateWithDice.board, bestCand.seq.board, player)) {
+        return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply` };
+    }
+
+    // 3. Filtrage déterministe « Premier Principe » : Plafond Blunder Cap ΔE_max + Biais Cognitif Persona
     const topEq = bestCand.move.cubelessEquity ?? bestCand.move.equity;
     const blunderCap = BLUNDER_CAP_EMG_BY_DIFFICULTY[difficulty] ?? 0.035;
     const biasScale = difficulty === 'beginner' ? 0.35 : difficulty === 'intermediate' ? 0.22 : 0.08;

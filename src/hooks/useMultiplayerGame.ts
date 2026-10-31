@@ -45,7 +45,12 @@ export interface UseMultiplayerGameReturn {
     broadcastDoublePassed: (winner: Player) => void;
     broadcastResign: (reason?: 'surrender' | 'timeout' | 'disconnect') => void;
     sendQuickChat: (messageId: 'gg' | 'nice_move' | 'unlucky' | 'thinking' | 'thanks') => void;
-    handleMatchOver: (winner: Player, winType: string, pointsWon: number) => void;
+    handleMatchOver: (
+        winner: Player,
+        winType: string,
+        pointsWon: number,
+        prOptions?: { readonly prX?: number | null; readonly prO?: number | null },
+    ) => void;
     leaveMatch: () => void;
     onRemoteAction?: (action: RealtimeBroadcastAction) => void;
 }

@@ -11,6 +11,7 @@ export interface PlayerEloProfile {
     username: string;
     displayName: string;
     rating: number;
+    averagePr?: number;
     avatarUrl?: string | null;
     isGuest?: boolean;
     countryFlag?: string;
@@ -47,6 +48,7 @@ export interface EloCalculationResult {
     deltaO: number;
     expectedScoreX: number;
     expectedScoreO: number;
+    prBlockedGain?: boolean;
 }
 
 export interface MatchmakingQueueTicket {

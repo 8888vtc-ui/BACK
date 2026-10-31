@@ -47,6 +47,7 @@ export default function Home() {
     // État maître : aucune modale superposée au plateau au démarrage.
     const [appScreen, setAppScreen] = useState<AppScreen>('LOBBY');
     const userInitiatedMultiplayerRef = useRef<boolean>(false);
+    const livePrRef = useRef<{ prX: number; prO: number }>({ prX: 0, prO: 8.5 });
 
     // Anti-hydratation : lecture des préférences post-montage client
     useEffect(() => {
@@ -73,8 +74,11 @@ export default function Home() {
             notificationSuccess();
             soundEngine.playVictory();
 
-            if (isMultiplayerActive) {
-                multiplayer.handleMatchOver(result.winner, result.winType, result.pointsWon);
+            if (isMultiplayerActive || multiplayer.matchInfo?.isClubChallenger) {
+                multiplayer.handleMatchOver(result.winner, result.winType, result.pointsWon, {
+                    prX: livePrRef.current.prX,
+                    prO: livePrRef.current.prO,
+                });
             }
             handleGameOverAnalysis(result);
         },
@@ -106,6 +110,7 @@ export default function Home() {
     const prO = matchStatsO.decisionsCount > 0
         ? Math.min(MAX_BOT_DISPLAY_PR, (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500)
         : computeRealtimeBotErrorRate(game.matchLog, game.difficulty);
+    livePrRef.current = { prX, prO };
 
     // Interaction pions et dés
     const {

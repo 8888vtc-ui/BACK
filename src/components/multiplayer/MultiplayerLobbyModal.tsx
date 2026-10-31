@@ -121,6 +121,13 @@ export default function MultiplayerLobbyModal({
                                 <span className="font-mono font-bold text-amber-300">
                                     {localProfile.rating} Elo
                                 </span>
+                                <span className="text-slate-600">•</span>
+                                <span
+                                    className="rounded border border-emerald-400/40 bg-emerald-950/60 px-1.5 py-0.5 font-mono text-[11px] font-bold text-emerald-300"
+                                    title="PR Moyen Public (améliorez-le en réussissant des Quizz au 1er essai)"
+                                >
+                                    PR {(localProfile.averagePr ?? 8.5).toFixed(2)}
+                                </span>
                             </div>
                         </div>
                     </div>

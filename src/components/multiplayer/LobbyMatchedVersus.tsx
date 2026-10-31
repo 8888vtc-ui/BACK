@@ -29,8 +29,12 @@ export const LobbyMatchedVersus: React.FC<LobbyMatchedVersusProps> = ({
                     <div className="text-xs font-bold text-white truncate">
                         {localProfile.displayName} (Vous)
                     </div>
-                    <div className="text-xs font-mono text-amber-400">
-                        {localProfile.rating} Elo
+                    <div className="flex items-center justify-center gap-1.5 text-xs font-mono">
+                        <span className="text-amber-400 font-bold">{localProfile.rating} Elo</span>
+                        <span className="text-slate-600">•</span>
+                        <span className="rounded border border-emerald-400/40 bg-emerald-950/60 px-1.5 py-0.2 text-[11px] font-bold text-emerald-300">
+                            PR {(localProfile.averagePr ?? 8.5).toFixed(2)}
+                        </span>
                     </div>
                     <div className="inline-block rounded-md border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-slate-300">
                         Pions {matchInfo.localRole === 'X' ? '⚪ Blancs (X)' : '⚫ Noirs (O)'}
@@ -50,8 +54,12 @@ export const LobbyMatchedVersus: React.FC<LobbyMatchedVersusProps> = ({
                             Club {opponentProfile.countryName}
                         </div>
                     )}
-                    <div className="text-xs font-mono text-amber-400">
-                        {opponentProfile.rating} Elo
+                    <div className="flex items-center justify-center gap-1.5 text-xs font-mono">
+                        <span className="text-amber-400 font-bold">{opponentProfile.rating} Elo</span>
+                        <span className="text-slate-600">•</span>
+                        <span className="rounded border border-amber-400/40 bg-amber-950/60 px-1.5 py-0.2 text-[11px] font-bold text-amber-200">
+                            PR {(opponentProfile.averagePr ?? 8.5).toFixed(2)}
+                        </span>
                     </div>
                     <div className="inline-block rounded-md border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-slate-300">
                         Pions {matchInfo.localRole === 'X' ? '⚫ Noirs (O)' : '⚪ Blancs (X)'}

@@ -108,15 +108,19 @@ export function selectClubChallengerForRating(playerRating: number): PlayerEloPr
     const topPool = sorted.slice(0, Math.min(5, sorted.length));
     const chosen = topPool[cryptoRandomInt(topPool.length)] ?? CLUB_CHALLENGER_SEEDS[0];
 
-    // Légère oscillation naturelle d'Elo (-14 à +14 pts)
+    // Légère oscillation naturelle d'Elo (-14 à +14 pts) et de PR Moyen Public
     const jitter = cryptoRandomInt(29) - 14;
     const finalRating = Math.max(1350, Math.min(1985, chosen.baseRating + jitter));
+    const basePr = chosen.difficulty === 'beginner' ? 12.5 : chosen.difficulty === 'intermediate' ? 7.5 : 2.5;
+    const prJitter = (cryptoRandomInt(7) - 3) * 0.1;
+    const averagePr = Number(Math.max(1.8, basePr + prJitter).toFixed(2));
 
     return {
         id: `${chosen.id}_${Date.now()}`,
         username: chosen.username,
         displayName: `${chosen.countryFlag} ${chosen.username}`,
         rating: finalRating,
+        averagePr,
         countryFlag: chosen.countryFlag,
         countryName: chosen.countryName,
         clubBotDifficulty: chosen.difficulty,

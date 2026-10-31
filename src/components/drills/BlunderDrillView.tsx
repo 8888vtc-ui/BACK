@@ -26,6 +26,7 @@ import {
 } from '../../features/drills/adaptiveQuizEngine';
 import type { PlayerBlunderRecord, DrillValidationResult, BlunderBankStats } from '../../features/drills/types';
 import { impactLight, notificationSuccess, notificationError } from '../../lib/capacitor/haptics';
+import { rewardFirstTryQuizOnPublicPr } from '../../features/multiplayer/elo';
 import { toast } from '../toast/ToastContext';
 import BlunderDrillHeader, { type QuizDrillMode } from './BlunderDrillHeader';
 import BlunderDrillFeedbackCard from './BlunderDrillFeedbackCard';
@@ -89,6 +90,7 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
     const [selectedDie, setSelectedDie] = useState<0 | 1 | null>(null);
     const [showHint, setShowHint] = useState<boolean>(false);
     const [validationResult, setValidationResult] = useState<DrillValidationResult | null>(null);
+    const failedOnCurrentQuizRef = useRef<boolean>(false);
 
     const liveDrillRef = useRef<{ board: number[]; usedDice: [boolean, boolean]; playedMoves: Move[] }>({
         board: currentBoard,
@@ -106,6 +108,7 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
             setSelectedDie(null);
             setShowHint(false);
             setValidationResult(null);
+            failedOnCurrentQuizRef.current = false;
             liveDrillRef.current = { board: currentBlunder.board, usedDice: [false, false], playedMoves: [] };
         }
     }, [currentBlunder]);
@@ -118,6 +121,8 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
             if (result.isCorrect) {
                 notificationSuccess();
                 markBlunderAttempt(currentBlunder.id, true);
+                const isFirstTry = !failedOnCurrentQuizRef.current;
+                const prReward = isFirstTry ? rewardFirstTryQuizOnPublicPr() : null;
                 const outcome = recordAdaptiveQuizOutcome(currentBlunder, true);
                 setAdaptiveProfile(outcome.profile);
                 setStats(getBlunderBankStats());
@@ -126,18 +131,22 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
                     setXp((currXp) => currXp + 25 * Math.min(next, 4));
                     return next;
                 });
+                const prBonusLabel = prReward
+                    ? ` · PR Moyen Public : ${prReward.newPr.toFixed(2)} (${prReward.deltaPr.toFixed(2)})`
+                    : '';
                 if (outcome.leveledUp) {
                     toast.success(
-                        `Niveau ${outcome.categoryState.level}/4 débloqué en ${outcome.categoryMeta.fullName} !`,
+                        `Niveau ${outcome.categoryState.level}/4 débloqué en ${outcome.categoryMeta.fullName}${prBonusLabel} !`,
                         '🚀 Montée de Palier !',
                     );
                 } else {
                     toast.success(
-                        `${outcome.categoryMeta.shortLabel} : Maîtrise ${outcome.categoryState.masteryScore}% (+XP)`,
-                        '🎉 Bravo !',
+                        `${outcome.categoryMeta.shortLabel} : Maîtrise ${outcome.categoryState.masteryScore}%${prBonusLabel}`,
+                        isFirstTry ? '🎯 1er Essai — PR Amélioré !' : '🎉 Bravo !',
                     );
                 }
             } else {
+                failedOnCurrentQuizRef.current = true;
                 notificationError();
                 markBlunderAttempt(currentBlunder.id, false);
                 const outcome = recordAdaptiveQuizOutcome(currentBlunder, false);
