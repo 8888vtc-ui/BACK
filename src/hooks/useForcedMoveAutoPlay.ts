@@ -88,7 +88,7 @@ export function useForcedMoveAutoPlay({
                 highlightDestination: null,
             };
         }
-        const forced = detectForcedMove({ leftDieTargets, rightDieTargets, dice });
+        const forced = detectForcedMove({ leftDieTargets, rightDieTargets, dice, board, turn });
         if (forced.isForced || !greedyBearOffEnabled || !board) return forced;
 
         const greedy = detectGreedyBearOffStep({

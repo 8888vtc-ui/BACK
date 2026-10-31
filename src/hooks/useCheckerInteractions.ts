@@ -177,7 +177,8 @@ export function useCheckerInteractions({
         }
     }, [playMove, currentTurnMovesRef, isMultiplayerActive, gameUsedDice, multiplayer, gameBoard, gameTurn]);
 
-    // Auto-play du coup forcé unique, de l'Auto-Bearoff sur l'As et du Greedy Bearoff (actif si autoConfirmTurn est activé)
+    // Auto-play du coup forcé unique, de la rentrée forcée depuis la barre (ex: 2 pions sur la barre), de l'Auto-Bearoff sur l'As et du Greedy Bearoff
+    const isPlayerOnBar = gameTurn === 'X' ? (gameBoard[0] ?? 0) > 0 : (gameBoard[25] ?? 0) < 0;
     useForcedMoveAutoPlay({
         phase: gamePhase,
         turn: gameTurn,
@@ -188,7 +189,7 @@ export function useCheckerInteractions({
         leftDieTargets,
         rightDieTargets,
         onPlayMove: handlePlayMove,
-        autoPlayEnabled: Boolean(autoConfirmTurn),
+        autoPlayEnabled: Boolean(autoConfirmTurn) || isPlayerOnBar,
     });
 
     const handleSelectDie = useCallback((die: 0 | 1) => {

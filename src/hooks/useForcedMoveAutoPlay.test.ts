@@ -91,4 +91,32 @@ describe('useForcedMoveAutoPlay hook & Board Forced Move Pulsation (Audit 13 / 2
         expect(getByTestId('ghost-checker-21')).toBeTruthy();
         expect(getByTestId('ghost-checker-21').textContent).toBe('3');
     });
+
+    it('rentre automatiquement dans le board lorsque le joueur a 2 pions sur la barre et lance les dés', () => {
+        vi.useFakeTimers();
+        const onPlayMove = vi.fn();
+        const board = new Array(28).fill(0);
+        board[0] = 2; // 2 pions X sur la barre
+
+        const { result } = renderHook(() =>
+            useForcedMoveAutoPlay({
+                phase: 'PLAYING_MOVES',
+                turn: 'X',
+                board,
+                dice: [5, 2],
+                leftDieTargets: new Map([[0, [20]]]),
+                rightDieTargets: new Map([[0, [23]]]),
+                onPlayMove,
+            }),
+        );
+
+        expect(result.current.isForcedMove).toBe(true);
+        expect(result.current.forcedMove?.from).toBe(0);
+        expect(result.current.forcedMove?.to).toBe(20);
+
+        vi.advanceTimersByTime(250);
+        expect(onPlayMove).toHaveBeenCalledWith(0, 20, 0);
+
+        vi.useRealTimers();
+    });
 });
