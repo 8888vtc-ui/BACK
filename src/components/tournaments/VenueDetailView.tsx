@@ -16,9 +16,11 @@ import Link from 'next/link';
 import AppNavbar from '../nav/AppNavbar';
 import type { WorldBackgammonVenue, VenueCategory } from '../../features/tournaments/worldBackgammonVenues';
 import { getCountryFlagEmoji } from '../../features/tournaments/tournamentEngine';
+import { getAllWorldVenues } from '../../lib/supabase/tournamentService';
 
 export interface VenueDetailViewProps {
-    readonly venue: WorldBackgammonVenue;
+    readonly venue?: WorldBackgammonVenue;
+    readonly fallbackSlug?: string;
     readonly relatedVenues: ReadonlyArray<WorldBackgammonVenue>;
 }
 
@@ -29,7 +31,13 @@ const CATEGORY_STYLES: Readonly<Record<VenueCategory, { badge: string; cls: stri
     traditional_cafe: { badge: '☕ Café Traditionnel', cls: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
 };
 
-const VenueDetailViewComponent: React.FC<VenueDetailViewProps> = ({ venue, relatedVenues }) => {
+const VenueDetailViewComponent: React.FC<VenueDetailViewProps> = ({ venue: initialVenue, fallbackSlug, relatedVenues }) => {
+    const resolvedVenue = React.useMemo(() => {
+        if (initialVenue) return initialVenue;
+        const all = getAllWorldVenues();
+        return all.find((v) => v.slug === fallbackSlug) ?? all[0]!;
+    }, [initialVenue, fallbackSlug]);
+    const venue = resolvedVenue;
     const catStyle = CATEGORY_STYLES[venue.category];
     const flag = getCountryFlagEmoji(venue.countryCode);
     const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.googleMapsQuery)}`;

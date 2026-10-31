@@ -153,6 +153,7 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         opponentPips: diff.opponent,
         primeLength: primeLen,
         blotsCount: userBlots.length,
+        seedExtra: params.variantIndex,
     };
 
     const applyFrCopy = (cat: VariedCheckerCategory) => {
@@ -313,6 +314,50 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
 
     let explanation = `${whyFailed} ${whyOptimal}`;
     const isOptimalVerdict = verdict === 'optimal' || playedMove === optimalMove || absLoss < 0.001;
+
+    // Enrichissement concret sur le plateau (coordonnées exactes des blots, portes intérieures, prime)
+    if (!isOptimalVerdict && features) {
+        const userBlotPts = userBlots.map((b) => b.point).slice(0, 4);
+        const bestBlotPts = bestBlots.map((b) => b.point).slice(0, 4);
+        const uInner = board.innerBoardPoints;
+        const bInner = bestBoard?.innerBoardPoints ?? uInner;
+        const uPrime = board.longestPrime;
+        const bPrime = bestBoard?.longestPrime ?? uPrime;
+
+        if (userBlotPts.length > 0 && !/flèche|point\s+\d/i.test(whyFailed)) {
+            const ptsLabel = isEn
+                ? `point${userBlotPts.length > 1 ? 's' : ''} ${userBlotPts.join(', ')}`
+                : `flèche${userBlotPts.length > 1 ? 's' : ''} ${userBlotPts.join(', ')}`;
+            whyFailed = `${whyFailed.replace(/\.$/, '')} (${isEn ? `exposed blot(s) on ${ptsLabel}` : `pion(s) isolé(s) sur ${ptsLabel}`}).`;
+        }
+        const optDetails: string[] = [];
+        if (bInner > uInner) {
+            optDetails.push(
+                isEn
+                    ? `${bInner} home-board gates closed vs ${uInner}`
+                    : `${bInner} portes intérieures fermées contre ${uInner}`,
+            );
+        }
+        if (bPrime > uPrime && bPrime >= 3) {
+            optDetails.push(
+                isEn
+                    ? `${bPrime}-point consecutive prime vs ${uPrime}`
+                    : `barrage de ${bPrime} portes consécutives contre ${uPrime}`,
+            );
+        }
+        if (userBlots.length > bestBlots.length) {
+            optDetails.push(
+                isEn
+                    ? `reduces loose blots from ${userBlots.length} to ${bestBlots.length}${bestBlotPts.length > 0 ? ` (pt ${bestBlotPts.join(', ')})` : ''}`
+                    : `réduit vos pions isolés de ${userBlots.length} à ${bestBlots.length}`,
+            );
+        }
+        if (optDetails.length > 0) {
+            whyOptimal = `${whyOptimal.replace(/\.$/, '')} [${optDetails.join(' · ')}].`;
+        }
+        explanation = `${whyFailed} ${whyOptimal}`;
+    }
+
     if (isOptimalVerdict) {
         whyFailed = '';
         summary = isEn
@@ -391,11 +436,17 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         equityLoss: Math.abs(equityLoss),
         bestMoveNotation: optimalMove,
         playedMoveNotation: playedMove,
+        conceptId,
         archetype: features?.bgsage?.playerGamePlan,
         gamePhase: contactStatus === 'pureRace' ? 'race' : 'contact',
         primeLength: board.longestPrime,
+        bestPrimeLength: bestBoard?.longestPrime ?? board.longestPrime,
         homeBoardPointsMade: board.innerBoardPoints,
+        bestHomeBoardPoints: bestBoard?.innerBoardPoints ?? board.innerBoardPoints,
         blotsLeft: userBlots.length,
+        bestBlotsLeft: bestBlots.length,
+        userBlotPoints: userBlots.map((b) => b.point),
+        bestBlotPoints: bestBlots.map((b) => b.point),
         locale: isEn ? 'en' : 'fr',
     });
 
@@ -415,4 +466,24 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
     return language !== 'fr' && language !== 'en'
         ? localizeOfflineExplanation(baseResult, params)
         : baseResult;
+}
+
+/**
+ * Génère les 10 variantes distinctes de commentaires Grand-Maître (index 0..9)
+ * pour un même coup/position afin d'alimenter la base de connaissances et offrir
+ * une variété naturelle immédiate d'un joueur ou d'une partie à l'autre.
+ */
+export function generateTenDistinctCommentariesForMove(
+    params: CoachPromptParams,
+): ReadonlyArray<CoachStructuredResponse> {
+    const variants: CoachStructuredResponse[] = [];
+    for (let v = 0; v < 10; v++) {
+        variants.push(
+            generateRuleBasedExplanation({
+                ...params,
+                variantIndex: v,
+            }),
+        );
+    }
+    return variants;
 }

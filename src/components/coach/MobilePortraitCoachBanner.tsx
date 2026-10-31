@@ -17,6 +17,7 @@ import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { CoachSidebarProps } from './CoachSidebar';
 import { getBotPersona } from '../../features/personas/botPersonas';
 import { BotPortraitMedallion } from '../common/MonteCarloIcons';
+import { useTranslation } from '../../i18n';
 
 export interface MobilePortraitCoachBannerProps {
     readonly coach: CoachSidebarProps['coach'];
@@ -37,7 +38,8 @@ const MobilePortraitCoachBannerComponent: React.FC<MobilePortraitCoachBannerProp
     onReplayMove,
     onOpenDrawer,
 }) => {
-    const persona = getBotPersona(difficulty);
+    const { locale } = useTranslation();
+    const persona = getBotPersona(difficulty, locale);
     const equityLoss = coach?.equityLoss !== undefined ? Math.abs(coach.equityLoss) : 0;
     const isBlunder = coach?.verdict === 'blunder' || equityLoss >= 0.08;
     const isInaccuracy = !isBlunder && (coach?.verdict === 'inaccuracy' || equityLoss >= 0.02);

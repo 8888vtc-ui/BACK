@@ -148,8 +148,13 @@ export async function getSharedCoachExplanation(
         }
 
         const rows = data as CoachExplanationRecord[];
-        const llmMatch = rows.find((r) => r.source === 'llm' && Boolean(r.explanation));
-        return llmMatch ?? rows[0] ?? null;
+        const llmMatches = rows.filter((r) => r.source === 'llm' && Boolean(r.explanation));
+        if (llmMatches.length > 0) {
+            const rotIdx = Math.floor(Date.now() / 1000) % llmMatches.length;
+            return llmMatches[rotIdx] ?? llmMatches[0] ?? null;
+        }
+        const rotIdx = Math.floor(Date.now() / 1000) % rows.length;
+        return rows[rotIdx] ?? rows[0] ?? null;
     } catch {
         return null;
     }

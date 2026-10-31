@@ -10,6 +10,7 @@ import {
 } from '../../features/coach';
 import { parseStreamedExplanation, type CoachDisplayVerdict, type ParsedExplanation } from './coachPanelHelpers';
 import { persistExplanation, resolveL2CachedExplanation } from './coachExplanationPersistence';
+import { buildKnowledgeVaultEntry } from '../../features/coach/knowledgeVaultHarvester';
 import type { Locale } from '../../lib/i18n/types';
 
 export const LLM_TIMEOUT_MS = 14000;
@@ -40,7 +41,7 @@ export interface UseCoachExplanationResult {
     streamError: string | null;
     explanationSource: ExplanationSource;
     cachedExplanation: ParsedExplanation | null;
-    executeExplain: (autoTriggered?: boolean) => Promise<void>;
+    executeExplain: (autoTriggered?: boolean, forceDeepAnalysis?: boolean) => Promise<void>;
     abort: () => void;
 }
 
@@ -151,7 +152,22 @@ export function useCoachExplanation({
                     : verdict === 'inaccuracy'
                       ? 'inaccuracy'
                       : 'doubtful';
-        const ruleBased = generateRuleBasedExplanation({
+        const vaultBuilt = buildKnowledgeVaultEntry({
+            promptParams: {
+                verdict: resolvedVerdict,
+                equityLoss: -absLoss,
+                playedMove: playedMove ?? (locale === 'en' ? 'Played move' : 'Coup joué'),
+                optimalMove: optimalMove ?? (locale === 'en' ? 'Optimal move' : 'Coup optimal'),
+                features: safeFeatures,
+                matchContext: matchCtx ?? undefined,
+                playerLevel,
+                language: (locale as Locale),
+            },
+            board,
+            xgid,
+            dice,
+        });
+        const ruleBased = vaultBuilt.selectedVariant ?? generateRuleBasedExplanation({
             verdict: resolvedVerdict,
             equityLoss: -absLoss,
             playedMove: playedMove ?? (locale === 'en' ? 'Played move' : 'Coup joué'),
@@ -167,10 +183,10 @@ export function useCoachExplanation({
             pedagogicalExplanation: ruleBased.pedagogical_explanation,
             rawText: ruleBased.explanation,
         };
-    }, [verdict, isBlunder, absLoss, playedMove, optimalMove, features, matchCtx, playerLevel, locale]);
+    }, [verdict, isBlunder, absLoss, playedMove, optimalMove, features, matchCtx, playerLevel, locale, board, xgid, dice]);
 
     const executeExplain = useCallback(
-        async (_autoTriggered = false) => {
+        async (_autoTriggered = false, forceDeepAnalysis = false) => {
             onExplain?.();
             abortControllerRef.current?.abort();
             const seqId = ++explainSeqIdRef.current;
@@ -181,8 +197,8 @@ export function useCoachExplanation({
             setStreamedText('');
             setCachedExplanation(null);
 
-            // Niveau 1 : Cache canonique mémoire L1 (0 ms)
-            if (cacheKey && globalExplanationCache.has(cacheKey)) {
+            // Niveau 1 : Cache canonique mémoire L1 (0 ms) — ignoré si l'utilisateur demande explicitement l'Analyse Profonde
+            if (!forceDeepAnalysis && cacheKey && globalExplanationCache.has(cacheKey)) {
                 const cached = globalExplanationCache.get(cacheKey);
                 if (cached) {
                     setCachedExplanation({
@@ -250,7 +266,7 @@ export function useCoachExplanation({
                     optimalMove: optimalMove ?? (locale === 'en' ? 'Optimal move' : 'Coup optimal'),
                     features,
                     matchContext: matchCtx,
-                    playerLevel,
+                    playerLevel: forceDeepAnalysis ? 'grandmaster' : playerLevel,
                     language: locale,
                 };
 

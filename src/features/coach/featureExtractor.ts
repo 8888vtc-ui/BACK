@@ -117,9 +117,13 @@ export interface TacticalDelta {
 export interface BgsageMoveMetrics {
     equity: number;
     cubelessEquity: number;
+    equityLoss?: number;
     winProb: number;
+    winSingleProb?: number;
     winGammonProb: number;
     winBackgammonProb: number;
+    loseProb?: number;
+    loseSingleProb?: number;
     loseGammonProb: number;
     loseBackgammonProb: number;
     playerGamePlan: string;
@@ -127,13 +131,37 @@ export interface BgsageMoveMetrics {
     evalLevel?: string;
 }
 
+export interface BgsageCandidateSummary {
+    rank: number;
+    notation: string;
+    equity: number;
+    cubelessEquity: number;
+    equityLoss: number;
+    winProb: number;
+    winGammonProb: number;
+    winBackgammonProb: number;
+    loseGammonProb: number;
+    loseBackgammonProb: number;
+    playerGamePlan?: string;
+}
+
+export interface BgsageCubeTelemetry {
+    noDouble?: number | null;
+    doubleTake?: number | null;
+    doublePass?: number | null;
+    optimalAction?: string | null;
+}
+
 export interface BgsageStrategicInsights {
     isRace: boolean;
     playerGamePlan: string;
     opponentGamePlan: string;
     evalLevel: string;
+    source?: string;
     playedMetrics?: BgsageMoveMetrics;
     optimalMetrics?: BgsageMoveMetrics;
+    topCandidates?: ReadonlyArray<BgsageCandidateSummary>;
+    cubeDecision?: BgsageCubeTelemetry;
 }
 
 import {

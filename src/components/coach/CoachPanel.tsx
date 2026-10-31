@@ -174,7 +174,12 @@ export default function CoachPanel({
 
     function handleExplainClick() {
         manualExplainRef.current = true;
-        void executeExplain(false);
+        void executeExplain(false, false);
+    }
+
+    function handleDeepExplainClick() {
+        manualExplainRef.current = true;
+        void executeExplain(false, true);
     }
 
     function handleDismissClick() {
@@ -236,6 +241,7 @@ export default function CoachPanel({
             onReplayMove={onReplayMove}
             onDismiss={handleDismissClick}
             onExplainClick={handleExplainClick}
+            onDeepExplainClick={handleDeepExplainClick}
             onOpenKnowledgeConcept={onOpenKnowledgeConcept}
             onBlunderClick={onBlunderClick}
             onCandidateHover={onCandidateHover}
@@ -243,6 +249,8 @@ export default function CoachPanel({
             board={board}
             dice={dice}
             xgid={xgid}
+            positionKey={positionKey}
+            features={features}
             candidateMoves={candidateMoves}
             onRolloutCompleted={onRolloutCompleted}
             isVoiceEnabled={isVoiceEnabled}

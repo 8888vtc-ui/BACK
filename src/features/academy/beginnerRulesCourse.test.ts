@@ -51,4 +51,23 @@ describe('Parcours Débutant Interactif — Apprendre les Règles en 5 Étapes +
         expect(completed).toContain('lesson-1-horseshoe');
         expect(getCompletedBeginnerLessons()).toContain('lesson-1-horseshoe');
     });
+
+    it('intègre le lecteur Vidéo Masterclass Complète avec sous-titres animés et contrôle Voix-Off', () => {
+        render(React.createElement(BeginnerInteractiveRulesCourse));
+
+        expect(screen.getByTestId('beginner-masterclass-video-player')).toBeDefined();
+        const playBtn = screen.getByTestId('masterclass-play-pause-btn');
+        expect(playBtn.textContent).toContain('Lancer la Vidéo Complète');
+
+        const subtitles = screen.getByTestId('masterclass-video-subtitles');
+        expect(subtitles.textContent).toContain('Chapitre 1 sur 5');
+
+        fireEvent.click(playBtn);
+        expect(playBtn.textContent).toContain('Pause Vidéo');
+
+        const voiceBtn = screen.getByTestId('masterclass-voice-toggle-btn');
+        expect(voiceBtn.textContent).toContain('Voix-Off ON');
+        fireEvent.click(voiceBtn);
+        expect(voiceBtn.textContent).toContain('Muet');
+    });
 });

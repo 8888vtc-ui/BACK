@@ -149,6 +149,7 @@ export const MICHY_AND_MAGRIEL_PROVERBS: Record<string, MichyProverbEntry> = {
 export interface LightweightThemeInput {
     archetype?: string;
     gamePhase?: string;
+    conceptId?: string;
     primeLength?: number;
     opponentBarCount?: number;
     homeBoardPointsMade?: number;
@@ -223,18 +224,20 @@ export function classifyDominantTheme(
 
     const phase = (input.gamePhase ?? '').toLowerCase();
     const arch = (input.archetype ?? '').toLowerCase();
+    const cid = (input.conceptId ?? '').toLowerCase();
     if (phase.includes('bear') || arch.includes('bear') || (input.playerPipCount ?? 150) <= 65) return 'BEAROFF';
-    if (phase === 'race' || arch.includes('race') || arch.includes('course')) return 'RACE';
-    if (arch.includes('blitz') || ((input.opponentBarCount ?? 0) >= 1 && (input.homeBoardPointsMade ?? 0) >= 4)) return 'BLITZ';
-    if (arch.includes('prime') || (input.primeLength ?? 0) >= 4) return 'PRIME';
-    if (arch.includes('hold') || arch.includes('anchor')) return 'HOLDING';
-    if (Math.abs((input.opponentPipCount ?? 150) - (input.playerPipCount ?? 150)) >= 15) return 'RACE';
+    if (cid === 'keith-count' || cid === 'running-game' || phase === 'race' || arch.includes('race') || arch.includes('course')) return 'RACE';
+    if (cid === 'tempo-hit' || arch.includes('blitz') || ((input.opponentBarCount ?? 0) >= 1 && (input.homeBoardPointsMade ?? 0) >= 4)) return 'BLITZ';
+    if (cid === 'golden-point' || cid === 'bar-point' || cid === 'prime-vs-prime' || arch.includes('prime') || (input.primeLength ?? 0) >= 4) return 'PRIME';
+    if (cid === 'advanced-anchor' || cid === 'back-checker-escape' || arch.includes('hold') || arch.includes('anchor')) return 'HOLDING';
+    if (((input.opponentPipCount ?? 150) - (input.playerPipCount ?? 150)) >= 15) return 'RACE';
     return 'PRIME';
 }
 
 export interface ProverbSelectorParams {
     dominantTheme?: DominantTheme;
     theme?: DominantTheme;
+    conceptId?: string;
     playedMove?: string;
     optimalMove?: string;
     bestMoveNotation?: string;
@@ -251,6 +254,7 @@ export function selectMichyOrMagrielProverb(params: ProverbSelectorParams): Mich
     const theme = params.dominantTheme ?? params.theme ?? 'PRIME';
     const optimalMove = params.optimalMove ?? params.bestMoveNotation ?? '';
     const features = params.features;
+    const conceptId = params.conceptId ?? '';
 
     const userDirect = features
         ? features.blotsAndShots.user.reduce((s, b) => s + b.directShots, 0)
@@ -258,22 +262,34 @@ export function selectMichyOrMagrielProverb(params: ProverbSelectorParams): Mich
     const bestDirect = features
         ? features.blotsAndShots.best.reduce((s, b) => s + b.directShots, 0)
         : (params.directShotsBefore ?? 0);
+    const isLeadingRace = features
+        ? features.pipCountDiff.leader === features.player
+        : (params.playerPipCount ?? 150) < (params.opponentPipCount ?? 150);
 
+    if (conceptId === 'golden-point' || features?.tacticalDiff?.goldenPointCreatedByBest) {
+        return MICHY_AND_MAGRIEL_PROVERBS.GOLDEN_POINT_PRIORITY;
+    }
+    if (conceptId === 'back-checker-escape' || features?.tacticalDiff?.rearCheckerEscapedByBest || /\b(?:24|23)\/13\b/.test(optimalMove)) {
+        return MICHY_AND_MAGRIEL_PROVERBS.LOVERS_LEAP;
+    }
+    if (conceptId === 'advanced-anchor' || features?.tacticalDiff?.anchorCreatedOrKeptByBest) {
+        return MICHY_AND_MAGRIEL_PROVERBS.HOLDING_ANCHOR_LOCK;
+    }
+    if (conceptId === 'tempo-hit' || (optimalMove.match(/\*/g) ?? []).length >= 2) {
+        return MICHY_AND_MAGRIEL_PROVERBS.DOUBLE_TIGER;
+    }
+    if (conceptId === 'keith-count' || (theme === 'RACE' && features?.contactStatus === 'pureRace')) {
+        return MICHY_AND_MAGRIEL_PROVERBS.TRICE_EPC_EFFICIENCY;
+    }
+    if (conceptId === 'bar-point' || conceptId === 'prime-vs-prime') {
+        return MICHY_AND_MAGRIEL_PROVERBS.BREAK_THE_MOUNTAIN;
+    }
     if (theme === 'BEAROFF') {
         const hasContact = features ? features.contactStatus === 'contact' : false;
         return hasContact ? MICHY_AND_MAGRIEL_PROVERBS.AMOEBA_PLAY : MICHY_AND_MAGRIEL_PROVERBS.TRICE_EPC_EFFICIENCY;
     }
-    if (theme === 'RACE' && features?.contactStatus === 'pureRace') {
-        return MICHY_AND_MAGRIEL_PROVERBS.TRICE_EPC_EFFICIENCY;
-    }
-    if ((optimalMove.match(/\*/g) ?? []).length >= 2) {
-        return MICHY_AND_MAGRIEL_PROVERBS.DOUBLE_TIGER;
-    }
-    if (/\b(?:\d+|bar)\/(?:5|20)\*?(?:\(\d+\))?(?:\s|$)/i.test(optimalMove)) {
+    if (/\b(?:\d+|bar)\/(5|20)\*?(?:\(2\)|\s+\b(?:\d+|bar)\/\1\b)/i.test(optimalMove)) {
         return MICHY_AND_MAGRIEL_PROVERBS.GOLDEN_POINT_PRIORITY;
-    }
-    if (/\b(?:24|23)\/13\b/.test(optimalMove)) {
-        return MICHY_AND_MAGRIEL_PROVERBS.LOVERS_LEAP;
     }
     if (/\b(?:8\/[23456]|7\/[12345])\b/.test(optimalMove) && theme === 'HOLDING') {
         return MICHY_AND_MAGRIEL_PROVERBS.PROVERB_17_THREE_PIPS;
@@ -282,15 +298,12 @@ export function selectMichyOrMagrielProverb(params: ProverbSelectorParams): Mich
         return MICHY_AND_MAGRIEL_PROVERBS.DOUBLE_TIGER;
     }
     if (userDirect > bestDirect) {
-        const isLeading = features
-            ? features.pipCountDiff.leader === features.player
-            : (params.playerPipCount ?? 150) < (params.opponentPipCount ?? 150);
-        return isLeading ? MICHY_AND_MAGRIEL_PROVERBS.MAGRIEL_SAFE_VS_BOLD : MICHY_AND_MAGRIEL_PROVERBS.MOCHY_DUPLICATION;
+        return isLeadingRace ? MICHY_AND_MAGRIEL_PROVERBS.MAGRIEL_SAFE_VS_BOLD : MICHY_AND_MAGRIEL_PROVERBS.MOCHY_DUPLICATION;
     }
     if (theme === 'HOLDING' || features?.boardStructure.advancedAnchor) {
         return MICHY_AND_MAGRIEL_PROVERBS.HOLDING_ANCHOR_LOCK;
     }
-    if (theme === 'RACE') {
+    if (theme === 'RACE' && isLeadingRace) {
         return MICHY_AND_MAGRIEL_PROVERBS.MAGRIEL_SAFE_VS_BOLD;
     }
     return MICHY_AND_MAGRIEL_PROVERBS.BREAK_THE_MOUNTAIN;

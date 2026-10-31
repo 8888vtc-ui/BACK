@@ -7,6 +7,7 @@ import type { CoachNotificationLevel } from '../../features/coach/coachNotificat
 import type { CoachAnalysisHistoryEntry, CoachState, LastMoveFeedback } from '../useCoachHelpers';
 import type { CoachHighlight } from '../../components/board/boardThemes';
 import { executeCubeEvaluation } from './coachCubeEvaluator';
+import { recordLiveMatchDecisionOnAdaptiveProfile } from '../../features/drills/adaptiveQuizEngine';
 
 export interface UseCoachCubeEvaluatorParams {
     cancelActiveOperation: () => void;
@@ -57,6 +58,16 @@ export function useCoachCubeEvaluator({
                     : 'Erreur de Videau — Pass trop frileux';
 
             recordDecisionStats(res.cubeRes.verdict, res.rawLoss, res.playedLabel, res.cubeRes.optimalAction);
+            try {
+                recordLiveMatchDecisionOnAdaptiveProfile({
+                    board: evalState.board,
+                    turnIndex: coachHistoryLength,
+                    equityLoss: res.rawLoss,
+                    isCube: true,
+                });
+            } catch {
+                // ignore storage errors
+            }
             setLastMoveFeedback({
                 verdict: res.cubeRes.verdict,
                 equityLoss: res.rawLoss,

@@ -248,6 +248,30 @@ describe('CoachPanel Component', () => {
         expect(html).not.toContain('Texte local whyOptimal obsolète');
         expect(html).not.toContain('Résumé local obsolète');
     });
+
+    it('affiche les 3 onglets Zéro-Scroll, le module « 🧠 Analyse Profonde » (1/1 offerte) et les 3 questions en 1 clic sans jamais mentionner 3.8', () => {
+        const html = renderToStaticMarkup(
+            <CoachPanel
+                verdict="blunder"
+                equityLoss={-0.125}
+                playedMove="24/20 13/11"
+                optimalMove="8/5 6/5"
+                onDismiss={() => { }}
+            />,
+        );
+
+        expect(html).toContain('data-testid="coach-zero-scroll-tabs"');
+        expect(html).toContain('data-testid="coach-tab-diagnostic"');
+        expect(html).toContain('data-testid="coach-tab-candidates"');
+        expect(html).toContain('data-testid="coach-tab-questions"');
+        expect(html).toContain('data-testid="coach-deep-analysis-section"');
+        expect(html).toContain('🧠 Analyse Profonde');
+        expect(html).toContain('1/1 offerte aujourd&#x27;hui');
+        expect(html).toContain('data-testid="coach-deep-question-why_equity"');
+        expect(html).toContain('data-testid="coach-deep-question-next_36_rolls"');
+        expect(html).toContain('data-testid="coach-deep-question-cube_and_plan"');
+        expect(html).not.toContain('3.8');
+    });
 });
 
 describe('computePerformanceRating & getPRBadge', () => {

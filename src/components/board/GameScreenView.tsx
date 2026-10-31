@@ -10,7 +10,6 @@ import MatchHeader from '../hud/MatchHeader';
 import MobileThumbDock from './MobileThumbDock';
 import GameBoardArea from './GameBoardArea';
 import CoachMobileDrawer from '../coach/CoachMobileDrawer';
-import FloatingAiCoachWidget from '../coach/FloatingAiCoachWidget';
 import GameModalsContainer from '../modals/GameModalsContainer';
 import CubeBottomSheet from '../modals/CubeBottomSheet';
 import { useCoachQuota } from '../../hooks/useCoachQuota';
@@ -86,9 +85,27 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     openingEntry, onApplyOpeningMove, onResetGameHistory, gameId, playerColor,
 }) => {
     const [isCubeSheetOpen, setIsCubeSheetOpen] = useState(false);
+    const [swapDiceUsedToday, setSwapDiceUsedToday] = useState<boolean>(() => {
+        if (typeof window === 'undefined' || !window.localStorage) return false;
+        const today = new Date().toISOString().slice(0, 10);
+        return window.localStorage.getItem('backgammon.swapDiceDate') === today;
+    });
     const quota = useCoachQuota({ locale });
     const tilt = useTiltDetector({ windowSize: 6 });
     const lastRecordedFeedbackRef = useRef<LastMoveFeedback | null>(null);
+
+    const handleSwapDiceJoker = () => {
+        if (swapDiceUsedToday || isMultiplayerActive || !game.isHumanTurn || !game.dice) return;
+        const buf = new Uint32Array(2);
+        crypto.getRandomValues(buf);
+        const d1 = ((buf[0] ?? 0) % 6) + 1;
+        const d2 = ((buf[1] ?? 0) % 6) + 1;
+        game.rollDice([d1, d2]);
+        setSwapDiceUsedToday(true);
+        if (typeof window !== 'undefined' && window.localStorage) {
+            window.localStorage.setItem('backgammon.swapDiceDate', new Date().toISOString().slice(0, 10));
+        }
+    };
 
     useEffect(() => {
         if (!lastMoveFeedback || lastMoveFeedback === lastRecordedFeedbackRef.current) return;
@@ -279,19 +296,37 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 locale={locale}
             />
 
-            {/* 6. Bouton flottant Coach IA en bas à droite */}
-            <FloatingAiCoachWidget
-                coach={coach}
-                isAnalyzing={isAnalyzing}
-                lastMoveFeedback={lastMoveFeedback}
-                onTriggerCoach={onTriggerCoach}
-                onReplayMove={onReplayMove}
-                onOpenFullCoach={() => {
-                    onTriggerCoach();
-                    modals.openMobileDrawer();
-                }}
-                isInGame
-            />
+            {/* 6. Bandeau actif Anti-Tilt de Zare + Joker Swap Dice (1/jour en partie IA) */}
+            {(tilt.showTiltAlert || (!isMultiplayerActive && game.isHumanTurn && Boolean(game.dice) && !swapDiceUsedToday)) && (
+                <div
+                    data-testid="active-antitilt-swapdice-bar"
+                    className="fixed bottom-[4.6rem] left-2 sm:left-auto sm:bottom-16 sm:right-3 z-40 flex items-center gap-2 rounded-2xl border border-[#d4af37]/40 bg-[#0d0a08]/95 px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-[#f7f3e8] shadow-2xl backdrop-blur-md"
+                >
+                    {tilt.showTiltAlert && (
+                        <div className="flex items-center gap-1.5 text-amber-300 font-semibold">
+                            <span>🧘 Pause Anti-Tilt : respirez 5s avant de jouer</span>
+                            <button
+                                type="button"
+                                onClick={tilt.dismissTiltAlert}
+                                className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white hover:bg-white/20"
+                            >
+                                OK
+                            </button>
+                        </div>
+                    )}
+                    {!isMultiplayerActive && game.isHumanTurn && Boolean(game.dice) && !swapDiceUsedToday && (
+                        <button
+                            type="button"
+                            data-testid="swap-dice-joker-btn"
+                            onClick={handleSwapDiceJoker}
+                            title="Joker Anti-Paranoïa : échangez vos dés 1 fois par jour contre le jet de réserve SHA-256"
+                            className="inline-flex items-center gap-1 rounded-xl border border-emerald-400/50 bg-emerald-500/15 px-2.5 py-1 text-[11px] font-black text-emerald-200 hover:bg-emerald-500/25 transition active:scale-95"
+                        >
+                            <span>🔄 Swap Dés (1/j)</span>
+                        </button>
+                    )}
+                </div>
+            )}
         </main>
     );
 };

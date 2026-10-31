@@ -177,7 +177,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
 
                     <div className="flex items-center gap-2">
                         <span className="font-mono text-xs font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
-                            -{errorDetails.absLoss.toFixed(3)} EMG · -{errorDetails.mwcLossPct}% MWC
+                            -{errorDetails.mwcLossPct}% chances · -{errorDetails.absLoss.toFixed(3)} EMG · -{errorDetails.mwcLossPct}% MWC
                         </span>
                         <button
                             type="button"
@@ -190,6 +190,15 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                         </button>
                     </div>
                 </div>
+
+                {errorDetails.isBlunder && (
+                    <div
+                        data-testid="error-toast-adaptive-quiz-badge"
+                        className="mb-2 inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/40 bg-emerald-950/70 px-2.5 py-1 text-[11px] font-bold text-emerald-200"
+                    >
+                        <span>📌 Ajouté automatiquement à votre Parcours Quizz Adaptatif</span>
+                    </div>
+                )}
 
                 {/* Corps : Type de l'erreur + Motif géométrique */}
                 <div className="space-y-1.5">

@@ -209,11 +209,17 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
             '',
             `## OPEN SAGE NEURAL ENGINE DATA (${bgsage.evalLevel}):`,
             `- Position Game Plan: Player = ${bgsage.playerGamePlan}, Opponent = ${bgsage.opponentGamePlan} (Pure race: ${bgsage.isRace ? 'Yes' : 'No'})`,
+            bgsage.topCandidates && bgsage.topCandidates.length > 0
+                ? `- Top ${bgsage.topCandidates.length} Open Sage Max Candidates: ${bgsage.topCandidates.map((c) => `#${c.rank} ${c.notation} [Eq ${c.equity.toFixed(3)}, dEq ${c.equityLoss.toFixed(3)}, W ${(c.winProb * 100).toFixed(1)}%, G ${(c.winGammonProb * 100).toFixed(1)}%, OppG ${(c.loseGammonProb * 100).toFixed(1)}%]`).join(' | ')}`
+                : '',
+            bgsage.cubeDecision && typeof bgsage.cubeDecision.noDouble === 'number' && typeof bgsage.cubeDecision.doubleTake === 'number'
+                ? `- Open Sage Cube Equities: No Double=${bgsage.cubeDecision.noDouble.toFixed(3)}, Double/Take=${bgsage.cubeDecision.doubleTake.toFixed(3)}, Double/Pass=${(bgsage.cubeDecision.doublePass ?? 1).toFixed(3)} -> Optimal Cube Action: ${bgsage.cubeDecision.optimalAction ?? 'No Double'}`
+                : '',
             optM
-                ? `- Optimal Move (${optimalMove}) Neural Probabilities: Win ${(optM.winProb * 100).toFixed(1)}% (Gammon ${(optM.winGammonProb * 100).toFixed(1)}%), Opponent Gammon Risk ${(optM.loseGammonProb * 100).toFixed(1)}%, Resulting Plan = ${optM.playerGamePlan}`
+                ? `- Optimal Move (${optimalMove}) Neural Probabilities: Win ${(optM.winProb * 100).toFixed(1)}% (Gammon ${(optM.winGammonProb * 100).toFixed(1)}%, BG ${(optM.winBackgammonProb * 100).toFixed(2)}%), Opponent Gammon Risk ${(optM.loseGammonProb * 100).toFixed(1)}%, Eq Cubeful ${optM.equity.toFixed(4)} (Cubeless ${optM.cubelessEquity.toFixed(4)}), Resulting Plan = ${optM.playerGamePlan}`
                 : '',
             pldM
-                ? `- Played Move (${playedMove}) Neural Probabilities: Win ${(pldM.winProb * 100).toFixed(1)}% (Gammon ${(pldM.winGammonProb * 100).toFixed(1)}%), Opponent Gammon Risk ${(pldM.loseGammonProb * 100).toFixed(1)}%, Resulting Plan = ${pldM.playerGamePlan}`
+                ? `- Played Move (${playedMove}) Neural Probabilities: Win ${(pldM.winProb * 100).toFixed(1)}% (Gammon ${(pldM.winGammonProb * 100).toFixed(1)}%, BG ${(pldM.winBackgammonProb * 100).toFixed(2)}%), Opponent Gammon Risk ${(pldM.loseGammonProb * 100).toFixed(1)}%, Eq Cubeful ${pldM.equity.toFixed(4)} (Cubeless ${pldM.cubelessEquity.toFixed(4)}), Resulting Plan = ${pldM.playerGamePlan}`
                 : '',
             deltas
                 ? `- Pre-computed deltas (optimal − played, percentage points): Win ${deltas.win}, Gammon ${deltas.gammon}, Opponent Gammon Risk ${deltas.loseGammon}`
@@ -226,11 +232,17 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
             '',
             `## DONNÉES NEURALES OPEN SAGE (${bgsage.evalLevel}) :`,
             `- Plan de jeu identifié : Joueur = ${bgsage.playerGamePlan}, Adversaire = ${bgsage.opponentGamePlan} (Course pure : ${bgsage.isRace ? 'Oui' : 'Non'})`,
+            bgsage.topCandidates && bgsage.topCandidates.length > 0
+                ? `- Top ${bgsage.topCandidates.length} Candidats Open Sage Max : ${bgsage.topCandidates.map((c) => `#${c.rank} ${c.notation} [Eq ${c.equity.toFixed(3)}, dEq ${c.equityLoss.toFixed(3)}, Gain ${(c.winProb * 100).toFixed(1)}%, Gammon ${(c.winGammonProb * 100).toFixed(1)}%, GammonAdv ${(c.loseGammonProb * 100).toFixed(1)}%]`).join(' | ')}`
+                : '',
+            bgsage.cubeDecision && typeof bgsage.cubeDecision.noDouble === 'number' && typeof bgsage.cubeDecision.doubleTake === 'number'
+                ? `- Équités Videau Open Sage : Pas de Double=${bgsage.cubeDecision.noDouble.toFixed(3)}, Double/Pris=${bgsage.cubeDecision.doubleTake.toFixed(3)}, Double/Passé=${(bgsage.cubeDecision.doublePass ?? 1).toFixed(3)} -> Action Videau Optimale : ${bgsage.cubeDecision.optimalAction ?? 'No Double'}`
+                : '',
             optM
-                ? `- Probabilités neurales du coup optimal (${optimalMove}) : Gain ${(optM.winProb * 100).toFixed(1)}% (Gammon ${(optM.winGammonProb * 100).toFixed(1)}%), Risque de gammon adverse ${(optM.loseGammonProb * 100).toFixed(1)}%, Plan résultant = ${optM.playerGamePlan}`
+                ? `- Probabilités neurales du coup optimal (${optimalMove}) : Gain ${(optM.winProb * 100).toFixed(1)}% (Gammon ${(optM.winGammonProb * 100).toFixed(1)}%, BG ${(optM.winBackgammonProb * 100).toFixed(2)}%), Risque de gammon adverse ${(optM.loseGammonProb * 100).toFixed(1)}%, Eq Cubeful ${optM.equity.toFixed(4)} (Cubeless ${optM.cubelessEquity.toFixed(4)}), Plan résultant = ${optM.playerGamePlan}`
                 : '',
             pldM
-                ? `- Probabilités neurales du coup joué (${playedMove}) : Gain ${(pldM.winProb * 100).toFixed(1)}% (Gammon ${(pldM.winGammonProb * 100).toFixed(1)}%), Risque de gammon adverse ${(pldM.loseGammonProb * 100).toFixed(1)}%, Plan résultant = ${pldM.playerGamePlan}`
+                ? `- Probabilités neurales du coup joué (${playedMove}) : Gain ${(pldM.winProb * 100).toFixed(1)}% (Gammon ${(pldM.winGammonProb * 100).toFixed(1)}%, BG ${(pldM.winBackgammonProb * 100).toFixed(2)}%), Risque de gammon adverse ${(pldM.loseGammonProb * 100).toFixed(1)}%, Eq Cubeful ${pldM.equity.toFixed(4)} (Cubeless ${pldM.cubelessEquity.toFixed(4)}), Plan résultant = ${pldM.playerGamePlan}`
                 : '',
             deltas
                 ? `- Écarts pré-calculés (optimal − joué, en points de %) : Gain ${deltas.win}, Gammon ${deltas.gammon}, Risque de gammon adverse ${deltas.loseGammon}`

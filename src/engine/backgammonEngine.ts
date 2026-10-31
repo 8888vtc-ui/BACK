@@ -444,6 +444,19 @@ function moveDistance(move: Move, player: Player): number {
     return to - from;
 }
 
+function boardKey(board: number[]): string {
+    return board.join(',');
+}
+
+function maxSequenceMoveCount(sequences: ReadonlyArray<MoveSequence>): number {
+    let max = 0;
+    for (let i = 0; i < sequences.length; i++) {
+        const len = sequences[i].moves.length;
+        if (len > max) max = len;
+    }
+    return max;
+}
+
 function generateSequences(
     board: number[],
     player: Player,
@@ -451,6 +464,8 @@ function generateSequences(
     index: number,
     current: Move[],
     results: MoveSequence[],
+    visited?: Set<string>,
+    preserveFirstMove = false,
 ): void {
     if (index === dice.length) {
         if (current.length > 0) {
@@ -458,20 +473,24 @@ function generateSequences(
         }
         return;
     }
+    if (visited && current.length > 0) {
+        const prefix = preserveFirstMove ? `${current[0].from}:${current[0].to}|` : '';
+        const stateKey = `${index}|${current.length}|${prefix}${boardKey(board)}`;
+        if (visited.has(stateKey)) {
+            return;
+        }
+        visited.add(stateKey);
+    }
     const die = dice[index];
     const singles = generateSingleMoves(board, player, die);
     if (singles.length === 0) {
-        generateSequences(board, player, dice, index + 1, current, results);
+        generateSequences(board, player, dice, index + 1, current, results, visited, preserveFirstMove);
         return;
     }
     for (const move of singles) {
         const next = applyMove(board, move, player);
-        generateSequences(next, player, dice, index + 1, [...current, move], results);
+        generateSequences(next, player, dice, index + 1, [...current, move], results, visited, preserveFirstMove);
     }
-}
-
-function boardKey(board: number[]): string {
-    return board.join(',');
 }
 
 /**
@@ -490,23 +509,25 @@ export function generateLegalMoves(state: BoardState, dice: [number, number]): M
         throw new Error(`Dés invalides : [${d1}, ${d2}]`);
     }
     const player = state.turn;
-    const orders: number[][] = d1 === d2 ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
+    const isDouble = d1 === d2;
+    const onBar = player === 'X' ? state.board[X_BAR] > 0 : state.board[O_BAR] < 0;
+    const orders: number[][] = isDouble ? [[d1, d1, d1, d1]] : [[d1, d2], [d2, d1]];
 
     const all: MoveSequence[] = [];
     for (const order of orders) {
-        generateSequences(state.board, player, order, 0, [], all);
+        const visited = isDouble ? new Set<string>() : undefined;
+        generateSequences(state.board, player, order, 0, [], all, visited, onBar);
     }
 
     if (all.length === 0) return [];
 
-    const maxDice = Math.max(...all.map((s) => s.moves.length));
+    const maxDice = maxSequenceMoveCount(all);
     let filtered = all.filter((s) => s.moves.length === maxDice);
 
     // Règle officielle du plus fort dé (WBF / USBGF Règle 4.2 / XG2 / Snowie) :
     // Lorsqu'un seul dé peut être joué au total (maxDice === 1) et que chaque dé
     // est individuellement jouable, le joueur a l'obligation de jouer le plus fort,
     // y compris s'il entre depuis la barre.
-    const onBar = player === 'X' ? state.board[X_BAR] > 0 : state.board[O_BAR] < 0;
     if (maxDice === 1 && d1 !== d2) {
         const d1Moves = generateSingleMoves(state.board, player, d1);
         const d2Moves = generateSingleMoves(state.board, player, d2);
@@ -571,13 +592,13 @@ export function computeLegalTargets(
 
         const remainingDice = Array(remainingCount).fill(d1);
         const all: MoveSequence[] = [];
-        generateSequences(state.board, player, remainingDice, 0, [], all);
+        generateSequences(state.board, player, remainingDice, 0, [], all, new Set<string>(), true);
 
         if (all.length === 0) {
             return { leftDieTargets, rightDieTargets };
         }
 
-        const maxMoves = Math.max(...all.map((s) => s.moves.length));
+        const maxMoves = maxSequenceMoveCount(all);
         const validSeqs = all.filter((s) => s.moves.length === maxMoves);
 
         for (const seq of validSeqs) {
@@ -616,7 +637,7 @@ export function computeLegalTargets(
         return { leftDieTargets, rightDieTargets };
     }
 
-    const maxDice = Math.max(...legalSeqs.map((s) => s.moves.length));
+    const maxDice = maxSequenceMoveCount(legalSeqs);
 
     if (maxDice === 1) {
         const d1Moves = generateSingleMoves(state.board, player, d1);

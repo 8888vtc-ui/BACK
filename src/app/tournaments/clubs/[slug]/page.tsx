@@ -49,11 +49,17 @@ export default async function VenueDetailPage({
 }): Promise<React.ReactElement> {
     const { slug } = await params;
     const venue = WORLD_BACKGAMMON_VENUES.find((v) => v.slug === slug);
-    if (!venue) notFound();
-
     const related = WORLD_BACKGAMMON_VENUES
-        .filter((v) => v.id !== venue.id && (v.region === venue.region || v.category === venue.category))
+        .filter((v) => v.slug !== slug && (!venue || v.region === venue.region || v.category === venue.category))
         .slice(0, 3);
+
+    if (!venue) {
+        return (
+            <ErrorBoundary name="Fiche Club">
+                <VenueDetailView fallbackSlug={slug} relatedVenues={related} />
+            </ErrorBoundary>
+        );
+    }
 
     const jsonLd = {
         '@context': 'https://schema.org',

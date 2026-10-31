@@ -45,6 +45,14 @@ export const VOICE_BCP47_MAP: Record<string, string> = {
 };
 
 const PREFERRED_VOICE_NAMES: readonly string[] = [
+    'online (natural)',
+    'natural',
+    'neural',
+    'henri',
+    'denise',
+    'vivienne',
+    'remy',
+    'eloise',
     'google français',
     'google us english',
     'google uk english',
@@ -54,8 +62,6 @@ const PREFERRED_VOICE_NAMES: readonly string[] = [
     'amelie',
     'daniel',
     'samantha',
-    'natural',
-    'neural',
     'google',
 ];
 
@@ -237,13 +243,14 @@ class VoiceCoachEngine {
         if (!host?.speechSynthesis || options?.isGlobalMuted) return false;
         if (!this.enabled && !options?.force) return false;
 
+        const rawLang = (locale || detectLocale() || 'fr').toLowerCase().slice(0, 2);
         const resolvedLocale = resolveVoiceLocale(locale);
         const cleanText = options?.phoneticMoves
-            ? transduceMoveNotationToPhonetic(text, resolvedLocale)
+            ? transduceMoveNotationToPhonetic(text, rawLang)
             : sanitizeTextForSpeech(text);
         if (!cleanText) return false;
 
-        const bcp47 = VOICE_LOCALE_BCP47[resolvedLocale];
+        const bcp47 = VOICE_BCP47_MAP[rawLang] ?? VOICE_LOCALE_BCP47[resolvedLocale];
 
         try {
             host.speechSynthesis.cancel();
@@ -260,8 +267,9 @@ class VoiceCoachEngine {
 
             const voices: SpeechSynthesisVoice[] = host.speechSynthesis.getVoices?.() ?? [];
             const matchingVoice =
+                selectBestCoachVoice(voices, rawLang) ||
                 voices.find((v) => v.lang.toLowerCase() === bcp47.toLowerCase()) ||
-                voices.find((v) => v.lang.toLowerCase().startsWith(resolvedLocale));
+                voices.find((v) => v.lang.toLowerCase().startsWith(rawLang));
             if (matchingVoice) utterance.voice = matchingVoice;
 
             host.speechSynthesis.speak(utterance);

@@ -23,6 +23,11 @@ import RecurringErrorsCard from './RecurringErrorsCard';
 import ProgressionHeroStats from './ProgressionHeroStats';
 import ProgressionMatchesHistory from './ProgressionMatchesHistory';
 import ProgressionConceptsSection from './ProgressionConceptsSection';
+import {
+    ADAPTIVE_QUIZ_CATEGORIES,
+    getAdaptivePlayerProfile,
+    type AdaptivePlayerProfile,
+} from '../../features/drills/adaptiveQuizEngine';
 
 export interface ProgressionDashboardProps {
     onBackToGame?: () => void;
@@ -61,6 +66,11 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [allAnalyses, setAllAnalyses] = useState<CompleteGameAnalysis[]>([]);
     const [ratingHistory, setRatingHistory] = useState<RatingHistoryPoint[]>([]);
+    const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptivePlayerProfile>(() => getAdaptivePlayerProfile());
+
+    useEffect(() => {
+        setAdaptiveProfile(getAdaptivePlayerProfile());
+    }, []);
 
     useEffect(() => {
         let mounted = true;
@@ -177,6 +187,42 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                 winRate={stats.winRate}
                 onBackToGame={onBackToGame}
             />
+
+            {/* RADAR DES 9 COMPÉTENCES DU PARCOURS ADAPTATIF IA */}
+            <section className="rounded-2xl border border-white/10 bg-[#0e121b]/95 p-4 sm:p-5 shadow-xl space-y-3" data-testid="progression-9-skills-radar">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h2 className="text-sm sm:text-base font-black text-[#fdf8eb]">
+                            🎯 Niveau &amp; Maîtrise sur les 9 Techniques (Quizz Adaptatif Multi-Ply)
+                        </h2>
+                        <p className="text-xs text-[#a5b0c4]">
+                            Niveau Global : <strong className="text-[#f3c65f]">{adaptiveProfile.overallLevel.toFixed(1)} / 4.0</strong> · Maîtrise Moyenne : <strong className="text-emerald-300">{adaptiveProfile.overallMastery}%</strong> · Quizz uniques résolus : <strong className="text-white">{adaptiveProfile.seenQuizIds.length}</strong>
+                        </p>
+                    </div>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-9 gap-2">
+                    {ADAPTIVE_QUIZ_CATEGORIES.map((cat) => {
+                        const st = adaptiveProfile.categories[cat.id];
+                        const lvl = st?.level ?? 1;
+                        const m = st?.masteryScore ?? 25;
+                        return (
+                            <div key={cat.id} className="rounded-xl border border-white/10 bg-black/40 p-2.5 flex flex-col justify-between">
+                                <div className="flex items-center justify-between text-xs font-bold text-[#fdf8eb]">
+                                    <span className="truncate">{cat.icon} {cat.shortLabel}</span>
+                                    <span className="font-mono text-[11px] text-[#f3c65f]">N{lvl}</span>
+                                </div>
+                                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                                    <div
+                                        className={`h-full rounded-full ${m >= 75 ? 'bg-emerald-400' : m >= 45 ? 'bg-[#f3c65f]' : 'bg-rose-400'}`}
+                                        style={{ width: `${Math.max(8, Math.min(100, m))}%` }}
+                                    />
+                                </div>
+                                <span className="mt-1 font-mono text-[11px] text-[#a5b0c4]">{m}%</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            </section>
 
             {/* ÉVOLUTION DU PERFORMANCE RATING (PR) & HISTORIQUE DES PARTIES */}
             <section className="space-y-4" data-testid="pr-history-section">

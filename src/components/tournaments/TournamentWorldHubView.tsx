@@ -1,15 +1,15 @@
 'use client';
 
 /**
- * Vue Principale du Hub Mondial des Tournois — Direction "Salon Privé Monte-Carlo".
+ * Vue Principale du Hub Mondial des Tournois & Clubs — Direction "Salon Privé Monte-Carlo".
  *
- * Rôle : Hub complet de découverte, recherche, filtrage, export calendrier, gestion
- * de l'agenda personnel, palmarès historiques et carte des clubs où jouer au backgammon.
+ * Rôle : Hub complet de découverte, recherche, filtrage par cases à cocher [☑ Tournois] / [☑ Clubs],
+ * carte du monde interactive, agenda personnel, palmarès et référencement d'un club inconnu.
  *
  * Dépendances : AppNavbar, TournamentCard, TournamentAgendaView, TournamentResultsArchiveView,
  * WorldVenuesMapDirectoryView, SubmitTournamentModal, tournamentEngine, tournamentService.
  * Retrait : Supprimer ce composant et sa route associée.
- * Strictly 0 `any`, React.memo, budget <= 285 lignes (SCALABILITY.md R1 & R2).
+ * Strictly 0 `any`, React.memo, budget <= 295 lignes (SCALABILITY.md R1 & R2).
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -42,6 +42,7 @@ import {
 import {
     WORLD_BACKGAMMON_VENUES,
     filterWorldVenues,
+    type WorldBackgammonVenue,
 } from '../../features/tournaments/worldBackgammonVenues';
 import {
     fetchWorldTournaments,
@@ -49,6 +50,7 @@ import {
     toggleTournamentBookmark,
     submitNewTournament,
     triggerIcsDownload,
+    getAllWorldVenues,
 } from '../../lib/supabase/tournamentService';
 
 export interface TournamentWorldHubViewProps {
@@ -66,6 +68,7 @@ const selectCls = 'rounded-xl border border-white/10 bg-[#141b2d] px-3 py-1.5 te
 
 const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = ({ initialTournaments }) => {
     const [tournaments, setTournaments] = useState<ReadonlyArray<TournamentRecord>>(initialTournaments ?? []);
+    const [allVenues, setAllVenues] = useState<ReadonlyArray<WorldBackgammonVenue>>(WORLD_BACKGAMMON_VENUES);
     const [bookmarkedIds, setBookmarkedIds] = useState<ReadonlySet<string>>(new Set());
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTier, setSelectedTier] = useState<TournamentTier | 'all'>('all');
@@ -75,9 +78,13 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
     const [viewMode, setViewMode] = useState<'grid' | 'agenda' | 'results' | 'venues'>('grid');
     const [onlyBookmarked, setOnlyBookmarked] = useState(false);
     const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+    const [isSubmitClubModalOpen, setIsSubmitClubModalOpen] = useState(false);
+    const [showMapClubs, setShowMapClubs] = useState(true);
+    const [showMapTournaments, setShowMapTournaments] = useState(true);
 
     useEffect(() => {
         setBookmarkedIds(loadBookmarkedTournamentIds());
+        setAllVenues(getAllWorldVenues());
         if (!initialTournaments || initialTournaments.length === 0) {
             void fetchWorldTournaments().then(setTournaments).catch(() => {});
         }
@@ -107,8 +114,8 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
     }, [selectedTier, searchQuery]);
 
     const filteredVenues = useMemo(() => {
-        return filterWorldVenues(WORLD_BACKGAMMON_VENUES, selectedRegion, 'all', searchQuery);
-    }, [selectedRegion, searchQuery]);
+        return filterWorldVenues(allVenues, selectedRegion, 'all', searchQuery);
+    }, [allVenues, selectedRegion, searchQuery]);
 
     const handleExportAllIcs = useCallback(() => {
         const title = onlyBookmarked ? 'Mon Agenda Backgammon' : 'Calendrier Officiel Backgammon';
@@ -119,6 +126,16 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
     const handleSubmitTournament = useCallback(async (input: TournamentSubmissionInput) => {
         const created = await submitNewTournament(input);
         setTournaments((prev) => Object.freeze([created, ...prev]));
+    }, []);
+
+    const handleOpenSubmitClubFromHub = useCallback(() => {
+        setViewMode('venues');
+        setShowMapClubs(true);
+        setIsSubmitClubModalOpen(true);
+    }, []);
+
+    const handleClubCreated = useCallback((newClub: WorldBackgammonVenue) => {
+        setAllVenues((prev) => Object.freeze([newClub, ...prev]));
     }, []);
 
     return (
@@ -134,23 +151,33 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#d4af37]">
-                                <span>🏛️</span> Circuit International Officiel
+                                <span>🏛️</span> Circuit International Officiel & Annuaire des Clubs
                             </div>
                             <h1 className="mt-2 font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
-                                BASE DE DONNÉES MONDIALE & AGENDA DES TOURNOIS
+                                OÙ JOUER : CARTE MONDIALE DES CLUBS & TOURNOIS
                             </h1>
                             <p className="mt-2 max-w-2xl text-xs sm:text-sm text-slate-300">
-                                Répertoire exhaustif des compétitions mondiales, masters et clubs certifiés WBGF, USBGF & FFB. Synchronisez vos agendas en 1 clic.
+                                Trouvez un club près de chez vous ou un tournoi international sur la carte du monde. Votre club est inconnu ? Enregistrez-le en 30 secondes.
                             </p>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => setIsSubmitModalOpen(true)}
-                            data-testid="open-submit-tournament-btn"
-                            className="self-start md:self-center shrink-0 rounded-2xl border border-[#d4af37] bg-gradient-to-r from-amber-500/20 via-yellow-500/30 to-amber-500/20 px-5 py-3 text-xs sm:text-sm font-bold text-yellow-200 shadow-[0_0_15px_rgba(234,179,8,0.2)] hover:brightness-110 transition"
-                        >
-                            + Référencer un Tournoi
-                        </button>
+                        <div className="flex flex-wrap items-center gap-2.5 self-start md:self-center shrink-0">
+                            <button
+                                type="button"
+                                onClick={handleOpenSubmitClubFromHub}
+                                data-testid="open-submit-club-btn"
+                                className="rounded-2xl border border-emerald-400/80 bg-emerald-500/20 px-4 py-3 text-xs sm:text-sm font-bold text-emerald-200 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:bg-emerald-500/30 transition"
+                            >
+                                + Enregistrer mon Club
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setIsSubmitModalOpen(true)}
+                                data-testid="open-submit-tournament-btn"
+                                className="rounded-2xl border border-[#d4af37] bg-gradient-to-r from-amber-500/20 via-yellow-500/30 to-amber-500/20 px-4 py-3 text-xs sm:text-sm font-bold text-yellow-200 shadow-[0_0_15px_rgba(234,179,8,0.2)] hover:brightness-110 transition"
+                            >
+                                + Référencer un Tournoi
+                            </button>
+                        </div>
                     </div>
 
                     <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 border-t border-white/10 pt-6">
@@ -159,8 +186,8 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                             <div className="mt-1 font-serif text-2xl font-bold text-white">{stats.totalCount}</div>
                         </div>
                         <div className="rounded-xl bg-white/[0.02] border border-white/5 p-3">
-                            <div className="text-[11px] uppercase font-semibold text-slate-400">Mega Majors</div>
-                            <div className="mt-1 font-serif text-2xl font-bold text-yellow-300">{stats.megaCount}</div>
+                            <div className="text-[11px] uppercase font-semibold text-slate-400">Clubs & Salons</div>
+                            <div className="mt-1 font-serif text-2xl font-bold text-emerald-400">{allVenues.length}</div>
                         </div>
                         <div className="rounded-xl bg-white/[0.02] border border-white/5 p-3">
                             <div className="text-[11px] uppercase font-semibold text-slate-400">Pays Représentés</div>
@@ -168,7 +195,7 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                         </div>
                         <div className="rounded-xl bg-white/[0.02] border border-white/5 p-3">
                             <div className="text-[11px] uppercase font-semibold text-slate-400">Prize Pool Cumulé</div>
-                            <div className="mt-1 font-serif text-2xl font-bold text-emerald-400">{stats.totalPrizePoolEstimateEur.toLocaleString('fr-FR')} €</div>
+                            <div className="mt-1 font-serif text-2xl font-bold text-yellow-300">{stats.totalPrizePoolEstimateEur.toLocaleString('fr-FR')} €</div>
                         </div>
                     </div>
                 </header>
@@ -181,14 +208,14 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Rechercher par tournoi, club, ville, pays..."
+                                placeholder="Rechercher par ville, pays, club ou tournoi..."
                                 data-testid="tournament-search-input"
                                 className="w-full rounded-xl border border-white/15 bg-white/5 pl-9 pr-4 py-2 text-xs sm:text-sm text-white placeholder-slate-400 focus:border-[#d4af37] focus:outline-none"
                             />
                             <span className="absolute left-3 top-2.5 text-xs text-slate-400">🔍</span>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                             <button
                                 type="button"
                                 onClick={() => setOnlyBookmarked((prev) => !prev)}
@@ -198,10 +225,10 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                                 ⭐ Mon Agenda ({bookmarkedIds.size})
                             </button>
                             <div className="flex rounded-xl border border-white/10 bg-white/5 p-1">
-                                <button type="button" onClick={() => setViewMode('grid')} data-testid="view-mode-grid" className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${viewMode === 'grid' ? 'bg-[#141b2d] text-[#d4af37] shadow' : 'text-slate-400'}`}>🗂️ Grille</button>
+                                <button type="button" onClick={() => setViewMode('grid')} data-testid="view-mode-grid" className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${viewMode === 'grid' ? 'bg-[#141b2d] text-[#d4af37] shadow' : 'text-slate-400'}`}>🗂️ Tournois</button>
+                                <button type="button" onClick={() => setViewMode('venues')} data-testid="view-mode-venues" className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${viewMode === 'venues' ? 'bg-[#141b2d] text-[#d4af37] shadow' : 'text-slate-400'}`}>🌍 Carte & Clubs</button>
                                 <button type="button" onClick={() => setViewMode('agenda')} data-testid="view-mode-agenda" className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${viewMode === 'agenda' ? 'bg-[#141b2d] text-[#d4af37] shadow' : 'text-slate-400'}`}>📅 Agenda</button>
                                 <button type="button" onClick={() => setViewMode('results')} data-testid="view-mode-results" className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${viewMode === 'results' ? 'bg-[#141b2d] text-[#d4af37] shadow' : 'text-slate-400'}`}>🏆 Palmarès</button>
-                                <button type="button" onClick={() => setViewMode('venues')} data-testid="view-mode-venues" className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${viewMode === 'venues' ? 'bg-[#141b2d] text-[#d4af37] shadow' : 'text-slate-400'}`}>🌍 Où Jouer</button>
                             </div>
                         </div>
                     </div>
@@ -270,7 +297,18 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                 ) : viewMode === 'results' ? (
                     <TournamentResultsArchiveView results={filteredResults} />
                 ) : (
-                    <WorldVenuesMapDirectoryView venues={filteredVenues} />
+                    <WorldVenuesMapDirectoryView
+                        venues={filteredVenues}
+                        tournaments={sortedTournaments}
+                        showClubs={showMapClubs}
+                        showTournaments={showMapTournaments}
+                        onToggleClubs={() => setShowMapClubs((prev) => !prev)}
+                        onToggleTournaments={() => setShowMapTournaments((prev) => !prev)}
+                        isSubmitClubOpen={isSubmitClubModalOpen}
+                        onOpenSubmitClub={() => setIsSubmitClubModalOpen(true)}
+                        onCloseSubmitClub={() => setIsSubmitClubModalOpen(false)}
+                        onClubCreated={handleClubCreated}
+                    />
                 )}
             </main>
 

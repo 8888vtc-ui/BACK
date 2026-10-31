@@ -208,10 +208,8 @@ export default function Home() {
                 }
                 break;
             case 'drills':
-                navigateTo('/drills');
-                break;
             case 'puzzles':
-                navigateTo('/puzzles');
+                navigateTo('/drills');
                 break;
             case 'import_export':
                 modals.openExportImport();

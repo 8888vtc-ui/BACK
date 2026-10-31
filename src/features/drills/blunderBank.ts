@@ -5,7 +5,7 @@
  * parties pour les rejouer automatiquement sous forme de drills tactiques ciblés.
  */
 
-import type { PlayerBlunderRecord, BlunderBankStats } from './types';
+import type { PlayerBlunderRecord, BlunderBankStats, DrillTier } from './types';
 import { BENCHMARK_BLUNDERS } from './benchmarkBlunders';
 
 export const BLUNDER_BANK_STORAGE_KEY = 'bg_blunder_bank';
@@ -21,6 +21,8 @@ export function createDefaultBenchmarkBlunders(): PlayerBlunderRecord[] {
         board: [...b.board],
         dice: [b.dice[0], b.dice[1]] as [number, number],
         acceptableMoves: b.acceptableMoves ? [...b.acceptableMoves] : [],
+        commentaryVariants: b.commentaryVariants ? [...b.commentaryVariants] : undefined,
+        quizChoices: b.quizChoices ? [...b.quizChoices] : undefined,
     }));
 }
 
@@ -46,7 +48,26 @@ export function getAllBlunders(): PlayerBlunderRecord[] {
 
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed;
+            // Fusionne automatiquement les nouveaux Quizz par Paliers de BENCHMARK_BLUNDERS
+            // si l'utilisateur avait une ancienne banque locale
+            const defaults = createDefaultBenchmarkBlunders();
+            const byId = new Map<string, PlayerBlunderRecord>();
+            for (const item of parsed as PlayerBlunderRecord[]) {
+                const benchMatch = defaults.find((d) => d.id === item.id);
+                byId.set(item.id, benchMatch ? { ...benchMatch, ...item, tier: item.tier ?? benchMatch.tier, whyFailed: item.whyFailed ?? benchMatch.whyFailed, proverb: item.proverb ?? benchMatch.proverb, commentaryVariants: item.commentaryVariants ?? benchMatch.commentaryVariants, quizChoices: item.quizChoices ?? benchMatch.quizChoices } : item);
+            }
+            let added = false;
+            for (const def of defaults) {
+                if (!byId.has(def.id)) {
+                    byId.set(def.id, def);
+                    added = true;
+                }
+            }
+            const merged = Array.from(byId.values());
+            if (added) {
+                window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, JSON.stringify(merged));
+            }
+            return merged;
         }
 
         const defaults = createDefaultBenchmarkBlunders();
@@ -154,9 +175,12 @@ export function getBlunderById(id: string): PlayerBlunderRecord | null {
  * - Trie par perte d'équité décroissante (les plus grosses erreurs en premier)
  * - Si toutes les erreurs sont maîtrisées, retourne la liste complète pour révision
  */
-export function getBlundersToReview(conceptId?: string): PlayerBlunderRecord[] {
+export function getBlundersToReview(conceptId?: string, tier?: DrillTier): PlayerBlunderRecord[] {
     const all = getAllBlunders();
-    const filtered = conceptId ? all.filter((b) => b.conceptId === conceptId) : all;
+    let filtered = conceptId && conceptId !== 'all' ? all.filter((b) => b.conceptId === conceptId) : all;
+    if (tier) {
+        filtered = filtered.filter((b) => (b.tier ?? 1) === tier);
+    }
 
     const unmastered = filtered.filter((b) => !b.isMastered);
 

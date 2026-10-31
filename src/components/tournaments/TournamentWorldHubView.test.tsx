@@ -121,4 +121,38 @@ describe('TournamentWorldHubView', () => {
         expect(screen.getAllByText(/Pourquoi jouer ici — Avantages du lieu/i).length).toBeGreaterThanOrEqual(1);
         expect(screen.getByTestId('map-pin-paris-vie-deau')).toBeDefined();
     });
+
+    it('permet de cocher/décocher Tournois et Clubs sur la carte et d’enregistrer un club inconnu', async () => {
+        renderHub();
+
+        // Cliquer sur "+ Enregistrer mon Club" depuis le header bascule sur la carte et ouvre le formulaire
+        fireEvent.click(screen.getByTestId('open-submit-club-btn'));
+        expect(screen.getByTestId('world-venues-map-directory')).toBeDefined();
+        expect(screen.getByTestId('submit-club-modal')).toBeDefined();
+
+        // Vérifier les 2 cases à cocher [☑ Clubs] et [☑ Tournois]
+        const toggleClubs = screen.getByTestId('map-toggle-clubs') as HTMLInputElement;
+        const toggleTournaments = screen.getByTestId('map-toggle-tournaments') as HTMLInputElement;
+        expect(toggleClubs.checked).toBe(true);
+        expect(toggleTournaments.checked).toBe(true);
+        expect(screen.getByTestId('map-tournaments-section')).toBeDefined();
+
+        // Décocher Tournois masque les tournois de la carte
+        fireEvent.click(toggleTournaments);
+        expect(screen.queryByTestId('map-tournaments-section')).toBeNull();
+
+        // Remplir et soumettre un nouveau club inconnu SANS site web (avec Page Club Officielle Offerte)
+        expect(screen.getByTestId('club-free-page-offer')).toBeDefined();
+        fireEvent.change(screen.getByTestId('club-input-name'), { target: { value: 'Riviera Backgammon Club Antibes' } });
+        fireEvent.change(screen.getByTestId('club-input-city'), { target: { value: 'Nice' } });
+        fireEvent.change(screen.getByTestId('club-input-country'), { target: { value: 'France' } });
+        fireEvent.change(screen.getByTestId('club-input-address'), { target: { value: '12 Promenade du Port, Antibes' } });
+        // Laisser l'URL vide -> génère automatiquement la Page Club Officielle Offerte (/tournaments/clubs/...)
+        fireEvent.click(screen.getByTestId('submit-club-confirm-btn'));
+
+        // Le club fraîchement créé apparaît immédiatement dans la liste et sur la carte avec son badge Page Offerte
+        const matches = await screen.findAllByText(/Riviera Backgammon Club Antibes/i);
+        expect(matches.length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText(/Page Club Officielle hébergée et offerte/i).length).toBeGreaterThanOrEqual(1);
+    });
 });

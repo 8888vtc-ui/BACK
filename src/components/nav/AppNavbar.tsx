@@ -16,6 +16,7 @@ import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '../../lib/supabase/types';
 import UserAccountMenu, { type AuthStatus } from './UserAccountMenu';
+import LanguageSelector from './LanguageSelector';
 import type { LobbyModuleId } from '../lobby/LobbyScreen';
 import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
@@ -57,7 +58,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
             { id: 'tournaments', label: ui.navbar.tournaments, icon: '🏆', href: '/tournaments', testId: 'nav-tab-tournaments' },
             { id: 'puzzles', label: ui.navbar.puzzles, icon: '🧩', href: '/puzzles', moduleId: 'puzzles', testId: 'nav-tab-puzzles' },
             { id: 'drills', label: ui.navbar.drills, icon: '🎯', href: '/drills', moduleId: 'drills', testId: 'nav-tab-drills' },
-            { id: 'openings', label: ui.navbar.openings, icon: '📖', href: '/', moduleId: 'openings', testId: 'nav-tab-openings' },
+            { id: 'openings', label: ui.navbar.openings, icon: '📖', href: '/academy', moduleId: 'openings', testId: 'nav-tab-openings' },
             { id: 'progression', label: ui.navbar.progression, icon: '📊', href: '/progression', moduleId: 'stats', testId: 'nav-tab-progression' },
             { id: 'academy', label: ui.navbar.academy, icon: '🏛️', href: '/academy', testId: 'nav-tab-academy' },
         ],
@@ -101,9 +102,9 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                 </a>
             </div>
 
-            <div className="mx-auto flex h-13 max-w-7xl items-center justify-between gap-2 px-3 sm:px-6 overflow-hidden">
+            <div className="mx-auto flex h-13 max-w-7xl items-center justify-between gap-1.5 sm:gap-2 px-2 sm:px-6 overflow-hidden">
                 {/* Gauche : Burger mobile + Marque épurée 2026 */}
-                <div className="flex items-center gap-2.5 shrink-0">
+                <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                     <button
                         type="button"
                         onClick={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -173,6 +174,9 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
 
                 {/* Droite : Bouton PWA + Sélecteur de langue 6 marchés + Menu Compte Utilisateur */}
                 <div className="flex items-center gap-2">
+                    <div className="hidden md:block">
+                        <LanguageSelector />
+                    </div>
                     {!isInstalled && canInstall && (
                         <button
                             type="button"
@@ -203,6 +207,12 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     data-testid="navbar-mobile-drawer"
                     className="border-t border-white/10 bg-slate-950/98 px-4 py-3 shadow-2xl lg:hidden"
                 >
+                    <div className="mb-2.5 flex items-center justify-between gap-2 border-b border-white/10 pb-2.5 md:hidden">
+                        <span className="truncate text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                            🌐 {ui.navbar.languageSelectorAria}
+                        </span>
+                        <LanguageSelector />
+                    </div>
                     <div className="grid grid-cols-2 gap-1.5">
                         {navItems.map((item) => {
                             const isActive = activeTab === item.id;
@@ -213,14 +223,14 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                                     prefetch
                                     data-testid={`mobile-${item.testId}`}
                                     onClick={(e) => handleItemClick(item, e)}
-                                    className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition ${
+                                    className={`flex min-w-0 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition ${
                                         isActive
                                             ? 'border-[#f3c65f] bg-[#f3c65f]/15 text-white'
                                             : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'
                                     }`}
                                 >
-                                    <span aria-hidden="true" className="text-sm">{item.icon}</span>
-                                    <span>{item.label}</span>
+                                    <span aria-hidden="true" className="shrink-0 text-sm">{item.icon}</span>
+                                    <span className="truncate">{item.label}</span>
                                 </Link>
                             );
                         })}

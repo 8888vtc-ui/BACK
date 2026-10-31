@@ -5,9 +5,20 @@ import ProgressionDashboard from '../../components/stats/ProgressionDashboard';
 import { BackToLobbyButton } from '../../components/nav/PageTransition';
 
 export const metadata: Metadata = {
-    title: 'Progression & Performance Rating (PR)',
+    title: 'Calcul Performance Rating (PR) & Indice ERH Backgammon | Progression',
     description:
-        'Analyse du Performance Rating (PR), taux d’erreur Monte-Carlo 3-Ply et concepts stratégiques de backgammon à travailler.',
+        'Mesurez votre Performance Rating officiel (PR = Équité perdue × 500), votre Indice ERH (Exploitation du Risque Humain) et vos 9 compétences stratégiques de Backgammon.',
+    alternates: {
+        canonical: '/progression',
+        languages: {
+            'fr-FR': '/progression',
+            'en-US': '/progression?lang=en',
+            'es-ES': '/progression?lang=es',
+            'pt-BR': '/progression?lang=pt',
+            'de-DE': '/progression?lang=de',
+            'ar-SA': '/progression?lang=ar',
+        },
+    },
 };
 
 export default function ProgressionPage() {
@@ -16,28 +27,26 @@ export default function ProgressionPage() {
             <div className="w-full max-w-6xl flex flex-wrap items-center justify-between gap-2">
                 <BackToLobbyButton label="Retour au Lobby" />
 
-                <nav aria-label="Modules d'entraînement" className="flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/90 p-1">
-                    <Link
-                        href="/drills"
-                        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition"
-                    >
-                        <span>🎯</span>
-                        <span>Drills</span>
-                    </Link>
-                    <Link
-                        href="/puzzles"
-                        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition"
-                    >
-                        <span>🧩</span>
-                        <span>Puzzles</span>
-                    </Link>
-                    <span className="flex items-center gap-1.5 rounded-lg bg-amber-400 px-3 py-1.5 text-xs font-bold text-slate-950 shadow-sm">
-                        <span>📊</span>
-                        <span>Progression</span>
-                    </span>
-                </nav>
+                <Link
+                    href="/drills"
+                    className="flex items-center gap-2 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#c69214] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#1a0f08] shadow-md transition hover:brightness-105"
+                >
+                    <span>🎯</span>
+                    <span>Lancer le Quizz Adaptatif ERH (9 Compétences)</span>
+                </Link>
             </div>
             <ProgressionDashboard />
+            <section
+                aria-label="Guide de calcul du Performance Rating et de l'Indice ERH"
+                className="w-full max-w-6xl rounded-2xl border border-white/10 bg-slate-900/60 p-4 text-xs text-slate-300 space-y-1.5"
+            >
+                <h2 className="font-bold text-[#f3c65f] uppercase tracking-wider">
+                    📐 Comment sont calculés le Performance Rating (PR) et l&apos;Indice ERH ?
+                </h2>
+                <p>
+                    Le <strong>Performance Rating (PR)</strong> officiel mesure l&apos;équité moyenne perdue par décision non forcée multipliée par 500 : un Grand-Maître joue sous <strong>PR 3.0</strong>, un joueur de Club entre <strong>PR 5.0 et 10.0</strong>. Notre <strong>Indice ERH (Exploitation du Risque &amp; de l&apos;Erreur Humaine)</strong> complète ce score en mesurant votre capacité à adapter vos coups de pions et de videau au profil psychologique réel de votre adversaire.
+                </p>
+            </section>
         </main>
     );
 }

@@ -2,11 +2,19 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
     normalizeMoveNotation,
     validateDrillMove,
+    validateDrillNotationChoice,
     createDrillSession,
     advanceDrillSession,
 } from './blunderDrillEngine';
 import { BENCHMARK_BLUNDERS } from './benchmarkBlunders';
-import { clearBlunderBank } from './blunderBank';
+import { clearBlunderBank, getAllBlunders } from './blunderBank';
+import {
+    ADAPTIVE_QUIZ_CATEGORIES,
+    checkQuizPremiumAccess,
+    recordAdaptiveQuizOutcome,
+    resetAdaptivePlayerProfile,
+    selectNextAdaptiveQuiz,
+} from './adaptiveQuizEngine';
 
 describe('BlunderDrillEngine Module', () => {
     beforeEach(() => {
@@ -86,5 +94,54 @@ describe('BlunderDrillEngine Module', () => {
         expect(sessionFinal.sessionSolvedCount).toBe(2);
         expect(sessionFinal.sessionAttemptsCount).toBe(3);
         expect(sessionFinal.isCompleted).toBe(true);
+    });
+
+    it('fournit 36 positions couvrant les 9 catégories et les 4 paliers issues des 10 000 parties multi-ply', () => {
+        expect(BENCHMARK_BLUNDERS.length).toBe(36);
+        expect(ADAPTIVE_QUIZ_CATEGORIES.length).toBe(9);
+        for (const tier of [1, 2, 3, 4] as const) {
+            const tierSession = createDrillSession({ tier, maxBlunders: 20 });
+            expect(tierSession.blunders.length).toBeGreaterThanOrEqual(5);
+            for (const b of tierSession.blunders) {
+                expect(b.tier).toBe(tier);
+                expect(b.whyFailed).toBeTruthy();
+                expect(b.explanation).toBeTruthy();
+                expect(b.proverb).toBeTruthy();
+                expect(b.quizChoices?.length).toBe(4);
+                expect(b.commentaryVariants?.length).toBeGreaterThanOrEqual(3);
+            }
+        }
+    });
+
+    it('valide les choix en Mode Quiz Express QCM via validateDrillNotationChoice', () => {
+        const tier2Blunder = BENCHMARK_BLUNDERS.find((b) => b.tier === 2)!;
+        const okRes = validateDrillNotationChoice(tier2Blunder, tier2Blunder.optimalMove);
+        expect(okRes.isCorrect).toBe(true);
+        expect(okRes.verdict).toBe('optimal');
+
+        const trapRes = validateDrillNotationChoice(tier2Blunder, tier2Blunder.playedMove);
+        expect(trapRes.isCorrect).toBe(false);
+        expect(trapRes.canRetry).toBe(true);
+        expect(trapRes.feedbackMessage).toContain('piège initial');
+    });
+
+    it('garantit mathématiquement ZÉRO doublon sur tout le parcours adaptatif et fait évoluer le niveau par catégorie', () => {
+        resetAdaptivePlayerProfile();
+        const all = getAllBlunders();
+        const seenInRun = new Set<string>();
+
+        for (let i = 0; i < all.length; i++) {
+            const pick = selectNextAdaptiveQuiz(all);
+            expect(pick.quiz).not.toBeNull();
+            expect(seenInRun.has(pick.quiz!.id)).toBe(false);
+            seenInRun.add(pick.quiz!.id);
+            recordAdaptiveQuizOutcome(pick.quiz!, i % 2 === 0);
+        }
+        expect(seenInRun.size).toBe(all.length);
+
+        const access = checkQuizPremiumAccess(false);
+        expect(access.canPlayQuiz).toBe(true);
+        expect(access.isLaunchPromoFree).toBe(true);
+        expect(access.remainingFreeToday).toBe('unlimited');
     });
 });

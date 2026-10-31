@@ -58,12 +58,18 @@ export interface SymbolicAuditInput {
     equityLoss: number;
     bestMoveNotation: string;
     playedMoveNotation: string;
+    conceptId?: string;
     archetype?: string;
     gamePhase?: string;
     primeLength?: number;
+    bestPrimeLength?: number;
     opponentBarCount?: number;
     homeBoardPointsMade?: number;
+    bestHomeBoardPoints?: number;
     blotsLeft?: number;
+    bestBlotsLeft?: number;
+    userBlotPoints?: ReadonlyArray<number>;
+    bestBlotPoints?: ReadonlyArray<number>;
     dice?: [number, number] | null;
     luckDelta?: number;
     board?: ReadonlyArray<number>;
@@ -131,9 +137,10 @@ export function buildDeterministicSymbolicAudit(input: SymbolicAuditInput): Symb
         {
             archetype: input.archetype,
             gamePhase: input.gamePhase,
-            primeLength: input.primeLength,
+            conceptId: input.conceptId,
+            primeLength: input.bestPrimeLength ?? input.primeLength,
             opponentBarCount: input.opponentBarCount,
-            homeBoardPointsMade: input.homeBoardPointsMade,
+            homeBoardPointsMade: input.bestHomeBoardPoints ?? input.homeBoardPointsMade,
             playerPipCount: playerPip,
             opponentPipCount: opponentPip,
         },
@@ -162,9 +169,10 @@ export function buildDeterministicPedagogicalExplanation(
 
     const proverb = selectMichyOrMagrielProverb({
         theme: symbolicAudit.dominant_theme,
+        conceptId: input.conceptId,
         directShotsBefore: input.directShotsBefore,
         directShotsAfter: symbolicAudit.direct_shots_conceded,
-        primeLength: input.primeLength,
+        primeLength: input.bestPrimeLength ?? input.primeLength,
         blotsLeft: input.blotsLeft,
         bestMoveNotation: input.bestMoveNotation,
         playerPipCount: symbolicAudit.player_pip,
@@ -192,6 +200,61 @@ export function buildDeterministicPedagogicalExplanation(
     const headline = truncateToSwellerHeadline(rawHeadline, 15);
     const shotsBefore = input.directShotsBefore ?? 0;
     const shotsAfter = symbolicAudit.direct_shots_conceded;
+    const shotsDiffer = shotsAfter !== shotsBefore;
+    const uBlots = input.blotsLeft ?? 1;
+    const bBlots = input.bestBlotsLeft ?? uBlots;
+    const uInner = input.homeBoardPointsMade ?? 2;
+    const bInner = input.bestHomeBoardPoints ?? uInner;
+    const uPrime = input.primeLength ?? 1;
+    const bPrime = input.bestPrimeLength ?? uPrime;
+    const blotPtsFr =
+        input.userBlotPoints && input.userBlotPoints.length > 0
+            ? ` (flèche${input.userBlotPoints.length > 1 ? 's' : ''} ${input.userBlotPoints.slice(0, 4).join(', ')})`
+            : '';
+    const blotPtsEn =
+        input.userBlotPoints && input.userBlotPoints.length > 0
+            ? ` (point${input.userBlotPoints.length > 1 ? 's' : ''} ${input.userBlotPoints.slice(0, 4).join(', ')})`
+            : '';
+
+    const structuralProblemEn = isOptimal
+        ? `Your move ${input.playedMoveNotation} leaves no structural weakness (${shotsAfter}/36 shots).`
+        : shotsAfter > shotsBefore
+          ? `Playing ${input.playedMoveNotation} concedes ${shotsAfter}/36 shots${blotPtsEn} (vs only ${shotsBefore}/36 after ${input.bestMoveNotation}) and costs ${loss.toFixed(3)} equity.`
+          : bInner > uInner
+            ? `Playing ${input.playedMoveNotation}${blotPtsEn} misses closing a key inner-board gate (${uInner} vs ${bInner} points made with ${input.bestMoveNotation}) and costs ${loss.toFixed(3)} equity.`
+            : bPrime > uPrime
+              ? `Playing ${input.playedMoveNotation}${blotPtsEn} leaves your blockade at ${uPrime} point(s) instead of extending a ${bPrime}-prime with ${input.bestMoveNotation} (-${loss.toFixed(3)} Eq).`
+              : uBlots > bBlots
+                ? `Playing ${input.playedMoveNotation} scatters ${uBlots} loose blots${blotPtsEn} (vs ${bBlots} with ${input.bestMoveNotation}) and costs ${loss.toFixed(3)} equity.`
+                : `Playing ${input.playedMoveNotation}${blotPtsEn} weakens builder coordination for the next 36 rolls compared to ${input.bestMoveNotation} (-${loss.toFixed(3)} Eq).`;
+
+    const structuralProblemFr = isOptimal
+        ? `Votre coup ${input.playedMoveNotation} ne laisse aucune faille (${shotsAfter}/36 tirs).`
+        : shotsAfter > shotsBefore
+          ? `Jouer ${input.playedMoveNotation} concède ${shotsAfter}/36 tirs${blotPtsFr} (contre seulement ${shotsBefore}/36 avec ${input.bestMoveNotation}) et coûte ${loss.toFixed(3)} Eq.`
+          : bInner > uInner
+            ? `Jouer ${input.playedMoveNotation}${blotPtsFr} manque la fermeture d'une porte intérieure clé (${uInner} porte(s) contre ${bInner} avec ${input.bestMoveNotation}) et coûte ${loss.toFixed(3)} Eq.`
+            : bPrime > uPrime
+              ? `Jouer ${input.playedMoveNotation}${blotPtsFr} limite votre barrage à ${uPrime} porte(s) au lieu d'étendre une prime de ${bPrime} portes avec ${input.bestMoveNotation} (-${loss.toFixed(3)} Eq).`
+              : uBlots > bBlots
+                ? `Jouer ${input.playedMoveNotation} disperse ${uBlots} pions isolés${blotPtsFr} (contre ${bBlots} avec ${input.bestMoveNotation}) et coûte ${loss.toFixed(3)} Eq.`
+                : `Jouer ${input.playedMoveNotation}${blotPtsFr} dégrade la synergie de vos bâtisseurs sur les 36 prochains lancers par rapport à ${input.bestMoveNotation} (-${loss.toFixed(3)} Eq).`;
+
+    const step2HintEn = shotsDiffer
+        ? `Step 2 (Target): Compare ${shotsAfter}/36 shots conceded by ${input.playedMoveNotation}${blotPtsEn} with ${shotsBefore}/36 on the optimal line.`
+        : bInner > uInner
+          ? `Step 2 (Target): ${input.bestMoveNotation} closes ${bInner} home-board gates vs ${uInner} after ${input.playedMoveNotation}${blotPtsEn}.`
+          : bPrime > uPrime
+            ? `Step 2 (Target): ${input.bestMoveNotation} builds a ${bPrime}-point prime blockade vs ${uPrime} after ${input.playedMoveNotation}.`
+            : `Step 2 (Target): Compare the ${uBlots} blot(s)${blotPtsEn} left by ${input.playedMoveNotation} against the cleaner structure of ${input.bestMoveNotation} (${bBlots} blot(s)).`;
+
+    const step2HintFr = shotsDiffer
+        ? `Indice 2 (Zone) : Comparez les ${shotsAfter}/36 tirs concédés par ${input.playedMoveNotation}${blotPtsFr} aux ${shotsBefore}/36 de la ligne optimale.`
+        : bInner > uInner
+          ? `Indice 2 (Zone) : ${input.bestMoveNotation} verrouille ${bInner} portes intérieures contre ${uInner} après ${input.playedMoveNotation}${blotPtsFr}.`
+          : bPrime > uPrime
+            ? `Indice 2 (Zone) : ${input.bestMoveNotation} soude un barrage de ${bPrime} portes consécutives contre ${uPrime} après ${input.playedMoveNotation}.`
+            : `Indice 2 (Zone) : Comparez les ${uBlots} pion(s) isolé(s)${blotPtsFr} laissés par ${input.playedMoveNotation} à la structure compacte de ${input.bestMoveNotation} (${bBlots} blot(s)).`;
 
     const ideaProblemSolution: DecodeChessTriptych = isEn
         ? {
@@ -203,9 +266,7 @@ export function buildDeterministicPedagogicalExplanation(
                         : symbolicAudit.dominant_theme === 'HOLDING'
                           ? 'The AI waits on its anchor for a direct shot while you bring checkers home.'
                           : 'The AI aims to maximize racing crossovers and punish any contact exposure.',
-              structural_problem: isOptimal
-                  ? `Your move ${input.playedMoveNotation} leaves no structural weakness (${shotsAfter}/36 shots).`
-                  : `Playing ${input.playedMoveNotation} concedes ${shotsAfter}/36 shots (vs ${shotsBefore}/36) and costs ${loss.toFixed(3)} equity.`,
+              structural_problem: structuralProblemEn,
               canonical_solution: `Canonical play ${input.bestMoveNotation} (${proverb.name}) ${proverb.tacticalRuleEn}`,
           }
         : {
@@ -217,21 +278,19 @@ export function buildDeterministicPedagogicalExplanation(
                         : symbolicAudit.dominant_theme === 'HOLDING'
                           ? "L'IA guette depuis son ancre le moindre tir direct pendant votre retour."
                           : "L'IA cherche à accélérer la course et punir tout contact résiduel.",
-              structural_problem: isOptimal
-                  ? `Votre coup ${input.playedMoveNotation} ne laisse aucune faille (${shotsAfter}/36 tirs).`
-                  : `Jouer ${input.playedMoveNotation} concède ${shotsAfter}/36 tirs (contre ${shotsBefore}/36) et coûte ${loss.toFixed(3)} Eq.`,
+              structural_problem: structuralProblemFr,
               canonical_solution: `Le coup canonique ${input.bestMoveNotation} (${proverb.name}) ${proverb.tacticalRuleFr}`,
           };
 
     const socraticHints: [string, string, string] = isEn
         ? [
               `Step 1 (Plan): In this ${symbolicAudit.dominant_theme} position (${symbolicAudit.player_pip} vs ${symbolicAudit.opponent_pip} pips), ${proverb.socraticQuestionEn}`,
-              `Step 2 (Target): Compare ${shotsAfter}/36 shots conceded by ${input.playedMoveNotation} with ${shotsBefore}/36 on the optimal line.`,
+              step2HintEn,
               `Step 3 (Solution): Play ${input.bestMoveNotation} — ${proverb.proverbEn}`,
           ]
         : [
               `Indice 1 (Plan) : Dans ce schéma ${symbolicAudit.dominant_theme} (${symbolicAudit.player_pip} vs ${symbolicAudit.opponent_pip} pips), ${proverb.socraticQuestionFr}`,
-              `Indice 2 (Zone) : Comparez les ${shotsAfter}/36 tirs concédés par ${input.playedMoveNotation} aux ${shotsBefore}/36 de la ligne optimale.`,
+              step2HintFr,
               `Indice 3 (Solution) : Jouez ${input.bestMoveNotation} — ${proverb.proverbFr}`,
           ];
 

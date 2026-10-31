@@ -9,7 +9,7 @@
  * Strictement < 120 lignes, 0 any.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { AIDifficulty } from '../../engine/aiHeuristics';
 import { getBotPersona, readStoredExperienceMode } from '../../features/personas/botPersonas';
 import { useTranslation } from '../../i18n';
@@ -17,6 +17,7 @@ import {
     detectClassicalBlunderPattern,
     resolveMuskBotOrchestration,
 } from '../../features/personas/botEcosystemEngine';
+import { BotPortraitMedallion } from '../common/MonteCarloIcons';
 
 export interface BoardLivePersonaBubbleProps {
     readonly difficulty?: AIDifficulty;
@@ -44,6 +45,7 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
     onOpenCoach,
 }) => {
     const [dismissedKey, setDismissedKey] = useState<string | null>(null);
+    const [isMuted, setIsMuted] = useState<boolean>(false);
     const { locale } = useTranslation();
     const persona = getBotPersona(difficulty, locale);
     const mode = readStoredExperienceMode();
@@ -92,19 +94,25 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
         return null;
     }, [isPlayerThinking, opponentDice, equityLoss, verdict, boardBefore, boardAfter, difficulty, mode, turnsCount, persona, locale]);
 
-    if (!bubbleState || dismissedKey === bubbleState.key) return null;
+    useEffect(() => {
+        if (!bubbleState || turnsCount === 0) return;
+        const timer = setTimeout(() => {
+            setDismissedKey(bubbleState.key);
+        }, 4500);
+        return () => clearTimeout(timer);
+    }, [bubbleState, turnsCount]);
+
+    if (!bubbleState || dismissedKey === bubbleState.key || isMuted) return null;
 
     return (
         <div
             data-testid="board-bot-speech-bubble"
-            className="sr-only"
+            className="fixed top-[4.5rem] sm:top-14 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 sm:gap-2.5 rounded-2xl border border-[#d4af37]/45 bg-[#120e09]/95 px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-[#f7f3e8] shadow-[0_10px_28px_rgba(0,0,0,0.85)] backdrop-blur-md max-w-[94vw] sm:max-w-md animate-in fade-in duration-200"
         >
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-base">
-                {persona.avatar}
-            </span>
+            <BotPortraitMedallion character={difficulty} size="sm" isActive />
             <div className="min-w-0 flex-1 leading-snug">
                 <span className="font-bold text-[#f3c65f] mr-1.5">{persona.shortName} :</span>
-                <span className="text-[11px] text-slate-200 line-clamp-2">{bubbleState.text}</span>
+                <span className="text-[11px] text-amber-100/95 line-clamp-2 italic">« {bubbleState.text} »</span>
             </div>
             {bubbleState.showReplay && onReplayMove && (
                 <button
@@ -126,6 +134,16 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
                     ⚡ Karma Swap !
                 </button>
             )}
+            <button
+                type="button"
+                data-testid="board-bot-mute-btn"
+                title="Mode Zen : couper les bulles du Bot"
+                aria-label="Couper les bulles du Bot"
+                onClick={() => setIsMuted(true)}
+                className="shrink-0 text-[11px] text-stone-400 hover:text-amber-300 px-1"
+            >
+                🔇
+            </button>
             <button
                 type="button"
                 aria-label="Fermer la bulle du Bot"

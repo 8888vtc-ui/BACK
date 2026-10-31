@@ -19,8 +19,12 @@ import {
     ensureUserProfileSynced,
     signOut as supabaseSignOut,
     onAuthStateChange,
+    readPlayerPassport,
+    clearPlayerPassport,
+    type PlayerPassport,
 } from '../../lib/supabase/auth';
 import type { Profile } from '../../lib/supabase/types';
+import { useTranslation } from '../../i18n';
 
 export type AuthStatus = 'loading' | 'offline' | 'anonymous' | 'authenticated';
 
@@ -59,9 +63,12 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
     const [internalStatus, setInternalStatus] = useState<AuthStatus>('loading');
     const [internalUser, setInternalUser] = useState<User | null>(null);
     const [internalProfile, setInternalProfile] = useState<Profile | null>(null);
+    const [localPassport, setLocalPassport] = useState<PlayerPassport | null>(() => readPlayerPassport());
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
 
     useEffect(() => {
         if (!isControlled) {
@@ -138,6 +145,8 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
 
     const handleLogout = async () => {
         setIsDropdownOpen(false);
+        clearPlayerPassport();
+        setLocalPassport(null);
         if (onSignOut) {
             await onSignOut();
         } else {
@@ -193,17 +202,20 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
         (typeof meta?.full_name === 'string' ? meta.full_name : null) ||
         (typeof meta?.name === 'string' ? meta.name : null) ||
         user?.email?.split('@')[0] ||
+        localPassport?.pseudo ||
         null;
+    const displayEmail = user?.email || localPassport?.email || null;
     const avatarUrl =
         profile?.avatar_url ||
         (typeof meta?.avatar_url === 'string' ? meta.avatar_url : null) ||
         (typeof meta?.picture === 'string' ? meta.picture : null);
     const elo = profile?.rating ?? 1500;
     const rankTitle = getCompetitiveRankTitle(elo);
+    const isRegisteredPlayer = Boolean(user || localPassport);
 
     return (
         <div className="relative flex items-center gap-2" ref={menuRef}>
-            {user ? (
+            {isRegisteredPlayer ? (
                 <>
                     <button
                         type="button"
@@ -222,7 +234,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                             </div>
                         )}
                         <span className="hidden sm:inline text-xs font-semibold text-slate-100 group-hover:text-white">
-                            {displayName ?? 'Joueur'}
+                            {displayName ?? (isEn ? 'Player' : 'Joueur')}
                         </span>
                         <span data-testid="user-elo-badge" className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[11px] font-bold text-amber-300">
                             {elo} ELO
@@ -234,12 +246,12 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                         <div role="menu" data-testid="user-dropdown-menu" className="absolute right-0 top-full mt-2 z-50 w-60 rounded-2xl border border-white/10 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl text-xs">
                             <div className="border-b border-white/10 px-3 py-2.5">
                                 <div className="flex items-center justify-between">
-                                    <span className="font-bold text-slate-100 truncate">{displayName ?? 'Joueur'}</span>
+                                    <span className="font-bold text-slate-100 truncate">{displayName ?? (isEn ? 'Player' : 'Joueur')}</span>
                                     <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-300">{rankTitle}</span>
                                 </div>
-                                <p className="mt-0.5 truncate text-[11px] text-slate-400">{user.email}</p>
+                                {displayEmail && <p className="mt-0.5 truncate text-[11px] text-slate-400">{displayEmail}</p>}
                                 <div className="mt-2 flex items-center justify-between rounded-lg bg-white/5 px-2.5 py-1.5 text-xs">
-                                    <span className="text-slate-400">Classement ELO</span>
+                                    <span className="text-slate-400">{isEn ? 'ELO Rating' : 'Classement ELO'}</span>
                                     <span className="font-mono font-bold text-amber-300">{elo} GR</span>
                                 </div>
                             </div>
@@ -247,16 +259,16 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                             <div className="py-1 border-b border-white/10 flex flex-col gap-0.5">
                                 <Link href="/progression" prefetch onClick={(e) => handleRouteAction(e, '/progression', 'stats')} data-testid="user-menu-progression-link" className="flex w-full items-center gap-2 rounded-xl px-3 py-2 font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition">
                                     <span aria-hidden="true">📊</span>
-                                    <span>Profil &amp; Statistiques (PR)</span>
+                                    <span>{isEn ? 'Profile & PR Stats' : 'Profil & Statistiques (PR)'}</span>
                                 </Link>
                                 <Link href="/pricing" prefetch onClick={(e) => handleRouteAction(e, '/pricing')} data-testid="user-menu-pricing-link" className="flex w-full items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 font-bold text-amber-300 hover:border-white/25 hover:text-amber-200 transition">
                                     <span aria-hidden="true">⚡</span>
-                                    <span>Coach Illimité VIP</span>
+                                    <span>{isEn ? 'Unlimited VIP Coach' : 'Coach Illimité VIP'}</span>
                                 </Link>
                                 {onOpenSettings && (
                                     <button type="button" onClick={() => { setIsDropdownOpen(false); onOpenSettings(); }} data-testid="user-menu-settings-btn" className="flex w-full items-center gap-2 rounded-xl px-3 py-2 font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition">
                                         <span aria-hidden="true">⚙️</span>
-                                        <span>Paramètres de Table</span>
+                                        <span>{isEn ? 'Table Settings' : 'Paramètres de Table'}</span>
                                     </button>
                                 )}
                             </div>
@@ -264,7 +276,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                             <div className="pt-1">
                                 <button type="button" onClick={handleLogout} data-testid="auth-logout-btn" className="flex w-full items-center gap-2 rounded-xl px-3 py-2 font-semibold text-rose-400 hover:bg-rose-500/15 hover:text-rose-300 transition">
                                     <span aria-hidden="true">🚪</span>
-                                    <span>Déconnexion</span>
+                                    <span>{isEn ? 'Sign Out' : 'Déconnexion'}</span>
                                 </button>
                             </div>
                         </div>
@@ -279,9 +291,17 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                         className="group flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-white/25 hover:bg-slate-800 hover:text-white active:scale-[0.98]"
                     >
                         <span className="text-xs text-amber-300">👤</span>
-                        <span>{isOffline ? 'Membre Local' : 'Connexion'}</span>
+                        <span>{isOffline ? (isEn ? 'Local Member' : 'Membre Local') : (isEn ? 'Sign In' : 'Connexion')}</span>
                     </button>
-                    {!onOpenAuthModal && <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
+                    {!onOpenAuthModal && (
+                        <AuthModal
+                            isOpen={isAuthModalOpen}
+                            onClose={() => setIsAuthModalOpen(false)}
+                            onSuccess={() => {
+                                setLocalPassport(readPlayerPassport());
+                            }}
+                        />
+                    )}
                 </>
             )}
         </div>

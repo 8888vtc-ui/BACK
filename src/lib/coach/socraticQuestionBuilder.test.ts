@@ -190,15 +190,15 @@ describe('Chantier 5 — Coach Socratique Interactif (Méthode Michy / Magriel /
         });
     });
 
-    describe('3. Prompts gemini-3.8-flash & Fallback déterministe Michy / Magriel / Woolsey', () => {
+    describe('3. Prompts Analyse Profonde & Fallback déterministe Michy / Magriel / Woolsey', () => {
         it('structure le prompt système et le fallback local autour des critères de Michy, Magriel et Woolsey', () => {
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('gemini-3.8-flash');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Analyse Profonde');
             expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Michy / Magriel / Woolsey');
             expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Connectivity');
             expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Timing / Race');
             expect(BACKGAMMON_COACH_SYSTEM_PROMPT).toContain('Duplication / Purity');
 
-            expect(BACKGAMMON_COACH_SYSTEM_PROMPT_EN).toContain('gemini-3.8-flash');
+            expect(BACKGAMMON_COACH_SYSTEM_PROMPT_EN).toContain('Deep Analysis');
             expect(BACKGAMMON_COACH_SYSTEM_PROMPT_EN).toContain('Michy / Magriel / Woolsey');
 
             const fallback = generateRuleBasedExplanation({

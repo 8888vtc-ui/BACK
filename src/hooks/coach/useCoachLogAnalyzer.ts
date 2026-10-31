@@ -5,6 +5,10 @@ import { soundEngine } from '../../lib/sound/soundEngine';
 import { analyzeHumanMoveFromLogWithBgsage, type CoachVerdict } from '../../features/coach/logAnalyzer';
 import { evaluateBrilliantMoveCriteria } from '../../features/coach/tacticalExplainer';
 import { recordBlunder } from '../../features/drills/blunderBank';
+import {
+    classifyLivePositionCategory,
+    recordLiveMatchDecisionOnAdaptiveProfile,
+} from '../../features/drills/adaptiveQuizEngine';
 import { shouldNotify, type CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
 import {
     buildCoachStateFromLogResult,
@@ -106,8 +110,23 @@ export function useCoachLogAnalyzer({
                     loggedMoves.length > 0 ? loggedMoves : movesFromBoardDiff(lastEntry.boardBefore, lastEntry.boardAfter, 'X');
                 const playedNotation = formatCoachMoveSequence(playedMoves, 'X', lastEntry.boardBefore);
 
+                const { coachState, highlight } = buildCoachStateFromLogResult({
+                    lastEntry,
+                    result,
+                    playedMoves,
+                    playedNotation,
+                    gameState,
+                });
+                if (isStale()) return;
+
                 if (isUnforced) {
                     recordDecisionStats(verdict, equityLoss, playedNotation, result.optimalNotation);
+                    const liveOutcome = recordLiveMatchDecisionOnAdaptiveProfile({
+                        board: lastEntry.boardBefore,
+                        turnIndex: lastEntry.turnIndex,
+                        equityLoss,
+                        isCube: false,
+                    });
                     const secondBest = candidateMoves[1];
                     const uniquenessDelta = secondBest !== undefined ? Math.abs(secondBest.equityLoss) : 0;
                     const isBrilliant = evaluateBrilliantMoveCriteria({
@@ -118,7 +137,16 @@ export function useCoachLogAnalyzer({
                     setBrilliantMove(isBrilliant);
                     if (verdict === 'blunder' || Math.abs(equityLoss) >= 0.06) {
                         try {
+                            const catMeta = classifyLivePositionCategory(lastEntry.boardBefore, lastEntry.turnIndex, false);
+                            const choiceSet = new Set<string>();
+                            if (result.optimalNotation) choiceSet.add(result.optimalNotation);
+                            if (playedNotation) choiceSet.add(playedNotation);
+                            for (const cand of candidateMoves) {
+                                if (cand.notation) choiceSet.add(cand.notation);
+                                if (choiceSet.size >= 4) break;
+                            }
                             recordBlunder({
+                                id: `user_blunder_${lastEntry.turnIndex}_${Date.now()}`,
                                 board: [...lastEntry.boardBefore],
                                 dice: [lastEntry.dice[0], lastEntry.dice[1]],
                                 player: 'X',
@@ -129,23 +157,20 @@ export function useCoachLogAnalyzer({
                                     .map((m) => m.notation),
                                 equityLoss: Math.abs(equityLoss),
                                 verdict: Math.abs(equityLoss) >= 0.20 ? 'howler' : Math.abs(equityLoss) >= 0.08 ? 'blunder' : 'doubtful',
-                                conceptId: 'positional',
-                                conceptName: 'Jeu positionnel',
-                                explanation: `Le coup optimal était ${result.optimalNotation} (perte de ${Math.abs(equityLoss).toFixed(3)} EMG sur ${playedNotation}).`,
+                                tier: liveOutcome.categoryState.level,
+                                conceptId: catMeta.id,
+                                conceptName: catMeta.fullName,
+                                whyFailed: coachState.whyFailed || `Votre coup ${playedNotation} cède ${Math.abs(equityLoss).toFixed(3)} EMG.`,
+                                explanation:
+                                    coachState.whyOptimal ||
+                                    coachState.explanation ||
+                                    `Le coup optimal était ${result.optimalNotation} (perte de ${Math.abs(equityLoss).toFixed(3)} EMG sur ${playedNotation}).`,
+                                hint: `Catégorie ciblée : ${catMeta.fullName} — cherchez comment ${result.optimalNotation} protège votre structure.`,
+                                quizChoices: Array.from(choiceSet).slice(0, 4),
                             });
                         } catch { /* ignore storage errors */ }
                     }
                 }
-                if (isStale()) return;
-
-                const { coachState, highlight } = buildCoachStateFromLogResult({
-                    lastEntry,
-                    result,
-                    playedMoves,
-                    playedNotation,
-                    gameState,
-                });
-                if (isStale()) return;
 
                 const nextFeedback: LastMoveFeedback = {
                     verdict,

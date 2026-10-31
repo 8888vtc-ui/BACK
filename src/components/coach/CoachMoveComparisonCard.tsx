@@ -5,9 +5,15 @@
  * Intègre le bouton viral `ShareBlunderButton` ("Partager ce Quiz (HD)" 1200x630).
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { CoachDisplayVerdict } from './coachPanelHelpers';
 import ShareBlunderButton from '../share/ShareBlunderButton';
+import {
+    getChameleonCardLocaleLabels,
+    readChameleonUxLayer,
+    writeChameleonUxLayer,
+    type ChameleonUxLayer,
+} from '../../features/coach/deepAnalysisQuota';
 
 const DEFAULT_SHARE_BOARD: ReadonlyArray<number> = Object.freeze([
     0, -2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, -5, 5, 0, 0, 0, -3, 0, -5, 0, 0, 0, 0, 2, 0,
@@ -97,14 +103,21 @@ export function CoachMoveComparisonCard({
     verdict, equityLoss, playedMove, optimalMove, whyFailed, whyOptimal,
     summary, onReplayMove, onClose, locale = 'fr', board, dice, keyConcept,
 }: CoachMoveComparisonCardProps) {
+    const [chameleonLayer, setChameleonLayer] = useState<ChameleonUxLayer>(() => readChameleonUxLayer());
     if (!verdict) return null;
 
     const isEn = locale === 'en';
+    const chameleonLabels = getChameleonCardLocaleLabels(locale);
     const tier = classifyDecisionTier(equityLoss);
     const style = getTierStyle(tier, isEn);
     const isError = tier === 'inaccuracy' || tier === 'blunder';
+    const isBrilliant =
+        tier === 'optimal' &&
+        Boolean(playedMove && optimalMove && playedMove.trim() === optimalMove.trim()) &&
+        Math.abs(equityLoss ?? 0) === 0;
     const formattedLoss = equityLoss !== null ? Math.abs(equityLoss).toFixed(3) : null;
     const prImpact = equityLoss !== null ? (Math.abs(equityLoss) * 500).toFixed(1) : null;
+    const mwcDropPct = equityLoss !== null ? Math.max(1, Math.round(Math.abs(equityLoss) * 50)) : null;
 
     // Affiche la perte d'équité exacte dès qu'elle atteint 0.001 (calibrage PR 1–5).
     const hasMicroLoss = equityLoss !== null && Math.abs(equityLoss) >= 0.001;
@@ -113,11 +126,67 @@ export function CoachMoveComparisonCard({
             ? style.label
             : `${style.label} (-${formattedLoss})`;
 
+    const handleSelectLayer = (next: ChameleonUxLayer) => {
+        setChameleonLayer(next);
+        writeChameleonUxLayer(next);
+    };
+
     return (
         <div
             className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-3 space-y-2.5 shadow-lg"
             data-testid="coach-move-comparison-card"
         >
+            {/* 0. Sélecteur Caméléon 3 Couches (🌱 Débutant | ⚔️ Club | 👑 Pro) + Badge Coup Brillant !! */}
+            <div className="flex flex-wrap items-center justify-between gap-1.5">
+                <div
+                    role="group"
+                    aria-label="Niveau de langage du Coach"
+                    data-testid="coach-chameleon-layer-bar"
+                    className="inline-flex rounded-xl border border-white/10 bg-slate-900/90 p-0.5"
+                >
+                    {(
+                        [
+                            { id: 'L0' as const, label: chameleonLabels.beginner },
+                            { id: 'L1' as const, label: chameleonLabels.club },
+                            { id: 'L2' as const, label: chameleonLabels.pro },
+                        ]
+                    ).map((item) => (
+                        <button
+                            key={item.id}
+                            type="button"
+                            data-testid={`coach-chameleon-btn-${item.id}`}
+                            aria-pressed={chameleonLayer === item.id}
+                            onClick={() => handleSelectLayer(item.id)}
+                            className={`rounded-lg px-2 py-0.5 text-[11px] font-extrabold transition ${
+                                chameleonLayer === item.id
+                                    ? 'bg-[#d4af37] text-slate-950 shadow'
+                                    : 'text-slate-300 hover:text-white'
+                            }`}
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
+
+                {isBrilliant && (
+                    <span
+                        data-testid="coach-brilliant-move-badge"
+                        className="inline-flex items-center gap-1 rounded-full border border-cyan-400/60 bg-cyan-950/80 px-2.5 py-0.5 text-[11px] font-black text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.35)]"
+                    >
+                        <span>!!</span>
+                        <span>{chameleonLabels.brilliantBadge}</span>
+                    </span>
+                )}
+                {tier === 'blunder' && (
+                    <span
+                        data-testid="coach-blunder-quiz-saved-badge"
+                        className="inline-flex items-center gap-1 rounded-full border border-emerald-400/50 bg-emerald-950/80 px-2.5 py-0.5 text-[11px] font-bold text-emerald-200"
+                    >
+                        <span>📌 {chameleonLabels.savedQuizBadge}</span>
+                    </span>
+                )}
+            </div>
+
             {/* 1. Bandeau de verdict immédiat */}
             <div
                 data-testid="coach-verdict-banner"
@@ -135,6 +204,14 @@ export function CoachMoveComparisonCard({
                     </span>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
+                    {chameleonLayer === 'L0' && isError && mwcDropPct && (
+                        <span
+                            data-testid="coach-chameleon-human-loss"
+                            className="rounded bg-amber-900/70 border border-amber-400/50 px-1.5 py-0.5 text-[11px] font-bold text-amber-100"
+                        >
+                            {chameleonLabels.formatWinChanceLoss(mwcDropPct)}
+                        </span>
+                    )}
                     {tier === 'blunder' && prImpact && (
                         <span
                             data-testid="coach-blunder-pr-impact"

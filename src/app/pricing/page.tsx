@@ -7,7 +7,18 @@ import ManageSubscriptionBanner from '../../components/subscription/ManageSubscr
 export const metadata: Metadata = {
     title: 'Coach IA Illimité & Abonnement Prestige | Backgammon Tour',
     description:
-        'Modèle éthique Zero Ads, Zero Coins, Pure Skill. Le jeu en ligne est 100 % gratuit. Débloquez les analyses illimites du Coach Grand-Maître Monte-Carlo.',
+        'Modèle éthique Zero Ads, Zero Coins, Pure Skill. Le jeu en ligne est 100 % gratuit. Débloquez les analyses illimitées du Coach Grand-Maître Monte-Carlo.',
+    alternates: {
+        canonical: '/pricing',
+        languages: {
+            'fr-FR': '/pricing',
+            'en-US': '/pricing?lang=en',
+            'es-ES': '/pricing?lang=es',
+            'pt-BR': '/pricing?lang=pt',
+            'de-DE': '/pricing?lang=de',
+            'ar-SA': '/pricing?lang=ar',
+        },
+    },
 };
 
 export default function PricingPage() {
@@ -31,16 +42,10 @@ export default function PricingPage() {
 
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                     <Link
-                        href="/puzzles"
-                        className="rounded-xl border border-white/10 bg-[#140b06]/85 px-3.5 py-2 font-bold text-[#e8dcc6] transition hover:border-white/25 hover:text-white"
-                    >
-                        🧩 Puzzles Tactiques
-                    </Link>
-                    <Link
                         href="/drills"
-                        className="rounded-xl border border-white/10 bg-[#140b06]/85 px-3.5 py-2 font-bold text-[#e8dcc6] transition hover:border-white/25 hover:text-white"
+                        className="rounded-xl border border-[#f3c65f]/40 bg-[#140b06]/85 px-3.5 py-2 font-bold text-[#f3c65f] transition hover:border-[#f3c65f] hover:text-white"
                     >
-                        🎯 Drills de Gaffes
+                        🎯 Quizz Adaptatif (9 Compétences)
                     </Link>
                     <Link
                         href="/academy"
@@ -49,6 +54,12 @@ export default function PricingPage() {
                         🏛️ Gammon Academy
                     </Link>
                 </div>
+            </div>
+
+            {/* Bannière Offre de Lancement : Tout Gratuit pour attirer le trafic */}
+            <div className="mb-5 w-full max-w-4xl rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3 text-center text-xs sm:text-sm text-emerald-200 shadow-lg">
+                <strong className="text-emerald-300">🎁 OFFRE DE LANCEMENT ACTIVE : </strong>
+                Le Parcours Quizz Adaptatif (10 000 parties Multi-Ply) et le Coach Pédagogique 3.8 Flash sont actuellement <strong>100 % offerts en accès illimité</strong> pour tous les joueurs !
             </div>
 
             {/* Vitrine centrale d'abonnement Prestige */}

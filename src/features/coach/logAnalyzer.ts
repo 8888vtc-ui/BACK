@@ -230,14 +230,24 @@ function notationsAreEquivalent(a: string, b: string, player: Player = 'X'): boo
 }
 
 function toBgsageMoveMetrics(m: BgsageMove): BgsageMoveMetrics {
+    const winProb = m.probabilities?.win ?? 0.5;
+    const winGammonProb = m.probabilities?.winGammon ?? 0;
+    const winBackgammonProb = m.probabilities?.winBackgammon ?? 0;
+    const loseProb = m.probabilities?.loseWin ?? Math.max(0, 1 - winProb);
+    const loseGammonProb = m.probabilities?.loseGammon ?? 0;
+    const loseBackgammonProb = m.probabilities?.loseBackgammon ?? 0;
     return {
         equity: m.equity,
         cubelessEquity: m.cubelessEquity ?? m.equity,
-        winProb: m.probabilities?.win ?? 0.5,
-        winGammonProb: m.probabilities?.winGammon ?? 0,
-        winBackgammonProb: m.probabilities?.winBackgammon ?? 0,
-        loseGammonProb: m.probabilities?.loseGammon ?? 0,
-        loseBackgammonProb: m.probabilities?.loseBackgammon ?? 0,
+        equityLoss: m.equityLoss,
+        winProb,
+        winSingleProb: m.probabilities?.winSingle ?? Math.max(0, winProb - winGammonProb),
+        winGammonProb,
+        winBackgammonProb,
+        loseProb,
+        loseSingleProb: m.probabilities?.loseSingle ?? Math.max(0, loseProb - loseGammonProb),
+        loseGammonProb,
+        loseBackgammonProb,
         playerGamePlan: m.playerGamePlan ?? 'contact',
         opponentGamePlan: m.opponentGamePlan ?? 'contact',
         evalLevel: m.evalLevel ?? undefined,
@@ -866,13 +876,34 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
         });
     }
 
+    const topCandidates = bgsageResult.chequerPlay.slice(0, 5).map((m, idx) => {
+        const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
+        const isMatch = m === matched;
+        return {
+            rank: m.rank ?? idx + 1,
+            notation: isMatch ? playedNotation : resolvedCand.notation,
+            equity: m.equity,
+            cubelessEquity: m.cubelessEquity ?? m.equity,
+            equityLoss: m.equityLoss,
+            winProb: m.probabilities?.win ?? 0.5,
+            winGammonProb: m.probabilities?.winGammon ?? 0,
+            winBackgammonProb: m.probabilities?.winBackgammon ?? 0,
+            loseGammonProb: m.probabilities?.loseGammon ?? 0,
+            loseBackgammonProb: m.probabilities?.loseBackgammon ?? 0,
+            playerGamePlan: m.playerGamePlan ?? undefined,
+        };
+    });
+
     const bgsageInsights: BgsageStrategicInsights = {
         isRace: Boolean(bgsageResult.isRace),
         playerGamePlan: bgsageResult.gamePlans?.player ?? bestMove.playerGamePlan ?? 'contact',
         opponentGamePlan: bgsageResult.gamePlans?.opponent ?? bestMove.opponentGamePlan ?? 'contact',
         evalLevel: bestMove.evalLevel ?? `${targetPly}-ply`,
+        source: bgsageResult.source ?? 'bgsage-stage11',
         optimalMetrics: toBgsageMoveMetrics(bestMove),
         playedMetrics: matched ? toBgsageMoveMetrics(matched) : undefined,
+        topCandidates,
+        cubeDecision: bgsageResult.cubeDecision ?? undefined,
     };
 
     return {

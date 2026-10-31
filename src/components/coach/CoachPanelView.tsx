@@ -1,22 +1,27 @@
 'use client';
 
 /**
- * Vue de présentation du panneau Coach (structure analytique XG / Snowie, < 275 lignes, 0 any).
- * Composant 100 % muet (LOI 5) : tout l'état vit dans `CoachPanel`.
+ * Vue de présentation du panneau Coach Zéro-Scroll (3 Onglets + « 🧠 Analyse Profonde » Open Sage Max, < 295 lignes, 0 any).
+ * Composant 100 % orienté présentation : conserve l'ordre DOM strict pour le SSR et les tests tout en isolant chaque onglet.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import CoachMoveComparisonCard from './CoachMoveComparisonCard';
 import CoachPrDashboard, { type DecisionCounters } from './CoachPrDashboard';
 import CoachCandidatesTable, { type CandidateRow } from './CoachCandidatesTable';
 import CoachDiagnosticBox from './CoachDiagnosticBox';
+import CoachDeepAnalysisSection from './CoachDeepAnalysisSection';
 import CoachFooterTabs from './CoachFooterTabs';
 import CoachPanelActions from './CoachPanelActions';
 import type { ExplanationSource } from './useCoachExplanation';
 import type { CoachDisplayVerdict, MatchStats, ParsedExplanation } from './coachPanelHelpers';
+import type { StrategicFeatures } from '../../features/coach/featureExtractor';
+import { getDeepAnalysisCopyLabels } from '../../features/coach/deepAnalysisQuota';
 import type { RawGameTurn } from '../../features/rating';
 import type { RolloutResult } from '../../lib/engine/rolloutClient';
 import type { ZareTiltEvaluation } from '../../lib/coach/zareTiltEngine';
+
+type CoachZeroScrollTab = 'diagnostic' | 'candidates' | 'questions';
 
 export interface CoachPanelViewProps {
     verdict: CoachDisplayVerdict;
@@ -40,6 +45,7 @@ export interface CoachPanelViewProps {
     onReplayMove?: () => void;
     onDismiss: () => void;
     onExplainClick: () => void;
+    onDeepExplainClick?: () => void;
     onOpenKnowledgeConcept?: (conceptId: string) => void;
     onBlunderClick?: () => void;
     onCandidateHover?: (notation: string | null) => void;
@@ -47,6 +53,8 @@ export interface CoachPanelViewProps {
     board?: number[];
     dice?: [number, number] | null;
     xgid?: string | null;
+    positionKey?: string | null;
+    features?: StrategicFeatures;
     candidateMoves?: string[];
     onRolloutCompleted?: (result: RolloutResult) => void;
     isVoiceEnabled?: boolean;
@@ -90,6 +98,7 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
     onReplayMove,
     onDismiss,
     onExplainClick,
+    onDeepExplainClick,
     onOpenKnowledgeConcept,
     onBlunderClick,
     onCandidateHover,
@@ -97,6 +106,8 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
     board,
     dice,
     xgid,
+    positionKey,
+    features,
     candidateMoves,
     onRolloutCompleted,
     isVoiceEnabled = false,
@@ -109,8 +120,11 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
     locale,
     labels,
 }) => {
+    const [activeMainTab, setActiveMainTab] = useState<CoachZeroScrollTab>('diagnostic');
     const isBlunder = verdict === 'blunder';
     const isEn = Boolean(locale && locale !== 'fr');
+    const deepCopy = getDeepAnalysisCopyLabels(locale);
+    const moveKey = `${positionKey ?? xgid ?? 'pos'}::${playedMove ?? 'move'}::${optimalMove ?? 'opt'}`;
     const accent = isBlunder
         ? 'border-rose-500/60 bg-slate-950/95 text-rose-300 shadow-[0_12px_32px_rgba(0,0,0,0.8)]'
         : 'border-white/15 bg-slate-950/95 text-amber-300 shadow-[0_12px_32px_rgba(0,0,0,0.8)]';
@@ -179,7 +193,7 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                 <div
                     data-testid="coach-tilt-alert-banner"
                     role="alert"
-                    className="mt-2.5 flex items-center justify-between gap-2 rounded-xl border border-amber-400/50 bg-amber-950/60 px-3 py-2 text-xs text-amber-100"
+                    className="mt-2 flex items-center justify-between gap-2 rounded-xl border border-amber-400/50 bg-amber-950/60 px-3 py-2 text-xs text-amber-100"
                 >
                     <span>
                         🧘 <strong>{isEn ? 'Anti-Tilt Pause:' : 'Pause Anti-Tilt :'}</strong>{' '}
@@ -193,8 +207,53 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                 </div>
             )}
 
+            {/* Barre de navigation Zéro-Scroll en 3 Onglets */}
+            <div
+                role="tablist"
+                data-testid="coach-zero-scroll-tabs"
+                aria-label={isEn ? 'Coach sections' : 'Sections du Coach'}
+                className="mt-2.5 grid grid-cols-3 gap-1 rounded-xl border border-white/10 bg-slate-900/90 p-1"
+            >
+                <button
+                    type="button"
+                    role="tab"
+                    data-testid="coach-tab-diagnostic"
+                    aria-selected={activeMainTab === 'diagnostic'}
+                    onClick={() => setActiveMainTab('diagnostic')}
+                    className={`rounded-lg py-1 text-[11px] font-extrabold transition ${
+                        activeMainTab === 'diagnostic' ? 'bg-[#d4af37] text-slate-950 shadow' : 'text-slate-300 hover:text-white'
+                    }`}
+                >
+                    {deepCopy.tabDiagnostic}
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    data-testid="coach-tab-candidates"
+                    aria-selected={activeMainTab === 'candidates'}
+                    onClick={() => setActiveMainTab('candidates')}
+                    className={`rounded-lg py-1 text-[11px] font-extrabold transition ${
+                        activeMainTab === 'candidates' ? 'bg-[#d4af37] text-slate-950 shadow' : 'text-slate-300 hover:text-white'
+                    }`}
+                >
+                    {deepCopy.tabCandidates} {candidateRows.length > 0 ? `(${candidateRows.length})` : ''}
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    data-testid="coach-tab-questions"
+                    aria-selected={activeMainTab === 'questions'}
+                    onClick={() => setActiveMainTab('questions')}
+                    className={`rounded-lg py-1 text-[11px] font-extrabold transition ${
+                        activeMainTab === 'questions' ? 'bg-[#d4af37] text-slate-950 shadow' : 'text-slate-300 hover:text-white'
+                    }`}
+                >
+                    {deepCopy.tabQuestions}
+                </button>
+            </div>
+
             {/* 1. PRIORITÉ N°1 : Verdict immédiat & Comparaison des coups tout en haut */}
-            <div className="mt-3">
+            <div className="mt-2.5">
                 <CoachMoveComparisonCard
                     verdict={verdict}
                     equityLoss={equityLoss}
@@ -211,14 +270,26 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                 />
             </div>
 
-            {/* 2. Diagnostic pédagogique (sans répéter whyFailed / whyOptimal / summary déjà affichés dans la carte ci-dessus) */}
-            <div className="mt-3">
+            {/* ONGLET 1 : Diagnostic & Analyse Profonde (1 offerte / jour) */}
+            <div className={activeMainTab === 'diagnostic' ? 'mt-2.5 space-y-2.5' : 'hidden'}>
+                <CoachDeepAnalysisSection
+                    moveKey={moveKey}
+                    playedMove={playedMove}
+                    optimalMove={optimalMove}
+                    equityLoss={equityLoss}
+                    features={features}
+                    symbolicAudit={parsed.symbolicAudit}
+                    pedagogicalExplanation={parsed.pedagogicalExplanation}
+                    whyFailed={parsed.whyFailed || propWhyFailed}
+                    whyOptimal={parsed.whyOptimal || propWhyOptimal}
+                    explanation={parsed.explanation || parsed.rawText}
+                    isStreaming={isStreaming}
+                    onTriggerDeepAnalysis={onDeepExplainClick ?? onExplainClick}
+                    locale={locale}
+                />
+
                 <CoachDiagnosticBox
-                    tacticalSummary={
-                        tacticalSummary && tacticalSummary !== (parsed.summary || propSummary)
-                            ? tacticalSummary
-                            : null
-                    }
+                    tacticalSummary={tacticalSummary && tacticalSummary !== (parsed.summary || propSummary) ? tacticalSummary : null}
                     explanation={parsed.explanation || parsed.rawText}
                     advice={parsed.advice}
                     keyConcept={parsed.keyConcept}
@@ -228,32 +299,30 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                     equityLoss={equityLoss}
                     bestMoveNotation={optimalMove}
                     playedMoveNotation={playedMove}
-                    onOpenKnowledgeConcept={onOpenKnowledgeConcept} onRetryMove={onReplayMove}
-                    isStreaming={isStreaming} locale={locale} board={board} dice={dice}
+                    onOpenKnowledgeConcept={onOpenKnowledgeConcept}
+                    onRetryMove={onReplayMove}
+                    isStreaming={isStreaming}
+                    locale={locale}
+                    board={board}
+                    dice={dice}
+                />
+
+                <CoachPanelActions
+                    explanationSource={explanationSource}
+                    streamError={streamError}
+                    hasContent={hasContent}
+                    isStreaming={isStreaming}
+                    onExplainClick={onExplainClick}
+                    onOpenKnowledgeConcept={parsed.keyConcept ? undefined : onOpenKnowledgeConcept}
+                    conceptId={parsed.conceptId}
+                    locale={locale}
+                    labels={labels}
                 />
             </div>
 
-            <CoachPanelActions
-                explanationSource={explanationSource}
-                streamError={streamError}
-                hasContent={hasContent}
-                isStreaming={isStreaming}
-                onExplainClick={onExplainClick}
-                onOpenKnowledgeConcept={parsed.keyConcept ? undefined : onOpenKnowledgeConcept}
-                conceptId={parsed.conceptId}
-                locale={locale}
-                labels={{
-                    sourceCache: labels.sourceCache,
-                    sourceRuleBased: labels.sourceRuleBased,
-                    sourceLlm: labels.sourceLlm,
-                    retry: labels.retry,
-                    explainError: labels.explainError,
-                }}
-            />
-
-            {/* 3. Classement des 5 meilleurs coups candidats */}
-            {candidateRows.length > 0 && (
-                <div className="mt-3">
+            {/* ONGLET 2 : Top 5 Candidats Open Sage Max & Bilan PR */}
+            <div className={activeMainTab === 'candidates' ? 'mt-2.5 space-y-2.5' : 'hidden'}>
+                {candidateRows.length > 0 && (
                     <CoachCandidatesTable
                         candidates={candidateRows}
                         playedMove={playedMove}
@@ -261,11 +330,7 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                         maxRows={5}
                         locale={locale}
                     />
-                </div>
-            )}
-
-            {/* 4. Bilan PR de la session & Outils avancés en bas de panneau */}
-            <div className="mt-3">
+                )}
                 <CoachPrDashboard
                     pr={performanceRating}
                     decisionsCount={matchStats?.decisionsCount ?? 0}
@@ -275,7 +340,23 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                 />
             </div>
 
-            <div className="mt-2.5">
+            {/* ONGLET 3 : Questions & Outils Avancés (Grille 36 / Feuille de Match / Rollout) */}
+            <div className={activeMainTab === 'questions' ? 'mt-2.5 space-y-2.5' : 'hidden'}>
+                <CoachDeepAnalysisSection
+                    moveKey={moveKey}
+                    playedMove={playedMove}
+                    optimalMove={optimalMove}
+                    equityLoss={equityLoss}
+                    features={features}
+                    symbolicAudit={parsed.symbolicAudit}
+                    pedagogicalExplanation={parsed.pedagogicalExplanation}
+                    whyFailed={parsed.whyFailed || propWhyFailed}
+                    whyOptimal={parsed.whyOptimal || propWhyOptimal}
+                    explanation={parsed.explanation || parsed.rawText}
+                    isStreaming={isStreaming}
+                    onTriggerDeepAnalysis={onDeepExplainClick ?? onExplainClick}
+                    locale={locale}
+                />
                 <CoachFooterTabs
                     turnsHistory={turnsHistory}
                     board={board}

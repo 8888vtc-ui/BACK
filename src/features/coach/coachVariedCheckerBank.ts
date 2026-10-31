@@ -18,7 +18,10 @@ export function pickVariedCheckerErrorCopy(
 ): VariedExplanationCopy {
     const lossMilli = Math.round(Math.abs(ctx.equityLoss) * 1000);
     const seed = `${category}|${ctx.playedMove}|${ctx.optimalMove}|${lossMilli}|${ctx.userShots ?? 0}|${ctx.playerPips ?? 0}|${ctx.seedExtra ?? ''}`;
-    const idx = selectVariantIndex(seed, 10);
+    const idx =
+        typeof ctx.seedExtra === 'number' && Number.isFinite(ctx.seedExtra)
+            ? Math.abs(Math.trunc(ctx.seedExtra)) % 10
+            : selectVariantIndex(seed, 10);
 
     const pld = ctx.playedMove;
     const opt = ctx.optimalMove;

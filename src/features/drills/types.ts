@@ -10,6 +10,11 @@ import type { AnalyzeMovesResult } from '../../lib/engine/types';
 
 export type BlunderVerdict = 'blunder' | 'doubtful' | 'howler';
 
+/**
+ * Paliers de progression gamifiés (1: Débutant, 2: Intermédiaire, 3: Club, 4: Grand-Maître)
+ */
+export type DrillTier = 1 | 2 | 3 | 4;
+
 export interface PlayerBlunderRecord {
     /** Identifiant unique de l'erreur */
     id: string;
@@ -37,6 +42,16 @@ export interface PlayerBlunderRecord {
     conceptName: string;
     /** Explication pédagogique du coup correct */
     explanation: string;
+    /** Explication précise de pourquoi le coup joué échoue */
+    whyFailed?: string;
+    /** Proverbe / règle d'or du Grand-Maître */
+    proverb?: string;
+    /** 10 variantes distinctes d'explication IA pour éviter toute répétition */
+    commentaryVariants?: string[];
+    /** Choix de coups pour le mode Quiz Rapide QCM */
+    quizChoices?: string[];
+    /** Palier de difficulté (1: Débutant, 2: Intermédiaire, 3: Club, 4: Maître) */
+    tier?: DrillTier;
     /** Indice pédagogique pour aider le joueur sans donner la solution */
     hint?: string;
     /** Nombre de fois où cette erreur a été rejouée en drill */

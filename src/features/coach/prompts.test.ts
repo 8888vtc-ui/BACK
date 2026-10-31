@@ -202,6 +202,81 @@ describe('Coach Prompts & Instructions', () => {
             expect(prompt).toContain('Gain +5.0, Gammon 0.0, Risque de gammon adverse -3.0');
         });
 
+        it('sérialise la télémétrie complète Open Sage Max (Top 5 Candidats, Eq Cubeful vs Cubeless et Équités Videau)', () => {
+            const prompt = buildCoachUserPrompt({
+                ...SAMPLE_PARAMS,
+                features: {
+                    ...SAMPLE_PARAMS.features,
+                    bgsage: {
+                        isRace: false,
+                        playerGamePlan: 'prime',
+                        opponentGamePlan: 'holding',
+                        evalLevel: '3-ply',
+                        optimalMetrics: {
+                            equity: 0.412,
+                            cubelessEquity: 0.365,
+                            winProb: 0.68,
+                            winGammonProb: 0.22,
+                            winBackgammonProb: 0.01,
+                            loseGammonProb: 0.04,
+                            loseBackgammonProb: 0.002,
+                            playerGamePlan: 'prime',
+                            opponentGamePlan: 'holding',
+                        },
+                        playedMetrics: {
+                            equity: 0.267,
+                            cubelessEquity: 0.23,
+                            winProb: 0.61,
+                            winGammonProb: 0.16,
+                            winBackgammonProb: 0.005,
+                            loseGammonProb: 0.09,
+                            loseBackgammonProb: 0.004,
+                            playerGamePlan: 'contact',
+                            opponentGamePlan: 'holding',
+                        },
+                        topCandidates: [
+                            {
+                                rank: 1,
+                                notation: '8/4 6/4',
+                                equity: 0.412,
+                                cubelessEquity: 0.365,
+                                equityLoss: 0,
+                                winProb: 0.68,
+                                winGammonProb: 0.22,
+                                winBackgammonProb: 0.01,
+                                loseGammonProb: 0.04,
+                                loseBackgammonProb: 0.002,
+                            },
+                            {
+                                rank: 2,
+                                notation: '13/9 13/7',
+                                equity: 0.355,
+                                cubelessEquity: 0.31,
+                                equityLoss: -0.057,
+                                winProb: 0.65,
+                                winGammonProb: 0.19,
+                                winBackgammonProb: 0.008,
+                                loseGammonProb: 0.05,
+                                loseBackgammonProb: 0.002,
+                            },
+                        ],
+                        cubeDecision: {
+                            noDouble: 0.38,
+                            doubleTake: 0.44,
+                            doublePass: 1.0,
+                            optimalAction: 'Double / Take',
+                        },
+                    },
+                },
+            });
+
+            expect(prompt).toContain('Top 2 Candidats Open Sage Max');
+            expect(prompt).toContain('#1 8/4 6/4');
+            expect(prompt).toContain('#2 13/9 13/7');
+            expect(prompt).toContain('Eq Cubeful 0.4120 (Cubeless 0.3650)');
+            expect(prompt).toContain('Équités Videau Open Sage : Pas de Double=0.380, Double/Pris=0.440');
+        });
+
         it('génère un prompt spécialisé VIDEAU (sans parler de déplacement de pions) lors d’une décision de Cube', () => {
             const cubePrompt = buildCoachUserPrompt({
                 ...SAMPLE_PARAMS,

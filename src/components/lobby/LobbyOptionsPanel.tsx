@@ -16,6 +16,8 @@ import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import { setSavedPipCountVisibility } from '../board/PipCountBadge';
 import { LobbyInteractiveBoardPreview } from './LobbyInteractiveBoardPreview';
 import { BotPortraitMedallion } from '../common/MonteCarloIcons';
+import { getBotPersona } from '../../features/personas/botPersonas';
+import { useTranslation } from '../../i18n';
 
 export type LobbyClockPreset = 'blitz' | 'speed' | 'normal' | 'unlimited';
 
@@ -113,10 +115,13 @@ export const LobbyOptionsPanel: React.FC<LobbyOptionsPanelProps> = React.memo(({
     onClose,
     onStartGame,
 }) => {
+    const { locale } = useTranslation();
     const isMoneyGame = matchLength === 0;
     const lengthValues = [1, 3, 5, 7, 11];
     const currentClock = CLOCK_MONTE_CARLO_ROWS.find((c) => c.value === clockPreset) ?? CLOCK_MONTE_CARLO_ROWS[1];
-    const currentBot = ELO_MAP[difficulty] ?? ELO_MAP.expert;
+    const currentBotBase = ELO_MAP[difficulty] ?? ELO_MAP.expert;
+    const localizedPersona = getBotPersona(difficulty, locale);
+    const currentBot = { elo: currentBotBase.elo, title: `${localizedPersona.shortName} · ${localizedPersona.styleBadge}` };
 
     return (
         <div data-testid="lobby-options-panel" className="mt-2 rounded-3xl border border-white/10 bg-[#070b16]/95 p-4 sm:p-5 shadow-2xl backdrop-blur-xl">

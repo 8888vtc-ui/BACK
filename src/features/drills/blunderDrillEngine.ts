@@ -12,7 +12,7 @@ import {
     analyzeBoardMoves,
     formatMoveSequenceNotation,
 } from '../../lib/engine/evaluator';
-import type { PlayerBlunderRecord, DrillValidationResult, BlunderDrillSession } from './types';
+import type { PlayerBlunderRecord, DrillValidationResult, BlunderDrillSession, DrillTier } from './types';
 import { getBlundersToReview, markBlunderAttempt } from './blunderBank';
 
 /**
@@ -140,13 +140,70 @@ export function validateDrillMove(
 }
 
 /**
+ * Valide un choix de coup direct en notation (Mode Quiz QCM Rapide).
+ */
+export function validateDrillNotationChoice(
+    blunder: PlayerBlunderRecord,
+    chosenNotation: string,
+): DrillValidationResult {
+    const normalizedPlayed = normalizeMoveNotation(chosenNotation);
+    const normalizedOptimal = normalizeMoveNotation(blunder.optimalMove);
+    const normalizedAcceptables = (blunder.acceptableMoves || []).map(normalizeMoveNotation);
+
+    if (normalizedPlayed === normalizedOptimal) {
+        return {
+            isCorrect: true,
+            verdict: 'optimal',
+            equityLoss: 0,
+            playedNotation: chosenNotation,
+            optimalNotation: blunder.optimalMove,
+            feedbackMessage:
+                '👑 Coup optimal trouvé ! Vous avez corrigé cette erreur avec une précision chirurgicale.',
+            hint: blunder.hint,
+            canRetry: false,
+        };
+    }
+
+    if (normalizedAcceptables.includes(normalizedPlayed)) {
+        return {
+            isCorrect: true,
+            verdict: 'acceptable',
+            equityLoss: 0.015,
+            playedNotation: chosenNotation,
+            optimalNotation: blunder.optimalMove,
+            feedbackMessage:
+                '✨ Variante solide et acceptable ! Votre coup préserve l’équité de la position.',
+            hint: blunder.hint,
+            canRetry: false,
+        };
+    }
+
+    const isOriginalBlunder = normalizedPlayed === normalizeMoveNotation(blunder.playedMove);
+    const loss = isOriginalBlunder ? blunder.equityLoss : Math.max(0.08, Number((blunder.equityLoss * 0.85).toFixed(3)));
+
+    return {
+        isCorrect: false,
+        verdict: loss >= 0.08 ? 'blunder' : 'doubtful',
+        equityLoss: loss,
+        playedNotation: chosenNotation,
+        optimalNotation: blunder.optimalMove,
+        feedbackMessage: isOriginalBlunder
+            ? `❌ Vous êtes retombé dans le piège initial (${chosenNotation}, -${loss.toFixed(3)} ΔEq) ! Lisez pourquoi ci-dessous et réessayez.`
+            : `❌ Ce coup reste une erreur (-${loss.toFixed(3)} ΔEq). Rejouez jusqu’à trouver le bon coup !`,
+        hint: blunder.hint,
+        canRetry: true,
+    };
+}
+
+/**
  * Crée une session de drill avec un sous-ensemble d'erreurs prioritaires.
  */
 export function createDrillSession(options?: {
     conceptId?: string;
+    tier?: DrillTier;
     maxBlunders?: number;
 }): BlunderDrillSession {
-    const list = getBlundersToReview(options?.conceptId);
+    const list = getBlundersToReview(options?.conceptId, options?.tier);
     const max = options?.maxBlunders ?? 5;
     const selected = list.slice(0, max);
 

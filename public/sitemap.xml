@@ -71,6 +71,34 @@
     <priority>0.85</priority>
   </url>
 
+  <!-- 5b. Puzzle du Jour & Défi Tactique ERH (/daily-puzzle) -->
+  <url>
+    <loc>https://backgammontour.com/daily-puzzle</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://backgammontour.com/daily-puzzle" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://backgammontour.com/daily-puzzle?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://backgammontour.com/daily-puzzle?lang=es" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://backgammontour.com/daily-puzzle?lang=pt" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://backgammontour.com/daily-puzzle?lang=de" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://backgammontour.com/daily-puzzle?lang=ar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://backgammontour.com/daily-puzzle" />
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <!-- 5c. Offre Club & Coach IA Illimité VIP (/pricing) -->
+  <url>
+    <loc>https://backgammontour.com/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://backgammontour.com/pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://backgammontour.com/pricing?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://backgammontour.com/pricing?lang=es" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://backgammontour.com/pricing?lang=pt" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://backgammontour.com/pricing?lang=de" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://backgammontour.com/pricing?lang=ar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://backgammontour.com/pricing" />
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
   <!-- 6. Les 15 Pages Programmatiques des Rouleaux d'Ouverture (/academy/openings/[roll]) -->
   <url><loc>https://backgammontour.com/academy/openings/3-1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
   <url><loc>https://backgammontour.com/academy/openings/4-2</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>

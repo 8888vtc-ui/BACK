@@ -24,6 +24,170 @@ export interface SignInParams {
     password: string;
 }
 
+export type PlayerExperienceTier = 'beginner' | 'intermediate' | 'expert';
+
+export interface PlayerPassport {
+    readonly pseudo: string;
+    readonly email: string;
+    readonly experienceLevel: PlayerExperienceTier;
+    readonly registeredAt: string;
+    readonly supabaseSynced?: boolean;
+}
+
+export const PLAYER_PASSPORT_STORAGE_KEY = 'bg_player_passport_v1';
+
+export function readPlayerPassport(): PlayerPassport | null {
+    if (typeof window === 'undefined' || !window.localStorage) return null;
+    try {
+        const raw = window.localStorage.getItem(PLAYER_PASSPORT_STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw) as Partial<PlayerPassport>;
+        if (
+            typeof parsed.pseudo === 'string' &&
+            parsed.pseudo.trim().length >= 2 &&
+            typeof parsed.email === 'string' &&
+            parsed.email.includes('@')
+        ) {
+            const level: PlayerExperienceTier =
+                parsed.experienceLevel === 'beginner' ||
+                parsed.experienceLevel === 'intermediate' ||
+                parsed.experienceLevel === 'expert'
+                    ? parsed.experienceLevel
+                    : 'intermediate';
+            return {
+                pseudo: parsed.pseudo.trim(),
+                email: parsed.email.trim().toLowerCase(),
+                experienceLevel: level,
+                registeredAt: parsed.registeredAt ?? new Date().toISOString(),
+                supabaseSynced: Boolean(parsed.supabaseSynced),
+            };
+        }
+        return null;
+    } catch {
+        return null;
+    }
+}
+
+export function savePlayerPassport(passport: PlayerPassport): PlayerPassport {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+            window.localStorage.setItem(PLAYER_PASSPORT_STORAGE_KEY, JSON.stringify(passport));
+            const chameleonLayer =
+                passport.experienceLevel === 'beginner'
+                    ? 'L0'
+                    : passport.experienceLevel === 'expert'
+                      ? 'L2'
+                      : 'L1';
+            window.localStorage.setItem('backgammon.chameleonUxLayer', chameleonLayer);
+        } catch {
+            // ignore storage errors
+        }
+    }
+    return passport;
+}
+
+export function clearPlayerPassport(): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+            window.localStorage.removeItem(PLAYER_PASSPORT_STORAGE_KEY);
+        } catch {
+            // ignore
+        }
+    }
+}
+
+function generateCryptoPassportPassword(): string {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+    const buf = new Uint32Array(16);
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+        crypto.getRandomValues(buf);
+    }
+    let out = 'Mc!';
+    for (let i = 0; i < buf.length; i++) {
+        out += chars[(buf[i] ?? i) % chars.length];
+    }
+    return out;
+}
+
+/**
+ * Enregistre le Passeport Joueur obligatoire (Pseudo + Email + Niveau) en local
+ * ET synchronise immédiatement le contact dans Supabase Auth (`auth.users`).
+ */
+export async function registerPlayerPassportLead(params: {
+    pseudo: string;
+    email: string;
+    experienceLevel: PlayerExperienceTier;
+    password?: string;
+}): Promise<{ passport: PlayerPassport; error: Error | null }> {
+    const cleanPseudo = params.pseudo.trim();
+    const cleanEmail = params.email.trim().toLowerCase();
+    if (cleanPseudo.length < 2) {
+        return {
+            passport: { pseudo: cleanPseudo, email: cleanEmail, experienceLevel: params.experienceLevel, registeredAt: new Date().toISOString() },
+            error: new Error('Veuillez indiquer un pseudo (2 caractères minimum).'),
+        };
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+        return {
+            passport: { pseudo: cleanPseudo, email: cleanEmail, experienceLevel: params.experienceLevel, registeredAt: new Date().toISOString() },
+            error: new Error('Veuillez indiquer une adresse email valide.'),
+        };
+    }
+
+    let supabaseSynced = false;
+    if (isSupabaseConfigured()) {
+        try {
+            const effectivePassword =
+                params.password && params.password.length >= 6
+                    ? params.password
+                    : generateCryptoPassportPassword();
+            const { data, error } = await supabase.auth.signUp({
+                email: cleanEmail,
+                password: effectivePassword,
+                options: {
+                    data: {
+                        full_name: cleanPseudo,
+                        username: cleanPseudo,
+                        experience_level: params.experienceLevel,
+                    },
+                },
+            });
+            if (!error || (error.message && error.message.toLowerCase().includes('already registered'))) {
+                supabaseSynced = true;
+            }
+            if (data?.user && data?.session) {
+                await ensureUserProfileSynced(data.user);
+            }
+        } catch {
+            // La sauvegarde locale garantit que le joueur n'est pas bloqué en cas de micro-coupure
+        }
+    }
+
+    const saved = savePlayerPassport({
+        pseudo: cleanPseudo,
+        email: cleanEmail,
+        experienceLevel: params.experienceLevel,
+        registeredAt: new Date().toISOString(),
+        supabaseSynced,
+    });
+
+    return { passport: saved, error: null };
+}
+
+/**
+ * Envoie un email de réinitialisation de mot de passe via Supabase Auth.
+ */
+export async function resetPasswordForEmail(email: string): Promise<{ error: Error | null }> {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+        return { error: new Error('Veuillez saisir une adresse email valide.') };
+    }
+    const redirectTo =
+        typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, { redirectTo });
+    return { error };
+}
+
 /**
  * Inscription par Email et mot de passe.
  */

@@ -14,8 +14,8 @@ import { NextRequest } from 'next/server';
 import {
     getCoachSystemPrompt,
     buildCoachUserPrompt,
-    generateRuleBasedExplanation,
 } from '../../../features/coach/prompts';
+import { autoHarvestUserMoveToDatabase } from '../../../features/coach/knowledgeVaultHarvester';
 import type { MatchSummaryPayload } from '../../../components/summary/postMatchReportHelpers';
 import { checkRateLimit, RATE_LIMIT_PROFILES } from '../../../lib/security/rateLimit';
 import { CoachRequestSchema, validateJsonBody } from '../../../lib/security/schemas';
@@ -115,8 +115,16 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             console.warn('[Coach API] Erreur lecture cache L2 coach_explanations :', cacheErr);
         }
 
+        // Auto-approvisionnement de la base de connaissances (10 variantes distinctes par coup + rotation)
+        const harvested = await autoHarvestUserMoveToDatabase({
+            promptParams: params,
+            board: body.board,
+            xgid: body.xgid,
+            dice: body.dice,
+        });
+
         if (!apiKey) {
-            return createJsonFallbackStream(generateRuleBasedExplanation(params), encoder);
+            return createJsonFallbackStream(harvested.selectedVariant, encoder);
         }
 
         const groundTruthAudit = buildGroundTruthNeuroSymbolicAudit(params);
@@ -174,14 +182,14 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
         } catch (fetchErr: unknown) {
             clearTimeout(timeoutId);
             console.warn('[Coach API] Timeout ou erreur réseau LLM, repli heuristique :', fetchErr);
-            return createJsonFallbackStream(generateRuleBasedExplanation(params), encoder);
+            return createJsonFallbackStream(harvested.selectedVariant, encoder);
         } finally {
             clearTimeout(timeoutId);
         }
 
         if (!llmResponse.ok || !llmResponse.body) {
             console.warn(`[Coach API] Statut HTTP ${llmResponse.status}, bascule repli heuristique`);
-            return createJsonFallbackStream(generateRuleBasedExplanation(params), encoder);
+            return createJsonFallbackStream(harvested.selectedVariant, encoder);
         }
 
         const upstreamReader = llmResponse.body.getReader();

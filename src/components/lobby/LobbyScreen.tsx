@@ -6,6 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '../../lib/supabase/types';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
@@ -20,11 +21,12 @@ import RecentMatchesSummary from './RecentMatchesSummary';
 import LearningModulesGrid from './LearningModulesGrid';
 import CoachPreMatchBriefingCard from './CoachPreMatchBriefingCard';
 import TournamentTableClockModal from '../clock/TournamentTableClockModal';
-import FloatingAiCoachWidget from '../coach/FloatingAiCoachWidget';
 import { LobbyLeftSidebar, LobbyRightShowcaseColumn } from './LobbySidebarAndWidgets';
 import { BotPortraitMedallion } from '../common/MonteCarloIcons';
 import { getSyncAcademySnapshot, loadPlayerHubData, type AcademyProgressSnapshot, type RecentMatchEntry } from '../../features/progression/userProgressionService';
 import { BOT_PERSONAS_BY_DIFFICULTY, getBotPersona } from '../../features/personas/botPersonas';
+import { readPlayerPassport } from '../../lib/supabase/auth';
+import AuthModal from '../auth/AuthModal';
 import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
 
@@ -60,7 +62,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     const [selectedMode, setSelectedMode] = useState<LobbyMode | null>('ai');
     const [showOptions, setShowOptions] = useState(false);
     const [isTableClockOpen, setIsTableClockOpen] = useState(false);
-    const [displayName, setDisplayName] = useState<string | null>(null);
+    const [isPassportGateOpen, setIsPassportGateOpen] = useState(false);
+    const [displayName, setDisplayName] = useState<string | null>(() => readPlayerPassport()?.pseudo ?? null);
     const [snapshot, setSnapshot] = useState<AcademyProgressSnapshot>(() => getSyncAcademySnapshot());
     const [recentMatches, setRecentMatches] = useState<RecentMatchEntry[]>([]);
     const [isMittensActive, setIsMittensActive] = useState<boolean>(false);
@@ -101,7 +104,14 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     }, []);
 
     const handleUserResolved = useCallback((user: User | null, profile: Profile | null) => {
-        setDisplayName(profile?.display_name || profile?.username || user?.email?.split('@')[0] || null);
+        const passport = readPlayerPassport();
+        setDisplayName(
+            profile?.display_name ||
+                profile?.username ||
+                user?.email?.split('@')[0] ||
+                passport?.pseudo ||
+                null,
+        );
         loadPlayerHubData(user?.id ?? null)
             .then((res) => {
                 setSnapshot((prev) => ({ ...res.snapshot, eloRating: profile?.rating ?? res.snapshot.eloRating ?? prev.eloRating }));
@@ -110,11 +120,23 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
             .catch(() => {});
     }, []);
 
-    const handlePlay = () => {
+    const executePlayNow = () => {
         const activeMode = selectedMode ?? 'ai';
         if (activeMode === 'ai') return onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset });
         if (activeMode === 'multiplayer') return onOpenModule?.('multiplayer');
         if (activeMode === 'training') onOpenModule?.('drills');
+    };
+
+    const handlePlay = () => {
+        const passport = readPlayerPassport();
+        const isTestBypass =
+            process.env.NODE_ENV === 'test' &&
+            !(typeof window !== 'undefined' && (window as unknown as { __ENFORCE_PASSPORT_IN_TEST__?: boolean }).__ENFORCE_PASSPORT_IN_TEST__);
+        if (!displayName && !passport && !isTestBypass) {
+            setIsPassportGateOpen(true);
+            return;
+        }
+        executePlayNow();
     };
 
     const handleJoinOpenChallenge = (challenge: OpenMatchChallenge) => {
@@ -138,7 +160,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
             <div className="relative z-10 flex flex-1 w-full">
                 <LobbyLeftSidebar
                     selectedMode={selectedMode} matchLength={matchLength} isSubmenuOpen={showOptions}
-                    onQuickPlay={() => onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset })}
+                    onQuickPlay={handlePlay}
                     onSelectMoneyGame={() => { setSelectedMode('ai'); setMatchLength(0); setShowOptions(true); }}
                     onSelectMatchGame={() => { setSelectedMode('ai'); setMatchLength((prev) => (prev === 0 ? 7 : prev)); setShowOptions(true); }}
                     onSelectAiMode={() => { setSelectedMode('ai'); setShowOptions(true); }}
@@ -192,7 +214,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 {selectedMode === 'ai' && (
                                     <>
                                         {/* Galerie de Portraits Haute-Couture des 5 Adversaires du Cercle Monte-Carlo */}
-                                        <div data-testid="lobby-persona-quickbar" className="grid grid-cols-2 sm:grid-cols-5 gap-2.5" role="group" aria-label="Adversaire Bot Personnifié">
+                                        <div data-testid="lobby-persona-quickbar" className="flex overflow-x-auto pb-1 sm:pb-0 sm:grid sm:grid-cols-5 gap-2 sm:gap-2.5 snap-x" role="group" aria-label="Adversaire Bot Personnifié">
                                             {(['beginner', 'intermediate', 'expert', 'grandmaster'] as const).map((lvl) => {
                                                 const p = getBotPersona(lvl, locale) ?? BOT_PERSONAS_BY_DIFFICULTY[lvl];
                                                 const active = !isMittensActive && difficulty === lvl;
@@ -203,7 +225,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                         data-testid={`lobby-persona-pill-${lvl}`}
                                                         aria-pressed={active}
                                                         onClick={() => { setIsMittensActive(false); setDifficulty(lvl); }}
-                                                        className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-center transition-all duration-200 ${
+                                                        className={`min-w-[128px] sm:min-w-0 shrink-0 snap-start flex flex-col items-center gap-1 sm:gap-1.5 rounded-2xl border p-2.5 sm:p-3 text-center transition-all duration-200 ${
                                                             active
                                                                 ? 'border-2 border-[#f3c65f] bg-gradient-to-b from-[#d4af37]/25 via-[#241a0d] to-[#120d07] text-white shadow-[0_0_24px_rgba(243,198,95,0.35)] -translate-y-0.5'
                                                                 : 'border-white/10 bg-black/45 text-stone-300 hover:border-[#d4af37]/50 hover:bg-[#1a130b] hover:text-white'
@@ -227,7 +249,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                 data-testid="lobby-persona-pill-mittens"
                                                 aria-pressed={isMittensActive}
                                                 onClick={() => { setIsMittensActive(true); setDifficulty('grandmaster'); }}
-                                                className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-center transition-all duration-200 ${
+                                                className={`min-w-[128px] sm:min-w-0 shrink-0 snap-start flex flex-col items-center gap-1 sm:gap-1.5 rounded-2xl border p-2.5 sm:p-3 text-center transition-all duration-200 ${
                                                     isMittensActive
                                                         ? 'border-2 border-rose-400 bg-gradient-to-b from-rose-500/30 via-[#241016] to-[#12080b] text-white shadow-[0_0_24px_rgba(244,63,94,0.4)] -translate-y-0.5'
                                                         : 'border-white/10 bg-black/45 text-stone-300 hover:border-rose-400/50 hover:bg-[#1a0d12] hover:text-white'
@@ -303,7 +325,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                     </>
                                 )}
 
-                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1" data-testid="lobby-tournament-quickbar">
+                                <div className="max-sm:sticky max-sm:bottom-2 max-sm:z-30 max-sm:rounded-2xl max-sm:bg-[#0e0b08]/95 max-sm:p-2 max-sm:shadow-2xl max-sm:backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1" data-testid="lobby-tournament-quickbar">
                                     <button type="button" data-testid="lobby-start-btn" onClick={handlePlay} className="flex-1 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#f3c65f] via-[#f7d77e] to-[#e5b548] px-6 py-3 text-sm sm:text-base font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_20px_rgba(243,198,95,0.35)] transition hover:brightness-105 active:scale-[0.99]">
                                         🎲 {selectedMode === 'multiplayer' ? ui.lobby.cardMultiTitle : selectedMode === 'training' ? ui.lobby.cardTrainingTitle : `${ui.lobby.playNow} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`}
                                     </button>
@@ -357,25 +379,58 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                             {recentMatches.length > 0 && (
                                 <RecentMatchesSummary matches={recentMatches} onReviewMatch={() => onOpenModule?.('stats')} onOpenImportExport={() => onOpenModule?.('import_export')} />
                             )}
+
+                            {/* Annuaire SEO On-Page & Maillage Interne Crawlable */}
+                            <footer
+                                aria-label="Annuaire Stratégique Backgammon Tour & Cercle Monte-Carlo"
+                                data-testid="lobby-seo-directory-footer"
+                                className="mt-2 rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-[11px] text-stone-400 space-y-2"
+                            >
+                                <div className="font-bold uppercase tracking-wider text-[#f3c65f]">
+                                    ⚜️ Encyclopédie Backgammon, Méthode ERH &amp; Tournois Mondiaux
+                                </div>
+                                <div className="flex flex-wrap gap-x-3 gap-y-1">
+                                    <Link href="/academy#learn-rules" className="hover:text-white underline-offset-2 hover:underline">Règles du Backgammon en 5 min</Link>
+                                    <Link href="/drills" className="hover:text-white underline-offset-2 hover:underline">Quizz ERH &amp; Revoir Mes Blunders</Link>
+                                    <Link href="/daily-puzzle" className="hover:text-white underline-offset-2 hover:underline">Puzzle Backgammon du Jour</Link>
+                                    <Link href="/academy/openings/3-1" className="hover:text-white underline-offset-2 hover:underline">Ouverture 3-1 (Point 5)</Link>
+                                    <Link href="/academy/openings/6-1" className="hover:text-white underline-offset-2 hover:underline">Ouverture 6-1 (Bar Point)</Link>
+                                    <Link href="/academy/openings/4-2" className="hover:text-white underline-offset-2 hover:underline">Ouverture 4-2 (Point 4)</Link>
+                                    <Link href="/academy/concepts/golden-point" className="hover:text-white underline-offset-2 hover:underline">Golden Point (Case 5)</Link>
+                                    <Link href="/academy/concepts/take-point" className="hover:text-white underline-offset-2 hover:underline">Videau &amp; Take Point 21,5 %</Link>
+                                    <Link href="/academy/concepts/woolsey-law" className="hover:text-white underline-offset-2 hover:underline">Loi de Woolsey</Link>
+                                    <Link href="/tournaments" className="hover:text-white underline-offset-2 hover:underline">Tournois &amp; Clubs Où Jouer</Link>
+                                    <Link href="/progression" className="hover:text-white underline-offset-2 hover:underline">Calcul PR &amp; Indice ERH</Link>
+                                </div>
+                            </footer>
                         </section>
                     </div>
 
                     {!showOptions && (
                         <LobbyRightShowcaseColumn
                             eloRating={snapshot.eloRating} averagePR={snapshot.averagePR}
-                            onQuickPlay={() => onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset })}
+                            onQuickPlay={handlePlay}
                             onOpenStats={() => onOpenModule?.('stats')}
                         />
                     )}
                 </div>
             </div>
 
-            <FloatingAiCoachWidget onOpenFullCoach={() => onOpenModule?.('drills')} />
-
             <TournamentTableClockModal
                 isOpen={isTableClockOpen} onClose={() => setIsTableClockOpen(false)}
                 onOpenPhotoScanner={() => { setIsTableClockOpen(false); onOpenModule?.('import_export'); }}
                 initialMatchLength={matchLength || 7}
+            />
+
+            <AuthModal
+                isOpen={isPassportGateOpen}
+                onClose={() => setIsPassportGateOpen(false)}
+                onSuccess={() => {
+                    const p = readPlayerPassport();
+                    if (p) setDisplayName(p.pseudo);
+                    setIsPassportGateOpen(false);
+                    executePlayNow();
+                }}
             />
         </main>
     );
