@@ -16,6 +16,24 @@ export const STRIPE_PRICE_IDS = {
     CLUB_CHOUETTE: 'price_club_chouette',
 } as const;
 
+/**
+ * Identifiants réels des tarifs créés sur le compte Stripe Live (`acct_1MCQSOEVVCu10o6A` / `prod_VUo9osvIkwdLGc`).
+ */
+export const STRIPE_LIVE_API_PRICE_IDS = {
+    coach_monthly: 'price_1UWfRQEVVCu10o6Abo1i27H4',
+    coach_yearly: 'price_1UWfRTEVVCu10o6AAhWg7jY8',
+    club_chouette: 'price_1UWfRAEVVCu10o6Ams2X2Ziv',
+    legacy_monthly_999: 'price_1UToXhEVVCu10o6AfcJ224ro',
+    legacy_yearly_7999: 'price_1UToXkEVVCu10o6ANDZWBOgU',
+} as const;
+
+/**
+ * Mode Lancement 100 % Gratuit : tant que ce drapeau est actif, aucun paywall ne bloque les joueurs humains.
+ * Dès que le trafic et les tests humains sont validés, passer `NEXT_PUBLIC_ENABLE_PAID_SUBSCRIPTIONS=true`.
+ */
+export const LAUNCH_PROMO_100_PERCENT_FREE: boolean =
+    process.env.NEXT_PUBLIC_ENABLE_PAID_SUBSCRIPTIONS !== 'true';
+
 export type StripePriceId = (typeof STRIPE_PRICE_IDS)[keyof typeof STRIPE_PRICE_IDS];
 
 export type PaidSubscriptionTier = 'coach_monthly' | 'coach_yearly' | 'club_chouette';
@@ -183,9 +201,12 @@ export function resolveTierFromPriceId(
     priceId?: string | null,
 ): PaidSubscriptionTier {
     if (!priceId) return 'coach_yearly';
-    const normalized = priceId.trim().toLowerCase();
+    const raw = priceId.trim();
+    const normalized = raw.toLowerCase();
     if (
         normalized === STRIPE_PRICE_IDS.MONTHLY ||
+        raw === STRIPE_LIVE_API_PRICE_IDS.coach_monthly ||
+        raw === STRIPE_LIVE_API_PRICE_IDS.legacy_monthly_999 ||
         normalized === process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY?.toLowerCase() ||
         normalized.includes('monthly') ||
         normalized.includes('month')
@@ -194,6 +215,7 @@ export function resolveTierFromPriceId(
     }
     if (
         normalized === STRIPE_PRICE_IDS.CLUB_CHOUETTE ||
+        raw === STRIPE_LIVE_API_PRICE_IDS.club_chouette ||
         normalized === process.env.NEXT_PUBLIC_STRIPE_PRICE_CLUB_CHOUETTE?.toLowerCase() ||
         normalized.includes('club') ||
         normalized.includes('chouette')
@@ -201,6 +223,25 @@ export function resolveTierFromPriceId(
         return 'club_chouette';
     }
     return 'coach_yearly';
+}
+
+/**
+ * Résout l'identifiant `price_1...` réel attendu par l'API Stripe v1 lors d'un appel Live/Test.
+ */
+export function resolveStripeApiPriceId(
+    tier: PaidSubscriptionTier,
+    requestedPriceId?: string | null,
+): string {
+    if (requestedPriceId && requestedPriceId.startsWith('price_1')) {
+        return requestedPriceId;
+    }
+    if (tier === 'coach_monthly') {
+        return process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY || STRIPE_LIVE_API_PRICE_IDS.coach_monthly;
+    }
+    if (tier === 'club_chouette') {
+        return process.env.NEXT_PUBLIC_STRIPE_PRICE_CLUB_CHOUETTE || STRIPE_LIVE_API_PRICE_IDS.club_chouette;
+    }
+    return process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY || STRIPE_LIVE_API_PRICE_IDS.coach_yearly;
 }
 
 /**

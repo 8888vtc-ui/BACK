@@ -13,7 +13,12 @@
 
 import { createHmac, timingSafeEqual } from 'node:crypto';
 export * from './stripePlans';
-import { STRIPE_PLANS, resolveTierFromPriceId, STRIPE_PRICE_IDS } from './stripePlans';
+import {
+    STRIPE_PLANS,
+    resolveTierFromPriceId,
+    resolveStripeApiPriceId,
+    STRIPE_PRICE_IDS,
+} from './stripePlans';
 import type { SubscriptionTier } from '../supabase/types';
 
 export interface StripeCheckoutSessionCreateParams {
@@ -171,7 +176,14 @@ export const stripe = {
                     secretKey &&
                     (secretKey.startsWith('sk_live_') || secretKey.startsWith('sk_test_'))
                 ) {
-                    const formBody = encodeStripeCheckoutForm(params);
+                    const liveParams: StripeCheckoutSessionCreateParams = {
+                        ...params,
+                        line_items: params.line_items.map((item) => ({
+                            ...item,
+                            price: resolveStripeApiPriceId(tier, item.price),
+                        })),
+                    };
+                    const formBody = encodeStripeCheckoutForm(liveParams);
                     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
                         method: 'POST',
                         headers: {
