@@ -63,8 +63,8 @@ const CheckerComponent: React.FC<CheckerProps> = ({
             }`}
             onPointerDown={isInteractive ? onPointerDown : undefined}
             style={{
-                width: 'clamp(24px, min(7.4vw, calc((100dvh - 58px) / 10.4)), 58px)',
-                height: 'clamp(24px, min(7.4vw, calc((100dvh - 58px) / 10.4)), 58px)',
+                width: 'clamp(20px, min(6.5vw, calc((100dvh - 28px) / 12.6)), 52px)',
+                height: 'clamp(20px, min(6.5vw, calc((100dvh - 28px) / 12.6)), 52px)',
                 borderRadius: '9999px',
                 touchAction: 'manipulation',
                 transform: 'translate3d(0, 0, 0)',

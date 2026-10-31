@@ -201,7 +201,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
 
             <div
                 data-testid="board-main-column"
-                className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 max-w-full flex flex-col items-center justify-between sm:justify-center gap-0 overflow-hidden w-full relative z-10 transition-all duration-200`}
+                className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 max-w-full flex flex-col items-center justify-center gap-0 overflow-hidden w-full relative z-10 transition-all duration-200`}
             >
                 <MoveErrorPopToast
                     feedback={lastMoveFeedback}
@@ -320,7 +320,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                             onToggleBestMoveArrows={() => setPreviewBoardMode((m) => (m === 'before' ? 'live' : 'before'))}
                             onReplayMove={handleSyncedReplayMove} onOpenDrawer={onTriggerCoach}
                         />
-                        <div className={`${replay.isLive ? 'sr-only' : 'hidden md:block'} shrink-0 h-8 w-full`}>
+                        <div className={`${replay.isLive ? 'hidden' : 'hidden md:block [@media(max-height:540px)]:!hidden'} shrink-0 h-8 w-full`}>
                             <BoardHorologyBar
                                 totalTurns={effectiveTurns.length} replayIndex={replay.replayIndex} isLive={replay.isLive}
                                 selectedTurn={replay.selectedTurn} officialNotation={replay.officialNotation} viewPhase={replayViewPhase}
