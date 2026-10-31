@@ -4,9 +4,10 @@ import {
     type AIDifficulty,
 } from '../../engine/aiHeuristics';
 import {
-    analyzeBoardMoves,
-    findBestBoardMove,
-} from '../../lib/engine/evaluator';
+    analyzeBtCoreMoves,
+    findBestBtCoreMove,
+} from '../../lib/engine/btCoreEngine';
+import { findBestBtErhMove } from '../../lib/engine/btErhEngine';
 import { selectBotMoveWithBgsage } from '../../lib/engine/bgsageClient';
 import { findOpeningBookSequenceForOpponent, isInitialBoardPosition } from '../../features/openings';
 import { isVisuallyObviousBestMove } from '../../features/personas/botPersonas';
@@ -53,12 +54,21 @@ export function pickLocalMove(
     difficulty: AIDifficulty,
 ): MoveSequence | null {
     try {
+        if (difficulty === 'grandmaster') {
+            const erhBest = findBestBtErhMove(stateWithDice, rolledDice, {
+                candidateMoves: legalSeqs,
+                opponentPr: 6.5,
+                ply: 2,
+                maxGtoSacrificeEmg: 0.015,
+            });
+            if (erhBest?.sequence) return erhBest.sequence;
+        }
         if (difficulty === 'expert' || difficulty === 'grandmaster') {
-            const unified = findBestBoardMove(stateWithDice, rolledDice, 2);
+            const unified = findBestBtCoreMove(stateWithDice, rolledDice, 2);
             if (unified?.sequence) return unified.sequence;
         }
         if (difficulty === 'intermediate' || difficulty === 'beginner') {
-            const analysis = analyzeBoardMoves(stateWithDice, rolledDice, {
+            const analysis = analyzeBtCoreMoves(stateWithDice, rolledDice, {
                 candidateMoves: legalSeqs,
                 ply: 1,
                 maxMoves: 64,
@@ -149,5 +159,5 @@ export async function resolveOpponentMoveSequence({
         // Dernier recours si le réseau client est totalement coupé
     }
 
-    return legalSeqs[0] ?? null;
+    return pickLocalMove(stateWithDice, rolledDice, legalSeqs, difficulty);
 }
