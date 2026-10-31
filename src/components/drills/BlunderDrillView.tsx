@@ -38,14 +38,15 @@ import BlunderDrillFeedbackCard from './BlunderDrillFeedbackCard';
 
 export interface BlunderDrillViewProps {
     initialConceptId?: string;
+    initialMode?: QuizDrillMode;
     onClose?: () => void;
 }
 
-export default function BlunderDrillView({ initialConceptId, onClose }: BlunderDrillViewProps) {
+export default function BlunderDrillView({ initialConceptId, initialMode = 'adaptive', onClose }: BlunderDrillViewProps) {
     const { theme } = useBoardTheme();
     const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptivePlayerProfile>(() => getAdaptivePlayerProfile());
     const [stats, setStats] = useState<BlunderBankStats>(() => getBlunderBankStats());
-    const [drillMode, setDrillMode] = useState<QuizDrillMode>('adaptive');
+    const [drillMode, setDrillMode] = useState<QuizDrillMode>(initialMode);
     const [hearts, setHearts] = useState<number>(5);
     const [streak, setStreak] = useState<number>(0);
     const [xp, setXp] = useState<number>(0);
@@ -388,22 +389,9 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
                     </div>
                 </div>
             ) : (
-                <div className="flex w-full flex-col gap-2.5 sm:gap-3">
-                    <div className="order-2 sm:order-1 w-full">
-                        <BlunderDrillFeedbackCard
-                            currentBlunder={currentBlunder}
-                            currentIndex={quizStepCount}
-                            totalBlunders={stats.totalBlunders}
-                            showHint={showHint}
-                            onToggleHint={() => setShowHint((prev) => !prev)}
-                            onResetAttempt={handleResetCurrentAttempt}
-                            validationResult={validationResult}
-                            onNextBlunder={handleNextBlunder}
-                            onSelectQuizChoice={handleSelectQuizChoice}
-                        />
-                    </div>
-
-                    <div className="order-1 sm:order-2 w-full flex justify-center overflow-x-auto rounded-2xl border border-white/10 bg-[#080a0f] p-0 sm:p-3 max-sm:rounded-none max-sm:border-x-0 shadow-2xl">
+                <div className="flex w-full flex-col gap-2">
+                    {/* 1. LE PLATEAU INTERACTIF TOUT DE SUITE EN HAUT DE L'ÉCRAN */}
+                    <div className="w-full flex justify-center overflow-x-auto rounded-2xl border border-white/10 bg-[#080a0f] p-0 sm:p-2 max-sm:rounded-none max-sm:border-x-0 shadow-2xl">
                         <Board
                             state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets}
                             selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice}
@@ -415,6 +403,21 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
                             onDiceClick={() => setSelectedDie((prev) => (prev === 1 ? 0 : 1))}
                             onDeselect={() => { setSelectedPoint(null); setSelectedDie(null); }}
                             theme={theme}
+                        />
+                    </div>
+
+                    {/* 2. CHOIX QCM EXPRESS, PROFIL PSYCHOLOGIQUE ERH & EXPLICATION SOUS LE PLATEAU */}
+                    <div className="w-full">
+                        <BlunderDrillFeedbackCard
+                            currentBlunder={currentBlunder}
+                            currentIndex={quizStepCount}
+                            totalBlunders={stats.totalBlunders}
+                            showHint={showHint}
+                            onToggleHint={() => setShowHint((prev) => !prev)}
+                            onResetAttempt={handleResetCurrentAttempt}
+                            validationResult={validationResult}
+                            onNextBlunder={handleNextBlunder}
+                            onSelectQuizChoice={handleSelectQuizChoice}
                         />
                     </div>
                 </div>

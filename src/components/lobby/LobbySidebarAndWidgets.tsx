@@ -153,19 +153,19 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     </span>
                 </button>
 
-                {/* 3. Puzzles */}
+                {/* 3. Quizz PR (Mathématique) */}
                 <button type="button" onClick={() => onOpenModule?.('puzzles')} className={itemCls}>
                     <span className="flex items-center gap-2.5">
                         <IconGeometricCompass size={15} className="text-emerald-400" />
-                        {!collapsed && <span>Puzzles</span>}
+                        {!collapsed && <span>Quizz PR</span>}
                     </span>
                 </button>
 
-                {/* 4. Entraînement & Blunders */}
+                {/* 4. Quizz ERH (Psychologie Adverse) */}
                 <button type="button" onClick={() => onOpenModule?.('drills')} className={itemCls}>
                     <span className="flex items-center gap-2.5">
-                        <IconAstrolabeCoach size={15} className="text-rose-400" />
-                        {!collapsed && <span>Entraînement</span>}
+                        <IconAstrolabeCoach size={15} className="text-[#f3d27a]" />
+                        {!collapsed && <span>Quizz ERH</span>}
                     </span>
                 </button>
 
