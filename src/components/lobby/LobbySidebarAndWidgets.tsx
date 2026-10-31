@@ -179,6 +179,13 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         </span>
                         {!collapsed && <span className="font-mono text-[11px] text-emerald-300">5 min</span>}
                     </Link>
+                    <Link href="/academy#er-vs-erh-manifesto" className={itemCls}>
+                        <span className="flex items-center gap-2">
+                            <IconAstrolabeCoach size={15} className="text-[#f3d27a]" />
+                            {!collapsed && <span>Étude ER vs ERH (10 200)</span>}
+                        </span>
+                        {!collapsed && <span className="font-mono text-[11px] font-bold text-[#f3d27a]">+30.9%</span>}
+                    </Link>
                 </div>
 
                 {/* CATÉGORIE III : ANALYSE & OUTILS PRO */}
@@ -372,6 +379,13 @@ export const LobbyRightShowcaseColumn: React.FC<LobbyRightShowcaseColumnProps> =
                         <span className="font-mono font-bold text-rose-300">PR 7.8</span>
                     </div>
                 </div>
+                <Link
+                    href="/academy#er-vs-erh-manifesto"
+                    className="mt-1 flex items-center justify-between rounded-xl border border-emerald-400/30 bg-emerald-950/35 px-2.5 py-1.5 text-[11px] font-bold text-emerald-200 hover:border-emerald-400/60 transition"
+                >
+                    <span>🔬 Pourquoi ERH bat ER (10 200 parties)</span>
+                    <span className="font-mono text-emerald-300">+30,9 % →</span>
+                </Link>
             </div>
         </aside>
     );

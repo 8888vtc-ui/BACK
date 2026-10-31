@@ -17,6 +17,7 @@ import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import AppNavbar from '../nav/AppNavbar';
 import BeginnerInteractiveRulesCourse from './BeginnerInteractiveRulesCourse';
+import ErVsErhBenchmarkShowcase from './ErVsErhBenchmarkShowcase';
 import OpeningRollsTable from './OpeningRollsTable';
 import MatchEquityCalculator from './MatchEquityCalculator';
 import AcademyKnowledgeGrid from './AcademyKnowledgeGrid';
@@ -99,6 +100,9 @@ const GammonAcademyViewComponent: React.FC = () => {
                         </button>
                     </div>
                 </header>
+
+                {/* DÉMONSTRATION SCIENTIFIQUE : ER vs ERH (10 200 Parties vs 100 Robots Humains + 5 000 Machine) */}
+                <ErVsErhBenchmarkShowcase />
 
                 {/* PALIER 1 : Parcours Débutant Interactif */}
                 <div className={showBeginner ? 'space-y-8' : 'hidden'}>
