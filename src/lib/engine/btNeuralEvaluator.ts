@@ -261,7 +261,10 @@ export class BtNeuralEngine {
         const phase6 = classifyPhase6FromFeatures(input);
         this.lastPhase6 = phase6;
 
-        const { w1, b1, w2, b2, w3, b3, linearOut, phaseExperts } = this.weights;
+        const fullNets = this.weights.fullPhaseNetworks;
+        const activeNet = fullNets && fullNets.length === 6 ? fullNets[phase6] : this.weights;
+        const { w1, b1, w2, b2, w3, b3, linearOut } = activeNet;
+        const phaseExperts = fullNets && fullNets.length === 6 ? undefined : this.weights.phaseExperts;
         const expert = phaseExperts && phaseExperts.length === 6 ? phaseExperts[phase6] : undefined;
         const effB2 = expert ? expert.b2Phase : b2;
         const effW3 = expert ? expert.w3Phase : w3;

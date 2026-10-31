@@ -321,13 +321,13 @@ export const ErVsErhBenchmarkShowcase: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="rounded-2xl border border-white/10 bg-[#090d16]/90 p-5 space-y-2.5">
                             <span className="inline-block rounded-lg border border-amber-400/30 bg-amber-500/10 px-2.5 py-1 text-xs font-extrabold text-[#f3c65f]">
-                                ⚡ 1. En Précision Pure (ER) : 6 Réseaux Spécialisés MoE-6 (97,73 %)
+                                ⚡ 1. En Précision Pure (ER) : 6 Réseaux Complets Goliath MoE-6 (251 754 floats)
                             </span>
                             <h3 className="font-serif text-base font-bold text-[#fdf8eb]">
-                                BT-Core v4.0 MoE-6 : 97,73 % d’accord 3-Ply (PR ~ 0,28)
+                                BT-Core v5.0 Goliath MoE-6 : 6 × 41 959 = 251 754 paramètres (1,007 Mo)
                             </h3>
                             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                Au lieu d’un réseau unique, <strong>BT-Neural v4.0 MoE-6</strong> déploie <strong>6 réseaux neuronaux spécialisés par phase</strong> (<code className="text-amber-200">53 329 paramètres float32</code>) : <strong>Contact (97,6 %)</strong>, <strong>Prime (99,2 %)</strong>, <strong>Blitz (97,8 %)</strong>, <strong>Crashed (98,0 %)</strong>, <strong>Backgame (98,6 %)</strong> et <strong>Course Exacte (94,5 % + Table 54 264 états)</strong>.
+                                Au lieu d’un réseau unique ou d’un tronc partagé, <strong>BT-Neural v5.0 Goliath MoE-6</strong> déploie <strong>6 réseaux neuronaux profonds complets et indépendants</strong> (<code className="text-amber-200">6 × 41 959 = 251 754 paramètres float32</code>, soit <code className="text-amber-200">1,007 Mo</code>) : <strong>Contact</strong>, <strong>Prime (98,5 %)</strong>, <strong>Blitz (96,4 %)</strong>, <strong>Crashed</strong>, <strong>Backgame</strong> et <strong>Course Exacte (+ Table 54 264 états)</strong>.
                             </p>
                         </div>
 
