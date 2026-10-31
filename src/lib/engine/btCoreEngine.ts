@@ -48,7 +48,13 @@ import {
     type ScoredCandidate,
 } from './expectiminimax';
 import { classifyStage11Phase, type Stage11BoardState } from './openSageStage11Simd';
-import type { AnalyzeMovesResult, CubeDecisionResult, MoveAnalysis, Probabilities } from './types';
+import type {
+    AnalyzeMovesResult,
+    BestMoveResult,
+    CubeDecisionResult,
+    MoveAnalysis,
+    Probabilities,
+} from './types';
 
 function clamp(v: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, v));
@@ -155,7 +161,7 @@ export function computeBtCoreResidualCorrection(
 /**
  * Évaluateur statique Propriétaire `BT-Core` 100 % antisymétrique (`E(P) = -E(O)`).
  */
-export function evaluateBtCoreBoard(state: BoardState): {
+export function evaluateBtCoreBoard(state: BoardState, _ply?: number): {
     cubelessEquity: number;
     cubefulEquity: number;
     probabilities: Probabilities;
@@ -221,10 +227,18 @@ export function evaluateBtCoreBoard(state: BoardState): {
 export function analyzeBtCoreMoves(
     state: BoardState,
     dice: [number, number],
-    options: { ply?: number; maxMoves?: number; timeBudgetMs?: number } = {},
+    options: {
+        candidateMoves?: MoveSequence[];
+        ply?: number;
+        maxMoves?: number;
+        timeBudgetMs?: number;
+    } = {},
 ): AnalyzeMovesResult {
     const xgid = serializeXGID(state);
-    const candidateSeqs = generateLegalMoves(state, dice);
+    const candidateSeqs =
+        options.candidateMoves && options.candidateMoves.length > 0
+            ? options.candidateMoves
+            : generateLegalMoves(state, dice);
     if (candidateSeqs.length === 0) {
         return { xgid, moves: [], bestMove: null, isWasm: false };
     }
@@ -414,6 +428,37 @@ export function analyzeBtCoreMoves(
 /**
  * Décision de Videau Propriétaire `BT-Core`.
  */
-export function analyzeBtCoreCube(state: BoardState): CubeDecisionResult {
-    return analyzeBoardCube(state, { ply: 2 });
+export function analyzeBtCoreCube(
+    state: BoardState,
+    options: {
+        score?: { scoreX: number; scoreO: number; matchLength?: number };
+        ply?: number;
+    } = {},
+): CubeDecisionResult {
+    return analyzeBoardCube(state, { score: options.score, ply: options.ply ?? 2 });
+}
+
+/**
+ * Détermine le meilleur coup avec `BT-Core v2.0`.
+ */
+export function findBestBtCoreMove(
+    state: BoardState,
+    dice: [number, number],
+    ply: number = 2,
+): BestMoveResult | null {
+    const result = analyzeBtCoreMoves(state, dice, { ply, maxMoves: 1 });
+    if (!result.bestMove || !result.bestMove.moves || !result.bestMove.board) {
+        return null;
+    }
+    return {
+        xgid: result.xgid,
+        notation: result.bestMove.notation,
+        sequence: {
+            moves: result.bestMove.moves,
+            board: result.bestMove.board,
+        },
+        equity: result.bestMove.equity,
+        rank: 1,
+        isWasm: false,
+    };
 }

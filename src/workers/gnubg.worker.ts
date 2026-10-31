@@ -17,10 +17,12 @@
 
 import { serializeXGID } from '../engine/backgammonEngine';
 import {
-    analyzeBoardCube,
-    analyzeBoardMoves,
-    evaluateBoard,
-    findBestBoardMove,
+    analyzeBtCoreCube,
+    analyzeBtCoreMoves,
+    evaluateBtCoreBoard,
+    findBestBtCoreMove,
+} from '../lib/engine/btCoreEngine';
+import {
     resolveBoardState,
 } from '../lib/engine/evaluator';
 import {
@@ -68,7 +70,7 @@ export async function handleRequest(request: WorkerRequest): Promise<unknown> {
             const params = request.payload as EvaluateParams;
             const state = resolveBoardState(params.position, params.player);
             const xgid = serializeXGID(state);
-            const evalResult = evaluateBoard(state, params.ply ?? 2);
+            const evalResult = evaluateBtCoreBoard(state, params.ply ?? 2);
 
             const result: EvaluateResult = {
                 xgid,
@@ -83,7 +85,7 @@ export async function handleRequest(request: WorkerRequest): Promise<unknown> {
         case 'analyzeMoves': {
             const params = request.payload as AnalyzeMovesParams;
             const state = resolveBoardState(params.position);
-            const result = analyzeBoardMoves(state, params.dice, {
+            const result = analyzeBtCoreMoves(state, params.dice, {
                 candidateMoves: params.candidateMoves,
                 ply: params.ply ?? 2,
                 maxMoves: params.maxMoves ?? 5,
@@ -97,7 +99,7 @@ export async function handleRequest(request: WorkerRequest): Promise<unknown> {
         case 'analyzeCube': {
             const params = request.payload as AnalyzeCubeParams;
             const state = resolveBoardState(params.position);
-            const result: CubeDecisionResult = analyzeBoardCube(state, {
+            const result: CubeDecisionResult = analyzeBtCoreCube(state, {
                 score: params.score,
                 ply: params.ply ?? 2,
             });
@@ -110,7 +112,7 @@ export async function handleRequest(request: WorkerRequest): Promise<unknown> {
         case 'bestMove': {
             const params = request.payload as BestMoveParams;
             const state = resolveBoardState(params.position);
-            const result = findBestBoardMove(state, params.dice, params.ply ?? 2);
+            const result = findBestBtCoreMove(state, params.dice, params.ply ?? 2);
             if (!result) {
                 return null;
             }
