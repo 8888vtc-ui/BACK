@@ -92,3 +92,4 @@ describe('BT-ERH v2.0 — Exploitation de la Réponse Humaine (Chequer Play, Pi�
         expect(erh2Ply.erhEquity).toBeGreaterThanOrEqual(erh2Ply.gtoEquity);
     });
 });
+

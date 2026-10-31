@@ -1,0 +1,40 @@
+{
+  "campaignName": "BT-Core v2.0 (3-Ply Selective) vs GNU Backgammon 3-Ply [world class] — 5,000-Game Campaign",
+  "executedAt": "2026-10-31T11:52:18.529Z",
+  "elapsedSeconds": 96.55,
+  "zeroDataLostFiles": {
+    "gamesJsonlPath": "data/campaign/bt_core_5000_games.jsonl",
+    "reportJsonPath": "data/campaign/bt_core_5000_report.json",
+    "quizzesTsPath": "src/features/drills/btCore5000HarvestSeeds.ts"
+  },
+  "duplicateArena5000Games": {
+    "totalGamesPlayed": 5000,
+    "totalDuplicatePairs": 2500,
+    "matchFormatsTested": [
+      0,
+      3,
+      5,
+      7,
+      9,
+      11
+    ],
+    "btCoreWins": 2697,
+    "opponentWins": 2303,
+    "btCoreWinRatePct": 53.94,
+    "btCoreTotalPoints": 3087,
+    "opponentTotalPoints": 2664,
+    "netPointsAdvantageBtCore": 423,
+    "duplicatePairsWonByBtCore": 680,
+    "duplicatePairsWonByOpponent": 519,
+    "duplicatePairsTied": 1301
+  },
+  "gnubg3PlyWorldClassValidation": {
+    "engineReference": "GNU Backgammon 1.08.003 (2-ply cubeful prune [world class] = 3-ply XG convention)",
+    "certifiedPositionsCount": 213,
+    "top1ExactAgreementPct": 31,
+    "top2AgreementPct": 37.1,
+    "avgEmgLossPerDecision": 0.02977,
+    "officialXgPerformanceRatingPr": 14.88
+  },
+  "newQuizzesGeneratedCount": 192
+}
