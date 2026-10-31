@@ -175,6 +175,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                 <LobbyLeftSidebar
                     selectedMode={selectedMode} matchLength={matchLength} isSubmenuOpen={showOptions}
                     onQuickPlay={handlePlay}
+                    onFindOpponent={() => onOpenModule?.('multiplayer')}
+                    onOpenPassport={() => setIsPassportGateOpen(true)}
                     onSelectMoneyGame={() => { setSelectedMode('ai'); setMatchLength(0); setShowOptions(true); }}
                     onSelectMatchGame={() => { setSelectedMode('ai'); setMatchLength((prev) => (prev === 0 ? 7 : prev)); setShowOptions(true); }}
                     onSelectAiMode={() => { setSelectedMode('ai'); setShowOptions(true); }}
@@ -185,15 +187,24 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
 
                 <div className="mx-auto flex flex-1 w-full max-w-6xl items-start justify-center gap-6 px-4 py-5 sm:px-8 sm:py-6">
                     <div className={`flex flex-1 min-w-0 ${showOptions ? 'max-w-5xl' : 'max-w-3xl'} flex-col gap-4`}>
-                        <header className="flex w-full flex-col sm:flex-row items-center justify-between gap-1 border-b border-[#d4af37]/20 pb-3">
+                        <header className="flex w-full flex-col sm:flex-row items-center justify-between gap-2 border-b border-[#d4af37]/20 pb-3">
                             <div className="flex items-center gap-2.5">
                                 <h1 className="font-display text-2xl sm:text-3xl italic font-bold tracking-wide text-[#f7f3e8]">BACKGAMMON</h1>
                                 <span className="rounded border border-[#d4af37]/35 bg-[#d4af37]/10 px-2.5 py-0.5 text-[11px] font-semibold tracking-wider uppercase text-[#f3d27a]">{ui.lobby.subtitle}</span>
                             </div>
-                            <span data-testid="lobby-auth-status" className="inline-flex items-center gap-1.5 text-xs text-stone-400">
-                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                            <button
+                                type="button"
+                                data-testid="lobby-auth-status"
+                                onClick={() => setIsPassportGateOpen(true)}
+                                title="Modifier mon profil, mes 5 avatars et mon passeport joueur"
+                                className="inline-flex items-center gap-2 rounded-full border border-[#d4af37]/35 bg-[#14100c] px-3 py-1 text-xs font-semibold text-stone-200 hover:border-[#f3c65f] hover:text-white transition"
+                            >
+                                <span className="h-2 w-2 rounded-full bg-emerald-400" />
                                 <span>{displayName ? `${ui.lobby.activeMemberPrefix} · ${displayName}` : ui.lobby.privateSalonSession}</span>
-                            </span>
+                                <span className="rounded bg-[#d4af37]/15 px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#f3c65f]">
+                                    {snapshot.eloRating} Elo {snapshot.averagePR !== null ? `· PR ${snapshot.averagePR.toFixed(1)}` : '· 5 Avatars'}
+                                </span>
+                            </button>
                         </header>
 
                         {selectedMode === 'ai' && showOptions && (
@@ -316,8 +327,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                 </div>
                                                 {matchLength > 0 ? (
                                                     <div className="inline-flex items-center gap-1" role="group" aria-label="Points du match">
-                                                        {[1, 3, 5, 7, 11].map((pts) => (
-                                                            <button key={pts} type="button" data-testid={`lobby-quick-pts-${pts}`} aria-pressed={matchLength === pts} onClick={() => setMatchLength(pts)} className={`rounded-lg border px-2.5 py-1 font-mono text-xs font-bold transition ${matchLength === pts ? 'border-[#f3c65f] bg-[#f3c65f]/20 text-[#f3c65f]' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'}`}>{pts === 1 ? '1 pt' : `${pts} pts`}</button>
+                                                        {[3, 5, 7, 9, 11].map((pts) => (
+                                                            <button key={pts} type="button" data-testid={`lobby-quick-pts-${pts}`} aria-pressed={matchLength === pts} onClick={() => setMatchLength(pts)} className={`rounded-lg border px-2.5 py-1 font-mono text-xs font-bold transition ${matchLength === pts ? 'border-[#f3c65f] bg-[#f3c65f]/20 text-[#f3c65f]' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/25 hover:text-white'}`}>{`${pts} pts`}</button>
                                                         ))}
                                                     </div>
                                                 ) : (
@@ -340,8 +351,20 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 )}
 
                                 <div className="max-sm:sticky max-sm:bottom-2 max-sm:z-30 max-sm:rounded-2xl max-sm:bg-[#0e0b08]/95 max-sm:p-2 max-sm:shadow-2xl max-sm:backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1" data-testid="lobby-tournament-quickbar">
-                                    <button type="button" data-testid="lobby-start-btn" onClick={handlePlay} className="flex-1 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#f3c65f] via-[#f7d77e] to-[#e5b548] px-6 py-3 text-sm sm:text-base font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_20px_rgba(243,198,95,0.35)] transition hover:brightness-105 active:scale-[0.99]">
-                                        🎲 {selectedMode === 'multiplayer' ? ui.lobby.cardMultiTitle : selectedMode === 'training' ? ui.lobby.cardTrainingTitle : `${ui.lobby.playNow} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`}
+                                    <button
+                                        type="button"
+                                        data-testid="lobby-find-opponent-btn"
+                                        onClick={() => onOpenModule?.('multiplayer')}
+                                        className="flex-1 rounded-xl border border-emerald-400/50 bg-gradient-to-r from-[#0d3b26] via-[#135337] to-[#0d3b26] px-4 py-3 text-xs sm:text-sm font-black uppercase tracking-wider text-emerald-100 shadow-[0_4px_20px_rgba(16,185,129,0.25)] transition hover:brightness-110 active:scale-[0.99]"
+                                    >
+                                        ⚡ Trouver un Adversaire (100 Joueurs)
+                                    </button>
+                                    <button type="button" data-testid="lobby-start-btn" onClick={handlePlay} className="flex-1 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#f3c65f] via-[#f7d77e] to-[#e5b548] px-5 py-3 text-xs sm:text-sm font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_20px_rgba(243,198,95,0.35)] transition hover:brightness-105 active:scale-[0.99]">
+                                        ⚔️ {selectedMode === 'multiplayer'
+                                            ? ui.lobby.cardMultiTitle
+                                            : selectedMode === 'training'
+                                                ? ui.lobby.cardTrainingTitle
+                                                : `DÉFIER ${isMittensActive ? 'LORD MITTENS' : selectedPersona.shortName.toUpperCase()} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`}
                                     </button>
                                     <div className="flex items-center justify-end gap-1.5 shrink-0">
                                         <button type="button" data-testid="lobby-quick-scanner-btn" onClick={() => onOpenModule?.('import_export')} className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/[0.08] hover:text-white transition touch-manipulation">📷 Scanner</button>
@@ -353,12 +376,26 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
 
                         {selectedMode === 'training' && (
                             <section data-testid="lobby-training-submenu" className="grid w-full grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                <Link href="/drills?mode=personal_blunders" data-testid="lobby-training-personal-blunders-btn" className="flex items-center justify-between rounded-xl border border-rose-400/35 bg-[#1a1016] p-3.5 text-left transition hover:border-rose-400/60">
+                                    <div>
+                                        <div className="text-sm font-bold text-rose-100">🔥 Revoir mes Blunders</div>
+                                        <div className="text-xs text-rose-200/80">Quizz personnalisé généré depuis vos propres erreurs</div>
+                                    </div>
+                                    <span className="rounded-lg border border-rose-400/40 bg-rose-500/15 px-2.5 py-1 text-xs font-semibold text-rose-200">{ui.lobby.openBtn}</span>
+                                </Link>
+                                <button type="button" data-testid="lobby-training-drills-btn" onClick={() => onOpenModule?.('drills')} className="flex items-center justify-between rounded-xl border border-white/10 bg-[#121629] p-3.5 text-left transition hover:border-white/20">
+                                    <div><div className="text-sm font-bold text-white">{ui.lobby.blunderDrillsTitle}</div><div className="text-xs text-slate-400">{ui.lobby.blunderDrillsDesc}</div></div>
+                                    <span className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-[#f3c65f]">{ui.lobby.openBtn}</span>
+                                </button>
                                 <button type="button" data-testid="lobby-training-puzzles-btn" onClick={() => onOpenModule?.('puzzles')} className="flex items-center justify-between rounded-xl border border-white/10 bg-[#121629] p-3.5 text-left transition hover:border-white/20">
                                     <div><div className="text-sm font-bold text-white">{ui.lobby.dailyPuzzlesTitle}</div><div className="text-xs text-slate-400">{ui.lobby.dailyPuzzlesDesc}</div></div>
                                     <span className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-[#f3c65f]">{ui.lobby.openBtn}</span>
                                 </button>
-                                <button type="button" data-testid="lobby-training-drills-btn" onClick={() => onOpenModule?.('drills')} className="flex items-center justify-between rounded-xl border border-white/10 bg-[#121629] p-3.5 text-left transition hover:border-white/20">
-                                    <div><div className="text-sm font-bold text-white">{ui.lobby.blunderDrillsTitle}</div><div className="text-xs text-slate-400">{ui.lobby.blunderDrillsDesc}</div></div>
+                                <button type="button" data-testid="lobby-training-openings-btn" onClick={() => onOpenModule?.('openings')} className="flex items-center justify-between rounded-xl border border-white/10 bg-[#121629] p-3.5 text-left transition hover:border-white/20">
+                                    <div>
+                                        <div className="text-sm font-bold text-white">📖 Les 15 Ouvertures XG & Règles</div>
+                                        <div className="text-xs text-slate-400">Encyclopédie interactive des 15 lancers initiaux</div>
+                                    </div>
                                     <span className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-[#f3c65f]">{ui.lobby.openBtn}</span>
                                 </button>
                             </section>

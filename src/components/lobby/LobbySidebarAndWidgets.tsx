@@ -30,6 +30,8 @@ export interface LobbyLeftSidebarProps {
     readonly matchLength: number;
     readonly isSubmenuOpen?: boolean;
     readonly onQuickPlay: () => void;
+    readonly onFindOpponent?: () => void;
+    readonly onOpenPassport?: () => void;
     readonly onSelectMoneyGame: () => void;
     readonly onSelectMatchGame: () => void;
     readonly onSelectAiMode: () => void;
@@ -44,6 +46,8 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     matchLength,
     isSubmenuOpen = false,
     onQuickPlay,
+    onFindOpponent,
+    onOpenPassport,
     onSelectMoneyGame,
     onSelectMatchGame,
     onSelectAiMode,
@@ -65,19 +69,19 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                 }`}
         >
             <div className="flex flex-col gap-2 w-full">
-                {/* CTA Table Immédiate Or Champagne */}
+                {/* CTA Trouver un Adversaire Or Champagne */}
                 <button
                     type="button"
                     data-testid="sidebar-quick-play-btn"
-                    onClick={onQuickPlay}
-                    title="Ouvrir une table immédiate"
-                    className="mb-1 flex w-full items-center justify-center gap-2 rounded-xl border border-[#f5dfa0]/60 bg-gradient-to-r from-[#d4af37] via-[#f3d27a] to-[#b88924] px-3 py-2.5 text-xs font-extrabold uppercase tracking-widest text-[#090806] shadow-[0_4px_20px_rgba(212,175,55,0.3)] transition hover:brightness-105 active:scale-95"
+                    onClick={onFindOpponent ?? onQuickPlay}
+                    title="Trouver un adversaire international ou lancer une table"
+                    className="mb-1 flex w-full items-center justify-center gap-2 rounded-xl border border-[#f5dfa0]/60 bg-gradient-to-r from-[#d4af37] via-[#f3d27a] to-[#b88924] px-3 py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#090806] shadow-[0_4px_20px_rgba(212,175,55,0.3)] transition hover:brightness-105 active:scale-95"
                 >
                     <IconLuxuryDice className="text-[#090806]" size={16} />
-                    {!collapsed && <span>Table Immédiate</span>}
+                    {!collapsed && <span>⚡ Trouver un Adversaire</span>}
                 </button>
 
-                {/* CATÉGORIE I : TABLES DU SALON */}
+                {/* CATÉGORIE I : JOUER & MATCHMAKING */}
                 <div className="flex flex-col gap-0.5">
                     <button
                         type="button"
@@ -88,13 +92,25 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     >
                         <span className="flex items-center gap-2">
                             <IconLuxuryDice size={14} />
-                            {!collapsed && <span>I. Tables du Salon</span>}
+                            {!collapsed && <span>I. Jouer & Matchmaking</span>}
                         </span>
                         {!collapsed && <span aria-hidden="true">{playGroupExpanded ? '▾' : '▸'}</span>}
                     </button>
 
                     {(playGroupExpanded || collapsed) && (
                         <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-2 border-l border-[#d4af37]/20 ml-2'}`}>
+                            <button
+                                type="button"
+                                data-testid="sidebar-submenu-find-opponent"
+                                onClick={() => (onFindOpponent ? onFindOpponent() : onOpenModule?.('multiplayer'))}
+                                className="flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-white/5 hover:text-white transition"
+                            >
+                                <span className="flex items-center gap-2">
+                                    <IconWorldTourLive size={15} />
+                                    {!collapsed && <span>Trouver un Adversaire</span>}
+                                </span>
+                                {!collapsed && <span className="font-mono text-[11px] font-bold text-emerald-300">100</span>}
+                            </button>
                             <button
                                 type="button"
                                 data-testid="sidebar-submenu-money"
@@ -117,7 +133,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                     }`}
                             >
                                 <IconLuxuryCrown size={15} />
-                                {!collapsed && <span>Match (1–11 pts · Crawford)</span>}
+                                {!collapsed && <span>Match (3, 5, 7, 9, 11 pts)</span>}
                             </button>
                             <button
                                 type="button"
@@ -126,7 +142,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-stone-300 hover:bg-white/5 hover:text-white transition"
                             >
                                 <IconAstrolabeCoach size={15} />
-                                {!collapsed && <span>Jouer contre l’IA 3-Ply</span>}
+                                {!collapsed && <span>Les 5 Bots (MoE-6 & ERH)</span>}
                             </button>
                             <button
                                 type="button"
@@ -144,26 +160,33 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     )}
                 </div>
 
-                {/* CATÉGORIE II : ACADÉMIE & ENTRAÎNEMENT */}
+                {/* CATÉGORIE II : QUIZZ ÉVOLUTIFS & BLUNDERS */}
                 <div className="flex flex-col gap-0.5 pt-1 border-t border-[#d4af37]/15">
                     {!collapsed && (
                         <span className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-[#d4af37]">
-                            II. Académie & Drills
+                            II. Quizz Évolutifs & Blunders
                         </span>
                     )}
+                    <Link href="/drills?mode=personal_blunders" data-testid="sidebar-personal-blunders-link" className={itemCls}>
+                        <span className="flex items-center gap-2">
+                            <IconAstrolabeCoach size={15} className="text-rose-400" />
+                            {!collapsed && <span>Revoir mes Blunders</span>}
+                        </span>
+                        {!collapsed && <span className="rounded bg-rose-500/20 border border-rose-400/40 px-1.5 py-0.2 font-mono text-[11px] font-bold text-rose-200">PERSO</span>}
+                    </Link>
+                    <button type="button" onClick={() => onOpenModule?.('drills')} className={itemCls}>
+                        <span className="flex items-center gap-2">
+                            <IconAstrolabeCoach size={15} />
+                            {!collapsed && <span>Quizz ER & ERH (GNU)</span>}
+                        </span>
+                        {!collapsed && <span className="rounded bg-amber-500/20 border border-amber-400/40 px-1.5 py-0.2 font-mono text-[11px] font-bold text-amber-200">19 413</span>}
+                    </button>
                     <button type="button" onClick={() => onOpenModule?.('puzzles')} className={itemCls}>
                         <span className="flex items-center gap-2">
                             <IconGeometricCompass size={15} />
                             {!collapsed && <span>Puzzles Quotidiens</span>}
                         </span>
                         {!collapsed && <span className="font-mono text-[11px] font-bold text-[#f3d27a]">1/7</span>}
-                    </button>
-                    <button type="button" onClick={() => onOpenModule?.('drills')} className={itemCls}>
-                        <span className="flex items-center gap-2">
-                            <IconAstrolabeCoach size={15} />
-                            {!collapsed && <span>Drills de Blunders</span>}
-                        </span>
-                        {!collapsed && <span className="rounded bg-rose-500/20 border border-rose-400/40 px-1.5 py-0.2 font-mono text-[11px] font-bold text-rose-200">FSRS</span>}
                     </button>
                     <button type="button" onClick={() => onOpenModule?.('openings')} className={itemCls}>
                         <span className="flex items-center gap-2">
@@ -175,7 +198,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     <Link href="/academy#learn-rules" className={itemCls}>
                         <span className="flex items-center gap-2">
                             <IconLuxuryCrown size={15} className="text-emerald-400" />
-                            {!collapsed && <span>Règles en 5 min & Guides</span>}
+                            {!collapsed && <span>Règles Débutant (5 étapes)</span>}
                         </span>
                         {!collapsed && <span className="font-mono text-[11px] text-emerald-300">5 min</span>}
                     </Link>
@@ -188,11 +211,11 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     </Link>
                 </div>
 
-                {/* CATÉGORIE III : ANALYSE & OUTILS PRO */}
+                {/* CATÉGORIE III : ANALYSE, PROFIL & OUTILS PRO */}
                 <div className="flex flex-col gap-0.5 pt-1 border-t border-[#d4af37]/15">
                     {!collapsed && (
                         <span className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-[#d4af37]">
-                            III. Analyse & Outils Pro
+                            III. Analyse, Profil & Outils
                         </span>
                     )}
                     <button type="button" onClick={() => onOpenModule?.('stats')} className={itemCls}>
@@ -201,6 +224,14 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             {!collapsed && <span>Progression, ELO & PR</span>}
                         </span>
                     </button>
+                    {onOpenPassport && (
+                        <button type="button" data-testid="sidebar-passport-btn" onClick={onOpenPassport} className={itemCls}>
+                            <span className="flex items-center gap-2">
+                                <IconLuxuryCrown size={15} className="text-[#f3d27a]" />
+                                {!collapsed && <span>Mon Profil & 5 Avatars</span>}
+                            </span>
+                        </button>
+                    )}
                     <button type="button" onClick={() => onOpenModule?.('import_export')} className={itemCls}>
                         <span className="flex items-center gap-2">
                             <IconCameraScanner size={15} />
@@ -217,8 +248,8 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     )}
                 </div>
 
-                {/* CATÉGORIE IV : CIRCUIT MONDIAL LIVE */}
-                <div className="flex flex-col gap-0.5 pt-1 border-t border-[#d4af37]/15">
+                {/* CATÉGORIE IV : CLUBS & TOURNOIS MONDIAUX */}
+                <div className="flex flex-col gap-1 pt-1 border-t border-[#d4af37]/15">
                     <button
                         type="button"
                         data-testid="sidebar-tournaments-live-btn"
@@ -235,6 +266,16 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             </span>
                         )}
                     </button>
+                    <Link
+                        href="/tournaments#clubs-map"
+                        data-testid="sidebar-clubs-directory-link"
+                        className={itemCls}
+                    >
+                        <span className="flex items-center gap-2">
+                            <IconWorldTourLive size={15} className="text-emerald-400" />
+                            {!collapsed && <span>Carte des Clubs & Inscrire</span>}
+                        </span>
+                    </Link>
                 </div>
             </div>
 
