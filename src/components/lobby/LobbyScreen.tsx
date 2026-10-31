@@ -67,7 +67,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     const [snapshot, setSnapshot] = useState<AcademyProgressSnapshot>(() => getSyncAcademySnapshot());
     const [recentMatches, setRecentMatches] = useState<RecentMatchEntry[]>([]);
     const [isMittensActive, setIsMittensActive] = useState<boolean>(false);
-    const [fairBag36Enabled, setFairBag36Enabled] = useState<boolean>(false);
 
     const matchFormats = useMemo(() => [
         { value: 0, label: ui.lobby.moneyGame, hint: ui.lobby.formatMoneyHint },
@@ -187,22 +186,22 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
 
                 <div className="mx-auto flex flex-1 w-full max-w-6xl items-start justify-center gap-6 px-4 py-5 sm:px-8 sm:py-6">
                     <div className={`flex flex-1 min-w-0 ${showOptions ? 'max-w-5xl' : 'max-w-3xl'} flex-col gap-4`}>
-                        <header className="flex w-full flex-col sm:flex-row items-center justify-between gap-2 border-b border-[#d4af37]/20 pb-3">
+                        <header className="flex w-full flex-col sm:flex-row items-center justify-between gap-2 border-b border-white/10 pb-3">
                             <div className="flex items-center gap-2.5">
-                                <h1 className="font-display text-2xl sm:text-3xl italic font-bold tracking-wide text-[#f7f3e8]">BACKGAMMON</h1>
-                                <span className="rounded border border-[#d4af37]/35 bg-[#d4af37]/10 px-2.5 py-0.5 text-[11px] font-semibold tracking-wider uppercase text-[#f3d27a]">{ui.lobby.subtitle}</span>
+                                <h1 className="font-display text-xl sm:text-2xl italic font-bold tracking-wide text-[#f7f3e8]">BACKGAMMON</h1>
+                                <span className="rounded border border-[#d4af37]/35 bg-[#d4af37]/10 px-2 py-0.5 text-[11px] font-semibold tracking-wider uppercase text-[#f3d27a]">{ui.lobby.subtitle}</span>
                             </div>
                             <button
                                 type="button"
                                 data-testid="lobby-auth-status"
                                 onClick={() => setIsPassportGateOpen(true)}
-                                title="Modifier mon profil, mes 5 avatars et mon passeport joueur"
-                                className="inline-flex items-center gap-2 rounded-full border border-[#d4af37]/35 bg-[#14100c] px-3 py-1 text-xs font-semibold text-stone-200 hover:border-[#f3c65f] hover:text-white transition"
+                                title="Mon profil joueur"
+                                className="inline-flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-stone-200 hover:border-[#f3c65f] hover:text-white transition"
                             >
                                 <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                                <span>{displayName ? `${ui.lobby.activeMemberPrefix} · ${displayName}` : ui.lobby.privateSalonSession}</span>
-                                <span className="rounded bg-[#d4af37]/15 px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#f3c65f]">
-                                    {snapshot.eloRating} Elo {snapshot.averagePR !== null ? `· PR ${snapshot.averagePR.toFixed(1)}` : '· 5 Avatars'}
+                                <span>{displayName ?? 'Invité'}</span>
+                                <span className="rounded bg-[#d4af37]/15 px-2 py-0.5 font-mono text-[11px] font-bold text-[#f3c65f]">
+                                    📊 {snapshot.eloRating} Elo {snapshot.averagePR !== null ? `· PR ${snapshot.averagePR.toFixed(1)}` : ''}
                                 </span>
                             </button>
                         </header>
@@ -293,32 +292,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                             </button>
                                         </div>
 
-                                        {/* Focus Grand Portrait & Réplique de Caractère de l'Adversaire Sélectionné */}
-                                        <div
-                                            data-testid="lobby-persona-spotlight"
-                                            className="flex flex-col sm:flex-row items-center gap-3.5 rounded-2xl border border-[#d4af37]/35 bg-gradient-to-r from-[#1c140b] via-[#120e09] to-[#1c140b] p-3.5 shadow-inner"
-                                        >
-                                            <BotPortraitMedallion character={isMittensActive ? 'mittens' : difficulty} size="lg" isActive />
-                                            <div className="flex-1 min-w-0 text-center sm:text-left space-y-1">
-                                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                                    <span className="font-display text-lg sm:text-xl italic font-black text-[#f7f3e8]">
-                                                        {isMittensActive ? 'Lord Mittens — Le Sphynx de Monte-Carlo' : selectedPersona.name}
-                                                    </span>
-                                                    <span className="rounded-full border border-[#f3c65f]/50 bg-[#f3c65f]/15 px-2.5 py-0.5 font-mono text-[11px] font-extrabold text-[#f3c65f]">
-                                                        {isMittensActive ? 'Elo ??? · PR 0.1' : `${BOT_ELO_BY_DIFF[difficulty]} · PR ${selectedPersona.targetErrorRate}`}
-                                                    </span>
-                                                </div>
-                                                <p className="text-xs sm:text-sm italic text-amber-100/95 leading-snug">
-                                                    « {isMittensActive
-                                                        ? 'Miaou… Tes portes sont charmantes, mais j’ai déjà calculé tes 36 prochains lancers.'
-                                                        : selectedPersona.dialogues.opening.fun} »
-                                                </p>
-                                                <div className="text-[11px] font-semibold text-emerald-300">
-                                                    🎯 Défi tactique : {isMittensActive ? 'Survie contre le réseau neuronal 3-ply sans concession' : `${selectedPersona.skillTaught} (${selectedPersona.lobbyHint})`}
-                                                </div>
-                                            </div>
-                                        </div>
-
                                         <div data-testid="lobby-direct-format-bar" className="flex flex-wrap items-center justify-between gap-2 pt-1">
                                             <div className="flex flex-wrap items-center gap-1.5">
                                                 <div className="inline-flex rounded-xl border border-white/10 bg-black/40 p-0.5">
@@ -334,14 +307,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                 ) : (
                                                     <span data-testid="lobby-money-rule-badge" className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-300">Partie libre continue</span>
                                                 )}
-                                                <button
-                                                    type="button" data-testid="lobby-fairbag36-toggle" aria-pressed={fairBag36Enabled}
-                                                    onClick={() => setFairBag36Enabled((v) => !v)}
-                                                    title="Mode Anti-Paranoïa Gammon36 : tirage sans remise des 36 combinaisons de dés (zéro série truquée)"
-                                                    className={`rounded-lg border px-2.5 py-1 text-xs font-semibold transition ${fairBag36Enabled ? 'border-emerald-400/60 bg-emerald-500/15 text-emerald-200' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'}`}
-                                                >
-                                                    🛡 {fairBag36Enabled ? 'Sac 36 Dés Actif' : 'Dés SHA-256'}
-                                                </button>
                                             </div>
                                             <button type="button" onClick={() => setShowOptions((v) => !v)} aria-expanded={showOptions} data-testid="lobby-options-toggle" className={`flex items-center gap-1.5 rounded-xl border px-3 py-1 text-xs font-semibold text-slate-200 transition ${showOptions ? 'border-[#f3c65f] bg-slate-800' : 'border-white/10 bg-black/30 hover:border-white/20'}`}>
                                                 <span>⚙️ {showOptions ? ui.lobby.collapse : ui.lobby.configure}</span>
@@ -351,20 +316,12 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 )}
 
                                 <div className="max-sm:sticky max-sm:bottom-2 max-sm:z-30 max-sm:rounded-2xl max-sm:bg-[#0e0b08]/95 max-sm:p-2 max-sm:shadow-2xl max-sm:backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1" data-testid="lobby-tournament-quickbar">
-                                    <button
-                                        type="button"
-                                        data-testid="lobby-find-opponent-btn"
-                                        onClick={() => onOpenModule?.('multiplayer')}
-                                        className="flex-1 rounded-xl border border-emerald-400/50 bg-gradient-to-r from-[#0d3b26] via-[#135337] to-[#0d3b26] px-4 py-3 text-xs sm:text-sm font-black uppercase tracking-wider text-emerald-100 shadow-[0_4px_20px_rgba(16,185,129,0.25)] transition hover:brightness-110 active:scale-[0.99]"
-                                    >
-                                        ⚡ Trouver un Adversaire (100 Joueurs)
-                                    </button>
-                                    <button type="button" data-testid="lobby-start-btn" onClick={handlePlay} className="flex-1 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#f3c65f] via-[#f7d77e] to-[#e5b548] px-5 py-3 text-xs sm:text-sm font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_20px_rgba(243,198,95,0.35)] transition hover:brightness-105 active:scale-[0.99]">
-                                        ⚔️ {selectedMode === 'multiplayer'
+                                    <button type="button" data-testid="lobby-start-btn" onClick={handlePlay} className="flex-1 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#f3c65f] via-[#f7d77e] to-[#e5b548] px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_20px_rgba(243,198,95,0.35)] transition hover:brightness-105 active:scale-[0.99]">
+                                        🎲 {selectedMode === 'multiplayer'
                                             ? ui.lobby.cardMultiTitle
                                             : selectedMode === 'training'
                                                 ? ui.lobby.cardTrainingTitle
-                                                : `DÉFIER ${isMittensActive ? 'LORD MITTENS' : selectedPersona.shortName.toUpperCase()} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`}
+                                                : `${isMittensActive ? 'Lord Mittens' : selectedPersona.shortName} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`}
                                     </button>
                                     <div className="flex items-center justify-end gap-1.5 shrink-0">
                                         <button type="button" data-testid="lobby-quick-scanner-btn" onClick={() => onOpenModule?.('import_export')} className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/[0.08] hover:text-white transition touch-manipulation">📷 Scanner</button>
@@ -372,6 +329,57 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Section Tournois Style Backgammon Galaxy */}
+                            <section
+                                aria-label="Tournois et événements"
+                                data-testid="lobby-galaxy-tournaments-box"
+                                className="rounded-2xl border border-white/10 bg-[#121629]/80 p-3.5 shadow-xl"
+                            >
+                                <div className="mb-2.5 flex items-center justify-between">
+                                    <span className="flex items-center gap-2 text-sm font-bold text-white">
+                                        <span>🏆</span>
+                                        <span>Tournois</span>
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => onOpenModule?.('tournaments')}
+                                        className="text-xs font-semibold text-slate-400 hover:text-white transition"
+                                    >
+                                        Tout ›
+                                    </button>
+                                </div>
+                                <div className="space-y-1.5">
+                                    {[
+                                        { time: 'En cours', title: 'Monte-Carlo Championship', format: 'Normal · 7 pts', club: '🇲🇨 Monaco', action: 'Voir' },
+                                        { time: '19h30', title: 'Tournoi Rapide du Soir', format: 'Speed · 5 pts', club: '🇫🇷 Paris', action: 'Rejoindre' },
+                                        { time: 'Demain', title: 'Open International WBGF', format: 'Normal · 9 pts', club: '🌍 Global', action: 'Calendrier' },
+                                    ].map((tItem) => (
+                                        <div
+                                            key={tItem.title}
+                                            className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-xs"
+                                        >
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <span className="shrink-0 rounded-md bg-emerald-500/15 border border-emerald-400/30 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-300">
+                                                    {tItem.time}
+                                                </span>
+                                                <span className="font-bold text-white truncate">{tItem.title}</span>
+                                                <span className="hidden sm:inline text-slate-400">{tItem.format}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <span className="hidden md:inline text-slate-300">{tItem.club}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onOpenModule?.('tournaments')}
+                                                    className="rounded-lg bg-[#f3c65f]/20 border border-[#f3c65f]/40 px-2.5 py-1 text-xs font-bold text-[#f3c65f] hover:bg-[#f3c65f] hover:text-slate-950 transition"
+                                                >
+                                                    {tItem.action}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
                         </div>
 
                         {selectedMode === 'training' && (
@@ -379,7 +387,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 <Link href="/drills?mode=personal_blunders" data-testid="lobby-training-personal-blunders-btn" className="flex items-center justify-between rounded-xl border border-rose-400/35 bg-[#1a1016] p-3.5 text-left transition hover:border-rose-400/60">
                                     <div>
                                         <div className="text-sm font-bold text-rose-100">🔥 Revoir mes Blunders</div>
-                                        <div className="text-xs text-rose-200/80">Quizz personnalisé généré depuis vos propres erreurs</div>
+                                        <div className="text-xs text-rose-200/80">Corrigez vos erreurs issues de vos parties</div>
                                     </div>
                                     <span className="rounded-lg border border-rose-400/40 bg-rose-500/15 px-2.5 py-1 text-xs font-semibold text-rose-200">{ui.lobby.openBtn}</span>
                                 </Link>
@@ -393,7 +401,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 </button>
                                 <button type="button" data-testid="lobby-training-openings-btn" onClick={() => onOpenModule?.('openings')} className="flex items-center justify-between rounded-xl border border-white/10 bg-[#121629] p-3.5 text-left transition hover:border-white/20">
                                     <div>
-                                        <div className="text-sm font-bold text-white">📖 Les 15 Ouvertures XG & Règles</div>
+                                        <div className="text-sm font-bold text-white">📖 Les 15 Ouvertures</div>
                                         <div className="text-xs text-slate-400">Encyclopédie interactive des 15 lancers initiaux</div>
                                     </div>
                                     <span className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-semibold text-[#f3c65f]">{ui.lobby.openBtn}</span>
@@ -430,40 +438,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                             {recentMatches.length > 0 && (
                                 <RecentMatchesSummary matches={recentMatches} onReviewMatch={() => onOpenModule?.('stats')} onOpenImportExport={() => onOpenModule?.('import_export')} />
                             )}
-
-                            {/* Annuaire SEO On-Page & Maillage Interne Crawlable */}
-                            <footer
-                                aria-label="Annuaire Stratégique Backgammon Tour & Cercle Monte-Carlo"
-                                data-testid="lobby-seo-directory-footer"
-                                className="mt-2 rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-[11px] text-stone-400 space-y-2"
-                            >
-                                <div className="font-bold uppercase tracking-wider text-[#f3c65f]">
-                                    ⚜️ Encyclopédie Backgammon, Méthode ERH &amp; Éditions par Pays
-                                </div>
-                                <div className="flex flex-wrap gap-x-3 gap-y-1">
-                                    <Link href="/academy#learn-rules" className="hover:text-white underline-offset-2 hover:underline">Règles du Backgammon en 5 min</Link>
-                                    <Link href="/drills" className="hover:text-white underline-offset-2 hover:underline">Quizz ERH &amp; Revoir Mes Blunders</Link>
-                                    <Link href="/daily-puzzle" className="hover:text-white underline-offset-2 hover:underline">Puzzle Backgammon du Jour</Link>
-                                    <Link href="/academy/openings/3-1" className="hover:text-white underline-offset-2 hover:underline">Ouverture 3-1 (Point 5)</Link>
-                                    <Link href="/academy/openings/6-1" className="hover:text-white underline-offset-2 hover:underline">Ouverture 6-1 (Bar Point)</Link>
-                                    <Link href="/academy/openings/4-2" className="hover:text-white underline-offset-2 hover:underline">Ouverture 4-2 (Point 4)</Link>
-                                    <Link href="/academy/concepts/golden-point" className="hover:text-white underline-offset-2 hover:underline">Golden Point (Case 5)</Link>
-                                    <Link href="/academy/concepts/take-point" className="hover:text-white underline-offset-2 hover:underline">Videau &amp; Take Point 21,5 %</Link>
-                                    <Link href="/academy/concepts/woolsey-law" className="hover:text-white underline-offset-2 hover:underline">Loi de Woolsey</Link>
-                                    <Link href="/tournaments" className="hover:text-white underline-offset-2 hover:underline">Tournois &amp; Clubs Où Jouer</Link>
-                                    <Link href="/progression" className="hover:text-white underline-offset-2 hover:underline">Calcul PR &amp; Indice ERH</Link>
-                                    <Link href="/privacy" data-testid="lobby-gdpr-privacy-link" className="text-emerald-300/90 hover:text-white underline-offset-2 hover:underline">🔒 Confidentialité &amp; RGPD (0 Cookie Pub)</Link>
-                                </div>
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 border-t border-white/10 text-[10px]">
-                                    <span className="font-bold text-amber-200/80">🌍 Éditions Nationales :</span>
-                                    <Link href="/countries/france-monaco" className="hover:text-white underline-offset-2 hover:underline">🇫🇷🇲🇨 France &amp; Monaco</Link>
-                                    <Link href="/countries/usa-uk" className="hover:text-white underline-offset-2 hover:underline">🇺🇸🇬🇧 USA &amp; UK</Link>
-                                    <Link href="/countries/deutschland-dach" className="hover:text-white underline-offset-2 hover:underline">🇩🇪🇦🇹🇨🇭 Deutschland &amp; DACH</Link>
-                                    <Link href="/countries/espana-latam" className="hover:text-white underline-offset-2 hover:underline">🇪🇸🇲🇽 España &amp; LatAm</Link>
-                                    <Link href="/countries/brasil-portugal" className="hover:text-white underline-offset-2 hover:underline">🇧🇷🇵🇹 Brasil &amp; Portugal (Gamão)</Link>
-                                    <Link href="/countries/monde-arabe-mena" className="hover:text-white underline-offset-2 hover:underline">🇸🇦🇦🇪 العالم العربي (طاولة)</Link>
-                                </div>
-                            </footer>
                         </section>
                     </div>
 

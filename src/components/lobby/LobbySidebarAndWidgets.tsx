@@ -21,8 +21,6 @@ import {
     IconGrimoireBook,
     IconHorologyGear,
     IconCameraScanner,
-    IconBronsteinClock,
-    BotPortraitMedallion,
 } from '../common/MonteCarloIcons';
 
 export interface LobbyLeftSidebarProps {
@@ -53,238 +51,174 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     onSelectAiMode,
     onSelectMultiplayerMode,
     onOpenModule,
-    onOpenTableClock,
     onOpenSettings,
 }) => {
     const [collapsed, setCollapsed] = useState(false);
     const [playGroupExpanded, setPlayGroupExpanded] = useState(true);
 
-    const itemCls = 'flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-semibold text-stone-300 hover:bg-white/5 hover:text-white transition';
+    const itemCls = 'flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold text-stone-300 hover:bg-white/5 hover:text-white transition';
 
     return (
         <aside
-            aria-label="Menu latéral principal par catégories"
+            aria-label="Menu latéral principal"
             data-testid="lobby-left-sidebar"
-            className={`hidden lg:flex flex-col justify-between shrink-0 border-r border-[#d4af37]/20 bg-[#0b0907] py-3.5 transition-all duration-200 select-none overflow-y-auto ${collapsed ? 'w-16 px-2 items-center' : 'w-64 px-3.5'
+            className={`hidden lg:flex flex-col justify-between shrink-0 border-r border-white/10 bg-[#0b0907] py-4 transition-all duration-200 select-none overflow-y-auto ${collapsed ? 'w-16 px-2 items-center' : 'w-56 px-3'
                 }`}
         >
-            <div className="flex flex-col gap-2 w-full">
-                {/* CTA Trouver un Adversaire Or Champagne */}
+            <div className="flex flex-col gap-1.5 w-full">
+                {/* Bouton Principal Style Galaxy : Jeu Rapide */}
                 <button
                     type="button"
                     data-testid="sidebar-quick-play-btn"
-                    onClick={onFindOpponent ?? onQuickPlay}
-                    title="Trouver un adversaire international ou lancer une table"
-                    className="mb-1 flex w-full items-center justify-center gap-2 rounded-xl border border-[#f5dfa0]/60 bg-gradient-to-r from-[#d4af37] via-[#f3d27a] to-[#b88924] px-3 py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#090806] shadow-[0_4px_20px_rgba(212,175,55,0.3)] transition hover:brightness-105 active:scale-95"
+                    onClick={onQuickPlay}
+                    title="Lancer une partie rapide"
+                    className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-[#f5dfa0]/60 bg-gradient-to-r from-[#d4af37] via-[#f3d27a] to-[#b88924] px-3 py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#090806] shadow-[0_4px_16px_rgba(212,175,55,0.25)] transition hover:brightness-105 active:scale-95"
                 >
                     <IconLuxuryDice className="text-[#090806]" size={16} />
-                    {!collapsed && <span>⚡ Trouver un Adversaire</span>}
+                    {!collapsed && <span>Jeu Rapide</span>}
                 </button>
 
-                {/* CATÉGORIE I : JOUER & MATCHMAKING */}
-                <div className="flex flex-col gap-0.5">
-                    <button
-                        type="button"
-                        data-testid="sidebar-play-group-toggle"
-                        aria-expanded={playGroupExpanded}
-                        onClick={() => setPlayGroupExpanded((v) => !v)}
-                        className="flex items-center justify-between rounded-lg px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-[#d4af37] hover:bg-[#d4af37]/10 transition"
-                    >
-                        <span className="flex items-center gap-2">
-                            <IconLuxuryDice size={14} />
-                            {!collapsed && <span>I. Jouer & Matchmaking</span>}
-                        </span>
-                        {!collapsed && <span aria-hidden="true">{playGroupExpanded ? '▾' : '▸'}</span>}
-                    </button>
+                {/* 1. Jouer */}
+                <button
+                    type="button"
+                    data-testid="sidebar-play-group-toggle"
+                    aria-expanded={playGroupExpanded}
+                    onClick={() => setPlayGroupExpanded((v) => !v)}
+                    className={itemCls}
+                >
+                    <span className="flex items-center gap-2.5">
+                        <IconLuxuryDice size={15} className="text-[#d4af37]" />
+                        {!collapsed && <span>Jouer</span>}
+                    </span>
+                    {!collapsed && <span aria-hidden="true" className="text-stone-500">{playGroupExpanded ? '▾' : '▸'}</span>}
+                </button>
 
-                    {(playGroupExpanded || collapsed) && (
-                        <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-2 border-l border-[#d4af37]/20 ml-2'}`}>
-                            <button
-                                type="button"
-                                data-testid="sidebar-submenu-find-opponent"
-                                onClick={() => (onFindOpponent ? onFindOpponent() : onOpenModule?.('multiplayer'))}
-                                className="flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-white/5 hover:text-white transition"
-                            >
-                                <span className="flex items-center gap-2">
-                                    <IconWorldTourLive size={15} />
-                                    {!collapsed && <span>Trouver un Adversaire</span>}
-                                </span>
-                                {!collapsed && <span className="font-mono text-[11px] font-bold text-emerald-300">100</span>}
-                            </button>
-                            <button
-                                type="button"
-                                data-testid="sidebar-submenu-money"
-                                onClick={onSelectMoneyGame}
-                                className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition ${selectedMode === 'ai' && matchLength === 0 && isSubmenuOpen
-                                        ? 'border border-[#d4af37]/50 bg-[#d4af37]/15 text-[#fdf8eb]'
-                                        : 'text-stone-300 hover:bg-white/5 hover:text-white'
-                                    }`}
-                            >
-                                <IconCasinoToken size={15} />
-                                {!collapsed && <span>Money Game (Jacoby)</span>}
-                            </button>
-                            <button
-                                type="button"
-                                data-testid="sidebar-submenu-match"
-                                onClick={onSelectMatchGame}
-                                className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition ${selectedMode === 'ai' && matchLength > 0 && isSubmenuOpen
-                                        ? 'border border-[#d4af37]/50 bg-[#d4af37]/15 text-[#fdf8eb]'
-                                        : 'text-stone-300 hover:bg-white/5 hover:text-white'
-                                    }`}
-                            >
-                                <IconLuxuryCrown size={15} />
-                                {!collapsed && <span>Match (3, 5, 7, 9, 11 pts)</span>}
-                            </button>
-                            <button
-                                type="button"
-                                data-testid="sidebar-submenu-ai"
-                                onClick={onSelectAiMode}
-                                className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-stone-300 hover:bg-white/5 hover:text-white transition"
-                            >
-                                <IconAstrolabeCoach size={15} />
-                                {!collapsed && <span>Les 5 Bots (MoE-6 & ERH)</span>}
-                            </button>
-                            <button
-                                type="button"
-                                data-testid="sidebar-submenu-friends"
-                                onClick={onSelectMultiplayerMode}
-                                className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold transition ${selectedMode === 'multiplayer'
-                                        ? 'border border-[#d4af37]/50 bg-[#d4af37]/15 text-[#fdf8eb]'
-                                        : 'text-stone-300 hover:bg-white/5 hover:text-white'
-                                    }`}
-                            >
-                                <IconCasinoToken size={15} className="text-emerald-400" />
-                                {!collapsed && <span>Salon Privé · Code Ami</span>}
-                            </button>
-                        </div>
-                    )}
-                </div>
-
-                {/* CATÉGORIE II : QUIZZ ÉVOLUTIFS & BLUNDERS */}
-                <div className="flex flex-col gap-0.5 pt-1 border-t border-[#d4af37]/15">
-                    {!collapsed && (
-                        <span className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-[#d4af37]">
-                            II. Quizz Évolutifs & Blunders
-                        </span>
-                    )}
-                    <Link href="/drills?mode=personal_blunders" data-testid="sidebar-personal-blunders-link" className={itemCls}>
-                        <span className="flex items-center gap-2">
-                            <IconAstrolabeCoach size={15} className="text-rose-400" />
-                            {!collapsed && <span>Revoir mes Blunders</span>}
-                        </span>
-                        {!collapsed && <span className="rounded bg-rose-500/20 border border-rose-400/40 px-1.5 py-0.2 font-mono text-[11px] font-bold text-rose-200">PERSO</span>}
-                    </Link>
-                    <button type="button" onClick={() => onOpenModule?.('drills')} className={itemCls}>
-                        <span className="flex items-center gap-2">
-                            <IconAstrolabeCoach size={15} />
-                            {!collapsed && <span>Quizz ER & ERH (GNU)</span>}
-                        </span>
-                        {!collapsed && <span className="rounded bg-amber-500/20 border border-amber-400/40 px-1.5 py-0.2 font-mono text-[11px] font-bold text-amber-200">19 413</span>}
-                    </button>
-                    <button type="button" onClick={() => onOpenModule?.('puzzles')} className={itemCls}>
-                        <span className="flex items-center gap-2">
-                            <IconGeometricCompass size={15} />
-                            {!collapsed && <span>Puzzles Quotidiens</span>}
-                        </span>
-                        {!collapsed && <span className="font-mono text-[11px] font-bold text-[#f3d27a]">1/7</span>}
-                    </button>
-                    <button type="button" onClick={() => onOpenModule?.('openings')} className={itemCls}>
-                        <span className="flex items-center gap-2">
-                            <IconGrimoireBook size={15} />
-                            {!collapsed && <span>Les 15 Ouvertures XG</span>}
-                        </span>
-                        {!collapsed && <span className="font-mono text-[11px] text-stone-400">0/15</span>}
-                    </button>
-                    <Link href="/academy#learn-rules" className={itemCls}>
-                        <span className="flex items-center gap-2">
-                            <IconLuxuryCrown size={15} className="text-emerald-400" />
-                            {!collapsed && <span>Règles Débutant (5 étapes)</span>}
-                        </span>
-                        {!collapsed && <span className="font-mono text-[11px] text-emerald-300">5 min</span>}
-                    </Link>
-                    <Link href="/academy#er-vs-erh-manifesto" className={itemCls}>
-                        <span className="flex items-center gap-2">
-                            <IconAstrolabeCoach size={15} className="text-[#f3d27a]" />
-                            {!collapsed && <span>Étude ER vs ERH (19 413 Quiz)</span>}
-                        </span>
-                        {!collapsed && <span className="font-mono text-[11px] font-bold text-[#f3d27a]">+30.9%</span>}
-                    </Link>
-                </div>
-
-                {/* CATÉGORIE III : ANALYSE, PROFIL & OUTILS PRO */}
-                <div className="flex flex-col gap-0.5 pt-1 border-t border-[#d4af37]/15">
-                    {!collapsed && (
-                        <span className="px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-[#d4af37]">
-                            III. Analyse, Profil & Outils
-                        </span>
-                    )}
-                    <button type="button" onClick={() => onOpenModule?.('stats')} className={itemCls}>
-                        <span className="flex items-center gap-2">
-                            <IconGeometricCompass size={15} className="text-emerald-400" />
-                            {!collapsed && <span>Progression, ELO & PR</span>}
-                        </span>
-                    </button>
-                    {onOpenPassport && (
-                        <button type="button" data-testid="sidebar-passport-btn" onClick={onOpenPassport} className={itemCls}>
-                            <span className="flex items-center gap-2">
-                                <IconLuxuryCrown size={15} className="text-[#f3d27a]" />
-                                {!collapsed && <span>Mon Profil & 5 Avatars</span>}
-                            </span>
+                {(playGroupExpanded || collapsed) && (
+                    <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-3 border-l border-white/10 ml-3'}`}>
+                        <button
+                            type="button"
+                            data-testid="sidebar-submenu-find-opponent"
+                            onClick={() => (onFindOpponent ? onFindOpponent() : onOpenModule?.('multiplayer'))}
+                            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-stone-300 hover:bg-white/5 hover:text-white transition"
+                        >
+                            <IconWorldTourLive size={14} className="text-emerald-400" />
+                            {!collapsed && <span>Jouer en Ligne</span>}
                         </button>
-                    )}
-                    <button type="button" onClick={() => onOpenModule?.('import_export')} className={itemCls}>
-                        <span className="flex items-center gap-2">
-                            <IconCameraScanner size={15} />
-                            {!collapsed && <span>Scanner / Importer (.mat)</span>}
-                        </span>
-                    </button>
-                    {onOpenTableClock && (
-                        <button type="button" onClick={onOpenTableClock} className={itemCls}>
-                            <span className="flex items-center gap-2">
-                                <IconBronsteinClock size={15} />
-                                {!collapsed && <span>Pendule WBF Bronstein</span>}
-                            </span>
+                        <button
+                            type="button"
+                            data-testid="sidebar-submenu-match"
+                            onClick={onSelectMatchGame}
+                            className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${selectedMode === 'ai' && matchLength > 0 && isSubmenuOpen
+                                    ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
+                                    : 'text-stone-300 hover:bg-white/5 hover:text-white'
+                                }`}
+                        >
+                            <IconLuxuryCrown size={14} />
+                            {!collapsed && <span>Match (3 à 11 pts)</span>}
                         </button>
-                    )}
-                </div>
+                        <button
+                            type="button"
+                            data-testid="sidebar-submenu-money"
+                            onClick={onSelectMoneyGame}
+                            className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${selectedMode === 'ai' && matchLength === 0 && isSubmenuOpen
+                                    ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
+                                    : 'text-stone-300 hover:bg-white/5 hover:text-white'
+                                }`}
+                        >
+                            <IconCasinoToken size={14} />
+                            {!collapsed && <span>Partie Simple</span>}
+                        </button>
+                        <button
+                            type="button"
+                            data-testid="sidebar-submenu-ai"
+                            onClick={onSelectAiMode}
+                            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-stone-300 hover:bg-white/5 hover:text-white transition"
+                        >
+                            <IconAstrolabeCoach size={14} />
+                            {!collapsed && <span>Contre l’IA</span>}
+                        </button>
+                    </div>
+                )}
 
-                {/* CATÉGORIE IV : CLUBS & TOURNOIS MONDIAUX */}
-                <div className="flex flex-col gap-1 pt-1 border-t border-[#d4af37]/15">
-                    <button
-                        type="button"
-                        data-testid="sidebar-tournaments-live-btn"
-                        onClick={() => onOpenModule?.('tournaments')}
-                        className="flex items-center justify-between rounded-xl border border-[#d4af37]/30 bg-[#16120e] px-2.5 py-2 text-xs font-semibold text-[#f7f3e8] hover:border-[#d4af37]/60 transition"
-                    >
-                        <span className="flex items-center gap-2">
-                            <IconWorldTourLive size={15} />
-                            {!collapsed && <span>Tournois & Agenda</span>}
-                        </span>
-                        {!collapsed && (
-                            <span className="rounded border border-amber-400/50 bg-amber-500/20 px-1.5 py-0.5 font-mono text-[11px] font-bold text-amber-200 uppercase">
-                                LIVE
-                            </span>
-                        )}
-                    </button>
-                    <Link
-                        href="/tournaments#clubs-map"
-                        data-testid="sidebar-clubs-directory-link"
-                        className={itemCls}
-                    >
-                        <span className="flex items-center gap-2">
-                            <IconWorldTourLive size={15} className="text-emerald-400" />
-                            {!collapsed && <span>Carte des Clubs & Inscrire</span>}
-                        </span>
-                    </Link>
-                </div>
+                {/* 2. Tournois */}
+                <button
+                    type="button"
+                    data-testid="sidebar-tournaments-live-btn"
+                    onClick={() => onOpenModule?.('tournaments')}
+                    className={itemCls}
+                >
+                    <span className="flex items-center gap-2.5">
+                        <IconWorldTourLive size={15} className="text-amber-400" />
+                        {!collapsed && <span>Tournois</span>}
+                    </span>
+                </button>
+
+                {/* 3. Puzzles */}
+                <button type="button" onClick={() => onOpenModule?.('puzzles')} className={itemCls}>
+                    <span className="flex items-center gap-2.5">
+                        <IconGeometricCompass size={15} className="text-emerald-400" />
+                        {!collapsed && <span>Puzzles</span>}
+                    </span>
+                </button>
+
+                {/* 4. Entraînement & Blunders */}
+                <button type="button" onClick={() => onOpenModule?.('drills')} className={itemCls}>
+                    <span className="flex items-center gap-2.5">
+                        <IconAstrolabeCoach size={15} className="text-rose-400" />
+                        {!collapsed && <span>Entraînement</span>}
+                    </span>
+                </button>
+
+                {/* 5. Analyse & Progression */}
+                <button type="button" onClick={() => onOpenModule?.('stats')} className={itemCls}>
+                    <span className="flex items-center gap-2.5">
+                        <IconCameraScanner size={15} className="text-sky-400" />
+                        {!collapsed && <span>Analyse</span>}
+                    </span>
+                </button>
+
+                {/* 6. Bibliothèque d'Ouvertures */}
+                <button type="button" onClick={() => onOpenModule?.('openings')} className={itemCls}>
+                    <span className="flex items-center gap-2.5">
+                        <IconGrimoireBook size={15} className="text-[#f3d27a]" />
+                        {!collapsed && <span>Bibliothèque</span>}
+                    </span>
+                </button>
+
+                {/* 7. Leçons & Académie */}
+                <Link href="/academy" className={itemCls}>
+                    <span className="flex items-center gap-2.5">
+                        <IconLuxuryCrown size={15} className="text-emerald-400" />
+                        {!collapsed && <span>Leçons</span>}
+                    </span>
+                </Link>
             </div>
 
-            {/* Pied de barre latérale */}
-            <div className="flex flex-col gap-1 w-full pt-2 border-t border-[#d4af37]/20">
+            {/* Pied de barre latérale épuré (Inviter des amis, Mon Profil, Réglages, Réduire) */}
+            <div className="flex flex-col gap-1 w-full pt-2 border-t border-white/10">
+                <button
+                    type="button"
+                    data-testid="sidebar-submenu-friends"
+                    onClick={onSelectMultiplayerMode}
+                    className={itemCls}
+                >
+                    <span className="flex items-center gap-2.5">
+                        <IconCasinoToken size={15} className="text-[#f3d27a]" />
+                        {!collapsed && <span>Inviter des amis</span>}
+                    </span>
+                </button>
+                {onOpenPassport && (
+                    <button type="button" data-testid="sidebar-passport-btn" onClick={onOpenPassport} className={itemCls}>
+                        <span className="flex items-center gap-2.5">
+                            <IconLuxuryCrown size={15} />
+                            {!collapsed && <span>Mon Profil</span>}
+                        </span>
+                    </button>
+                )}
                 <button type="button" onClick={onOpenSettings} className={itemCls}>
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2.5">
                         <IconHorologyGear size={15} />
-                        {!collapsed && <span>Configurer la Table</span>}
+                        {!collapsed && <span>Réglages</span>}
                     </span>
                 </button>
                 <button
@@ -293,9 +227,9 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     onClick={() => setCollapsed((v) => !v)}
                     className={itemCls}
                 >
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2.5">
                         <span aria-hidden="true" className="text-[#d4af37] font-mono">{collapsed ? '⇥' : '⇤'}</span>
-                        {!collapsed && <span>Réduire le menu</span>}
+                        {!collapsed && <span>Réduire</span>}
                     </span>
                 </button>
             </div>
@@ -318,37 +252,28 @@ export const LobbyRightShowcaseColumn: React.FC<LobbyRightShowcaseColumnProps> =
 }) => {
     return (
         <aside
-            aria-label="Table d'Honneur et Galerie des Maîtres"
+            aria-label="Match en Direct et Classement"
             data-testid="lobby-right-showcase"
-            className="hidden xl:flex flex-col gap-3 w-72 shrink-0 overflow-y-auto max-h-[calc(100dvh-5.5rem)] pr-0.5"
+            className="hidden xl:flex flex-col gap-3 w-68 shrink-0 overflow-y-auto max-h-[calc(100dvh-5.5rem)] pr-0.5"
         >
-            {/* Carte Table d'Honneur Monte-Carlo */}
-            <div className="rounded-2xl border border-[#d4af37]/30 bg-[#110e0b] p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.85)]">
-                <div className="flex items-center justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-2.5">
-                        <BotPortraitMedallion character="grandmaster" size="sm" isActive />
-                        <div>
-                            <div className="font-display text-sm font-bold italic text-[#f7f3e8]">
-                                Viktor « L’Intellectuel »
-                            </div>
-                            <div className="font-mono text-[11px] font-semibold text-[#d4af37]">
-                                2150 Elo · PR 0.6
-                            </div>
-                        </div>
-                    </div>
+            {/* Carte Match en Direct (Style Galaxy EN DIRECT) */}
+            <div className="rounded-2xl border border-white/10 bg-[#110e0b] p-3.5 shadow-xl">
+                <div className="flex items-center justify-between gap-2 mb-2 text-xs">
+                    <span className="font-semibold text-[#f7f3e8]">🇲🇨 Viktor_GM</span>
+                    <span className="font-mono text-[#d4af37]">2150 · PR 0.6</span>
                 </div>
 
                 <button
                     type="button"
                     onClick={onQuickPlay}
-                    className="group relative w-full aspect-[16/11] rounded-xl border border-[#d4af37]/40 bg-[#09341c] overflow-hidden shadow-inner flex flex-col justify-between p-2 text-left transition hover:brightness-105"
+                    className="group relative w-full aspect-[16/11] rounded-xl border border-[#d4af37]/35 bg-[#09341c] overflow-hidden shadow-inner flex flex-col justify-between p-2 text-left transition hover:brightness-105"
                 >
                     <div className="flex items-center justify-between z-10">
-                        <span className="inline-flex items-center gap-1.5 rounded border border-[#d4af37]/40 bg-[#0b0907]/90 px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-[#f7f3e8]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                            Table d’Honneur
+                        <span className="inline-flex items-center gap-1.5 rounded bg-[#0b0907]/90 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#f7f3e8]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
+                            En Direct
                         </span>
-                        <span className="rounded border border-[#f5dfa0] bg-[#78350f] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#fef3c7] shadow">
+                        <span className="rounded border border-[#f5dfa0] bg-[#78350f] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#fef3c7]">
                             64
                         </span>
                     </div>
@@ -366,67 +291,48 @@ export const LobbyRightShowcaseColumn: React.FC<LobbyRightShowcaseColumnProps> =
                         ))}
                     </div>
 
-                    <div className="z-10 flex items-center justify-between rounded-lg bg-[#0b0907]/90 px-2.5 py-1.5 text-xs font-bold text-[#f7f3e8] border border-[#d4af37]/30">
-                        <span className="font-display italic text-sm">Prendre place au Cercle</span>
-                        <span className="text-[#d4af37] group-hover:translate-x-0.5 transition-transform">→</span>
+                    <div className="z-10 flex items-center justify-between rounded-lg bg-[#0b0907]/90 px-2.5 py-1 text-xs font-semibold text-[#f7f3e8]">
+                        <span>Observer / Jouer</span>
+                        <span className="text-[#d4af37]">→</span>
                     </div>
                 </button>
 
-                <div className="mt-3 flex items-center justify-between text-xs font-semibold text-stone-300 border-t border-white/10 pt-2.5">
-                    <span>Votre Cote Officielle</span>
-                    <span className="font-mono text-[#d4af37] font-bold">
-                        {eloRating} Elo {averagePR !== null ? `· PR ${averagePR.toFixed(1)}` : ''}
-                    </span>
+                <div className="mt-2 flex items-center justify-between text-xs text-stone-300">
+                    <span className="font-semibold text-[#f7f3e8]">🇫🇷 Sofia_Riviera</span>
+                    <span className="font-mono text-stone-400">1680 · PR 7.5</span>
                 </div>
             </div>
 
-            {/* Les 4 Personnages Officiels en Photos Haute-Couture */}
-            <div className="rounded-2xl border border-[#d4af37]/25 bg-[#110e0b] p-3 shadow-xl flex flex-col gap-1.5">
-                <div className="flex items-center justify-between border-b border-[#d4af37]/15 pb-1.5">
-                    <span className="font-display text-sm font-bold italic text-[#f7f3e8]">
-                        Les Adversaires du Salon
+            {/* Classement Général (Style Galaxy Leaderboard, sans répéter les 4 avatars de bots) */}
+            <div className="rounded-2xl border border-white/10 bg-[#110e0b] p-3.5 shadow-xl flex flex-col gap-2">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#f3d27a]">
+                        🏆 Classement
                     </span>
-                    <button type="button" onClick={onOpenStats} className="text-xs font-bold text-[#d4af37] hover:underline">
-                        Revue & PR
+                    <button type="button" onClick={onOpenStats} className="text-xs font-semibold text-stone-400 hover:text-white">
+                        Tout ›
                     </button>
                 </div>
-                <div className="space-y-1 text-xs">
-                    <div className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/[0.05] px-2.5 py-1.5">
-                        <span className="flex items-center gap-2 font-semibold text-[#f7f3e8] truncate">
-                            <BotPortraitMedallion character="grandmaster" size="sm" />
-                            <span className="truncate">Viktor « L’Intellectuel »</span>
-                        </span>
-                        <span className="shrink-0 font-mono font-bold text-emerald-400">PR 0.6</span>
+                <div className="space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between rounded-lg bg-white/[0.03] px-2.5 py-1.5">
+                        <span className="font-semibold text-white">1. 🇯🇵 Masayuki_M</span>
+                        <span className="font-mono font-bold text-emerald-400">PR 1.8</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/[0.05] px-2.5 py-1.5">
-                        <span className="flex items-center gap-2 font-semibold text-stone-200 truncate">
-                            <BotPortraitMedallion character="expert" size="sm" />
-                            <span className="truncate">L’Homme d’Affaires</span>
-                        </span>
-                        <span className="shrink-0 font-mono font-bold text-[#d4af37]">PR 2.5</span>
+                    <div className="flex items-center justify-between rounded-lg bg-white/[0.03] px-2.5 py-1.5">
+                        <span className="font-semibold text-stone-200">2. 🇺🇸 Sander_NY</span>
+                        <span className="font-mono font-bold text-[#f3d27a]">PR 2.3</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/[0.05] px-2.5 py-1.5">
-                        <span className="flex items-center gap-2 font-semibold text-stone-200 truncate">
-                            <BotPortraitMedallion character="intermediate" size="sm" />
-                            <span className="truncate">Sofia « La Riviera »</span>
-                        </span>
-                        <span className="shrink-0 font-mono font-bold text-amber-300">PR 7.5</span>
+                    <div className="flex items-center justify-between rounded-lg bg-white/[0.03] px-2.5 py-1.5">
+                        <span className="font-semibold text-stone-200">3. 🇫🇷 Marc_MonteCarlo</span>
+                        <span className="font-mono font-bold text-[#f3d27a]">PR 2.9</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/[0.05] px-2.5 py-1.5">
-                        <span className="flex items-center gap-2 font-semibold text-stone-200 truncate">
-                            <BotPortraitMedallion character="beginner" size="sm" />
-                            <span className="truncate">Le Mauvais Joueur</span>
+                    <div className="flex items-center justify-between rounded-lg border border-[#d4af37]/30 bg-[#d4af37]/10 px-2.5 py-1.5">
+                        <span className="font-bold text-[#f3d27a]">Vous</span>
+                        <span className="font-mono font-bold text-white">
+                            {eloRating} Elo {averagePR !== null ? `· PR ${averagePR.toFixed(1)}` : ''}
                         </span>
-                        <span className="shrink-0 font-mono font-bold text-rose-300">PR 12.5</span>
                     </div>
                 </div>
-                <Link
-                    href="/academy#er-vs-erh-manifesto"
-                    className="mt-1 flex items-center justify-between gap-1.5 rounded-xl border border-emerald-400/30 bg-emerald-950/35 px-2.5 py-1.5 text-[11px] font-bold text-emerald-200 hover:border-emerald-400/60 transition"
-                >
-                    <span className="truncate">🔬 Pourquoi ERH bat ER (19 413 Quiz)</span>
-                    <span className="shrink-0 whitespace-nowrap font-mono text-emerald-300">+30,9 % →</span>
-                </Link>
             </div>
         </aside>
     );
