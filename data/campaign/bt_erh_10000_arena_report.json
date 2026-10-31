@@ -1,0 +1,211 @@
+{
+  "campaign": "BT-ERH v3.0 vs BT-Core v3.0 (ER) vs GNU Backgammon against 100 Human Archetype Bots",
+  "timestamp": "2026-10-31T13:26:20.612Z",
+  "durationSeconds": 992.8,
+  "totalGamesPlayed": 10200,
+  "humanBotsCount": 100,
+  "erhQuizzesGenerated": 800,
+  "champions": {
+    "BT_ERH_V3": {
+      "champion": "BT_ERH_V3",
+      "totalGames": 3400,
+      "wins": 1903,
+      "losses": 1497,
+      "winRatePct": 55.97,
+      "netPoints": 1361,
+      "netPpg": 0.4003,
+      "gammonsWon": 356,
+      "cubePassesWon": 327,
+      "cubePointsExploited": 413,
+      "ER_Metrics": {
+        "unforcedDecisions": 63807,
+        "avgGtoSacrificeEmg": 0.00023,
+        "erTheoreticalPr": 0.12
+      },
+      "ERH_Metrics": {
+        "humanMovesFaced": 56688,
+        "avgInducedHumanErrorEmg": 0.01672,
+        "inducedHumanPr": 8.36,
+        "totalHumanBlundersInduced": 5791,
+        "netExploitativeEdgeEmg": 0.01649,
+        "erhDominanceIndex": 12.25
+      },
+      "byTier": {
+        "TIER_1_IMPULSIVE_BEGINNER": {
+          "games": 680,
+          "wins": 430,
+          "winRatePct": 63.24,
+          "netPoints": 568,
+          "netPpg": 0.8353,
+          "inducedOpponentPr": 17.64
+        },
+        "TIER_2_CAFE_CANDLESTICK": {
+          "games": 850,
+          "wins": 475,
+          "winRatePct": 55.88,
+          "netPoints": 376,
+          "netPpg": 0.4424,
+          "inducedOpponentPr": 10.42
+        },
+        "TIER_3_CLUB_REGULAR": {
+          "games": 850,
+          "wins": 469,
+          "winRatePct": 55.18,
+          "netPoints": 360,
+          "netPpg": 0.4235,
+          "inducedOpponentPr": 6.07
+        },
+        "TIER_4_TOURNAMENT_ADVANCED": {
+          "games": 680,
+          "wins": 345,
+          "winRatePct": 50.74,
+          "netPoints": 5,
+          "netPpg": 0.0074,
+          "inducedOpponentPr": 3.12
+        },
+        "TIER_5_HUMAN_MASTER": {
+          "games": 340,
+          "wins": 184,
+          "winRatePct": 54.12,
+          "netPoints": 52,
+          "netPpg": 0.1529,
+          "inducedOpponentPr": 1.48
+        }
+      }
+    },
+    "BT_CORE_ER_V3": {
+      "champion": "BT_CORE_ER_V3",
+      "totalGames": 3400,
+      "wins": 1848,
+      "losses": 1552,
+      "winRatePct": 54.35,
+      "netPoints": 1040,
+      "netPpg": 0.3059,
+      "gammonsWon": 346,
+      "cubePassesWon": 107,
+      "cubePointsExploited": 0,
+      "ER_Metrics": {
+        "unforcedDecisions": 65309,
+        "avgGtoSacrificeEmg": 0,
+        "erTheoreticalPr": 0
+      },
+      "ERH_Metrics": {
+        "humanMovesFaced": 57866,
+        "avgInducedHumanErrorEmg": 0.01678,
+        "inducedHumanPr": 8.39,
+        "totalHumanBlundersInduced": 5952,
+        "netExploitativeEdgeEmg": 0.01678,
+        "erhDominanceIndex": 11.45
+      },
+      "byTier": {
+        "TIER_1_IMPULSIVE_BEGINNER": {
+          "games": 680,
+          "wins": 422,
+          "winRatePct": 62.06,
+          "netPoints": 521,
+          "netPpg": 0.7662,
+          "inducedOpponentPr": 17.59
+        },
+        "TIER_2_CAFE_CANDLESTICK": {
+          "games": 850,
+          "wins": 464,
+          "winRatePct": 54.59,
+          "netPoints": 317,
+          "netPpg": 0.3729,
+          "inducedOpponentPr": 10.47
+        },
+        "TIER_3_CLUB_REGULAR": {
+          "games": 850,
+          "wins": 457,
+          "winRatePct": 53.76,
+          "netPoints": 281,
+          "netPpg": 0.3306,
+          "inducedOpponentPr": 6.05
+        },
+        "TIER_4_TOURNAMENT_ADVANCED": {
+          "games": 680,
+          "wins": 339,
+          "winRatePct": 49.85,
+          "netPoints": -37,
+          "netPpg": -0.0544,
+          "inducedOpponentPr": 3.14
+        },
+        "TIER_5_HUMAN_MASTER": {
+          "games": 340,
+          "wins": 166,
+          "winRatePct": 48.82,
+          "netPoints": -42,
+          "netPpg": -0.1235,
+          "inducedOpponentPr": 1.48
+        }
+      }
+    },
+    "GNUBG": {
+      "champion": "GNUBG",
+      "totalGames": 3400,
+      "wins": 1580,
+      "losses": 1820,
+      "winRatePct": 46.47,
+      "netPoints": 390,
+      "netPpg": 0.1147,
+      "gammonsWon": 267,
+      "cubePassesWon": 92,
+      "cubePointsExploited": 0,
+      "ER_Metrics": {
+        "unforcedDecisions": 62193,
+        "avgGtoSacrificeEmg": 0.01998,
+        "erTheoreticalPr": 9.99
+      },
+      "ERH_Metrics": {
+        "humanMovesFaced": 56455,
+        "avgInducedHumanErrorEmg": 0.01672,
+        "inducedHumanPr": 8.36,
+        "totalHumanBlundersInduced": 5828,
+        "netExploitativeEdgeEmg": -0.00326,
+        "erhDominanceIndex": -0.48
+      },
+      "byTier": {
+        "TIER_1_IMPULSIVE_BEGINNER": {
+          "games": 680,
+          "wins": 361,
+          "winRatePct": 53.09,
+          "netPoints": 416,
+          "netPpg": 0.6118,
+          "inducedOpponentPr": 17.54
+        },
+        "TIER_2_CAFE_CANDLESTICK": {
+          "games": 850,
+          "wins": 393,
+          "winRatePct": 46.24,
+          "netPoints": 115,
+          "netPpg": 0.1353,
+          "inducedOpponentPr": 10.48
+        },
+        "TIER_3_CLUB_REGULAR": {
+          "games": 850,
+          "wins": 384,
+          "winRatePct": 45.18,
+          "netPoints": 101,
+          "netPpg": 0.1188,
+          "inducedOpponentPr": 6
+        },
+        "TIER_4_TOURNAMENT_ADVANCED": {
+          "games": 680,
+          "wins": 307,
+          "winRatePct": 45.15,
+          "netPoints": -95,
+          "netPpg": -0.1397,
+          "inducedOpponentPr": 3.13
+        },
+        "TIER_5_HUMAN_MASTER": {
+          "games": 340,
+          "wins": 135,
+          "winRatePct": 39.71,
+          "netPoints": -147,
+          "netPpg": -0.4324,
+          "inducedOpponentPr": 1.45
+        }
+      }
+    }
+  }
+}
