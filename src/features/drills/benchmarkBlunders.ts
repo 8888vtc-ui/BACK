@@ -12,6 +12,7 @@ import type { PlayerBlunderRecord, DrillTier, BlunderVerdict } from './types';
 import { parseXGID } from '../../engine/backgammonEngine';
 import { HARVESTED_MULTIPLY_9CAT_SEEDS } from './harvestedMultiPlySeeds';
 import { BTCORE_5000_HARVEST_SEEDS } from './btCore5000HarvestSeeds';
+import { BTERH_HARVEST_SEEDS } from './btErhHarvestSeeds';
 
 function boardFromXgid(xgid: string): number[] {
     const parsed = parseXGID(xgid);
@@ -641,4 +642,5 @@ export const BENCHMARK_BLUNDERS: PlayerBlunderRecord[] = [
     ...HARVESTED_TIERED_SEEDS.map((seed, idx) => buildHarvestedBlunder(seed, idx)),
     ...HARVESTED_MULTIPLY_9CAT_SEEDS.map((seed, idx) => buildHarvestedBlunder(seed, 30 + idx)),
     ...BTCORE_5000_HARVEST_SEEDS.map((seed, idx) => buildHarvestedBlunder(seed, 16000 + idx)),
+    ...BTERH_HARVEST_SEEDS.map((seed, idx) => buildHarvestedBlunder(seed, 30000 + idx)),
 ];
