@@ -1,0 +1,15 @@
+{
+  "modelName": "BT-Neural v3.0 (250 -> 128 -> 64 -> 5 + Skip-Connection)",
+  "trainedAt": "2026-10-31T12:14:14Z",
+  "hardware": "Intel(R) Core(TM) Ultra 7 258V (8 cores, 31.5 GB RAM)",
+  "supervised3PlyPositions": 1920,
+  "certifiedTacticalMovePairs": 16289,
+  "epochs": 90,
+  "elapsedSeconds": 10.38,
+  "initial3PlyProbMse": 0.016953,
+  "final3PlyProbMse": 9.4e-05,
+  "initialPairwiseRankingAccuracyPct": 51.69,
+  "finalPairwiseRankingAccuracyPct": 94.95,
+  "exportedFloatCount": 41959,
+  "exportedBase64Bytes": 223784
+}

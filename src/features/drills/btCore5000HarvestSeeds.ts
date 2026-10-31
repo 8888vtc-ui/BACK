@@ -1,5 +1,5 @@
 /**
- * Quizz Tactiques Certifiés 3-Ply issus de la Campagne 5 000 Parties (BT-Core v2.0 vs GNU Backgammon 3-Ply [world class]).
+ * Quizz Tactiques Certifiés 3-Ply issus de la Campagne 5 000 Parties & Usine 8 Cœurs (BT-Neural v3.0 & GNU Backgammon 3-Ply [world class]).
  * Zéro donnée perdue — Généré automatiquement et vérifié sur les 6 formats de match (Money Game, 3, 5, 7, 9, 11 pts).
  */
 import type { HarvestedSeedInput } from './benchmarkBlunders';
@@ -6031,6 +6031,14485 @@ export const BTCORE_5000_HARVEST_SEEDS: HarvestedSeedInput[] = [
             "Certifié 3-ply [world class] : 8/3 6/3 domine 14/9 11/8 de +0.048 EMG.",
             "En Match en 7 pts (3-3, Videau à 1), 8/3 6/3 maximise votre équité cubeful (+0.981 EMG).",
             "Évitez le piège 14/9 11/8 (-0.048 EMG) ; préférez la ligne maîtresse 8/3 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_193_23",
+        "tier": 4,
+        "xgid": "XGID=--AAaaF-----bCb--a-bD-b-d-:0:0:1:23:0:0:0:0:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "20/17*/15",
+        "optimalMove": "6/4* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/4* 6/3",
+            "20/17*/15",
+            "20/18 6/3",
+            "20/17* 6/4*"
+        ],
+        "equityLoss": 0.042,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/17*/15 (Money Game), vous concédez -0.042 EMG face au coup 3-ply 6/4* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Money Game : 6/4* 6/3 surpasse 20/17*/15 de +0.042 EMG (48.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/4* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/4* 6/3 domine 20/17*/15 de +0.042 EMG.",
+            "En Money Game, 6/4* 6/3 maximise votre équité cubeful (-0.139 EMG).",
+            "Évitez 20/17*/15 (-0.042 EMG) ; jouez la ligne maîtresse 6/4* 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_194_16",
+        "tier": 2,
+        "xgid": "XGID=-b----E-C--AcD---d-dB--aa-:0:0:1:16:0:1:0:3:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "13/7 8/7",
+        "optimalMove": "11/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/5 6/5",
+            "13/7 8/7",
+            "13/6",
+            "13/7 6/5"
+        ],
+        "equityLoss": 0.216,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 8/7 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.216 EMG face au coup 3-ply 11/5 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 3 pts (0-1, Videau à 1) : 11/5 6/5 surpasse 13/7 8/7 de +0.216 EMG (62.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 11/5 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/5 6/5 domine 13/7 8/7 de +0.216 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 11/5 6/5 maximise votre équité cubeful (+0.869 EMG).",
+            "Évitez 13/7 8/7 (-0.216 EMG) ; jouez la ligne maîtresse 11/5 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_195_16",
+        "tier": 4,
+        "xgid": "XGID=-AAB--DAAAb-cB---b-ea--bB-:0:0:1:16:1:0:0:3:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "7/1 6/5",
+        "optimalMove": "8/2 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/2 6/5",
+            "7/1 6/5",
+            "7/1 3/2",
+            "9/8 7/1"
+        ],
+        "equityLoss": 0.04,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/1 6/5 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.040 EMG face au coup 3-ply 8/2 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 3 pts (1-0, Videau à 1) : 8/2 6/5 surpasse 7/1 6/5 de +0.040 EMG (35.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/2 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/2 6/5 domine 7/1 6/5 de +0.040 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 8/2 6/5 maximise votre équité cubeful (-0.841 EMG).",
+            "Évitez 7/1 6/5 (-0.040 EMG) ; jouez la ligne maîtresse 8/2 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_196_64",
+        "tier": 4,
+        "xgid": "XGID=--BA--EbCAA-aB----abaacbb-:0:0:1:64:0:1:0:3:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "10/6 9/3",
+        "optimalMove": "10/4 9/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/4 9/5",
+            "10/6 9/3",
+            "10/4 8/4",
+            "9/3 8/4"
+        ],
+        "equityLoss": 0.047,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/6 9/3 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.047 EMG face au coup 3-ply 10/4 9/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 3 pts (0-1, Videau à 1) : 10/4 9/5 surpasse 10/6 9/3 de +0.047 EMG (49.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 10/4 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/4 9/5 domine 10/6 9/3 de +0.047 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 10/4 9/5 maximise votre équité cubeful (-0.006 EMG).",
+            "Évitez 10/6 9/3 (-0.047 EMG) ; jouez la ligne maîtresse 10/4 9/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_197_35",
+        "tier": 2,
+        "xgid": "XGID=-BDCB-AA-----a-aabBd--bd--:0:0:1:35:1:0:0:3:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "18/13* 6/3",
+        "optimalMove": "18/15* 18/13*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/15* 18/13*",
+            "18/13* 6/3",
+            "18/15* 6/1",
+            "18/15*/10"
+        ],
+        "equityLoss": 0.328,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/13* 6/3 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.328 EMG face au coup 3-ply 18/15* 18/13*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 3 pts (1-0, Videau à 1) : 18/15* 18/13* surpasse 18/13* 6/3 de +0.328 EMG (81.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/15* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/15* 18/13* domine 18/13* 6/3 de +0.328 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 18/15* 18/13* maximise votre équité cubeful (+1.155 EMG).",
+            "Évitez 18/13* 6/3 (-0.328 EMG) ; jouez la ligne maîtresse 18/15* 18/13*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_198_51",
+        "tier": 2,
+        "xgid": "XGID=--DC--C-BA--a-----aA-bddcA:0:0:1:51:0:1:0:3:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "bar/19",
+        "optimalMove": "bar/20 19/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 19/18*",
+            "bar/19",
+            "bar/20 2/1",
+            "bar/20 8/7"
+        ],
+        "equityLoss": 0.822,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.822 EMG face au coup 3-ply bar/20 19/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 3 pts (0-1, Videau à 1) : bar/20 19/18* surpasse bar/19 de +0.822 EMG (43.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 19/18* domine bar/19 de +0.822 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/20 19/18* maximise votre équité cubeful (-0.186 EMG).",
+            "Évitez bar/19 (-0.822 EMG) ; jouez la ligne maîtresse bar/20 19/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_199_54",
+        "tier": 2,
+        "xgid": "XGID=-aA--CA-aa--bE-Acc-cA-AaAA:0:0:1:54:2:0:0:5:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "bar/20 13/9*",
+        "optimalMove": "bar/20 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 6/2",
+            "bar/20 13/9*",
+            "bar/20 15/11",
+            "bar/20 24/20"
+        ],
+        "equityLoss": 0.137,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 13/9* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.137 EMG face au coup 3-ply bar/20 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 5 pts (2-0, Videau à 1) : bar/20 6/2 surpasse bar/20 13/9* de +0.137 EMG (37.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 6/2 domine bar/20 13/9* de +0.137 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/20 6/2 maximise votre équité cubeful (-0.691 EMG).",
+            "Évitez bar/20 13/9* (-0.137 EMG) ; jouez la ligne maîtresse bar/20 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_200_54",
+        "tier": 2,
+        "xgid": "XGID=-aBAaB--Aa-abB--aA-cCcBaaA:0:0:1:54:2:0:0:5:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "bar/20 8/4*",
+        "optimalMove": "bar/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/16*",
+            "bar/20 8/4*",
+            "bar/20 17/13",
+            "bar/20 13/9*"
+        ],
+        "equityLoss": 0.251,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 8/4* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.251 EMG face au coup 3-ply bar/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 5 pts (2-0, Videau à 1) : bar/16* surpasse bar/20 8/4* de +0.251 EMG (46.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/16* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/16* domine bar/20 8/4* de +0.251 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/16* maximise votre équité cubeful (-0.356 EMG).",
+            "Évitez bar/20 8/4* (-0.251 EMG) ; jouez la ligne maîtresse bar/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_201_23",
+        "tier": 2,
+        "xgid": "XGID=-bA--BDBaA-abD--ab-d-a-Aa-:0:0:1:23:3:0:0:7:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "23/21* 13/10",
+        "optimalMove": "13/11*/8*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11*/8*",
+            "23/21* 13/10",
+            "23/21*/18",
+            "23/21* 9/6"
+        ],
+        "equityLoss": 0.247,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/21* 13/10 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.247 EMG face au coup 3-ply 13/11*/8*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 7 pts (3-0, Videau à 1) : 13/11*/8* surpasse 23/21* 13/10 de +0.247 EMG (74.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/11*/8* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11*/8* domine 23/21* 13/10 de +0.247 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 13/11*/8* maximise votre équité cubeful (+1.126 EMG).",
+            "Évitez 23/21* 13/10 (-0.247 EMG) ; jouez la ligne maîtresse 13/11*/8*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_202_66",
+        "tier": 2,
+        "xgid": "XGID=-AAaA-D-BA--aB---baccAcaB-:0:0:1:66:0:3:0:7:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "24/18*/12* 13/1",
+        "optimalMove": "24/18*/12* 9/3* 8/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18*/12* 9/3* 8/2",
+            "24/18*/12* 13/1",
+            "24/18*/12*/6 8/2",
+            "24/18*/12* 13/7 8/2"
+        ],
+        "equityLoss": 0.165,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18*/12* 13/1 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.165 EMG face au coup 3-ply 24/18*/12* 9/3* 8/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Match en 7 pts (0-3, Videau à 1) : 24/18*/12* 9/3* 8/2 surpasse 24/18*/12* 13/1 de +0.165 EMG (45.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18*/12* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18*/12* 9/3* 8/2 domine 24/18*/12* 13/1 de +0.165 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 24/18*/12* 9/3* 8/2 maximise votre équité cubeful (-0.172 EMG).",
+            "Évitez 24/18*/12* 13/1 (-0.165 EMG) ; jouez la ligne maîtresse 24/18*/12* 9/3* 8/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_203_44",
+        "tier": 2,
+        "xgid": "XGID=-aaC-CCAA-a-a---ac-eAaBAa-:0:0:1:44:3:0:0:7:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "20/16*/12*/8 6/2*",
+        "optimalMove": "20/16*/12* 6/2* 5/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/16*/12* 6/2* 5/1*",
+            "20/16*/12*/8 6/2*",
+            "22/18 20/16*/12* 6/2*",
+            "22/18 20/16* 6/2* 5/1*"
+        ],
+        "equityLoss": 0.121,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/16*/12*/8 6/2* (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.121 EMG face au coup 3-ply 20/16*/12* 6/2* 5/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 7 pts (3-0, Videau à 1) : 20/16*/12* 6/2* 5/1* surpasse 20/16*/12*/8 6/2* de +0.121 EMG (84.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/16*/12* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/16*/12* 6/2* 5/1* domine 20/16*/12*/8 6/2* de +0.121 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 20/16*/12* 6/2* 5/1* maximise votre équité cubeful (+1.830 EMG).",
+            "Évitez 20/16*/12*/8 6/2* (-0.121 EMG) ; jouez la ligne maîtresse 20/16*/12* 6/2* 5/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_204_35",
+        "tier": 4,
+        "xgid": "XGID=bBBDbBA---a-aA---cAe--B-a-:0:0:1:35:3:0:0:7:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "13/10*/5",
+        "optimalMove": "18/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/10*",
+            "13/10*/5",
+            "13/10* 6/1",
+            "18/15 13/8"
+        ],
+        "equityLoss": 0.053,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10*/5 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.053 EMG face au coup 3-ply 18/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 7 pts (3-0, Videau à 1) : 18/10* surpasse 13/10*/5 de +0.053 EMG (80.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/10* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/10* domine 13/10*/5 de +0.053 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 18/10* maximise votre équité cubeful (+1.529 EMG).",
+            "Évitez 13/10*/5 (-0.053 EMG) ; jouez la ligne maîtresse 18/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_205_32",
+        "tier": 3,
+        "xgid": "XGID=-a-Aa-EAB---cD-A-d-da--aA-:0:0:1:32:0:4:0:9:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "6/4* 6/3",
+        "optimalMove": "7/4* 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/4* 6/4",
+            "6/4* 6/3",
+            "6/4*/1*",
+            "7/4* 3/1*"
+        ],
+        "equityLoss": 0.074,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 6/4* 6/3 (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.074 EMG face au coup 3-ply 7/4* 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 9 pts (0-4, Videau à 1) : 7/4* 6/4 surpasse 6/4* 6/3 de +0.074 EMG (57.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 7/4* en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/4* 6/4 domine 6/4* 6/3 de +0.074 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), 7/4* 6/4 maximise votre équité cubeful (+0.447 EMG).",
+            "Évitez 6/4* 6/3 (-0.074 EMG) ; jouez la ligne maîtresse 7/4* 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_206_44",
+        "tier": 2,
+        "xgid": "XGID=---aa-EaC---aB-A-b-dcAaaAB:0:0:1:44:0:4:0:9:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21(2) 15/7*",
+        "optimalMove": "bar/21(2) 8/4*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21(2) 8/4*(2)",
+            "bar/21(2) 15/7*",
+            "bar/21(2) 15/11 8/4*",
+            "bar/21(2) 6/2(2)"
+        ],
+        "equityLoss": 0.203,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21(2) 15/7* (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.203 EMG face au coup 3-ply bar/21(2) 8/4*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 9 pts (0-4, Videau à 1) : bar/21(2) 8/4*(2) surpasse bar/21(2) 15/7* de +0.203 EMG (48.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21(2) en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21(2) 8/4*(2) domine bar/21(2) 15/7* de +0.203 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), bar/21(2) 8/4*(2) maximise votre équité cubeful (+0.089 EMG).",
+            "Évitez bar/21(2) 15/7* (-0.203 EMG) ; jouez la ligne maîtresse bar/21(2) 8/4*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_207_35",
+        "tier": 3,
+        "xgid": "XGID=-A-acCD-B-a-bA---aAbabBb-A:0:0:1:35:4:0:0:9:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "bar/20*/17*",
+        "optimalMove": "bar/20* 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 13/10*",
+            "bar/20*/17*",
+            "bar/20* 6/3*",
+            "bar/20* 18/15"
+        ],
+        "equityLoss": 0.085,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20*/17* (Match en 9 pts (4-0, Videau à 1)), vous concédez -0.085 EMG face au coup 3-ply bar/20* 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 9 pts (4-0, Videau à 1) : bar/20* 13/10* surpasse bar/20*/17* de +0.085 EMG (60.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 9 pts (4-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 13/10* domine bar/20*/17* de +0.085 EMG.",
+            "En Match en 9 pts (4-0, Videau à 1), bar/20* 13/10* maximise votre équité cubeful (+0.374 EMG).",
+            "Évitez bar/20*/17* (-0.085 EMG) ; jouez la ligne maîtresse bar/20* 13/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_208_51",
+        "tier": 2,
+        "xgid": "XGID=-a--bCD-C-B-c-----Bc-aad-A:0:0:1:51:4:0:0:9:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "bar/24 8/3",
+        "optimalMove": "bar/24 6/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 6/1*",
+            "bar/24 8/3",
+            "bar/20 6/5",
+            "bar/24 18/13"
+        ],
+        "equityLoss": 0.164,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 8/3 (Match en 9 pts (4-0, Videau à 1)), vous concédez -0.164 EMG face au coup 3-ply bar/24 6/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 9 pts (4-0, Videau à 1) : bar/24 6/1* surpasse bar/24 8/3 de +0.164 EMG (71.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 9 pts (4-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 6/1* domine bar/24 8/3 de +0.164 EMG.",
+            "En Match en 9 pts (4-0, Videau à 1), bar/24 6/1* maximise votre équité cubeful (+0.714 EMG).",
+            "Évitez bar/24 8/3 (-0.164 EMG) ; jouez la ligne maîtresse bar/24 6/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_209_53",
+        "tier": 4,
+        "xgid": "XGID=-bC---Ea--A-eD----AeAaa---:0:0:1:53:0:5:0:11:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "18/13 10/7*",
+        "optimalMove": "13/8 10/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/8 10/7*",
+            "18/13 10/7*",
+            "18/10",
+            "20/15 10/7*"
+        ],
+        "equityLoss": 0.039,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/13 10/7* (Match en 11 pts (0-5, Videau à 1)), vous concédez -0.039 EMG face au coup 3-ply 13/8 10/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 11 pts (0-5, Videau à 1) : 13/8 10/7* surpasse 18/13 10/7* de +0.039 EMG (56.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/8 en Match en 11 pts (0-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/8 10/7* domine 18/13 10/7* de +0.039 EMG.",
+            "En Match en 11 pts (0-5, Videau à 1), 13/8 10/7* maximise votre équité cubeful (+0.512 EMG).",
+            "Évitez 18/13 10/7* (-0.039 EMG) ; jouez la ligne maîtresse 13/8 10/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_210_51",
+        "tier": 2,
+        "xgid": "XGID=aC-aD-A-----AC-Ba--e-c-dA-:0:0:1:51:5:0:0:11:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/12 6/1",
+        "optimalMove": "12/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "12/6",
+            "13/12 6/1",
+            "13/8 4/3*",
+            "6/1 4/3*"
+        ],
+        "equityLoss": 0.748,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/12 6/1 (Match en 11 pts (5-0, Videau à 1)), vous concédez -0.748 EMG face au coup 3-ply 12/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 11 pts (5-0, Videau à 1) : 12/6 surpasse 13/12 6/1 de +0.748 EMG (46.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 12/6 en Match en 11 pts (5-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 12/6 domine 13/12 6/1 de +0.748 EMG.",
+            "En Match en 11 pts (5-0, Videau à 1), 12/6 maximise votre équité cubeful (-0.252 EMG).",
+            "Évitez 13/12 6/1 (-0.748 EMG) ; jouez la ligne maîtresse 12/6."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_211_56",
+        "tier": 2,
+        "xgid": "XGID=-aaB-AD-D---cBa-aa-da-aaB-:0:0:1:56:0:0:0:0:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "8/3 8/2*",
+        "optimalMove": "8/2* 6/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/2* 6/1*",
+            "8/3 8/2*",
+            "13/2*",
+            "13/7 6/1*"
+        ],
+        "equityLoss": 0.633,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/3 8/2* (Money Game), vous concédez -0.633 EMG face au coup 3-ply 8/2* 6/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Money Game : 8/2* 6/1* surpasse 8/3 8/2* de +0.633 EMG (68.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/2* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/2* 6/1* domine 8/3 8/2* de +0.633 EMG.",
+            "En Money Game, 8/2* 6/1* maximise votre équité cubeful (+1.064 EMG).",
+            "Évitez 8/3 8/2* (-0.633 EMG) ; jouez la ligne maîtresse 8/2* 6/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_212_14",
+        "tier": 4,
+        "xgid": "XGID=--AaaBE-A----C---dae-aABb-:0:0:1:14:0:0:0:0:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "8/4*/3*",
+        "optimalMove": "22/21* 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/21* 6/2",
+            "8/4*/3*",
+            "22/21* 8/4*",
+            "22/18* 6/5"
+        ],
+        "equityLoss": 0.058,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4*/3* (Money Game), vous concédez -0.058 EMG face au coup 3-ply 22/21* 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Money Game : 22/21* 6/2 surpasse 8/4*/3* de +0.058 EMG (61.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/21* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/21* 6/2 domine 8/4*/3* de +0.058 EMG.",
+            "En Money Game, 22/21* 6/2 maximise votre équité cubeful (+0.454 EMG).",
+            "Évitez 8/4*/3* (-0.058 EMG) ; jouez la ligne maîtresse 22/21* 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_213_55",
+        "tier": 2,
+        "xgid": "XGID=-Bb-B-E-B-aAb--a---ccCaaa-:0:0:1:55:0:0:0:0:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "21/11(2)",
+        "optimalMove": "21/11 21/16(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/11 21/16(2)",
+            "21/11(2)",
+            "21/16(3) 11/6",
+            "21/11 8/3(2)"
+        ],
+        "equityLoss": 0.147,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/11(2) (Money Game), vous concédez -0.147 EMG face au coup 3-ply 21/11 21/16(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Money Game : 21/11 21/16(2) surpasse 21/11(2) de +0.147 EMG (66.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/11 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/11 21/16(2) domine 21/11(2) de +0.147 EMG.",
+            "En Money Game, 21/11 21/16(2) maximise votre équité cubeful (+0.639 EMG).",
+            "Évitez 21/11(2) (-0.147 EMG) ; jouez la ligne maîtresse 21/11 21/16(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_214_31",
+        "tier": 4,
+        "xgid": "XGID=-AB--bDA----cE---d-e-a--B-:0:0:1:31:0:1:0:3:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/21*/20",
+        "optimalMove": "24/21* 7/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21* 7/6",
+            "24/21*/20",
+            "24/21* 2/1",
+            "24/23 24/21*"
+        ],
+        "equityLoss": 0.041,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21*/20 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.041 EMG face au coup 3-ply 24/21* 7/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 3 pts (0-1, Videau à 1) : 24/21* 7/6 surpasse 24/21*/20 de +0.041 EMG (45.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/21* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* 7/6 domine 24/21*/20 de +0.041 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 24/21* 7/6 maximise votre équité cubeful (-0.072 EMG).",
+            "Évitez 24/21*/20 (-0.041 EMG) ; jouez la ligne maîtresse 24/21* 7/6."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_215_23",
+        "tier": 3,
+        "xgid": "XGID=-ADaa-BA---adC--Ab-f---AAA:0:0:1:23:0:1:0:3:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/23 7/4*",
+        "optimalMove": "bar/22 13/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 13/11*",
+            "bar/23 7/4*",
+            "bar/23 16/13",
+            "bar/22 24/22"
+        ],
+        "equityLoss": 0.08,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23 7/4* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.080 EMG face au coup 3-ply bar/22 13/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 3 pts (0-1, Videau à 1) : bar/22 13/11* surpasse bar/23 7/4* de +0.080 EMG (35.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 13/11* domine bar/23 7/4* de +0.080 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/22 13/11* maximise votre équité cubeful (-0.504 EMG).",
+            "Évitez bar/23 7/4* (-0.080 EMG) ; jouez la ligne maîtresse bar/22 13/11*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_216_42",
+        "tier": 3,
+        "xgid": "XGID=-aE--aAA--abdBA--A-f-BB---:0:0:1:42:0:1:0:3:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "21/17 7/5*",
+        "optimalMove": "14/10* 7/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/10* 7/5*",
+            "21/17 7/5*",
+            "17/13 7/5*",
+            "17/15 14/10*"
+        ],
+        "equityLoss": 0.098,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/17 7/5* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.098 EMG face au coup 3-ply 14/10* 7/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 3 pts (0-1, Videau à 1) : 14/10* 7/5* surpasse 21/17 7/5* de +0.098 EMG (34.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/10* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/10* 7/5* domine 21/17 7/5* de +0.098 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 14/10* 7/5* maximise votre équité cubeful (-0.554 EMG).",
+            "Évitez 21/17 7/5* (-0.098 EMG) ; jouez la ligne maîtresse 14/10* 7/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_217_64",
+        "tier": 3,
+        "xgid": "XGID=-a-a--Ea-ab-bEA-a-aA-A-eAA:0:0:1:64:1:0:0:3:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "bar/19 13/9*",
+        "optimalMove": "bar/21 24/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 24/18*",
+            "bar/19 13/9*",
+            "bar/21 13/7*",
+            "bar/21 19/13"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19 13/9* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.097 EMG face au coup 3-ply bar/21 24/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 3 pts (1-0, Videau à 1) : bar/21 24/18* surpasse bar/19 13/9* de +0.097 EMG (68.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 24/18* domine bar/19 13/9* de +0.097 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/21 24/18* maximise votre équité cubeful (+0.679 EMG).",
+            "Évitez bar/19 13/9* (-0.097 EMG) ; jouez la ligne maîtresse bar/21 24/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_218_52",
+        "tier": 2,
+        "xgid": "XGID=-aaBa-EAB-a-cC-A-cAc-b----:0:0:1:52:0:0:0:5:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "7/2* 6/4*",
+        "optimalMove": "15/10* 6/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/10* 6/4*",
+            "7/2* 6/4*",
+            "15/10*/8",
+            "6/4* 6/1*"
+        ],
+        "equityLoss": 0.289,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/2* 6/4* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.289 EMG face au coup 3-ply 15/10* 6/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 5 pts (0-0, Videau à 1) : 15/10* 6/4* surpasse 7/2* 6/4* de +0.289 EMG (62.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 15/10* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/10* 6/4* domine 7/2* 6/4* de +0.289 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 15/10* 6/4* maximise votre équité cubeful (+0.659 EMG).",
+            "Évitez 7/2* 6/4* (-0.289 EMG) ; jouez la ligne maîtresse 15/10* 6/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_219_14",
+        "tier": 2,
+        "xgid": "XGID=--A-a-C-CA-abB-a-aad-CcaB-:0:0:1:14:0:0:0:5:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "24/23* 6/2",
+        "optimalMove": "24/23* 21/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23* 21/17*",
+            "24/23* 6/2",
+            "24/23* 8/4*",
+            "21/17*/16"
+        ],
+        "equityLoss": 0.189,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23* 6/2 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.189 EMG face au coup 3-ply 24/23* 21/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 5 pts (0-0, Videau à 1) : 24/23* 21/17* surpasse 24/23* 6/2 de +0.189 EMG (55.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23* 21/17* domine 24/23* 6/2 de +0.189 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/23* 21/17* maximise votre équité cubeful (+0.173 EMG).",
+            "Évitez 24/23* 6/2 (-0.189 EMG) ; jouez la ligne maîtresse 24/23* 21/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_220_32",
+        "tier": 2,
+        "xgid": "XGID=aBABaAb--AAa-A-A-a-e-DdA--:0:0:1:32:0:0:0:5:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "15/13 5/2",
+        "optimalMove": "13/11* 5/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11* 5/2",
+            "15/13 5/2",
+            "10/8 5/2",
+            "10/5"
+        ],
+        "equityLoss": 0.483,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 15/13 5/2 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.483 EMG face au coup 3-ply 13/11* 5/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 5 pts (0-0, Videau à 1) : 13/11* 5/2 surpasse 15/13 5/2 de +0.483 EMG (60.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/11* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11* 5/2 domine 15/13 5/2 de +0.483 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 13/11* 5/2 maximise votre équité cubeful (+0.503 EMG).",
+            "Évitez 15/13 5/2 (-0.483 EMG) ; jouez la ligne maîtresse 13/11* 5/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_221_16",
+        "tier": 3,
+        "xgid": "XGID=---De-E-AA----AaaaaC--abc-:0:0:1:16:0:0:0:5:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "19/18* 9/3",
+        "optimalMove": "19/18* 14/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "19/18* 14/8",
+            "19/18* 9/3",
+            "19/18*/12",
+            "19/18* 8/2"
+        ],
+        "equityLoss": 0.094,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 19/18* 9/3 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.094 EMG face au coup 3-ply 19/18* 14/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 5 pts (0-0, Videau à 1) : 19/18* 14/8 surpasse 19/18* 9/3 de +0.094 EMG (83.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 19/18* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 19/18* 14/8 domine 19/18* 9/3 de +0.094 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 19/18* 14/8 maximise votre équité cubeful (+1.251 EMG).",
+            "Évitez 19/18* 9/3 (-0.094 EMG) ; jouez la ligne maîtresse 19/18* 14/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_222_26",
+        "tier": 4,
+        "xgid": "XGID=--A--aDaE---cCa--b-g--A-A-:0:0:1:26:0:3:0:7:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "22/14*",
+        "optimalMove": "13/7*/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7*/5*",
+            "22/14*",
+            "8/2 6/4",
+            "8/6 8/2"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/14* (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.038 EMG face au coup 3-ply 13/7*/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 7 pts (0-3, Videau à 1) : 13/7*/5* surpasse 22/14* de +0.038 EMG (53.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/7*/5* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/7*/5* domine 22/14* de +0.038 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 13/7*/5* maximise votre équité cubeful (+0.285 EMG).",
+            "Évitez 22/14* (-0.038 EMG) ; jouez la ligne maîtresse 13/7*/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_223_63",
+        "tier": 2,
+        "xgid": "XGID=--C--bDAC--acA----AgaA-a-A:0:0:1:63:0:3:0:7:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "bar/22 7/1",
+        "optimalMove": "bar/22 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 13/7",
+            "bar/22 7/1",
+            "bar/22 21/15",
+            "bar/16"
+        ],
+        "equityLoss": 0.283,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 7/1 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.283 EMG face au coup 3-ply bar/22 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 7 pts (0-3, Videau à 1) : bar/22 13/7 surpasse bar/22 7/1 de +0.283 EMG (50.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 13/7 domine bar/22 7/1 de +0.283 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), bar/22 13/7 maximise votre équité cubeful (+0.071 EMG).",
+            "Évitez bar/22 7/1 (-0.283 EMG) ; jouez la ligne maîtresse bar/22 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_224_12",
+        "tier": 2,
+        "xgid": "XGID=--CAaAF----a-B-A-a-e-aAdb-:0:0:1:12:3:0:0:7:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "13/11* 6/5",
+        "optimalMove": "22/21* 5/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/21* 5/3",
+            "13/11* 6/5",
+            "6/4*/3",
+            "6/4* 5/4"
+        ],
+        "equityLoss": 0.365,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11* 6/5 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.365 EMG face au coup 3-ply 22/21* 5/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 7 pts (3-0, Videau à 1) : 22/21* 5/3 surpasse 13/11* 6/5 de +0.365 EMG (65.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/21* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/21* 5/3 domine 13/11* 6/5 de +0.365 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 22/21* 5/3 maximise votre équité cubeful (+0.587 EMG).",
+            "Évitez 13/11* 6/5 (-0.365 EMG) ; jouez la ligne maîtresse 22/21* 5/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_225_34",
+        "tier": 4,
+        "xgid": "XGID=-c---aFa-A-AdBa-A-AcaBaA--:0:0:1:34:4:2:0:9:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "23/20* 18/14*",
+        "optimalMove": "23/20* 9/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/20* 9/5*",
+            "23/20* 18/14*",
+            "23/20* 11/7*",
+            "18/14*/11"
+        ],
+        "equityLoss": 0.032,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/20* 18/14* (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.032 EMG face au coup 3-ply 23/20* 9/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 9 pts (4-2, Videau à 1) : 23/20* 9/5* surpasse 23/20* 18/14* de +0.032 EMG (59.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/20* en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/20* 9/5* domine 23/20* 18/14* de +0.032 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 23/20* 9/5* maximise votre équité cubeful (+0.499 EMG).",
+            "Évitez 23/20* 18/14* (-0.032 EMG) ; jouez la ligne maîtresse 23/20* 9/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_226_63",
+        "tier": 2,
+        "xgid": "XGID=--aAaACaaA-A-C-aaaagC---B-:0:0:1:63:2:4:0:9:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "20/17* 9/3",
+        "optimalMove": "20/17* 11/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/17* 11/5",
+            "20/17* 9/3",
+            "24/18* 20/17*",
+            "24/18*/15*"
+        ],
+        "equityLoss": 0.135,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/17* 9/3 (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.135 EMG face au coup 3-ply 20/17* 11/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 9 pts (2-4, Videau à 1) : 20/17* 11/5 surpasse 20/17* 9/3 de +0.135 EMG (63.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/17* en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/17* 11/5 domine 20/17* 9/3 de +0.135 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), 20/17* 11/5 maximise votre équité cubeful (+0.740 EMG).",
+            "Évitez 20/17* 9/3 (-0.135 EMG) ; jouez la ligne maîtresse 20/17* 11/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_227_14",
+        "tier": 2,
+        "xgid": "XGID=-a---cGaAaA-b-a--A-daBAaAA:0:0:1:14:4:2:0:9:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "bar/21 10/9*",
+        "optimalMove": "bar/20*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20*",
+            "bar/21 10/9*",
+            "bar/21 24/23*",
+            "bar/21 8/7*"
+        ],
+        "equityLoss": 0.184,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 10/9* (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.184 EMG face au coup 3-ply bar/20*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 9 pts (4-2, Videau à 1) : bar/20* surpasse bar/21 10/9* de +0.184 EMG (46.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* domine bar/21 10/9* de +0.184 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), bar/20* maximise votre équité cubeful (-0.203 EMG).",
+            "Évitez bar/21 10/9* (-0.184 EMG) ; jouez la ligne maîtresse bar/20*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_228_64",
+        "tier": 4,
+        "xgid": "XGID=-A--aaEAA---dE----ae-ab-AA:0:0:1:64:2:1:0:11:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "bar/21* 7/1",
+        "optimalMove": "bar/21* 24/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 24/18*",
+            "bar/21* 7/1",
+            "bar/21* 13/7",
+            "bar/21* 8/2"
+        ],
+        "equityLoss": 0.057,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 7/1 (Match en 11 pts (2-1, Videau à 1)), vous concédez -0.057 EMG face au coup 3-ply bar/21* 24/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 11 pts (2-1, Videau à 1) : bar/21* 24/18* surpasse bar/21* 7/1 de +0.057 EMG (49.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 11 pts (2-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 24/18* domine bar/21* 7/1 de +0.057 EMG.",
+            "En Match en 11 pts (2-1, Videau à 1), bar/21* 24/18* maximise votre équité cubeful (-0.088 EMG).",
+            "Évitez bar/21* 7/1 (-0.057 EMG) ; jouez la ligne maîtresse bar/21* 24/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_229_24",
+        "tier": 2,
+        "xgid": "XGID=-a-B-aE---a-bD-A-cadaA-aAA:0:0:1:24:1:2:0:11:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/23* 13/9",
+        "optimalMove": "bar/23* 24/20*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 24/20*",
+            "bar/23* 13/9",
+            "bar/23* 15/11",
+            "bar/23* 6/2"
+        ],
+        "equityLoss": 0.487,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 13/9 (Match en 11 pts (1-2, Videau à 1)), vous concédez -0.487 EMG face au coup 3-ply bar/23* 24/20*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 11 pts (1-2, Videau à 1) : bar/23* 24/20* surpasse bar/23* 13/9 de +0.487 EMG (58.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 11 pts (1-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 24/20* domine bar/23* 13/9 de +0.487 EMG.",
+            "En Match en 11 pts (1-2, Videau à 1), bar/23* 24/20* maximise votre équité cubeful (+0.513 EMG).",
+            "Évitez bar/23* 13/9 (-0.487 EMG) ; jouez la ligne maîtresse bar/23* 24/20*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_230_36",
+        "tier": 3,
+        "xgid": "XGID=-B----E--a-adEb--AadB-aa--:0:0:1:36:0:0:0:0:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "17/11*/8",
+        "optimalMove": "17/11* 13/10",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "17/11* 13/10",
+            "17/11*/8",
+            "17/11* 6/3",
+            "20/11*"
+        ],
+        "equityLoss": 0.064,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 17/11*/8 (Money Game), vous concédez -0.064 EMG face au coup 3-ply 17/11* 13/10.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Money Game : 17/11* 13/10 surpasse 17/11*/8 de +0.064 EMG (54.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 17/11* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 17/11* 13/10 domine 17/11*/8 de +0.064 EMG.",
+            "En Money Game, 17/11* 13/10 maximise votre équité cubeful (+0.293 EMG).",
+            "Évitez 17/11*/8 (-0.064 EMG) ; jouez la ligne maîtresse 17/11* 13/10."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_231_54",
+        "tier": 3,
+        "xgid": "XGID=-c-aABEaAA--cB--Ad-b-B-a--:0:0:1:54:1:0:0:3:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "16/11 8/4",
+        "optimalMove": "21/16 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16 8/4",
+            "16/11 8/4",
+            "9/4 8/4",
+            "9/4 6/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/11 8/4 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.073 EMG face au coup 3-ply 21/16 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 3 pts (1-0, Videau à 1) : 21/16 8/4 surpasse 16/11 8/4 de +0.073 EMG (67.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/16 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16 8/4 domine 16/11 8/4 de +0.073 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 21/16 8/4 maximise votre équité cubeful (+0.758 EMG).",
+            "Évitez 16/11 8/4 (-0.073 EMG) ; jouez la ligne maîtresse 21/16 8/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_232_31",
+        "tier": 3,
+        "xgid": "XGID=--ACc-B-Ba-A-B--a-Acbb-cC-:0:0:1:31:0:1:0:3:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "18/15 3/2",
+        "optimalMove": "11/8 3/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/8 3/2",
+            "18/15 3/2",
+            "18/17 11/8",
+            "13/9*"
+        ],
+        "equityLoss": 0.104,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/15 3/2 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.104 EMG face au coup 3-ply 11/8 3/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 3 pts (0-1, Videau à 1) : 11/8 3/2 surpasse 18/15 3/2 de +0.104 EMG (33.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 11/8 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/8 3/2 domine 18/15 3/2 de +0.104 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 11/8 3/2 maximise votre équité cubeful (-0.684 EMG).",
+            "Évitez 18/15 3/2 (-0.104 EMG) ; jouez la ligne maîtresse 11/8 3/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_233_32",
+        "tier": 2,
+        "xgid": "XGID=-cC-DCA-aa--b----b-b-CdA--:0:0:1:32:1:0:0:3:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "23/20 6/4",
+        "optimalMove": "6/3 5/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/3 5/3",
+            "23/20 6/4",
+            "21/18 6/4",
+            "23/21 6/3"
+        ],
+        "equityLoss": 0.227,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/20 6/4 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.227 EMG face au coup 3-ply 6/3 5/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 3 pts (1-0, Videau à 1) : 6/3 5/3 surpasse 23/20 6/4 de +0.227 EMG (56.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/3 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/3 5/3 domine 23/20 6/4 de +0.227 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 6/3 5/3 maximise votre équité cubeful (+0.203 EMG).",
+            "Évitez 23/20 6/4 (-0.227 EMG) ; jouez la ligne maîtresse 6/3 5/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_234_15",
+        "tier": 3,
+        "xgid": "XGID=-a--a-FAB---eD---aAcb--aaA:0:0:1:15:0:2:0:5:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/24* 13/8",
+        "optimalMove": "bar/24* 6/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 6/1*",
+            "bar/24* 13/8",
+            "bar/24* 18/13",
+            "bar/24* 7/2"
+        ],
+        "equityLoss": 0.109,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 13/8 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.109 EMG face au coup 3-ply bar/24* 6/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 5 pts (0-2, Videau à 1) : bar/24* 6/1* surpasse bar/24* 13/8 de +0.109 EMG (52.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 6/1* domine bar/24* 13/8 de +0.109 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), bar/24* 6/1* maximise votre équité cubeful (+0.258 EMG).",
+            "Évitez bar/24* 13/8 (-0.109 EMG) ; jouez la ligne maîtresse bar/24* 6/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_235_23",
+        "tier": 3,
+        "xgid": "XGID=-B-aaaDA--a-eC---aAbc--BAA:0:0:1:23:0:2:0:5:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/22 6/4*",
+        "optimalMove": "bar/22 7/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 7/5*",
+            "bar/22 6/4*",
+            "bar/23 7/4*",
+            "bar/23 6/3*"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 6/4* (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.089 EMG face au coup 3-ply bar/22 7/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 5 pts (0-2, Videau à 1) : bar/22 7/5* surpasse bar/22 6/4* de +0.089 EMG (39.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 7/5* domine bar/22 6/4* de +0.089 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), bar/22 7/5* maximise votre équité cubeful (-0.359 EMG).",
+            "Évitez bar/22 6/4* (-0.089 EMG) ; jouez la ligne maîtresse bar/22 7/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_236_43",
+        "tier": 2,
+        "xgid": "XGID=-baaABB-a----FaA-c-dA-B-b-:0:0:1:43:2:0:0:5:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "20/13",
+        "optimalMove": "15/8*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/8*",
+            "20/13",
+            "13/6",
+            "20/16 13/10"
+        ],
+        "equityLoss": 0.22,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/13 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.220 EMG face au coup 3-ply 15/8*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 5 pts (2-0, Videau à 1) : 15/8* surpasse 20/13 de +0.220 EMG (57.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 15/8* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/8* domine 20/13 de +0.220 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 15/8* maximise votre équité cubeful (+0.142 EMG).",
+            "Évitez 20/13 (-0.220 EMG) ; jouez la ligne maîtresse 15/8*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_237_26",
+        "tier": 3,
+        "xgid": "XGID=-Bab--DAC--ae--a-aB-baAaAA:0:0:1:26:0:2:0:5:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "bar/23*/17*",
+        "optimalMove": "bar/23* 8/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 8/2*",
+            "bar/23*/17*",
+            "bar/17*",
+            "bar/23* 24/18"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23*/17* (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.092 EMG face au coup 3-ply bar/23* 8/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 5 pts (0-2, Videau à 1) : bar/23* 8/2* surpasse bar/23*/17* de +0.092 EMG (61.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 8/2* domine bar/23*/17* de +0.092 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), bar/23* 8/2* maximise votre équité cubeful (+0.905 EMG).",
+            "Évitez bar/23*/17* (-0.092 EMG) ; jouez la ligne maîtresse bar/23* 8/2*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_238_51",
+        "tier": 4,
+        "xgid": "XGID=-a-AAAbaaA---F---cad--BBbA:0:0:1:51:2:0:0:5:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "bar/20 9/8*",
+        "optimalMove": "bar/20 5/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 5/4",
+            "bar/20 9/8*",
+            "bar/20 4/3",
+            "bar/20 3/2"
+        ],
+        "equityLoss": 0.037,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 9/8* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.037 EMG face au coup 3-ply bar/20 5/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 5 pts (2-0, Videau à 1) : bar/20 5/4 surpasse bar/20 9/8* de +0.037 EMG (49.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 5/4 domine bar/20 9/8* de +0.037 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/20 5/4 maximise votre équité cubeful (-0.433 EMG).",
+            "Évitez bar/20 9/8* (-0.037 EMG) ; jouez la ligne maîtresse bar/20 5/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_239_32",
+        "tier": 4,
+        "xgid": "XGID=--ABaAD-B-Bae--a---d-AabB-:0:0:1:32:0:3:0:7:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "6/4* 5/2",
+        "optimalMove": "24/22* 5/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/22* 5/2",
+            "6/4* 5/2",
+            "24/22* 8/5",
+            "8/5 6/4*"
+        ],
+        "equityLoss": 0.043,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 6/4* 5/2 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.043 EMG face au coup 3-ply 24/22* 5/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 7 pts (0-3, Videau à 1) : 24/22* 5/2 surpasse 6/4* 5/2 de +0.043 EMG (66.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/22* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/22* 5/2 domine 6/4* 5/2 de +0.043 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 24/22* 5/2 maximise votre équité cubeful (+0.905 EMG).",
+            "Évitez 6/4* 5/2 (-0.043 EMG) ; jouez la ligne maîtresse 24/22* 5/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_240_56",
+        "tier": 2,
+        "xgid": "XGID=-AAaaaD--a---E-c---bC-Acc-:0:0:1:56:3:0:0:7:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "20/14 6/1",
+        "optimalMove": "13/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/2",
+            "20/14 6/1",
+            "20/9*",
+            "22/16 6/1"
+        ],
+        "equityLoss": 0.167,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14 6/1 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.167 EMG face au coup 3-ply 13/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 7 pts (3-0, Videau à 1) : 13/2 surpasse 20/14 6/1 de +0.167 EMG (46.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/2 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/2 domine 20/14 6/1 de +0.167 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 13/2 maximise votre équité cubeful (-0.246 EMG).",
+            "Évitez 20/14 6/1 (-0.167 EMG) ; jouez la ligne maîtresse 13/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_241_63",
+        "tier": 4,
+        "xgid": "XGID=-cA---E-B---eE---c-b-aAAa-:0:0:1:63:0:0:0:9:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "23/20 8/2",
+        "optimalMove": "13/10 8/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/10 8/2",
+            "23/20 8/2",
+            "8/5 8/2",
+            "22/13"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/20 8/2 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.038 EMG face au coup 3-ply 13/10 8/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 9 pts (0-0, Videau à 1) : 13/10 8/2 surpasse 23/20 8/2 de +0.038 EMG (58.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/10 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/10 8/2 domine 23/20 8/2 de +0.038 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 13/10 8/2 maximise votre équité cubeful (+0.390 EMG).",
+            "Évitez 23/20 8/2 (-0.038 EMG) ; jouez la ligne maîtresse 13/10 8/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_242_36",
+        "tier": 3,
+        "xgid": "XGID=-BbB--A-B---cE---b-e-Caaa-:0:0:1:36:0:0:0:9:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "13/10 13/7",
+        "optimalMove": "21/15 13/10",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/15 13/10",
+            "13/10 13/7",
+            "13/4",
+            "21/18 13/7"
+        ],
+        "equityLoss": 0.081,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10 13/7 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.081 EMG face au coup 3-ply 21/15 13/10.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 9 pts (0-0, Videau à 1) : 21/15 13/10 surpasse 13/10 13/7 de +0.081 EMG (46.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/15 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/15 13/10 domine 13/10 13/7 de +0.081 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 21/15 13/10 maximise votre équité cubeful (-0.176 EMG).",
+            "Évitez 13/10 13/7 (-0.081 EMG) ; jouez la ligne maîtresse 21/15 13/10."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_243_22",
+        "tier": 2,
+        "xgid": "XGID=-AAAa-DaB-a-eB---b-a-AbBbA:0:0:1:22:0:0:0:9:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "bar/23 6/4*(2) 3/1",
+        "optimalMove": "bar/23 6/4*/2 3/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 6/4*/2 3/1",
+            "bar/23 6/4*(2) 3/1",
+            "bar/23 21/19* 6/4*/2",
+            "bar/23 21/19* 6/4* 3/1"
+        ],
+        "equityLoss": 0.125,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23 6/4*(2) 3/1 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.125 EMG face au coup 3-ply bar/23 6/4*/2 3/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 9 pts (0-0, Videau à 1) : bar/23 6/4*/2 3/1 surpasse bar/23 6/4*(2) 3/1 de +0.125 EMG (63.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 6/4*/2 3/1 domine bar/23 6/4*(2) 3/1 de +0.125 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/23 6/4*/2 3/1 maximise votre équité cubeful (+0.743 EMG).",
+            "Évitez bar/23 6/4*(2) 3/1 (-0.125 EMG) ; jouez la ligne maîtresse bar/23 6/4*/2 3/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_244_15",
+        "tier": 2,
+        "xgid": "XGID=-BcB-aAaA-a-bE-A-bAcA-Ab--:0:0:1:15:0:0:0:9:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "15/10* 8/7*",
+        "optimalMove": "15/10* 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/10* 6/5*",
+            "15/10* 8/7*",
+            "13/8 6/5*",
+            "20/15 6/5*"
+        ],
+        "equityLoss": 0.141,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 15/10* 8/7* (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.141 EMG face au coup 3-ply 15/10* 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 9 pts (0-0, Videau à 1) : 15/10* 6/5* surpasse 15/10* 8/7* de +0.141 EMG (54.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 15/10* en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/10* 6/5* domine 15/10* 8/7* de +0.141 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 15/10* 6/5* maximise votre équité cubeful (+0.270 EMG).",
+            "Évitez 15/10* 8/7* (-0.141 EMG) ; jouez la ligne maîtresse 15/10* 6/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_245_62",
+        "tier": 4,
+        "xgid": "XGID=a-B-aaCbB---dB---bBAB-bAb-:0:0:1:62:0:0:0:9:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "23/21 19/13",
+        "optimalMove": "13/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/5*",
+            "23/21 19/13",
+            "19/13 6/4*",
+            "23/15"
+        ],
+        "equityLoss": 0.058,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/21 19/13 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.058 EMG face au coup 3-ply 13/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 9 pts (0-0, Videau à 1) : 13/5* surpasse 23/21 19/13 de +0.058 EMG (59.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/5* en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/5* domine 23/21 19/13 de +0.058 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 13/5* maximise votre équité cubeful (+0.442 EMG).",
+            "Évitez 23/21 19/13 (-0.058 EMG) ; jouez la ligne maîtresse 13/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_246_43",
+        "tier": 3,
+        "xgid": "XGID=-B-B-acbB----D--AbCcb--bA-:0:0:1:43:0:0:0:9:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "24/21 18/14",
+        "optimalMove": "18/14 16/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/14 16/13",
+            "24/21 18/14",
+            "16/9",
+            "24/21 16/12"
+        ],
+        "equityLoss": 0.093,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21 18/14 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.093 EMG face au coup 3-ply 18/14 16/13.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 9 pts (0-0, Videau à 1) : 18/14 16/13 surpasse 24/21 18/14 de +0.093 EMG (41.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/14 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/14 16/13 domine 24/21 18/14 de +0.093 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 18/14 16/13 maximise votre équité cubeful (-0.428 EMG).",
+            "Évitez 24/21 18/14 (-0.093 EMG) ; jouez la ligne maîtresse 18/14 16/13."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_247_46",
+        "tier": 2,
+        "xgid": "XGID=-A----D-aa--aE-d--aeBAaaB-:0:0:1:46:7:4:0:11:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "24/18*/14",
+        "optimalMove": "24/18* 13/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 13/9*",
+            "24/18*/14",
+            "24/18* 21/17",
+            "13/9* 13/7"
+        ],
+        "equityLoss": 0.232,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18*/14 (Match en 11 pts (7-4, Videau à 1)), vous concédez -0.232 EMG face au coup 3-ply 24/18* 13/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 11 pts (7-4, Videau à 1) : 24/18* 13/9* surpasse 24/18*/14 de +0.232 EMG (49.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 11 pts (7-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 13/9* domine 24/18*/14 de +0.232 EMG.",
+            "En Match en 11 pts (7-4, Videau à 1), 24/18* 13/9* maximise votre équité cubeful (-0.176 EMG).",
+            "Évitez 24/18*/14 (-0.232 EMG) ; jouez la ligne maîtresse 24/18* 13/9*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_248_46",
+        "tier": 2,
+        "xgid": "XGID=-B--AbCa-a-A-B-c-aAeAaBaB-:0:0:1:46:7:4:0:11:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "24/18 13/9*",
+        "optimalMove": "13/9* 13/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9* 13/7*",
+            "24/18 13/9*",
+            "20/14 11/7*",
+            "24/18 11/7*"
+        ],
+        "equityLoss": 0.218,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18 13/9* (Match en 11 pts (7-4, Videau à 1)), vous concédez -0.218 EMG face au coup 3-ply 13/9* 13/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 11 pts (7-4, Videau à 1) : 13/9* 13/7* surpasse 24/18 13/9* de +0.218 EMG (51.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/9* en Match en 11 pts (7-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/9* 13/7* domine 24/18 13/9* de +0.218 EMG.",
+            "En Match en 11 pts (7-4, Videau à 1), 13/9* 13/7* maximise votre équité cubeful (-0.040 EMG).",
+            "Évitez 24/18 13/9* (-0.218 EMG) ; jouez la ligne maîtresse 13/9* 13/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_249_41",
+        "tier": 3,
+        "xgid": "XGID=-baaaaEAA-B-b-a-AAabCa--bA:0:0:1:41:4:7:0:11:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "bar/21* 6/5*",
+        "optimalMove": "bar/21* 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 8/7",
+            "bar/21* 6/5*",
+            "bar/21* 17/16",
+            "bar/21* 7/6"
+        ],
+        "equityLoss": 0.103,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 6/5* (Match en 11 pts (4-7, Videau à 1)), vous concédez -0.103 EMG face au coup 3-ply bar/21* 8/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 11 pts (4-7, Videau à 1) : bar/21* 8/7 surpasse bar/21* 6/5* de +0.103 EMG (60.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 11 pts (4-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 8/7 domine bar/21* 6/5* de +0.103 EMG.",
+            "En Match en 11 pts (4-7, Videau à 1), bar/21* 8/7 maximise votre équité cubeful (+0.667 EMG).",
+            "Évitez bar/21* 6/5* (-0.103 EMG) ; jouez la ligne maîtresse bar/21* 8/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_250_16",
+        "tier": 2,
+        "xgid": "XGID=-B--adBAA--A-A-c--aeaCB-B-:0:0:1:16:7:4:0:11:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "21/20* 13/7",
+        "optimalMove": "24/18* 21/20*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 21/20*",
+            "21/20* 13/7",
+            "21/20*/14",
+            "24/18* 8/7"
+        ],
+        "equityLoss": 0.127,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/20* 13/7 (Match en 11 pts (7-4, Videau à 1)), vous concédez -0.127 EMG face au coup 3-ply 24/18* 21/20*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 11 pts (7-4, Videau à 1) : 24/18* 21/20* surpasse 21/20* 13/7 de +0.127 EMG (47.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 11 pts (7-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 21/20* domine 21/20* 13/7 de +0.127 EMG.",
+            "En Match en 11 pts (7-4, Videau à 1), 24/18* 21/20* maximise votre équité cubeful (-0.182 EMG).",
+            "Évitez 21/20* 13/7 (-0.127 EMG) ; jouez la ligne maîtresse 24/18* 21/20*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_251_13",
+        "tier": 4,
+        "xgid": "XGID=-acBAaDBA---aB---c-e-BA-a-:0:0:1:13:0:0:0:0:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "8/5*/4",
+        "optimalMove": "8/5* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5* 6/5",
+            "8/5*/4",
+            "13/12* 8/5*",
+            "7/4 6/5*"
+        ],
+        "equityLoss": 0.049,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/5*/4 (Money Game), vous concédez -0.049 EMG face au coup 3-ply 8/5* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Money Game : 8/5* 6/5 surpasse 8/5*/4 de +0.049 EMG (78.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5* 6/5 domine 8/5*/4 de +0.049 EMG.",
+            "En Money Game, 8/5* 6/5 maximise votre équité cubeful (+1.194 EMG).",
+            "Évitez 8/5*/4 (-0.049 EMG) ; jouez la ligne maîtresse 8/5* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_252_41",
+        "tier": 2,
+        "xgid": "XGID=-A-ac-EAC-a-b----aabBbbBA-:0:0:1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "24/20 7/6",
+        "optimalMove": "24/20 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20 8/7",
+            "24/20 7/6",
+            "8/7 6/2",
+            "7/3*/2"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 7/6 (Money Game), vous concédez -0.159 EMG face au coup 3-ply 24/20 8/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Money Game : 24/20 8/7 surpasse 24/20 7/6 de +0.159 EMG (40.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/20 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20 8/7 domine 24/20 7/6 de +0.159 EMG.",
+            "En Money Game, 24/20 8/7 maximise votre équité cubeful (-0.358 EMG).",
+            "Évitez 24/20 7/6 (-0.159 EMG) ; jouez la ligne maîtresse 24/20 8/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_253_25",
+        "tier": 2,
+        "xgid": "XGID=-aAadAD-B-----AA-aabBbbCa-:0:0:1:25:0:0:0:0:8",
+        "dice": [
+            2,
+            5
+        ],
+        "playedMove": "23/18*/16",
+        "optimalMove": "23/18* 5/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/18* 5/3*",
+            "23/18*/16",
+            "23/18* 14/12",
+            "23/18* 15/13"
+        ],
+        "equityLoss": 0.311,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/18*/16 (Money Game), vous concédez -0.311 EMG face au coup 3-ply 23/18* 5/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-5 en Money Game : 23/18* 5/3* surpasse 23/18*/16 de +0.311 EMG (58.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/18* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/18* 5/3* domine 23/18*/16 de +0.311 EMG.",
+            "En Money Game, 23/18* 5/3* maximise votre équité cubeful (+0.300 EMG).",
+            "Évitez 23/18*/16 (-0.311 EMG) ; jouez la ligne maîtresse 23/18* 5/3*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_254_35",
+        "tier": 4,
+        "xgid": "XGID=-A--AaDAa--abBaaDb-e--a-B-:0:0:1:35:1:0:0:3:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "16/11* 4/1",
+        "optimalMove": "16/11* 7/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/11* 7/4",
+            "16/11* 4/1",
+            "13/8* 7/4",
+            "13/8* 4/1"
+        ],
+        "equityLoss": 0.059,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/11* 4/1 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.059 EMG face au coup 3-ply 16/11* 7/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 3 pts (1-0, Videau à 1) : 16/11* 7/4 surpasse 16/11* 4/1 de +0.059 EMG (51.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 16/11* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/11* 7/4 domine 16/11* 4/1 de +0.059 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 16/11* 7/4 maximise votre équité cubeful (-0.126 EMG).",
+            "Évitez 16/11* 4/1 (-0.059 EMG) ; jouez la ligne maîtresse 16/11* 7/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_255_22",
+        "tier": 2,
+        "xgid": "XGID=ab-A-CC-BdA-AC-----bAa-da-:0:0:1:22:0:1:0:3:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "13/11 8/4 6/4",
+        "optimalMove": "8/4 6/4 5/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4 5/3",
+            "13/11 8/4 6/4",
+            "8/4(2)",
+            "10/4 6/4"
+        ],
+        "equityLoss": 0.174,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11 8/4 6/4 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.174 EMG face au coup 3-ply 8/4 6/4 5/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 3 pts (0-1, Videau à 1) : 8/4 6/4 5/3 surpasse 13/11 8/4 6/4 de +0.174 EMG (89.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/4 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/4 6/4 5/3 domine 13/11 8/4 6/4 de +0.174 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 8/4 6/4 5/3 maximise votre équité cubeful (+1.711 EMG).",
+            "Évitez 13/11 8/4 6/4 (-0.174 EMG) ; jouez la ligne maîtresse 8/4 6/4 5/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_256_16",
+        "tier": 3,
+        "xgid": "XGID=-B--b-E-BA--dC---cad---aB-:0:0:1:16:0:0:0:5:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "24/18* 9/8",
+        "optimalMove": "24/23* 24/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23* 24/18*",
+            "24/18* 9/8",
+            "24/18* 6/5",
+            "24/23* 9/3"
+        ],
+        "equityLoss": 0.072,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18* 9/8 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.072 EMG face au coup 3-ply 24/23* 24/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 5 pts (0-0, Videau à 1) : 24/23* 24/18* surpasse 24/18* 9/8 de +0.072 EMG (56.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23* 24/18* domine 24/18* 9/8 de +0.072 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/23* 24/18* maximise votre équité cubeful (+0.372 EMG).",
+            "Évitez 24/18* 9/8 (-0.072 EMG) ; jouez la ligne maîtresse 24/23* 24/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_257_32",
+        "tier": 2,
+        "xgid": "XGID=-aBB-aC-A---aD--b-aeaBa-bA:0:0:1:32:0:0:0:5:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "bar/22* 13/11",
+        "optimalMove": "bar/22*/20*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22*/20*",
+            "bar/22* 13/11",
+            "bar/22* 8/6",
+            "bar/20*"
+        ],
+        "equityLoss": 0.429,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 13/11 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.429 EMG face au coup 3-ply bar/22*/20*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 5 pts (0-0, Videau à 1) : bar/22*/20* surpasse bar/22* 13/11 de +0.429 EMG (73.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22*/20* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22*/20* domine bar/22* 13/11 de +0.429 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/22*/20* maximise votre équité cubeful (+1.037 EMG).",
+            "Évitez bar/22* 13/11 (-0.429 EMG) ; jouez la ligne maîtresse bar/22*/20*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_258_65",
+        "tier": 2,
+        "xgid": "XGID=aB--cAEA-B--dA---a-bAaabAA:0:0:1:65:0:0:0:5:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "bar/20 24/18",
+        "optimalMove": "bar/20 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 13/7",
+            "bar/20 24/18",
+            "bar/14",
+            "bar/20 7/1"
+        ],
+        "equityLoss": 0.284,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 24/18 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.284 EMG face au coup 3-ply bar/20 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 5 pts (0-0, Videau à 1) : bar/20 13/7 surpasse bar/20 24/18 de +0.284 EMG (58.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 13/7 domine bar/20 24/18 de +0.284 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/20 13/7 maximise votre équité cubeful (+0.459 EMG).",
+            "Évitez bar/20 24/18 (-0.284 EMG) ; jouez la ligne maîtresse bar/20 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_259_54",
+        "tier": 2,
+        "xgid": "XGID=-ba---EAA---cE-a-aAe---bAA:0:0:1:54:0:3:0:7:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "bar/21 13/8",
+        "optimalMove": "bar/20 24/20",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 24/20",
+            "bar/21 13/8",
+            "bar/21 7/2*",
+            "bar/21 18/13"
+        ],
+        "equityLoss": 0.122,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 13/8 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.122 EMG face au coup 3-ply bar/20 24/20.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 7 pts (0-3, Videau à 1) : bar/20 24/20 surpasse bar/21 13/8 de +0.122 EMG (43.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 24/20 domine bar/21 13/8 de +0.122 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), bar/20 24/20 maximise votre équité cubeful (-0.260 EMG).",
+            "Évitez bar/21 13/8 (-0.122 EMG) ; jouez la ligne maîtresse bar/20 24/20."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_260_32",
+        "tier": 2,
+        "xgid": "XGID=--A--cDbbAa-BB--A---Ad-cC-:0:0:1:32:0:3:0:7:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "24/22 16/13",
+        "optimalMove": "12/10* 12/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "12/10* 12/9",
+            "24/22 16/13",
+            "24/22 9/6",
+            "24/22 12/9"
+        ],
+        "equityLoss": 0.152,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22 16/13 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.152 EMG face au coup 3-ply 12/10* 12/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 7 pts (0-3, Videau à 1) : 12/10* 12/9 surpasse 24/22 16/13 de +0.152 EMG (60.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 12/10* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 12/10* 12/9 domine 24/22 16/13 de +0.152 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 12/10* 12/9 maximise votre équité cubeful (+0.463 EMG).",
+            "Évitez 24/22 16/13 (-0.152 EMG) ; jouez la ligne maîtresse 12/10* 12/9."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_261_63",
+        "tier": 2,
+        "xgid": "XGID=-bC-Daa--a--caAaaBBdB--A--:0:0:1:63:3:0:0:7:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "20/14 18/15*",
+        "optimalMove": "18/15*/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/15*/9*",
+            "20/14 18/15*",
+            "20/17 20/14",
+            "14/5*"
+        ],
+        "equityLoss": 0.196,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14 18/15* (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.196 EMG face au coup 3-ply 18/15*/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 7 pts (3-0, Videau à 1) : 18/15*/9* surpasse 20/14 18/15* de +0.196 EMG (47.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/15*/9* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/15*/9* domine 20/14 18/15* de +0.196 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 18/15*/9* maximise votre équité cubeful (+0.010 EMG).",
+            "Évitez 20/14 18/15* (-0.196 EMG) ; jouez la ligne maîtresse 18/15*/9*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_262_65",
+        "tier": 2,
+        "xgid": "XGID=-b---aEAC---dD---aAe---bA-:0:0:1:65:4:6:0:9:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "13/8 13/7",
+        "optimalMove": "18/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/7",
+            "13/8 13/7",
+            "24/18 13/8",
+            "8/2 7/2"
+        ],
+        "equityLoss": 0.178,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/8 13/7 (Match en 9 pts (4-6, Videau à 1)), vous concédez -0.178 EMG face au coup 3-ply 18/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 9 pts (4-6, Videau à 1) : 18/7 surpasse 13/8 13/7 de +0.178 EMG (62.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/7 en Match en 9 pts (4-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/7 domine 13/8 13/7 de +0.178 EMG.",
+            "En Match en 9 pts (4-6, Videau à 1), 18/7 maximise votre équité cubeful (+0.555 EMG).",
+            "Évitez 13/8 13/7 (-0.178 EMG) ; jouez la ligne maîtresse 18/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_263_32",
+        "tier": 2,
+        "xgid": "XGID=aAB-a-FA--A-bB---cce----B-:0:0:1:32:6:4:0:9:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "7/4* 6/4",
+        "optimalMove": "6/4*/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/4*/1",
+            "7/4* 6/4",
+            "24/21 6/4*",
+            "10/7 6/4*"
+        ],
+        "equityLoss": 0.128,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/4* 6/4 (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.128 EMG face au coup 3-ply 6/4*/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 9 pts (6-4, Videau à 1) : 6/4*/1 surpasse 7/4* 6/4 de +0.128 EMG (59.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/4*/1 en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/4*/1 domine 7/4* 6/4 de +0.128 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), 6/4*/1 maximise votre équité cubeful (+0.448 EMG).",
+            "Évitez 7/4* 6/4 (-0.128 EMG) ; jouez la ligne maîtresse 6/4*/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_264_42",
+        "tier": 2,
+        "xgid": "XGID=-aC---BCCa--aA----aeAAbbbA:0:0:1:42:4:6:0:9:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "bar/21 13/11",
+        "optimalMove": "bar/21 20/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 20/18*",
+            "bar/21 13/11",
+            "bar/21 8/6",
+            "bar/21 7/5"
+        ],
+        "equityLoss": 0.619,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 13/11 (Match en 9 pts (4-6, Videau à 1)), vous concédez -0.619 EMG face au coup 3-ply bar/21 20/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 9 pts (4-6, Videau à 1) : bar/21 20/18* surpasse bar/21 13/11 de +0.619 EMG (48.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 9 pts (4-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 20/18* domine bar/21 13/11 de +0.619 EMG.",
+            "En Match en 9 pts (4-6, Videau à 1), bar/21 20/18* maximise votre équité cubeful (-0.007 EMG).",
+            "Évitez bar/21 13/11 (-0.619 EMG) ; jouez la ligne maîtresse bar/21 20/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_265_55",
+        "tier": 2,
+        "xgid": "XGID=aCBBAaC-----bB----cc-b-cAA:0:0:1:55:6:4:0:9:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/15 13/8(2)",
+        "optimalMove": "bar/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/5*",
+            "bar/15 13/8(2)",
+            "bar/10 13/8",
+            "bar/10 6/1"
+        ],
+        "equityLoss": 0.341,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/15 13/8(2) (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.341 EMG face au coup 3-ply bar/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 9 pts (6-4, Videau à 1) : bar/5* surpasse bar/15 13/8(2) de +0.341 EMG (63.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/5* en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/5* domine bar/15 13/8(2) de +0.341 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), bar/5* maximise votre équité cubeful (+0.481 EMG).",
+            "Évitez bar/15 13/8(2) (-0.341 EMG) ; jouez la ligne maîtresse bar/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_266_14",
+        "tier": 2,
+        "xgid": "XGID=--CaB-CC----aB---a-cAabaeA:0:0:1:14:4:6:0:9:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "bar/21* 7/6",
+        "optimalMove": "bar/21* 13/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 13/12*",
+            "bar/21* 7/6",
+            "bar/21*/20",
+            "bar/21* 2/1"
+        ],
+        "equityLoss": 0.205,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 7/6 (Match en 9 pts (4-6, Videau à 1)), vous concédez -0.205 EMG face au coup 3-ply bar/21* 13/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 9 pts (4-6, Videau à 1) : bar/21* 13/12* surpasse bar/21* 7/6 de +0.205 EMG (84.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 9 pts (4-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 13/12* domine bar/21* 7/6 de +0.205 EMG.",
+            "En Match en 9 pts (4-6, Videau à 1), bar/21* 13/12* maximise votre équité cubeful (+1.178 EMG).",
+            "Évitez bar/21* 7/6 (-0.205 EMG) ; jouez la ligne maîtresse bar/21* 13/12*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_267_23",
+        "tier": 2,
+        "xgid": "XGID=-EABaAB-A---bA----dbAbAbb-:0:0:1:23:6:4:0:9:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "13/11 8/5",
+        "optimalMove": "22/20 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/20 8/5",
+            "13/11 8/5",
+            "22/20 5/2",
+            "8/6 5/2"
+        ],
+        "equityLoss": 0.325,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11 8/5 (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.325 EMG face au coup 3-ply 22/20 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 9 pts (6-4, Videau à 1) : 22/20 8/5 surpasse 13/11 8/5 de +0.325 EMG (32.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/20 en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/20 8/5 domine 13/11 8/5 de +0.325 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), 22/20 8/5 maximise votre équité cubeful (-0.675 EMG).",
+            "Évitez 13/11 8/5 (-0.325 EMG) ; jouez la ligne maîtresse 22/20 8/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_268_14",
+        "tier": 4,
+        "xgid": "XGID=-a-a--E-D-A-bC-aabAea--aA-:0:0:1:14:6:3:0:11:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "24/20* 8/7",
+        "optimalMove": "24/20* 10/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20* 10/9",
+            "24/20* 8/7",
+            "24/20* 6/5",
+            "24/23* 18/14"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20* 8/7 (Match en 11 pts (6-3, Videau à 1)), vous concédez -0.038 EMG face au coup 3-ply 24/20* 10/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 11 pts (6-3, Videau à 1) : 24/20* 10/9 surpasse 24/20* 8/7 de +0.038 EMG (56.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/20* en Match en 11 pts (6-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20* 10/9 domine 24/20* 8/7 de +0.038 EMG.",
+            "En Match en 11 pts (6-3, Videau à 1), 24/20* 10/9 maximise votre équité cubeful (+0.144 EMG).",
+            "Évitez 24/20* 8/7 (-0.038 EMG) ; jouez la ligne maîtresse 24/20* 10/9."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_269_56",
+        "tier": 4,
+        "xgid": "XGID=-----AEaB-AabBa--b-hBA--A-:0:0:1:56:3:6:0:11:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "13/7* 10/5",
+        "optimalMove": "20/14* 10/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/14* 10/5",
+            "13/7* 10/5",
+            "21/15 10/5",
+            "21/10"
+        ],
+        "equityLoss": 0.052,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7* 10/5 (Match en 11 pts (3-6, Videau à 1)), vous concédez -0.052 EMG face au coup 3-ply 20/14* 10/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 11 pts (3-6, Videau à 1) : 20/14* 10/5 surpasse 13/7* 10/5 de +0.052 EMG (57.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/14* en Match en 11 pts (3-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/14* 10/5 domine 13/7* 10/5 de +0.052 EMG.",
+            "En Match en 11 pts (3-6, Videau à 1), 20/14* 10/5 maximise votre équité cubeful (+0.485 EMG).",
+            "Évitez 13/7* 10/5 (-0.052 EMG) ; jouez la ligne maîtresse 20/14* 10/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_270_44",
+        "tier": 2,
+        "xgid": "XGID=-----bHaC-AAbAAb-a-ea-a---:0:0:1:44:6:3:0:11:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "14/10 13/9 6/2(2)",
+        "optimalMove": "14/10 11/7* 6/2(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/10 11/7* 6/2(2)",
+            "14/10 13/9 6/2(2)",
+            "11/7* 10/2 6/2",
+            "14/10 11/7* 8/4(2)"
+        ],
+        "equityLoss": 0.168,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 14/10 13/9 6/2(2) (Match en 11 pts (6-3, Videau à 1)), vous concédez -0.168 EMG face au coup 3-ply 14/10 11/7* 6/2(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 11 pts (6-3, Videau à 1) : 14/10 11/7* 6/2(2) surpasse 14/10 13/9 6/2(2) de +0.168 EMG (67.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/10 en Match en 11 pts (6-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/10 11/7* 6/2(2) domine 14/10 13/9 6/2(2) de +0.168 EMG.",
+            "En Match en 11 pts (6-3, Videau à 1), 14/10 11/7* 6/2(2) maximise votre équité cubeful (+0.540 EMG).",
+            "Évitez 14/10 13/9 6/2(2) (-0.168 EMG) ; jouez la ligne maîtresse 14/10 11/7* 6/2(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_271_63",
+        "tier": 3,
+        "xgid": "XGID=-Aa-AbEaDA------aa-fba-BA-:0:0:1:63:6:3:0:11:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21* 23/17*",
+        "optimalMove": "23/17* 4/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/17* 4/1",
+            "24/21* 23/17*",
+            "8/2* 4/1",
+            "24/21* 8/2*"
+        ],
+        "equityLoss": 0.114,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21* 23/17* (Match en 11 pts (6-3, Videau à 1)), vous concédez -0.114 EMG face au coup 3-ply 23/17* 4/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 11 pts (6-3, Videau à 1) : 23/17* 4/1 surpasse 24/21* 23/17* de +0.114 EMG (52.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/17* en Match en 11 pts (6-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/17* 4/1 domine 24/21* 23/17* de +0.114 EMG.",
+            "En Match en 11 pts (6-3, Videau à 1), 23/17* 4/1 maximise votre équité cubeful (-0.009 EMG).",
+            "Évitez 24/21* 23/17* (-0.114 EMG) ; jouez la ligne maîtresse 23/17* 4/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_272_55",
+        "tier": 3,
+        "xgid": "XGID=acaAaAF-A--------dAdBaAA-A:0:0:1:55:3:6:0:11:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/15 23/18 8/3",
+        "optimalMove": "bar/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/5",
+            "bar/15 23/18 8/3",
+            "bar/15 18/13 8/3",
+            "bar/15 20/15 8/3"
+        ],
+        "equityLoss": 0.105,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/15 23/18 8/3 (Match en 11 pts (3-6, Videau à 1)), vous concédez -0.105 EMG face au coup 3-ply bar/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 11 pts (3-6, Videau à 1) : bar/5 surpasse bar/15 23/18 8/3 de +0.105 EMG (56.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/5 en Match en 11 pts (3-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/5 domine bar/15 23/18 8/3 de +0.105 EMG.",
+            "En Match en 11 pts (3-6, Videau à 1), bar/5 maximise votre équité cubeful (+0.557 EMG).",
+            "Évitez bar/15 23/18 8/3 (-0.105 EMG) ; jouez la ligne maîtresse bar/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_273_41",
+        "tier": 4,
+        "xgid": "XGID=-ACb--A-B---cE-A-aaf--AbA-:0:0:1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "22/18* 2/1",
+        "optimalMove": "22/18*/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/18*/17*",
+            "22/18* 2/1",
+            "15/11 2/1",
+            "6/1"
+        ],
+        "equityLoss": 0.044,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/18* 2/1 (Money Game), vous concédez -0.044 EMG face au coup 3-ply 22/18*/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Money Game : 22/18*/17* surpasse 22/18* 2/1 de +0.044 EMG (43.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/18*/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/18*/17* domine 22/18* 2/1 de +0.044 EMG.",
+            "En Money Game, 22/18*/17* maximise votre équité cubeful (-0.368 EMG).",
+            "Évitez 22/18* 2/1 (-0.044 EMG) ; jouez la ligne maîtresse 22/18*/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_274_52",
+        "tier": 2,
+        "xgid": "XGID=--B-a-FA--aBdAA--b--a-AdbA:0:0:1:52:0:0:0:0:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "bar/20* 13/11",
+        "optimalMove": "bar/20* 6/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 6/4*",
+            "bar/20* 13/11",
+            "bar/20* 22/20",
+            "bar/20* 7/5"
+        ],
+        "equityLoss": 0.421,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 13/11 (Money Game), vous concédez -0.421 EMG face au coup 3-ply bar/20* 6/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Money Game : bar/20* 6/4* surpasse bar/20* 13/11 de +0.421 EMG (69.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 6/4* domine bar/20* 13/11 de +0.421 EMG.",
+            "En Money Game, bar/20* 6/4* maximise votre équité cubeful (+0.897 EMG).",
+            "Évitez bar/20* 13/11 (-0.421 EMG) ; jouez la ligne maîtresse bar/20* 6/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_275_43",
+        "tier": 3,
+        "xgid": "XGID=-BD---a-B-aaaD-aa--fAA-baA:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "bar/22 20/16*",
+        "optimalMove": "bar/21 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 13/10*",
+            "bar/22 20/16*",
+            "bar/21 20/17",
+            "bar/22 13/9"
+        ],
+        "equityLoss": 0.063,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 20/16* (Money Game), vous concédez -0.063 EMG face au coup 3-ply bar/21 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Money Game : bar/21 13/10* surpasse bar/22 20/16* de +0.063 EMG (49.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 13/10* domine bar/22 20/16* de +0.063 EMG.",
+            "En Money Game, bar/21 13/10* maximise votre équité cubeful (+0.013 EMG).",
+            "Évitez bar/22 20/16* (-0.063 EMG) ; jouez la ligne maîtresse bar/21 13/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_276_61",
+        "tier": 2,
+        "xgid": "XGID=-AB-A-FaaB--cB-a-ba----dbA:0:0:1:61:0:0:0:0:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "bar/19 6/5",
+        "optimalMove": "bar/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/18*",
+            "bar/19 6/5",
+            "bar/19 4/3",
+            "bar/19 2/1"
+        ],
+        "equityLoss": 0.334,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19 6/5 (Money Game), vous concédez -0.334 EMG face au coup 3-ply bar/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Money Game : bar/18* surpasse bar/19 6/5 de +0.334 EMG (67.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/18* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/18* domine bar/19 6/5 de +0.334 EMG.",
+            "En Money Game, bar/18* maximise votre équité cubeful (+0.786 EMG).",
+            "Évitez bar/19 6/5 (-0.334 EMG) ; jouez la ligne maîtresse bar/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_277_45",
+        "tier": 2,
+        "xgid": "XGID=-CC---aBBA--aC--aaAe--bbb-:0:0:1:45:0:0:0:0:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "18/13 9/5",
+        "optimalMove": "18/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/9",
+            "18/13 9/5",
+            "18/14 9/4",
+            "18/14 13/8"
+        ],
+        "equityLoss": 0.186,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/13 9/5 (Money Game), vous concédez -0.186 EMG face au coup 3-ply 18/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Money Game : 18/9 surpasse 18/13 9/5 de +0.186 EMG (36.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/9 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/9 domine 18/13 9/5 de +0.186 EMG.",
+            "En Money Game, 18/9 maximise votre équité cubeful (-0.422 EMG).",
+            "Évitez 18/13 9/5 (-0.186 EMG) ; jouez la ligne maîtresse 18/9."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_278_12",
+        "tier": 3,
+        "xgid": "XGID=-a-A-BCaB---dD---a-e-ab-BA:0:0:1:12:0:1:0:3:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/24 3/1*",
+        "optimalMove": "bar/23 8/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 8/7*",
+            "bar/24 3/1*",
+            "bar/23 24/23",
+            "bar/23 6/5"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 3/1* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.068 EMG face au coup 3-ply bar/23 8/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 3 pts (0-1, Videau à 1) : bar/23 8/7* surpasse bar/24 3/1* de +0.068 EMG (49.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 8/7* domine bar/24 3/1* de +0.068 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/23 8/7* maximise votre équité cubeful (+0.113 EMG).",
+            "Évitez bar/24 3/1* (-0.068 EMG) ; jouez la ligne maîtresse bar/23 8/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_279_13",
+        "tier": 2,
+        "xgid": "XGID=-aBD--BA-Aa-cB---aAd--e-B-:0:0:1:13:0:1:0:3:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "18/17* 9/6",
+        "optimalMove": "18/17* 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/17* 13/10*",
+            "18/17* 9/6",
+            "13/10* 7/6",
+            "24/21 18/17*"
+        ],
+        "equityLoss": 0.312,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/17* 9/6 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.312 EMG face au coup 3-ply 18/17* 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 3 pts (0-1, Videau à 1) : 18/17* 13/10* surpasse 18/17* 9/6 de +0.312 EMG (66.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/17* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/17* 13/10* domine 18/17* 9/6 de +0.312 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 18/17* 13/10* maximise votre équité cubeful (+0.965 EMG).",
+            "Évitez 18/17* 9/6 (-0.312 EMG) ; jouez la ligne maîtresse 18/17* 13/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_280_11",
+        "tier": 3,
+        "xgid": "XGID=-aaFaaBA-b-A---Aa-----gaBB:0:0:1:11:1:0:0:3:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "bar/23* bar/24 3/2*",
+        "optimalMove": "bar/24(2) 3/2*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24(2) 3/2*(2)",
+            "bar/23* bar/24 3/2*",
+            "bar/24(2) 3/2*/1*",
+            "bar/23* bar/24 7/6"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* bar/24 3/2* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.090 EMG face au coup 3-ply bar/24(2) 3/2*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 3 pts (1-0, Videau à 1) : bar/24(2) 3/2*(2) surpasse bar/23* bar/24 3/2* de +0.090 EMG (71.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24(2) en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24(2) 3/2*(2) domine bar/23* bar/24 3/2* de +0.090 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/24(2) 3/2*(2) maximise votre équité cubeful (+0.874 EMG).",
+            "Évitez bar/23* bar/24 3/2* (-0.090 EMG) ; jouez la ligne maîtresse bar/24(2) 3/2*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_281_62",
+        "tier": 2,
+        "xgid": "XGID=-aABa-C-C---eD---b-baab-B-:0:0:1:62:0:2:0:5:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "13/11 8/2",
+        "optimalMove": "8/2 6/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/2 6/4*",
+            "13/11 8/2",
+            "8/6 8/2",
+            "24/16"
+        ],
+        "equityLoss": 0.183,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11 8/2 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.183 EMG face au coup 3-ply 8/2 6/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 5 pts (0-2, Videau à 1) : 8/2 6/4* surpasse 13/11 8/2 de +0.183 EMG (54.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/2 en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/2 6/4* domine 13/11 8/2 de +0.183 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 8/2 6/4* maximise votre équité cubeful (+0.377 EMG).",
+            "Évitez 13/11 8/2 (-0.183 EMG) ; jouez la ligne maîtresse 8/2 6/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_282_13",
+        "tier": 2,
+        "xgid": "XGID=aBBA-aD--A--AD---d-e---d--:0:0:1:13:0:3:0:7:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "13/12 6/3",
+        "optimalMove": "6/5* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/5* 6/3",
+            "13/12 6/3",
+            "12/11 6/3",
+            "9/8 6/3"
+        ],
+        "equityLoss": 0.237,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/12 6/3 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.237 EMG face au coup 3-ply 6/5* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 7 pts (0-3, Videau à 1) : 6/5* 6/3 surpasse 13/12 6/3 de +0.237 EMG (81.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/5* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/5* 6/3 domine 13/12 6/3 de +0.237 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 6/5* 6/3 maximise votre équité cubeful (+1.153 EMG).",
+            "Évitez 13/12 6/3 (-0.237 EMG) ; jouez la ligne maîtresse 6/5* 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_283_24",
+        "tier": 2,
+        "xgid": "XGID=--D---F-C-aAc--ba--d--Aac-:0:0:1:24:3:0:0:7:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "8/4 6/4",
+        "optimalMove": "22/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/16*",
+            "8/4 6/4",
+            "11/5",
+            "11/7 6/4"
+        ],
+        "equityLoss": 0.303,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4 6/4 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.303 EMG face au coup 3-ply 22/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 7 pts (3-0, Videau à 1) : 22/16* surpasse 8/4 6/4 de +0.303 EMG (63.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/16* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/16* domine 8/4 6/4 de +0.303 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 22/16* maximise votre équité cubeful (+0.499 EMG).",
+            "Évitez 8/4 6/4 (-0.303 EMG) ; jouez la ligne maîtresse 22/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_284_55",
+        "tier": 2,
+        "xgid": "XGID=-b---AEAB---dD---c-c-aBb--:0:0:1:55:0:4:0:9:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3 8/3 7/2",
+        "optimalMove": "13/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3(2)",
+            "13/3 8/3 7/2",
+            "13/3 8/3(2)",
+            "13/3 13/8 7/2"
+        ],
+        "equityLoss": 0.21,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/3 8/3 7/2 (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.210 EMG face au coup 3-ply 13/3(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 9 pts (0-4, Videau à 1) : 13/3(2) surpasse 13/3 8/3 7/2 de +0.210 EMG (51.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/3(2) en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/3(2) domine 13/3 8/3 7/2 de +0.210 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), 13/3(2) maximise votre équité cubeful (+0.256 EMG).",
+            "Évitez 13/3 8/3 7/2 (-0.210 EMG) ; jouez la ligne maîtresse 13/3(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_285_63",
+        "tier": 3,
+        "xgid": "XGID=-aA---DAD---dCa--aae-a-aB-:0:0:1:63:8:9:0:11:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21* 24/18*",
+        "optimalMove": "24/21* 8/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21* 8/2",
+            "24/21* 24/18*",
+            "24/21* 7/1*",
+            "24/21* 13/7"
+        ],
+        "equityLoss": 0.078,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21* 24/18* (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.078 EMG face au coup 3-ply 24/21* 8/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 11 pts (8-9, Videau à 1) : 24/21* 8/2 surpasse 24/21* 24/18* de +0.078 EMG (63.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/21* en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* 8/2 domine 24/21* 24/18* de +0.078 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), 24/21* 8/2 maximise votre équité cubeful (+0.982 EMG).",
+            "Évitez 24/21* 24/18* (-0.078 EMG) ; jouez la ligne maîtresse 24/21* 8/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_286_62",
+        "tier": 2,
+        "xgid": "XGID=abB--AE-B---bC--bAAf-b----:0:0:1:62:8:9:0:11:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "17/11 13/11",
+        "optimalMove": "13/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/5",
+            "17/11 13/11",
+            "17/11 5/3",
+            "17/9"
+        ],
+        "equityLoss": 0.422,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 17/11 13/11 (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.422 EMG face au coup 3-ply 13/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 11 pts (8-9, Videau à 1) : 13/5 surpasse 17/11 13/11 de +0.422 EMG (66.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/5 en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/5 domine 17/11 13/11 de +0.422 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), 13/5 maximise votre équité cubeful (+0.907 EMG).",
+            "Évitez 17/11 13/11 (-0.422 EMG) ; jouez la ligne maîtresse 13/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_287_33",
+        "tier": 4,
+        "xgid": "XGID=--a-B-GaaB--aAa--aAe-a-cB-:0:0:1:33:9:8:0:11:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "24/21*/18 13/7*",
+        "optimalMove": "24/21*/18 6/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21*/18 6/3(2)",
+            "24/21*/18 13/7*",
+            "24/21*(2) 18/12*",
+            "24/21*(2) 13/7*"
+        ],
+        "equityLoss": 0.048,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21*/18 13/7* (Match en 11 pts (9-8, Videau à 1)), vous concédez -0.048 EMG face au coup 3-ply 24/21*/18 6/3(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 11 pts (9-8, Videau à 1) : 24/21*/18 6/3(2) surpasse 24/21*/18 13/7* de +0.048 EMG (77.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/21*/18 en Match en 11 pts (9-8, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21*/18 6/3(2) domine 24/21*/18 13/7* de +0.048 EMG.",
+            "En Match en 11 pts (9-8, Videau à 1), 24/21*/18 6/3(2) maximise votre équité cubeful (+1.231 EMG).",
+            "Évitez 24/21*/18 13/7* (-0.048 EMG) ; jouez la ligne maîtresse 24/21*/18 6/3(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_288_43",
+        "tier": 2,
+        "xgid": "XGID=-bD-A-DaA--AA---aB-haaA-a-:0:0:1:43:8:9:0:11:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "12/9 8/4",
+        "optimalMove": "11/7*/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/7*/4",
+            "12/9 8/4",
+            "11/4",
+            "12/9 11/7*"
+        ],
+        "equityLoss": 0.41,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 12/9 8/4 (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.410 EMG face au coup 3-ply 11/7*/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 11 pts (8-9, Videau à 1) : 11/7*/4 surpasse 12/9 8/4 de +0.410 EMG (73.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 11/7*/4 en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/7*/4 domine 12/9 8/4 de +0.410 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), 11/7*/4 maximise votre équité cubeful (+1.138 EMG).",
+            "Évitez 12/9 8/4 (-0.410 EMG) ; jouez la ligne maîtresse 11/7*/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_289_21",
+        "tier": 2,
+        "xgid": "XGID=aBAaBAF-b---Aaa---Ac-b-dA-:0:0:1:21:9:8:0:11:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "5/2",
+        "optimalMove": "5/3*/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "5/3*/2",
+            "5/2",
+            "24/22 6/5",
+            "6/5 6/4"
+        ],
+        "equityLoss": 0.687,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 5/2 (Match en 11 pts (9-8, Videau à 1)), vous concédez -0.687 EMG face au coup 3-ply 5/3*/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 11 pts (9-8, Videau à 1) : 5/3*/2 surpasse 5/2 de +0.687 EMG (84.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 5/3*/2 en Match en 11 pts (9-8, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 5/3*/2 domine 5/2 de +0.687 EMG.",
+            "En Match en 11 pts (9-8, Videau à 1), 5/3*/2 maximise votre équité cubeful (+1.678 EMG).",
+            "Évitez 5/2 (-0.687 EMG) ; jouez la ligne maîtresse 5/3*/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_290_53",
+        "tier": 2,
+        "xgid": "XGID=-bAAA-D-B---aD--da-cb-aaB-:0:0:1:53:0:0:0:0:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "13/10 8/3",
+        "optimalMove": "13/8 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/8 6/3",
+            "13/10 8/3",
+            "8/5 8/3",
+            "8/3 6/3"
+        ],
+        "equityLoss": 0.215,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10 8/3 (Money Game), vous concédez -0.215 EMG face au coup 3-ply 13/8 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Money Game : 13/8 6/3 surpasse 13/10 8/3 de +0.215 EMG (39.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/8 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/8 6/3 domine 13/10 8/3 de +0.215 EMG.",
+            "En Money Game, 13/8 6/3 maximise votre équité cubeful (-0.491 EMG).",
+            "Évitez 13/10 8/3 (-0.215 EMG) ; jouez la ligne maîtresse 13/8 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_291_66",
+        "tier": 4,
+        "xgid": "XGID=-BcA-CC--C---a---ba--adcC-:0:0:1:66:0:0:0:0:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "24/18*/6 9/3",
+        "optimalMove": "24/18*/12 24/18 9/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18*/12 24/18 9/3",
+            "24/18*/6 9/3",
+            "24/18*(2) 9/3(2)",
+            "24/18*(3) 9/3"
+        ],
+        "equityLoss": 0.055,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18*/6 9/3 (Money Game), vous concédez -0.055 EMG face au coup 3-ply 24/18*/12 24/18 9/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Money Game : 24/18*/12 24/18 9/3 surpasse 24/18*/6 9/3 de +0.055 EMG (88.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18*/12 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18*/12 24/18 9/3 domine 24/18*/6 9/3 de +0.055 EMG.",
+            "En Money Game, 24/18*/12 24/18 9/3 maximise votre équité cubeful (+1.396 EMG).",
+            "Évitez 24/18*/6 9/3 (-0.055 EMG) ; jouez la ligne maîtresse 24/18*/12 24/18 9/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_292_12",
+        "tier": 2,
+        "xgid": "XGID=-CcaBCC---A-a----aA--addB-:0:0:1:12:0:0:0:0:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "18/17* 6/4",
+        "optimalMove": "18/17* 5/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/17* 5/3*",
+            "18/17* 6/4",
+            "18/17* 10/8",
+            "18/17*/15"
+        ],
+        "equityLoss": 0.161,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/17* 6/4 (Money Game), vous concédez -0.161 EMG face au coup 3-ply 18/17* 5/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Money Game : 18/17* 5/3* surpasse 18/17* 6/4 de +0.161 EMG (91.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/17* 5/3* domine 18/17* 6/4 de +0.161 EMG.",
+            "En Money Game, 18/17* 5/3* maximise votre équité cubeful (+1.629 EMG).",
+            "Évitez 18/17* 6/4 (-0.161 EMG) ; jouez la ligne maîtresse 18/17* 5/3*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_293_15",
+        "tier": 2,
+        "xgid": "XGID=bcAaB-CBC---bB-----fAA-a--:0:0:1:15:0:1:0:3:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "8/7 8/3*",
+        "optimalMove": "8/3*/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3*/2",
+            "8/7 8/3*",
+            "21/20 8/3*",
+            "8/3* 6/5"
+        ],
+        "equityLoss": 0.221,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/7 8/3* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.221 EMG face au coup 3-ply 8/3*/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 3 pts (0-1, Videau à 1) : 8/3*/2 surpasse 8/7 8/3* de +0.221 EMG (78.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3*/2 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3*/2 domine 8/7 8/3* de +0.221 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 8/3*/2 maximise votre équité cubeful (+1.822 EMG).",
+            "Évitez 8/7 8/3* (-0.221 EMG) ; jouez la ligne maîtresse 8/3*/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_294_53",
+        "tier": 2,
+        "xgid": "XGID=-aa---F-a-a-bB---bbdAAAaCA:0:0:1:53:1:0:0:3:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/20 13/10*",
+        "optimalMove": "bar/20 24/21",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 24/21",
+            "bar/20 13/10*",
+            "bar/22 20/15",
+            "bar/22 21/16"
+        ],
+        "equityLoss": 0.195,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 13/10* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.195 EMG face au coup 3-ply bar/20 24/21.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 3 pts (1-0, Videau à 1) : bar/20 24/21 surpasse bar/20 13/10* de +0.195 EMG (42.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 24/21 domine bar/20 13/10* de +0.195 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/20 24/21 maximise votre équité cubeful (-0.746 EMG).",
+            "Évitez bar/20 13/10* (-0.195 EMG) ; jouez la ligne maîtresse bar/20 24/21."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_295_14",
+        "tier": 2,
+        "xgid": "XGID=-a-a-bE-B-----b-A-ceC-aABA:0:0:1:14:1:0:0:3:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "bar/21 24/23",
+        "optimalMove": "bar/21 23/22*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 23/22*",
+            "bar/21 24/23",
+            "bar/24 20/16",
+            "bar/21 16/15"
+        ],
+        "equityLoss": 0.261,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 24/23 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.261 EMG face au coup 3-ply bar/21 23/22*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 3 pts (1-0, Videau à 1) : bar/21 23/22* surpasse bar/21 24/23 de +0.261 EMG (45.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 23/22* domine bar/21 24/23 de +0.261 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/21 23/22* maximise votre équité cubeful (-0.453 EMG).",
+            "Évitez bar/21 24/23 (-0.261 EMG) ; jouez la ligne maîtresse bar/21 23/22*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_296_31",
+        "tier": 4,
+        "xgid": "XGID=acDBE-aAA---b---A-bcaAb---:0:0:1:31:0:0:0:5:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "21/20* 16/13",
+        "optimalMove": "7/6*/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/6*/3",
+            "21/20* 16/13",
+            "21/20*/17",
+            "21/20* 7/4"
+        ],
+        "equityLoss": 0.052,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/20* 16/13 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.052 EMG face au coup 3-ply 7/6*/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 5 pts (0-0, Videau à 1) : 7/6*/3 surpasse 21/20* 16/13 de +0.052 EMG (59.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 7/6*/3 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/6*/3 domine 21/20* 16/13 de +0.052 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 7/6*/3 maximise votre équité cubeful (+0.829 EMG).",
+            "Évitez 21/20* 16/13 (-0.052 EMG) ; jouez la ligne maîtresse 7/6*/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_297_42",
+        "tier": 3,
+        "xgid": "XGID=---C--CB-Ab-A------B-dcfC-:0:0:1:42:0:0:0:5:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/20 6/4",
+        "optimalMove": "9/5 7/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/5 7/5",
+            "24/20 6/4",
+            "24/20 7/5",
+            "24/20 9/7"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 6/4 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.062 EMG face au coup 3-ply 9/5 7/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 5 pts (0-0, Videau à 1) : 9/5 7/5 surpasse 24/20 6/4 de +0.062 EMG (47.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/5 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/5 7/5 domine 24/20 6/4 de +0.062 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 9/5 7/5 maximise votre équité cubeful (-0.382 EMG).",
+            "Évitez 24/20 6/4 (-0.062 EMG) ; jouez la ligne maîtresse 9/5 7/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_298_55",
+        "tier": 4,
+        "xgid": "XGID=-AaB--E-DAA-ca--ab-daAaa--:0:0:1:55:0:3:0:7:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "21/16*/1",
+        "optimalMove": "21/16*/11 8/3 6/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16*/11 8/3 6/1",
+            "21/16*/1",
+            "21/16* 8/3(2) 6/1",
+            "21/16*/11 10/5 6/1"
+        ],
+        "equityLoss": 0.035,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/16*/1 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.035 EMG face au coup 3-ply 21/16*/11 8/3 6/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 7 pts (0-3, Videau à 1) : 21/16*/11 8/3 6/1 surpasse 21/16*/1 de +0.035 EMG (80.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/16*/11 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16*/11 8/3 6/1 domine 21/16*/1 de +0.035 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 21/16*/11 8/3 6/1 maximise votre équité cubeful (+1.251 EMG).",
+            "Évitez 21/16*/1 (-0.035 EMG) ; jouez la ligne maîtresse 21/16*/11 8/3 6/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_299_31",
+        "tier": 2,
+        "xgid": "XGID=-bA-a-E-C---dD-A-aacba--A-:0:0:1:31:4:2:0:9:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "8/5 6/5",
+        "optimalMove": "24/21* 15/14",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21* 15/14",
+            "8/5 6/5",
+            "6/2",
+            "24/21* 6/5"
+        ],
+        "equityLoss": 0.144,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/5 6/5 (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.144 EMG face au coup 3-ply 24/21* 15/14.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 9 pts (4-2, Videau à 1) : 24/21* 15/14 surpasse 8/5 6/5 de +0.144 EMG (48.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/21* en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* 15/14 domine 8/5 6/5 de +0.144 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 24/21* 15/14 maximise votre équité cubeful (-0.139 EMG).",
+            "Évitez 8/5 6/5 (-0.144 EMG) ; jouez la ligne maîtresse 24/21* 15/14."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_300_36",
+        "tier": 2,
+        "xgid": "XGID=--AAaACAAa--dC---bbe-B-AA-:0:0:1:36:2:4:0:9:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "8/2 6/3",
+        "optimalMove": "13/7 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/5",
+            "8/2 6/3",
+            "13/7 5/2",
+            "8/5 7/1"
+        ],
+        "equityLoss": 0.146,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/2 6/3 (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.146 EMG face au coup 3-ply 13/7 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 9 pts (2-4, Videau à 1) : 13/7 8/5 surpasse 8/2 6/3 de +0.146 EMG (41.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/7 en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/7 8/5 domine 8/2 6/3 de +0.146 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), 13/7 8/5 maximise votre équité cubeful (-0.206 EMG).",
+            "Évitez 8/2 6/3 (-0.146 EMG) ; jouez la ligne maîtresse 13/7 8/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_301_45",
+        "tier": 2,
+        "xgid": "XGID=--a-aaFAB-a--C-aabac-Bba-A:0:0:1:45:4:2:0:9:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "bar/21 7/2*",
+        "optimalMove": "bar/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/16*",
+            "bar/21 7/2*",
+            "bar/20 6/2*",
+            "bar/21 13/8"
+        ],
+        "equityLoss": 0.223,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 7/2* (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.223 EMG face au coup 3-ply bar/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 9 pts (4-2, Videau à 1) : bar/16* surpasse bar/21 7/2* de +0.223 EMG (53.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/16* en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/16* domine bar/21 7/2* de +0.223 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), bar/16* maximise votre équité cubeful (+0.047 EMG).",
+            "Évitez bar/21 7/2* (-0.223 EMG) ; jouez la ligne maîtresse bar/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_302_42",
+        "tier": 2,
+        "xgid": "XGID=--aCcaBABAA-c--A---fAa-AAA:0:0:1:42:2:4:0:9:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "bar/21* 9/7",
+        "optimalMove": "bar/21* 7/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 7/5*",
+            "bar/21* 9/7",
+            "bar/21* 10/8",
+            "bar/21* 24/22"
+        ],
+        "equityLoss": 0.189,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 9/7 (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.189 EMG face au coup 3-ply bar/21* 7/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 9 pts (2-4, Videau à 1) : bar/21* 7/5* surpasse bar/21* 9/7 de +0.189 EMG (59.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 7/5* domine bar/21* 9/7 de +0.189 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), bar/21* 7/5* maximise votre équité cubeful (+0.673 EMG).",
+            "Évitez bar/21* 9/7 (-0.189 EMG) ; jouez la ligne maîtresse bar/21* 7/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_303_35",
+        "tier": 4,
+        "xgid": "XGID=aaAEA-baB--acA-A--Af---BA-:0:0:1:35:2:4:0:9:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "23/18 4/1*",
+        "optimalMove": "18/13 4/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/13 4/1*",
+            "23/18 4/1*",
+            "15/7*",
+            "18/15 13/8"
+        ],
+        "equityLoss": 0.049,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/18 4/1* (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.049 EMG face au coup 3-ply 18/13 4/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 9 pts (2-4, Videau à 1) : 18/13 4/1* surpasse 23/18 4/1* de +0.049 EMG (41.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/13 en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/13 4/1* domine 23/18 4/1* de +0.049 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), 18/13 4/1* maximise votre équité cubeful (-0.183 EMG).",
+            "Évitez 23/18 4/1* (-0.049 EMG) ; jouez la ligne maîtresse 18/13 4/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_304_25",
+        "tier": 2,
+        "xgid": "XGID=-a--A-E-C--aeD----aeA-aAa-:0:0:1:25:0:5:0:11:8",
+        "dice": [
+            2,
+            5
+        ],
+        "playedMove": "23/18* 13/11*",
+        "optimalMove": "23/18* 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/18* 6/4",
+            "23/18* 13/11*",
+            "6/4 6/1*",
+            "13/11* 6/1*"
+        ],
+        "equityLoss": 0.133,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/18* 13/11* (Match en 11 pts (0-5, Videau à 1)), vous concédez -0.133 EMG face au coup 3-ply 23/18* 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-5 en Match en 11 pts (0-5, Videau à 1) : 23/18* 6/4 surpasse 23/18* 13/11* de +0.133 EMG (69.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/18* en Match en 11 pts (0-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/18* 6/4 domine 23/18* 13/11* de +0.133 EMG.",
+            "En Match en 11 pts (0-5, Videau à 1), 23/18* 6/4 maximise votre équité cubeful (+0.951 EMG).",
+            "Évitez 23/18* 13/11* (-0.133 EMG) ; jouez la ligne maîtresse 23/18* 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_305_11",
+        "tier": 3,
+        "xgid": "XGID=-A-AA-Da---acEB--c-e--aaA-:0:0:1:11:5:0:0:11:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23* 6/5(2) 4/3",
+        "optimalMove": "24/23*/22*/21 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23*/22*/21 4/3",
+            "24/23* 6/5(2) 4/3",
+            "24/23*/22* 14/13 4/3",
+            "24/23*/22* 3/1"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23* 6/5(2) 4/3 (Match en 11 pts (5-0, Videau à 1)), vous concédez -0.068 EMG face au coup 3-ply 24/23*/22*/21 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 11 pts (5-0, Videau à 1) : 24/23*/22*/21 4/3 surpasse 24/23* 6/5(2) 4/3 de +0.068 EMG (60.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23*/22*/21 en Match en 11 pts (5-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23*/22*/21 4/3 domine 24/23* 6/5(2) 4/3 de +0.068 EMG.",
+            "En Match en 11 pts (5-0, Videau à 1), 24/23*/22*/21 4/3 maximise votre équité cubeful (+0.423 EMG).",
+            "Évitez 24/23* 6/5(2) 4/3 (-0.068 EMG) ; jouez la ligne maîtresse 24/23*/22*/21 4/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_306_23",
+        "tier": 2,
+        "xgid": "XGID=------E-C-abdCA----c-AdAaA:0:0:1:23:0:5:0:11:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/23 8/5",
+        "optimalMove": "bar/23 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 13/10*",
+            "bar/23 8/5",
+            "bar/23 6/3",
+            "bar/23 21/18"
+        ],
+        "equityLoss": 0.184,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23 8/5 (Match en 11 pts (0-5, Videau à 1)), vous concédez -0.184 EMG face au coup 3-ply bar/23 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 11 pts (0-5, Videau à 1) : bar/23 13/10* surpasse bar/23 8/5 de +0.184 EMG (49.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 11 pts (0-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 13/10* domine bar/23 8/5 de +0.184 EMG.",
+            "En Match en 11 pts (0-5, Videau à 1), bar/23 13/10* maximise votre équité cubeful (+0.059 EMG).",
+            "Évitez bar/23 8/5 (-0.184 EMG) ; jouez la ligne maîtresse bar/23 13/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_307_66",
+        "tier": 2,
+        "xgid": "XGID=-aaDaAC-aA--cDA--a-e-aaA--:0:0:1:66:5:0:0:11:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "23/17* 14/8*/2* 13/7",
+        "optimalMove": "23/17*/5 14/8*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/17*/5 14/8*",
+            "23/17* 14/8*/2* 13/7",
+            "23/17*/11 14/8*/2*",
+            "14/8*/2* 13/1*"
+        ],
+        "equityLoss": 0.222,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/17* 14/8*/2* 13/7 (Match en 11 pts (5-0, Videau à 1)), vous concédez -0.222 EMG face au coup 3-ply 23/17*/5 14/8*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Match en 11 pts (5-0, Videau à 1) : 23/17*/5 14/8* surpasse 23/17* 14/8*/2* 13/7 de +0.222 EMG (70.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/17*/5 en Match en 11 pts (5-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/17*/5 14/8* domine 23/17* 14/8*/2* 13/7 de +0.222 EMG.",
+            "En Match en 11 pts (5-0, Videau à 1), 23/17*/5 14/8* maximise votre équité cubeful (+1.073 EMG).",
+            "Évitez 23/17* 14/8*/2* 13/7 (-0.222 EMG) ; jouez la ligne maîtresse 23/17*/5 14/8*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_308_36",
+        "tier": 3,
+        "xgid": "XGID=-A--baD-C---cE--acadA---A-:0:0:1:36:0:0:0:0:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "24/18*/15",
+        "optimalMove": "24/18* 8/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 8/5*",
+            "24/18*/15",
+            "24/18* 13/10",
+            "24/18* 6/3"
+        ],
+        "equityLoss": 0.072,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18*/15 (Money Game), vous concédez -0.072 EMG face au coup 3-ply 24/18* 8/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Money Game : 24/18* 8/5* surpasse 24/18*/15 de +0.072 EMG (52.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 8/5* domine 24/18*/15 de +0.072 EMG.",
+            "En Money Game, 24/18* 8/5* maximise votre équité cubeful (+0.093 EMG).",
+            "Évitez 24/18*/15 (-0.072 EMG) ; jouez la ligne maîtresse 24/18* 8/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_309_44",
+        "tier": 2,
+        "xgid": "XGID=-A--b-DaC-AacC---aaeAa--AA:0:0:1:44:0:0:0:0:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21*/17*/13 24/20",
+        "optimalMove": "bar/21*/17* 6/2(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21*/17* 6/2(2)",
+            "bar/21*/17*/13 24/20",
+            "bar/21*/17* 24/20 13/9",
+            "bar/21*/17*/9"
+        ],
+        "equityLoss": 0.137,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21*/17*/13 24/20 (Money Game), vous concédez -0.137 EMG face au coup 3-ply bar/21*/17* 6/2(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Money Game : bar/21*/17* 6/2(2) surpasse bar/21*/17*/13 24/20 de +0.137 EMG (60.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21*/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21*/17* 6/2(2) domine bar/21*/17*/13 24/20 de +0.137 EMG.",
+            "En Money Game, bar/21*/17* 6/2(2) maximise votre équité cubeful (+0.679 EMG).",
+            "Évitez bar/21*/17*/13 24/20 (-0.137 EMG) ; jouez la ligne maîtresse bar/21*/17* 6/2(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_310_52",
+        "tier": 4,
+        "xgid": "XGID=-aBaaaE--a-AbCAa-aAdAA-aa-:0:0:1:52:0:0:0:0:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "20/15* 6/4*",
+        "optimalMove": "14/9* 6/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/9* 6/4*",
+            "20/15* 6/4*",
+            "11/9*/4*",
+            "20/15* 11/9*"
+        ],
+        "equityLoss": 0.059,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15* 6/4* (Money Game), vous concédez -0.059 EMG face au coup 3-ply 14/9* 6/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Money Game : 14/9* 6/4* surpasse 20/15* 6/4* de +0.059 EMG (68.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/9* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/9* 6/4* domine 20/15* 6/4* de +0.059 EMG.",
+            "En Money Game, 14/9* 6/4* maximise votre équité cubeful (+0.983 EMG).",
+            "Évitez 20/15* 6/4* (-0.059 EMG) ; jouez la ligne maîtresse 14/9* 6/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_311_44",
+        "tier": 4,
+        "xgid": "XGID=abBbaaDC-a--aAAB-a-dA--Aa-:0:0:1:44:0:0:0:0:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "20/16 14/10 13/9*/5*",
+        "optimalMove": "20/12* 13/9*/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/12* 13/9*/5*",
+            "20/16 14/10 13/9*/5*",
+            "20/16 15/11 13/9*/5*",
+            "15/11 14/10 13/9*/5*"
+        ],
+        "equityLoss": 0.035,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/16 14/10 13/9*/5* (Money Game), vous concédez -0.035 EMG face au coup 3-ply 20/12* 13/9*/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Money Game : 20/12* 13/9*/5* surpasse 20/16 14/10 13/9*/5* de +0.035 EMG (65.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/12* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/12* 13/9*/5* domine 20/16 14/10 13/9*/5* de +0.035 EMG.",
+            "En Money Game, 20/12* 13/9*/5* maximise votre équité cubeful (+1.068 EMG).",
+            "Évitez 20/16 14/10 13/9*/5* (-0.035 EMG) ; jouez la ligne maîtresse 20/12* 13/9*/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_312_13",
+        "tier": 4,
+        "xgid": "XGID=--Bc-bDAA---cD-a-AAbca--A-:0:0:1:13:1:0:0:3:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "24/21* 18/17",
+        "optimalMove": "24/21* 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21* 8/7",
+            "24/21* 18/17",
+            "18/15* 8/7",
+            "18/15* 7/6"
+        ],
+        "equityLoss": 0.045,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21* 18/17 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.045 EMG face au coup 3-ply 24/21* 8/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 3 pts (1-0, Videau à 1) : 24/21* 8/7 surpasse 24/21* 18/17 de +0.045 EMG (50.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/21* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* 8/7 domine 24/21* 18/17 de +0.045 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 24/21* 8/7 maximise votre équité cubeful (-0.090 EMG).",
+            "Évitez 24/21* 18/17 (-0.045 EMG) ; jouez la ligne maîtresse 24/21* 8/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_313_55",
+        "tier": 2,
+        "xgid": "XGID=aa--BBBaa---dCA--aAdAABb--:0:0:1:55:0:1:0:3:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "18/8* 14/9 13/8",
+        "optimalMove": "13/8*/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/8*/3(2)",
+            "18/8* 14/9 13/8",
+            "22/17* 14/9 13/8*(2)",
+            "14/4 13/8*(2)"
+        ],
+        "equityLoss": 0.146,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/8* 14/9 13/8 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.146 EMG face au coup 3-ply 13/8*/3(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 3 pts (0-1, Videau à 1) : 13/8*/3(2) surpasse 18/8* 14/9 13/8 de +0.146 EMG (79.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/8*/3(2) en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/8*/3(2) domine 18/8* 14/9 13/8 de +0.146 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 13/8*/3(2) maximise votre équité cubeful (+1.678 EMG).",
+            "Évitez 18/8* 14/9 13/8 (-0.146 EMG) ; jouez la ligne maîtresse 13/8*/3(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_314_26",
+        "tier": 2,
+        "xgid": "XGID=-BAa-aC-aa-abD---aAaadD-a-:0:0:1:26:1:0:0:3:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "22/20* 22/16",
+        "optimalMove": "13/11*/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11*/5*",
+            "22/20* 22/16",
+            "22/20* 13/7",
+            "22/20*/14"
+        ],
+        "equityLoss": 0.258,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/20* 22/16 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.258 EMG face au coup 3-ply 13/11*/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 3 pts (1-0, Videau à 1) : 13/11*/5* surpasse 22/20* 22/16 de +0.258 EMG (65.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/11*/5* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11*/5* domine 22/20* 22/16 de +0.258 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 13/11*/5* maximise votre équité cubeful (+0.644 EMG).",
+            "Évitez 22/20* 22/16 (-0.258 EMG) ; jouez la ligne maîtresse 13/11*/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_315_15",
+        "tier": 2,
+        "xgid": "XGID=---acAECBA--eA---a-bAaAaa-:0:0:1:15:2:0:0:5:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "8/3* 6/5",
+        "optimalMove": "22/17* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/17* 6/5",
+            "8/3* 6/5",
+            "13/8 6/5",
+            "20/15 6/5"
+        ],
+        "equityLoss": 0.171,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/3* 6/5 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.171 EMG face au coup 3-ply 22/17* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 5 pts (2-0, Videau à 1) : 22/17* 6/5 surpasse 8/3* 6/5 de +0.171 EMG (72.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/17* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/17* 6/5 domine 8/3* 6/5 de +0.171 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 22/17* 6/5 maximise votre équité cubeful (+0.965 EMG).",
+            "Évitez 8/3* 6/5 (-0.171 EMG) ; jouez la ligne maîtresse 22/17* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_316_44",
+        "tier": 4,
+        "xgid": "XGID=-AAaA-BA-A---Ca--bcebDa--A:0:0:1:44:0:2:0:5:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21 13/9(3)",
+        "optimalMove": "bar/21 13/5 9/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 13/5 9/5",
+            "bar/21 13/9(3)",
+            "bar/21 9/1 7/3*",
+            "bar/21 13/1"
+        ],
+        "equityLoss": 0.052,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 13/9(3) (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.052 EMG face au coup 3-ply bar/21 13/5 9/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 5 pts (0-2, Videau à 1) : bar/21 13/5 9/5 surpasse bar/21 13/9(3) de +0.052 EMG (18.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 13/5 9/5 domine bar/21 13/9(3) de +0.052 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), bar/21 13/5 9/5 maximise votre équité cubeful (-1.220 EMG).",
+            "Évitez bar/21 13/9(3) (-0.052 EMG) ; jouez la ligne maîtresse bar/21 13/5 9/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_317_33",
+        "tier": 2,
+        "xgid": "XGID=-aaAa-DAC---bD--acAea----A:0:0:1:33:0:3:0:7:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "bar/22 13/7 6/3",
+        "optimalMove": "bar/22 7/4*/1* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 7/4*/1* 6/3",
+            "bar/22 13/7 6/3",
+            "bar/22 18/15 7/4* 6/3",
+            "bar/22 13/10 7/4* 6/3"
+        ],
+        "equityLoss": 0.27,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 13/7 6/3 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.270 EMG face au coup 3-ply bar/22 7/4*/1* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 7 pts (0-3, Videau à 1) : bar/22 7/4*/1* 6/3 surpasse bar/22 13/7 6/3 de +0.270 EMG (60.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 7/4*/1* 6/3 domine bar/22 13/7 6/3 de +0.270 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), bar/22 7/4*/1* 6/3 maximise votre équité cubeful (+0.655 EMG).",
+            "Évitez bar/22 13/7 6/3 (-0.270 EMG) ; jouez la ligne maîtresse bar/22 7/4*/1* 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_318_14",
+        "tier": 2,
+        "xgid": "XGID=-a-aAADBB---dB----bdbAAaA-:0:0:1:14:3:0:0:7:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "21/17 5/4",
+        "optimalMove": "8/4 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/5",
+            "21/17 5/4",
+            "24/23* 8/4",
+            "21/17 6/5"
+        ],
+        "equityLoss": 0.162,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/17 5/4 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.162 EMG face au coup 3-ply 8/4 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 7 pts (3-0, Videau à 1) : 8/4 6/5 surpasse 21/17 5/4 de +0.162 EMG (52.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/4 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/4 6/5 domine 21/17 5/4 de +0.162 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 8/4 6/5 maximise votre équité cubeful (-0.016 EMG).",
+            "Évitez 21/17 5/4 (-0.162 EMG) ; jouez la ligne maîtresse 8/4 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_319_43",
+        "tier": 2,
+        "xgid": "XGID=bAABC-D-----dA-----cbABca-:0:0:1:43:3:0:0:7:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/9 4/1",
+        "optimalMove": "6/2 4/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/2 4/1",
+            "13/9 4/1",
+            "13/10 6/2",
+            "21/17 4/1"
+        ],
+        "equityLoss": 0.424,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/9 4/1 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.424 EMG face au coup 3-ply 6/2 4/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 7 pts (3-0, Videau à 1) : 6/2 4/1 surpasse 13/9 4/1 de +0.424 EMG (85.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/2 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/2 4/1 domine 13/9 4/1 de +0.424 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 6/2 4/1 maximise votre équité cubeful (+1.558 EMG).",
+            "Évitez 13/9 4/1 (-0.424 EMG) ; jouez la ligne maîtresse 6/2 4/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_320_24",
+        "tier": 4,
+        "xgid": "XGID=-Ca--aC-B---bEa-ac-e-a--B-:0:0:1:24:0:0:0:9:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "24/22 24/20",
+        "optimalMove": "24/22 6/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/22 6/2*",
+            "24/22 24/20",
+            "13/11 6/2*",
+            "8/2*"
+        ],
+        "equityLoss": 0.05,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22 24/20 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.050 EMG face au coup 3-ply 24/22 6/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 9 pts (0-0, Videau à 1) : 24/22 6/2* surpasse 24/22 24/20 de +0.050 EMG (38.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/22 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/22 6/2* domine 24/22 24/20 de +0.050 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 24/22 6/2* maximise votre équité cubeful (-0.491 EMG).",
+            "Évitez 24/22 24/20 (-0.050 EMG) ; jouez la ligne maîtresse 24/22 6/2*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_321_23",
+        "tier": 3,
+        "xgid": "XGID=-b--aAD-CA-AcBA-aa-aAa-bcA:0:0:1:23:0:0:0:9:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/22 6/4*",
+        "optimalMove": "bar/22 11/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 11/9",
+            "bar/22 6/4*",
+            "bar/20",
+            "bar/22 5/3"
+        ],
+        "equityLoss": 0.112,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 6/4* (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.112 EMG face au coup 3-ply bar/22 11/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 9 pts (0-0, Videau à 1) : bar/22 11/9 surpasse bar/22 6/4* de +0.112 EMG (62.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 11/9 domine bar/22 6/4* de +0.112 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/22 11/9 maximise votre équité cubeful (+0.454 EMG).",
+            "Évitez bar/22 6/4* (-0.112 EMG) ; jouez la ligne maîtresse bar/22 11/9."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_322_23",
+        "tier": 2,
+        "xgid": "XGID=-CBABaa-BA-ab-a-aa-e--AbBA:0:0:1:23:0:0:0:9:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/22 24/22",
+        "optimalMove": "bar/22 8/6*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 8/6*",
+            "bar/22 24/22",
+            "bar/22 9/7",
+            "bar/22 3/1"
+        ],
+        "equityLoss": 0.595,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 24/22 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.595 EMG face au coup 3-ply bar/22 8/6*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 9 pts (0-0, Videau à 1) : bar/22 8/6* surpasse bar/22 24/22 de +0.595 EMG (42.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 8/6* domine bar/22 24/22 de +0.595 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/22 8/6* maximise votre équité cubeful (-0.237 EMG).",
+            "Évitez bar/22 24/22 (-0.595 EMG) ; jouez la ligne maîtresse bar/22 8/6*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_323_63",
+        "tier": 2,
+        "xgid": "XGID=-bBa-aEAA-A--AA-aaaB-babcA:0:0:1:63:0:0:0:9:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "bar/22* 13/7",
+        "optimalMove": "bar/22*/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22*/16*",
+            "bar/22* 13/7",
+            "bar/22* 14/8",
+            "bar/22* 19/13"
+        ],
+        "equityLoss": 0.244,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 13/7 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.244 EMG face au coup 3-ply bar/22*/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 9 pts (0-0, Videau à 1) : bar/22*/16* surpasse bar/22* 13/7 de +0.244 EMG (73.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22*/16* en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22*/16* domine bar/22* 13/7 de +0.244 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/22*/16* maximise votre équité cubeful (+1.021 EMG).",
+            "Évitez bar/22* 13/7 (-0.244 EMG) ; jouez la ligne maîtresse bar/22*/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_324_52",
+        "tier": 3,
+        "xgid": "XGID=-CBaB-a-AAa---a--a-fBb-bCA:0:0:1:52:0:0:0:9:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "bar/20 24/22",
+        "optimalMove": "bar/20 8/6*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 8/6*",
+            "bar/20 24/22",
+            "bar/20 9/7",
+            "bar/18"
+        ],
+        "equityLoss": 0.105,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 24/22 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.105 EMG face au coup 3-ply bar/20 8/6*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 9 pts (0-0, Videau à 1) : bar/20 8/6* surpasse bar/20 24/22 de +0.105 EMG (31.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 8/6* domine bar/20 24/22 de +0.105 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/20 8/6* maximise votre équité cubeful (-1.000 EMG).",
+            "Évitez bar/20 24/22 (-0.105 EMG) ; jouez la ligne maîtresse bar/20 8/6*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_325_55",
+        "tier": 2,
+        "xgid": "XGID=-C-b--DABA--bC--aabdbA--a-:0:0:1:55:2:1:0:11:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "21/16*/6 9/4",
+        "optimalMove": "21/16*/6 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16*/6 13/8",
+            "21/16*/6 9/4",
+            "21/16*/6 7/2",
+            "21/16*/11 13/8 7/2"
+        ],
+        "equityLoss": 0.132,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/16*/6 9/4 (Match en 11 pts (2-1, Videau à 1)), vous concédez -0.132 EMG face au coup 3-ply 21/16*/6 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 11 pts (2-1, Videau à 1) : 21/16*/6 13/8 surpasse 21/16*/6 9/4 de +0.132 EMG (56.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/16*/6 en Match en 11 pts (2-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16*/6 13/8 domine 21/16*/6 9/4 de +0.132 EMG.",
+            "En Match en 11 pts (2-1, Videau à 1), 21/16*/6 13/8 maximise votre équité cubeful (+0.214 EMG).",
+            "Évitez 21/16*/6 9/4 (-0.132 EMG) ; jouez la ligne maîtresse 21/16*/6 13/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_326_14",
+        "tier": 2,
+        "xgid": "XGID=-A---BEAA---bB--AabbaaBae-:0:0:1:14:1:2:0:11:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "22/21* 8/4",
+        "optimalMove": "22/21*/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/21*/17*",
+            "22/21* 8/4",
+            "22/21* 7/3",
+            "22/21* 6/2"
+        ],
+        "equityLoss": 0.689,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/21* 8/4 (Match en 11 pts (1-2, Videau à 1)), vous concédez -0.689 EMG face au coup 3-ply 22/21*/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 11 pts (1-2, Videau à 1) : 22/21*/17* surpasse 22/21* 8/4 de +0.689 EMG (70.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/21*/17* en Match en 11 pts (1-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/21*/17* domine 22/21* 8/4 de +0.689 EMG.",
+            "En Match en 11 pts (1-2, Videau à 1), 22/21*/17* maximise votre équité cubeful (+0.926 EMG).",
+            "Évitez 22/21* 8/4 (-0.689 EMG) ; jouez la ligne maîtresse 22/21*/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_327_56",
+        "tier": 3,
+        "xgid": "XGID=-EBbBAbB-A---A---aaeaaA-b-:0:0:1:56:2:1:0:11:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "22/17*/11",
+        "optimalMove": "22/17* 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/17* 13/7",
+            "22/17*/11",
+            "22/16 9/4",
+            "13/7 9/4"
+        ],
+        "equityLoss": 0.077,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/17*/11 (Match en 11 pts (2-1, Videau à 1)), vous concédez -0.077 EMG face au coup 3-ply 22/17* 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 11 pts (2-1, Videau à 1) : 22/17* 13/7 surpasse 22/17*/11 de +0.077 EMG (60.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/17* en Match en 11 pts (2-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/17* 13/7 domine 22/17*/11 de +0.077 EMG.",
+            "En Match en 11 pts (2-1, Videau à 1), 22/17* 13/7 maximise votre équité cubeful (+0.469 EMG).",
+            "Évitez 22/17*/11 (-0.077 EMG) ; jouez la ligne maîtresse 22/17* 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_328_12",
+        "tier": 2,
+        "xgid": "XGID=-b-A--D-C---cEA--bac-a-cA-:0:0:1:12:0:0:0:0:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "6/3",
+        "optimalMove": "24/21*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21*",
+            "6/3",
+            "14/11",
+            "13/10"
+        ],
+        "equityLoss": 0.242,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 6/3 (Money Game), vous concédez -0.242 EMG face au coup 3-ply 24/21*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Money Game : 24/21* surpasse 6/3 de +0.242 EMG (53.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/21* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* domine 6/3 de +0.242 EMG.",
+            "En Money Game, 24/21* maximise votre équité cubeful (+0.051 EMG).",
+            "Évitez 6/3 (-0.242 EMG) ; jouez la ligne maîtresse 24/21*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_329_21",
+        "tier": 2,
+        "xgid": "XGID=--a-aAB-C---bFaAA--bab-daA:0:0:1:21:0:0:0:0:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "bar/24*/22",
+        "optimalMove": "bar/24* 16/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 16/14*",
+            "bar/24*/22",
+            "bar/24* 15/13",
+            "bar/24* 13/11"
+        ],
+        "equityLoss": 0.527,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24*/22 (Money Game), vous concédez -0.527 EMG face au coup 3-ply bar/24* 16/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Money Game : bar/24* 16/14* surpasse bar/24*/22 de +0.527 EMG (58.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 16/14* domine bar/24*/22 de +0.527 EMG.",
+            "En Money Game, bar/24* 16/14* maximise votre équité cubeful (+0.181 EMG).",
+            "Évitez bar/24*/22 (-0.527 EMG) ; jouez la ligne maîtresse bar/24* 16/14*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_330_24",
+        "tier": 2,
+        "xgid": "XGID=-aD-BBA---a-dBaa-c-aaCa-aA:0:0:1:24:0:0:0:0:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/21 6/4",
+        "optimalMove": "bar/19*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19*",
+            "bar/21 6/4",
+            "bar/23 13/9",
+            "bar/23 6/2"
+        ],
+        "equityLoss": 0.766,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 6/4 (Money Game), vous concédez -0.766 EMG face au coup 3-ply bar/19*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Money Game : bar/19* surpasse bar/21 6/4 de +0.766 EMG (62.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/19* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19* domine bar/21 6/4 de +0.766 EMG.",
+            "En Money Game, bar/19* maximise votre équité cubeful (+0.782 EMG).",
+            "Évitez bar/21 6/4 (-0.766 EMG) ; jouez la ligne maîtresse bar/19*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_331_16",
+        "tier": 3,
+        "xgid": "XGID=aabA-BAaa-A-eB----AcaAA-DA:0:0:1:16:1:0:0:3:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "bar/24 10/4",
+        "optimalMove": "bar/24 13/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 13/7*",
+            "bar/24 10/4",
+            "bar/18",
+            "bar/24 21/15"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 10/4 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.092 EMG face au coup 3-ply bar/24 13/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 3 pts (1-0, Videau à 1) : bar/24 13/7* surpasse bar/24 10/4 de +0.092 EMG (57.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 13/7* domine bar/24 10/4 de +0.092 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/24 13/7* maximise votre équité cubeful (+0.138 EMG).",
+            "Évitez bar/24 10/4 (-0.092 EMG) ; jouez la ligne maîtresse bar/24 13/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_332_55",
+        "tier": 4,
+        "xgid": "XGID=-badaBA-a-A-cA-AA-Ac-AA-DA:0:0:1:55:1:0:0:3:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/20 21/16 18/13 15/10",
+        "optimalMove": "bar/15 21/16 18/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/15 21/16 18/13",
+            "bar/20 21/16 18/13 15/10",
+            "bar/20 18/13 16/11 15/10",
+            "bar/20 16/6 13/8*"
+        ],
+        "equityLoss": 0.039,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 21/16 18/13 15/10 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.039 EMG face au coup 3-ply bar/15 21/16 18/13.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 3 pts (1-0, Videau à 1) : bar/15 21/16 18/13 surpasse bar/20 21/16 18/13 15/10 de +0.039 EMG (58.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/15 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/15 21/16 18/13 domine bar/20 21/16 18/13 15/10 de +0.039 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/15 21/16 18/13 maximise votre équité cubeful (+0.298 EMG).",
+            "Évitez bar/20 21/16 18/13 15/10 (-0.039 EMG) ; jouez la ligne maîtresse bar/15 21/16 18/13."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_333_12",
+        "tier": 2,
+        "xgid": "XGID=-b---AE-Ba--cE--Ac-e---a-A:0:0:1:12:0:0:0:5:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/23*/22",
+        "optimalMove": "bar/23* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 6/5",
+            "bar/23*/22",
+            "bar/23* 5/4",
+            "bar/23* 16/15"
+        ],
+        "equityLoss": 0.442,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23*/22 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.442 EMG face au coup 3-ply bar/23* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 5 pts (0-0, Videau à 1) : bar/23* 6/5 surpasse bar/23*/22 de +0.442 EMG (64.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 6/5 domine bar/23*/22 de +0.442 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/23* 6/5 maximise votre équité cubeful (+0.605 EMG).",
+            "Évitez bar/23*/22 (-0.442 EMG) ; jouez la ligne maîtresse bar/23* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_334_63",
+        "tier": 2,
+        "xgid": "XGID=-aB-a-F-A---eB--Aa-e---bBA:0:0:1:63:0:0:0:5:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "bar/22 8/2",
+        "optimalMove": "bar/16",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/16",
+            "bar/22 8/2",
+            "bar/22 16/10",
+            "bar/22 24/18"
+        ],
+        "equityLoss": 0.192,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 8/2 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.192 EMG face au coup 3-ply bar/16.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 5 pts (0-0, Videau à 1) : bar/16 surpasse bar/22 8/2 de +0.192 EMG (44.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/16 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/16 domine bar/22 8/2 de +0.192 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/16 maximise votre équité cubeful (-0.205 EMG).",
+            "Évitez bar/22 8/2 (-0.192 EMG) ; jouez la ligne maîtresse bar/16."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_335_46",
+        "tier": 4,
+        "xgid": "XGID=-aBb-BCA-a--bEA----e-aabA-:0:0:1:46:0:0:0:5:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "13/9* 7/1*",
+        "optimalMove": "13/9* 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9* 13/7",
+            "13/9* 7/1*",
+            "14/8 13/9*",
+            "24/18 13/9*"
+        ],
+        "equityLoss": 0.039,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/9* 7/1* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.039 EMG face au coup 3-ply 13/9* 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 5 pts (0-0, Videau à 1) : 13/9* 13/7 surpasse 13/9* 7/1* de +0.039 EMG (72.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/9* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/9* 13/7 domine 13/9* 7/1* de +0.039 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 13/9* 13/7 maximise votre équité cubeful (+1.006 EMG).",
+            "Évitez 13/9* 7/1* (-0.039 EMG) ; jouez la ligne maîtresse 13/9* 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_336_56",
+        "tier": 3,
+        "xgid": "XGID=aCCb-BB--A--aC---b-e-a-cA-:0:0:1:56:0:0:0:5:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "24/13",
+        "optimalMove": "24/18 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18 13/8",
+            "24/13",
+            "13/2",
+            "13/8 13/7"
+        ],
+        "equityLoss": 0.108,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/13 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.108 EMG face au coup 3-ply 24/18 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 5 pts (0-0, Videau à 1) : 24/18 13/8 surpasse 24/13 de +0.108 EMG (73.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18 13/8 domine 24/13 de +0.108 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/18 13/8 maximise votre équité cubeful (+0.985 EMG).",
+            "Évitez 24/13 (-0.108 EMG) ; jouez la ligne maîtresse 24/18 13/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_337_34",
+        "tier": 4,
+        "xgid": "XGID=-AC-A-E-A--ab---aa--b-CddA:0:0:1:34:0:0:0:5:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "bar/21 4/1",
+        "optimalMove": "bar/22 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 8/4",
+            "bar/21 4/1",
+            "bar/21 22/19",
+            "bar/21 6/3"
+        ],
+        "equityLoss": 0.049,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 4/1 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.049 EMG face au coup 3-ply bar/22 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 5 pts (0-0, Videau à 1) : bar/22 8/4 surpasse bar/21 4/1 de +0.049 EMG (35.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 8/4 domine bar/21 4/1 de +0.049 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/22 8/4 maximise votre équité cubeful (-0.604 EMG).",
+            "Évitez bar/21 4/1 (-0.049 EMG) ; jouez la ligne maîtresse bar/22 8/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_338_22",
+        "tier": 2,
+        "xgid": "XGID=-bA--ACaC---eD---b-b-baAB-:0:0:1:22:0:3:0:7:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "24/22*/20 6/2",
+        "optimalMove": "13/7*/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7*/5",
+            "24/22*/20 6/2",
+            "24/22*/20(2)",
+            "24/22* 8/2"
+        ],
+        "equityLoss": 0.29,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22*/20 6/2 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.290 EMG face au coup 3-ply 13/7*/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 7 pts (0-3, Videau à 1) : 13/7*/5 surpasse 24/22*/20 6/2 de +0.290 EMG (54.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/7*/5 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/7*/5 domine 24/22*/20 6/2 de +0.290 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 13/7*/5 maximise votre équité cubeful (+0.358 EMG).",
+            "Évitez 24/22*/20 6/2 (-0.290 EMG) ; jouez la ligne maîtresse 13/7*/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_339_14",
+        "tier": 2,
+        "xgid": "XGID=--a-C-Daa---bC---A-cabcaD-:0:0:1:14:3:0:0:7:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "24/23* 6/2*",
+        "optimalMove": "24/23* 24/20*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23* 24/20*",
+            "24/23* 6/2*",
+            "24/20* 17/16",
+            "24/20* 6/5"
+        ],
+        "equityLoss": 0.406,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23* 6/2* (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.406 EMG face au coup 3-ply 24/23* 24/20*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 7 pts (3-0, Videau à 1) : 24/23* 24/20* surpasse 24/23* 6/2* de +0.406 EMG (53.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23* 24/20* domine 24/23* 6/2* de +0.406 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 24/23* 24/20* maximise votre équité cubeful (-0.002 EMG).",
+            "Évitez 24/23* 6/2* (-0.406 EMG) ; jouez la ligne maîtresse 24/23* 24/20*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_340_53",
+        "tier": 2,
+        "xgid": "XGID=aBaaa-Ca--A-bCa----bAbcACA:0:0:1:53:3:0:0:7:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/20 13/10",
+        "optimalMove": "bar/20 10/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 10/7*",
+            "bar/20 13/10",
+            "bar/20 23/20",
+            "bar/20 6/3*"
+        ],
+        "equityLoss": 0.174,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 13/10 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.174 EMG face au coup 3-ply bar/20 10/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 7 pts (3-0, Videau à 1) : bar/20 10/7* surpasse bar/20 13/10 de +0.174 EMG (42.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 10/7* domine bar/20 13/10 de +0.174 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), bar/20 10/7* maximise votre équité cubeful (-0.543 EMG).",
+            "Évitez bar/20 13/10 (-0.174 EMG) ; jouez la ligne maîtresse bar/20 10/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_341_15",
+        "tier": 2,
+        "xgid": "XGID=-bA-A-D-C---eD----abb-baB-:0:0:1:15:4:6:0:9:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "8/3 4/3",
+        "optimalMove": "24/23*/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23*/18*",
+            "8/3 4/3",
+            "8/2",
+            "24/23* 13/8"
+        ],
+        "equityLoss": 0.194,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/3 4/3 (Match en 9 pts (4-6, Videau à 1)), vous concédez -0.194 EMG face au coup 3-ply 24/23*/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 9 pts (4-6, Videau à 1) : 24/23*/18* surpasse 8/3 4/3 de +0.194 EMG (46.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23*/18* en Match en 9 pts (4-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23*/18* domine 8/3 4/3 de +0.194 EMG.",
+            "En Match en 9 pts (4-6, Videau à 1), 24/23*/18* maximise votre équité cubeful (-0.067 EMG).",
+            "Évitez 8/3 4/3 (-0.194 EMG) ; jouez la ligne maîtresse 24/23*/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_342_36",
+        "tier": 2,
+        "xgid": "XGID=aAaB-BA-A---cD---d-dAa-aBA:0:0:1:36:6:4:0:9:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "bar/16",
+        "optimalMove": "bar/22 8/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 8/2*",
+            "bar/16",
+            "bar/22 20/14",
+            "bar/22 13/7"
+        ],
+        "equityLoss": 0.212,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/16 (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.212 EMG face au coup 3-ply bar/22 8/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 9 pts (6-4, Videau à 1) : bar/22 8/2* surpasse bar/16 de +0.212 EMG (42.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 8/2* domine bar/16 de +0.212 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), bar/22 8/2* maximise votre équité cubeful (-0.531 EMG).",
+            "Évitez bar/16 (-0.212 EMG) ; jouez la ligne maîtresse bar/22 8/2*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_343_15",
+        "tier": 3,
+        "xgid": "XGID=-BbCbA---A--cB--Aa-cbAAbC-:0:0:1:15:6:4:0:9:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "22/21 16/11",
+        "optimalMove": "22/17*/16",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/17*/16",
+            "22/21 16/11",
+            "22/17* 16/15",
+            "21/16 9/8"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/21 16/11 (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.068 EMG face au coup 3-ply 22/17*/16.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 9 pts (6-4, Videau à 1) : 22/17*/16 surpasse 22/21 16/11 de +0.068 EMG (30.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/17*/16 en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/17*/16 domine 22/21 16/11 de +0.068 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), 22/17*/16 maximise votre équité cubeful (-1.004 EMG).",
+            "Évitez 22/21 16/11 (-0.068 EMG) ; jouez la ligne maîtresse 22/17*/16."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_344_31",
+        "tier": 3,
+        "xgid": "XGID=-DAAba--AB-Ab----a-ebA-bCA:0:0:1:31:6:4:0:9:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "bar/24 11/8",
+        "optimalMove": "bar/21",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21",
+            "bar/24 11/8",
+            "bar/22 3/2",
+            "bar/22 8/7"
+        ],
+        "equityLoss": 0.088,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 11/8 (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.088 EMG face au coup 3-ply bar/21.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 9 pts (6-4, Videau à 1) : bar/21 surpasse bar/24 11/8 de +0.088 EMG (16.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 domine bar/24 11/8 de +0.088 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), bar/21 maximise votre équité cubeful (-1.248 EMG).",
+            "Évitez bar/24 11/8 (-0.088 EMG) ; jouez la ligne maîtresse bar/21."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_345_46",
+        "tier": 3,
+        "xgid": "XGID=-aA---FAa--AeC---a-e--aaBA:0:0:1:46:4:7:0:11:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "bar/21 11/5",
+        "optimalMove": "bar/21 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 13/7",
+            "bar/21 11/5",
+            "bar/21 7/1*",
+            "bar/15"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 11/5 (Match en 11 pts (4-7, Videau à 1)), vous concédez -0.092 EMG face au coup 3-ply bar/21 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 11 pts (4-7, Videau à 1) : bar/21 13/7 surpasse bar/21 11/5 de +0.092 EMG (44.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 11 pts (4-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 13/7 domine bar/21 11/5 de +0.092 EMG.",
+            "En Match en 11 pts (4-7, Videau à 1), bar/21 13/7 maximise votre équité cubeful (-0.161 EMG).",
+            "Évitez bar/21 11/5 (-0.092 EMG) ; jouez la ligne maîtresse bar/21 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_346_11",
+        "tier": 2,
+        "xgid": "XGID=-bAA--F-B-a--BBaaa-eAa-ab-:0:0:1:11:7:4:0:11:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "13/10* 3/2",
+        "optimalMove": "6/5(3) 3/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/5(3) 3/2",
+            "13/10* 3/2",
+            "14/13 6/5(2) 3/2",
+            "13/12 6/5(2) 3/2"
+        ],
+        "equityLoss": 0.161,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10* 3/2 (Match en 11 pts (7-4, Videau à 1)), vous concédez -0.161 EMG face au coup 3-ply 6/5(3) 3/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 11 pts (7-4, Videau à 1) : 6/5(3) 3/2 surpasse 13/10* 3/2 de +0.161 EMG (67.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/5(3) en Match en 11 pts (7-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/5(3) 3/2 domine 13/10* 3/2 de +0.161 EMG.",
+            "En Match en 11 pts (7-4, Videau à 1), 6/5(3) 3/2 maximise votre équité cubeful (+0.721 EMG).",
+            "Évitez 13/10* 3/2 (-0.161 EMG) ; jouez la ligne maîtresse 6/5(3) 3/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_347_64",
+        "tier": 3,
+        "xgid": "XGID=aBB-aaE-AA-aab-A-aAea-a-B-:0:0:1:64:4:7:0:11:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "18/12* 9/5*",
+        "optimalMove": "15/11*/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/11*/5*",
+            "18/12* 9/5*",
+            "18/12* 8/4*",
+            "18/12* 15/11*"
+        ],
+        "equityLoss": 0.081,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/12* 9/5* (Match en 11 pts (4-7, Videau à 1)), vous concédez -0.081 EMG face au coup 3-ply 15/11*/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 11 pts (4-7, Videau à 1) : 15/11*/5* surpasse 18/12* 9/5* de +0.081 EMG (81.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 15/11*/5* en Match en 11 pts (4-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/11*/5* domine 18/12* 9/5* de +0.081 EMG.",
+            "En Match en 11 pts (4-7, Videau à 1), 15/11*/5* maximise votre équité cubeful (+1.831 EMG).",
+            "Évitez 18/12* 9/5* (-0.081 EMG) ; jouez la ligne maîtresse 15/11*/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_348_33",
+        "tier": 2,
+        "xgid": "XGID=---AaaEaA---BAA-a--eBa-cbB:0:0:1:33:7:4:0:11:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "bar/22(2) 14/8",
+        "optimalMove": "bar/22(2) 8/5* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22(2) 8/5* 6/3",
+            "bar/22(2) 14/8",
+            "bar/22(2) 13/7*",
+            "bar/22(2) 8/5*/2"
+        ],
+        "equityLoss": 0.279,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22(2) 14/8 (Match en 11 pts (7-4, Videau à 1)), vous concédez -0.279 EMG face au coup 3-ply bar/22(2) 8/5* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 11 pts (7-4, Videau à 1) : bar/22(2) 8/5* 6/3 surpasse bar/22(2) 14/8 de +0.279 EMG (56.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22(2) en Match en 11 pts (7-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22(2) 8/5* 6/3 domine bar/22(2) 14/8 de +0.279 EMG.",
+            "En Match en 11 pts (7-4, Videau à 1), bar/22(2) 8/5* 6/3 maximise votre équité cubeful (+0.012 EMG).",
+            "Évitez bar/22(2) 14/8 (-0.279 EMG) ; jouez la ligne maîtresse bar/22(2) 8/5* 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_349_64",
+        "tier": 4,
+        "xgid": "XGID=-aa-A-DAA--AcD-a-d-e----BA:0:0:1:64:0:0:0:0:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "bar/15*",
+        "optimalMove": "bar/21 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 13/7",
+            "bar/15*",
+            "bar/21 11/5",
+            "bar/21 8/2*"
+        ],
+        "equityLoss": 0.042,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/15* (Money Game), vous concédez -0.042 EMG face au coup 3-ply bar/21 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Money Game : bar/21 13/7 surpasse bar/15* de +0.042 EMG (43.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 13/7 domine bar/15* de +0.042 EMG.",
+            "En Money Game, bar/21 13/7 maximise votre équité cubeful (-0.397 EMG).",
+            "Évitez bar/15* (-0.042 EMG) ; jouez la ligne maîtresse bar/21 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_350_52",
+        "tier": 3,
+        "xgid": "XGID=-c-a-CDCa-a--Ab---Ad-BAc--:0:0:1:52:0:0:0:0:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8*/6",
+        "optimalMove": "13/8* 5/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/8* 5/3*",
+            "13/8*/6",
+            "18/13 5/3*",
+            "18/16 13/8*"
+        ],
+        "equityLoss": 0.108,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/8*/6 (Money Game), vous concédez -0.108 EMG face au coup 3-ply 13/8* 5/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Money Game : 13/8* 5/3* surpasse 13/8*/6 de +0.108 EMG (77.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/8* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/8* 5/3* domine 13/8*/6 de +0.108 EMG.",
+            "En Money Game, 13/8* 5/3* maximise votre équité cubeful (+1.133 EMG).",
+            "Évitez 13/8*/6 (-0.108 EMG) ; jouez la ligne maîtresse 13/8* 5/3*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_351_41",
+        "tier": 2,
+        "xgid": "XGID=-a-C-aE------E-a-eaf----B-:0:0:1:41:0:1:0:3:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "13/9 6/5*",
+        "optimalMove": "6/5*/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/5*/1*",
+            "13/9 6/5*",
+            "24/20 6/5*",
+            "6/2 3/2"
+        ],
+        "equityLoss": 0.23,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/9 6/5* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.230 EMG face au coup 3-ply 6/5*/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 3 pts (0-1, Videau à 1) : 6/5*/1* surpasse 13/9 6/5* de +0.230 EMG (53.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/5*/1* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/5*/1* domine 13/9 6/5* de +0.230 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 6/5*/1* maximise votre équité cubeful (+0.398 EMG).",
+            "Évitez 13/9 6/5* (-0.230 EMG) ; jouez la ligne maîtresse 6/5*/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_352_26",
+        "tier": 2,
+        "xgid": "XGID=-AAa--EAD-a-e-A----c-acaAA:0:0:1:26:1:0:0:3:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "bar/23* 8/2",
+        "optimalMove": "bar/23* 7/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 7/1",
+            "bar/23* 8/2",
+            "bar/23* 14/8",
+            "bar/23*/17"
+        ],
+        "equityLoss": 0.172,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 8/2 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.172 EMG face au coup 3-ply bar/23* 7/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 3 pts (1-0, Videau à 1) : bar/23* 7/1 surpasse bar/23* 8/2 de +0.172 EMG (54.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 7/1 domine bar/23* 8/2 de +0.172 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/23* 7/1 maximise votre équité cubeful (+0.077 EMG).",
+            "Évitez bar/23* 8/2 (-0.172 EMG) ; jouez la ligne maîtresse bar/23* 7/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_353_24",
+        "tier": 3,
+        "xgid": "XGID=--cCA-CA-----E---eAd--Aab-:0:0:1:24:0:1:0:3:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "18/14 6/4",
+        "optimalMove": "22/18 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/18 6/4",
+            "18/14 6/4",
+            "13/9 6/4",
+            "7/3 6/4"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/14 6/4 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.090 EMG face au coup 3-ply 22/18 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 3 pts (0-1, Videau à 1) : 22/18 6/4 surpasse 18/14 6/4 de +0.090 EMG (58.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/18 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/18 6/4 domine 18/14 6/4 de +0.090 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 22/18 6/4 maximise votre équité cubeful (+0.530 EMG).",
+            "Évitez 18/14 6/4 (-0.090 EMG) ; jouez la ligne maîtresse 22/18 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_354_12",
+        "tier": 2,
+        "xgid": "XGID=-BB--ABaD---d---aaabAbcC--:0:0:1:12:1:0:0:3:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "20/18*/17*",
+        "optimalMove": "8/7*/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/7*/5",
+            "20/18*/17*",
+            "20/18* 8/7*",
+            "8/7* 8/6"
+        ],
+        "equityLoss": 0.283,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/18*/17* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.283 EMG face au coup 3-ply 8/7*/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 3 pts (1-0, Videau à 1) : 8/7*/5 surpasse 20/18*/17* de +0.283 EMG (56.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/7*/5 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/7*/5 domine 20/18*/17* de +0.283 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 8/7*/5 maximise votre équité cubeful (+0.260 EMG).",
+            "Évitez 20/18*/17* (-0.283 EMG) ; jouez la ligne maîtresse 8/7*/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_355_61",
+        "tier": 2,
+        "xgid": "XGID=-aAA--E---a-eE---a-cba-aC-:0:0:1:61:0:2:0:5:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "24/17*",
+        "optimalMove": "24/23*/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23*/17*",
+            "24/17*",
+            "24/18 3/2",
+            "13/7 3/2"
+        ],
+        "equityLoss": 0.218,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/17* (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.218 EMG face au coup 3-ply 24/23*/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 5 pts (0-2, Videau à 1) : 24/23*/17* surpasse 24/17* de +0.218 EMG (42.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23*/17* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23*/17* domine 24/17* de +0.218 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 24/23*/17* maximise votre équité cubeful (-0.256 EMG).",
+            "Évitez 24/17* (-0.218 EMG) ; jouez la ligne maîtresse 24/23*/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_356_64",
+        "tier": 2,
+        "xgid": "XGID=-Ba--BA-Aa--fEAB---e--aaA-:0:0:1:64:2:0:0:5:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "14/8 13/9*",
+        "optimalMove": "8/2* 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/2* 6/2",
+            "14/8 13/9*",
+            "15/9* 6/2*",
+            "14/8 6/2*"
+        ],
+        "equityLoss": 0.188,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 14/8 13/9* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.188 EMG face au coup 3-ply 8/2* 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 5 pts (2-0, Videau à 1) : 8/2* 6/2 surpasse 14/8 13/9* de +0.188 EMG (60.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/2* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/2* 6/2 domine 14/8 13/9* de +0.188 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 8/2* 6/2 maximise votre équité cubeful (+0.415 EMG).",
+            "Évitez 14/8 13/9* (-0.188 EMG) ; jouez la ligne maîtresse 8/2* 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_357_34",
+        "tier": 2,
+        "xgid": "XGID=--BA--DA--a-dE---c--c-aBc-:0:0:1:34:0:2:0:5:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "13/10* 13/9",
+        "optimalMove": "13/10* 7/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/10* 7/3",
+            "13/10* 13/9",
+            "13/10*/6",
+            "23/19 13/10*"
+        ],
+        "equityLoss": 0.366,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10* 13/9 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.366 EMG face au coup 3-ply 13/10* 7/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 5 pts (0-2, Videau à 1) : 13/10* 7/3 surpasse 13/10* 13/9 de +0.366 EMG (58.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/10* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/10* 7/3 domine 13/10* 13/9 de +0.366 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 13/10* 7/3 maximise votre équité cubeful (+0.525 EMG).",
+            "Évitez 13/10* 13/9 (-0.366 EMG) ; jouez la ligne maîtresse 13/10* 7/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_358_44",
+        "tier": 3,
+        "xgid": "XGID=-CbAAB--D---aC--c-ab-abc-A:0:0:1:44:2:0:0:5:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21* 13/5 8/4",
+        "optimalMove": "bar/21*/13 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21*/13 8/4",
+            "bar/21* 13/5 8/4",
+            "bar/21* 13/9(2) 8/4",
+            "bar/21*/17 8/4(2)"
+        ],
+        "equityLoss": 0.07,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 13/5 8/4 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.070 EMG face au coup 3-ply bar/21*/13 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 5 pts (2-0, Videau à 1) : bar/21*/13 8/4 surpasse bar/21* 13/5 8/4 de +0.070 EMG (65.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21*/13 en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21*/13 8/4 domine bar/21* 13/5 8/4 de +0.070 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/21*/13 8/4 maximise votre équité cubeful (+0.522 EMG).",
+            "Évitez bar/21* 13/5 8/4 (-0.070 EMG) ; jouez la ligne maîtresse bar/21*/13 8/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_359_65",
+        "tier": 4,
+        "xgid": "XGID=----a-DcCA--eE---bA--aa-bA:0:0:1:65:3:0:0:7:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "bar/19 13/8",
+        "optimalMove": "bar/19 9/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19 9/4*",
+            "bar/19 13/8",
+            "bar/19 18/13",
+            "bar/20 9/3"
+        ],
+        "equityLoss": 0.049,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19 13/8 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.049 EMG face au coup 3-ply bar/19 9/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 7 pts (3-0, Videau à 1) : bar/19 9/4* surpasse bar/19 13/8 de +0.049 EMG (61.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/19 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19 9/4* domine bar/19 13/8 de +0.049 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), bar/19 9/4* maximise votre équité cubeful (+0.381 EMG).",
+            "Évitez bar/19 13/8 (-0.049 EMG) ; jouez la ligne maîtresse bar/19 9/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_360_32",
+        "tier": 2,
+        "xgid": "XGID=-B-A-A-Aa-a-eE---cCd-A-a-A:0:0:1:32:0:3:0:7:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "bar/23*/20",
+        "optimalMove": "bar/23* 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 13/10*",
+            "bar/23*/20",
+            "bar/22 5/3",
+            "bar/23* 5/2"
+        ],
+        "equityLoss": 0.145,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23*/20 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.145 EMG face au coup 3-ply bar/23* 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 7 pts (0-3, Videau à 1) : bar/23* 13/10* surpasse bar/23*/20 de +0.145 EMG (39.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 13/10* domine bar/23*/20 de +0.145 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), bar/23* 13/10* maximise votre équité cubeful (-0.423 EMG).",
+            "Évitez bar/23*/20 (-0.145 EMG) ; jouez la ligne maîtresse bar/23* 13/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_361_15",
+        "tier": 4,
+        "xgid": "XGID=-CAA-Aa-aa--dE-A-cAd-a-AA-:0:0:1:15:0:3:0:7:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "13/8* 3/2",
+        "optimalMove": "23/18 3/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/18 3/2",
+            "13/8* 3/2",
+            "18/13 3/2",
+            "24/18"
+        ],
+        "equityLoss": 0.045,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/8* 3/2 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.045 EMG face au coup 3-ply 23/18 3/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 7 pts (0-3, Videau à 1) : 23/18 3/2 surpasse 13/8* 3/2 de +0.045 EMG (30.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/18 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/18 3/2 domine 13/8* 3/2 de +0.045 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 23/18 3/2 maximise votre équité cubeful (-0.936 EMG).",
+            "Évitez 13/8* 3/2 (-0.045 EMG) ; jouez la ligne maîtresse 23/18 3/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_362_45",
+        "tier": 2,
+        "xgid": "XGID=--a-A-D-C-aAfC-AA---b-aacA:0:0:1:45:3:0:0:7:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "bar/21 16/11",
+        "optimalMove": "bar/21 15/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 15/10*",
+            "bar/21 16/11",
+            "bar/16",
+            "bar/21 11/6"
+        ],
+        "equityLoss": 0.205,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 16/11 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.205 EMG face au coup 3-ply bar/21 15/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 7 pts (3-0, Videau à 1) : bar/21 15/10* surpasse bar/21 16/11 de +0.205 EMG (64.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 15/10* domine bar/21 16/11 de +0.205 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), bar/21 15/10* maximise votre équité cubeful (+0.524 EMG).",
+            "Évitez bar/21 16/11 (-0.205 EMG) ; jouez la ligne maîtresse bar/21 15/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_363_16",
+        "tier": 3,
+        "xgid": "XGID=-a-A--DaC---dE---a-fA-aaA-:0:0:1:16:0:4:0:9:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "24/23*/17*",
+        "optimalMove": "24/23* 13/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23* 13/7*",
+            "24/23*/17*",
+            "13/7* 8/7",
+            "24/23* 20/14"
+        ],
+        "equityLoss": 0.07,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23*/17* (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.070 EMG face au coup 3-ply 24/23* 13/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 9 pts (0-4, Videau à 1) : 24/23* 13/7* surpasse 24/23*/17* de +0.070 EMG (63.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23* en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23* 13/7* domine 24/23*/17* de +0.070 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), 24/23* 13/7* maximise votre équité cubeful (+0.799 EMG).",
+            "Évitez 24/23*/17* (-0.070 EMG) ; jouez la ligne maîtresse 24/23* 13/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_364_12",
+        "tier": 4,
+        "xgid": "XGID=--A-aaCB--a-cD-a---fA-AbBA:0:0:1:12:0:4:0:9:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/24 22/20",
+        "optimalMove": "bar/22",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22",
+            "bar/24 22/20",
+            "bar/24 6/4*",
+            "bar/24 7/5*"
+        ],
+        "equityLoss": 0.042,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 22/20 (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.042 EMG face au coup 3-ply bar/22.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 9 pts (0-4, Videau à 1) : bar/22 surpasse bar/24 22/20 de +0.042 EMG (46.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 domine bar/24 22/20 de +0.042 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), bar/22 maximise votre équité cubeful (-0.135 EMG).",
+            "Évitez bar/24 22/20 (-0.042 EMG) ; jouez la ligne maîtresse bar/22."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_365_56",
+        "tier": 4,
+        "xgid": "XGID=-AAaabD---B-bC-A--BbbaacA-:0:0:1:56:0:4:0:9:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "24/18 6/1",
+        "optimalMove": "24/18 15/10",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18 15/10",
+            "24/18 6/1",
+            "13/2",
+            "15/9 6/1"
+        ],
+        "equityLoss": 0.046,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18 6/1 (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.046 EMG face au coup 3-ply 24/18 15/10.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 9 pts (0-4, Videau à 1) : 24/18 15/10 surpasse 24/18 6/1 de +0.046 EMG (49.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18 en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18 15/10 domine 24/18 6/1 de +0.046 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), 24/18 15/10 maximise votre équité cubeful (+0.045 EMG).",
+            "Évitez 24/18 6/1 (-0.046 EMG) ; jouez la ligne maîtresse 24/18 15/10."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_366_13",
+        "tier": 2,
+        "xgid": "XGID=-AAB-ABaA--acEA--cada-a--A:0:0:1:13:3:6:0:11:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "bar/22* 8/7*",
+        "optimalMove": "bar/22* 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 2/1",
+            "bar/22* 8/7*",
+            "bar/22* 3/2",
+            "bar/22* 14/13"
+        ],
+        "equityLoss": 0.265,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 8/7* (Match en 11 pts (3-6, Videau à 1)), vous concédez -0.265 EMG face au coup 3-ply bar/22* 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 11 pts (3-6, Videau à 1) : bar/22* 2/1 surpasse bar/22* 8/7* de +0.265 EMG (56.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22* en Match en 11 pts (3-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 2/1 domine bar/22* 8/7* de +0.265 EMG.",
+            "En Match en 11 pts (3-6, Videau à 1), bar/22* 2/1 maximise votre équité cubeful (+0.632 EMG).",
+            "Évitez bar/22* 8/7* (-0.265 EMG) ; jouez la ligne maîtresse bar/22* 2/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_367_13",
+        "tier": 4,
+        "xgid": "XGID=---b-AE-C---eC---Aaba-cAaA:0:0:1:13:6:3:0:11:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "bar/24* 23/20*",
+        "optimalMove": "bar/24* 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 8/5",
+            "bar/24* 23/20*",
+            "bar/24*/21",
+            "bar/24* 17/14"
+        ],
+        "equityLoss": 0.045,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 23/20* (Match en 11 pts (6-3, Videau à 1)), vous concédez -0.045 EMG face au coup 3-ply bar/24* 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 11 pts (6-3, Videau à 1) : bar/24* 8/5 surpasse bar/24* 23/20* de +0.045 EMG (62.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 11 pts (6-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 8/5 domine bar/24* 23/20* de +0.045 EMG.",
+            "En Match en 11 pts (6-3, Videau à 1), bar/24* 8/5 maximise votre équité cubeful (+0.384 EMG).",
+            "Évitez bar/24* 23/20* (-0.045 EMG) ; jouez la ligne maîtresse bar/24* 8/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_368_24",
+        "tier": 2,
+        "xgid": "XGID=-a-DaA---aA-AC---bbcBabBbA:0:0:1:24:3:6:0:11:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/21* 3/1*",
+        "optimalMove": "bar/21* 12/10",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 12/10",
+            "bar/21* 3/1*",
+            "bar/21* 23/21",
+            "bar/21* 5/3"
+        ],
+        "equityLoss": 0.161,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 3/1* (Match en 11 pts (3-6, Videau à 1)), vous concédez -0.161 EMG face au coup 3-ply bar/21* 12/10.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 11 pts (3-6, Videau à 1) : bar/21* 12/10 surpasse bar/21* 3/1* de +0.161 EMG (35.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 11 pts (3-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 12/10 domine bar/21* 3/1* de +0.161 EMG.",
+            "En Match en 11 pts (3-6, Videau à 1), bar/21* 12/10 maximise votre équité cubeful (-0.613 EMG).",
+            "Évitez bar/21* 3/1* (-0.161 EMG) ; jouez la ligne maîtresse bar/21* 12/10."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_369_64",
+        "tier": 2,
+        "xgid": "XGID=--A-AaC-D---fD---b-da-a-B-:0:0:1:64:0:0:0:0:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "8/4 8/2",
+        "optimalMove": "24/20* 8/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20* 8/2",
+            "8/4 8/2",
+            "24/20*/14",
+            "24/20* 13/7"
+        ],
+        "equityLoss": 0.199,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4 8/2 (Money Game), vous concédez -0.199 EMG face au coup 3-ply 24/20* 8/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Money Game : 24/20* 8/2 surpasse 8/4 8/2 de +0.199 EMG (55.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/20* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20* 8/2 domine 8/4 8/2 de +0.199 EMG.",
+            "En Money Game, 24/20* 8/2 maximise votre équité cubeful (+0.250 EMG).",
+            "Évitez 8/4 8/2 (-0.199 EMG) ; jouez la ligne maîtresse 24/20* 8/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_370_44",
+        "tier": 2,
+        "xgid": "XGID=---aa-D-C---dE---d-aBAca--:0:0:1:44:0:0:0:0:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "8/4*(2) 6/2(2)",
+        "optimalMove": "13/9(2) 8/4*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9(2) 8/4*(2)",
+            "8/4*(2) 6/2(2)",
+            "13/5(2)",
+            "13/9 8/4*(3)"
+        ],
+        "equityLoss": 0.139,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4*(2) 6/2(2) (Money Game), vous concédez -0.139 EMG face au coup 3-ply 13/9(2) 8/4*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Money Game : 13/9(2) 8/4*(2) surpasse 8/4*(2) 6/2(2) de +0.139 EMG (65.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/9(2) en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/9(2) 8/4*(2) domine 8/4*(2) 6/2(2) de +0.139 EMG.",
+            "En Money Game, 13/9(2) 8/4*(2) maximise votre équité cubeful (+0.693 EMG).",
+            "Évitez 8/4*(2) 6/2(2) (-0.139 EMG) ; jouez la ligne maîtresse 13/9(2) 8/4*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_371_25",
+        "tier": 2,
+        "xgid": "XGID=--BD-dA-B---bDa--c-cAaAa--:0:0:1:25:0:0:0:0:8",
+        "dice": [
+            2,
+            5
+        ],
+        "playedMove": "20/15 8/6",
+        "optimalMove": "13/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/6",
+            "20/15 8/6",
+            "22/20 13/8",
+            "6/1 3/1"
+        ],
+        "equityLoss": 0.205,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15 8/6 (Money Game), vous concédez -0.205 EMG face au coup 3-ply 13/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-5 en Money Game : 13/6 surpasse 20/15 8/6 de +0.205 EMG (53.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/6 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/6 domine 20/15 8/6 de +0.205 EMG.",
+            "En Money Game, 13/6 maximise votre équité cubeful (+0.179 EMG).",
+            "Évitez 20/15 8/6 (-0.205 EMG) ; jouez la ligne maîtresse 13/6."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_372_44",
+        "tier": 4,
+        "xgid": "XGID=--A-A-B-D---d--b-a-AD-ebaB:0:0:1:44:0:0:0:0:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21(2) 20/16(2)",
+        "optimalMove": "bar/17* bar/21 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/17* bar/21 8/4",
+            "bar/21(2) 20/16(2)",
+            "bar/21(2) 20/16 8/4",
+            "bar/21(2) 8/4(2)"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21(2) 20/16(2) (Money Game), vous concédez -0.038 EMG face au coup 3-ply bar/17* bar/21 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Money Game : bar/17* bar/21 8/4 surpasse bar/21(2) 20/16(2) de +0.038 EMG (54.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/17* bar/21 8/4 domine bar/21(2) 20/16(2) de +0.038 EMG.",
+            "En Money Game, bar/17* bar/21 8/4 maximise votre équité cubeful (+0.071 EMG).",
+            "Évitez bar/21(2) 20/16(2) (-0.038 EMG) ; jouez la ligne maîtresse bar/17* bar/21 8/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_373_44",
+        "tier": 2,
+        "xgid": "XGID=-A--BA--D-A-c----BcBAAcdb-:0:0:1:44:0:0:0:0:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "21/9 5/1",
+        "optimalMove": "21/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/5",
+            "21/9 5/1",
+            "21/9 10/6",
+            "19/11 10/6 5/1"
+        ],
+        "equityLoss": 0.138,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/9 5/1 (Money Game), vous concédez -0.138 EMG face au coup 3-ply 21/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Money Game : 21/5 surpasse 21/9 5/1 de +0.138 EMG (38.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/5 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/5 domine 21/9 5/1 de +0.138 EMG.",
+            "En Money Game, 21/5 maximise votre équité cubeful (-0.588 EMG).",
+            "Évitez 21/9 5/1 (-0.138 EMG) ; jouez la ligne maîtresse 21/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_374_31",
+        "tier": 2,
+        "xgid": "XGID=-aA-a-EaB---eE---bAcA--b--:0:0:1:31:0:1:0:3:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "18/15 2/1*",
+        "optimalMove": "6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/2",
+            "18/15 2/1*",
+            "8/7*/4*",
+            "8/5 6/5"
+        ],
+        "equityLoss": 0.125,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/15 2/1* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.125 EMG face au coup 3-ply 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 3 pts (0-1, Videau à 1) : 6/2 surpasse 18/15 2/1* de +0.125 EMG (51.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/2 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/2 domine 18/15 2/1* de +0.125 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 6/2 maximise votre équité cubeful (+0.222 EMG).",
+            "Évitez 18/15 2/1* (-0.125 EMG) ; jouez la ligne maîtresse 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_375_46",
+        "tier": 4,
+        "xgid": "XGID=-bCBBbb--A--bC--AB-Aca-ba-:0:0:1:46:1:0:0:3:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "16/10 13/9",
+        "optimalMove": "19/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "19/9",
+            "16/10 13/9",
+            "17/11 13/9",
+            "19/15 16/10"
+        ],
+        "equityLoss": 0.037,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/10 13/9 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.037 EMG face au coup 3-ply 19/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 3 pts (1-0, Videau à 1) : 19/9 surpasse 16/10 13/9 de +0.037 EMG (62.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 19/9 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 19/9 domine 16/10 13/9 de +0.037 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 19/9 maximise votre équité cubeful (+0.443 EMG).",
+            "Évitez 16/10 13/9 (-0.037 EMG) ; jouez la ligne maîtresse 19/9."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_376_56",
+        "tier": 4,
+        "xgid": "XGID=-a--a-D-DA--dC----Agaa--AA:0:0:1:56:0:0:0:5:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "bar/20*/14",
+        "optimalMove": "bar/20* 24/18",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 24/18",
+            "bar/20*/14",
+            "bar/20* 13/7",
+            "bar/20* 9/3"
+        ],
+        "equityLoss": 0.057,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20*/14 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.057 EMG face au coup 3-ply bar/20* 24/18.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 5 pts (0-0, Videau à 1) : bar/20* 24/18 surpasse bar/20*/14 de +0.057 EMG (59.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 24/18 domine bar/20*/14 de +0.057 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/20* 24/18 maximise votre équité cubeful (+0.353 EMG).",
+            "Évitez bar/20*/14 (-0.057 EMG) ; jouez la ligne maîtresse bar/20* 24/18."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_377_32",
+        "tier": 2,
+        "xgid": "XGID=-AaA--B-DaA-cB-a---eAaAcAA:0:0:1:32:0:0:0:5:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "bar/22 8/6",
+        "optimalMove": "bar/22 3/1",
+        "acceptableMoves": [
+            "bar/20"
+        ],
+        "quizChoices": [
+            "bar/22 3/1",
+            "bar/22 8/6",
+            "bar/20",
+            "bar/22 24/22"
+        ],
+        "equityLoss": 0.122,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 8/6 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.122 EMG face au coup 3-ply bar/22 3/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 5 pts (0-0, Videau à 1) : bar/22 3/1 surpasse bar/22 8/6 de +0.122 EMG (42.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 3/1 domine bar/22 8/6 de +0.122 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/22 3/1 maximise votre équité cubeful (-0.397 EMG).",
+            "Évitez bar/22 8/6 (-0.122 EMG) ; jouez la ligne maîtresse bar/22 3/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_378_45",
+        "tier": 4,
+        "xgid": "XGID=-bDbC-C-A---aB-aAd-ba--Ab-:0:0:1:45:0:0:0:5:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "16/12* 13/8",
+        "optimalMove": "23/18 16/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/18 16/12*",
+            "16/12* 13/8",
+            "16/12*/7",
+            "16/11 8/4"
+        ],
+        "equityLoss": 0.047,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/12* 13/8 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.047 EMG face au coup 3-ply 23/18 16/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 5 pts (0-0, Videau à 1) : 23/18 16/12* surpasse 16/12* 13/8 de +0.047 EMG (56.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/18 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/18 16/12* domine 16/12* 13/8 de +0.047 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 23/18 16/12* maximise votre équité cubeful (+0.524 EMG).",
+            "Évitez 16/12* 13/8 (-0.047 EMG) ; jouez la ligne maîtresse 23/18 16/12*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_379_63",
+        "tier": 2,
+        "xgid": "XGID=-C-aAAAaCB-------a-c-dBeB-:0:0:1:63:0:0:0:5:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "9/3* 8/5",
+        "optimalMove": "9/6 9/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/6 9/3*",
+            "9/3* 8/5",
+            "9/3* 6/3",
+            "22/16 8/5"
+        ],
+        "equityLoss": 0.16,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 9/3* 8/5 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.160 EMG face au coup 3-ply 9/6 9/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 5 pts (0-0, Videau à 1) : 9/6 9/3* surpasse 9/3* 8/5 de +0.160 EMG (40.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/6 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/6 9/3* domine 9/3* 8/5 de +0.160 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 9/6 9/3* maximise votre équité cubeful (-0.650 EMG).",
+            "Évitez 9/3* 8/5 (-0.160 EMG) ; jouez la ligne maîtresse 9/6 9/3*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_380_62",
+        "tier": 2,
+        "xgid": "XGID=abEaDAC--AA-----ac-a--bac-:0:0:1:62:0:0:0:5:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "10/4 5/3*",
+        "optimalMove": "9/3* 5/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/3* 5/3",
+            "10/4 5/3*",
+            "10/8 9/3*",
+            "9/3* 4/2"
+        ],
+        "equityLoss": 0.226,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/4 5/3* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.226 EMG face au coup 3-ply 9/3* 5/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 5 pts (0-0, Videau à 1) : 9/3* 5/3 surpasse 10/4 5/3* de +0.226 EMG (87.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/3* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/3* 5/3 domine 10/4 5/3* de +0.226 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 9/3* 5/3 maximise votre équité cubeful (+1.515 EMG).",
+            "Évitez 10/4 5/3* (-0.226 EMG) ; jouez la ligne maîtresse 9/3* 5/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_381_12",
+        "tier": 3,
+        "xgid": "XGID=--BBA-EaC---a----aaccacAaA:0:0:1:12:0:3:0:7:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/24* 23/21*",
+        "optimalMove": "bar/24* 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 6/4",
+            "bar/24* 23/21*",
+            "bar/24* 4/2",
+            "bar/23 8/7*"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 23/21* (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.083 EMG face au coup 3-ply bar/24* 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 7 pts (0-3, Videau à 1) : bar/24* 6/4 surpasse bar/24* 23/21* de +0.083 EMG (70.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 6/4 domine bar/24* 23/21* de +0.083 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), bar/24* 6/4 maximise votre équité cubeful (+1.381 EMG).",
+            "Évitez bar/24* 23/21* (-0.083 EMG) ; jouez la ligne maîtresse bar/24* 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_382_65",
+        "tier": 2,
+        "xgid": "XGID=---DaCBbB-a-----AbAA-Adbc-:0:0:1:65:3:0:0:7:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "18/13 16/10*",
+        "optimalMove": "16/10*/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/10*/5",
+            "18/13 16/10*",
+            "19/14 16/10*",
+            "21/10*"
+        ],
+        "equityLoss": 0.149,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/13 16/10* (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.149 EMG face au coup 3-ply 16/10*/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 7 pts (3-0, Videau à 1) : 16/10*/5 surpasse 18/13 16/10* de +0.149 EMG (73.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 16/10*/5 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/10*/5 domine 18/13 16/10* de +0.149 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 16/10*/5 maximise votre équité cubeful (+1.010 EMG).",
+            "Évitez 18/13 16/10* (-0.149 EMG) ; jouez la ligne maîtresse 16/10*/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_383_55",
+        "tier": 2,
+        "xgid": "XGID=--aBaAC-B----Ca--aaf--caCA:0:0:1:55:2:4:0:9:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/10 13/8",
+        "optimalMove": "bar/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/5",
+            "bar/10 13/8",
+            "bar/15 13/3",
+            "bar/15 13/8(2)"
+        ],
+        "equityLoss": 0.496,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/10 13/8 (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.496 EMG face au coup 3-ply bar/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 9 pts (2-4, Videau à 1) : bar/5 surpasse bar/10 13/8 de +0.496 EMG (59.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/5 en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/5 domine bar/10 13/8 de +0.496 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), bar/5 maximise votre équité cubeful (+0.393 EMG).",
+            "Évitez bar/10 13/8 (-0.496 EMG) ; jouez la ligne maîtresse bar/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_384_31",
+        "tier": 4,
+        "xgid": "XGID=-cACA-G-----c--A-a-c--dBa-:0:0:1:31:4:2:0:9:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "23/20 3/2",
+        "optimalMove": "6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/2",
+            "23/20 3/2",
+            "23/20 4/3",
+            "15/11"
+        ],
+        "equityLoss": 0.058,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/20 3/2 (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.058 EMG face au coup 3-ply 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 9 pts (4-2, Videau à 1) : 6/2 surpasse 23/20 3/2 de +0.058 EMG (58.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/2 en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/2 domine 23/20 3/2 de +0.058 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 6/2 maximise votre équité cubeful (+0.301 EMG).",
+            "Évitez 23/20 3/2 (-0.058 EMG) ; jouez la ligne maîtresse 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_385_12",
+        "tier": 3,
+        "xgid": "XGID=-bBCa-FA--a-c-A-A--bA-c-c-:0:0:1:12:4:2:0:9:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "7/5 6/5",
+        "optimalMove": "16/14 7/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/14 7/6",
+            "7/5 6/5",
+            "6/4*/3",
+            "16/14 3/2"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/5 6/5 (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.089 EMG face au coup 3-ply 16/14 7/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 9 pts (4-2, Videau à 1) : 16/14 7/6 surpasse 7/5 6/5 de +0.089 EMG (71.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 16/14 en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/14 7/6 domine 7/5 6/5 de +0.089 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 16/14 7/6 maximise votre équité cubeful (+0.875 EMG).",
+            "Évitez 7/5 6/5 (-0.089 EMG) ; jouez la ligne maîtresse 16/14 7/6."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_386_14",
+        "tier": 2,
+        "xgid": "XGID=-----aFaCAA-cB---b-d-abaB-:0:0:1:14:8:9:0:11:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "24/23* 9/5*",
+        "optimalMove": "9/5* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/5* 6/5",
+            "24/23* 9/5*",
+            "9/5* 8/7*",
+            "13/9 6/5*"
+        ],
+        "equityLoss": 0.139,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23* 9/5* (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.139 EMG face au coup 3-ply 9/5* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 11 pts (8-9, Videau à 1) : 9/5* 6/5 surpasse 24/23* 9/5* de +0.139 EMG (55.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/5* en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/5* 6/5 domine 24/23* 9/5* de +0.139 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), 9/5* 6/5 maximise votre équité cubeful (+0.570 EMG).",
+            "Évitez 24/23* 9/5* (-0.139 EMG) ; jouez la ligne maîtresse 9/5* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_387_33",
+        "tier": 2,
+        "xgid": "XGID=---B-bE-Aa--bC-aAbafA---AA:0:0:1:33:9:8:0:11:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "bar/22 24/18* 16/13",
+        "optimalMove": "bar/22 24/18*/15*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 24/18*/15*",
+            "bar/22 24/18* 16/13",
+            "bar/22 24/18* 6/3",
+            "bar/22 24/18* 13/10"
+        ],
+        "equityLoss": 0.365,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 24/18* 16/13 (Match en 11 pts (9-8, Videau à 1)), vous concédez -0.365 EMG face au coup 3-ply bar/22 24/18*/15*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 11 pts (9-8, Videau à 1) : bar/22 24/18*/15* surpasse bar/22 24/18* 16/13 de +0.365 EMG (57.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 11 pts (9-8, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 24/18*/15* domine bar/22 24/18* 16/13 de +0.365 EMG.",
+            "En Match en 11 pts (9-8, Videau à 1), bar/22 24/18*/15* maximise votre équité cubeful (+0.230 EMG).",
+            "Évitez bar/22 24/18* 16/13 (-0.365 EMG) ; jouez la ligne maîtresse bar/22 24/18*/15*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_388_54",
+        "tier": 3,
+        "xgid": "XGID=-Aaa-aEBB-AAb--aB--dA-da--:0:0:1:54:8:9:0:11:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "20/15*/11",
+        "optimalMove": "10/5*/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/5*/1",
+            "20/15*/11",
+            "20/15* 11/7",
+            "20/15* 6/2*"
+        ],
+        "equityLoss": 0.08,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15*/11 (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.080 EMG face au coup 3-ply 10/5*/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 11 pts (8-9, Videau à 1) : 10/5*/1 surpasse 20/15*/11 de +0.080 EMG (69.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 10/5*/1 en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/5*/1 domine 20/15*/11 de +0.080 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), 10/5*/1 maximise votre équité cubeful (+1.045 EMG).",
+            "Évitez 20/15*/11 (-0.080 EMG) ; jouez la ligne maîtresse 10/5*/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_389_13",
+        "tier": 2,
+        "xgid": "XGID=-BbaCaCBA-A-a-aaAA-b-Ad-b-:0:0:1:13:8:9:0:11:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "17/14* 16/15*",
+        "optimalMove": "8/5* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5* 6/5",
+            "17/14* 16/15*",
+            "17/14* 4/3*",
+            "16/15*/12*"
+        ],
+        "equityLoss": 0.141,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 17/14* 16/15* (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.141 EMG face au coup 3-ply 8/5* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 11 pts (8-9, Videau à 1) : 8/5* 6/5 surpasse 17/14* 16/15* de +0.141 EMG (82.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5* en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5* 6/5 domine 17/14* 16/15* de +0.141 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), 8/5* 6/5 maximise votre équité cubeful (+1.686 EMG).",
+            "Évitez 17/14* 16/15* (-0.141 EMG) ; jouez la ligne maîtresse 8/5* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_390_22",
+        "tier": 2,
+        "xgid": "XGID=-BbDa-B-a-A--A---bbaBdABb-:0:0:1:22:9:8:0:11:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "22/20 10/8* 6/4*(2)",
+        "optimalMove": "13/11 10/8* 6/4*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 10/8* 6/4*(2)",
+            "22/20 10/8* 6/4*(2)",
+            "13/11 10/8*/4*",
+            "10/8* 6/4*(2) 3/1"
+        ],
+        "equityLoss": 0.143,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/20 10/8* 6/4*(2) (Match en 11 pts (9-8, Videau à 1)), vous concédez -0.143 EMG face au coup 3-ply 13/11 10/8* 6/4*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 11 pts (9-8, Videau à 1) : 13/11 10/8* 6/4*(2) surpasse 22/20 10/8* 6/4*(2) de +0.143 EMG (57.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/11 en Match en 11 pts (9-8, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11 10/8* 6/4*(2) domine 22/20 10/8* 6/4*(2) de +0.143 EMG.",
+            "En Match en 11 pts (9-8, Videau à 1), 13/11 10/8* 6/4*(2) maximise votre équité cubeful (+0.227 EMG).",
+            "Évitez 22/20 10/8* 6/4*(2) (-0.143 EMG) ; jouez la ligne maîtresse 13/11 10/8* 6/4*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_391_56",
+        "tier": 2,
+        "xgid": "XGID=----aaEAB---dD---a-e-bAaB-:0:0:1:56:0:0:0:0:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "22/17*/11",
+        "optimalMove": "22/17* 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/17* 13/7",
+            "22/17*/11",
+            "13/8 13/7",
+            "24/18 22/17*"
+        ],
+        "equityLoss": 0.22,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/17*/11 (Money Game), vous concédez -0.220 EMG face au coup 3-ply 22/17* 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Money Game : 22/17* 13/7 surpasse 22/17*/11 de +0.220 EMG (51.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/17* 13/7 domine 22/17*/11 de +0.220 EMG.",
+            "En Money Game, 22/17* 13/7 maximise votre équité cubeful (+0.012 EMG).",
+            "Évitez 22/17*/11 (-0.220 EMG) ; jouez la ligne maîtresse 22/17* 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_392_24",
+        "tier": 2,
+        "xgid": "XGID=aCaaa-D-B--AaB-a-aadAAAc--:0:0:1:24:0:0:0:0:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "8/4*/2*",
+        "optimalMove": "8/4* 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4* 6/4",
+            "8/4*/2*",
+            "21/17*/15*",
+            "21/17* 20/18*"
+        ],
+        "equityLoss": 0.302,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4*/2* (Money Game), vous concédez -0.302 EMG face au coup 3-ply 8/4* 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Money Game : 8/4* 6/4 surpasse 8/4*/2* de +0.302 EMG (78.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/4* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/4* 6/4 domine 8/4*/2* de +0.302 EMG.",
+            "En Money Game, 8/4* 6/4 maximise votre équité cubeful (+1.439 EMG).",
+            "Évitez 8/4*/2* (-0.302 EMG) ; jouez la ligne maîtresse 8/4* 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_393_56",
+        "tier": 2,
+        "xgid": "XGID=--CaAbD-A-A--a--a--ebBBAc-:0:0:1:56:0:0:0:0:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "10/4 8/3*",
+        "optimalMove": "21/16* 10/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16* 10/4",
+            "10/4 8/3*",
+            "22/16* 8/3*",
+            "21/16*/10"
+        ],
+        "equityLoss": 0.168,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/4 8/3* (Money Game), vous concédez -0.168 EMG face au coup 3-ply 21/16* 10/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Money Game : 21/16* 10/4 surpasse 10/4 8/3* de +0.168 EMG (52.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/16* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16* 10/4 domine 10/4 8/3* de +0.168 EMG.",
+            "En Money Game, 21/16* 10/4 maximise votre équité cubeful (+0.083 EMG).",
+            "Évitez 10/4 8/3* (-0.168 EMG) ; jouez la ligne maîtresse 21/16* 10/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_394_44",
+        "tier": 2,
+        "xgid": "XGID=--C-A-EaaaAa--aAAAAe-a--dA:0:0:1:44:0:0:0:0:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21* 18/14* 15/11*/7*",
+        "optimalMove": "bar/21* 16/8*/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 16/8*/4",
+            "bar/21* 18/14* 15/11*/7*",
+            "bar/21* 18/14* 17/9*",
+            "bar/21* 18/14* 16/8*"
+        ],
+        "equityLoss": 0.206,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 18/14* 15/11*/7* (Money Game), vous concédez -0.206 EMG face au coup 3-ply bar/21* 16/8*/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Money Game : bar/21* 16/8*/4 surpasse bar/21* 18/14* 15/11*/7* de +0.206 EMG (86.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 16/8*/4 domine bar/21* 18/14* 15/11*/7* de +0.206 EMG.",
+            "En Money Game, bar/21* 16/8*/4 maximise votre équité cubeful (+1.539 EMG).",
+            "Évitez bar/21* 18/14* 15/11*/7* (-0.206 EMG) ; jouez la ligne maîtresse bar/21* 16/8*/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_395_55",
+        "tier": 3,
+        "xgid": "XGID=-Aa-aaCAB---dE---c-e---AAA:0:0:1:55:0:1:0:3:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/20 23/18 7/2* 6/1",
+        "optimalMove": "bar/20 13/8 7/2* 6/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 13/8 7/2* 6/1",
+            "bar/20 23/18 7/2* 6/1",
+            "bar/5*",
+            "bar/20 13/8(2) 7/2*"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 23/18 7/2* 6/1 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.068 EMG face au coup 3-ply bar/20 13/8 7/2* 6/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 3 pts (0-1, Videau à 1) : bar/20 13/8 7/2* 6/1 surpasse bar/20 23/18 7/2* 6/1 de +0.068 EMG (46.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 13/8 7/2* 6/1 domine bar/20 23/18 7/2* 6/1 de +0.068 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/20 13/8 7/2* 6/1 maximise votre équité cubeful (-0.007 EMG).",
+            "Évitez bar/20 23/18 7/2* 6/1 (-0.068 EMG) ; jouez la ligne maîtresse bar/20 13/8 7/2* 6/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_396_43",
+        "tier": 4,
+        "xgid": "XGID=--aaaaEDC---e--A-bAa---Ac-:0:0:1:43:1:0:0:3:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "7/3* 6/3",
+        "optimalMove": "8/4* 7/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4* 7/4",
+            "7/3* 6/3",
+            "23/19* 18/15",
+            "23/19* 8/5*"
+        ],
+        "equityLoss": 0.037,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/3* 6/3 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.037 EMG face au coup 3-ply 8/4* 7/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 3 pts (1-0, Videau à 1) : 8/4* 7/4 surpasse 7/3* 6/3 de +0.037 EMG (78.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/4* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/4* 7/4 domine 7/3* 6/3 de +0.037 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 8/4* 7/4 maximise votre équité cubeful (+1.207 EMG).",
+            "Évitez 7/3* 6/3 (-0.037 EMG) ; jouez la ligne maîtresse 8/4* 7/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_397_56",
+        "tier": 3,
+        "xgid": "XGID=-aAB-bEBaa-bb-Ba---BA-b-c-:0:0:1:56:1:0:0:3:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "14/9* 14/8*",
+        "optimalMove": "20/15*/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/15*/9*",
+            "14/9* 14/8*",
+            "20/15* 14/8*",
+            "20/9*"
+        ],
+        "equityLoss": 0.069,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 14/9* 14/8* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.069 EMG face au coup 3-ply 20/15*/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 3 pts (1-0, Videau à 1) : 20/15*/9* surpasse 14/9* 14/8* de +0.069 EMG (79.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/15*/9* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/15*/9* domine 14/9* 14/8* de +0.069 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 20/15*/9* maximise votre équité cubeful (+1.231 EMG).",
+            "Évitez 14/9* 14/8* (-0.069 EMG) ; jouez la ligne maîtresse 20/15*/9*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_398_21",
+        "tier": 2,
+        "xgid": "XGID=-b-A--DAC---bDa--c-e-a-aB-:0:0:1:21:0:2:0:5:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "7/5 6/5",
+        "optimalMove": "24/23*/21*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23*/21*",
+            "7/5 6/5",
+            "13/11 8/7",
+            "24/21*"
+        ],
+        "equityLoss": 0.168,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/5 6/5 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.168 EMG face au coup 3-ply 24/23*/21*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 5 pts (0-2, Videau à 1) : 24/23*/21* surpasse 7/5 6/5 de +0.168 EMG (57.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23*/21* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23*/21* domine 7/5 6/5 de +0.168 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 24/23*/21* maximise votre équité cubeful (+0.471 EMG).",
+            "Évitez 7/5 6/5 (-0.168 EMG) ; jouez la ligne maîtresse 24/23*/21*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_399_62",
+        "tier": 4,
+        "xgid": "XGID=-bBA--E-C-A-cA--aaacaaaaB-:0:0:1:62:2:0:0:5:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22*/16*",
+        "optimalMove": "24/18*/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18*/16*",
+            "24/22*/16*",
+            "24/22* 24/18*",
+            "24/18* 10/8"
+        ],
+        "equityLoss": 0.036,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22*/16* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.036 EMG face au coup 3-ply 24/18*/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 5 pts (2-0, Videau à 1) : 24/18*/16* surpasse 24/22*/16* de +0.036 EMG (65.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18*/16* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18*/16* domine 24/22*/16* de +0.036 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 24/18*/16* maximise votre équité cubeful (+0.848 EMG).",
+            "Évitez 24/22*/16* (-0.036 EMG) ; jouez la ligne maîtresse 24/18*/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_400_13",
+        "tier": 3,
+        "xgid": "XGID=-bFbAABaA-AA-A----a-Abcca-:0:0:1:13:0:2:0:5:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "8/7*/4",
+        "optimalMove": "10/7* 5/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/7* 5/4",
+            "8/7*/4",
+            "11/8 5/4",
+            "13/10 5/4"
+        ],
+        "equityLoss": 0.063,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/7*/4 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.063 EMG face au coup 3-ply 10/7* 5/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 5 pts (0-2, Videau à 1) : 10/7* 5/4 surpasse 8/7*/4 de +0.063 EMG (61.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 10/7* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/7* 5/4 domine 8/7*/4 de +0.063 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 10/7* 5/4 maximise votre équité cubeful (+0.640 EMG).",
+            "Évitez 8/7*/4 (-0.063 EMG) ; jouez la ligne maîtresse 10/7* 5/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_401_14",
+        "tier": 2,
+        "xgid": "XGID=cADBBaA------aa--Aab-B-fB-:0:0:1:14:2:0:0:5:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "17/13* 2/1",
+        "optimalMove": "6/5*/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/5*/1",
+            "17/13* 2/1",
+            "24/20 2/1",
+            "21/17 2/1"
+        ],
+        "equityLoss": 0.197,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 17/13* 2/1 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.197 EMG face au coup 3-ply 6/5*/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 5 pts (2-0, Videau à 1) : 6/5*/1 surpasse 17/13* 2/1 de +0.197 EMG (91.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/5*/1 en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/5*/1 domine 17/13* 2/1 de +0.197 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 6/5*/1 maximise votre équité cubeful (+2.068 EMG).",
+            "Évitez 17/13* 2/1 (-0.197 EMG) ; jouez la ligne maîtresse 6/5*/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_402_34",
+        "tier": 2,
+        "xgid": "XGID=-a---AEAAa--aD---dccaa--BA:0:0:1:34:0:3:0:7:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "bar/21* 24/21",
+        "optimalMove": "bar/21* 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 8/5",
+            "bar/21* 24/21",
+            "bar/22 24/20*",
+            "bar/21* 13/10"
+        ],
+        "equityLoss": 0.298,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 24/21 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.298 EMG face au coup 3-ply bar/21* 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 7 pts (0-3, Videau à 1) : bar/21* 8/5 surpasse bar/21* 24/21 de +0.298 EMG (46.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 8/5 domine bar/21* 24/21 de +0.298 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), bar/21* 8/5 maximise votre équité cubeful (-0.063 EMG).",
+            "Évitez bar/21* 24/21 (-0.298 EMG) ; jouez la ligne maîtresse bar/21* 8/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_403_14",
+        "tier": 4,
+        "xgid": "XGID=-c--aaCCD---dA--A-AbA-ca-A:0:0:1:14:3:0:0:7:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "bar/20",
+        "optimalMove": "bar/24 20/16",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 20/16",
+            "bar/20",
+            "bar/21 6/5*",
+            "bar/21 18/17"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.038 EMG face au coup 3-ply bar/24 20/16.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 7 pts (3-0, Videau à 1) : bar/24 20/16 surpasse bar/20 de +0.038 EMG (64.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 20/16 domine bar/20 de +0.038 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), bar/24 20/16 maximise votre équité cubeful (+0.573 EMG).",
+            "Évitez bar/20 (-0.038 EMG) ; jouez la ligne maîtresse bar/24 20/16."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_404_35",
+        "tier": 2,
+        "xgid": "XGID=-bB---DAA---cE-a-b-c-baaAA:0:0:1:35:0:0:0:9:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "bar/22* 7/2",
+        "optimalMove": "bar/22* 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 13/8",
+            "bar/22* 7/2",
+            "bar/22* 8/3",
+            "bar/20 13/10"
+        ],
+        "equityLoss": 0.235,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 7/2 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.235 EMG face au coup 3-ply bar/22* 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 9 pts (0-0, Videau à 1) : bar/22* 13/8 surpasse bar/22* 7/2 de +0.235 EMG (51.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22* en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 13/8 domine bar/22* 7/2 de +0.235 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/22* 13/8 maximise votre équité cubeful (+0.070 EMG).",
+            "Évitez bar/22* 7/2 (-0.235 EMG) ; jouez la ligne maîtresse bar/22* 13/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_405_14",
+        "tier": 2,
+        "xgid": "XGID=--ACAaC-BAa-eB-----c-aacB-:0:0:1:14:0:0:0:9:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "9/5* 6/5",
+        "optimalMove": "9/5*/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/5*/4",
+            "9/5* 6/5",
+            "9/5* 3/2",
+            "8/4 6/5*"
+        ],
+        "equityLoss": 0.164,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 9/5* 6/5 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.164 EMG face au coup 3-ply 9/5*/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 9 pts (0-0, Videau à 1) : 9/5*/4 surpasse 9/5* 6/5 de +0.164 EMG (69.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/5*/4 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/5*/4 domine 9/5* 6/5 de +0.164 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 9/5*/4 maximise votre équité cubeful (+0.935 EMG).",
+            "Évitez 9/5* 6/5 (-0.164 EMG) ; jouez la ligne maîtresse 9/5*/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_406_35",
+        "tier": 2,
+        "xgid": "XGID=-BcD-aAAB---d-a----bB-AdB-:0:0:1:35:0:0:0:9:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "24/21 6/1",
+        "optimalMove": "22/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/14*",
+            "24/21 6/1",
+            "22/17 20/17",
+            "7/4 6/1"
+        ],
+        "equityLoss": 0.209,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21 6/1 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.209 EMG face au coup 3-ply 22/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 9 pts (0-0, Videau à 1) : 22/14* surpasse 24/21 6/1 de +0.209 EMG (50.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/14* en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/14* domine 24/21 6/1 de +0.209 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 22/14* maximise votre équité cubeful (+0.072 EMG).",
+            "Évitez 24/21 6/1 (-0.209 EMG) ; jouez la ligne maîtresse 22/14*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_407_46",
+        "tier": 2,
+        "xgid": "XGID=-BaE-A-a-a--c-bAAAAba-AdB-:0:0:1:46:0:0:0:9:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "24/20* 15/9*",
+        "optimalMove": "15/9*/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/9*/5",
+            "24/20* 15/9*",
+            "24/20* 22/16",
+            "15/5"
+        ],
+        "equityLoss": 0.296,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20* 15/9* (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.296 EMG face au coup 3-ply 15/9*/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 9 pts (0-0, Videau à 1) : 15/9*/5 surpasse 24/20* 15/9* de +0.296 EMG (45.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 15/9*/5 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/9*/5 domine 24/20* 15/9* de +0.296 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 15/9*/5 maximise votre équité cubeful (-0.157 EMG).",
+            "Évitez 24/20* 15/9* (-0.296 EMG) ; jouez la ligne maîtresse 15/9*/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_408_15",
+        "tier": 3,
+        "xgid": "XGID=-BCA--D-----dC-a-aBd-caa--:0:0:1:15:5:0:0:11:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "18/17* 13/8",
+        "optimalMove": "18/17* 18/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/17* 18/13",
+            "18/17* 13/8",
+            "13/8 6/5",
+            "13/7"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/17* 13/8 (Match en 11 pts (5-0, Videau à 1)), vous concédez -0.068 EMG face au coup 3-ply 18/17* 18/13.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 11 pts (5-0, Videau à 1) : 18/17* 18/13 surpasse 18/17* 13/8 de +0.068 EMG (55.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/17* en Match en 11 pts (5-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/17* 18/13 domine 18/17* 13/8 de +0.068 EMG.",
+            "En Match en 11 pts (5-0, Videau à 1), 18/17* 18/13 maximise votre équité cubeful (+0.142 EMG).",
+            "Évitez 18/17* 13/8 (-0.068 EMG) ; jouez la ligne maîtresse 18/17* 18/13."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_409_51",
+        "tier": 3,
+        "xgid": "XGID=aBAAB-CaA---aD--aa-d-Aacb-:0:0:1:51:0:5:0:11:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/12* 8/3",
+        "optimalMove": "21/16* 3/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16* 3/2",
+            "13/12* 8/3",
+            "8/7*/2",
+            "13/8 3/2"
+        ],
+        "equityLoss": 0.069,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/12* 8/3 (Match en 11 pts (0-5, Videau à 1)), vous concédez -0.069 EMG face au coup 3-ply 21/16* 3/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 11 pts (0-5, Videau à 1) : 21/16* 3/2 surpasse 13/12* 8/3 de +0.069 EMG (90.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/16* en Match en 11 pts (0-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16* 3/2 domine 13/12* 8/3 de +0.069 EMG.",
+            "En Match en 11 pts (0-5, Videau à 1), 21/16* 3/2 maximise votre équité cubeful (+1.733 EMG).",
+            "Évitez 13/12* 8/3 (-0.069 EMG) ; jouez la ligne maîtresse 21/16* 3/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_410_31",
+        "tier": 2,
+        "xgid": "XGID=-BC-aaD-A-A-ca--aaAbAbA-cA:0:0:1:31:5:0:0:11:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "bar/22 6/5*",
+        "optimalMove": "bar/22 18/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 18/17*",
+            "bar/22 6/5*",
+            "bar/22 10/9",
+            "bar/22 2/1"
+        ],
+        "equityLoss": 0.362,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 6/5* (Match en 11 pts (5-0, Videau à 1)), vous concédez -0.362 EMG face au coup 3-ply bar/22 18/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 11 pts (5-0, Videau à 1) : bar/22 18/17* surpasse bar/22 6/5* de +0.362 EMG (51.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 11 pts (5-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 18/17* domine bar/22 6/5* de +0.362 EMG.",
+            "En Match en 11 pts (5-0, Videau à 1), bar/22 18/17* maximise votre équité cubeful (-0.057 EMG).",
+            "Évitez bar/22 6/5* (-0.362 EMG) ; jouez la ligne maîtresse bar/22 18/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_411_13",
+        "tier": 3,
+        "xgid": "XGID=-a-AaaDaDA--eB-----bcA-aB-:0:0:1:13:0:0:0:0:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "24/23* 6/3",
+        "optimalMove": "8/5* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5* 6/5",
+            "24/23* 6/3",
+            "8/5*/4*",
+            "8/7* 8/5*"
+        ],
+        "equityLoss": 0.118,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23* 6/3 (Money Game), vous concédez -0.118 EMG face au coup 3-ply 8/5* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Money Game : 8/5* 6/5 surpasse 24/23* 6/3 de +0.118 EMG (56.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5* 6/5 domine 24/23* 6/3 de +0.118 EMG.",
+            "En Money Game, 8/5* 6/5 maximise votre équité cubeful (+0.350 EMG).",
+            "Évitez 24/23* 6/3 (-0.118 EMG) ; jouez la ligne maîtresse 8/5* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_412_16",
+        "tier": 3,
+        "xgid": "XGID=-caA-aB-Eb--dA---aAabA-ABA:0:0:1:16:0:0:0:0:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "bar/19* 3/2*",
+        "optimalMove": "bar/19* 18/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19* 18/17*",
+            "bar/19* 3/2*",
+            "bar/19*/18",
+            "bar/19* 23/22"
+        ],
+        "equityLoss": 0.098,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19* 3/2* (Money Game), vous concédez -0.098 EMG face au coup 3-ply bar/19* 18/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Money Game : bar/19* 18/17* surpasse bar/19* 3/2* de +0.098 EMG (54.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/19* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19* 18/17* domine bar/19* 3/2* de +0.098 EMG.",
+            "En Money Game, bar/19* 18/17* maximise votre équité cubeful (+0.297 EMG).",
+            "Évitez bar/19* 3/2* (-0.098 EMG) ; jouez la ligne maîtresse bar/19* 18/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_413_42",
+        "tier": 2,
+        "xgid": "XGID=-c-aABa-A-a-aD--BdBc--AaAA:0:0:1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "bar/23* 16/12*",
+        "optimalMove": "bar/23* 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 8/4",
+            "bar/23* 16/12*",
+            "bar/23* 24/20",
+            "bar/23* 13/9"
+        ],
+        "equityLoss": 0.367,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 16/12* (Money Game), vous concédez -0.367 EMG face au coup 3-ply bar/23* 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Money Game : bar/23* 8/4 surpasse bar/23* 16/12* de +0.367 EMG (55.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 8/4 domine bar/23* 16/12* de +0.367 EMG.",
+            "En Money Game, bar/23* 8/4 maximise votre équité cubeful (+0.303 EMG).",
+            "Évitez bar/23* 16/12* (-0.367 EMG) ; jouez la ligne maîtresse bar/23* 8/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_414_15",
+        "tier": 3,
+        "xgid": "XGID=-aAa-aCcCb--dB-A---AAaAbAA:0:0:1:15:0:0:0:0:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/20 19/18",
+        "optimalMove": "bar/24 20/15",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 20/15",
+            "bar/20 19/18",
+            "bar/24 15/10",
+            "bar/20 2/1*"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 19/18 (Money Game), vous concédez -0.073 EMG face au coup 3-ply bar/24 20/15.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Money Game : bar/24 20/15 surpasse bar/20 19/18 de +0.073 EMG (60.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 20/15 domine bar/20 19/18 de +0.073 EMG.",
+            "En Money Game, bar/24 20/15 maximise votre équité cubeful (+0.475 EMG).",
+            "Évitez bar/20 19/18 (-0.073 EMG) ; jouez la ligne maîtresse bar/24 20/15."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_415_21",
+        "tier": 2,
+        "xgid": "XGID=-c----FAC---bC-B-bbe----a-:0:0:1:21:1:0:0:3:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "13/11 8/7",
+        "optimalMove": "7/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/5 6/5",
+            "13/11 8/7",
+            "8/7 6/4",
+            "15/13 8/7"
+        ],
+        "equityLoss": 0.14,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11 8/7 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.140 EMG face au coup 3-ply 7/5 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 3 pts (1-0, Videau à 1) : 7/5 6/5 surpasse 13/11 8/7 de +0.140 EMG (72.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 7/5 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/5 6/5 domine 13/11 8/7 de +0.140 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 7/5 6/5 maximise votre équité cubeful (+0.839 EMG).",
+            "Évitez 13/11 8/7 (-0.140 EMG) ; jouez la ligne maîtresse 7/5 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_416_24",
+        "tier": 2,
+        "xgid": "XGID=-BA--aE-A-A-bA---b-g-BbaAA:0:0:1:24:0:1:0:3:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/23* 13/9",
+        "optimalMove": "bar/23* 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 6/2",
+            "bar/23* 13/9",
+            "bar/23* 10/6",
+            "bar/23* 24/20"
+        ],
+        "equityLoss": 0.387,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 13/9 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.387 EMG face au coup 3-ply bar/23* 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 3 pts (0-1, Videau à 1) : bar/23* 6/2 surpasse bar/23* 13/9 de +0.387 EMG (44.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 6/2 domine bar/23* 13/9 de +0.387 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/23* 6/2 maximise votre équité cubeful (-0.099 EMG).",
+            "Évitez bar/23* 13/9 (-0.387 EMG) ; jouez la ligne maîtresse bar/23* 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_417_15",
+        "tier": 2,
+        "xgid": "XGID=-BAaabEAA-------a--faCc-AA:0:0:1:15:0:1:0:3:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/20* 21/20",
+        "optimalMove": "bar/20* 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 8/7",
+            "bar/20* 21/20",
+            "bar/20* 24/23",
+            "bar/20* 7/6"
+        ],
+        "equityLoss": 0.28,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 21/20 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.280 EMG face au coup 3-ply bar/20* 8/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 3 pts (0-1, Videau à 1) : bar/20* 8/7 surpasse bar/20* 21/20 de +0.280 EMG (52.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 8/7 domine bar/20* 21/20 de +0.280 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/20* 8/7 maximise votre équité cubeful (+0.273 EMG).",
+            "Évitez bar/20* 21/20 (-0.280 EMG) ; jouez la ligne maîtresse bar/20* 8/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_418_41",
+        "tier": 2,
+        "xgid": "XGID=--BaaAE-----dE---c-ca-aaB-:0:0:1:41:0:0:0:5:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "24/20* 5/4*",
+        "optimalMove": "24/20* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20* 6/5",
+            "24/20* 5/4*",
+            "24/23* 24/20*",
+            "13/9 6/5"
+        ],
+        "equityLoss": 0.239,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20* 5/4* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.239 EMG face au coup 3-ply 24/20* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 5 pts (0-0, Videau à 1) : 24/20* 6/5 surpasse 24/20* 5/4* de +0.239 EMG (64.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/20* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20* 6/5 domine 24/20* 5/4* de +0.239 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/20* 6/5 maximise votre équité cubeful (+0.656 EMG).",
+            "Évitez 24/20* 5/4* (-0.239 EMG) ; jouez la ligne maîtresse 24/20* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_419_26",
+        "tier": 2,
+        "xgid": "XGID=aACbaDEA----d--A-c-c--a---:0:0:1:26:0:0:0:5:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "15/13 7/1",
+        "optimalMove": "7/1 6/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/1 6/4*",
+            "15/13 7/1",
+            "15/9 6/4*",
+            "15/9 7/5"
+        ],
+        "equityLoss": 0.136,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 15/13 7/1 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.136 EMG face au coup 3-ply 7/1 6/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 5 pts (0-0, Videau à 1) : 7/1 6/4* surpasse 15/13 7/1 de +0.136 EMG (80.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 7/1 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/1 6/4* domine 15/13 7/1 de +0.136 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 7/1 6/4* maximise votre équité cubeful (+1.365 EMG).",
+            "Évitez 15/13 7/1 (-0.136 EMG) ; jouez la ligne maîtresse 7/1 6/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_420_52",
+        "tier": 2,
+        "xgid": "XGID=-aDcADC-----d----bac-Ca---:0:0:1:52:0:0:0:5:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "21/14",
+        "optimalMove": "21/16 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16 6/4",
+            "21/14",
+            "21/16 4/2",
+            "6/4 6/1*"
+        ],
+        "equityLoss": 0.318,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/14 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.318 EMG face au coup 3-ply 21/16 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 5 pts (0-0, Videau à 1) : 21/16 6/4 surpasse 21/14 de +0.318 EMG (51.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/16 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16 6/4 domine 21/14 de +0.318 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 21/16 6/4 maximise votre équité cubeful (+0.277 EMG).",
+            "Évitez 21/14 (-0.318 EMG) ; jouez la ligne maîtresse 21/16 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_421_41",
+        "tier": 4,
+        "xgid": "XGID=-B--caC-B----D------daDdb-:0:0:1:41:0:0:0:5:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "22/21*/17",
+        "optimalMove": "22/21* 22/18",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/21* 22/18",
+            "22/21*/17",
+            "22/21* 13/9",
+            "22/21* 6/2"
+        ],
+        "equityLoss": 0.047,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/21*/17 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.047 EMG face au coup 3-ply 22/21* 22/18.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 5 pts (0-0, Videau à 1) : 22/21* 22/18 surpasse 22/21*/17 de +0.047 EMG (65.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/21* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/21* 22/18 domine 22/21*/17 de +0.047 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 22/21* 22/18 maximise votre équité cubeful (+0.654 EMG).",
+            "Évitez 22/21*/17 (-0.047 EMG) ; jouez la ligne maîtresse 22/21* 22/18."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_422_32",
+        "tier": 4,
+        "xgid": "XGID=-aa--AD-E--A-B---g-e-a--B-:0:0:1:32:0:3:0:7:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "8/6 8/5",
+        "optimalMove": "11/9 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/9 8/5",
+            "8/6 8/5",
+            "8/5 6/4",
+            "13/11 8/5"
+        ],
+        "equityLoss": 0.039,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/6 8/5 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.039 EMG face au coup 3-ply 11/9 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 7 pts (0-3, Videau à 1) : 11/9 8/5 surpasse 8/6 8/5 de +0.039 EMG (60.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 11/9 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/9 8/5 domine 8/6 8/5 de +0.039 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 11/9 8/5 maximise votre équité cubeful (+0.535 EMG).",
+            "Évitez 8/6 8/5 (-0.039 EMG) ; jouez la ligne maîtresse 11/9 8/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_423_31",
+        "tier": 3,
+        "xgid": "XGID=-A-aAaD-G-----a-Af-cba-A--:0:0:1:31:3:0:0:7:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "8/5* 6/5",
+        "optimalMove": "8/5*/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5*/4",
+            "8/5* 6/5",
+            "6/5* 4/1",
+            "8/4"
+        ],
+        "equityLoss": 0.085,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/5* 6/5 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.085 EMG face au coup 3-ply 8/5*/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 7 pts (3-0, Videau à 1) : 8/5*/4 surpasse 8/5* 6/5 de +0.085 EMG (48.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5*/4 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5*/4 domine 8/5* 6/5 de +0.085 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 8/5*/4 maximise votre équité cubeful (-0.134 EMG).",
+            "Évitez 8/5* 6/5 (-0.085 EMG) ; jouez la ligne maîtresse 8/5*/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_424_65",
+        "tier": 2,
+        "xgid": "XGID=--aaABC-F--A-----e-dAAbaa-:0:0:1:65:0:3:0:7:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "11/5 8/3*",
+        "optimalMove": "8/3* 8/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3* 8/2*",
+            "11/5 8/3*",
+            "21/15 8/3*",
+            "20/14 8/3*"
+        ],
+        "equityLoss": 0.295,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 11/5 8/3* (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.295 EMG face au coup 3-ply 8/3* 8/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 7 pts (0-3, Videau à 1) : 8/3* 8/2* surpasse 11/5 8/3* de +0.295 EMG (63.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3* 8/2* domine 11/5 8/3* de +0.295 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 8/3* 8/2* maximise votre équité cubeful (+0.687 EMG).",
+            "Évitez 11/5 8/3* (-0.295 EMG) ; jouez la ligne maîtresse 8/3* 8/2*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_425_55",
+        "tier": 4,
+        "xgid": "XGID=-b---aEABA--eD---aad--AAa-:0:0:1:55:0:0:0:0:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "23/18*/8 22/17*",
+        "optimalMove": "23/18* 22/17* 8/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/18* 22/17* 8/3(2)",
+            "23/18*/8 22/17*",
+            "23/18* 22/17* 13/8(2)",
+            "23/18* 22/17* 13/3"
+        ],
+        "equityLoss": 0.058,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/18*/8 22/17* (Money Game), vous concédez -0.058 EMG face au coup 3-ply 23/18* 22/17* 8/3(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Money Game : 23/18* 22/17* 8/3(2) surpasse 23/18*/8 22/17* de +0.058 EMG (67.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/18* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/18* 22/17* 8/3(2) domine 23/18*/8 22/17* de +0.058 EMG.",
+            "En Money Game, 23/18* 22/17* 8/3(2) maximise votre équité cubeful (+0.942 EMG).",
+            "Évitez 23/18*/8 22/17* (-0.058 EMG) ; jouez la ligne maîtresse 23/18* 22/17* 8/3(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_426_36",
+        "tier": 3,
+        "xgid": "XGID=-a----DA---AdD---c-eBa-aBA:0:0:1:36:0:0:0:0:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "bar/22 11/5",
+        "optimalMove": "bar/22 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 13/7",
+            "bar/22 11/5",
+            "bar/16",
+            "bar/22 24/18"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 11/5 (Money Game), vous concédez -0.083 EMG face au coup 3-ply bar/22 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Money Game : bar/22 13/7 surpasse bar/22 11/5 de +0.083 EMG (46.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 13/7 domine bar/22 11/5 de +0.083 EMG.",
+            "En Money Game, bar/22 13/7 maximise votre équité cubeful (-0.301 EMG).",
+            "Évitez bar/22 11/5 (-0.083 EMG) ; jouez la ligne maîtresse bar/22 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_427_14",
+        "tier": 3,
+        "xgid": "XGID=-aB-A-BB---aaCA-AacfBA-aa-:0:0:1:14:0:0:0:0:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "16/12*/11*",
+        "optimalMove": "21/17* 13/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/17* 13/12*",
+            "16/12*/11*",
+            "14/10 13/12*",
+            "21/17*/16"
+        ],
+        "equityLoss": 0.086,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/12*/11* (Money Game), vous concédez -0.086 EMG face au coup 3-ply 21/17* 13/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Money Game : 21/17* 13/12* surpasse 16/12*/11* de +0.086 EMG (72.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/17* 13/12* domine 16/12*/11* de +0.086 EMG.",
+            "En Money Game, 21/17* 13/12* maximise votre équité cubeful (+0.892 EMG).",
+            "Évitez 16/12*/11* (-0.086 EMG) ; jouez la ligne maîtresse 21/17* 13/12*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_428_52",
+        "tier": 4,
+        "xgid": "XGID=-Aa--cFCa--adB----bAAA-ba-:0:0:1:52:0:0:0:0:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "19/17 6/1",
+        "optimalMove": "21/19 6/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/19 6/1",
+            "19/17 6/1",
+            "20/13",
+            "6/4 6/1"
+        ],
+        "equityLoss": 0.051,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 19/17 6/1 (Money Game), vous concédez -0.051 EMG face au coup 3-ply 21/19 6/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Money Game : 21/19 6/1 surpasse 19/17 6/1 de +0.051 EMG (67.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/19 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/19 6/1 domine 19/17 6/1 de +0.051 EMG.",
+            "En Money Game, 21/19 6/1 maximise votre équité cubeful (+0.907 EMG).",
+            "Évitez 19/17 6/1 (-0.051 EMG) ; jouez la ligne maîtresse 21/19 6/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_429_24",
+        "tier": 4,
+        "xgid": "XGID=-BC--a----b-aDAa-BceC---b-:0:0:1:24:0:0:0:0:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "20/16 14/12*",
+        "optimalMove": "14/12* 13/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/12* 13/9",
+            "20/16 14/12*",
+            "14/12*/8",
+            "20/14"
+        ],
+        "equityLoss": 0.059,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/16 14/12* (Money Game), vous concédez -0.059 EMG face au coup 3-ply 14/12* 13/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Money Game : 14/12* 13/9 surpasse 20/16 14/12* de +0.059 EMG (34.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/12* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/12* 13/9 domine 20/16 14/12* de +0.059 EMG.",
+            "En Money Game, 14/12* 13/9 maximise votre équité cubeful (-0.705 EMG).",
+            "Évitez 20/16 14/12* (-0.059 EMG) ; jouez la ligne maîtresse 14/12* 13/9."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_430_12",
+        "tier": 2,
+        "xgid": "XGID=-aa--aCABa--dD---bbcAAA-B-:0:0:1:12:1:0:0:3:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "21/20 7/5*",
+        "optimalMove": "7/5* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/5* 6/5",
+            "21/20 7/5*",
+            "22/21 7/5*",
+            "24/22 21/20"
+        ],
+        "equityLoss": 0.274,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/20 7/5* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.274 EMG face au coup 3-ply 7/5* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 3 pts (1-0, Videau à 1) : 7/5* 6/5 surpasse 21/20 7/5* de +0.274 EMG (49.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 7/5* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/5* 6/5 domine 21/20 7/5* de +0.274 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 7/5* 6/5 maximise votre équité cubeful (-0.180 EMG).",
+            "Évitez 21/20 7/5* (-0.274 EMG) ; jouez la ligne maîtresse 7/5* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_431_64",
+        "tier": 2,
+        "xgid": "XGID=-A-babBBBA--cE---a-b--cAaA:0:0:1:64:0:1:0:3:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "bar/21 13/7",
+        "optimalMove": "bar/21 23/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 23/17*",
+            "bar/21 13/7",
+            "bar/15",
+            "bar/21 7/1"
+        ],
+        "equityLoss": 0.293,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 13/7 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.293 EMG face au coup 3-ply bar/21 23/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 3 pts (0-1, Videau à 1) : bar/21 23/17* surpasse bar/21 13/7 de +0.293 EMG (61.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 23/17* domine bar/21 13/7 de +0.293 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/21 23/17* maximise votre équité cubeful (+0.686 EMG).",
+            "Évitez bar/21 13/7 (-0.293 EMG) ; jouez la ligne maîtresse bar/21 23/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_432_44",
+        "tier": 3,
+        "xgid": "XGID=-aAaAaaABa--aEAa-bab-BcB--:0:0:1:44:0:1:0:3:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "13/9*/5*/1* 8/4",
+        "optimalMove": "13/9*/5*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9*/5*(2)",
+            "13/9*/5*/1* 8/4",
+            "13/9*/5* 8/4 7/3*",
+            "14/6*/2 8/4"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/9*/5*/1* 8/4 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.113 EMG face au coup 3-ply 13/9*/5*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 3 pts (0-1, Videau à 1) : 13/9*/5*(2) surpasse 13/9*/5*/1* 8/4 de +0.113 EMG (51.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/9*/5*(2) en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/9*/5*(2) domine 13/9*/5*/1* 8/4 de +0.113 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 13/9*/5*(2) maximise votre équité cubeful (+0.254 EMG).",
+            "Évitez 13/9*/5*/1* 8/4 (-0.113 EMG) ; jouez la ligne maîtresse 13/9*/5*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_433_61",
+        "tier": 4,
+        "xgid": "XGID=b-bCa-BABaAacA---baAAaBaA-:0:0:1:61:1:0:0:3:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "19/18* 10/4*",
+        "optimalMove": "22/21* 10/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/21* 10/4*",
+            "19/18* 10/4*",
+            "24/23* 10/4*",
+            "10/4* 8/7"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 19/18* 10/4* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.038 EMG face au coup 3-ply 22/21* 10/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 3 pts (1-0, Videau à 1) : 22/21* 10/4* surpasse 19/18* 10/4* de +0.038 EMG (78.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/21* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/21* 10/4* domine 19/18* 10/4* de +0.038 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 22/21* 10/4* maximise votre équité cubeful (+1.453 EMG).",
+            "Évitez 19/18* 10/4* (-0.038 EMG) ; jouez la ligne maîtresse 22/21* 10/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_434_23",
+        "tier": 3,
+        "xgid": "XGID=-b--AaDAD---dC--a-aeA-a-A-:0:0:1:23:0:2:0:5:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "24/22* 7/4",
+        "optimalMove": "8/5* 7/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5* 7/5",
+            "24/22* 7/4",
+            "20/18* 7/4",
+            "8/5* 6/4"
+        ],
+        "equityLoss": 0.064,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22* 7/4 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.064 EMG face au coup 3-ply 8/5* 7/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 5 pts (0-2, Videau à 1) : 8/5* 7/5 surpasse 24/22* 7/4 de +0.064 EMG (66.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5* 7/5 domine 24/22* 7/4 de +0.064 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 8/5* 7/5 maximise votre équité cubeful (+0.904 EMG).",
+            "Évitez 24/22* 7/4 (-0.064 EMG) ; jouez la ligne maîtresse 8/5* 7/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_435_64",
+        "tier": 3,
+        "xgid": "XGID=-aAA--DaAA---C-a-dbdAaaAB-:0:0:1:64:2:0:0:5:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "13/7* 6/2",
+        "optimalMove": "13/7*/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7*/3",
+            "13/7* 6/2",
+            "24/20 9/3",
+            "24/20 8/2"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7* 6/2 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.092 EMG face au coup 3-ply 13/7*/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 5 pts (2-0, Videau à 1) : 13/7*/3 surpasse 13/7* 6/2 de +0.092 EMG (43.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/7*/3 en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/7*/3 domine 13/7* 6/2 de +0.092 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 13/7*/3 maximise votre équité cubeful (-0.567 EMG).",
+            "Évitez 13/7* 6/2 (-0.092 EMG) ; jouez la ligne maîtresse 13/7*/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_436_21",
+        "tier": 4,
+        "xgid": "XGID=-baADaDBAaA-b---a-adAAaa--:0:0:1:21:0:2:0:5:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "4/3 4/2*",
+        "optimalMove": "6/5*/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/5*/3",
+            "4/3 4/2*",
+            "7/5* 6/5",
+            "7/5* 4/3"
+        ],
+        "equityLoss": 0.04,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 4/3 4/2* (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.040 EMG face au coup 3-ply 6/5*/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 5 pts (0-2, Videau à 1) : 6/5*/3 surpasse 4/3 4/2* de +0.040 EMG (70.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/5*/3 en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/5*/3 domine 4/3 4/2* de +0.040 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 6/5*/3 maximise votre équité cubeful (+1.221 EMG).",
+            "Évitez 4/3 4/2* (-0.040 EMG) ; jouez la ligne maîtresse 6/5*/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_437_54",
+        "tier": 2,
+        "xgid": "XGID=--Ba-ABA-Aa--BaaA-bdadAABA:0:0:1:54:2:0:0:5:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "bar/20* 7/3*",
+        "optimalMove": "bar/20* 9/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 9/5",
+            "bar/20* 7/3*",
+            "bar/20*/16",
+            "bar/20* 24/20"
+        ],
+        "equityLoss": 0.225,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 7/3* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.225 EMG face au coup 3-ply bar/20* 9/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 5 pts (2-0, Videau à 1) : bar/20* 9/5 surpasse bar/20* 7/3* de +0.225 EMG (54.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 9/5 domine bar/20* 7/3* de +0.225 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/20* 9/5 maximise votre équité cubeful (-0.100 EMG).",
+            "Évitez bar/20* 7/3* (-0.225 EMG) ; jouez la ligne maîtresse bar/20* 9/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_438_16",
+        "tier": 4,
+        "xgid": "XGID=-C--a-AAaAA---aC--cdAdABaA:0:0:1:16:2:0:0:5:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "bar/24* 10/4*",
+        "optimalMove": "bar/24* 20/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 20/14*",
+            "bar/24* 10/4*",
+            "bar/24* 15/9",
+            "bar/24* 22/16"
+        ],
+        "equityLoss": 0.048,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 10/4* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.048 EMG face au coup 3-ply bar/24* 20/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 5 pts (2-0, Videau à 1) : bar/24* 20/14* surpasse bar/24* 10/4* de +0.048 EMG (32.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 20/14* domine bar/24* 10/4* de +0.048 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/24* 20/14* maximise votre équité cubeful (-1.004 EMG).",
+            "Évitez bar/24* 10/4* (-0.048 EMG) ; jouez la ligne maîtresse bar/24* 20/14*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_439_53",
+        "tier": 2,
+        "xgid": "XGID=-b--A-DAC---cD---aaga--AA-:0:0:1:53:0:3:0:7:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "13/8 7/4",
+        "optimalMove": "23/18* 7/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/18* 7/4",
+            "13/8 7/4",
+            "23/20* 13/8",
+            "23/20*/15"
+        ],
+        "equityLoss": 0.432,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/8 7/4 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.432 EMG face au coup 3-ply 23/18* 7/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 7 pts (0-3, Videau à 1) : 23/18* 7/4 surpasse 13/8 7/4 de +0.432 EMG (66.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/18* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/18* 7/4 domine 13/8 7/4 de +0.432 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 23/18* 7/4 maximise votre équité cubeful (+0.826 EMG).",
+            "Évitez 13/8 7/4 (-0.432 EMG) ; jouez la ligne maîtresse 23/18* 7/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_440_15",
+        "tier": 2,
+        "xgid": "XGID=-a-AaaFAA---bC-a-cacaAAa-A:0:0:1:15:3:0:0:7:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/20* 8/7",
+        "optimalMove": "bar/20* 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 6/5*",
+            "bar/20* 8/7",
+            "bar/20* 21/20",
+            "bar/20* 7/6"
+        ],
+        "equityLoss": 0.167,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 8/7 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.167 EMG face au coup 3-ply bar/20* 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 7 pts (3-0, Videau à 1) : bar/20* 6/5* surpasse bar/20* 8/7 de +0.167 EMG (55.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 6/5* domine bar/20* 8/7 de +0.167 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), bar/20* 6/5* maximise votre équité cubeful (+0.137 EMG).",
+            "Évitez bar/20* 8/7 (-0.167 EMG) ; jouez la ligne maîtresse bar/20* 6/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_441_65",
+        "tier": 3,
+        "xgid": "XGID=-aAaa-CAD-A-cA-A---dA-daB-:0:0:1:65:0:3:0:7:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "20/15 13/7",
+        "optimalMove": "15/10 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/10 13/7",
+            "20/15 13/7",
+            "10/4* 7/2",
+            "15/10 8/2"
+        ],
+        "equityLoss": 0.116,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15 13/7 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.116 EMG face au coup 3-ply 15/10 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 7 pts (0-3, Videau à 1) : 15/10 13/7 surpasse 20/15 13/7 de +0.116 EMG (57.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 15/10 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/10 13/7 domine 20/15 13/7 de +0.116 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 15/10 13/7 maximise votre équité cubeful (+0.341 EMG).",
+            "Évitez 20/15 13/7 (-0.116 EMG) ; jouez la ligne maîtresse 15/10 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_442_52",
+        "tier": 3,
+        "xgid": "XGID=bcAEaaC---B-AA--ac-c-AAa--:0:0:1:52:3:0:0:7:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "21/16* 6/4*",
+        "optimalMove": "10/5* 6/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/5* 6/4*",
+            "21/16* 6/4*",
+            "10/8 10/5*",
+            "22/20 10/5*"
+        ],
+        "equityLoss": 0.066,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/16* 6/4* (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.066 EMG face au coup 3-ply 10/5* 6/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 7 pts (3-0, Videau à 1) : 10/5* 6/4* surpasse 21/16* 6/4* de +0.066 EMG (66.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 10/5* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/5* 6/4* domine 21/16* 6/4* de +0.066 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 10/5* 6/4* maximise votre équité cubeful (+1.053 EMG).",
+            "Évitez 21/16* 6/4* (-0.066 EMG) ; jouez la ligne maîtresse 10/5* 6/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_443_61",
+        "tier": 2,
+        "xgid": "XGID=-aAEcaDb--Da-a---cAb-a----:0:0:1:61:3:0:0:7:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "18/12 2/1*",
+        "optimalMove": "18/12 3/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/12 3/2",
+            "18/12 2/1*",
+            "18/11*",
+            "18/12 6/5*"
+        ],
+        "equityLoss": 0.272,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/12 2/1* (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.272 EMG face au coup 3-ply 18/12 3/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 7 pts (3-0, Videau à 1) : 18/12 3/2 surpasse 18/12 2/1* de +0.272 EMG (61.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/12 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/12 3/2 domine 18/12 2/1* de +0.272 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 18/12 3/2 maximise votre équité cubeful (+0.742 EMG).",
+            "Évitez 18/12 2/1* (-0.272 EMG) ; jouez la ligne maîtresse 18/12 3/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_444_62",
+        "tier": 2,
+        "xgid": "XGID=--a-BaCaB---cD-AAb-e--aaAA:0:0:1:62:4:0:0:9:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "bar/23* 16/10",
+        "optimalMove": "bar/23* 13/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 13/7*",
+            "bar/23* 16/10",
+            "bar/23* 15/9",
+            "bar/23* 8/2*"
+        ],
+        "equityLoss": 0.253,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 16/10 (Match en 9 pts (4-0, Videau à 1)), vous concédez -0.253 EMG face au coup 3-ply bar/23* 13/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 9 pts (4-0, Videau à 1) : bar/23* 13/7* surpasse bar/23* 16/10 de +0.253 EMG (64.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 9 pts (4-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 13/7* domine bar/23* 16/10 de +0.253 EMG.",
+            "En Match en 9 pts (4-0, Videau à 1), bar/23* 13/7* maximise votre équité cubeful (+0.469 EMG).",
+            "Évitez bar/23* 16/10 (-0.253 EMG) ; jouez la ligne maîtresse bar/23* 13/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_445_15",
+        "tier": 2,
+        "xgid": "XGID=--B--aD-Ba-adC--AcAa-b-Bb-:0:0:1:15:0:4:0:9:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "23/18 6/5*",
+        "optimalMove": "16/11* 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/11* 6/5*",
+            "23/18 6/5*",
+            "23/22 16/11*",
+            "18/13 6/5*"
+        ],
+        "equityLoss": 0.367,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/18 6/5* (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.367 EMG face au coup 3-ply 16/11* 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 9 pts (0-4, Videau à 1) : 16/11* 6/5* surpasse 23/18 6/5* de +0.367 EMG (61.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 16/11* en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/11* 6/5* domine 23/18 6/5* de +0.367 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), 16/11* 6/5* maximise votre équité cubeful (+0.739 EMG).",
+            "Évitez 23/18 6/5* (-0.367 EMG) ; jouez la ligne maîtresse 16/11* 6/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_446_32",
+        "tier": 2,
+        "xgid": "XGID=-BAAA--bDaa-cD--A--daaAb--:0:0:1:32:4:0:0:9:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "16/13 4/2",
+        "optimalMove": "13/10* 4/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/10* 4/2",
+            "16/13 4/2",
+            "22/20* 13/10*",
+            "22/20* 16/13"
+        ],
+        "equityLoss": 0.198,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/13 4/2 (Match en 9 pts (4-0, Videau à 1)), vous concédez -0.198 EMG face au coup 3-ply 13/10* 4/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 9 pts (4-0, Videau à 1) : 13/10* 4/2 surpasse 16/13 4/2 de +0.198 EMG (49.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/10* en Match en 9 pts (4-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/10* 4/2 domine 16/13 4/2 de +0.198 EMG.",
+            "En Match en 9 pts (4-0, Videau à 1), 13/10* 4/2 maximise votre équité cubeful (-0.185 EMG).",
+            "Évitez 16/13 4/2 (-0.198 EMG) ; jouez la ligne maîtresse 13/10* 4/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_447_62",
+        "tier": 2,
+        "xgid": "XGID=-BAaA-D--A-bcBA-AeA--Aaab-:0:0:1:62:0:4:0:9:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "9/3* 6/4",
+        "optimalMove": "9/3* 4/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/3* 4/2",
+            "9/3* 6/4",
+            "16/10 4/2",
+            "16/10 6/4"
+        ],
+        "equityLoss": 0.135,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 9/3* 6/4 (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.135 EMG face au coup 3-ply 9/3* 4/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 9 pts (0-4, Videau à 1) : 9/3* 4/2 surpasse 9/3* 6/4 de +0.135 EMG (57.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/3* en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/3* 4/2 domine 9/3* 6/4 de +0.135 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), 9/3* 4/2 maximise votre équité cubeful (+0.526 EMG).",
+            "Évitez 9/3* 6/4 (-0.135 EMG) ; jouez la ligne maîtresse 9/3* 4/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_448_62",
+        "tier": 4,
+        "xgid": "XGID=-BBAa-aaEa--aCa-a--cA-Abc-:0:0:1:62:4:0:0:9:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "20/14*/12*",
+        "optimalMove": "22/16*/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/16*/14*",
+            "20/14*/12*",
+            "20/14* 8/6*",
+            "22/16* 8/6*"
+        ],
+        "equityLoss": 0.05,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14*/12* (Match en 9 pts (4-0, Videau à 1)), vous concédez -0.050 EMG face au coup 3-ply 22/16*/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 9 pts (4-0, Videau à 1) : 22/16*/14* surpasse 20/14*/12* de +0.050 EMG (69.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/16*/14* en Match en 9 pts (4-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/16*/14* domine 20/14*/12* de +0.050 EMG.",
+            "En Match en 9 pts (4-0, Videau à 1), 22/16*/14* maximise votre équité cubeful (+0.699 EMG).",
+            "Évitez 20/14*/12* (-0.050 EMG) ; jouez la ligne maîtresse 22/16*/14*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_449_62",
+        "tier": 4,
+        "xgid": "XGID=-b-A--EAAAA-bCa--caea---B-:0:0:1:62:0:5:0:11:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/18* 10/8",
+        "optimalMove": "24/18* 9/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 9/7",
+            "24/18* 10/8",
+            "13/7 10/8",
+            "10/8 9/3"
+        ],
+        "equityLoss": 0.049,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18* 10/8 (Match en 11 pts (0-5, Videau à 1)), vous concédez -0.049 EMG face au coup 3-ply 24/18* 9/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 11 pts (0-5, Videau à 1) : 24/18* 9/7 surpasse 24/18* 10/8 de +0.049 EMG (49.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 11 pts (0-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 9/7 domine 24/18* 10/8 de +0.049 EMG.",
+            "En Match en 11 pts (0-5, Videau à 1), 24/18* 9/7 maximise votre équité cubeful (+0.088 EMG).",
+            "Évitez 24/18* 10/8 (-0.049 EMG) ; jouez la ligne maîtresse 24/18* 9/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_450_44",
+        "tier": 4,
+        "xgid": "XGID=-ABBCbB-A--A-Aa--d-bcb-aB-:0:0:1:44:0:5:0:11:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "11/3 8/4 6/2",
+        "optimalMove": "13/9 11/3 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9 11/3 8/4",
+            "11/3 8/4 6/2",
+            "11/7 8/4 6/2(2)",
+            "11/3 6/2(2)"
+        ],
+        "equityLoss": 0.057,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 11/3 8/4 6/2 (Match en 11 pts (0-5, Videau à 1)), vous concédez -0.057 EMG face au coup 3-ply 13/9 11/3 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 11 pts (0-5, Videau à 1) : 13/9 11/3 8/4 surpasse 11/3 8/4 6/2 de +0.057 EMG (23.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/9 en Match en 11 pts (0-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/9 11/3 8/4 domine 11/3 8/4 6/2 de +0.057 EMG.",
+            "En Match en 11 pts (0-5, Videau à 1), 13/9 11/3 8/4 maximise votre équité cubeful (-1.000 EMG).",
+            "Évitez 11/3 8/4 6/2 (-0.057 EMG) ; jouez la ligne maîtresse 13/9 11/3 8/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_451_52",
+        "tier": 3,
+        "xgid": "XGID=aaCDBCAAA-----------adbdb-:0:0:1:52:5:0:0:11:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "8/6 7/2",
+        "optimalMove": "6/1* 3/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/1* 3/1",
+            "8/6 7/2",
+            "7/5 6/1*",
+            "6/1* 5/3"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/6 7/2 (Match en 11 pts (5-0, Videau à 1)), vous concédez -0.090 EMG face au coup 3-ply 6/1* 3/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 11 pts (5-0, Videau à 1) : 6/1* 3/1 surpasse 8/6 7/2 de +0.090 EMG (96.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/1* en Match en 11 pts (5-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/1* 3/1 domine 8/6 7/2 de +0.090 EMG.",
+            "En Match en 11 pts (5-0, Videau à 1), 6/1* 3/1 maximise votre équité cubeful (+1.328 EMG).",
+            "Évitez 8/6 7/2 (-0.090 EMG) ; jouez la ligne maîtresse 6/1* 3/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_452_53",
+        "tier": 3,
+        "xgid": "XGID=-BBbaAD-A-A-cA-----dbaaCa-:0:0:1:53:0:0:0:0:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "10/5 8/5",
+        "optimalMove": "23/18 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/18 8/5",
+            "10/5 8/5",
+            "13/5",
+            "8/5 6/1"
+        ],
+        "equityLoss": 0.082,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/5 8/5 (Money Game), vous concédez -0.082 EMG face au coup 3-ply 23/18 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Money Game : 23/18 8/5 surpasse 10/5 8/5 de +0.082 EMG (49.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/18 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/18 8/5 domine 10/5 8/5 de +0.082 EMG.",
+            "En Money Game, 23/18 8/5 maximise votre équité cubeful (+0.025 EMG).",
+            "Évitez 10/5 8/5 (-0.082 EMG) ; jouez la ligne maîtresse 23/18 8/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_453_51",
+        "tier": 2,
+        "xgid": "XGID=-BaA-ADaa-A--A-a-b-dAABbcA:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "bar/20 6/5",
+        "optimalMove": "bar/20 3/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 3/2*",
+            "bar/20 6/5",
+            "bar/20 10/9",
+            "bar/20 22/21"
+        ],
+        "equityLoss": 0.271,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 6/5 (Money Game), vous concédez -0.271 EMG face au coup 3-ply bar/20 3/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Money Game : bar/20 3/2* surpasse bar/20 6/5 de +0.271 EMG (41.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 3/2* domine bar/20 6/5 de +0.271 EMG.",
+            "En Money Game, bar/20 3/2* maximise votre équité cubeful (-0.512 EMG).",
+            "Évitez bar/20 6/5 (-0.271 EMG) ; jouez la ligne maîtresse bar/20 3/2*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_454_33",
+        "tier": 4,
+        "xgid": "XGID=-DB-AdC-C--aa--a--Acb-aAb-:0:0:1:33:0:0:0:0:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "18/15*/12*/9 4/1",
+        "optimalMove": "18/15*/12*/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/15*/12*/6",
+            "18/15*/12*/9 4/1",
+            "18/15*/12*/9 6/3",
+            "18/15*/12* 6/3 4/1"
+        ],
+        "equityLoss": 0.033,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/15*/12*/9 4/1 (Money Game), vous concédez -0.033 EMG face au coup 3-ply 18/15*/12*/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Money Game : 18/15*/12*/6 surpasse 18/15*/12*/9 4/1 de +0.033 EMG (70.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/15*/12*/6 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/15*/12*/6 domine 18/15*/12*/9 4/1 de +0.033 EMG.",
+            "En Money Game, 18/15*/12*/6 maximise votre équité cubeful (+1.086 EMG).",
+            "Évitez 18/15*/12*/9 4/1 (-0.033 EMG) ; jouez la ligne maîtresse 18/15*/12*/6."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_455_21",
+        "tier": 4,
+        "xgid": "XGID=-a--B-EAa---cD-a-d-e----BA:0:0:1:21:0:1:0:3:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "bar/22",
+        "optimalMove": "bar/23 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 6/5",
+            "bar/22",
+            "bar/23 24/23",
+            "bar/24 7/5"
+        ],
+        "equityLoss": 0.047,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.047 EMG face au coup 3-ply bar/23 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 3 pts (0-1, Videau à 1) : bar/23 6/5 surpasse bar/22 de +0.047 EMG (43.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 6/5 domine bar/22 de +0.047 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/23 6/5 maximise votre équité cubeful (-0.137 EMG).",
+            "Évitez bar/22 (-0.047 EMG) ; jouez la ligne maîtresse bar/23 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_456_14",
+        "tier": 4,
+        "xgid": "XGID=-abBA-F--Aa-cB--A-bc-Aab-A:0:0:1:14:0:1:0:3:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "bar/21 16/15",
+        "optimalMove": "bar/21 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 4/3",
+            "bar/21 16/15",
+            "bar/21 9/8",
+            "bar/21 6/5"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 16/15 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.038 EMG face au coup 3-ply bar/21 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 3 pts (0-1, Videau à 1) : bar/21 4/3 surpasse bar/21 16/15 de +0.038 EMG (48.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 4/3 domine bar/21 16/15 de +0.038 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/21 4/3 maximise votre équité cubeful (+0.134 EMG).",
+            "Évitez bar/21 16/15 (-0.038 EMG) ; jouez la ligne maîtresse bar/21 4/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_457_11",
+        "tier": 2,
+        "xgid": "XGID=--BAaACB---acC----AeaacB--:0:0:1:11:1:0:0:3:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "18/17 6/4* 5/4",
+        "optimalMove": "18/16 5/4*/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/16 5/4*/3",
+            "18/17 6/4* 5/4",
+            "18/17 7/6 5/4*/3",
+            "5/4*/3 2/1(2)"
+        ],
+        "equityLoss": 0.196,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/17 6/4* 5/4 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.196 EMG face au coup 3-ply 18/16 5/4*/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 3 pts (1-0, Videau à 1) : 18/16 5/4*/3 surpasse 18/17 6/4* 5/4 de +0.196 EMG (61.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/16 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/16 5/4*/3 domine 18/17 6/4* 5/4 de +0.196 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 18/16 5/4*/3 maximise votre équité cubeful (+0.411 EMG).",
+            "Évitez 18/17 6/4* 5/4 (-0.196 EMG) ; jouez la ligne maîtresse 18/16 5/4*/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_458_46",
+        "tier": 2,
+        "xgid": "XGID=--bCAAE-a---bCAA--ac--bca-:0:0:1:46:0:1:0:3:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "14/4",
+        "optimalMove": "14/8*/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/8*/4",
+            "14/4",
+            "15/5",
+            "15/9 13/9"
+        ],
+        "equityLoss": 0.238,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 14/4 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.238 EMG face au coup 3-ply 14/8*/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 3 pts (0-1, Videau à 1) : 14/8*/4 surpasse 14/4 de +0.238 EMG (68.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/8*/4 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/8*/4 domine 14/4 de +0.238 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 14/8*/4 maximise votre équité cubeful (+0.895 EMG).",
+            "Évitez 14/4 (-0.238 EMG) ; jouez la ligne maîtresse 14/8*/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_459_52",
+        "tier": 2,
+        "xgid": "XGID=-BD---BB-aa-bA---A-eAccA-A:0:0:1:52:1:0:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "bar/20 13/11",
+        "optimalMove": "bar/23 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23 13/8",
+            "bar/20 13/11",
+            "bar/23 7/2",
+            "bar/23 20/15"
+        ],
+        "equityLoss": 0.195,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 13/11 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.195 EMG face au coup 3-ply bar/23 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 3 pts (1-0, Videau à 1) : bar/23 13/8 surpasse bar/20 13/11 de +0.195 EMG (22.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23 13/8 domine bar/20 13/11 de +0.195 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/23 13/8 maximise votre équité cubeful (-1.096 EMG).",
+            "Évitez bar/20 13/11 (-0.195 EMG) ; jouez la ligne maîtresse bar/23 13/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_460_36",
+        "tier": 2,
+        "xgid": "XGID=-BaAA-C-a-A-aE--ab-eAaAba-:0:0:1:36:0:0:0:5:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "10/4 6/3",
+        "optimalMove": "22/16* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/16* 6/3",
+            "10/4 6/3",
+            "22/16* 13/10",
+            "22/16*/13"
+        ],
+        "equityLoss": 0.404,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/4 6/3 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.404 EMG face au coup 3-ply 22/16* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 5 pts (0-0, Videau à 1) : 22/16* 6/3 surpasse 10/4 6/3 de +0.404 EMG (55.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/16* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/16* 6/3 domine 10/4 6/3 de +0.404 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 22/16* 6/3 maximise votre équité cubeful (+0.220 EMG).",
+            "Évitez 10/4 6/3 (-0.404 EMG) ; jouez la ligne maîtresse 22/16* 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_461_44",
+        "tier": 3,
+        "xgid": "XGID=-BB-aaEAA--Ad----Aaca-aAcA:0:0:1:44:0:0:0:5:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21 17/13 11/7 8/4*",
+        "optimalMove": "bar/17 11/7 8/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/17 11/7 8/4*",
+            "bar/21 17/13 11/7 8/4*",
+            "bar/21 17/5*",
+            "bar/21 17/9 8/4*"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 17/13 11/7 8/4* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.062 EMG face au coup 3-ply bar/17 11/7 8/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 5 pts (0-0, Videau à 1) : bar/17 11/7 8/4* surpasse bar/21 17/13 11/7 8/4* de +0.062 EMG (68.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/17 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/17 11/7 8/4* domine bar/21 17/13 11/7 8/4* de +0.062 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/17 11/7 8/4* maximise votre équité cubeful (+0.807 EMG).",
+            "Évitez bar/21 17/13 11/7 8/4* (-0.062 EMG) ; jouez la ligne maîtresse bar/17 11/7 8/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_462_55",
+        "tier": 2,
+        "xgid": "XGID=aCbAa-C-----ADa--A-d-AacbA:0:0:1:55:0:0:0:5:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/20 21/16 13/3",
+        "optimalMove": "bar/20 17/12 13/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 17/12 13/3",
+            "bar/20 21/16 13/3",
+            "bar/15 13/3",
+            "bar/20 13/3 12/7"
+        ],
+        "equityLoss": 0.161,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 21/16 13/3 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.161 EMG face au coup 3-ply bar/20 17/12 13/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 5 pts (0-0, Videau à 1) : bar/20 17/12 13/3 surpasse bar/20 21/16 13/3 de +0.161 EMG (63.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 17/12 13/3 domine bar/20 21/16 13/3 de +0.161 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/20 17/12 13/3 maximise votre équité cubeful (+0.541 EMG).",
+            "Évitez bar/20 21/16 13/3 (-0.161 EMG) ; jouez la ligne maîtresse bar/20 17/12 13/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_463_44",
+        "tier": 2,
+        "xgid": "XGID=-C-a--CA----bDa--A-eAAacbA:0:0:1:44:0:0:0:5:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21 17/9 7/3*",
+        "optimalMove": "bar/21 13/9(2) 7/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 13/9(2) 7/3*",
+            "bar/21 17/9 7/3*",
+            "bar/17 13/9 7/3*",
+            "bar/21 17/9 13/9"
+        ],
+        "equityLoss": 0.156,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 17/9 7/3* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.156 EMG face au coup 3-ply bar/21 13/9(2) 7/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 5 pts (0-0, Videau à 1) : bar/21 13/9(2) 7/3* surpasse bar/21 17/9 7/3* de +0.156 EMG (35.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 13/9(2) 7/3* domine bar/21 17/9 7/3* de +0.156 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/21 13/9(2) 7/3* maximise votre équité cubeful (-0.844 EMG).",
+            "Évitez bar/21 17/9 7/3* (-0.156 EMG) ; jouez la ligne maîtresse bar/21 13/9(2) 7/3*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_464_34",
+        "tier": 2,
+        "xgid": "XGID=-aAA-AEa-----E---gAd-b--A-:0:0:1:34:0:3:0:7:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "18/14 5/2",
+        "optimalMove": "6/3 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/3 6/2",
+            "18/14 5/2",
+            "6/3 5/1*",
+            "13/9 5/2"
+        ],
+        "equityLoss": 0.273,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/14 5/2 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.273 EMG face au coup 3-ply 6/3 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 7 pts (0-3, Videau à 1) : 6/3 6/2 surpasse 18/14 5/2 de +0.273 EMG (42.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/3 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/3 6/2 domine 18/14 5/2 de +0.273 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 6/3 6/2 maximise votre équité cubeful (-0.283 EMG).",
+            "Évitez 18/14 5/2 (-0.273 EMG) ; jouez la ligne maîtresse 6/3 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_465_15",
+        "tier": 2,
+        "xgid": "XGID=-b--C-C-F---e-----AbaabbB-:0:0:1:15:3:0:0:7:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "18/13 4/3",
+        "optimalMove": "8/3 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 4/3",
+            "18/13 4/3",
+            "18/13 8/7",
+            "18/17 8/3"
+        ],
+        "equityLoss": 0.271,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/13 4/3 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.271 EMG face au coup 3-ply 8/3 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 7 pts (3-0, Videau à 1) : 8/3 4/3 surpasse 18/13 4/3 de +0.271 EMG (49.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3 4/3 domine 18/13 4/3 de +0.271 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 8/3 4/3 maximise votre équité cubeful (-0.066 EMG).",
+            "Évitez 18/13 4/3 (-0.271 EMG) ; jouez la ligne maîtresse 8/3 4/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_466_41",
+        "tier": 3,
+        "xgid": "XGID=acBBAABC--A-aA---f-Aab-aA-:0:0:1:41:0:3:0:7:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "24/20* 13/12*",
+        "optimalMove": "24/20* 5/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20* 5/4",
+            "24/20* 13/12*",
+            "13/9 5/4",
+            "13/12*/8"
+        ],
+        "equityLoss": 0.105,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20* 13/12* (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.105 EMG face au coup 3-ply 24/20* 5/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 7 pts (0-3, Videau à 1) : 24/20* 5/4 surpasse 24/20* 13/12* de +0.105 EMG (84.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/20* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20* 5/4 domine 24/20* 13/12* de +0.105 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 24/20* 5/4 maximise votre équité cubeful (+1.723 EMG).",
+            "Évitez 24/20* 13/12* (-0.105 EMG) ; jouez la ligne maîtresse 24/20* 5/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_467_12",
+        "tier": 4,
+        "xgid": "XGID=-aB-C-a-EA-----a--bacacbD-:0:0:1:12:3:0:0:7:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "8/6*/5",
+        "optimalMove": "8/7 8/6*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/7 8/6*",
+            "8/6*/5",
+            "9/6*",
+            "8/6* 2/1*"
+        ],
+        "equityLoss": 0.042,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/6*/5 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.042 EMG face au coup 3-ply 8/7 8/6*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 7 pts (3-0, Videau à 1) : 8/7 8/6* surpasse 8/6*/5 de +0.042 EMG (26.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/7 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/7 8/6* domine 8/6*/5 de +0.042 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 8/7 8/6* maximise votre équité cubeful (-1.156 EMG).",
+            "Évitez 8/6*/5 (-0.042 EMG) ; jouez la ligne maîtresse 8/7 8/6*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_468_16",
+        "tier": 2,
+        "xgid": "XGID=--B--aE-AAa-dD-a-c-d-Aa-A-:0:0:1:16:4:2:0:9:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "21/15* 9/8",
+        "optimalMove": "21/15* 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/15* 6/5*",
+            "21/15* 9/8",
+            "24/23 21/15*",
+            "21/15*/14"
+        ],
+        "equityLoss": 0.296,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/15* 9/8 (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.296 EMG face au coup 3-ply 21/15* 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Match en 9 pts (4-2, Videau à 1) : 21/15* 6/5* surpasse 21/15* 9/8 de +0.296 EMG (63.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/15* en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/15* 6/5* domine 21/15* 9/8 de +0.296 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 21/15* 6/5* maximise votre équité cubeful (+0.547 EMG).",
+            "Évitez 21/15* 9/8 (-0.296 EMG) ; jouez la ligne maîtresse 21/15* 6/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_469_44",
+        "tier": 2,
+        "xgid": "XGID=-A-AaaD-CA-AcC----adAaaba-:0:0:1:44:2:4:0:9:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "11/3 9/5*/1",
+        "optimalMove": "9/5*/1 8/4*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/5*/1 8/4*(2)",
+            "11/3 9/5*/1",
+            "13/5* 9/5 8/4*",
+            "13/5*/1 8/4*"
+        ],
+        "equityLoss": 0.272,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 11/3 9/5*/1 (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.272 EMG face au coup 3-ply 9/5*/1 8/4*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 9 pts (2-4, Videau à 1) : 9/5*/1 8/4*(2) surpasse 11/3 9/5*/1 de +0.272 EMG (76.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/5*/1 en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/5*/1 8/4*(2) domine 11/3 9/5*/1 de +0.272 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), 9/5*/1 8/4*(2) maximise votre équité cubeful (+1.183 EMG).",
+            "Évitez 11/3 9/5*/1 (-0.272 EMG) ; jouez la ligne maîtresse 9/5*/1 8/4*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_470_41",
+        "tier": 3,
+        "xgid": "XGID=-ABBAaD--A-AaAaaa--cBcaba-:0:0:1:41:4:2:0:9:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "6/5*/1",
+        "optimalMove": "9/5*/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/5*/4",
+            "6/5*/1",
+            "9/5* 6/5",
+            "13/12* 9/5*"
+        ],
+        "equityLoss": 0.087,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 6/5*/1 (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.087 EMG face au coup 3-ply 9/5*/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 9 pts (4-2, Videau à 1) : 9/5*/4 surpasse 6/5*/1 de +0.087 EMG (74.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/5*/4 en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/5*/4 domine 6/5*/1 de +0.087 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 9/5*/4 maximise votre équité cubeful (+1.094 EMG).",
+            "Évitez 6/5*/1 (-0.087 EMG) ; jouez la ligne maîtresse 9/5*/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_471_42",
+        "tier": 2,
+        "xgid": "XGID=-ACACaCa-B---Aa----eaA-bd-:0:0:1:42:2:4:0:9:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "9/7*/3",
+        "optimalMove": "9/5*/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/5*/3",
+            "9/7*/3",
+            "9/5* 3/1",
+            "9/7* 9/5*"
+        ],
+        "equityLoss": 0.162,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 9/7*/3 (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.162 EMG face au coup 3-ply 9/5*/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 9 pts (2-4, Videau à 1) : 9/5*/3 surpasse 9/7*/3 de +0.162 EMG (76.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/5*/3 en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/5*/3 domine 9/7*/3 de +0.162 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), 9/5*/3 maximise votre équité cubeful (+1.072 EMG).",
+            "Évitez 9/7*/3 (-0.162 EMG) ; jouez la ligne maîtresse 9/5*/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_472_51",
+        "tier": 2,
+        "xgid": "XGID=-EBabAD--A--A------abdbcA-:0:0:1:51:4:2:0:9:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "24/19* 9/8",
+        "optimalMove": "24/19* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/19* 6/5",
+            "24/19* 9/8",
+            "24/19* 12/11",
+            "24/19*/18"
+        ],
+        "equityLoss": 1.027,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/19* 9/8 (Match en 9 pts (4-2, Videau à 1)), vous concédez -1.027 EMG face au coup 3-ply 24/19* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 9 pts (4-2, Videau à 1) : 24/19* 6/5 surpasse 24/19* 9/8 de +1.027 EMG (67.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/19* en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/19* 6/5 domine 24/19* 9/8 de +1.027 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 24/19* 6/5 maximise votre équité cubeful (+0.663 EMG).",
+            "Évitez 24/19* 9/8 (-1.027 EMG) ; jouez la ligne maîtresse 24/19* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_473_61",
+        "tier": 2,
+        "xgid": "XGID=-ACCCB----a----A--acb-Bce-:0:0:1:61:2:4:0:9:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "15/9 2/1",
+        "optimalMove": "22/15",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/15",
+            "15/9 2/1",
+            "15/8",
+            "15/9 4/3"
+        ],
+        "equityLoss": 0.133,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 15/9 2/1 (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.133 EMG face au coup 3-ply 22/15.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 9 pts (2-4, Videau à 1) : 22/15 surpasse 15/9 2/1 de +0.133 EMG (29.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/15 en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/15 domine 15/9 2/1 de +0.133 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), 22/15 maximise votre équité cubeful (-0.606 EMG).",
+            "Évitez 15/9 2/1 (-0.133 EMG) ; jouez la ligne maîtresse 22/15."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_474_64",
+        "tier": 3,
+        "xgid": "XGID=-aa-A-E-AA--cD--ad-d--a-BA:0:0:1:64:2:1:0:11:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "bar/15",
+        "optimalMove": "bar/21 8/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 8/2*",
+            "bar/15",
+            "bar/21 13/7",
+            "bar/21 9/3"
+        ],
+        "equityLoss": 0.07,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/15 (Match en 11 pts (2-1, Videau à 1)), vous concédez -0.070 EMG face au coup 3-ply bar/21 8/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 11 pts (2-1, Videau à 1) : bar/21 8/2* surpasse bar/15 de +0.070 EMG (39.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 11 pts (2-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 8/2* domine bar/15 de +0.070 EMG.",
+            "En Match en 11 pts (2-1, Videau à 1), bar/21 8/2* maximise votre équité cubeful (-0.668 EMG).",
+            "Évitez bar/15 (-0.070 EMG) ; jouez la ligne maîtresse bar/21 8/2*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_475_53",
+        "tier": 4,
+        "xgid": "XGID=----a-FA-aa-cC-A-b-cabCa-A:0:0:1:53:2:1:0:11:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/20* 7/4*",
+        "optimalMove": "bar/20* 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 13/10*",
+            "bar/20* 7/4*",
+            "bar/20* 6/3",
+            "bar/22 15/10*"
+        ],
+        "equityLoss": 0.045,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 7/4* (Match en 11 pts (2-1, Videau à 1)), vous concédez -0.045 EMG face au coup 3-ply bar/20* 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 11 pts (2-1, Videau à 1) : bar/20* 13/10* surpasse bar/20* 7/4* de +0.045 EMG (45.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 11 pts (2-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 13/10* domine bar/20* 7/4* de +0.045 EMG.",
+            "En Match en 11 pts (2-1, Videau à 1), bar/20* 13/10* maximise votre équité cubeful (-0.259 EMG).",
+            "Évitez bar/20* 7/4* (-0.045 EMG) ; jouez la ligne maîtresse bar/20* 13/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_476_41",
+        "tier": 2,
+        "xgid": "XGID=---aB-DA-A-bba-aAaac-DAabA:0:0:1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "bar/20",
+        "optimalMove": "bar/21 16/15*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 16/15*",
+            "bar/20",
+            "bar/21 7/6",
+            "bar/21 9/8"
+        ],
+        "equityLoss": 0.589,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 (Money Game), vous concédez -0.589 EMG face au coup 3-ply bar/21 16/15*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Money Game : bar/21 16/15* surpasse bar/20 de +0.589 EMG (46.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 16/15* domine bar/20 de +0.589 EMG.",
+            "En Money Game, bar/21 16/15* maximise votre équité cubeful (-0.242 EMG).",
+            "Évitez bar/20 (-0.589 EMG) ; jouez la ligne maîtresse bar/21 16/15*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_477_52",
+        "tier": 4,
+        "xgid": "XGID=-A-daAE---B-AB-aacBdAa----:0:0:1:52:1:0:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "10/5 6/4*",
+        "optimalMove": "20/15* 18/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/15* 18/16*",
+            "10/5 6/4*",
+            "12/5",
+            "20/15* 6/4*"
+        ],
+        "equityLoss": 0.039,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/5 6/4* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.039 EMG face au coup 3-ply 20/15* 18/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 3 pts (1-0, Videau à 1) : 20/15* 18/16* surpasse 10/5 6/4* de +0.039 EMG (61.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/15* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/15* 18/16* domine 10/5 6/4* de +0.039 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 20/15* 18/16* maximise votre équité cubeful (+0.406 EMG).",
+            "Évitez 10/5 6/4* (-0.039 EMG) ; jouez la ligne maîtresse 20/15* 18/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_478_36",
+        "tier": 3,
+        "xgid": "XGID=--AAA-CbC---a-bb-Aae-ACAb-:0:0:1:36:0:1:0:3:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "23/17 21/18*",
+        "optimalMove": "21/18*/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/18*/12*",
+            "23/17 21/18*",
+            "23/17 6/3",
+            "23/17 8/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/17 21/18* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.097 EMG face au coup 3-ply 21/18*/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 3 pts (0-1, Videau à 1) : 21/18*/12* surpasse 23/17 21/18* de +0.097 EMG (44.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/18*/12* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/18*/12* domine 23/17 21/18* de +0.097 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 21/18*/12* maximise votre équité cubeful (-0.197 EMG).",
+            "Évitez 23/17 21/18* (-0.097 EMG) ; jouez la ligne maîtresse 21/18*/12*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_479_65",
+        "tier": 4,
+        "xgid": "XGID=-a--B-CaC-aAbD-aAd-e-A----:0:0:1:65:0:2:0:5:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "21/15* 16/11",
+        "optimalMove": "21/15*/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/15*/10*",
+            "21/15* 16/11",
+            "16/11 13/7*",
+            "21/15* 6/1*"
+        ],
+        "equityLoss": 0.056,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/15* 16/11 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.056 EMG face au coup 3-ply 21/15*/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 5 pts (0-2, Videau à 1) : 21/15*/10* surpasse 21/15* 16/11 de +0.056 EMG (74.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/15*/10* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/15*/10* domine 21/15* 16/11 de +0.056 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 21/15*/10* maximise votre équité cubeful (+1.021 EMG).",
+            "Évitez 21/15* 16/11 (-0.056 EMG) ; jouez la ligne maîtresse 21/15*/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_480_56",
+        "tier": 2,
+        "xgid": "XGID=bBAaBBB-C-aAbB---d-da-----:0:0:1:56:0:2:0:5:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "13/7 8/3*",
+        "optimalMove": "8/3* 8/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3* 8/2",
+            "13/7 8/3*",
+            "11/5 8/3*",
+            "11/6 8/2"
+        ],
+        "equityLoss": 0.158,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 8/3* (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.158 EMG face au coup 3-ply 8/3* 8/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 5 pts (0-2, Videau à 1) : 8/3* 8/2 surpasse 13/7 8/3* de +0.158 EMG (93.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3* 8/2 domine 13/7 8/3* de +0.158 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 8/3* 8/2 maximise votre équité cubeful (+1.812 EMG).",
+            "Évitez 13/7 8/3* (-0.158 EMG) ; jouez la ligne maîtresse 8/3* 8/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_481_13",
+        "tier": 4,
+        "xgid": "XGID=-bB-bBC-A---cD--aAac-AA-c-:0:0:1:13:0:3:0:7:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "21/18*/17",
+        "optimalMove": "21/18* 17/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/18* 17/16*",
+            "21/18*/17",
+            "17/16*/13",
+            "17/16* 8/5"
+        ],
+        "equityLoss": 0.057,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/18*/17 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.057 EMG face au coup 3-ply 21/18* 17/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 7 pts (0-3, Videau à 1) : 21/18* 17/16* surpasse 21/18*/17 de +0.057 EMG (74.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/18* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/18* 17/16* domine 21/18*/17 de +0.057 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 21/18* 17/16* maximise votre équité cubeful (+1.082 EMG).",
+            "Évitez 21/18*/17 (-0.057 EMG) ; jouez la ligne maîtresse 21/18* 17/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_482_15",
+        "tier": 4,
+        "xgid": "XGID=-cC-aDB-a--A-D--a-ac-Aa-d-:0:0:1:15:0:3:0:7:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "21/16* 5/4*",
+        "optimalMove": "13/8* 5/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/8* 5/4*",
+            "21/16* 5/4*",
+            "13/12 13/8*",
+            "13/8* 11/10"
+        ],
+        "equityLoss": 0.045,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/16* 5/4* (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.045 EMG face au coup 3-ply 13/8* 5/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 7 pts (0-3, Videau à 1) : 13/8* 5/4* surpasse 21/16* 5/4* de +0.045 EMG (88.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/8* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/8* 5/4* domine 21/16* 5/4* de +0.045 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 13/8* 5/4* maximise votre équité cubeful (+1.618 EMG).",
+            "Évitez 21/16* 5/4* (-0.045 EMG) ; jouez la ligne maîtresse 13/8* 5/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_483_11",
+        "tier": 3,
+        "xgid": "XGID=-b---ADBD---aB--bcae--a-B-:0:0:1:11:0:0:0:9:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23 13/12* 8/7 6/5",
+        "optimalMove": "24/22* 13/12* 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/22* 13/12* 6/5",
+            "24/23 13/12* 8/7 6/5",
+            "13/12* 8/7 6/5(2)",
+            "24/23 13/12*/11 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23 13/12* 8/7 6/5 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.097 EMG face au coup 3-ply 24/22* 13/12* 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 9 pts (0-0, Videau à 1) : 24/22* 13/12* 6/5 surpasse 24/23 13/12* 8/7 6/5 de +0.097 EMG (74.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/22* en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/22* 13/12* 6/5 domine 24/23 13/12* 8/7 6/5 de +0.097 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 24/22* 13/12* 6/5 maximise votre équité cubeful (+1.081 EMG).",
+            "Évitez 24/23 13/12* 8/7 6/5 (-0.097 EMG) ; jouez la ligne maîtresse 24/22* 13/12* 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_484_33",
+        "tier": 3,
+        "xgid": "XGID=--bC-ADBB---bA----baad-cB-:0:0:1:33:0:0:0:9:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "8/5 7/4(2) 6/3",
+        "optimalMove": "8/5(2) 7/4(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5(2) 7/4(2)",
+            "8/5 7/4(2) 6/3",
+            "13/10 8/5 7/4(2)",
+            "13/7 8/5(2)"
+        ],
+        "equityLoss": 0.086,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/5 7/4(2) 6/3 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.086 EMG face au coup 3-ply 8/5(2) 7/4(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 9 pts (0-0, Videau à 1) : 8/5(2) 7/4(2) surpasse 8/5 7/4(2) 6/3 de +0.086 EMG (67.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5(2) en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5(2) 7/4(2) domine 8/5 7/4(2) 6/3 de +0.086 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 8/5(2) 7/4(2) maximise votre équité cubeful (+0.759 EMG).",
+            "Évitez 8/5 7/4(2) 6/3 (-0.086 EMG) ; jouez la ligne maîtresse 8/5(2) 7/4(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_485_52",
+        "tier": 2,
+        "xgid": "XGID=-bC-DAABA----A-A-aad-Acac-:0:0:1:52:0:0:0:9:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "15/10 8/6",
+        "optimalMove": "21/16 8/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16 8/6",
+            "15/10 8/6",
+            "13/6",
+            "8/3 5/3"
+        ],
+        "equityLoss": 0.253,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 15/10 8/6 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.253 EMG face au coup 3-ply 21/16 8/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 9 pts (0-0, Videau à 1) : 21/16 8/6 surpasse 15/10 8/6 de +0.253 EMG (69.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/16 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16 8/6 domine 15/10 8/6 de +0.253 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 21/16 8/6 maximise votre équité cubeful (+0.646 EMG).",
+            "Évitez 15/10 8/6 (-0.253 EMG) ; jouez la ligne maîtresse 21/16 8/6."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_486_13",
+        "tier": 4,
+        "xgid": "XGID=-CBD--D---b--a----baAd-eA-:0:0:1:13:0:0:0:9:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "20/19* 6/3",
+        "optimalMove": "20/19*/16",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/19*/16",
+            "20/19* 6/3",
+            "20/17 6/5",
+            "20/17 3/2"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/19* 6/3 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.038 EMG face au coup 3-ply 20/19*/16.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 9 pts (0-0, Videau à 1) : 20/19*/16 surpasse 20/19* 6/3 de +0.038 EMG (72.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/19*/16 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/19*/16 domine 20/19* 6/3 de +0.038 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 20/19*/16 maximise votre équité cubeful (+0.814 EMG).",
+            "Évitez 20/19* 6/3 (-0.038 EMG) ; jouez la ligne maîtresse 20/19*/16."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_487_15",
+        "tier": 3,
+        "xgid": "XGID=--a-aACAB---aD-acb-e--AaBA:0:0:1:15:4:7:0:11:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/20 13/12*",
+        "optimalMove": "bar/20 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 6/5",
+            "bar/20 13/12*",
+            "bar/20 5/4*",
+            "bar/20 24/23*"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 13/12* (Match en 11 pts (4-7, Videau à 1)), vous concédez -0.089 EMG face au coup 3-ply bar/20 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 11 pts (4-7, Videau à 1) : bar/20 6/5 surpasse bar/20 13/12* de +0.089 EMG (51.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 11 pts (4-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 6/5 domine bar/20 13/12* de +0.089 EMG.",
+            "En Match en 11 pts (4-7, Videau à 1), bar/20 6/5 maximise votre équité cubeful (+0.008 EMG).",
+            "Évitez bar/20 13/12* (-0.089 EMG) ; jouez la ligne maîtresse bar/20 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_488_22",
+        "tier": 3,
+        "xgid": "XGID=aaAbaBC-D-------bb-e-AAaBA:0:0:1:22:4:7:0:11:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "bar/23* 22/20 6/4*/2",
+        "optimalMove": "bar/23* 8/4* 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 8/4* 6/4",
+            "bar/23* 22/20 6/4*/2",
+            "bar/23* 8/4*/2",
+            "bar/23*/21 6/4*/2"
+        ],
+        "equityLoss": 0.074,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 22/20 6/4*/2 (Match en 11 pts (4-7, Videau à 1)), vous concédez -0.074 EMG face au coup 3-ply bar/23* 8/4* 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 11 pts (4-7, Videau à 1) : bar/23* 8/4* 6/4 surpasse bar/23* 22/20 6/4*/2 de +0.074 EMG (70.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 11 pts (4-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 8/4* 6/4 domine bar/23* 22/20 6/4*/2 de +0.074 EMG.",
+            "En Match en 11 pts (4-7, Videau à 1), bar/23* 8/4* 6/4 maximise votre équité cubeful (+1.051 EMG).",
+            "Évitez bar/23* 22/20 6/4*/2 (-0.074 EMG) ; jouez la ligne maîtresse bar/23* 8/4* 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_489_24",
+        "tier": 2,
+        "xgid": "XGID=-baaa-EAABa------d-AbcBAB-:0:0:1:24:7:4:0:11:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "8/4*/2*",
+        "optimalMove": "8/4* 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4* 6/4",
+            "8/4*/2*",
+            "7/3* 6/4*",
+            "23/19 9/7"
+        ],
+        "equityLoss": 0.176,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4*/2* (Match en 11 pts (7-4, Videau à 1)), vous concédez -0.176 EMG face au coup 3-ply 8/4* 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 11 pts (7-4, Videau à 1) : 8/4* 6/4 surpasse 8/4*/2* de +0.176 EMG (49.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/4* en Match en 11 pts (7-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/4* 6/4 domine 8/4*/2* de +0.176 EMG.",
+            "En Match en 11 pts (7-4, Videau à 1), 8/4* 6/4 maximise votre équité cubeful (-0.173 EMG).",
+            "Évitez 8/4*/2* (-0.176 EMG) ; jouez la ligne maîtresse 8/4* 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_490_26",
+        "tier": 4,
+        "xgid": "XGID=-baaCB-aD-A-a---aaBdC-ba--:0:0:1:26:4:7:0:11:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "18/16* 18/12*",
+        "optimalMove": "8/2* 4/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/2* 4/2",
+            "18/16* 18/12*",
+            "18/12* 4/2*",
+            "18/16* 8/2*"
+        ],
+        "equityLoss": 0.044,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/16* 18/12* (Match en 11 pts (4-7, Videau à 1)), vous concédez -0.044 EMG face au coup 3-ply 8/2* 4/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 11 pts (4-7, Videau à 1) : 8/2* 4/2 surpasse 18/16* 18/12* de +0.044 EMG (71.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/2* en Match en 11 pts (4-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/2* 4/2 domine 18/16* 18/12* de +0.044 EMG.",
+            "En Match en 11 pts (4-7, Videau à 1), 8/2* 4/2 maximise votre équité cubeful (+1.163 EMG).",
+            "Évitez 18/16* 18/12* (-0.044 EMG) ; jouez la ligne maîtresse 8/2* 4/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_491_53",
+        "tier": 4,
+        "xgid": "XGID=-a-ab-DAC---dD-A-a-da--aAA:0:0:1:53:0:0:0:0:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/20* 6/3*",
+        "optimalMove": "bar/20*/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20*/17*",
+            "bar/20* 6/3*",
+            "bar/20* 24/21",
+            "bar/20* 13/10"
+        ],
+        "equityLoss": 0.043,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 6/3* (Money Game), vous concédez -0.043 EMG face au coup 3-ply bar/20*/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Money Game : bar/20*/17* surpasse bar/20* 6/3* de +0.043 EMG (60.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20*/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20*/17* domine bar/20* 6/3* de +0.043 EMG.",
+            "En Money Game, bar/20*/17* maximise votre équité cubeful (+0.579 EMG).",
+            "Évitez bar/20* 6/3* (-0.043 EMG) ; jouez la ligne maîtresse bar/20*/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_492_34",
+        "tier": 3,
+        "xgid": "XGID=--BAf-Ea--A-cCA--A-d---a-A:0:0:1:34:0:0:0:0:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "bar/21 6/3",
+        "optimalMove": "bar/22 14/10",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 14/10",
+            "bar/21 6/3",
+            "bar/21 13/10",
+            "bar/21 10/7*"
+        ],
+        "equityLoss": 0.11,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 6/3 (Money Game), vous concédez -0.110 EMG face au coup 3-ply bar/22 14/10.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Money Game : bar/22 14/10 surpasse bar/21 6/3 de +0.110 EMG (64.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 14/10 domine bar/21 6/3 de +0.110 EMG.",
+            "En Money Game, bar/22 14/10 maximise votre équité cubeful (+0.852 EMG).",
+            "Évitez bar/21 6/3 (-0.110 EMG) ; jouez la ligne maîtresse bar/22 14/10."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_493_33",
+        "tier": 2,
+        "xgid": "XGID=-aaB-aEBB-a-bB---b-ea-a--B:0:0:1:33:0:1:0:3:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "bar/22*(2) 8/5*/2*",
+        "optimalMove": "bar/22*(2) 8/5*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22*(2) 8/5*(2)",
+            "bar/22*(2) 8/5*/2*",
+            "bar/22*(2) 13/10* 8/5*",
+            "bar/22*(2) 8/5* 6/3"
+        ],
+        "equityLoss": 0.13,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22*(2) 8/5*/2* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.130 EMG face au coup 3-ply bar/22*(2) 8/5*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 3 pts (0-1, Videau à 1) : bar/22*(2) 8/5*(2) surpasse bar/22*(2) 8/5*/2* de +0.130 EMG (73.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22*(2) en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22*(2) 8/5*(2) domine bar/22*(2) 8/5*/2* de +0.130 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/22*(2) 8/5*(2) maximise votre équité cubeful (+1.602 EMG).",
+            "Évitez bar/22*(2) 8/5*/2* (-0.130 EMG) ; jouez la ligne maîtresse bar/22*(2) 8/5*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_494_52",
+        "tier": 2,
+        "xgid": "XGID=a-BAa-CaC----a-A--bdBbc-C-:0:0:1:52:1:0:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "8/3 6/4*",
+        "optimalMove": "15/13* 8/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "15/13* 8/3",
+            "8/3 6/4*",
+            "20/13*",
+            "15/13*/8"
+        ],
+        "equityLoss": 0.199,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/3 6/4* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.199 EMG face au coup 3-ply 15/13* 8/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 3 pts (1-0, Videau à 1) : 15/13* 8/3 surpasse 8/3 6/4* de +0.199 EMG (49.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 15/13* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 15/13* 8/3 domine 8/3 6/4* de +0.199 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 15/13* 8/3 maximise votre équité cubeful (-0.250 EMG).",
+            "Évitez 8/3 6/4* (-0.199 EMG) ; jouez la ligne maîtresse 15/13* 8/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_495_32",
+        "tier": 3,
+        "xgid": "XGID=-aAA--DaCA--dC---b-d-ab-B-:0:0:1:32:0:0:0:5:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "24/21* 3/1*",
+        "optimalMove": "24/21* 9/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21* 9/7*",
+            "24/21* 3/1*",
+            "9/7* 6/3",
+            "24/21* 8/6"
+        ],
+        "equityLoss": 0.069,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21* 3/1* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.069 EMG face au coup 3-ply 24/21* 9/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 5 pts (0-0, Videau à 1) : 24/21* 9/7* surpasse 24/21* 3/1* de +0.069 EMG (49.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/21* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* 9/7* domine 24/21* 3/1* de +0.069 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/21* 9/7* maximise votre équité cubeful (-0.060 EMG).",
+            "Évitez 24/21* 3/1* (-0.069 EMG) ; jouez la ligne maîtresse 24/21* 9/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_496_61",
+        "tier": 4,
+        "xgid": "XGID=-bABB-B-BA--bC-a-b-d--acB-:0:0:1:61:0:0:0:5:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "8/7 8/2",
+        "optimalMove": "13/7 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/7",
+            "8/7 8/2",
+            "9/2",
+            "13/6"
+        ],
+        "equityLoss": 0.054,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/7 8/2 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.054 EMG face au coup 3-ply 13/7 8/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 5 pts (0-0, Videau à 1) : 13/7 8/7 surpasse 8/7 8/2 de +0.054 EMG (65.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/7 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/7 8/7 domine 8/7 8/2 de +0.054 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 13/7 8/7 maximise votre équité cubeful (+0.674 EMG).",
+            "Évitez 8/7 8/2 (-0.054 EMG) ; jouez la ligne maîtresse 13/7 8/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_497_26",
+        "tier": 4,
+        "xgid": "XGID=-bCA--E-B-A-bB----ababdaA-:0:0:1:26:0:0:0:5:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "24/18*/16",
+        "optimalMove": "24/18* 10/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 10/8",
+            "24/18*/16",
+            "10/4 6/4",
+            "24/18* 6/4"
+        ],
+        "equityLoss": 0.048,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18*/16 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.048 EMG face au coup 3-ply 24/18* 10/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 5 pts (0-0, Videau à 1) : 24/18* 10/8 surpasse 24/18*/16 de +0.048 EMG (54.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 10/8 domine 24/18*/16 de +0.048 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/18* 10/8 maximise votre équité cubeful (+0.193 EMG).",
+            "Évitez 24/18*/16 (-0.048 EMG) ; jouez la ligne maîtresse 24/18* 10/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_498_52",
+        "tier": 3,
+        "xgid": "XGID=-aAA-aDAA---cE--bc-ca-a-B-:0:0:1:52:0:3:0:7:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "24/22* 8/3",
+        "optimalMove": "24/22* 7/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/22* 7/2",
+            "24/22* 8/3",
+            "8/3 7/5*",
+            "24/22* 13/8"
+        ],
+        "equityLoss": 0.069,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22* 8/3 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.069 EMG face au coup 3-ply 24/22* 7/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 7 pts (0-3, Videau à 1) : 24/22* 7/2 surpasse 24/22* 8/3 de +0.069 EMG (42.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/22* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/22* 7/2 domine 24/22* 8/3 de +0.069 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 24/22* 7/2 maximise votre équité cubeful (-0.190 EMG).",
+            "Évitez 24/22* 8/3 (-0.069 EMG) ; jouez la ligne maîtresse 24/22* 7/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_499_61",
+        "tier": 2,
+        "xgid": "XGID=-A-CaBaCAA-A--Aa---d-Bbea-:0:0:1:61:3:0:0:7:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "21/15* 9/8",
+        "optimalMove": "21/15* 7/6*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/15* 7/6*",
+            "21/15* 9/8",
+            "11/5 9/8",
+            "14/8 7/6*"
+        ],
+        "equityLoss": 0.195,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/15* 9/8 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.195 EMG face au coup 3-ply 21/15* 7/6*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 7 pts (3-0, Videau à 1) : 21/15* 7/6* surpasse 21/15* 9/8 de +0.195 EMG (59.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/15* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/15* 7/6* domine 21/15* 9/8 de +0.195 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 21/15* 7/6* maximise votre équité cubeful (+0.133 EMG).",
+            "Évitez 21/15* 9/8 (-0.195 EMG) ; jouez la ligne maîtresse 21/15* 7/6*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_500_45",
+        "tier": 2,
+        "xgid": "XGID=-bECa-C-----a-A-bac-bAc-B-:0:0:1:45:0:3:0:7:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "24/19 21/17*",
+        "optimalMove": "21/17*/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/17*/12*",
+            "24/19 21/17*",
+            "21/17* 14/9",
+            "24/15"
+        ],
+        "equityLoss": 0.341,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/19 21/17* (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.341 EMG face au coup 3-ply 21/17*/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 7 pts (0-3, Videau à 1) : 21/17*/12* surpasse 24/19 21/17* de +0.341 EMG (50.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/17*/12* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/17*/12* domine 24/19 21/17* de +0.341 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 21/17*/12* maximise votre équité cubeful (+0.381 EMG).",
+            "Évitez 24/19 21/17* (-0.341 EMG) ; jouez la ligne maîtresse 21/17*/12*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_501_24",
+        "tier": 2,
+        "xgid": "XGID=-b-CAA-CAB---A-a---bABdf--:0:0:1:24:3:0:0:7:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "8/4 5/3",
+        "optimalMove": "8/4 7/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 7/5",
+            "8/4 5/3",
+            "13/11 8/4",
+            "13/9 7/5"
+        ],
+        "equityLoss": 0.649,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4 5/3 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.649 EMG face au coup 3-ply 8/4 7/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 7 pts (3-0, Videau à 1) : 8/4 7/5 surpasse 8/4 5/3 de +0.649 EMG (79.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/4 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/4 7/5 domine 8/4 5/3 de +0.649 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 8/4 7/5 maximise votre équité cubeful (+1.045 EMG).",
+            "Évitez 8/4 5/3 (-0.649 EMG) ; jouez la ligne maîtresse 8/4 7/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_502_13",
+        "tier": 4,
+        "xgid": "XGID=-a-B--E-A---fD----Aeaa-aAA:0:0:1:13:4:6:0:9:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "bar/22 24/23*",
+        "optimalMove": "bar/21*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21*",
+            "bar/22 24/23*",
+            "bar/24 13/10",
+            "bar/24 18/15"
+        ],
+        "equityLoss": 0.039,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22 24/23* (Match en 9 pts (4-6, Videau à 1)), vous concédez -0.039 EMG face au coup 3-ply bar/21*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 9 pts (4-6, Videau à 1) : bar/21* surpasse bar/22 24/23* de +0.039 EMG (57.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 9 pts (4-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* domine bar/22 24/23* de +0.039 EMG.",
+            "En Match en 9 pts (4-6, Videau à 1), bar/21* maximise votre équité cubeful (+0.505 EMG).",
+            "Évitez bar/22 24/23* (-0.039 EMG) ; jouez la ligne maîtresse bar/21*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_503_12",
+        "tier": 4,
+        "xgid": "XGID=---baDB----acF--aA-c-abaAA:0:0:1:12:6:4:0:9:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/23* 17/16*",
+        "optimalMove": "bar/23* 5/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 5/4*",
+            "bar/23* 17/16*",
+            "bar/24 13/11*",
+            "bar/23* 24/23"
+        ],
+        "equityLoss": 0.048,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 17/16* (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.048 EMG face au coup 3-ply bar/23* 5/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 9 pts (6-4, Videau à 1) : bar/23* 5/4* surpasse bar/23* 17/16* de +0.048 EMG (61.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 5/4* domine bar/23* 17/16* de +0.048 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), bar/23* 5/4* maximise votre équité cubeful (+0.432 EMG).",
+            "Évitez bar/23* 17/16* (-0.048 EMG) ; jouez la ligne maîtresse bar/23* 5/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_504_15",
+        "tier": 2,
+        "xgid": "XGID=--aBb-C--A--fCa---AAeBA--A:0:0:1:15:4:6:0:9:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/24 18/13",
+        "optimalMove": "bar/24 19/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 19/14*",
+            "bar/24 18/13",
+            "bar/19",
+            "bar/24 22/17"
+        ],
+        "equityLoss": 0.181,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 18/13 (Match en 9 pts (4-6, Videau à 1)), vous concédez -0.181 EMG face au coup 3-ply bar/24 19/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 9 pts (4-6, Videau à 1) : bar/24 19/14* surpasse bar/24 18/13 de +0.181 EMG (58.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 9 pts (4-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 19/14* domine bar/24 18/13 de +0.181 EMG.",
+            "En Match en 9 pts (4-6, Videau à 1), bar/24 19/14* maximise votre équité cubeful (+0.490 EMG).",
+            "Évitez bar/24 18/13 (-0.181 EMG) ; jouez la ligne maîtresse bar/24 19/14*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_505_32",
+        "tier": 4,
+        "xgid": "XGID=-AAb-CaaaaAAcE---Aab-Bb-a-:0:0:1:32:6:4:0:9:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "21/18* 10/8*",
+        "optimalMove": "13/11 13/10",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 13/10",
+            "21/18* 10/8*",
+            "21/18* 11/9*",
+            "11/8* 10/8"
+        ],
+        "equityLoss": 0.051,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/18* 10/8* (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.051 EMG face au coup 3-ply 13/11 13/10.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 9 pts (6-4, Videau à 1) : 13/11 13/10 surpasse 21/18* 10/8* de +0.051 EMG (55.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/11 en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11 13/10 domine 21/18* 10/8* de +0.051 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), 13/11 13/10 maximise votre équité cubeful (+0.119 EMG).",
+            "Évitez 21/18* 10/8* (-0.051 EMG) ; jouez la ligne maîtresse 13/11 13/10."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_506_61",
+        "tier": 4,
+        "xgid": "XGID=-bA---E-C---cD---c-c-ac-B-:0:0:1:61:6:3:0:11:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "13/7 8/7",
+        "optimalMove": "8/2 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/2 6/5",
+            "13/7 8/7",
+            "24/23 8/2",
+            "13/6"
+        ],
+        "equityLoss": 0.052,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 8/7 (Match en 11 pts (6-3, Videau à 1)), vous concédez -0.052 EMG face au coup 3-ply 8/2 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 11 pts (6-3, Videau à 1) : 8/2 6/5 surpasse 13/7 8/7 de +0.052 EMG (45.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/2 en Match en 11 pts (6-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/2 6/5 domine 13/7 8/7 de +0.052 EMG.",
+            "En Match en 11 pts (6-3, Videau à 1), 8/2 6/5 maximise votre équité cubeful (-0.375 EMG).",
+            "Évitez 13/7 8/7 (-0.052 EMG) ; jouez la ligne maîtresse 8/2 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_507_53",
+        "tier": 2,
+        "xgid": "XGID=-aADBaBAA---aBa--bbe---bB-:0:0:1:53:3:6:0:11:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/21 7/2",
+        "optimalMove": "8/5* 7/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5* 7/2",
+            "24/21 7/2",
+            "13/5*",
+            "7/2 4/1*"
+        ],
+        "equityLoss": 0.629,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21 7/2 (Match en 11 pts (3-6, Videau à 1)), vous concédez -0.629 EMG face au coup 3-ply 8/5* 7/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 11 pts (3-6, Videau à 1) : 8/5* 7/2 surpasse 24/21 7/2 de +0.629 EMG (59.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5* en Match en 11 pts (3-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5* 7/2 domine 24/21 7/2 de +0.629 EMG.",
+            "En Match en 11 pts (3-6, Videau à 1), 8/5* 7/2 maximise votre équité cubeful (+0.697 EMG).",
+            "Évitez 24/21 7/2 (-0.629 EMG) ; jouez la ligne maîtresse 8/5* 7/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_508_43",
+        "tier": 2,
+        "xgid": "XGID=-bBAB-BBB-A-aA---aabAbdbA-:0:0:1:43:6:3:0:11:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "24/20 13/10",
+        "optimalMove": "20/17* 7/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/17* 7/3",
+            "24/20 13/10",
+            "20/17*/13",
+            "24/17*"
+        ],
+        "equityLoss": 0.122,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 13/10 (Match en 11 pts (6-3, Videau à 1)), vous concédez -0.122 EMG face au coup 3-ply 20/17* 7/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 11 pts (6-3, Videau à 1) : 20/17* 7/3 surpasse 24/20 13/10 de +0.122 EMG (71.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/17* en Match en 11 pts (6-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/17* 7/3 domine 24/20 13/10 de +0.122 EMG.",
+            "En Match en 11 pts (6-3, Videau à 1), 20/17* 7/3 maximise votre équité cubeful (+0.710 EMG).",
+            "Évitez 24/20 13/10 (-0.122 EMG) ; jouez la ligne maîtresse 20/17* 7/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_509_44",
+        "tier": 2,
+        "xgid": "XGID=-CBCA-BBaa--a----b-a-bdcB-:0:0:1:44:3:6:0:11:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "24/12* 24/20",
+        "optimalMove": "24/12*/8*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/12*/8*",
+            "24/12* 24/20",
+            "24/12* 7/3",
+            "24/16(2)"
+        ],
+        "equityLoss": 0.198,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/12* 24/20 (Match en 11 pts (3-6, Videau à 1)), vous concédez -0.198 EMG face au coup 3-ply 24/12*/8*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 11 pts (3-6, Videau à 1) : 24/12*/8* surpasse 24/12* 24/20 de +0.198 EMG (82.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/12*/8* en Match en 11 pts (3-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/12*/8* domine 24/12* 24/20 de +0.198 EMG.",
+            "En Match en 11 pts (3-6, Videau à 1), 24/12*/8* maximise votre équité cubeful (+1.256 EMG).",
+            "Évitez 24/12* 24/20 (-0.198 EMG) ; jouez la ligne maîtresse 24/12*/8*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_510_11",
+        "tier": 2,
+        "xgid": "XGID=bACDB-a-B----A---Aab-Adbc-:0:0:1:11:6:3:0:11:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "13/12 8/6* 2/1",
+        "optimalMove": "8/6*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/6*(2)",
+            "13/12 8/6* 2/1",
+            "17/16 8/6* 2/1",
+            "8/6* 8/7 2/1"
+        ],
+        "equityLoss": 0.126,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/12 8/6* 2/1 (Match en 11 pts (6-3, Videau à 1)), vous concédez -0.126 EMG face au coup 3-ply 8/6*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 11 pts (6-3, Videau à 1) : 8/6*(2) surpasse 13/12 8/6* 2/1 de +0.126 EMG (88.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/6*(2) en Match en 11 pts (6-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/6*(2) domine 13/12 8/6* 2/1 de +0.126 EMG.",
+            "En Match en 11 pts (6-3, Videau à 1), 8/6*(2) maximise votre équité cubeful (+1.395 EMG).",
+            "Évitez 13/12 8/6* 2/1 (-0.126 EMG) ; jouez la ligne maîtresse 8/6*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_511_24",
+        "tier": 2,
+        "xgid": "XGID=-CBD-aBA--aaa-----aAaAebbA:0:0:1:24:3:6:0:11:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/19",
+        "optimalMove": "bar/21 7/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 7/5*",
+            "bar/19",
+            "bar/21 3/1",
+            "bar/21 19/17"
+        ],
+        "equityLoss": 0.862,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19 (Match en 11 pts (3-6, Videau à 1)), vous concédez -0.862 EMG face au coup 3-ply bar/21 7/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 11 pts (3-6, Videau à 1) : bar/21 7/5* surpasse bar/19 de +0.862 EMG (71.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 11 pts (3-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 7/5* domine bar/19 de +0.862 EMG.",
+            "En Match en 11 pts (3-6, Videau à 1), bar/21 7/5* maximise votre équité cubeful (+1.136 EMG).",
+            "Évitez bar/19 (-0.862 EMG) ; jouez la ligne maîtresse bar/21 7/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_512_12",
+        "tier": 2,
+        "xgid": "XGID=-bBaB-DAAA--dB---A-ca-abaA:0:0:1:12:0:0:0:0:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/24* 9/7",
+        "optimalMove": "bar/24*/22*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24*/22*",
+            "bar/24* 9/7",
+            "bar/24* 6/4",
+            "bar/24* 17/15"
+        ],
+        "equityLoss": 0.183,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 9/7 (Money Game), vous concédez -0.183 EMG face au coup 3-ply bar/24*/22*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Money Game : bar/24*/22* surpasse bar/24* 9/7 de +0.183 EMG (69.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24*/22* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24*/22* domine bar/24* 9/7 de +0.183 EMG.",
+            "En Money Game, bar/24*/22* maximise votre équité cubeful (+1.115 EMG).",
+            "Évitez bar/24* 9/7 (-0.183 EMG) ; jouez la ligne maîtresse bar/24*/22*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_513_16",
+        "tier": 4,
+        "xgid": "XGID=bbDAABB-AA--dB--A--ca-ab--:0:0:1:16:0:0:0:0:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "9/3 5/4",
+        "optimalMove": "16/10 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/10 4/3",
+            "9/3 5/4",
+            "13/7 4/3",
+            "16/15 9/3"
+        ],
+        "equityLoss": 0.034,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 9/3 5/4 (Money Game), vous concédez -0.034 EMG face au coup 3-ply 16/10 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Money Game : 16/10 4/3 surpasse 9/3 5/4 de +0.034 EMG (74.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 16/10 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/10 4/3 domine 9/3 5/4 de +0.034 EMG.",
+            "En Money Game, 16/10 4/3 maximise votre équité cubeful (+1.237 EMG).",
+            "Évitez 9/3 5/4 (-0.034 EMG) ; jouez la ligne maîtresse 16/10 4/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_514_24",
+        "tier": 2,
+        "xgid": "XGID=-cEbD-AA-B--bB-a-a-aaa-c--:0:0:1:24:0:0:0:0:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "9/5 7/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/5 7/5",
+            "13/7",
+            "9/7 9/5",
+            "9/7 6/2"
+        ],
+        "equityLoss": 0.226,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 (Money Game), vous concédez -0.226 EMG face au coup 3-ply 9/5 7/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Money Game : 9/5 7/5 surpasse 13/7 de +0.226 EMG (52.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/5 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/5 7/5 domine 13/7 de +0.226 EMG.",
+            "En Money Game, 9/5 7/5 maximise votre équité cubeful (+0.454 EMG).",
+            "Évitez 13/7 (-0.226 EMG) ; jouez la ligne maîtresse 9/5 7/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_515_54",
+        "tier": 3,
+        "xgid": "XGID=-bB-aAC-BA--bD---cadaa-AA-:0:0:1:54:0:1:0:3:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "24/20* 23/18*",
+        "optimalMove": "23/18* 9/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/18* 9/5",
+            "24/20* 23/18*",
+            "24/20* 9/4*",
+            "9/4* 8/4"
+        ],
+        "equityLoss": 0.117,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20* 23/18* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.117 EMG face au coup 3-ply 23/18* 9/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 3 pts (0-1, Videau à 1) : 23/18* 9/5 surpasse 24/20* 23/18* de +0.117 EMG (64.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/18* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/18* 9/5 domine 24/20* 23/18* de +0.117 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 23/18* 9/5 maximise votre équité cubeful (+1.021 EMG).",
+            "Évitez 24/20* 23/18* (-0.117 EMG) ; jouez la ligne maîtresse 23/18* 9/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_516_43",
+        "tier": 3,
+        "xgid": "XGID=---bBAEAB---cA---c--bb-cC-:0:0:1:43:1:0:0:3:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "6/2 5/2",
+        "optimalMove": "8/5 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 8/4",
+            "6/2 5/2",
+            "7/4 5/1",
+            "13/9 7/4"
+        ],
+        "equityLoss": 0.111,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 6/2 5/2 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.111 EMG face au coup 3-ply 8/5 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 3 pts (1-0, Videau à 1) : 8/5 8/4 surpasse 6/2 5/2 de +0.111 EMG (39.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5 8/4 domine 6/2 5/2 de +0.111 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 8/5 8/4 maximise votre équité cubeful (-0.889 EMG).",
+            "Évitez 6/2 5/2 (-0.111 EMG) ; jouez la ligne maîtresse 8/5 8/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_517_55",
+        "tier": 2,
+        "xgid": "XGID=-aCaBBAaD-A------a-facBa--:0:0:1:55:0:1:0:3:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "10/5 8/3*(2) 6/1*",
+        "optimalMove": "22/17* 8/3*(2) 6/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/17* 8/3*(2) 6/1*",
+            "10/5 8/3*(2) 6/1*",
+            "8/3*(3) 6/1*",
+            "22/17*/12 8/3*(2)"
+        ],
+        "equityLoss": 0.192,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/5 8/3*(2) 6/1* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.192 EMG face au coup 3-ply 22/17* 8/3*(2) 6/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 3 pts (0-1, Videau à 1) : 22/17* 8/3*(2) 6/1* surpasse 10/5 8/3*(2) 6/1* de +0.192 EMG (90.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/17* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/17* 8/3*(2) 6/1* domine 10/5 8/3*(2) 6/1* de +0.192 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 22/17* 8/3*(2) 6/1* maximise votre équité cubeful (+2.483 EMG).",
+            "Évitez 10/5 8/3*(2) 6/1* (-0.192 EMG) ; jouez la ligne maîtresse 22/17* 8/3*(2) 6/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_518_15",
+        "tier": 4,
+        "xgid": "XGID=-cFBCB--a-----A----eac-b-A:0:0:1:15:0:1:0:3:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/20* 4/3",
+        "optimalMove": "bar/20* 14/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 14/13",
+            "bar/20* 4/3",
+            "bar/20* 5/4",
+            "bar/24 14/9"
+        ],
+        "equityLoss": 0.033,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 4/3 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.033 EMG face au coup 3-ply bar/20* 14/13.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 3 pts (0-1, Videau à 1) : bar/20* 14/13 surpasse bar/20* 4/3 de +0.033 EMG (69.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 14/13 domine bar/20* 4/3 de +0.033 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/20* 14/13 maximise votre équité cubeful (+1.242 EMG).",
+            "Évitez bar/20* 4/3 (-0.033 EMG) ; jouez la ligne maîtresse bar/20* 14/13."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_519_55",
+        "tier": 3,
+        "xgid": "XGID=--CAE-B------------AbcdfC-:0:0:1:55:1:0:0:3:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "24/4",
+        "optimalMove": "24/9 19/14",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/9 19/14",
+            "24/4",
+            "24/9 6/1",
+            "24/14(2)"
+        ],
+        "equityLoss": 0.064,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/4 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.064 EMG face au coup 3-ply 24/9 19/14.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 3 pts (1-0, Videau à 1) : 24/9 19/14 surpasse 24/4 de +0.064 EMG (9.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/9 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/9 19/14 domine 24/4 de +0.064 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 24/9 19/14 maximise votre équité cubeful (-1.344 EMG).",
+            "Évitez 24/4 (-0.064 EMG) ; jouez la ligne maîtresse 24/9 19/14."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_520_63",
+        "tier": 2,
+        "xgid": "XGID=-a--b-D-D---cD--Ad-d--a-B-:0:0:1:63:0:2:0:5:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/15",
+        "optimalMove": "16/10 13/10",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/10 13/10",
+            "24/15",
+            "24/21 16/10",
+            "24/18 16/13"
+        ],
+        "equityLoss": 0.153,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/15 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.153 EMG face au coup 3-ply 16/10 13/10.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 5 pts (0-2, Videau à 1) : 16/10 13/10 surpasse 24/15 de +0.153 EMG (50.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 16/10 en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/10 13/10 domine 24/15 de +0.153 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 16/10 13/10 maximise votre équité cubeful (+0.030 EMG).",
+            "Évitez 24/15 (-0.153 EMG) ; jouez la ligne maîtresse 16/10 13/10."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_521_53",
+        "tier": 2,
+        "xgid": "XGID=-AaAabBAD---aC---bbcAAAba-:0:0:1:53:0:2:0:5:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "20/12*",
+        "optimalMove": "8/3 7/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 7/4*",
+            "20/12*",
+            "20/15 7/4*",
+            "13/8 7/4*"
+        ],
+        "equityLoss": 0.2,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/12* (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.200 EMG face au coup 3-ply 8/3 7/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 5 pts (0-2, Videau à 1) : 8/3 7/4* surpasse 20/12* de +0.200 EMG (49.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3 en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3 7/4* domine 20/12* de +0.200 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 8/3 7/4* maximise votre équité cubeful (+0.031 EMG).",
+            "Évitez 20/12* (-0.200 EMG) ; jouez la ligne maîtresse 8/3 7/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_522_12",
+        "tier": 3,
+        "xgid": "XGID=-ACa-aC-Ba-abA--adaAC-b-aA:0:0:1:12:2:0:0:5:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "bar/24* 20/18*",
+        "optimalMove": "bar/24* 13/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 13/11*",
+            "bar/24* 20/18*",
+            "bar/23 19/18*",
+            "bar/23 2/1"
+        ],
+        "equityLoss": 0.091,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 20/18* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.091 EMG face au coup 3-ply bar/24* 13/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 5 pts (2-0, Videau à 1) : bar/24* 13/11* surpasse bar/24* 20/18* de +0.091 EMG (59.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 13/11* domine bar/24* 20/18* de +0.091 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/24* 13/11* maximise votre équité cubeful (+0.498 EMG).",
+            "Évitez bar/24* 20/18* (-0.091 EMG) ; jouez la ligne maîtresse bar/24* 13/11*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_523_31",
+        "tier": 3,
+        "xgid": "XGID=-a--B-EAA-A-cC--ab-e--c-B-:0:0:1:31:0:3:0:7:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "10/7 6/5",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "10/7 6/5",
+            "13/10 8/7",
+            "8/7 6/3"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/7 6/5 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.068 EMG face au coup 3-ply 8/5 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 7 pts (0-3, Videau à 1) : 8/5 6/5 surpasse 10/7 6/5 de +0.068 EMG (51.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5 6/5 domine 10/7 6/5 de +0.068 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 8/5 6/5 maximise votre équité cubeful (+0.103 EMG).",
+            "Évitez 10/7 6/5 (-0.068 EMG) ; jouez la ligne maîtresse 8/5 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_524_26",
+        "tier": 3,
+        "xgid": "XGID=-b-CC-E-----bC-a-aabaacaA-:0:0:1:26:3:0:0:7:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "24/18*/16",
+        "optimalMove": "24/18* 13/11",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 13/11",
+            "24/18*/16",
+            "24/18* 6/4",
+            "24/18* 4/2"
+        ],
+        "equityLoss": 0.06,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18*/16 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.060 EMG face au coup 3-ply 24/18* 13/11.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 7 pts (3-0, Videau à 1) : 24/18* 13/11 surpasse 24/18*/16 de +0.060 EMG (69.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 13/11 domine 24/18*/16 de +0.060 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 24/18* 13/11 maximise votre équité cubeful (+1.016 EMG).",
+            "Évitez 24/18*/16 (-0.060 EMG) ; jouez la ligne maîtresse 24/18* 13/11."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_525_36",
+        "tier": 4,
+        "xgid": "XGID=-ba---E-CB-aeC---a-e--A-A-:0:0:1:36:0:4:0:9:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "22/13",
+        "optimalMove": "9/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/3 6/3",
+            "22/13",
+            "24/15",
+            "24/21 22/16"
+        ],
+        "equityLoss": 0.056,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/13 (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.056 EMG face au coup 3-ply 9/3 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 9 pts (0-4, Videau à 1) : 9/3 6/3 surpasse 22/13 de +0.056 EMG (61.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/3 en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/3 6/3 domine 22/13 de +0.056 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), 9/3 6/3 maximise votre équité cubeful (+0.838 EMG).",
+            "Évitez 22/13 (-0.056 EMG) ; jouez la ligne maîtresse 9/3 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_526_65",
+        "tier": 2,
+        "xgid": "XGID=-a---aEAD---cC---bbdaa-AA-:0:0:1:65:8:9:0:11:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "13/7 6/1*",
+        "optimalMove": "7/1* 6/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/1* 6/1",
+            "13/7 6/1*",
+            "13/7 8/3",
+            "8/2 7/2"
+        ],
+        "equityLoss": 0.204,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 6/1* (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.204 EMG face au coup 3-ply 7/1* 6/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 11 pts (8-9, Videau à 1) : 7/1* 6/1 surpasse 13/7 6/1* de +0.204 EMG (44.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 7/1* en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/1* 6/1 domine 13/7 6/1* de +0.204 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), 7/1* 6/1 maximise votre équité cubeful (-0.065 EMG).",
+            "Évitez 13/7 6/1* (-0.204 EMG) ; jouez la ligne maîtresse 7/1* 6/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_527_11",
+        "tier": 4,
+        "xgid": "XGID=-Aa-aBBBB---aCa-Acada-aaB-:0:0:1:11:9:8:0:11:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23* 16/14* 13/12*",
+        "optimalMove": "24/23* 13/12* 5/4*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23* 13/12* 5/4*(2)",
+            "24/23* 16/14* 13/12*",
+            "24/23*/22*/21 13/12*",
+            "24/23*/22* 16/15 13/12*"
+        ],
+        "equityLoss": 0.055,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23* 16/14* 13/12* (Match en 11 pts (9-8, Videau à 1)), vous concédez -0.055 EMG face au coup 3-ply 24/23* 13/12* 5/4*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 11 pts (9-8, Videau à 1) : 24/23* 13/12* 5/4*(2) surpasse 24/23* 16/14* 13/12* de +0.055 EMG (76.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23* en Match en 11 pts (9-8, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23* 13/12* 5/4*(2) domine 24/23* 16/14* 13/12* de +0.055 EMG.",
+            "En Match en 11 pts (9-8, Videau à 1), 24/23* 13/12* 5/4*(2) maximise votre équité cubeful (+1.257 EMG).",
+            "Évitez 24/23* 16/14* 13/12* (-0.055 EMG) ; jouez la ligne maîtresse 24/23* 13/12* 5/4*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_528_53",
+        "tier": 3,
+        "xgid": "XGID=-cAB-AD-CA--ba---baAabAabA:0:0:1:53:8:9:0:11:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/20* 5/2",
+        "optimalMove": "bar/20* 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 8/5",
+            "bar/20* 5/2",
+            "bar/20* 22/19",
+            "bar/20* 9/6"
+        ],
+        "equityLoss": 0.06,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 5/2 (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.060 EMG face au coup 3-ply bar/20* 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 11 pts (8-9, Videau à 1) : bar/20* 8/5 surpasse bar/20* 5/2 de +0.060 EMG (75.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 8/5 domine bar/20* 5/2 de +0.060 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), bar/20* 8/5 maximise votre équité cubeful (+1.459 EMG).",
+            "Évitez bar/20* 5/2 (-0.060 EMG) ; jouez la ligne maîtresse bar/20* 8/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_529_61",
+        "tier": 2,
+        "xgid": "XGID=-BAaBAaAB-A--A-a-bad--cbCA:0:0:1:61:9:8:0:11:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "bar/18*",
+        "optimalMove": "bar/24 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 13/7",
+            "bar/18*",
+            "bar/24 10/4",
+            "bar/24 7/1"
+        ],
+        "equityLoss": 0.142,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/18* (Match en 11 pts (9-8, Videau à 1)), vous concédez -0.142 EMG face au coup 3-ply bar/24 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 11 pts (9-8, Videau à 1) : bar/24 13/7 surpasse bar/18* de +0.142 EMG (22.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 11 pts (9-8, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 13/7 domine bar/18* de +0.142 EMG.",
+            "En Match en 11 pts (9-8, Videau à 1), bar/24 13/7 maximise votre équité cubeful (-1.439 EMG).",
+            "Évitez bar/18* (-0.142 EMG) ; jouez la ligne maîtresse bar/24 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_530_26",
+        "tier": 2,
+        "xgid": "XGID=-dBCA-DaA-A-a----aaAbabAbA:0:0:1:26:8:9:0:11:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "bar/17*",
+        "optimalMove": "bar/19 23/21*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19 23/21*",
+            "bar/17*",
+            "bar/19 6/4",
+            "bar/23 10/4"
+        ],
+        "equityLoss": 0.192,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/17* (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.192 EMG face au coup 3-ply bar/19 23/21*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 11 pts (8-9, Videau à 1) : bar/19 23/21* surpasse bar/17* de +0.192 EMG (70.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/19 en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19 23/21* domine bar/17* de +0.192 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), bar/19 23/21* maximise votre équité cubeful (+1.397 EMG).",
+            "Évitez bar/17* (-0.192 EMG) ; jouez la ligne maîtresse bar/19 23/21*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_531_21",
+        "tier": 3,
+        "xgid": "XGID=---A-aEaBA-AcC---d-f-A--A-:0:0:1:21:0:0:0:0:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "9/7* 6/5*",
+        "optimalMove": "6/5*/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/5*/3",
+            "9/7* 6/5*",
+            "8/7*/5*",
+            "11/9 6/5*"
+        ],
+        "equityLoss": 0.107,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 9/7* 6/5* (Money Game), vous concédez -0.107 EMG face au coup 3-ply 6/5*/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Money Game : 6/5*/3 surpasse 9/7* 6/5* de +0.107 EMG (54.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/5*/3 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/5*/3 domine 9/7* 6/5* de +0.107 EMG.",
+            "En Money Game, 6/5*/3 maximise votre équité cubeful (+0.234 EMG).",
+            "Évitez 9/7* 6/5* (-0.107 EMG) ; jouez la ligne maîtresse 6/5*/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_532_35",
+        "tier": 2,
+        "xgid": "XGID=-AAaaaD-D---bCA-abad-aa--A:0:0:1:35:0:0:0:0:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "bar/22* 8/3*",
+        "optimalMove": "bar/22* 6/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 6/1",
+            "bar/22* 8/3*",
+            "bar/22* 14/9",
+            "bar/22* 13/8"
+        ],
+        "equityLoss": 0.162,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/22* 8/3* (Money Game), vous concédez -0.162 EMG face au coup 3-ply bar/22* 6/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Money Game : bar/22* 6/1 surpasse bar/22* 8/3* de +0.162 EMG (55.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 6/1 domine bar/22* 8/3* de +0.162 EMG.",
+            "En Money Game, bar/22* 6/1 maximise votre équité cubeful (+0.333 EMG).",
+            "Évitez bar/22* 8/3* (-0.162 EMG) ; jouez la ligne maîtresse bar/22* 6/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_533_44",
+        "tier": 2,
+        "xgid": "XGID=----AaDBB---bB-b-c-dAABab-:0:0:1:44:0:0:0:0:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "13/5* 13/9 8/4",
+        "optimalMove": "13/5*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/5*(2)",
+            "13/5* 13/9 8/4",
+            "20/16 13/5* 8/4",
+            "13/5* 8/4(2)"
+        ],
+        "equityLoss": 0.262,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/5* 13/9 8/4 (Money Game), vous concédez -0.262 EMG face au coup 3-ply 13/5*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Money Game : 13/5*(2) surpasse 13/5* 13/9 8/4 de +0.262 EMG (52.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/5*(2) en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/5*(2) domine 13/5* 13/9 8/4 de +0.262 EMG.",
+            "En Money Game, 13/5*(2) maximise votre équité cubeful (+0.014 EMG).",
+            "Évitez 13/5* 13/9 8/4 (-0.262 EMG) ; jouez la ligne maîtresse 13/5*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_534_15",
+        "tier": 2,
+        "xgid": "XGID=-BAaaaDAB-C-aA-aaabb-b--bA:0:0:1:15:0:0:0:0:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/20 6/5*",
+        "optimalMove": "bar/20 13/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 13/12*",
+            "bar/20 6/5*",
+            "bar/20 7/6",
+            "bar/20 8/7"
+        ],
+        "equityLoss": 0.511,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 6/5* (Money Game), vous concédez -0.511 EMG face au coup 3-ply bar/20 13/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Money Game : bar/20 13/12* surpasse bar/20 6/5* de +0.511 EMG (54.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 13/12* domine bar/20 6/5* de +0.511 EMG.",
+            "En Money Game, bar/20 13/12* maximise votre équité cubeful (+0.190 EMG).",
+            "Évitez bar/20 6/5* (-0.511 EMG) ; jouez la ligne maîtresse bar/20 13/12*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_535_34",
+        "tier": 2,
+        "xgid": "XGID=-B-ACaACA--A-a-c---dBAacb-:0:0:1:34:0:0:0:0:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "11/8 7/3",
+        "optimalMove": "8/5* 7/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5* 7/3",
+            "11/8 7/3",
+            "11/8 6/2",
+            "8/4 6/3"
+        ],
+        "equityLoss": 0.211,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 11/8 7/3 (Money Game), vous concédez -0.211 EMG face au coup 3-ply 8/5* 7/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Money Game : 8/5* 7/3 surpasse 11/8 7/3 de +0.211 EMG (38.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5* 7/3 domine 11/8 7/3 de +0.211 EMG.",
+            "En Money Game, 8/5* 7/3 maximise votre équité cubeful (-0.500 EMG).",
+            "Évitez 11/8 7/3 (-0.211 EMG) ; jouez la ligne maîtresse 8/5* 7/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_536_26",
+        "tier": 2,
+        "xgid": "XGID=-b-A--E-A---dE---cad-a-AB-:0:0:1:26:0:1:0:3:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "24/18*/16",
+        "optimalMove": "24/18* 23/21*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 23/21*",
+            "24/18*/16",
+            "23/21*/15",
+            "24/22 24/18*"
+        ],
+        "equityLoss": 0.361,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18*/16 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.361 EMG face au coup 3-ply 24/18* 23/21*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 3 pts (0-1, Videau à 1) : 24/18* 23/21* surpasse 24/18*/16 de +0.361 EMG (50.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 23/21* domine 24/18*/16 de +0.361 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 24/18* 23/21* maximise votre équité cubeful (+0.192 EMG).",
+            "Évitez 24/18*/16 (-0.361 EMG) ; jouez la ligne maîtresse 24/18* 23/21*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_537_52",
+        "tier": 2,
+        "xgid": "XGID=-ACaacCAA-C-dBA--a-d-a----:0:0:1:52:1:0:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "14/7",
+        "optimalMove": "8/3*/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3*/1",
+            "14/7",
+            "8/3* 6/4*",
+            "10/8 6/1"
+        ],
+        "equityLoss": 0.253,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 14/7 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.253 EMG face au coup 3-ply 8/3*/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 3 pts (1-0, Videau à 1) : 8/3*/1 surpasse 14/7 de +0.253 EMG (64.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3*/1 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3*/1 domine 14/7 de +0.253 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 8/3*/1 maximise votre équité cubeful (+0.636 EMG).",
+            "Évitez 14/7 (-0.253 EMG) ; jouez la ligne maîtresse 8/3*/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_538_11",
+        "tier": 2,
+        "xgid": "XGID=-Aa---C-----cDAd--a-Dabc-B:0:0:1:11:0:1:0:3:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "bar/24(2) 20/19(2)",
+        "optimalMove": "bar/24(2) 20/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24(2) 20/18*",
+            "bar/24(2) 20/19(2)",
+            "bar/24(2) 20/19 14/13",
+            "bar/24(2) 6/5(2)"
+        ],
+        "equityLoss": 0.128,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24(2) 20/19(2) (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.128 EMG face au coup 3-ply bar/24(2) 20/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 3 pts (0-1, Videau à 1) : bar/24(2) 20/18* surpasse bar/24(2) 20/19(2) de +0.128 EMG (46.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24(2) en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24(2) 20/18* domine bar/24(2) 20/19(2) de +0.128 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/24(2) 20/18* maximise votre équité cubeful (-0.151 EMG).",
+            "Évitez bar/24(2) 20/19(2) (-0.128 EMG) ; jouez la ligne maîtresse bar/24(2) 20/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_539_13",
+        "tier": 4,
+        "xgid": "XGID=-aCCab--aaDadC-----cAA--a-:0:0:1:13:1:0:0:3:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "13/10 2/1*",
+        "optimalMove": "10/7 2/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/7 2/1*",
+            "13/10 2/1*",
+            "21/18 2/1*",
+            "20/17 2/1*"
+        ],
+        "equityLoss": 0.032,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10 2/1* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.032 EMG face au coup 3-ply 10/7 2/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 3 pts (1-0, Videau à 1) : 10/7 2/1* surpasse 13/10 2/1* de +0.032 EMG (57.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 10/7 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/7 2/1* domine 13/10 2/1* de +0.032 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 10/7 2/1* maximise votre équité cubeful (+0.285 EMG).",
+            "Évitez 13/10 2/1* (-0.032 EMG) ; jouez la ligne maîtresse 10/7 2/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_540_36",
+        "tier": 2,
+        "xgid": "XGID=-AaA-bD-B---bEba-bAe----A-:0:0:1:36:0:0:0:5:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "18/15*/9",
+        "optimalMove": "24/18 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18 6/3",
+            "18/15*/9",
+            "24/18 13/10",
+            "24/15*"
+        ],
+        "equityLoss": 0.216,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/15*/9 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.216 EMG face au coup 3-ply 24/18 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 5 pts (0-0, Videau à 1) : 24/18 6/3 surpasse 18/15*/9 de +0.216 EMG (55.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18 6/3 domine 18/15*/9 de +0.216 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/18 6/3 maximise votre équité cubeful (+0.140 EMG).",
+            "Évitez 18/15*/9 (-0.216 EMG) ; jouez la ligne maîtresse 24/18 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_541_55",
+        "tier": 3,
+        "xgid": "XGID=-a--a-EAB--BdB--B-aca-b-bA:0:0:1:55:0:0:0:5:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/20* 11/1* 6/1",
+        "optimalMove": "bar/20* 13/8 6/1*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 13/8 6/1*(2)",
+            "bar/20* 11/1* 6/1",
+            "bar/20* 16/11 6/1*(2)",
+            "bar/20*/15 6/1*(2)"
+        ],
+        "equityLoss": 0.07,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 11/1* 6/1 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.070 EMG face au coup 3-ply bar/20* 13/8 6/1*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 5 pts (0-0, Videau à 1) : bar/20* 13/8 6/1*(2) surpasse bar/20* 11/1* 6/1 de +0.070 EMG (66.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 13/8 6/1*(2) domine bar/20* 11/1* 6/1 de +0.070 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/20* 13/8 6/1*(2) maximise votre équité cubeful (+0.727 EMG).",
+            "Évitez bar/20* 11/1* 6/1 (-0.070 EMG) ; jouez la ligne maîtresse bar/20* 13/8 6/1*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_542_14",
+        "tier": 3,
+        "xgid": "XGID=-BB--aBA--b-bD--a--g-AbBA-:0:0:1:14:0:0:0:5:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "24/20 21/20",
+        "optimalMove": "21/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/16*",
+            "24/20 21/20",
+            "24/20 7/6",
+            "13/9 7/6"
+        ],
+        "equityLoss": 0.074,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 21/20 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.074 EMG face au coup 3-ply 21/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 5 pts (0-0, Videau à 1) : 21/16* surpasse 24/20 21/20 de +0.074 EMG (44.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/16* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/16* domine 24/20 21/20 de +0.074 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 21/16* maximise votre équité cubeful (-0.272 EMG).",
+            "Évitez 24/20 21/20 (-0.074 EMG) ; jouez la ligne maîtresse 21/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_543_41",
+        "tier": 2,
+        "xgid": "XGID=--aCa-Gb--A-cBAa---a--abcA:0:0:1:41:0:0:0:5:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "bar/21 14/13",
+        "optimalMove": "bar/21 3/2*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 3/2*",
+            "bar/21 14/13",
+            "bar/21 10/9",
+            "bar/20"
+        ],
+        "equityLoss": 0.126,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 14/13 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.126 EMG face au coup 3-ply bar/21 3/2*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 5 pts (0-0, Videau à 1) : bar/21 3/2* surpasse bar/21 14/13 de +0.126 EMG (67.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 3/2* domine bar/21 14/13 de +0.126 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/21 3/2* maximise votre équité cubeful (+0.790 EMG).",
+            "Évitez bar/21 14/13 (-0.126 EMG) ; jouez la ligne maîtresse bar/21 3/2*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_544_15",
+        "tier": 2,
+        "xgid": "XGID=-a-AaaE-C---dD-a--Af--a-A-:0:0:1:15:0:3:0:7:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "24/23 8/3",
+        "optimalMove": "8/3 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/5*",
+            "24/23 8/3",
+            "18/17 8/3",
+            "6/5* 6/1*"
+        ],
+        "equityLoss": 0.131,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23 8/3 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.131 EMG face au coup 3-ply 8/3 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Match en 7 pts (0-3, Videau à 1) : 8/3 6/5* surpasse 24/23 8/3 de +0.131 EMG (61.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3 en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3 6/5* domine 24/23 8/3 de +0.131 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 8/3 6/5* maximise votre équité cubeful (+0.640 EMG).",
+            "Évitez 24/23 8/3 (-0.131 EMG) ; jouez la ligne maîtresse 8/3 6/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_545_26",
+        "tier": 2,
+        "xgid": "XGID=aa-A--Fa-BB-bA-a-c-e-B-aA-:0:0:1:26:3:0:0:7:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "13/7* 3/1*",
+        "optimalMove": "9/7* 9/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/7* 9/3",
+            "13/7* 3/1*",
+            "21/15* 9/7*",
+            "21/15* 3/1*"
+        ],
+        "equityLoss": 0.169,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7* 3/1* (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.169 EMG face au coup 3-ply 9/7* 9/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 7 pts (3-0, Videau à 1) : 9/7* 9/3 surpasse 13/7* 3/1* de +0.169 EMG (66.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/7* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/7* 9/3 domine 13/7* 3/1* de +0.169 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 9/7* 9/3 maximise votre équité cubeful (+0.761 EMG).",
+            "Évitez 13/7* 3/1* (-0.169 EMG) ; jouez la ligne maîtresse 9/7* 9/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_546_25",
+        "tier": 2,
+        "xgid": "XGID=--BAb-D-B-a-aB-aa-Bea-baAA:0:0:1:25:0:3:0:7:8",
+        "dice": [
+            2,
+            5
+        ],
+        "playedMove": "bar/23* 8/3",
+        "optimalMove": "bar/20* 18/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 18/16*",
+            "bar/23* 8/3",
+            "bar/20*/18",
+            "bar/20* 3/1"
+        ],
+        "equityLoss": 0.16,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 8/3 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.160 EMG face au coup 3-ply bar/20* 18/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-5 en Match en 7 pts (0-3, Videau à 1) : bar/20* 18/16* surpasse bar/23* 8/3 de +0.160 EMG (65.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 18/16* domine bar/23* 8/3 de +0.160 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), bar/20* 18/16* maximise votre équité cubeful (+0.881 EMG).",
+            "Évitez bar/23* 8/3 (-0.160 EMG) ; jouez la ligne maîtresse bar/20* 18/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_547_55",
+        "tier": 3,
+        "xgid": "XGID=-a-A--FA-A--eC---bBc-aab-A:0:0:1:55:2:4:0:9:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/15 6/1*(2)",
+        "optimalMove": "bar/20 13/3 6/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 13/3 6/1*",
+            "bar/15 6/1*(2)",
+            "bar/20 13/8 6/1*(2)",
+            "bar/15 13/3"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/15 6/1*(2) (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.065 EMG face au coup 3-ply bar/20 13/3 6/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 9 pts (2-4, Videau à 1) : bar/20 13/3 6/1* surpasse bar/15 6/1*(2) de +0.065 EMG (46.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 13/3 6/1* domine bar/15 6/1*(2) de +0.065 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), bar/20 13/3 6/1* maximise votre équité cubeful (-0.033 EMG).",
+            "Évitez bar/15 6/1*(2) (-0.065 EMG) ; jouez la ligne maîtresse bar/20 13/3 6/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_548_24",
+        "tier": 2,
+        "xgid": "XGID=-aAC--E-B---cB-aAb-aa-abcA:0:0:1:24:2:4:0:9:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "bar/21 3/1*",
+        "optimalMove": "bar/19*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19*",
+            "bar/21 3/1*",
+            "bar/21 16/14",
+            "bar/21 6/4"
+        ],
+        "equityLoss": 0.48,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 3/1* (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.480 EMG face au coup 3-ply bar/19*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 9 pts (2-4, Videau à 1) : bar/19* surpasse bar/21 3/1* de +0.480 EMG (64.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/19* en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19* domine bar/21 3/1* de +0.480 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), bar/19* maximise votre équité cubeful (+0.734 EMG).",
+            "Évitez bar/21 3/1* (-0.480 EMG) ; jouez la ligne maîtresse bar/19*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_549_64",
+        "tier": 3,
+        "xgid": "XGID=-CBa-AAABaA-aB--ab-dAabaaA:0:0:1:64:4:2:0:9:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "bar/21* 20/14",
+        "optimalMove": "bar/21* 13/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 13/7",
+            "bar/21* 20/14",
+            "bar/21*/15",
+            "bar/21* 7/1"
+        ],
+        "equityLoss": 0.103,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 20/14 (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.103 EMG face au coup 3-ply bar/21* 13/7.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 9 pts (4-2, Videau à 1) : bar/21* 13/7 surpasse bar/21* 20/14 de +0.103 EMG (41.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 13/7 domine bar/21* 20/14 de +0.103 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), bar/21* 13/7 maximise votre équité cubeful (-0.658 EMG).",
+            "Évitez bar/21* 20/14 (-0.103 EMG) ; jouez la ligne maîtresse bar/21* 13/7."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_550_25",
+        "tier": 3,
+        "xgid": "XGID=-BAAaaD-CA------Ae--b-Bbd-:0:0:1:25:2:4:0:9:8",
+        "dice": [
+            2,
+            5
+        ],
+        "playedMove": "9/4* 6/4",
+        "optimalMove": "9/4*/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/4*/2",
+            "9/4* 6/4",
+            "8/3 6/4*",
+            "16/9"
+        ],
+        "equityLoss": 0.084,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 9/4* 6/4 (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.084 EMG face au coup 3-ply 9/4*/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-5 en Match en 9 pts (2-4, Videau à 1) : 9/4*/2 surpasse 9/4* 6/4 de +0.084 EMG (57.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/4*/2 en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/4*/2 domine 9/4* 6/4 de +0.084 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), 9/4*/2 maximise votre équité cubeful (+0.407 EMG).",
+            "Évitez 9/4* 6/4 (-0.084 EMG) ; jouez la ligne maîtresse 9/4*/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_551_66",
+        "tier": 2,
+        "xgid": "XGID=-A--AAC-BbA-eD---bae----B-:0:0:1:66:0:5:0:11:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "24/18*(2) 13/7 10/4",
+        "optimalMove": "24/18* 13/1 10/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 13/1 10/4",
+            "24/18*(2) 13/7 10/4",
+            "24/18* 13/7(2) 10/4",
+            "24/18* 10/4 8/2(2)"
+        ],
+        "equityLoss": 0.181,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/18*(2) 13/7 10/4 (Match en 11 pts (0-5, Videau à 1)), vous concédez -0.181 EMG face au coup 3-ply 24/18* 13/1 10/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Match en 11 pts (0-5, Videau à 1) : 24/18* 13/1 10/4 surpasse 24/18*(2) 13/7 10/4 de +0.181 EMG (60.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 11 pts (0-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 13/1 10/4 domine 24/18*(2) 13/7 10/4 de +0.181 EMG.",
+            "En Match en 11 pts (0-5, Videau à 1), 24/18* 13/1 10/4 maximise votre équité cubeful (+0.700 EMG).",
+            "Évitez 24/18*(2) 13/7 10/4 (-0.181 EMG) ; jouez la ligne maîtresse 24/18* 13/1 10/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_552_52",
+        "tier": 4,
+        "xgid": "XGID=-BBaa-D-Aba-bC-aa-Aa-acAaA:0:0:1:52:0:5:0:11:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "bar/20 23/21*",
+        "optimalMove": "bar/20 18/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 18/16*",
+            "bar/20 23/21*",
+            "bar/20 6/4*",
+            "bar/23 8/3*"
+        ],
+        "equityLoss": 0.057,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 23/21* (Match en 11 pts (0-5, Videau à 1)), vous concédez -0.057 EMG face au coup 3-ply bar/20 18/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 11 pts (0-5, Videau à 1) : bar/20 18/16* surpasse bar/20 23/21* de +0.057 EMG (73.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 11 pts (0-5, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 18/16* domine bar/20 23/21* de +0.057 EMG.",
+            "En Match en 11 pts (0-5, Videau à 1), bar/20 18/16* maximise votre équité cubeful (+1.204 EMG).",
+            "Évitez bar/20 23/21* (-0.057 EMG) ; jouez la ligne maîtresse bar/20 18/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_553_34",
+        "tier": 2,
+        "xgid": "XGID=-aAaA-D-B---eE---a-d--baAA:0:0:1:34:0:0:0:0:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "bar/21 4/1*",
+        "optimalMove": "bar/21 24/21",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 24/21",
+            "bar/21 4/1*",
+            "bar/21 6/3*",
+            "bar/21 13/10"
+        ],
+        "equityLoss": 0.183,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 4/1* (Money Game), vous concédez -0.183 EMG face au coup 3-ply bar/21 24/21.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Money Game : bar/21 24/21 surpasse bar/21 4/1* de +0.183 EMG (46.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 24/21 domine bar/21 4/1* de +0.183 EMG.",
+            "En Money Game, bar/21 24/21 maximise votre équité cubeful (-0.136 EMG).",
+            "Évitez bar/21 4/1* (-0.183 EMG) ; jouez la ligne maîtresse bar/21 24/21."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_554_46",
+        "tier": 4,
+        "xgid": "XGID=--ABbBC-----cE---d-dAA-aa-:0:0:1:46:0:0:0:0:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "20/14 6/2",
+        "optimalMove": "13/7 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 6/2",
+            "20/14 6/2",
+            "21/15 6/2",
+            "20/10"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14 6/2 (Money Game), vous concédez -0.038 EMG face au coup 3-ply 13/7 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Money Game : 13/7 6/2 surpasse 20/14 6/2 de +0.038 EMG (54.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/7 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/7 6/2 domine 20/14 6/2 de +0.038 EMG.",
+            "En Money Game, 13/7 6/2 maximise votre équité cubeful (+0.140 EMG).",
+            "Évitez 20/14 6/2 (-0.038 EMG) ; jouez la ligne maîtresse 13/7 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_555_16",
+        "tier": 2,
+        "xgid": "XGID=-AA--aF-D--adA---a-acB-d--:0:0:1:16:0:0:0:0:8",
+        "dice": [
+            1,
+            6
+        ],
+        "playedMove": "13/7 2/1",
+        "optimalMove": "8/2 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/2 6/5*",
+            "13/7 2/1",
+            "13/7 8/7",
+            "8/1"
+        ],
+        "equityLoss": 0.178,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 2/1 (Money Game), vous concédez -0.178 EMG face au coup 3-ply 8/2 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-6 en Money Game : 8/2 6/5* surpasse 13/7 2/1 de +0.178 EMG (54.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/2 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/2 6/5* domine 13/7 2/1 de +0.178 EMG.",
+            "En Money Game, 8/2 6/5* maximise votre équité cubeful (+0.272 EMG).",
+            "Évitez 13/7 2/1 (-0.178 EMG) ; jouez la ligne maîtresse 8/2 6/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_556_36",
+        "tier": 4,
+        "xgid": "XGID=-AD-aC--A-Aa-Ca--d-fA-A-b-:0:0:1:36:0:0:0:0:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "10/4*/1",
+        "optimalMove": "20/14*/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/14*/11*",
+            "10/4*/1",
+            "20/14* 13/10",
+            "20/14* 8/5"
+        ],
+        "equityLoss": 0.046,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/4*/1 (Money Game), vous concédez -0.046 EMG face au coup 3-ply 20/14*/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Money Game : 20/14*/11* surpasse 10/4*/1 de +0.046 EMG (54.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/14*/11* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/14*/11* domine 10/4*/1 de +0.046 EMG.",
+            "En Money Game, 20/14*/11* maximise votre équité cubeful (+0.130 EMG).",
+            "Évitez 10/4*/1 (-0.046 EMG) ; jouez la ligne maîtresse 20/14*/11*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_557_43",
+        "tier": 2,
+        "xgid": "XGID=-B-ba-G-C--Ac---Aaa-c--dA-:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "8/4*/1",
+        "optimalMove": "24/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/17*",
+            "8/4*/1",
+            "11/4*",
+            "11/8 6/2"
+        ],
+        "equityLoss": 0.292,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/4*/1 (Money Game), vous concédez -0.292 EMG face au coup 3-ply 24/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Money Game : 24/17* surpasse 8/4*/1 de +0.292 EMG (67.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/17* domine 8/4*/1 de +0.292 EMG.",
+            "En Money Game, 24/17* maximise votre équité cubeful (+0.731 EMG).",
+            "Évitez 8/4*/1 (-0.292 EMG) ; jouez la ligne maîtresse 24/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_558_52",
+        "tier": 3,
+        "xgid": "XGID=-AD-bBAA-----Ca--cAg-AA-b-:0:0:1:52:0:0:0:0:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "7/5 6/1",
+        "optimalMove": "13/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/6",
+            "7/5 6/1",
+            "21/16 18/16",
+            "18/16 6/1"
+        ],
+        "equityLoss": 0.084,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/5 6/1 (Money Game), vous concédez -0.084 EMG face au coup 3-ply 13/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Money Game : 13/6 surpasse 7/5 6/1 de +0.084 EMG (36.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/6 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/6 domine 7/5 6/1 de +0.084 EMG.",
+            "En Money Game, 13/6 maximise votre équité cubeful (-0.688 EMG).",
+            "Évitez 7/5 6/1 (-0.084 EMG) ; jouez la ligne maîtresse 13/6."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_559_54",
+        "tier": 2,
+        "xgid": "XGID=--Ba-ACA-aa-dE-aAb-d-A-a-A:0:0:1:54:1:0:0:3:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "bar/20 7/3*",
+        "optimalMove": "bar/20 13/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 13/9*",
+            "bar/20 7/3*",
+            "bar/16",
+            "bar/21 16/11"
+        ],
+        "equityLoss": 0.143,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 7/3* (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.143 EMG face au coup 3-ply bar/20 13/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 3 pts (1-0, Videau à 1) : bar/20 13/9* surpasse bar/20 7/3* de +0.143 EMG (52.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 13/9* domine bar/20 7/3* de +0.143 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/20 13/9* maximise votre équité cubeful (-0.085 EMG).",
+            "Évitez bar/20 7/3* (-0.143 EMG) ; jouez la ligne maîtresse bar/20 13/9*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_560_65",
+        "tier": 2,
+        "xgid": "XGID=-aA-bADAA-B-dCa-A-abb-Ab--:0:0:1:65:0:1:0:3:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "16/10 7/2",
+        "optimalMove": "22/16 7/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/16 7/2",
+            "16/10 7/2",
+            "22/16 13/8",
+            "10/5 8/2"
+        ],
+        "equityLoss": 0.18,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/10 7/2 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.180 EMG face au coup 3-ply 22/16 7/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 3 pts (0-1, Videau à 1) : 22/16 7/2 surpasse 16/10 7/2 de +0.180 EMG (50.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/16 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/16 7/2 domine 16/10 7/2 de +0.180 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 22/16 7/2 maximise votre équité cubeful (+0.128 EMG).",
+            "Évitez 16/10 7/2 (-0.180 EMG) ; jouez la ligne maîtresse 22/16 7/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_561_21",
+        "tier": 2,
+        "xgid": "XGID=--Ba-CA---aAcD-a-aAd-B-caA:0:0:1:21:1:0:0:3:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "bar/24* 13/11",
+        "optimalMove": "bar/24* 5/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 5/3*",
+            "bar/24* 13/11",
+            "bar/24* 18/16",
+            "bar/24*/22"
+        ],
+        "equityLoss": 0.174,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 13/11 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.174 EMG face au coup 3-ply bar/24* 5/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 3 pts (1-0, Videau à 1) : bar/24* 5/3* surpasse bar/24* 13/11 de +0.174 EMG (54.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 5/3* domine bar/24* 13/11 de +0.174 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/24* 5/3* maximise votre équité cubeful (-0.058 EMG).",
+            "Évitez bar/24* 13/11 (-0.174 EMG) ; jouez la ligne maîtresse bar/24* 5/3*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_562_51",
+        "tier": 2,
+        "xgid": "XGID=-aC-a-DbB---bCbB--a-bAaba-:0:0:1:51:0:1:0:3:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/8 2/1*",
+        "optimalMove": "6/1* 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/1* 2/1",
+            "13/8 2/1*",
+            "15/10 2/1*",
+            "21/16 2/1*"
+        ],
+        "equityLoss": 0.166,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/8 2/1* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.166 EMG face au coup 3-ply 6/1* 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 3 pts (0-1, Videau à 1) : 6/1* 2/1 surpasse 13/8 2/1* de +0.166 EMG (67.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/1* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/1* 2/1 domine 13/8 2/1* de +0.166 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 6/1* 2/1 maximise votre équité cubeful (+1.067 EMG).",
+            "Évitez 13/8 2/1* (-0.166 EMG) ; jouez la ligne maîtresse 6/1* 2/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_563_66",
+        "tier": 4,
+        "xgid": "XGID=-BBBaA-BA--Aa-b--aBbbBada-:0:0:1:66:1:0:0:3:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "21/9 18/12* 11/5",
+        "optimalMove": "21/15 18/12*(2) 11/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/15 18/12*(2) 11/5",
+            "21/9 18/12* 11/5",
+            "21/15(2) 18/12* 11/5",
+            "18/12*/6(2)"
+        ],
+        "equityLoss": 0.059,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/9 18/12* 11/5 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.059 EMG face au coup 3-ply 21/15 18/12*(2) 11/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Match en 3 pts (1-0, Videau à 1) : 21/15 18/12*(2) 11/5 surpasse 21/9 18/12* 11/5 de +0.059 EMG (73.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/15 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/15 18/12*(2) 11/5 domine 21/9 18/12* 11/5 de +0.059 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 21/15 18/12*(2) 11/5 maximise votre équité cubeful (+1.007 EMG).",
+            "Évitez 21/9 18/12* 11/5 (-0.059 EMG) ; jouez la ligne maîtresse 21/15 18/12*(2) 11/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_564_51",
+        "tier": 4,
+        "xgid": "XGID=-a-A--EaC--AaC-b-dae----AA:0:0:1:51:0:2:0:5:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "bar/24 8/3",
+        "optimalMove": "bar/20 13/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 13/12*",
+            "bar/24 8/3",
+            "bar/20 8/7*",
+            "bar/24 6/1*"
+        ],
+        "equityLoss": 0.045,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 8/3 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.045 EMG face au coup 3-ply bar/20 13/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 5 pts (0-2, Videau à 1) : bar/20 13/12* surpasse bar/24 8/3 de +0.045 EMG (46.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 13/12* domine bar/24 8/3 de +0.045 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), bar/20 13/12* maximise votre équité cubeful (-0.095 EMG).",
+            "Évitez bar/24 8/3 (-0.045 EMG) ; jouez la ligne maîtresse bar/20 13/12*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_565_31",
+        "tier": 3,
+        "xgid": "XGID=--Aa-bDaDAB-c-A--b-e-AaA--:0:0:1:31:2:0:0:5:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "23/22* 6/3*",
+        "optimalMove": "6/3*/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/3*/2",
+            "23/22* 6/3*",
+            "8/7* 6/3*",
+            "23/22* 9/6"
+        ],
+        "equityLoss": 0.094,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/22* 6/3* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.094 EMG face au coup 3-ply 6/3*/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 5 pts (2-0, Videau à 1) : 6/3*/2 surpasse 23/22* 6/3* de +0.094 EMG (55.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/3*/2 en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/3*/2 domine 23/22* 6/3* de +0.094 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 6/3*/2 maximise votre équité cubeful (+0.176 EMG).",
+            "Évitez 23/22* 6/3* (-0.094 EMG) ; jouez la ligne maîtresse 6/3*/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_566_46",
+        "tier": 2,
+        "xgid": "XGID=aCBA-AabBBB-b-B--a-c--caa-:0:0:1:46:2:0:0:5:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "10/6* 9/3",
+        "optimalMove": "9/5 9/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/5 9/3",
+            "10/6* 9/3",
+            "14/8 9/5",
+            "14/10 9/3"
+        ],
+        "equityLoss": 0.201,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/6* 9/3 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.201 EMG face au coup 3-ply 9/5 9/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 5 pts (2-0, Videau à 1) : 9/5 9/3 surpasse 10/6* 9/3 de +0.201 EMG (81.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/5 en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/5 9/3 domine 10/6* 9/3 de +0.201 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 9/5 9/3 maximise votre équité cubeful (+1.245 EMG).",
+            "Évitez 10/6* 9/3 (-0.201 EMG) ; jouez la ligne maîtresse 9/5 9/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_567_44",
+        "tier": 3,
+        "xgid": "XGID=-ABC--CAA-----ababBAa-abeA:0:0:1:44:0:2:0:5:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "bar/21 18/14*/6",
+        "optimalMove": "bar/21 18/14*/10 18/14",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 18/14*/10 18/14",
+            "bar/21 18/14*/6",
+            "bar/21 18/14*/10 7/3",
+            "bar/21 18/14*(2) 7/3"
+        ],
+        "equityLoss": 0.104,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 18/14*/6 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.104 EMG face au coup 3-ply bar/21 18/14*/10 18/14.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-4 en Match en 5 pts (0-2, Videau à 1) : bar/21 18/14*/10 18/14 surpasse bar/21 18/14*/6 de +0.104 EMG (60.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 18/14*/10 18/14 domine bar/21 18/14*/6 de +0.104 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), bar/21 18/14*/10 18/14 maximise votre équité cubeful (+0.495 EMG).",
+            "Évitez bar/21 18/14*/6 (-0.104 EMG) ; jouez la ligne maîtresse bar/21 18/14*/10 18/14."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_568_61",
+        "tier": 2,
+        "xgid": "XGID=-ECCa--aaBA--a---a----cfaA:0:0:1:61:2:0:0:5:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "bar/24*/18",
+        "optimalMove": "bar/24* 10/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 10/4*",
+            "bar/24*/18",
+            "bar/24* 9/3",
+            "bar/19 9/8*"
+        ],
+        "equityLoss": 0.231,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24*/18 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.231 EMG face au coup 3-ply bar/24* 10/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 5 pts (2-0, Videau à 1) : bar/24* 10/4* surpasse bar/24*/18 de +0.231 EMG (86.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 10/4* domine bar/24*/18 de +0.231 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/24* 10/4* maximise votre équité cubeful (+1.395 EMG).",
+            "Évitez bar/24*/18 (-0.231 EMG) ; jouez la ligne maîtresse bar/24* 10/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_569_53",
+        "tier": 3,
+        "xgid": "XGID=-aaa-aE-D---cD-A-c-e----A-:0:0:1:53:0:3:0:7:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "15/10 13/10",
+        "optimalMove": "8/3* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3* 6/3",
+            "15/10 13/10",
+            "8/5* 8/3*",
+            "13/5*"
+        ],
+        "equityLoss": 0.117,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 15/10 13/10 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.117 EMG face au coup 3-ply 8/3* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 7 pts (0-3, Videau à 1) : 8/3* 6/3 surpasse 15/10 13/10 de +0.117 EMG (61.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3* 6/3 domine 15/10 13/10 de +0.117 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 8/3* 6/3 maximise votre équité cubeful (+0.616 EMG).",
+            "Évitez 15/10 13/10 (-0.117 EMG) ; jouez la ligne maîtresse 8/3* 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_570_22",
+        "tier": 3,
+        "xgid": "XGID=-Ab--BC-D---b-A----dACcca-:0:0:1:22:3:0:0:7:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "20/18 8/4 6/4",
+        "optimalMove": "8/4(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4(2)",
+            "20/18 8/4 6/4",
+            "20/14 8/6",
+            "20/14 6/4"
+        ],
+        "equityLoss": 0.111,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/18 8/4 6/4 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.111 EMG face au coup 3-ply 8/4(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 7 pts (3-0, Videau à 1) : 8/4(2) surpasse 20/18 8/4 6/4 de +0.111 EMG (61.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/4(2) en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/4(2) domine 20/18 8/4 6/4 de +0.111 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 8/4(2) maximise votre équité cubeful (+0.349 EMG).",
+            "Évitez 20/18 8/4 6/4 (-0.111 EMG) ; jouez la ligne maîtresse 8/4(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_571_36",
+        "tier": 2,
+        "xgid": "XGID=-ADCaaCaAa-a-a--Ac-caa-Ba-:0:0:1:36:0:3:0:7:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "23/20*/14",
+        "optimalMove": "16/13*/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/13*/7*",
+            "23/20*/14",
+            "23/20* 16/10",
+            "16/10 8/5*"
+        ],
+        "equityLoss": 0.497,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/20*/14 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.497 EMG face au coup 3-ply 16/13*/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 7 pts (0-3, Videau à 1) : 16/13*/7* surpasse 23/20*/14 de +0.497 EMG (73.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 16/13*/7* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/13*/7* domine 23/20*/14 de +0.497 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 16/13*/7* maximise votre équité cubeful (+1.620 EMG).",
+            "Évitez 23/20*/14 (-0.497 EMG) ; jouez la ligne maîtresse 16/13*/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_572_11",
+        "tier": 4,
+        "xgid": "XGID=-AaB--E-Aa---B-b-cacb-AbBA:0:0:1:11:0:0:0:9:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "bar/24 22/21 6/5(2)",
+        "optimalMove": "bar/24 8/7 6/5(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 8/7 6/5(2)",
+            "bar/24 22/21 6/5(2)",
+            "bar/24 22/21 3/2*(2)",
+            "bar/24 6/5(3)"
+        ],
+        "equityLoss": 0.044,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 22/21 6/5(2) (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.044 EMG face au coup 3-ply bar/24 8/7 6/5(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 9 pts (0-0, Videau à 1) : bar/24 8/7 6/5(2) surpasse bar/24 22/21 6/5(2) de +0.044 EMG (28.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 8/7 6/5(2) domine bar/24 22/21 6/5(2) de +0.044 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), bar/24 8/7 6/5(2) maximise votre équité cubeful (-1.016 EMG).",
+            "Évitez bar/24 22/21 6/5(2) (-0.044 EMG) ; jouez la ligne maîtresse bar/24 8/7 6/5(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_573_13",
+        "tier": 2,
+        "xgid": "XGID=-a-Aa-Ea--A--B-c-aac-BacD-:0:0:1:13:0:0:0:9:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "10/9 6/3",
+        "optimalMove": "21/18*/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "21/18*/17*",
+            "10/9 6/3",
+            "24/21 10/9",
+            "10/7*/6"
+        ],
+        "equityLoss": 0.366,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 10/9 6/3 (Match en 9 pts (0-0, Videau à 1)), vous concédez -0.366 EMG face au coup 3-ply 21/18*/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 9 pts (0-0, Videau à 1) : 21/18*/17* surpasse 10/9 6/3 de +0.366 EMG (51.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 21/18*/17* en Match en 9 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 21/18*/17* domine 10/9 6/3 de +0.366 EMG.",
+            "En Match en 9 pts (0-0, Videau à 1), 21/18*/17* maximise votre équité cubeful (-0.057 EMG).",
+            "Évitez 10/9 6/3 (-0.366 EMG) ; jouez la ligne maîtresse 21/18*/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_574_64",
+        "tier": 3,
+        "xgid": "XGID=-bAa-AC-C---cE---aafA-a-A-:0:0:1:64:2:1:0:11:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "24/20 8/2",
+        "optimalMove": "24/18* 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18* 6/2",
+            "24/20 8/2",
+            "24/18*/14",
+            "20/16 8/2"
+        ],
+        "equityLoss": 0.093,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 8/2 (Match en 11 pts (2-1, Videau à 1)), vous concédez -0.093 EMG face au coup 3-ply 24/18* 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 11 pts (2-1, Videau à 1) : 24/18* 6/2 surpasse 24/20 8/2 de +0.093 EMG (58.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/18* en Match en 11 pts (2-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/18* 6/2 domine 24/20 8/2 de +0.093 EMG.",
+            "En Match en 11 pts (2-1, Videau à 1), 24/18* 6/2 maximise votre équité cubeful (+0.389 EMG).",
+            "Évitez 24/20 8/2 (-0.093 EMG) ; jouez la ligne maîtresse 24/18* 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_575_21",
+        "tier": 3,
+        "xgid": "XGID=-a-A-aFaAAA-cA--abacA-AbB-:0:0:1:21:1:2:0:11:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "20/18* 6/5*",
+        "optimalMove": "20/18* 8/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/18* 8/7*",
+            "20/18* 6/5*",
+            "9/7* 6/5*",
+            "8/7*/5*"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/18* 6/5* (Match en 11 pts (1-2, Videau à 1)), vous concédez -0.067 EMG face au coup 3-ply 20/18* 8/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Match en 11 pts (1-2, Videau à 1) : 20/18* 8/7* surpasse 20/18* 6/5* de +0.067 EMG (43.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/18* en Match en 11 pts (1-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/18* 8/7* domine 20/18* 6/5* de +0.067 EMG.",
+            "En Match en 11 pts (1-2, Videau à 1), 20/18* 8/7* maximise votre équité cubeful (-0.283 EMG).",
+            "Évitez 20/18* 6/5* (-0.067 EMG) ; jouez la ligne maîtresse 20/18* 8/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_576_53",
+        "tier": 2,
+        "xgid": "XGID=--AaA-D-AAa-aA-ba-AaCbccB-:0:0:1:53:1:2:0:11:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "9/4 6/3*",
+        "optimalMove": "13/10* 9/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/10* 9/4",
+            "9/4 6/3*",
+            "24/19* 13/10*",
+            "24/19*/16*"
+        ],
+        "equityLoss": 0.235,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 9/4 6/3* (Match en 11 pts (1-2, Videau à 1)), vous concédez -0.235 EMG face au coup 3-ply 13/10* 9/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 11 pts (1-2, Videau à 1) : 13/10* 9/4 surpasse 9/4 6/3* de +0.235 EMG (46.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/10* en Match en 11 pts (1-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/10* 9/4 domine 9/4 6/3* de +0.235 EMG.",
+            "En Match en 11 pts (1-2, Videau à 1), 13/10* 9/4 maximise votre équité cubeful (-0.298 EMG).",
+            "Évitez 9/4 6/3* (-0.235 EMG) ; jouez la ligne maîtresse 13/10* 9/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_577_62",
+        "tier": 4,
+        "xgid": "XGID=aa---ADAB--AfD---c-dA---A-:0:0:1:62:0:0:0:0:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "20/14 7/5",
+        "optimalMove": "11/5 7/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/5 7/5",
+            "20/14 7/5",
+            "13/5",
+            "24/18 7/5"
+        ],
+        "equityLoss": 0.039,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14 7/5 (Money Game), vous concédez -0.039 EMG face au coup 3-ply 11/5 7/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Money Game : 11/5 7/5 surpasse 20/14 7/5 de +0.039 EMG (62.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 11/5 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/5 7/5 domine 20/14 7/5 de +0.039 EMG.",
+            "En Money Game, 11/5 7/5 maximise votre équité cubeful (+0.623 EMG).",
+            "Évitez 20/14 7/5 (-0.039 EMG) ; jouez la ligne maîtresse 11/5 7/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_578_15",
+        "tier": 2,
+        "xgid": "XGID=--Aa-aDaB---dF--abAcaa-A--:0:0:1:15:0:0:0:0:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "8/7*/2",
+        "optimalMove": "8/3*/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3*/2",
+            "8/7*/2",
+            "23/18 6/5*",
+            "23/18 2/1"
+        ],
+        "equityLoss": 0.12,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/7*/2 (Money Game), vous concédez -0.120 EMG face au coup 3-ply 8/3*/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Money Game : 8/3*/2 surpasse 8/7*/2 de +0.120 EMG (51.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3*/2 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3*/2 domine 8/7*/2 de +0.120 EMG.",
+            "En Money Game, 8/3*/2 maximise votre équité cubeful (+0.116 EMG).",
+            "Évitez 8/7*/2 (-0.120 EMG) ; jouez la ligne maîtresse 8/3*/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_579_41",
+        "tier": 4,
+        "xgid": "XGID=--caA-CAB---fD---AabB-Aaa-:0:0:1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "8/7 8/4",
+        "optimalMove": "7/3* 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/3* 4/3",
+            "8/7 8/4",
+            "22/18* 4/3*",
+            "22/18* 7/6"
+        ],
+        "equityLoss": 0.035,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/7 8/4 (Money Game), vous concédez -0.035 EMG face au coup 3-ply 7/3* 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Money Game : 7/3* 4/3 surpasse 8/7 8/4 de +0.035 EMG (68.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 7/3* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/3* 4/3 domine 8/7 8/4 de +0.035 EMG.",
+            "En Money Game, 7/3* 4/3 maximise votre équité cubeful (+0.966 EMG).",
+            "Évitez 8/7 8/4 (-0.035 EMG) ; jouez la ligne maîtresse 7/3* 4/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_580_43",
+        "tier": 4,
+        "xgid": "XGID=-A-cbaB-C---eC-AaA--AAbAaA:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "bar/21 23/20",
+        "optimalMove": "bar/21 20/17",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 20/17",
+            "bar/21 23/20",
+            "bar/21 8/5*",
+            "bar/18"
+        ],
+        "equityLoss": 0.034,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 23/20 (Money Game), vous concédez -0.034 EMG face au coup 3-ply bar/21 20/17.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Money Game : bar/21 20/17 surpasse bar/21 23/20 de +0.034 EMG (61.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 20/17 domine bar/21 23/20 de +0.034 EMG.",
+            "En Money Game, bar/21 20/17 maximise votre équité cubeful (+0.508 EMG).",
+            "Évitez bar/21 23/20 (-0.034 EMG) ; jouez la ligne maîtresse bar/21 20/17."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_581_12",
+        "tier": 4,
+        "xgid": "XGID=-a--a-E-CC--dB---c-baba-B-:0:0:1:12:0:1:0:3:8",
+        "dice": [
+            1,
+            2
+        ],
+        "playedMove": "24/22* 9/8",
+        "optimalMove": "24/23 24/22*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23 24/22*",
+            "24/22* 9/8",
+            "24/22* 6/5",
+            "24/22* 8/7"
+        ],
+        "equityLoss": 0.049,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22* 9/8 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.049 EMG face au coup 3-ply 24/23 24/22*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-2 en Match en 3 pts (0-1, Videau à 1) : 24/23 24/22* surpasse 24/22* 9/8 de +0.049 EMG (51.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23 24/22* domine 24/22* 9/8 de +0.049 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 24/23 24/22* maximise votre équité cubeful (+0.255 EMG).",
+            "Évitez 24/22* 9/8 (-0.049 EMG) ; jouez la ligne maîtresse 24/23 24/22*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_582_31",
+        "tier": 2,
+        "xgid": "XGID=-aAABB--B-a-bD--bc-e-B--aA:0:0:1:31:1:0:0:3:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "bar/24*/21",
+        "optimalMove": "bar/24* 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 13/10*",
+            "bar/24*/21",
+            "bar/22 3/2",
+            "bar/24* 8/5"
+        ],
+        "equityLoss": 0.228,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24*/21 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.228 EMG face au coup 3-ply bar/24* 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 3 pts (1-0, Videau à 1) : bar/24* 13/10* surpasse bar/24*/21 de +0.228 EMG (51.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 13/10* domine bar/24*/21 de +0.228 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/24* 13/10* maximise votre équité cubeful (-0.069 EMG).",
+            "Évitez bar/24*/21 (-0.228 EMG) ; jouez la ligne maîtresse bar/24* 13/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_583_61",
+        "tier": 4,
+        "xgid": "XGID=-A--b-EaCC-AcAA--b--bbaaa-:0:0:1:61:0:1:0:3:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "13/7* 8/7",
+        "optimalMove": "8/7*/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/7*/1",
+            "13/7* 8/7",
+            "14/13 11/5",
+            "11/5 6/5"
+        ],
+        "equityLoss": 0.04,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7* 8/7 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.040 EMG face au coup 3-ply 8/7*/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-1 en Match en 3 pts (0-1, Videau à 1) : 8/7*/1 surpasse 13/7* 8/7 de +0.040 EMG (68.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/7*/1 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/7*/1 domine 13/7* 8/7 de +0.040 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 8/7*/1 maximise votre équité cubeful (+0.974 EMG).",
+            "Évitez 13/7* 8/7 (-0.040 EMG) ; jouez la ligne maîtresse 8/7*/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_584_31",
+        "tier": 2,
+        "xgid": "XGID=-ADCaB-A---a--A-A-bcbBacb-:0:0:1:31:1:0:0:3:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "7/4* 2/1",
+        "optimalMove": "14/11* 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/11* 2/1",
+            "7/4* 2/1",
+            "16/13 14/13",
+            "16/15 14/11*"
+        ],
+        "equityLoss": 0.229,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/4* 2/1 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.229 EMG face au coup 3-ply 14/11* 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 3 pts (1-0, Videau à 1) : 14/11* 2/1 surpasse 7/4* 2/1 de +0.229 EMG (40.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/11* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/11* 2/1 domine 7/4* 2/1 de +0.229 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 14/11* 2/1 maximise votre équité cubeful (-0.771 EMG).",
+            "Évitez 7/4* 2/1 (-0.229 EMG) ; jouez la ligne maîtresse 14/11* 2/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_585_14",
+        "tier": 4,
+        "xgid": "XGID=-b-a--FAC---dC---b-e--AaA-:0:0:1:14:0:0:0:5:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "24/20 8/7",
+        "optimalMove": "24/23* 7/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23* 7/3*",
+            "24/20 8/7",
+            "22/18 8/7",
+            "8/7 6/2"
+        ],
+        "equityLoss": 0.034,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 8/7 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.034 EMG face au coup 3-ply 24/23* 7/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 5 pts (0-0, Videau à 1) : 24/23* 7/3* surpasse 24/20 8/7 de +0.034 EMG (57.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23* 7/3* domine 24/20 8/7 de +0.034 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 24/23* 7/3* maximise votre équité cubeful (+0.392 EMG).",
+            "Évitez 24/20 8/7 (-0.034 EMG) ; jouez la ligne maîtresse 24/23* 7/3*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_586_51",
+        "tier": 3,
+        "xgid": "XGID=-aAa-CBAAa--bD---d-e-A-aB-:0:0:1:51:0:0:0:5:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "24/23* 7/2",
+        "optimalMove": "8/3*/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3*/2",
+            "24/23* 7/2",
+            "24/23* 8/3*",
+            "8/3* 2/1*"
+        ],
+        "equityLoss": 0.096,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23* 7/2 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.096 EMG face au coup 3-ply 8/3*/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Match en 5 pts (0-0, Videau à 1) : 8/3*/2 surpasse 24/23* 7/2 de +0.096 EMG (61.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3*/2 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3*/2 domine 24/23* 7/2 de +0.096 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 8/3*/2 maximise votre équité cubeful (+0.559 EMG).",
+            "Évitez 24/23* 7/2 (-0.096 EMG) ; jouez la ligne maîtresse 8/3*/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_587_11",
+        "tier": 4,
+        "xgid": "XGID=-aBA--EaB---cBa--aabcaBa-A:0:0:1:11:0:0:0:5:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "bar/24 22/21* 6/5(2)",
+        "optimalMove": "bar/23* 22/21* 8/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 22/21* 8/7*",
+            "bar/24 22/21* 6/5(2)",
+            "bar/24 22/21* 3/1*",
+            "bar/24 22/21* 2/1*(2)"
+        ],
+        "equityLoss": 0.045,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 22/21* 6/5(2) (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.045 EMG face au coup 3-ply bar/23* 22/21* 8/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 5 pts (0-0, Videau à 1) : bar/23* 22/21* 8/7* surpasse bar/24 22/21* 6/5(2) de +0.045 EMG (63.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 22/21* 8/7* domine bar/24 22/21* 6/5(2) de +0.045 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/23* 22/21* 8/7* maximise votre équité cubeful (+0.912 EMG).",
+            "Évitez bar/24 22/21* 6/5(2) (-0.045 EMG) ; jouez la ligne maîtresse bar/23* 22/21* 8/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_588_46",
+        "tier": 4,
+        "xgid": "XGID=-a-aaDBAA---aCa-abAe--BbA-:0:0:1:46:0:0:0:5:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "22/16*/12*",
+        "optimalMove": "22/16* 18/14*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/16* 18/14*",
+            "22/16*/12*",
+            "18/12* 8/4*",
+            "22/16* 8/4*"
+        ],
+        "equityLoss": 0.032,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/16*/12* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.032 EMG face au coup 3-ply 22/16* 18/14*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 5 pts (0-0, Videau à 1) : 22/16* 18/14* surpasse 22/16*/12* de +0.032 EMG (69.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/16* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/16* 18/14* domine 22/16*/12* de +0.032 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 22/16* 18/14* maximise votre équité cubeful (+0.871 EMG).",
+            "Évitez 22/16*/12* (-0.032 EMG) ; jouez la ligne maîtresse 22/16* 18/14*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_589_63",
+        "tier": 2,
+        "xgid": "XGID=-aCaa-D-BAaAb------cdaCAa-:0:0:1:63:0:0:0:5:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "11/8 9/3*",
+        "optimalMove": "9/3* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/3* 6/3",
+            "11/8 9/3*",
+            "22/16 6/3*",
+            "23/17 6/3*"
+        ],
+        "equityLoss": 0.506,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 11/8 9/3* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.506 EMG face au coup 3-ply 9/3* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 5 pts (0-0, Videau à 1) : 9/3* 6/3 surpasse 11/8 9/3* de +0.506 EMG (54.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/3* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/3* 6/3 domine 11/8 9/3* de +0.506 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 9/3* 6/3 maximise votre équité cubeful (+0.296 EMG).",
+            "Évitez 11/8 9/3* (-0.506 EMG) ; jouez la ligne maîtresse 9/3* 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_590_11",
+        "tier": 2,
+        "xgid": "XGID=-AaaCD-a-b---BaAab-c-AAcAA:0:0:1:11:0:0:0:5:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "bar/24 15/14* 4/3*/2*",
+        "optimalMove": "bar/24 4/3*/2*/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 4/3*/2*/1",
+            "bar/24 15/14* 4/3*/2*",
+            "bar/24 5/3* 4/3",
+            "bar/24 15/14* 5/3*"
+        ],
+        "equityLoss": 0.331,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 15/14* 4/3*/2* (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.331 EMG face au coup 3-ply bar/24 4/3*/2*/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 5 pts (0-0, Videau à 1) : bar/24 4/3*/2*/1 surpasse bar/24 15/14* 4/3*/2* de +0.331 EMG (64.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 4/3*/2*/1 domine bar/24 15/14* 4/3*/2* de +0.331 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), bar/24 4/3*/2*/1 maximise votre équité cubeful (+0.719 EMG).",
+            "Évitez bar/24 15/14* 4/3*/2* (-0.331 EMG) ; jouez la ligne maîtresse bar/24 4/3*/2*/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_591_34",
+        "tier": 4,
+        "xgid": "XGID=-aA--ADaC---bD-----faaabB-:0:0:1:34:0:3:0:7:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "24/21* 24/20*",
+        "optimalMove": "24/20* 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20* 8/5",
+            "24/21* 24/20*",
+            "24/20* 5/2",
+            "24/21* 6/2"
+        ],
+        "equityLoss": 0.055,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21* 24/20* (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.055 EMG face au coup 3-ply 24/20* 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 7 pts (0-3, Videau à 1) : 24/20* 8/5 surpasse 24/21* 24/20* de +0.055 EMG (60.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/20* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20* 8/5 domine 24/21* 24/20* de +0.055 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 24/20* 8/5 maximise votre équité cubeful (+0.550 EMG).",
+            "Évitez 24/21* 24/20* (-0.055 EMG) ; jouez la ligne maîtresse 24/20* 8/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_592_43",
+        "tier": 2,
+        "xgid": "XGID=-bCAA-F---A-cA---aadAa-baA:0:0:1:43:3:0:0:7:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "bar/21* 20/17*",
+        "optimalMove": "bar/21* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 6/3",
+            "bar/21* 20/17*",
+            "bar/21*/18*",
+            "bar/21* 13/10"
+        ],
+        "equityLoss": 0.148,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21* 20/17* (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.148 EMG face au coup 3-ply bar/21* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 7 pts (3-0, Videau à 1) : bar/21* 6/3 surpasse bar/21* 20/17* de +0.148 EMG (59.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 6/3 domine bar/21* 20/17* de +0.148 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), bar/21* 6/3 maximise votre équité cubeful (+0.481 EMG).",
+            "Évitez bar/21* 20/17* (-0.148 EMG) ; jouez la ligne maîtresse bar/21* 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_593_53",
+        "tier": 2,
+        "xgid": "XGID=abEBA-Ca-AA-d-----Ad-A-ba-:0:0:1:53:3:0:0:7:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "18/15 9/4",
+        "optimalMove": "10/7* 9/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/7* 9/4",
+            "18/15 9/4",
+            "21/18 9/4",
+            "18/13 10/7*"
+        ],
+        "equityLoss": 0.204,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/15 9/4 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.204 EMG face au coup 3-ply 10/7* 9/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 7 pts (3-0, Videau à 1) : 10/7* 9/4 surpasse 18/15 9/4 de +0.204 EMG (71.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 10/7* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/7* 9/4 domine 18/15 9/4 de +0.204 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 10/7* 9/4 maximise votre équité cubeful (+1.219 EMG).",
+            "Évitez 18/15 9/4 (-0.204 EMG) ; jouez la ligne maîtresse 10/7* 9/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_594_14",
+        "tier": 4,
+        "xgid": "XGID=-ABA--Cb----aE-----caabeBA:0:0:1:14:0:3:0:7:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "bar/21*/20*",
+        "optimalMove": "bar/21* 13/12*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21* 13/12*",
+            "bar/21*/20*",
+            "bar/20*",
+            "bar/21* 2/1"
+        ],
+        "equityLoss": 0.049,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21*/20* (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.049 EMG face au coup 3-ply bar/21* 13/12*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 7 pts (0-3, Videau à 1) : bar/21* 13/12* surpasse bar/21*/20* de +0.049 EMG (57.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21* 13/12* domine bar/21*/20* de +0.049 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), bar/21* 13/12* maximise votre équité cubeful (+0.290 EMG).",
+            "Évitez bar/21*/20* (-0.049 EMG) ; jouez la ligne maîtresse bar/21* 13/12*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_595_11",
+        "tier": 4,
+        "xgid": "XGID=-A-a-aD-C---dE---aaeaA-a-A:0:0:1:11:4:6:0:9:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "bar/23* 6/5*(2)",
+        "optimalMove": "bar/24 21/20* 6/5*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24 21/20* 6/5*(2)",
+            "bar/23* 6/5*(2)",
+            "bar/23* 21/20* 6/5*",
+            "bar/23* 21/20* 8/7"
+        ],
+        "equityLoss": 0.032,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 6/5*(2) (Match en 9 pts (4-6, Videau à 1)), vous concédez -0.032 EMG face au coup 3-ply bar/24 21/20* 6/5*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 9 pts (4-6, Videau à 1) : bar/24 21/20* 6/5*(2) surpasse bar/23* 6/5*(2) de +0.032 EMG (67.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24 en Match en 9 pts (4-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24 21/20* 6/5*(2) domine bar/23* 6/5*(2) de +0.032 EMG.",
+            "En Match en 9 pts (4-6, Videau à 1), bar/24 21/20* 6/5*(2) maximise votre équité cubeful (+0.945 EMG).",
+            "Évitez bar/23* 6/5*(2) (-0.032 EMG) ; jouez la ligne maîtresse bar/24 21/20* 6/5*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_596_45",
+        "tier": 2,
+        "xgid": "XGID=--aa--Fa----cD--acadA-B-AA:0:0:1:45:6:4:0:9:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "bar/16*",
+        "optimalMove": "bar/20 22/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 22/18*",
+            "bar/16*",
+            "bar/20 6/2*",
+            "bar/20 24/20"
+        ],
+        "equityLoss": 0.14,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/16* (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.140 EMG face au coup 3-ply bar/20 22/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 9 pts (6-4, Videau à 1) : bar/20 22/18* surpasse bar/16* de +0.140 EMG (45.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 22/18* domine bar/16* de +0.140 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), bar/20 22/18* maximise votre équité cubeful (-0.241 EMG).",
+            "Évitez bar/16* (-0.140 EMG) ; jouez la ligne maîtresse bar/20 22/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_597_14",
+        "tier": 3,
+        "xgid": "XGID=-a-bA-DaBA--dDa----d-AaAaA:0:0:1:14:4:6:0:9:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "bar/24* 13/9",
+        "optimalMove": "bar/24* 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 8/4",
+            "bar/24* 13/9",
+            "bar/21 23/22*",
+            "bar/24* 9/5"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24* 13/9 (Match en 9 pts (4-6, Videau à 1)), vous concédez -0.092 EMG face au coup 3-ply bar/24* 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 9 pts (4-6, Videau à 1) : bar/24* 8/4 surpasse bar/24* 13/9 de +0.092 EMG (57.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Match en 9 pts (4-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 8/4 domine bar/24* 13/9 de +0.092 EMG.",
+            "En Match en 9 pts (4-6, Videau à 1), bar/24* 8/4 maximise votre équité cubeful (+0.638 EMG).",
+            "Évitez bar/24* 13/9 (-0.092 EMG) ; jouez la ligne maîtresse bar/24* 8/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_598_23",
+        "tier": 4,
+        "xgid": "XGID=-A-bc-D---AAdC---aAdaBB---:0:0:1:23:6:4:0:9:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "22/20* 13/10",
+        "optimalMove": "22/20*/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/20*/17*",
+            "22/20* 13/10",
+            "22/20* 21/18",
+            "22/20* 18/15"
+        ],
+        "equityLoss": 0.038,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/20* 13/10 (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.038 EMG face au coup 3-ply 22/20*/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 9 pts (6-4, Videau à 1) : 22/20*/17* surpasse 22/20* 13/10 de +0.038 EMG (53.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/20*/17* en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/20*/17* domine 22/20* 13/10 de +0.038 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), 22/20*/17* maximise votre équité cubeful (+0.078 EMG).",
+            "Évitez 22/20* 13/10 (-0.038 EMG) ; jouez la ligne maîtresse 22/20*/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_599_62",
+        "tier": 3,
+        "xgid": "XGID=---acAE----abD-aaa-dBBA-a-:0:0:1:62:4:6:0:9:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "21/15* 13/11*",
+        "optimalMove": "13/11*/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11*/5",
+            "21/15* 13/11*",
+            "21/15* 5/3*",
+            "22/16* 13/11*"
+        ],
+        "equityLoss": 0.11,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 21/15* 13/11* (Match en 9 pts (4-6, Videau à 1)), vous concédez -0.110 EMG face au coup 3-ply 13/11*/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 9 pts (4-6, Videau à 1) : 13/11*/5 surpasse 21/15* 13/11* de +0.110 EMG (62.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/11*/5 en Match en 9 pts (4-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11*/5 domine 21/15* 13/11* de +0.110 EMG.",
+            "En Match en 9 pts (4-6, Videau à 1), 13/11*/5 maximise votre équité cubeful (+0.826 EMG).",
+            "Évitez 21/15* 13/11* (-0.110 EMG) ; jouez la ligne maîtresse 13/11*/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_600_43",
+        "tier": 2,
+        "xgid": "XGID=-A-abbD-Aa-AcBB----eaBA--A:0:0:1:43:6:4:0:9:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "bar/21 6/3*",
+        "optimalMove": "bar/21 11/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 11/8",
+            "bar/21 6/3*",
+            "bar/21 14/11",
+            "bar/22 11/7"
+        ],
+        "equityLoss": 0.203,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 6/3* (Match en 9 pts (6-4, Videau à 1)), vous concédez -0.203 EMG face au coup 3-ply bar/21 11/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-3 en Match en 9 pts (6-4, Videau à 1) : bar/21 11/8 surpasse bar/21 6/3* de +0.203 EMG (49.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 9 pts (6-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 11/8 domine bar/21 6/3* de +0.203 EMG.",
+            "En Match en 9 pts (6-4, Videau à 1), bar/21 11/8 maximise votre équité cubeful (-0.108 EMG).",
+            "Évitez bar/21 6/3* (-0.203 EMG) ; jouez la ligne maîtresse bar/21 11/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_601_66",
+        "tier": 3,
+        "xgid": "XGID=----AaEaB---bE--bc-da-aB--:0:0:1:66:4:7:0:11:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "13/7*/1(2)",
+        "optimalMove": "13/7*(2) 8/2(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7*(2) 8/2(2)",
+            "13/7*/1(2)",
+            "13/7*(4)",
+            "13/7*/1 13/7(2)"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7*/1(2) (Match en 11 pts (4-7, Videau à 1)), vous concédez -0.089 EMG face au coup 3-ply 13/7*(2) 8/2(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Match en 11 pts (4-7, Videau à 1) : 13/7*(2) 8/2(2) surpasse 13/7*/1(2) de +0.089 EMG (42.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/7*(2) en Match en 11 pts (4-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/7*(2) 8/2(2) domine 13/7*/1(2) de +0.089 EMG.",
+            "En Match en 11 pts (4-7, Videau à 1), 13/7*(2) 8/2(2) maximise votre équité cubeful (-0.173 EMG).",
+            "Évitez 13/7*/1(2) (-0.089 EMG) ; jouez la ligne maîtresse 13/7*(2) 8/2(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_602_64",
+        "tier": 2,
+        "xgid": "XGID=-ACdAAE-----AA--abAca-dA--:0:0:1:64:4:7:0:11:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "12/6 5/1",
+        "optimalMove": "18/12 5/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/12 5/1",
+            "12/6 5/1",
+            "18/12 13/9",
+            "18/12 6/2"
+        ],
+        "equityLoss": 0.284,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 12/6 5/1 (Match en 11 pts (4-7, Videau à 1)), vous concédez -0.284 EMG face au coup 3-ply 18/12 5/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Match en 11 pts (4-7, Videau à 1) : 18/12 5/1 surpasse 12/6 5/1 de +0.284 EMG (54.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/12 en Match en 11 pts (4-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/12 5/1 domine 12/6 5/1 de +0.284 EMG.",
+            "En Match en 11 pts (4-7, Videau à 1), 18/12 5/1 maximise votre équité cubeful (+0.293 EMG).",
+            "Évitez 12/6 5/1 (-0.284 EMG) ; jouez la ligne maîtresse 18/12 5/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_603_23",
+        "tier": 3,
+        "xgid": "XGID=-BFaA-DA-a------Ab-aa-fc--:0:0:1:23:4:7:0:11:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "16/14 7/4",
+        "optimalMove": "7/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/4 6/4",
+            "16/14 7/4",
+            "6/4 6/3*",
+            "16/13 6/4"
+        ],
+        "equityLoss": 0.093,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/14 7/4 (Match en 11 pts (4-7, Videau à 1)), vous concédez -0.093 EMG face au coup 3-ply 7/4 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 11 pts (4-7, Videau à 1) : 7/4 6/4 surpasse 16/14 7/4 de +0.093 EMG (83.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 7/4 en Match en 11 pts (4-7, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/4 6/4 domine 16/14 7/4 de +0.093 EMG.",
+            "En Match en 11 pts (4-7, Videau à 1), 7/4 6/4 maximise votre équité cubeful (+0.989 EMG).",
+            "Évitez 16/14 7/4 (-0.093 EMG) ; jouez la ligne maîtresse 7/4 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_604_14",
+        "tier": 2,
+        "xgid": "XGID=-b----EAB-a-eEA----e-a-aA-:0:0:1:14:0:0:0:0:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "14/10* 8/7",
+        "optimalMove": "24/23* 14/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/23* 14/10*",
+            "14/10* 8/7",
+            "14/10* 7/6",
+            "14/10*/9"
+        ],
+        "equityLoss": 0.209,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 14/10* 8/7 (Money Game), vous concédez -0.209 EMG face au coup 3-ply 24/23* 14/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Money Game : 24/23* 14/10* surpasse 14/10* 8/7 de +0.209 EMG (63.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/23* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/23* 14/10* domine 14/10* 8/7 de +0.209 EMG.",
+            "En Money Game, 24/23* 14/10* maximise votre équité cubeful (+0.784 EMG).",
+            "Évitez 14/10* 8/7 (-0.209 EMG) ; jouez la ligne maîtresse 24/23* 14/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_605_64",
+        "tier": 3,
+        "xgid": "XGID=-AA-A-D-AaA-cD--abadaaa-B-:0:0:1:64:0:0:0:0:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "24/20* 8/2",
+        "optimalMove": "24/20* 10/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20* 10/4",
+            "24/20* 8/2",
+            "24/20* 24/18*",
+            "13/9* 10/4"
+        ],
+        "equityLoss": 0.06,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20* 8/2 (Money Game), vous concédez -0.060 EMG face au coup 3-ply 24/20* 10/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-4 en Money Game : 24/20* 10/4 surpasse 24/20* 8/2 de +0.060 EMG (48.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/20* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/20* 10/4 domine 24/20* 8/2 de +0.060 EMG.",
+            "En Money Game, 24/20* 10/4 maximise votre équité cubeful (-0.015 EMG).",
+            "Évitez 24/20* 8/2 (-0.060 EMG) ; jouez la ligne maîtresse 24/20* 10/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_606_15",
+        "tier": 2,
+        "xgid": "XGID=-AA--aDaBA-AaC-a-abcAa-bbA:0:0:1:15:0:0:0:0:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "bar/20 9/8",
+        "optimalMove": "bar/20 2/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 2/1",
+            "bar/20 9/8",
+            "bar/20 6/5*",
+            "bar/20 13/12*"
+        ],
+        "equityLoss": 0.188,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 9/8 (Money Game), vous concédez -0.188 EMG face au coup 3-ply bar/20 2/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Money Game : bar/20 2/1 surpasse bar/20 9/8 de +0.188 EMG (34.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 2/1 domine bar/20 9/8 de +0.188 EMG.",
+            "En Money Game, bar/20 2/1 maximise votre équité cubeful (-0.743 EMG).",
+            "Évitez bar/20 9/8 (-0.188 EMG) ; jouez la ligne maîtresse bar/20 2/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_607_15",
+        "tier": 2,
+        "xgid": "XGID=-ABAA-B-AAa--B-aa--cD--ed-:0:0:1:15:0:0:0:0:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "20/15* 9/8",
+        "optimalMove": "20/15* 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/15* 4/3",
+            "20/15* 9/8",
+            "20/15* 3/2",
+            "20/15*/14"
+        ],
+        "equityLoss": 0.665,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15* 9/8 (Money Game), vous concédez -0.665 EMG face au coup 3-ply 20/15* 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Money Game : 20/15* 4/3 surpasse 20/15* 9/8 de +0.665 EMG (54.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/15* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/15* 4/3 domine 20/15* 9/8 de +0.665 EMG.",
+            "En Money Game, 20/15* 4/3 maximise votre équité cubeful (+0.102 EMG).",
+            "Évitez 20/15* 9/8 (-0.665 EMG) ; jouez la ligne maîtresse 20/15* 4/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_608_21",
+        "tier": 3,
+        "xgid": "XGID=-DFA-dBA-----A---abc-aaba-:0:0:1:21:0:0:0:0:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "7/4",
+        "optimalMove": "7/6 3/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "7/6 3/1",
+            "7/4",
+            "13/11 7/6",
+            "13/12 3/1"
+        ],
+        "equityLoss": 0.072,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/4 (Money Game), vous concédez -0.072 EMG face au coup 3-ply 7/6 3/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Money Game : 7/6 3/1 surpasse 7/4 de +0.072 EMG (79.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 7/6 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 7/6 3/1 domine 7/4 de +0.072 EMG.",
+            "En Money Game, 7/6 3/1 maximise votre équité cubeful (+1.078 EMG).",
+            "Évitez 7/4 (-0.072 EMG) ; jouez la ligne maîtresse 7/6 3/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_609_42",
+        "tier": 4,
+        "xgid": "XGID=bAa-A-C-D---dE---b-e--aA--:0:0:1:42:0:1:0:3:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "13/9 6/4",
+        "optimalMove": "13/11 8/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 8/4",
+            "13/9 6/4",
+            "8/6 8/4",
+            "23/21 8/4"
+        ],
+        "equityLoss": 0.052,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/9 6/4 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.052 EMG face au coup 3-ply 13/11 8/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 3 pts (0-1, Videau à 1) : 13/11 8/4 surpasse 13/9 6/4 de +0.052 EMG (66.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/11 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11 8/4 domine 13/9 6/4 de +0.052 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 13/11 8/4 maximise votre équité cubeful (+1.007 EMG).",
+            "Évitez 13/9 6/4 (-0.052 EMG) ; jouez la ligne maîtresse 13/11 8/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_610_54",
+        "tier": 2,
+        "xgid": "XGID=--aC-AB-B---dD---b--acCbb-:0:0:1:54:1:0:0:3:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "22/13",
+        "optimalMove": "13/9 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9 13/8",
+            "22/13",
+            "13/4",
+            "22/18 13/8"
+        ],
+        "equityLoss": 0.148,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/13 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.148 EMG face au coup 3-ply 13/9 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-4 en Match en 3 pts (1-0, Videau à 1) : 13/9 13/8 surpasse 22/13 de +0.148 EMG (47.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/9 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/9 13/8 domine 22/13 de +0.148 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 13/9 13/8 maximise votre équité cubeful (-0.360 EMG).",
+            "Évitez 22/13 (-0.148 EMG) ; jouez la ligne maîtresse 13/9 13/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_611_62",
+        "tier": 2,
+        "xgid": "XGID=bBBcCA--A---cD---cA-A-ca--:0:0:1:62:0:1:0:3:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "13/11 13/7",
+        "optimalMove": "13/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/5",
+            "13/11 13/7",
+            "20/14 13/11",
+            "18/16 13/7"
+        ],
+        "equityLoss": 0.295,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11 13/7 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.295 EMG face au coup 3-ply 13/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 3 pts (0-1, Videau à 1) : 13/5 surpasse 13/11 13/7 de +0.295 EMG (77.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/5 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/5 domine 13/11 13/7 de +0.295 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 13/5 maximise votre équité cubeful (+1.460 EMG).",
+            "Évitez 13/11 13/7 (-0.295 EMG) ; jouez la ligne maîtresse 13/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_612_62",
+        "tier": 3,
+        "xgid": "XGID=-AAD--a-AAa-bC---a-a-aCddA:0:0:1:62:1:0:0:3:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "bar/19* 3/1",
+        "optimalMove": "bar/19*/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/19*/17*",
+            "bar/19* 3/1",
+            "bar/19* 8/6*",
+            "bar/19* 22/20"
+        ],
+        "equityLoss": 0.066,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19* 3/1 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.066 EMG face au coup 3-ply bar/19*/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 3 pts (1-0, Videau à 1) : bar/19*/17* surpasse bar/19* 3/1 de +0.066 EMG (56.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/19*/17* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/19*/17* domine bar/19* 3/1 de +0.066 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/19*/17* maximise votre équité cubeful (+0.011 EMG).",
+            "Évitez bar/19* 3/1 (-0.066 EMG) ; jouez la ligne maîtresse bar/19*/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_613_52",
+        "tier": 2,
+        "xgid": "XGID=-b----EDC-A-c-a--b-db-AaA-:0:0:1:52:0:2:0:5:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "24/22 10/5",
+        "optimalMove": "10/5 7/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "10/5 7/5",
+            "24/22 10/5",
+            "24/22 7/2",
+            "24/22 8/3"
+        ],
+        "equityLoss": 0.358,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22 10/5 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.358 EMG face au coup 3-ply 10/5 7/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 5 pts (0-2, Videau à 1) : 10/5 7/5 surpasse 24/22 10/5 de +0.358 EMG (57.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 10/5 en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 10/5 7/5 domine 24/22 10/5 de +0.358 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 10/5 7/5 maximise votre équité cubeful (+0.436 EMG).",
+            "Évitez 24/22 10/5 (-0.358 EMG) ; jouez la ligne maîtresse 10/5 7/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_614_55",
+        "tier": 4,
+        "xgid": "XGID=-B-a-CC-Ca---B-a-cbc-baaB-:0:0:1:55:2:0:0:5:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3* 8/3(2)",
+        "optimalMove": "13/3*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3*(2)",
+            "13/3* 8/3(2)",
+            "13/3* 8/3 6/1",
+            "8/3*(3) 6/1"
+        ],
+        "equityLoss": 0.044,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/3* 8/3(2) (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.044 EMG face au coup 3-ply 13/3*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 5 pts (2-0, Videau à 1) : 13/3*(2) surpasse 13/3* 8/3(2) de +0.044 EMG (58.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/3*(2) en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/3*(2) domine 13/3* 8/3(2) de +0.044 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 13/3*(2) maximise votre équité cubeful (+0.484 EMG).",
+            "Évitez 13/3* 8/3(2) (-0.044 EMG) ; jouez la ligne maîtresse 13/3*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_615_23",
+        "tier": 2,
+        "xgid": "XGID=-cBABBBBB---a---Aaa-b-Aaf-:0:0:1:23:0:2:0:5:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "8/3",
+        "optimalMove": "22/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/17*",
+            "8/3",
+            "16/14 8/5",
+            "8/6 8/5"
+        ],
+        "equityLoss": 0.163,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/3 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.163 EMG face au coup 3-ply 22/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 5 pts (0-2, Videau à 1) : 22/17* surpasse 8/3 de +0.163 EMG (96.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/17* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/17* domine 8/3 de +0.163 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 22/17* maximise votre équité cubeful (+1.558 EMG).",
+            "Évitez 8/3 (-0.163 EMG) ; jouez la ligne maîtresse 22/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_616_11",
+        "tier": 2,
+        "xgid": "XGID=-HaaAAa------aA--abAa-afC-:0:0:1:11:2:0:0:5:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "14/13*/11 5/4",
+        "optimalMove": "14/13* 5/3* 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/13* 5/3* 4/3",
+            "14/13*/11 5/4",
+            "14/13* 4/3*/2*/1",
+            "14/13*/12 4/3*/2*"
+        ],
+        "equityLoss": 0.208,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 14/13*/11 5/4 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.208 EMG face au coup 3-ply 14/13* 5/3* 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-1 en Match en 5 pts (2-0, Videau à 1) : 14/13* 5/3* 4/3 surpasse 14/13*/11 5/4 de +0.208 EMG (46.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/13* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/13* 5/3* 4/3 domine 14/13*/11 5/4 de +0.208 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 14/13* 5/3* 4/3 maximise votre équité cubeful (-0.142 EMG).",
+            "Évitez 14/13*/11 5/4 (-0.208 EMG) ; jouez la ligne maîtresse 14/13* 5/3* 4/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_617_35",
+        "tier": 3,
+        "xgid": "XGID=-aAa-aE-B--AeD-A-a-d--aAa-:0:0:1:35:3:0:0:7:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "15/10 13/10",
+        "optimalMove": "8/3* 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3* 6/3",
+            "15/10 13/10",
+            "23/15",
+            "15/10 11/8"
+        ],
+        "equityLoss": 0.088,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 15/10 13/10 (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.088 EMG face au coup 3-ply 8/3* 6/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 7 pts (3-0, Videau à 1) : 8/3* 6/3 surpasse 15/10 13/10 de +0.088 EMG (60.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/3* en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/3* 6/3 domine 15/10 13/10 de +0.088 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 8/3* 6/3 maximise votre équité cubeful (+0.403 EMG).",
+            "Évitez 15/10 13/10 (-0.088 EMG) ; jouez la ligne maîtresse 8/3* 6/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_618_22",
+        "tier": 4,
+        "xgid": "XGID=--Aa-cE-B-A--Caabb-bAAc-A-:0:0:1:22:3:0:0:7:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "20/18 10/8 6/4(2)",
+        "optimalMove": "6/2 6/4(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "6/2 6/4(2)",
+            "20/18 10/8 6/4(2)",
+            "10/4 6/4",
+            "10/8 6/4(3)"
+        ],
+        "equityLoss": 0.059,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/18 10/8 6/4(2) (Match en 7 pts (3-0, Videau à 1)), vous concédez -0.059 EMG face au coup 3-ply 6/2 6/4(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-2 en Match en 7 pts (3-0, Videau à 1) : 6/2 6/4(2) surpasse 20/18 10/8 6/4(2) de +0.059 EMG (45.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 6/2 en Match en 7 pts (3-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 6/2 6/4(2) domine 20/18 10/8 6/4(2) de +0.059 EMG.",
+            "En Match en 7 pts (3-0, Videau à 1), 6/2 6/4(2) maximise votre équité cubeful (-0.345 EMG).",
+            "Évitez 20/18 10/8 6/4(2) (-0.059 EMG) ; jouez la ligne maîtresse 6/2 6/4(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_619_13",
+        "tier": 3,
+        "xgid": "XGID=-aBA-AC-B--acCa--bad-aABa-:0:0:1:13:4:0:0:9:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "22/21* 6/3",
+        "optimalMove": "22/21* 8/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/21* 8/5",
+            "22/21* 6/3",
+            "22/21*/18*",
+            "23/20 22/21*"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/21* 6/3 (Match en 9 pts (4-0, Videau à 1)), vous concédez -0.062 EMG face au coup 3-ply 22/21* 8/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Match en 9 pts (4-0, Videau à 1) : 22/21* 8/5 surpasse 22/21* 6/3 de +0.062 EMG (63.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/21* en Match en 9 pts (4-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/21* 8/5 domine 22/21* 6/3 de +0.062 EMG.",
+            "En Match en 9 pts (4-0, Videau à 1), 22/21* 8/5 maximise votre équité cubeful (+0.474 EMG).",
+            "Évitez 22/21* 6/3 (-0.062 EMG) ; jouez la ligne maîtresse 22/21* 8/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_620_42",
+        "tier": 2,
+        "xgid": "XGID=-Ab-AABaB--AbCa----caAbcBA:0:0:1:42:0:4:0:9:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "bar/21 11/9",
+        "optimalMove": "bar/21 13/11",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 13/11",
+            "bar/21 11/9",
+            "bar/21 6/4",
+            "bar/21 5/3"
+        ],
+        "equityLoss": 0.139,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 11/9 (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.139 EMG face au coup 3-ply bar/21 13/11.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Match en 9 pts (0-4, Videau à 1) : bar/21 13/11 surpasse bar/21 11/9 de +0.139 EMG (43.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 13/11 domine bar/21 11/9 de +0.139 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), bar/21 13/11 maximise votre équité cubeful (-0.325 EMG).",
+            "Évitez bar/21 11/9 (-0.139 EMG) ; jouez la ligne maîtresse bar/21 13/11."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_621_55",
+        "tier": 3,
+        "xgid": "XGID=-A---bCa-AaB-B--Aa-d-BccBA:0:0:1:55:0:4:0:9:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "bar/10* 16/11",
+        "optimalMove": "bar/10* 6/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/10* 6/1",
+            "bar/10* 16/11",
+            "bar/10* 9/4",
+            "bar/10* 21/16"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/10* 16/11 (Match en 9 pts (0-4, Videau à 1)), vous concédez -0.092 EMG face au coup 3-ply bar/10* 6/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 9 pts (0-4, Videau à 1) : bar/10* 6/1 surpasse bar/10* 16/11 de +0.092 EMG (51.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/10* en Match en 9 pts (0-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/10* 6/1 domine bar/10* 16/11 de +0.092 EMG.",
+            "En Match en 9 pts (0-4, Videau à 1), bar/10* 6/1 maximise votre équité cubeful (+0.021 EMG).",
+            "Évitez bar/10* 16/11 (-0.092 EMG) ; jouez la ligne maîtresse bar/10* 6/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_622_31",
+        "tier": 4,
+        "xgid": "XGID=-cDCAaC-----a-ad---dB-A-aA:0:0:1:31:4:0:0:9:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "bar/21",
+        "optimalMove": "bar/24*/21",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24*/21",
+            "bar/21",
+            "bar/24* 20/17",
+            "bar/22 6/5*"
+        ],
+        "equityLoss": 0.033,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/21 (Match en 9 pts (4-0, Videau à 1)), vous concédez -0.033 EMG face au coup 3-ply bar/24*/21.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-1 en Match en 9 pts (4-0, Videau à 1) : bar/24*/21 surpasse bar/21 de +0.033 EMG (45.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24*/21 en Match en 9 pts (4-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24*/21 domine bar/21 de +0.033 EMG.",
+            "En Match en 9 pts (4-0, Videau à 1), bar/24*/21 maximise votre équité cubeful (-0.101 EMG).",
+            "Évitez bar/21 (-0.033 EMG) ; jouez la ligne maîtresse bar/24*/21."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_623_62",
+        "tier": 3,
+        "xgid": "XGID=-bA---DACa--dD--ab-ca-AaA-:0:0:1:62:6:3:0:11:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "22/20* 13/7",
+        "optimalMove": "22/20* 8/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/20* 8/2",
+            "22/20* 13/7",
+            "24/22 13/7",
+            "24/18 22/20*"
+        ],
+        "equityLoss": 0.064,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/20* 13/7 (Match en 11 pts (6-3, Videau à 1)), vous concédez -0.064 EMG face au coup 3-ply 22/20* 8/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-2 en Match en 11 pts (6-3, Videau à 1) : 22/20* 8/2 surpasse 22/20* 13/7 de +0.064 EMG (59.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/20* en Match en 11 pts (6-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/20* 8/2 domine 22/20* 13/7 de +0.064 EMG.",
+            "En Match en 11 pts (6-3, Videau à 1), 22/20* 8/2 maximise votre équité cubeful (+0.398 EMG).",
+            "Évitez 22/20* 13/7 (-0.064 EMG) ; jouez la ligne maîtresse 22/20* 8/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_624_26",
+        "tier": 2,
+        "xgid": "XGID=-aAaaAC-Ba--dE--Aa-dAb--A-:0:0:1:26:3:6:0:11:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "8/2 5/3*",
+        "optimalMove": "13/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/5",
+            "8/2 5/3*",
+            "20/14 16/14",
+            "24/18 20/18"
+        ],
+        "equityLoss": 0.17,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/2 5/3* (Match en 11 pts (3-6, Videau à 1)), vous concédez -0.170 EMG face au coup 3-ply 13/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 11 pts (3-6, Videau à 1) : 13/5 surpasse 8/2 5/3* de +0.170 EMG (49.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/5 en Match en 11 pts (3-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/5 domine 8/2 5/3* de +0.170 EMG.",
+            "En Match en 11 pts (3-6, Videau à 1), 13/5 maximise votre équité cubeful (+0.103 EMG).",
+            "Évitez 8/2 5/3* (-0.170 EMG) ; jouez la ligne maîtresse 13/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_625_63",
+        "tier": 4,
+        "xgid": "XGID=-aabB-C--aAA-Dac-a-ba-BbAA:0:0:1:63:6:3:0:11:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "bar/16",
+        "optimalMove": "bar/22 10/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 10/4",
+            "bar/16",
+            "bar/22 24/18",
+            "bar/22 11/5"
+        ],
+        "equityLoss": 0.032,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/16 (Match en 11 pts (6-3, Videau à 1)), vous concédez -0.032 EMG face au coup 3-ply bar/22 10/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-3 en Match en 11 pts (6-3, Videau à 1) : bar/22 10/4 surpasse bar/16 de +0.032 EMG (47.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Match en 11 pts (6-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 10/4 domine bar/16 de +0.032 EMG.",
+            "En Match en 11 pts (6-3, Videau à 1), bar/22 10/4 maximise votre équité cubeful (-0.305 EMG).",
+            "Évitez bar/16 (-0.032 EMG) ; jouez la ligne maîtresse bar/22 10/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_626_34",
+        "tier": 2,
+        "xgid": "XGID=--BdAAD---B-b-aaA-abbbBAA-:0:0:1:34:3:6:0:11:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "22/18* 5/2",
+        "optimalMove": "22/18*/15*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/18*/15*",
+            "22/18* 5/2",
+            "22/18* 16/13",
+            "5/1 4/1"
+        ],
+        "equityLoss": 0.583,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/18* 5/2 (Match en 11 pts (3-6, Videau à 1)), vous concédez -0.583 EMG face au coup 3-ply 22/18*/15*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 11 pts (3-6, Videau à 1) : 22/18*/15* surpasse 22/18* 5/2 de +0.583 EMG (43.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/18*/15* en Match en 11 pts (3-6, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/18*/15* domine 22/18* 5/2 de +0.583 EMG.",
+            "En Match en 11 pts (3-6, Videau à 1), 22/18*/15* maximise votre équité cubeful (-0.064 EMG).",
+            "Évitez 22/18* 5/2 (-0.583 EMG) ; jouez la ligne maîtresse 22/18*/15*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_627_13",
+        "tier": 2,
+        "xgid": "XGID=-a---AE-Aa--cE-aac-e----BA:0:0:1:13:0:0:0:0:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "bar/24 8/5",
+        "optimalMove": "bar/22 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22 6/5",
+            "bar/24 8/5",
+            "bar/21",
+            "bar/22 5/4"
+        ],
+        "equityLoss": 0.136,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24 8/5 (Money Game), vous concédez -0.136 EMG face au coup 3-ply bar/22 6/5.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Money Game : bar/22 6/5 surpasse bar/24 8/5 de +0.136 EMG (43.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22 en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22 6/5 domine bar/24 8/5 de +0.136 EMG.",
+            "En Money Game, bar/22 6/5 maximise votre équité cubeful (-0.303 EMG).",
+            "Évitez bar/24 8/5 (-0.136 EMG) ; jouez la ligne maîtresse bar/22 6/5."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_628_21",
+        "tier": 3,
+        "xgid": "XGID=-b--a-E-E---dC---aAe-aa-A-:0:0:1:21:0:0:0:0:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "24/22* 18/17*",
+        "optimalMove": "18/17* 6/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/17* 6/4*",
+            "24/22* 18/17*",
+            "24/22*/21*",
+            "18/17*/15"
+        ],
+        "equityLoss": 0.069,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22* 18/17* (Money Game), vous concédez -0.069 EMG face au coup 3-ply 18/17* 6/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-1 en Money Game : 18/17* 6/4* surpasse 24/22* 18/17* de +0.069 EMG (62.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/17* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/17* 6/4* domine 24/22* 18/17* de +0.069 EMG.",
+            "En Money Game, 18/17* 6/4* maximise votre équité cubeful (+0.677 EMG).",
+            "Évitez 24/22* 18/17* (-0.069 EMG) ; jouez la ligne maîtresse 18/17* 6/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_629_51",
+        "tier": 4,
+        "xgid": "XGID=--B-aaE-AA--bC-A-e-da--aB-:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "24/23* 9/4*",
+        "optimalMove": "9/4* 6/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "9/4* 6/5*",
+            "24/23* 9/4*",
+            "13/8 6/5*",
+            "24/23* 13/8"
+        ],
+        "equityLoss": 0.057,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/23* 9/4* (Money Game), vous concédez -0.057 EMG face au coup 3-ply 9/4* 6/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-1 en Money Game : 9/4* 6/5* surpasse 24/23* 9/4* de +0.057 EMG (57.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 9/4* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 9/4* 6/5* domine 24/23* 9/4* de +0.057 EMG.",
+            "En Money Game, 9/4* 6/5* maximise votre équité cubeful (+0.368 EMG).",
+            "Évitez 24/23* 9/4* (-0.057 EMG) ; jouez la ligne maîtresse 9/4* 6/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_630_56",
+        "tier": 2,
+        "xgid": "XGID=-aB-bBE--A---A--abAcababBA:0:0:1:56:0:0:0:0:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "bar/20* 18/12",
+        "optimalMove": "bar/20* 24/18",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20* 24/18",
+            "bar/20* 18/12",
+            "bar/20*/14",
+            "bar/20* 9/3"
+        ],
+        "equityLoss": 0.178,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20* 18/12 (Money Game), vous concédez -0.178 EMG face au coup 3-ply bar/20* 24/18.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Money Game : bar/20* 24/18 surpasse bar/20* 18/12 de +0.178 EMG (53.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20* 24/18 domine bar/20* 18/12 de +0.178 EMG.",
+            "En Money Game, bar/20* 24/18 maximise votre équité cubeful (+0.124 EMG).",
+            "Évitez bar/20* 18/12 (-0.178 EMG) ; jouez la ligne maîtresse bar/20* 24/18."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_631_15",
+        "tier": 4,
+        "xgid": "XGID=-aCABaBaBAa--a----AebB-cA-:0:0:1:15:0:0:0:0:8",
+        "dice": [
+            1,
+            5
+        ],
+        "playedMove": "8/7* 8/3",
+        "optimalMove": "18/13* 8/7*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/13* 8/7*",
+            "8/7* 8/3",
+            "18/13* 2/1*",
+            "8/3 2/1*"
+        ],
+        "equityLoss": 0.058,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 8/7* 8/3 (Money Game), vous concédez -0.058 EMG face au coup 3-ply 18/13* 8/7*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-5 en Money Game : 18/13* 8/7* surpasse 8/7* 8/3 de +0.058 EMG (65.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/13* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/13* 8/7* domine 8/7* 8/3 de +0.058 EMG.",
+            "En Money Game, 18/13* 8/7* maximise votre équité cubeful (+0.658 EMG).",
+            "Évitez 8/7* 8/3 (-0.058 EMG) ; jouez la ligne maîtresse 18/13* 8/7*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_632_52",
+        "tier": 2,
+        "xgid": "XGID=---A--EaB---bE--abcea-A-A-:0:0:1:52:0:1:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "22/20* 13/8",
+        "optimalMove": "22/20* 8/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/20* 8/3",
+            "22/20* 13/8",
+            "22/20*/15",
+            "22/20* 6/1"
+        ],
+        "equityLoss": 0.161,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/20* 13/8 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.161 EMG face au coup 3-ply 22/20* 8/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 3 pts (0-1, Videau à 1) : 22/20* 8/3 surpasse 22/20* 13/8 de +0.161 EMG (42.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/20* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/20* 8/3 domine 22/20* 13/8 de +0.161 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 22/20* 8/3 maximise votre équité cubeful (-0.155 EMG).",
+            "Évitez 22/20* 13/8 (-0.161 EMG) ; jouez la ligne maîtresse 22/20* 8/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_633_41",
+        "tier": 2,
+        "xgid": "XGID=--CAb-DCA--aa-A-AbAd-bb-a-:0:0:1:41:1:0:0:3:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "16/12* 3/2",
+        "optimalMove": "16/12*/11*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/12*/11*",
+            "16/12* 3/2",
+            "18/14 8/7",
+            "16/12* 8/7"
+        ],
+        "equityLoss": 0.495,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/12* 3/2 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.495 EMG face au coup 3-ply 16/12*/11*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-1 en Match en 3 pts (1-0, Videau à 1) : 16/12*/11* surpasse 16/12* 3/2 de +0.495 EMG (61.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 16/12*/11* en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/12*/11* domine 16/12* 3/2 de +0.495 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 16/12*/11* maximise votre équité cubeful (+0.325 EMG).",
+            "Évitez 16/12* 3/2 (-0.495 EMG) ; jouez la ligne maîtresse 16/12*/11*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_634_45",
+        "tier": 3,
+        "xgid": "XGID=-A-CBaD--a-aaAA---cc-BAe--:0:0:1:45:0:1:0:3:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "13/9* 6/1",
+        "optimalMove": "14/9*/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/9*/5*",
+            "13/9* 6/1",
+            "14/9* 13/9",
+            "21/12*"
+        ],
+        "equityLoss": 0.107,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/9* 6/1 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.107 EMG face au coup 3-ply 14/9*/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 3 pts (0-1, Videau à 1) : 14/9*/5* surpasse 13/9* 6/1 de +0.107 EMG (73.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/9*/5* en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/9*/5* domine 13/9* 6/1 de +0.107 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 14/9*/5* maximise votre équité cubeful (+1.244 EMG).",
+            "Évitez 13/9* 6/1 (-0.107 EMG) ; jouez la ligne maîtresse 14/9*/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_635_65",
+        "tier": 3,
+        "xgid": "XGID=--EAb-CC--a---Ba-a-cAacba-:0:0:1:65:1:0:0:3:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "20/14 6/1",
+        "optimalMove": "20/15*/9",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "20/15*/9",
+            "20/14 6/1",
+            "20/14 7/2",
+            "20/9"
+        ],
+        "equityLoss": 0.06,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/14 6/1 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.060 EMG face au coup 3-ply 20/15*/9.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-5 en Match en 3 pts (1-0, Videau à 1) : 20/15*/9 surpasse 20/14 6/1 de +0.060 EMG (56.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 20/15*/9 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 20/15*/9 domine 20/14 6/1 de +0.060 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), 20/15*/9 maximise votre équité cubeful (+0.140 EMG).",
+            "Évitez 20/14 6/1 (-0.060 EMG) ; jouez la ligne maîtresse 20/15*/9."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_636_25",
+        "tier": 3,
+        "xgid": "XGID=-aB-ACC-A-A-dBA--abdAb--a-:0:0:1:25:0:0:0:5:8",
+        "dice": [
+            2,
+            5
+        ],
+        "playedMove": "20/15 6/4",
+        "optimalMove": "14/9 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/9 6/4",
+            "20/15 6/4",
+            "10/5 6/4",
+            "8/3 5/3"
+        ],
+        "equityLoss": 0.086,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 20/15 6/4 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.086 EMG face au coup 3-ply 14/9 6/4.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-5 en Match en 5 pts (0-0, Videau à 1) : 14/9 6/4 surpasse 20/15 6/4 de +0.086 EMG (64.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/9 en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/9 6/4 domine 20/15 6/4 de +0.086 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 14/9 6/4 maximise votre équité cubeful (+0.744 EMG).",
+            "Évitez 20/15 6/4 (-0.086 EMG) ; jouez la ligne maîtresse 14/9 6/4."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_637_33",
+        "tier": 2,
+        "xgid": "XGID=-AaaBaDBAAA--Baaa--bcA-ca-:0:0:1:33:0:0:0:5:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "9/3* 8/5* 6/3",
+        "optimalMove": "8/5*/2* 6/3*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5*/2* 6/3*(2)",
+            "9/3* 8/5* 6/3",
+            "8/5*/2* 7/1",
+            "13/10 8/5* 6/3*(2)"
+        ],
+        "equityLoss": 0.212,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 9/3* 8/5* 6/3 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.212 EMG face au coup 3-ply 8/5*/2* 6/3*(2).",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-3 en Match en 5 pts (0-0, Videau à 1) : 8/5*/2* 6/3*(2) surpasse 9/3* 8/5* 6/3 de +0.212 EMG (84.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 8/5*/2* en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 8/5*/2* 6/3*(2) domine 9/3* 8/5* 6/3 de +0.212 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 8/5*/2* 6/3*(2) maximise votre équité cubeful (+1.567 EMG).",
+            "Évitez 9/3* 8/5* 6/3 (-0.212 EMG) ; jouez la ligne maîtresse 8/5*/2* 6/3*(2)."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_638_66",
+        "tier": 2,
+        "xgid": "XGID=-CCa-C--A---aAa-b-bbAbdBA-:0:0:1:66:0:0:0:5:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "23/11 20/14*/8",
+        "optimalMove": "23/17(2) 20/14*/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "23/17(2) 20/14*/8",
+            "23/11 20/14*/8",
+            "23/17(2) 20/14* 8/2",
+            "23/17 20/14*/8 13/7"
+        ],
+        "equityLoss": 0.446,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 23/11 20/14*/8 (Match en 5 pts (0-0, Videau à 1)), vous concédez -0.446 EMG face au coup 3-ply 23/17(2) 20/14*/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 6-6 en Match en 5 pts (0-0, Videau à 1) : 23/17(2) 20/14*/8 surpasse 23/11 20/14*/8 de +0.446 EMG (44.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 23/17(2) en Match en 5 pts (0-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 23/17(2) 20/14*/8 domine 23/11 20/14*/8 de +0.446 EMG.",
+            "En Match en 5 pts (0-0, Videau à 1), 23/17(2) 20/14*/8 maximise votre équité cubeful (-0.228 EMG).",
+            "Évitez 23/11 20/14*/8 (-0.446 EMG) ; jouez la ligne maîtresse 23/17(2) 20/14*/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_639_56",
+        "tier": 2,
+        "xgid": "XGID=-a---BDaC--AbC----cf---bB-:0:0:1:56:0:3:0:7:8",
+        "dice": [
+            5,
+            6
+        ],
+        "playedMove": "13/7* 11/6",
+        "optimalMove": "13/7* 6/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7* 6/1*",
+            "13/7* 11/6",
+            "13/8 13/7*",
+            "13/7*/2"
+        ],
+        "equityLoss": 0.179,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7* 11/6 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.179 EMG face au coup 3-ply 13/7* 6/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-6 en Match en 7 pts (0-3, Videau à 1) : 13/7* 6/1* surpasse 13/7* 11/6 de +0.179 EMG (59.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/7* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/7* 6/1* domine 13/7* 11/6 de +0.179 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), 13/7* 6/1* maximise votre équité cubeful (+0.491 EMG).",
+            "Évitez 13/7* 11/6 (-0.179 EMG) ; jouez la ligne maîtresse 13/7* 6/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_640_24",
+        "tier": 2,
+        "xgid": "XGID=-bBA--D-A---cE--aaad-ba-B-:0:0:1:24:4:2:0:9:8",
+        "dice": [
+            2,
+            4
+        ],
+        "playedMove": "24/22* 24/20",
+        "optimalMove": "24/22*/18*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/22*/18*",
+            "24/22* 24/20",
+            "8/4 6/4",
+            "24/22* 13/9"
+        ],
+        "equityLoss": 0.446,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/22* 24/20 (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.446 EMG face au coup 3-ply 24/22*/18*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-4 en Match en 9 pts (4-2, Videau à 1) : 24/22*/18* surpasse 24/22* 24/20 de +0.446 EMG (53.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/22*/18* en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/22*/18* domine 24/22* 24/20 de +0.446 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 24/22*/18* maximise votre équité cubeful (+0.098 EMG).",
+            "Évitez 24/22* 24/20 (-0.446 EMG) ; jouez la ligne maîtresse 24/22*/18*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_641_34",
+        "tier": 2,
+        "xgid": "XGID=-aaDA-E-----cCa--a-c-a-dB-:0:0:1:34:2:4:0:9:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "24/21* 6/2*",
+        "optimalMove": "24/21*/17*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21*/17*",
+            "24/21* 6/2*",
+            "24/21* 24/20",
+            "6/2* 4/1*"
+        ],
+        "equityLoss": 0.187,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21* 6/2* (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.187 EMG face au coup 3-ply 24/21*/17*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 9 pts (2-4, Videau à 1) : 24/21*/17* surpasse 24/21* 6/2* de +0.187 EMG (68.9 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/21*/17* en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21*/17* domine 24/21* 6/2* de +0.187 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), 24/21*/17* maximise votre équité cubeful (+0.934 EMG).",
+            "Évitez 24/21* 6/2* (-0.187 EMG) ; jouez la ligne maîtresse 24/21*/17*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_642_14",
+        "tier": 2,
+        "xgid": "XGID=-bDAA-BAA--A-B-----gAbd-A-:0:0:1:14:4:2:0:9:8",
+        "dice": [
+            1,
+            4
+        ],
+        "playedMove": "24/20 4/3",
+        "optimalMove": "11/7 4/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "11/7 4/3",
+            "24/20 4/3",
+            "8/4 7/6",
+            "7/3 4/3"
+        ],
+        "equityLoss": 0.171,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/20 4/3 (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.171 EMG face au coup 3-ply 11/7 4/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-4 en Match en 9 pts (4-2, Videau à 1) : 11/7 4/3 surpasse 24/20 4/3 de +0.171 EMG (50.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 11/7 en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 11/7 4/3 domine 24/20 4/3 de +0.171 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 11/7 4/3 maximise votre équité cubeful (-0.153 EMG).",
+            "Évitez 24/20 4/3 (-0.171 EMG) ; jouez la ligne maîtresse 11/7 4/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_643_46",
+        "tier": 2,
+        "xgid": "XGID=--DAAaDA-A----aA--AA-bdeb-:0:0:1:46:4:2:0:9:8",
+        "dice": [
+            4,
+            6
+        ],
+        "playedMove": "15/9 7/3",
+        "optimalMove": "18/14* 9/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/14* 9/3",
+            "15/9 7/3",
+            "18/14* 15/9",
+            "19/15 9/3"
+        ],
+        "equityLoss": 0.269,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 15/9 7/3 (Match en 9 pts (4-2, Videau à 1)), vous concédez -0.269 EMG face au coup 3-ply 18/14* 9/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-6 en Match en 9 pts (4-2, Videau à 1) : 18/14* 9/3 surpasse 15/9 7/3 de +0.269 EMG (38.8 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/14* en Match en 9 pts (4-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/14* 9/3 domine 15/9 7/3 de +0.269 EMG.",
+            "En Match en 9 pts (4-2, Videau à 1), 18/14* 9/3 maximise votre équité cubeful (-0.731 EMG).",
+            "Évitez 15/9 7/3 (-0.269 EMG) ; jouez la ligne maîtresse 18/14* 9/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_644_52",
+        "tier": 2,
+        "xgid": "XGID=-DED-a-A--b-----A-acaabd--:0:0:1:52:2:4:0:9:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "16/14 7/2",
+        "optimalMove": "16/11 7/5*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "16/11 7/5*",
+            "16/14 7/2",
+            "7/2 3/1",
+            "16/9"
+        ],
+        "equityLoss": 0.271,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 16/14 7/2 (Match en 9 pts (2-4, Videau à 1)), vous concédez -0.271 EMG face au coup 3-ply 16/11 7/5*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-2 en Match en 9 pts (2-4, Videau à 1) : 16/11 7/5* surpasse 16/14 7/2 de +0.271 EMG (74.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 16/11 en Match en 9 pts (2-4, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 16/11 7/5* domine 16/14 7/2 de +0.271 EMG.",
+            "En Match en 9 pts (2-4, Videau à 1), 16/11 7/5* maximise votre équité cubeful (+0.868 EMG).",
+            "Évitez 16/14 7/2 (-0.271 EMG) ; jouez la ligne maîtresse 16/11 7/5*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_645_55",
+        "tier": 3,
+        "xgid": "XGID=--BAAbCA-A--cD---d-db---B-:0:0:1:55:8:9:0:11:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3 13/8 9/4",
+        "optimalMove": "13/3 9/4 7/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3 9/4 7/2",
+            "13/3 13/8 9/4",
+            "13/3 9/4 6/1",
+            "13/8(2) 9/4 7/2"
+        ],
+        "equityLoss": 0.061,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/3 13/8 9/4 (Match en 11 pts (8-9, Videau à 1)), vous concédez -0.061 EMG face au coup 3-ply 13/3 9/4 7/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Match en 11 pts (8-9, Videau à 1) : 13/3 9/4 7/2 surpasse 13/3 13/8 9/4 de +0.061 EMG (39.7 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/3 en Match en 11 pts (8-9, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/3 9/4 7/2 domine 13/3 13/8 9/4 de +0.061 EMG.",
+            "En Match en 11 pts (8-9, Videau à 1), 13/3 9/4 7/2 maximise votre équité cubeful (-0.338 EMG).",
+            "Évitez 13/3 13/8 9/4 (-0.061 EMG) ; jouez la ligne maîtresse 13/3 9/4 7/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_646_42",
+        "tier": 2,
+        "xgid": "XGID=-aA--AEaA-A-cD-aa-Af-b-A--:0:0:1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "18/16* 5/1*",
+        "optimalMove": "18/16* 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "18/16* 6/2",
+            "18/16* 5/1*",
+            "10/8 6/2",
+            "18/16* 10/6"
+        ],
+        "equityLoss": 0.245,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 18/16* 5/1* (Money Game), vous concédez -0.245 EMG face au coup 3-ply 18/16* 6/2.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-2 en Money Game : 18/16* 6/2 surpasse 18/16* 5/1* de +0.245 EMG (50.3 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 18/16* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 18/16* 6/2 domine 18/16* 5/1* de +0.245 EMG.",
+            "En Money Game, 18/16* 6/2 maximise votre équité cubeful (-0.029 EMG).",
+            "Évitez 18/16* 5/1* (-0.245 EMG) ; jouez la ligne maîtresse 18/16* 6/2."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_647_25",
+        "tier": 2,
+        "xgid": "XGID=--AA-BC-C-aa-C---aagab-aB-:0:0:1:25:0:0:0:0:8",
+        "dice": [
+            2,
+            5
+        ],
+        "playedMove": "13/11*/6",
+        "optimalMove": "13/11* 8/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11* 8/3",
+            "13/11*/6",
+            "13/11* 13/8",
+            "24/17*"
+        ],
+        "equityLoss": 0.658,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/11*/6 (Money Game), vous concédez -0.658 EMG face au coup 3-ply 13/11* 8/3.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-5 en Money Game : 13/11* 8/3 surpasse 13/11*/6 de +0.658 EMG (69.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 13/11* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 13/11* 8/3 domine 13/11*/6 de +0.658 EMG.",
+            "En Money Game, 13/11* 8/3 maximise votre équité cubeful (+0.924 EMG).",
+            "Évitez 13/11*/6 (-0.658 EMG) ; jouez la ligne maîtresse 13/11* 8/3."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_648_13",
+        "tier": 3,
+        "xgid": "XGID=-D-baC-AA-a--C----ag-aBaaA:0:0:1:13:0:0:0:0:8",
+        "dice": [
+            1,
+            3
+        ],
+        "playedMove": "bar/24*/21*",
+        "optimalMove": "bar/24* 13/10*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/24* 13/10*",
+            "bar/24*/21*",
+            "bar/24* 7/4*",
+            "bar/21*"
+        ],
+        "equityLoss": 0.061,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/24*/21* (Money Game), vous concédez -0.061 EMG face au coup 3-ply bar/24* 13/10*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 1-3 en Money Game : bar/24* 13/10* surpasse bar/24*/21* de +0.061 EMG (60.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/24* en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/24* 13/10* domine bar/24*/21* de +0.061 EMG.",
+            "En Money Game, bar/24* 13/10* maximise votre équité cubeful (+0.647 EMG).",
+            "Évitez bar/24*/21* (-0.061 EMG) ; jouez la ligne maîtresse bar/24* 13/10*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_649_55",
+        "tier": 3,
+        "xgid": "XGID=-ABaa-G-----ba-----adADad-:0:0:1:55:0:0:0:0:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "22/17(3) 6/1",
+        "optimalMove": "22/17(2) 21/16 6/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/17(2) 21/16 6/1",
+            "22/17(3) 6/1",
+            "22/17(2) 6/1(2)",
+            "22/17 21/11 6/1"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 22/17(3) 6/1 (Money Game), vous concédez -0.065 EMG face au coup 3-ply 22/17(2) 21/16 6/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-5 en Money Game : 22/17(2) 21/16 6/1 surpasse 22/17(3) 6/1 de +0.065 EMG (51.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/17(2) en Money Game.",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/17(2) 21/16 6/1 domine 22/17(3) 6/1 de +0.065 EMG.",
+            "En Money Game, 22/17(2) 21/16 6/1 maximise votre équité cubeful (+0.089 EMG).",
+            "Évitez 22/17(3) 6/1 (-0.065 EMG) ; jouez la ligne maîtresse 22/17(2) 21/16 6/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_650_53",
+        "tier": 2,
+        "xgid": "XGID=--DC-aE-a---------ce---eBA:0:0:1:53:1:0:0:3:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "bar/20 6/3",
+        "optimalMove": "bar/17",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/17",
+            "bar/20 6/3",
+            "bar/22 6/1",
+            "bar/20 24/21"
+        ],
+        "equityLoss": 0.192,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/20 6/3 (Match en 3 pts (1-0, Videau à 1)), vous concédez -0.192 EMG face au coup 3-ply bar/17.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 5-3 en Match en 3 pts (1-0, Videau à 1) : bar/17 surpasse bar/20 6/3 de +0.192 EMG (37.5 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/17 en Match en 3 pts (1-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/17 domine bar/20 6/3 de +0.192 EMG.",
+            "En Match en 3 pts (1-0, Videau à 1), bar/17 maximise votre équité cubeful (-0.604 EMG).",
+            "Évitez bar/20 6/3 (-0.192 EMG) ; jouez la ligne maîtresse bar/17."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_651_45",
+        "tier": 3,
+        "xgid": "XGID=-aEaA-DC--A--aA----a--cdd-:0:0:1:45:0:1:0:3:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "7/3* 6/1*",
+        "optimalMove": "14/10 6/1*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/10 6/1*",
+            "7/3* 6/1*",
+            "10/1*",
+            "14/10 7/2"
+        ],
+        "equityLoss": 0.072,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 7/3* 6/1* (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.072 EMG face au coup 3-ply 14/10 6/1*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 3 pts (0-1, Videau à 1) : 14/10 6/1* surpasse 7/3* 6/1* de +0.072 EMG (63.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/10 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/10 6/1* domine 7/3* 6/1* de +0.072 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), 14/10 6/1* maximise votre équité cubeful (+0.564 EMG).",
+            "Évitez 7/3* 6/1* (-0.072 EMG) ; jouez la ligne maîtresse 14/10 6/1*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_652_45",
+        "tier": 2,
+        "xgid": "XGID=--FDBA---a--a------A--ceeA:0:0:1:45:0:1:0:3:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "bar/16",
+        "optimalMove": "bar/20 5/1",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/20 5/1",
+            "bar/16",
+            "bar/21 19/14",
+            "bar/20 19/15"
+        ],
+        "equityLoss": 0.367,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/16 (Match en 3 pts (0-1, Videau à 1)), vous concédez -0.367 EMG face au coup 3-ply bar/20 5/1.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 3 pts (0-1, Videau à 1) : bar/20 5/1 surpasse bar/16 de +0.367 EMG (33.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/20 en Match en 3 pts (0-1, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/20 5/1 domine bar/16 de +0.367 EMG.",
+            "En Match en 3 pts (0-1, Videau à 1), bar/20 5/1 maximise votre équité cubeful (-0.610 EMG).",
+            "Évitez bar/16 (-0.367 EMG) ; jouez la ligne maîtresse bar/20 5/1."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_653_35",
+        "tier": 2,
+        "xgid": "XGID=--A---E-Ab--eEA--b-d-aa-B-:0:0:1:35:0:2:0:5:8",
+        "dice": [
+            3,
+            5
+        ],
+        "playedMove": "24/21*/16",
+        "optimalMove": "24/21* 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/21* 13/8",
+            "24/21*/16",
+            "24/21* 8/3",
+            "24/21* 6/1"
+        ],
+        "equityLoss": 0.195,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 24/21*/16 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.195 EMG face au coup 3-ply 24/21* 13/8.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-5 en Match en 5 pts (0-2, Videau à 1) : 24/21* 13/8 surpasse 24/21*/16 de +0.195 EMG (45.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 24/21* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 24/21* 13/8 domine 24/21*/16 de +0.195 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 24/21* 13/8 maximise votre équité cubeful (-0.097 EMG).",
+            "Évitez 24/21*/16 (-0.195 EMG) ; jouez la ligne maîtresse 24/21* 13/8."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_654_32",
+        "tier": 4,
+        "xgid": "XGID=-aB-aaC-A--aeE--Ba-ba-aaAA:0:0:1:32:2:0:0:5:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "bar/23* 8/5*",
+        "optimalMove": "bar/22* 6/4*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/22* 6/4*",
+            "bar/23* 8/5*",
+            "bar/22* 13/11*",
+            "bar/22*/20*"
+        ],
+        "equityLoss": 0.036,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23* 8/5* (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.036 EMG face au coup 3-ply bar/22* 6/4*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-2 en Match en 5 pts (2-0, Videau à 1) : bar/22* 6/4* surpasse bar/23* 8/5* de +0.036 EMG (62.6 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/22* en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/22* 6/4* domine bar/23* 8/5* de +0.036 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/22* 6/4* maximise votre équité cubeful (+0.621 EMG).",
+            "Évitez bar/23* 8/5* (-0.036 EMG) ; jouez la ligne maîtresse bar/22* 6/4*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_655_34",
+        "tier": 2,
+        "xgid": "XGID=-aA--BB--aAaeE----aaAbAcB-:0:0:1:34:0:2:0:5:8",
+        "dice": [
+            3,
+            4
+        ],
+        "playedMove": "13/10 13/9*",
+        "optimalMove": "22/19* 13/9*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "22/19* 13/9*",
+            "13/10 13/9*",
+            "22/18* 13/10",
+            "24/20 22/19*"
+        ],
+        "equityLoss": 0.233,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/10 13/9* (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.233 EMG face au coup 3-ply 22/19* 13/9*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-4 en Match en 5 pts (0-2, Videau à 1) : 22/19* 13/9* surpasse 13/10 13/9* de +0.233 EMG (66.4 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 22/19* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 22/19* 13/9* domine 13/10 13/9* de +0.233 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), 22/19* 13/9* maximise votre équité cubeful (+0.834 EMG).",
+            "Évitez 13/10 13/9* (-0.233 EMG) ; jouez la ligne maîtresse 22/19* 13/9*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_656_45",
+        "tier": 2,
+        "xgid": "XGID=aAD-Aba-a---eEAaA--Ab--b-A:0:0:1:45:2:0:0:5:8",
+        "dice": [
+            4,
+            5
+        ],
+        "playedMove": "bar/16",
+        "optimalMove": "bar/21 19/14",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/21 19/14",
+            "bar/16",
+            "bar/21 13/8*",
+            "bar/21 14/9"
+        ],
+        "equityLoss": 0.285,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/16 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.285 EMG face au coup 3-ply bar/21 19/14.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 4-5 en Match en 5 pts (2-0, Videau à 1) : bar/21 19/14 surpasse bar/16 de +0.285 EMG (43.2 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/21 en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/21 19/14 domine bar/16 de +0.285 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), bar/21 19/14 maximise votre équité cubeful (-0.478 EMG).",
+            "Évitez bar/16 (-0.285 EMG) ; jouez la ligne maîtresse bar/21 19/14."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_657_36",
+        "tier": 2,
+        "xgid": "XGID=--B-ABb-----dF--a-a-BaAeaA:0:0:1:36:0:2:0:5:8",
+        "dice": [
+            3,
+            6
+        ],
+        "playedMove": "bar/19 13/10",
+        "optimalMove": "bar/16*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/16*",
+            "bar/19 13/10",
+            "bar/22 13/7",
+            "bar/22 20/14"
+        ],
+        "equityLoss": 0.374,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/19 13/10 (Match en 5 pts (0-2, Videau à 1)), vous concédez -0.374 EMG face au coup 3-ply bar/16*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 3-6 en Match en 5 pts (0-2, Videau à 1) : bar/16* surpasse bar/19 13/10 de +0.374 EMG (65.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/16* en Match en 5 pts (0-2, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/16* domine bar/19 13/10 de +0.374 EMG.",
+            "En Match en 5 pts (0-2, Videau à 1), bar/16* maximise votre équité cubeful (+0.776 EMG).",
+            "Évitez bar/19 13/10 (-0.374 EMG) ; jouez la ligne maîtresse bar/16*."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_658_26",
+        "tier": 2,
+        "xgid": "XGID=-BDabbA--A--eDAa--B--aab--:0:0:1:26:2:0:0:5:8",
+        "dice": [
+            2,
+            6
+        ],
+        "playedMove": "13/7 9/7",
+        "optimalMove": "14/6",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "14/6",
+            "13/7 9/7",
+            "13/11 9/3*",
+            "14/8 9/7"
+        ],
+        "equityLoss": 0.12,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant 13/7 9/7 (Match en 5 pts (2-0, Videau à 1)), vous concédez -0.120 EMG face au coup 3-ply 14/6.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-6 en Match en 5 pts (2-0, Videau à 1) : 14/6 surpasse 13/7 9/7 de +0.120 EMG (49.0 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par 14/6 en Match en 5 pts (2-0, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : 14/6 domine 13/7 9/7 de +0.120 EMG.",
+            "En Match en 5 pts (2-0, Videau à 1), 14/6 maximise votre équité cubeful (-0.033 EMG).",
+            "Évitez 13/7 9/7 (-0.120 EMG) ; jouez la ligne maîtresse 14/6."
+        ]
+    },
+    {
+        "id": "btneural8c_3ply_659_23",
+        "tier": 3,
+        "xgid": "XGID=-B-aA-CaB---dD---a-g---aBA:0:0:1:23:0:3:0:7:8",
+        "dice": [
+            2,
+            3
+        ],
+        "playedMove": "bar/23*/20",
+        "optimalMove": "bar/23* 6/3*",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "bar/23* 6/3*",
+            "bar/23*/20",
+            "bar/22 6/4",
+            "bar/23* 24/21"
+        ],
+        "equityLoss": 0.07,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Structure 3-Ply",
+        "whyFailed": "En jouant bar/23*/20 (Match en 7 pts (0-3, Videau à 1)), vous concédez -0.070 EMG face au coup 3-ply bar/23* 6/3*.",
+        "explanation": "Certifié en 3-ply [world class] avec le jet 2-3 en Match en 7 pts (0-3, Videau à 1) : bar/23* 6/3* surpasse bar/23*/20 de +0.070 EMG (56.1 % de gain).",
+        "proverb": "La profondeur 3-ply révèle les duplications et les retours de flamme invisibles à 1-ply.",
+        "hint": "Regardez la ligne commençant par bar/23* en Match en 7 pts (0-3, Videau à 1).",
+        "commentaryVariants": [
+            "Certifié 3-ply [world class] : bar/23* 6/3* domine bar/23*/20 de +0.070 EMG.",
+            "En Match en 7 pts (0-3, Videau à 1), bar/23* 6/3* maximise votre équité cubeful (+0.447 EMG).",
+            "Évitez bar/23*/20 (-0.070 EMG) ; jouez la ligne maîtresse bar/23* 6/3*."
         ]
     }
 ];
