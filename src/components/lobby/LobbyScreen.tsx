@@ -21,7 +21,7 @@ import RecentMatchesSummary from './RecentMatchesSummary';
 import LearningModulesGrid from './LearningModulesGrid';
 import CoachPreMatchBriefingCard from './CoachPreMatchBriefingCard';
 import TournamentTableClockModal from '../clock/TournamentTableClockModal';
-import { LobbyLeftSidebar, LobbyRightShowcaseColumn } from './LobbySidebarAndWidgets';
+import { LobbyLeftSidebar } from './LobbySidebarAndWidgets';
 import { BotPortraitMedallion } from '../common/MonteCarloIcons';
 import { getSyncAcademySnapshot, loadPlayerHubData, type AcademyProgressSnapshot, type RecentMatchEntry } from '../../features/progression/userProgressionService';
 import { BOT_PERSONAS_BY_DIFFICULTY, getBotPersona } from '../../features/personas/botPersonas';
@@ -329,57 +329,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Section Tournois Style Backgammon Galaxy */}
-                            <section
-                                aria-label="Tournois et événements"
-                                data-testid="lobby-galaxy-tournaments-box"
-                                className="rounded-2xl border border-white/10 bg-[#121629]/80 p-3.5 shadow-xl"
-                            >
-                                <div className="mb-2.5 flex items-center justify-between">
-                                    <span className="flex items-center gap-2 text-sm font-bold text-white">
-                                        <span>🏆</span>
-                                        <span>Tournois</span>
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => onOpenModule?.('tournaments')}
-                                        className="text-xs font-semibold text-slate-400 hover:text-white transition"
-                                    >
-                                        Tout ›
-                                    </button>
-                                </div>
-                                <div className="space-y-1.5">
-                                    {[
-                                        { time: 'En cours', title: 'Monte-Carlo Championship', format: 'Normal · 7 pts', club: '🇲🇨 Monaco', action: 'Voir' },
-                                        { time: '19h30', title: 'Tournoi Rapide du Soir', format: 'Speed · 5 pts', club: '🇫🇷 Paris', action: 'Rejoindre' },
-                                        { time: 'Demain', title: 'Open International WBGF', format: 'Normal · 9 pts', club: '🌍 Global', action: 'Calendrier' },
-                                    ].map((tItem) => (
-                                        <div
-                                            key={tItem.title}
-                                            className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-xs"
-                                        >
-                                            <div className="flex items-center gap-2.5 min-w-0">
-                                                <span className="shrink-0 rounded-md bg-emerald-500/15 border border-emerald-400/30 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-300">
-                                                    {tItem.time}
-                                                </span>
-                                                <span className="font-bold text-white truncate">{tItem.title}</span>
-                                                <span className="hidden sm:inline text-slate-400">{tItem.format}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2 shrink-0">
-                                                <span className="hidden md:inline text-slate-300">{tItem.club}</span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => onOpenModule?.('tournaments')}
-                                                    className="rounded-lg bg-[#f3c65f]/20 border border-[#f3c65f]/40 px-2.5 py-1 text-xs font-bold text-[#f3c65f] hover:bg-[#f3c65f] hover:text-slate-950 transition"
-                                                >
-                                                    {tItem.action}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
                         </div>
 
                         {selectedMode === 'training' && (
@@ -440,14 +389,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                             )}
                         </section>
                     </div>
-
-                    {!showOptions && (
-                        <LobbyRightShowcaseColumn
-                            eloRating={snapshot.eloRating} averagePR={snapshot.averagePR}
-                            onQuickPlay={handlePlay}
-                            onOpenStats={() => onOpenModule?.('stats')}
-                        />
-                    )}
                 </div>
             </div>
 
