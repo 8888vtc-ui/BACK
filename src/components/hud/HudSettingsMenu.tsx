@@ -174,13 +174,35 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                     </button>
                 </div>
 
+                <button
+                    type="button"
+                    data-testid="hud-auto-validate-toggle"
+                    onClick={() => {
+                        const isCurrentlyAuto = effectiveAutoMode === 'always' || effectiveAutoMode === 'always_except_cube';
+                        const next: AutoConfirmMode = isCurrentlyAuto ? 'never' : 'always';
+                        setLocalAutoMode(next);
+                        saveAutoConfirmMode(next);
+                        onSelectAutoConfirmMode?.(next);
+                    }}
+                    className="flex items-center justify-between w-full rounded-xl border border-[#f3c65f]/40 bg-[#f3c65f]/10 px-3 py-2 text-xs font-bold text-white hover:border-[#f3c65f] transition"
+                >
+                    <span>⚡ Validation automatique des coups</span>
+                    <span className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-black ${
+                        effectiveAutoMode === 'always' || effectiveAutoMode === 'always_except_cube'
+                            ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50'
+                            : 'bg-white/10 text-slate-300'
+                    }`}>
+                        {effectiveAutoMode === 'always' || effectiveAutoMode === 'always_except_cube' ? 'ON' : 'OFF'}
+                    </span>
+                </button>
+
                 <div className="grid grid-cols-2 gap-1.5">
                     <button
                         type="button" onClick={handleCycleAutoMode} data-testid="hud-auto-confirm-btn"
                         title={AUTO_CONFIRM_MODE_LABELS[effectiveAutoMode].description}
                         className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 transition"
                     >
-                        <span>⚡ Auto</span>
+                        <span>⚡ Mode</span>
                         <span className="font-mono text-[11px] font-bold text-amber-300">{AUTO_CONFIRM_MODE_LABELS[effectiveAutoMode].badge}</span>
                     </button>
                     <button

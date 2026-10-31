@@ -290,6 +290,10 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         onToggleCoach={() => { setIsFocusFullBoard((v) => !v); onTriggerCoach(); }}
                         onToggleTheme={onToggleTheme}
                         onBackToLobby={onBackToLobby}
+                        canUndo={replay.isLive && game.canUndo}
+                        onUndo={replay.isLive ? game.undoMove : NOOP}
+                        autoConfirmEnabled={game.autoConfirmTurn}
+                        onToggleAutoConfirm={game.toggleAutoConfirmTurn}
                     />
                 </div>
 
