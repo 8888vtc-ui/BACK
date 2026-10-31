@@ -90,6 +90,31 @@ export const KeithRaceCalculatorCard: React.FC<KeithRaceCalculatorCardProps> = (
                 </label>
             </div>
 
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-white/10 text-[11px] font-mono">
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/25 p-2">
+                    <div className="text-slate-400 font-sans font-bold">1. Keith (1993)</div>
+                    <div className="font-extrabold text-emerald-300">{keithResult.keithX} vs {keithResult.keithO} (Max Take {keithResult.thresholdTake})</div>
+                </div>
+                <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-2">
+                    <div className="text-slate-400 font-sans font-bold">2. Timmes (Oct. 2026)</div>
+                    <div className="font-extrabold text-amber-200">
+                        Adj {pipsX + penX} vs {pipsO + penO} (Pt Double {Math.round((pipsO + penO) * 0.88)})
+                    </div>
+                </div>
+                <div className="rounded-xl border border-sky-500/30 bg-sky-950/20 p-2">
+                    <div className="text-slate-400 font-sans font-bold">3. Isight (Reichert)</div>
+                    <div className="font-extrabold text-sky-300">
+                        CPW {Math.min(99, Math.max(1, Math.round(50 + ((pipsO + penO) - (pipsX + penX)) * 2.5)))}%
+                    </div>
+                </div>
+                <div className="rounded-xl border border-purple-500/30 bg-purple-950/20 p-2">
+                    <div className="text-slate-400 font-sans font-bold">4. Trice (10% &amp; Règle 9)</div>
+                    <div className="font-extrabold text-purple-200">
+                        Seuil Prise ≤ {Math.floor(pipsX * 1.1) - ([69, 79, 89, 99].includes(pipsX) ? 1 : 2)} pips
+                    </div>
+                </div>
+            </div>
+
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10">
                 <div className="text-xs sm:text-sm font-mono text-slate-200">
                     <span className="text-amber-200 font-bold">{labels.keithVerdictLabel} : </span>
