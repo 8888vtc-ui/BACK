@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function DrillsPage() {
     return (
-        <main className="flex h-dvh overflow-y-auto flex-col items-center p-2 sm:p-5 bg-slate-950 text-slate-100">
+        <main className="flex h-dvh max-h-dvh w-screen overflow-hidden flex-col items-center bg-slate-950 text-slate-100">
             <ErrorBoundary name="Parcours Adaptatif de Quizz">
                 <BlunderDrillView />
             </ErrorBoundary>
