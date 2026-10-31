@@ -196,6 +196,11 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
             setMatchInfo(info);
             setOpponentProfile(opp);
             setStatus('matched');
+            // Salutation courtoise et respectueuse de l'adversaire à l'ouverture de la table
+            setTimeout(() => {
+                setQuickChatMessage({ player: 'O', messageId: 'gg' });
+                setTimeout(() => setQuickChatMessage(null), 3500);
+            }, 2400);
         }, isRematch ? 600 : computeRealisticMatchmakingDelayMs());
     }
 

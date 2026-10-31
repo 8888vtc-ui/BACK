@@ -12,6 +12,7 @@ import type {
 import type { MultiplayerRealtimeManager } from '../features/multiplayer/realtimeChannel';
 import type { MatchClockState } from '../features/multiplayer/clockManager';
 import type { ActiveGameSession } from '../features/multiplayer/sessionRecovery';
+import type { MatchEloPrOptions } from '../features/multiplayer/elo';
 import { useMultiplayerLocalProfile } from './useMultiplayerLocalProfile';
 import { useMultiplayerClockAndTimers } from './useMultiplayerClockAndTimers';
 import { useMultiplayerBroadcasters } from './useMultiplayerBroadcasters';
@@ -49,7 +50,7 @@ export interface UseMultiplayerGameReturn {
         winner: Player,
         winType: string,
         pointsWon: number,
-        prOptions?: { readonly prX?: number | null; readonly prO?: number | null },
+        prOptions?: MatchEloPrOptions,
     ) => void;
     leaveMatch: () => void;
     onRemoteAction?: (action: RealtimeBroadcastAction) => void;

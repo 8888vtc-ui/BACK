@@ -78,6 +78,8 @@ export default function Home() {
                 multiplayer.handleMatchOver(result.winner, result.winType, result.pointsWon, {
                     prX: livePrRef.current.prX,
                     prO: livePrRef.current.prO,
+                    decisionsCount: Math.max(6, turnsHistoryRef.current.length),
+                    isPrivateRoom: Boolean(multiplayer.privateRoomCode),
                 });
             }
             handleGameOverAnalysis(result);
@@ -151,7 +153,6 @@ export default function Home() {
             const opp = multiplayer.opponentProfile;
             if (multiplayer.matchInfo.isClubChallenger && opp) {
                 const timer = window.setTimeout(() => {
-                    userInitiatedMultiplayerRef.current = false;
                     game.startNewMatch(matchLen, opp.clubBotDifficulty ?? 'intermediate');
                     resetGameHistory();
                     modals.closeMatchmaking();
