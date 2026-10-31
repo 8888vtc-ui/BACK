@@ -17,3 +17,4 @@ export default async function LobbyRedirectPage(props: LobbyRedirectPageProps) {
     const qs = params.toString();
     redirect(qs ? `/?${qs}` : '/');
 }
+
