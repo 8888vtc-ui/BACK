@@ -173,7 +173,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                 </div>
 
                 {/* Droite : Bouton PWA + Sélecteur de langue 6 marchés + Menu Compte Utilisateur */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                     <div className="hidden md:block">
                         <LanguageSelector />
                     </div>
@@ -183,14 +183,14 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             onClick={() => void handleInstallClick()}
                             data-testid="navbar-pwa-install-btn"
                             aria-label={ui.pwa.installAppAria}
-                            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900 px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:border-white/25 hover:text-white active:scale-95"
+                            className="hidden sm:inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap rounded-lg border border-white/10 bg-slate-900 px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:border-white/25 hover:text-white active:scale-95"
                         >
-                            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-3.5 w-3.5 text-[#f3c65f]" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-[#f3c65f]" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                                 <polyline points="7 10 12 15 17 10" />
                                 <line x1="12" y1="15" x2="12" y2="3" />
                             </svg>
-                            <span>{ui.pwa.installApp}</span>
+                            <span className="whitespace-nowrap">{ui.pwa.installApp}</span>
                         </button>
                     )}
                     <UserAccountMenu

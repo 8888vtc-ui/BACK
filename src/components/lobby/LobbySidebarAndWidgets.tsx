@@ -182,7 +182,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     <Link href="/academy#er-vs-erh-manifesto" className={itemCls}>
                         <span className="flex items-center gap-2">
                             <IconAstrolabeCoach size={15} className="text-[#f3d27a]" />
-                            {!collapsed && <span>Étude ER vs ERH (10 200)</span>}
+                            {!collapsed && <span>Étude ER vs ERH (19 413 Quiz)</span>}
                         </span>
                         {!collapsed && <span className="font-mono text-[11px] font-bold text-[#f3d27a]">+30.9%</span>}
                     </Link>
@@ -279,11 +279,11 @@ export const LobbyRightShowcaseColumn: React.FC<LobbyRightShowcaseColumnProps> =
         <aside
             aria-label="Table d'Honneur et Galerie des Maîtres"
             data-testid="lobby-right-showcase"
-            className="hidden xl:flex flex-col gap-4 w-72 shrink-0"
+            className="hidden xl:flex flex-col gap-3 w-72 shrink-0 overflow-y-auto max-h-[calc(100dvh-5.5rem)] pr-0.5"
         >
             {/* Carte Table d'Honneur Monte-Carlo */}
-            <div className="rounded-2xl border border-[#d4af37]/30 bg-[#110e0b] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.85)]">
-                <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="rounded-2xl border border-[#d4af37]/30 bg-[#110e0b] p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.85)]">
+                <div className="flex items-center justify-between gap-2 mb-2">
                     <div className="flex items-center gap-2.5">
                         <BotPortraitMedallion character="grandmaster" size="sm" isActive />
                         <div>
@@ -291,7 +291,7 @@ export const LobbyRightShowcaseColumn: React.FC<LobbyRightShowcaseColumnProps> =
                                 Viktor « L’Intellectuel »
                             </div>
                             <div className="font-mono text-[11px] font-semibold text-[#d4af37]">
-                                2150 Elo · PR 0.30
+                                2150 Elo · PR 0.6
                             </div>
                         </div>
                     </div>
@@ -300,7 +300,7 @@ export const LobbyRightShowcaseColumn: React.FC<LobbyRightShowcaseColumnProps> =
                 <button
                     type="button"
                     onClick={onQuickPlay}
-                    className="group relative w-full aspect-[4/3] rounded-xl border border-[#d4af37]/40 bg-[#09341c] overflow-hidden shadow-inner flex flex-col justify-between p-2.5 text-left transition hover:brightness-105"
+                    className="group relative w-full aspect-[16/11] rounded-xl border border-[#d4af37]/40 bg-[#09341c] overflow-hidden shadow-inner flex flex-col justify-between p-2 text-left transition hover:brightness-105"
                 >
                     <div className="flex items-center justify-between z-10">
                         <span className="inline-flex items-center gap-1.5 rounded border border-[#d4af37]/40 bg-[#0b0907]/90 px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-[#f7f3e8]">
@@ -340,8 +340,8 @@ export const LobbyRightShowcaseColumn: React.FC<LobbyRightShowcaseColumnProps> =
             </div>
 
             {/* Les 4 Personnages Officiels en Photos Haute-Couture */}
-            <div className="rounded-2xl border border-[#d4af37]/25 bg-[#110e0b] p-4 shadow-xl flex flex-col gap-2">
-                <div className="flex items-center justify-between border-b border-[#d4af37]/15 pb-2">
+            <div className="rounded-2xl border border-[#d4af37]/25 bg-[#110e0b] p-3 shadow-xl flex flex-col gap-1.5">
+                <div className="flex items-center justify-between border-b border-[#d4af37]/15 pb-1.5">
                     <span className="font-display text-sm font-bold italic text-[#f7f3e8]">
                         Les Adversaires du Salon
                     </span>
@@ -349,42 +349,42 @@ export const LobbyRightShowcaseColumn: React.FC<LobbyRightShowcaseColumnProps> =
                         Revue & PR
                     </button>
                 </div>
-                <div className="space-y-1.5 text-xs">
+                <div className="space-y-1 text-xs">
                     <div className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/[0.05] px-2.5 py-1.5">
-                        <span className="flex items-center gap-2 font-semibold text-[#f7f3e8]">
+                        <span className="flex items-center gap-2 font-semibold text-[#f7f3e8] truncate">
                             <BotPortraitMedallion character="grandmaster" size="sm" />
-                            <span>Viktor « L’Intellectuel »</span>
+                            <span className="truncate">Viktor « L’Intellectuel »</span>
                         </span>
-                        <span className="font-mono font-bold text-emerald-400">PR 0.3</span>
+                        <span className="shrink-0 font-mono font-bold text-emerald-400">PR 0.6</span>
                     </div>
                     <div className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/[0.05] px-2.5 py-1.5">
-                        <span className="flex items-center gap-2 font-semibold text-stone-200">
+                        <span className="flex items-center gap-2 font-semibold text-stone-200 truncate">
                             <BotPortraitMedallion character="expert" size="sm" />
-                            <span>L’Homme d’Affaires</span>
+                            <span className="truncate">L’Homme d’Affaires</span>
                         </span>
-                        <span className="font-mono font-bold text-[#d4af37]">PR 1.8</span>
+                        <span className="shrink-0 font-mono font-bold text-[#d4af37]">PR 2.5</span>
                     </div>
                     <div className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/[0.05] px-2.5 py-1.5">
-                        <span className="flex items-center gap-2 font-semibold text-stone-200">
+                        <span className="flex items-center gap-2 font-semibold text-stone-200 truncate">
                             <BotPortraitMedallion character="intermediate" size="sm" />
-                            <span>Sofia « La Riviera »</span>
+                            <span className="truncate">Sofia « La Riviera »</span>
                         </span>
-                        <span className="font-mono font-bold text-amber-300">PR 4.2</span>
+                        <span className="shrink-0 font-mono font-bold text-amber-300">PR 7.5</span>
                     </div>
                     <div className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/[0.05] px-2.5 py-1.5">
-                        <span className="flex items-center gap-2 font-semibold text-stone-200">
+                        <span className="flex items-center gap-2 font-semibold text-stone-200 truncate">
                             <BotPortraitMedallion character="beginner" size="sm" />
-                            <span>Le Mauvais Joueur</span>
+                            <span className="truncate">Le Mauvais Joueur</span>
                         </span>
-                        <span className="font-mono font-bold text-rose-300">PR 7.8</span>
+                        <span className="shrink-0 font-mono font-bold text-rose-300">PR 12.5</span>
                     </div>
                 </div>
                 <Link
                     href="/academy#er-vs-erh-manifesto"
-                    className="mt-1 flex items-center justify-between rounded-xl border border-emerald-400/30 bg-emerald-950/35 px-2.5 py-1.5 text-[11px] font-bold text-emerald-200 hover:border-emerald-400/60 transition"
+                    className="mt-1 flex items-center justify-between gap-1.5 rounded-xl border border-emerald-400/30 bg-emerald-950/35 px-2.5 py-1.5 text-[11px] font-bold text-emerald-200 hover:border-emerald-400/60 transition"
                 >
-                    <span>🔬 Pourquoi ERH bat ER (10 200 parties)</span>
-                    <span className="font-mono text-emerald-300">+30,9 % →</span>
+                    <span className="truncate">🔬 Pourquoi ERH bat ER (19 413 Quiz)</span>
+                    <span className="shrink-0 whitespace-nowrap font-mono text-emerald-300">+30,9 % →</span>
                 </Link>
             </div>
         </aside>

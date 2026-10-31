@@ -213,10 +213,10 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 {mainCards.map((card) => {
                                     const active = selectedMode === card.id;
                                     return (
-                                        <button key={card.id} type="button" data-testid={`lobby-card-${card.id}`} aria-pressed={active} onClick={() => setSelectedMode(card.id)} className={`group relative flex flex-col items-start justify-between gap-1 rounded-2xl border p-4 text-left transition-all duration-150 ${active ? 'border-[#f3c65f] bg-[#121629] shadow-[0_0_0_1px_rgba(243,198,95,0.25),0_8px_24px_rgba(0,0,0,0.45)]' : 'border-white/10 bg-[#121629]/60 hover:border-white/20 hover:bg-[#121629]'}`}>
-                                            <div className="flex w-full items-center justify-between">
-                                                <span className="text-base font-bold text-white">{card.title}</span>
-                                                <span className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${active ? 'bg-[#f3c65f]/15 text-[#f3c65f]' : 'bg-white/5 text-slate-400'}`}>{card.badge}</span>
+                                        <button key={card.id} type="button" data-testid={`lobby-card-${card.id}`} aria-pressed={active} onClick={() => setSelectedMode(card.id)} className={`group relative flex flex-col items-start justify-between gap-1 rounded-2xl border p-3 sm:p-3.5 text-left transition-all duration-150 ${active ? 'border-[#f3c65f] bg-[#121629] shadow-[0_0_0_1px_rgba(243,198,95,0.25),0_8px_24px_rgba(0,0,0,0.45)]' : 'border-white/10 bg-[#121629]/60 hover:border-white/20 hover:bg-[#121629]'}`}>
+                                            <div className="flex w-full items-center justify-between gap-1.5 min-w-0">
+                                                <span className="text-sm sm:text-base font-bold text-white whitespace-nowrap truncate">{card.title}</span>
+                                                <span className={`shrink-0 whitespace-nowrap rounded-md px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold ${active ? 'bg-[#f3c65f]/15 text-[#f3c65f]' : 'bg-white/5 text-slate-400'}`}>{card.badge}</span>
                                             </div>
                                             <span className="text-xs text-slate-400 line-clamp-1">{card.subtitle}</span>
                                         </button>
@@ -239,20 +239,20 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                         data-testid={`lobby-persona-pill-${lvl}`}
                                                         aria-pressed={active}
                                                         onClick={() => { setIsMittensActive(false); setDifficulty(lvl); }}
-                                                        className={`min-w-[128px] sm:min-w-0 shrink-0 snap-start flex flex-col items-center gap-1 sm:gap-1.5 rounded-2xl border p-2.5 sm:p-3 text-center transition-all duration-200 ${
+                                                        className={`min-w-[128px] sm:min-w-0 shrink-0 snap-start flex flex-col items-center gap-1 sm:gap-1.5 rounded-2xl border p-2 sm:p-2.5 text-center transition-all duration-200 ${
                                                             active
                                                                 ? 'border-2 border-[#f3c65f] bg-gradient-to-b from-[#d4af37]/25 via-[#241a0d] to-[#120d07] text-white shadow-[0_0_24px_rgba(243,198,95,0.35)] -translate-y-0.5'
                                                                 : 'border-white/10 bg-black/45 text-stone-300 hover:border-[#d4af37]/50 hover:bg-[#1a130b] hover:text-white'
                                                         }`}
                                                     >
                                                         <BotPortraitMedallion character={lvl} size="md" isActive={active} />
-                                                        <span className="w-full truncate font-display text-sm italic font-black text-[#f7f3e8] leading-tight">
+                                                        <span className="w-full truncate font-display text-xs sm:text-sm italic font-black text-[#f7f3e8] leading-tight">
                                                             {p.shortName}
                                                         </span>
-                                                        <span className="w-full truncate text-[10px] font-bold uppercase tracking-wider text-[#f3c65f]">
+                                                        <span className="w-full truncate text-[10px] font-bold uppercase tracking-normal text-[#f3c65f]">
                                                             {p.styleBadge}
                                                         </span>
-                                                        <span className="rounded-md border border-[#d4af37]/35 bg-black/60 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-200">
+                                                        <span className="whitespace-nowrap rounded-md border border-[#d4af37]/35 bg-black/60 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-200 tracking-tight">
                                                             {BOT_ELO_BY_DIFF[lvl]} · PR {p.targetErrorRate}
                                                         </span>
                                                     </button>
@@ -263,20 +263,20 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                 data-testid="lobby-persona-pill-mittens"
                                                 aria-pressed={isMittensActive}
                                                 onClick={() => { setIsMittensActive(true); setDifficulty('grandmaster'); }}
-                                                className={`min-w-[128px] sm:min-w-0 shrink-0 snap-start flex flex-col items-center gap-1 sm:gap-1.5 rounded-2xl border p-2.5 sm:p-3 text-center transition-all duration-200 ${
+                                                className={`min-w-[128px] sm:min-w-0 shrink-0 snap-start flex flex-col items-center gap-1 sm:gap-1.5 rounded-2xl border p-2 sm:p-2.5 text-center transition-all duration-200 ${
                                                     isMittensActive
                                                         ? 'border-2 border-rose-400 bg-gradient-to-b from-rose-500/30 via-[#241016] to-[#12080b] text-white shadow-[0_0_24px_rgba(244,63,94,0.4)] -translate-y-0.5'
                                                         : 'border-white/10 bg-black/45 text-stone-300 hover:border-rose-400/50 hover:bg-[#1a0d12] hover:text-white'
                                                 }`}
                                             >
                                                 <BotPortraitMedallion character="mittens" size="md" isActive={isMittensActive} />
-                                                <span className="w-full truncate font-display text-sm italic font-black text-[#f7f3e8] leading-tight">
+                                                <span className="w-full truncate font-display text-xs sm:text-sm italic font-black text-[#f7f3e8] leading-tight">
                                                     Lord Mittens
                                                 </span>
-                                                <span className="w-full truncate text-[10px] font-bold uppercase tracking-wider text-rose-300">
+                                                <span className="w-full truncate text-[10px] font-bold uppercase tracking-normal text-rose-300">
                                                     Boss Secret
                                                 </span>
-                                                <span className="rounded-md border border-rose-400/40 bg-black/60 px-2 py-0.5 font-mono text-[10px] font-bold text-rose-200">
+                                                <span className="whitespace-nowrap rounded-md border border-rose-400/40 bg-black/60 px-1.5 py-0.5 font-mono text-[10px] font-bold text-rose-200 tracking-tight">
                                                     Elo ??? · PR 0.1
                                                 </span>
                                             </button>
