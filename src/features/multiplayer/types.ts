@@ -4,6 +4,8 @@
 
 import type { Player, Move } from '../../engine/backgammonEngine';
 
+export type ClubChallengerDifficulty = 'beginner' | 'intermediate' | 'expert';
+
 export interface PlayerEloProfile {
     id: string;
     username: string;
@@ -11,6 +13,9 @@ export interface PlayerEloProfile {
     rating: number;
     avatarUrl?: string | null;
     isGuest?: boolean;
+    countryFlag?: string;
+    countryName?: string;
+    clubBotDifficulty?: ClubChallengerDifficulty;
 }
 
 export type MultiplayerRole = Player; // 'X' | 'O'
@@ -32,6 +37,7 @@ export interface MultiplayerMatchInfo {
     matchLength: number;
     startedAt: string;
     localRole: MultiplayerRole;
+    isClubChallenger?: boolean;
 }
 
 export interface EloCalculationResult {

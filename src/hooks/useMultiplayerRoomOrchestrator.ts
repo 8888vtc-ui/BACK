@@ -16,6 +16,10 @@ import {
     assignPlayerRoles,
     createMultiplayerMatchInfo,
 } from '../features/multiplayer/matchmakingQueue';
+import {
+    computeRealisticMatchmakingDelayMs,
+    selectClubChallengerForRating,
+} from '../features/multiplayer/clubChallengerPool';
 import { createGameRoom, joinGameRoomByCode, subscribeToGameRoom } from '../features/multiplayer/roomService';
 import { MultiplayerRealtimeManager } from '../features/multiplayer/realtimeChannel';
 import {
@@ -123,10 +127,28 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
         setTimeout(() => connectToRealtime(info), 1800);
     }
 
+    function scheduleClubChallengerMatch(preferredMatchLength: number) {
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = setTimeout(() => {
+            const opp = selectClubChallengerForRating(localProfile.rating);
+            const roomId = generateRoomId(localProfile.id, opp.id);
+            const info: MultiplayerMatchInfo = {
+                ...createMultiplayerMatchInfo(roomId, localProfile, opp, preferredMatchLength, localProfile.id),
+                isClubChallenger: true,
+            };
+            setMatchInfo(info);
+            setOpponentProfile(opp);
+            setStatus('matched');
+        }, computeRealisticMatchmakingDelayMs());
+    }
+
     const startMatchmaking = useCallback(async (preferredMatchLength = 7) => {
         setStatus('searching'); setEloResult(null); setQuickChatMessage(null); setDisconnectCountdown(null);
         const myTicket = createMatchmakingTicket(localProfile, preferredMatchLength, Date.now());
-        if (!isSupabaseConfigured()) return;
+        if (!isSupabaseConfigured()) {
+            scheduleClubChallengerMatch(preferredMatchLength);
+            return;
+        }
         try {
             const { data: waitingTickets } = await supabase.from('matchmaking_queue').select('*')
                 .eq('status', 'waiting').neq('user_id', localProfile.id).order('created_at', { ascending: true }).limit(10);
@@ -155,7 +177,11 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
                 user_id: localProfile.isGuest ? null : localProfile.id, guest_id: localProfile.isGuest ? localProfile.id : null,
                 display_name: localProfile.displayName, rating: localProfile.rating, match_length: preferredMatchLength, status: 'waiting',
             });
-        } catch (err) { console.warn('[Matchmaking] Erreur queue Supabase :', err); }
+            scheduleClubChallengerMatch(preferredMatchLength);
+        } catch (err) {
+            console.warn('[Matchmaking] Erreur queue Supabase :', err);
+            scheduleClubChallengerMatch(preferredMatchLength);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [localProfile]);
 

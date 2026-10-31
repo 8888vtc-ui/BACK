@@ -40,11 +40,16 @@ export const LobbyMatchedVersus: React.FC<LobbyMatchedVersusProps> = ({
                 {/* Adversaire */}
                 <div className="space-y-1.5 text-center border-l border-white/10 pl-4">
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-amber-600 text-xl font-bold text-white shadow-md">
-                        {opponentProfile.displayName.charAt(0).toUpperCase()}
+                        {opponentProfile.countryFlag ?? opponentProfile.username.charAt(0).toUpperCase()}
                     </div>
                     <div className="text-xs font-bold text-white truncate">
                         {opponentProfile.displayName}
                     </div>
+                    {opponentProfile.countryName && (
+                        <div className="text-[11px] font-medium text-emerald-300/90 truncate">
+                            Club {opponentProfile.countryName}
+                        </div>
+                    )}
                     <div className="text-xs font-mono text-amber-400">
                         {opponentProfile.rating} Elo
                     </div>

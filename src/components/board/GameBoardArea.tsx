@@ -12,6 +12,7 @@ import type { BuildMatchContextParams } from '../../features/coach/matchContext'
 import type { RawGameTurn } from '../../features/rating';
 import type { CoachAnalysisHistoryEntry } from '../../hooks/useCoach';
 import type { LastMoveFeedback } from '../../hooks/coach/coachTypes';
+import type { PlayerEloProfile } from '../../features/multiplayer/types';
 import { useInteractiveReplay } from '../../hooks/useInteractiveReplay';
 import Board from './Board';
 import BoardHorologyBar from './BoardHorologyBar';
@@ -68,6 +69,7 @@ export interface GameBoardAreaProps {
     playerColor?: 'X' | 'O';
     onBackToLobby?: () => void;
     onToggleTheme?: () => void;
+    challengerProfile?: PlayerEloProfile | null;
 }
 
 const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
@@ -78,6 +80,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     onCandidateHover, turnsHistory, coachHistory = [], selectedCoachHistoryIndex = null,
     onSelectCoachHistoryIndex, onTriggerCoach, matchStats, matchStatsO, prX, prO, lastMoveFeedback, locale,
     gameId, matchContext, isMatchStarted = true, playerColor = 'X', onBackToLobby, onToggleTheme,
+    challengerProfile = null,
 }) => {
     const isXTurn = game.state.turn === 'X';
     const [replayViewPhase, setReplayViewPhase] = useState<'before' | 'after'>('before');
@@ -219,6 +222,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     turn={game.state.turn}
                     prX={prX}
                     prO={prO}
+                    challengerProfile={challengerProfile}
                 />
 
                 <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 px-0 sm:px-3 py-0 sm:py-1.5 overflow-hidden">
@@ -246,6 +250,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         turn={game.state.turn}
                         prX={prX}
                         prO={prO}
+                        challengerProfile={challengerProfile}
                     />
 
                     {/* COLONNE CENTRALE : Plateau 100 % Hauteur */}

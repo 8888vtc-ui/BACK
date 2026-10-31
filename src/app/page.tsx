@@ -139,16 +139,36 @@ export default function Home() {
         historyLength: turnsHistoryRef.current.length,
     });
 
-    // Synchronisation match multijoueur (uniquement sur action explicite de l'utilisateur)
+    // Synchronisation match multijoueur ou Challenger International de Club
     useEffect(() => {
         if (userInitiatedMultiplayerRef.current && multiplayer.status === 'matched' && multiplayer.matchInfo) {
+            const matchLen = multiplayer.matchInfo.matchLength;
+            const opp = multiplayer.opponentProfile;
+            if (multiplayer.matchInfo.isClubChallenger && opp) {
+                const timer = window.setTimeout(() => {
+                    userInitiatedMultiplayerRef.current = false;
+                    game.startNewMatch(matchLen, opp.clubBotDifficulty ?? 'intermediate');
+                    resetGameHistory();
+                    modals.closeMatchmaking();
+                    modals.closePrivateRoomModal();
+                    setAppScreen('GAME');
+                    window.setTimeout(() => {
+                        game.rollDice();
+                    }, 180);
+                    toast.success(
+                        `Match contre ${opp.displayName} (${opp.rating} Elo) en ${matchLen === 0 ? 'Money Game' : `${matchLen} pts`}.`,
+                        'Adversaire Trouvé',
+                    );
+                }, 1500);
+                return () => window.clearTimeout(timer);
+            }
             game.resetMatch();
             modals.closeMatchmaking();
             modals.closePrivateRoomModal();
             setAppScreen('GAME');
-            toast.success(`Match contre ${multiplayer.opponentProfile?.displayName} en ${multiplayer.matchInfo.matchLength} pts.`, 'Partie Multijoueur');
+            toast.success(`Match contre ${opp?.displayName} en ${matchLen} pts.`, 'Partie Multijoueur');
         }
-    }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, modals, game]);
+    }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, modals, game, resetGameHistory]);
 
     // Détection d'invitation 1-clic Salon Privé (?join=BG-XXXX) ou Entraînement Tournoi (?matchLength=15)
     usePrivateRoomInvite({

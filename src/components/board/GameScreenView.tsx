@@ -205,6 +205,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 onSelectCoachHistoryIndex={onSelectCoachHistoryIndex}
                 onBackToLobby={onBackToLobby}
                 onToggleTheme={onToggleTheme}
+                challengerProfile={multiplayer.matchInfo?.isClubChallenger ? multiplayer.opponentProfile : null}
             />
 
             {/* 3. Thumb-Dock Flottant Inférieur (MobileThumbDock) */}

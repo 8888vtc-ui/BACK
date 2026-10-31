@@ -7,6 +7,7 @@
 
 import React from 'react';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
+import type { PlayerEloProfile } from '../../features/multiplayer/types';
 import {
     BOT_ELO_BY_DIFFICULTY,
     BOT_OFFICIAL_PR_BY_DIFFICULTY,
@@ -33,21 +34,36 @@ export interface BoardLeftPlayerRailProps {
     readonly delaySeconds?: number;
     readonly prX?: number | null;
     readonly prO?: number | null;
+    readonly challengerProfile?: PlayerEloProfile | null;
 }
 
-function resolvePersonaMeta(difficulty: AIDifficulty, locale: string, prX?: number | null, prO?: number | null) {
+function resolvePersonaMeta(
+    difficulty: AIDifficulty,
+    locale: string,
+    prX?: number | null,
+    prO?: number | null,
+    challengerProfile?: PlayerEloProfile | null,
+) {
     const activePersona = getBotPersona(difficulty, locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja');
-    const botElo = String(BOT_ELO_BY_DIFFICULTY[difficulty] ?? 1950);
+    const botElo = challengerProfile ? String(challengerProfile.rating) : String(BOT_ELO_BY_DIFFICULTY[difficulty] ?? 1950);
     const botDefaultPr = (BOT_OFFICIAL_PR_BY_DIFFICULTY[difficulty] ?? 2.5).toFixed(1);
     const playerPrValue = typeof prX === 'number' && Number.isFinite(prX) ? prX : 0;
     const opponentPrValue = typeof prO === 'number' && Number.isFinite(prO) ? prO.toFixed(1) : botDefaultPr;
-    return { activePersona, botElo, playerPrValue, opponentPrValue };
+    const opponentDisplayName = challengerProfile ? challengerProfile.displayName : activePersona.shortName;
+    const opponentBadge = challengerProfile
+        ? challengerProfile.countryName
+            ? `Club ${challengerProfile.countryName}`
+            : 'Challenger En Ligne'
+        : activePersona.styleBadge;
+    return { activePersona, botElo, playerPrValue, opponentPrValue, opponentDisplayName, opponentBadge };
 }
 
 export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.memo(({
-    difficulty = 'expert', locale = 'fr', isXTurn, scoreO, cubeValue, matchLength, turn, opponentClock = '02:36', delaySeconds = 12, prX, prO,
+    difficulty = 'expert', locale = 'fr', isXTurn, scoreO, cubeValue, matchLength, turn, opponentClock = '02:36', delaySeconds = 12, prX, prO, challengerProfile,
 }) => {
-    const { activePersona, botElo, playerPrValue, opponentPrValue } = resolvePersonaMeta(difficulty, locale, prX, prO);
+    const { activePersona, botElo, playerPrValue, opponentPrValue, opponentDisplayName, opponentBadge } = resolvePersonaMeta(
+        difficulty, locale, prX, prO, challengerProfile,
+    );
     return (
         <div
             data-testid="board-portrait-top-hud"
@@ -78,10 +94,10 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                 <div className="flex items-center justify-end gap-2 min-w-0 flex-1 text-right">
                     <div className="min-w-0 flex flex-col items-end">
                         <span className="truncate max-w-[115px] font-display text-sm italic font-bold text-[#f7f3e8] leading-tight">
-                            {activePersona.shortName}
+                            {opponentDisplayName}
                         </span>
                         <span className="truncate max-w-[115px] text-[10px] font-bold text-[#f3c65f]">
-                            {activePersona.styleBadge}
+                            {opponentBadge}
                         </span>
                         <div className="mt-0.5 flex items-center gap-1 text-[10px] font-mono tabular-nums">
                             <span className="text-stone-300">{botElo}</span>
@@ -134,9 +150,11 @@ BoardPortraitBottomHud.displayName = 'BoardPortraitBottomHud';
 
 export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.memo(({
     difficulty = 'expert', locale = 'fr', isXTurn, scoreX, scoreO, cubeValue, matchLength, turn,
-    opponentClock = '02:36', playerClock = '02:14', delaySeconds = 12, prX, prO,
+    opponentClock = '02:36', playerClock = '02:14', delaySeconds = 12, prX, prO, challengerProfile,
 }) => {
-    const { activePersona, botElo, playerPrValue, opponentPrValue } = resolvePersonaMeta(difficulty, locale, prX, prO);
+    const { activePersona, botElo, playerPrValue, opponentPrValue, opponentDisplayName, opponentBadge } = resolvePersonaMeta(
+        difficulty, locale, prX, prO, challengerProfile,
+    );
 
     return (
         <aside
@@ -149,10 +167,10 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 <div className="flex w-full items-center justify-between gap-2">
                     <div className="flex flex-col items-center gap-1 min-w-0 flex-1">
                         <span className="truncate max-w-full font-display text-base md:text-lg [@media(max-height:540px)]:!text-xs italic font-black text-[#f7f3e8] leading-tight">
-                            {activePersona.shortName}
+                            {opponentDisplayName}
                         </span>
                         <span className="rounded-full border border-[#d4af37]/40 bg-[#d4af37]/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-[#f3c65f] [@media(max-height:540px)]:hidden">
-                            {activePersona.styleBadge}
+                            {opponentBadge}
                         </span>
                         <div className="[@media(max-height:540px)]:scale-90">
                             <BotPortraitMedallion character={difficulty} size="lg" isActive={!isXTurn} />
