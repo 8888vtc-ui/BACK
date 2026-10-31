@@ -56,12 +56,17 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
     };
 
     return (
-        <div className="w-full space-y-1.5">
-            {/* Barre supérieure ultra-compacte pour laisser le plateau immédiatement visible */}
-            <header className="w-full flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#0e121b]/95 px-3 py-2 shadow-md">
+        <div className="w-full shrink-0 space-y-1">
+            {/* Barre supérieure ultra-compacte (1 seule ligne) pour que le plateau + explications tiennent sur 1 écran */}
+            <header className="w-full flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#0e121b]/95 px-3 py-1.5 shadow-md">
                 <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="text-sm sm:text-base font-black tracking-tight text-[#fdf8eb]">
-                        Parcours Adaptatif IA : Quizz PR &amp; Quizz ERH
+                    <h1 className="text-xs sm:text-sm font-black tracking-tight text-[#fdf8eb]">
+                        {drillMode === 'pr_math'
+                            ? '🎯 Quizz PR · Mathématique Pure'
+                            : drillMode === 'personal_blunders'
+                                ? '🔥 Mes Blunders de Match'
+                                : '🧠 Quizz ERH · Psychologie Adverse'}
+                        <span className="sr-only">Parcours Adaptatif IA</span>
                     </h1>
                     <span className="sr-only" data-testid="premium-launch-badge">
                         {QUIZ_PREMIUM_CONFIG.premiumLabel}
@@ -72,7 +77,7 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
                             role="tablist"
                             aria-label="Mode du Quizz"
                             data-testid="drill-mode-tabs"
-                            className="inline-flex flex-wrap items-center gap-1 rounded-xl border border-white/10 bg-black/50 p-1"
+                            className="inline-flex flex-wrap items-center gap-1 rounded-xl border border-white/10 bg-black/50 p-0.5"
                         >
                             <button
                                 type="button"
@@ -86,7 +91,7 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
                                         : 'text-[#e2d2b5] hover:text-white'
                                 }`}
                             >
-                                🎯 Quizz PR (Mathématique)
+                                🎯 Quizz PR
                             </button>
                             <button
                                 type="button"
@@ -100,7 +105,7 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
                                         : 'text-[#e2d2b5] hover:text-white'
                                 }`}
                             >
-                                🧠 Quizz ERH (Psychologie)
+                                🧠 Quizz ERH
                             </button>
                             <button
                                 type="button"
@@ -123,31 +128,39 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
                     )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 text-xs">
+                <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                    {drillMode === 'adaptive' && (
+                        <button
+                            type="button"
+                            data-testid="erh-voice-manifest-btn"
+                            onClick={handleSpeakErhIntro}
+                            className="rounded-lg border border-[#f3c65f]/40 bg-[#1a1109] px-2 py-0.5 text-xs font-bold text-[#f3c65f] hover:bg-[#2a1b0e] transition"
+                        >
+                            {isSpeaking ? '🔇 Stop' : '🎙️ Pourquoi la Psychologie ?'}
+                        </button>
+                    )}
                     <button
                         type="button"
-                        data-testid="erh-voice-manifest-btn"
-                        onClick={handleSpeakErhIntro}
-                        className="rounded-lg border border-[#f3c65f]/40 bg-[#1a1109] px-2.5 py-1 text-xs font-bold text-[#f3c65f] hover:bg-[#2a1b0e] transition"
+                        onClick={() => setShowRadar((prev) => !prev)}
+                        className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-xs font-semibold text-[#f3c65f] hover:border-white/25 transition"
                     >
-                        {isSpeaking ? '🔇 Stop' : '🎙️ Pourquoi la Psychologie (ERH) ?'}
+                        {showRadar ? '▲ Jauges' : `📊 ${overallMastery}%`}
                     </button>
-                    <span className="rounded-lg border border-amber-500/35 bg-amber-950/30 px-2 py-1 font-mono font-bold text-amber-300">
+                    <span className="rounded-lg border border-amber-500/35 bg-amber-950/30 px-2 py-0.5 font-mono font-bold text-amber-300">
                         🔥 {streak}
                     </span>
                     <span className="sr-only" data-testid="mastered-count">
                         {seenCount} / {stats.totalBlunders}
                     </span>
                     {onClose ? (
-                        <button type="button" onClick={onClose} className="rounded-lg border border-white/10 bg-[#150c07] px-2.5 py-1 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white transition">← Retour</button>
+                        <button type="button" onClick={onClose} className="rounded-lg border border-white/10 bg-[#150c07] px-2.5 py-0.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white transition">← Retour</button>
                     ) : (
-                        <Link href="/" className="rounded-lg border border-white/10 bg-[#150c07] px-2.5 py-1 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white transition">← Retour</Link>
+                        <Link href="/" className="rounded-lg border border-white/10 bg-[#150c07] px-2.5 py-0.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white transition">← Retour</Link>
                     )}
                 </div>
             </header>
 
-            {/* Bandeau explicatif concis (1 seule ligne) + bouton optionnel pour voir les 9 compétences */}
-            <div className="w-full rounded-xl border border-white/10 bg-[#0e121b]/80 px-3 py-1.5" data-testid="adaptive-skill-radar">
+            <div className={showRadar ? 'w-full rounded-xl border border-white/10 bg-[#0e121b]/90 px-3 py-1.5' : 'sr-only'} data-testid="adaptive-skill-radar">
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                     <p className="text-[#e2d2b5] font-medium">
                         {drillMode === 'personal_blunders'
@@ -156,24 +169,13 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
                                 ? '🎯 Mode Quizz PR : Trouvez le coup mathématiquement optimal (Équité pure GNU Backgammon).'
                                 : '🧠 Mode Quizz ERH : La psychologie est un facteur vital au Backgammon — adaptez votre coup au profil psychologique de l’adversaire.'}
                     </p>
-                    <div className="flex items-center gap-2 shrink-0">
-                        <button
-                            type="button"
-                            onClick={() => setShowRadar((prev) => !prev)}
-                            className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-[#f3c65f] hover:border-white/25 transition"
-                        >
-                            {showRadar ? '▲ Masquer jauges' : `📊 Compétences (${overallMastery}%)`}
-                        </button>
-                        {showRadar && (
-                            <button type="button" onClick={onResetAllMastery} className="text-[#a5b0c4] hover:text-white underline text-[11px]">
-                                Réinitialiser
-                            </button>
-                        )}
-                    </div>
+                    <button type="button" onClick={onResetAllMastery} className="text-[#a5b0c4] hover:text-white underline text-[11px]">
+                        Réinitialiser
+                    </button>
                 </div>
 
                 {showRadar && (
-                    <div className="mt-2 grid grid-cols-3 sm:grid-cols-9 gap-1.5">
+                    <div className="mt-1.5 grid grid-cols-3 sm:grid-cols-9 gap-1.5">
                         {ADAPTIVE_QUIZ_CATEGORIES.map((cat) => {
                             const state = adaptiveProfile?.categories[cat.id];
                             const level = state?.level ?? 1;

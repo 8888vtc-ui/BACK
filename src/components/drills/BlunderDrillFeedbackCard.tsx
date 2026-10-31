@@ -15,6 +15,7 @@ export interface BlunderDrillFeedbackCardProps {
     validationResult: DrillValidationResult | null;
     onNextBlunder: () => void;
     onSelectQuizChoice?: (notation: string) => void;
+    drillMode?: 'adaptive' | 'pr_math' | 'personal_blunders' | 'speed_60s';
 }
 
 const TIER_LABELS: Record<number, { badge: string; color: string }> = {
@@ -34,6 +35,7 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
     validationResult,
     onNextBlunder,
     onSelectQuizChoice,
+    drillMode = 'adaptive',
 }) => {
     const [variantIdx, setVariantIdx] = useState<number>(0);
     const { isSpeaking, speak, stop } = useCoachVoice();
@@ -104,33 +106,30 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                 </div>
             </div>
 
-            {/* Carte Psychologique ERH : Qui est votre adversaire humain et comment exploiter ses erreurs ? */}
-            <div
-                data-testid="erh-opponent-scenario-card"
-                className="rounded-xl border border-[#d4af37]/35 bg-gradient-to-r from-[#1c130b] via-[#130e09] to-[#1c130b] p-3 space-y-1.5"
-            >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-2">
+            {/* Carte Psychologique ERH : affichée uniquement en mode Quizz ERH (Psychologie), jamais en Quizz PR */}
+            {drillMode !== 'pr_math' && (
+                <div
+                    data-testid="erh-opponent-scenario-card"
+                    className="rounded-xl border border-[#d4af37]/35 bg-gradient-to-r from-[#1c130b] via-[#130e09] to-[#1c130b] p-2.5 space-y-1"
+                >
+                    <div className="flex flex-wrap items-center justify-between gap-1.5">
                         <span className="rounded-md border border-[#f3c65f]/50 bg-[#f3c65f]/15 px-2 py-0.5 text-xs font-extrabold text-[#f3c65f]">
                             {erhScenario.badgeLabel}
                         </span>
-                        <span className="font-mono text-[11px] font-bold text-amber-200/90">
-                            {erhScenario.opponentErhScore}
-                        </span>
+                        <button
+                            type="button"
+                            data-testid="erh-scenario-voice-btn"
+                            onClick={handleSpeakErhBriefing}
+                            className="inline-flex items-center gap-1 rounded-lg border border-[#f3c65f]/40 bg-black/45 px-2 py-0.5 text-[11px] font-bold text-[#f3c65f] hover:bg-[#24190e] transition"
+                        >
+                            <span>{isSpeaking ? '🔇 Stop' : '🎙️ Écouter'}</span>
+                        </button>
                     </div>
-                    <button
-                        type="button"
-                        data-testid="erh-scenario-voice-btn"
-                        onClick={handleSpeakErhBriefing}
-                        className="inline-flex items-center gap-1 rounded-lg border border-[#f3c65f]/40 bg-black/45 px-2.5 py-1 text-[11px] font-bold text-[#f3c65f] hover:bg-[#24190e] transition"
-                    >
-                        <span>{isSpeaking ? '🔇 Stop' : '🎙️ Écouter le profil adverse'}</span>
-                    </button>
+                    <p className="text-xs text-amber-50/95 leading-snug font-medium">
+                        {erhScenario.psychologicalPrompt}
+                    </p>
                 </div>
-                <p className="text-xs text-amber-50/95 leading-snug font-medium">
-                    {erhScenario.psychologicalPrompt}
-                </p>
-            </div>
+            )}
 
             {/* Mode Quiz Express QCM (4 propositions cliquables OU jeu direct sur le plateau) */}
             {currentBlunder.quizChoices && currentBlunder.quizChoices.length > 0 && onSelectQuizChoice && !validationResult?.isCorrect && (

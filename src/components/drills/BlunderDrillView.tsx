@@ -362,7 +362,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     const activeCategoryId = currentBlunder ? normalizeToQuizCategory(currentBlunder.conceptId) : undefined;
 
     return (
-        <div className="flex w-full flex-col items-center gap-3 p-2 sm:p-4 text-[#fdf8eb] max-w-5xl mx-auto">
+        <div className="flex h-full max-h-[calc(100dvh-1rem)] w-full max-w-7xl mx-auto flex-col gap-2 p-1.5 sm:p-2.5 text-[#fdf8eb] overflow-hidden">
             <BlunderDrillHeader
                 stats={stats}
                 adaptiveProfile={adaptiveProfile}
@@ -389,9 +389,9 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                     </div>
                 </div>
             ) : (
-                <div className="flex w-full flex-col gap-2">
-                    {/* 1. LE PLATEAU INTERACTIF TOUT DE SUITE EN HAUT DE L'ÉCRAN */}
-                    <div className="w-full flex justify-center overflow-x-auto rounded-2xl border border-white/10 bg-[#080a0f] p-0 sm:p-2 max-sm:rounded-none max-sm:border-x-0 shadow-2xl">
+                <div className="flex-1 min-h-0 w-full grid grid-cols-1 lg:grid-cols-12 gap-2.5 overflow-hidden">
+                    {/* COLONNE GAUCHE (8/12) : Plateau 100% visible en entier sans scroller */}
+                    <div className="lg:col-span-8 h-full min-h-0 min-w-0 flex items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#080a0f] p-1 sm:p-2 shadow-2xl">
                         <Board
                             state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets}
                             selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice}
@@ -406,8 +406,8 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                         />
                     </div>
 
-                    {/* 2. CHOIX QCM EXPRESS, PROFIL PSYCHOLOGIQUE ERH & EXPLICATION SOUS LE PLATEAU */}
-                    <div className="w-full">
+                    {/* COLONNE DROITE (4/12) : Dés, Choix QCM Express & Explications côte-à-côte sur le même écran */}
+                    <div className="lg:col-span-4 h-full min-h-0 overflow-y-auto flex flex-col">
                         <BlunderDrillFeedbackCard
                             currentBlunder={currentBlunder}
                             currentIndex={quizStepCount}
@@ -418,6 +418,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                             validationResult={validationResult}
                             onNextBlunder={handleNextBlunder}
                             onSelectQuizChoice={handleSelectQuizChoice}
+                            drillMode={drillMode}
                         />
                     </div>
                 </div>
