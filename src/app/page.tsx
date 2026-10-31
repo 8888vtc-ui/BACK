@@ -74,15 +74,15 @@ export default function Home() {
             notificationSuccess();
             soundEngine.playVictory();
 
+            const completedAnalysis = handleGameOverAnalysis(result);
             if (isMultiplayerActive || multiplayer.matchInfo?.isClubChallenger) {
                 multiplayer.handleMatchOver(result.winner, result.winType, result.pointsWon, {
-                    prX: livePrRef.current.prX,
+                    prX: completedAnalysis ? completedAnalysis.performanceRating : livePrRef.current.prX,
                     prO: livePrRef.current.prO,
                     decisionsCount: Math.max(6, turnsHistoryRef.current.length),
                     isPrivateRoom: Boolean(multiplayer.privateRoomCode),
                 });
             }
-            handleGameOverAnalysis(result);
         },
     });
 
@@ -91,6 +91,7 @@ export default function Home() {
 
     const multiplayer = useMultiplayerGame(handleRemoteAction);
     const isMultiplayerActive = multiplayer.status === 'connected' || multiplayer.status === 'opponent_disconnected';
+    const isLiveMatch = isMultiplayerActive || Boolean(multiplayer.matchInfo?.isClubChallenger);
 
     // Persistance locale et analyse de fin de partie
     const {
@@ -98,15 +99,26 @@ export default function Home() {
         currentTurnDiceRef, latestGameAnalysis, handleGameOverAnalysis, resetGameHistory,
     } = useGamePersistence({ game, isMultiplayerActive, t });
 
-    // Coach IA en temps réel (sur mobile, notifications non-intrusives via CoachMobileSummaryBar sans tiroir auto)
+    // Coach IA en temps réel (désactivé en direct pendant un Match Live pour 0 blocage de jouabilité ; bilan généré en fin de match)
     const {
         coach, coachHighlight, matchStats, matchStatsX, matchStatsO, lastMoveFeedback,
         coachHistory, selectedCoachHistoryIndex, selectCoachHistoryIndex,
         notificationLevel, setNotificationLevel,
-        isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: handleTriggerCoach,
+        isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: rawTriggerCoach,
     } = useCoach({
-        game, currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
+        game: isLiveMatch ? { ...game, matchLog: [], moveHistory: [] } : game,
+        currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
     });
+    const handleTriggerCoach = useCallback(() => {
+        if (isLiveMatch) {
+            toast.info(
+                '🔒 Mode Match Live (Zéro IA en direct)',
+                'Pour garantir la fluidité et l’équité, l’analyse IA s’effectue au Compte-Rendu de fin de match et dans vos derniers Blunders.',
+            );
+            return;
+        }
+        void rawTriggerCoach();
+    }, [isLiveMatch, rawTriggerCoach]);
 
     const prX = matchStatsX.decisionsCount > 0 ? (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500 : 0.0;
     const prO = matchStatsO.decisionsCount > 0
@@ -144,6 +156,7 @@ export default function Home() {
     } = useOpeningAssistant({
         game, isMultiplayerActive, multiplayer, currentTurnMovesRef,
         historyLength: turnsHistoryRef.current.length,
+        isLiveAdviceEnabled: isLiveMatch ? false : undefined,
     });
 
     // Synchronisation match multijoueur ou Challenger International de Club

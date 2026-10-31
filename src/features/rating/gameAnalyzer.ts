@@ -19,6 +19,7 @@ import { boardsMatchOnPointsAndBar } from '../../lib/engine/bgsageClient';
 import { analyzeHumanMoveFromLog } from '../coach/logAnalyzer';
 import { movesFromBoardDiff } from '../coach/coachMoveNotation';
 import { recordBlunder } from '../drills/blunderBank';
+import { classifyLivePositionCategory } from '../drills/adaptiveQuizEngine';
 import { categorizeExplanation } from '../../lib/stats/statsAggregator';
 import {
     classifyMoveEquity,
@@ -270,8 +271,16 @@ export function analyzeCompleteGame(
                 ? categorizeExplanation(null, playedNotation)
                 : undefined;
 
-        if (verdict === 'blunder' || verdict === 'howler') {
+        if (verdict === 'blunder' || verdict === 'howler' || Math.abs(equityLoss) >= 0.06) {
             try {
+                const catMeta = classifyLivePositionCategory(turn.boardBefore, turn.turnNumber || i + 1, false);
+                const choiceSet = new Set<string>();
+                if (optimalNotation) choiceSet.add(optimalNotation);
+                if (playedNotation) choiceSet.add(playedNotation);
+                for (const cand of logEval?.candidateMoves ?? []) {
+                    if (cand.notation) choiceSet.add(cand.notation);
+                    if (choiceSet.size >= 4) break;
+                }
                 recordBlunder({
                     board: [...turn.boardBefore],
                     dice: [turn.dice[0], turn.dice[1]],
@@ -282,10 +291,13 @@ export function analyzeCompleteGame(
                         .filter((m) => Math.abs(m.equityLoss) < 0.02)
                         .map((m) => m.notation),
                     equityLoss: Math.abs(equityLoss),
-                    verdict,
-                    conceptId: conceptId || 'positional',
-                    conceptName: conceptId || 'Jeu positionnel',
+                    verdict: verdict === 'howler' ? 'howler' : verdict === 'blunder' ? 'blunder' : 'doubtful',
+                    conceptId: catMeta.id || conceptId || 'positional',
+                    conceptName: catMeta.fullName || conceptId || 'Jeu positionnel',
+                    whyFailed: `Votre coup ${playedNotation} cède ${Math.abs(equityLoss).toFixed(3)} EMG face à ${optimalNotation}.`,
                     explanation: `Le coup optimal était ${optimalNotation} (perte de ${Math.abs(equityLoss).toFixed(3)} EMG sur ${playedNotation}).`,
+                    hint: `Catégorie ciblée : ${catMeta.fullName} — cherchez comment ${optimalNotation} protège votre structure.`,
+                    quizChoices: Array.from(choiceSet).slice(0, 4),
                     gameId: options.gameId,
                     matchContext: {
                         scoreX,

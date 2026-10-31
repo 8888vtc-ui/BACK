@@ -14,9 +14,12 @@ import {
     computePipDiff,
     isLeading,
 } from '../../engine/pipCalculator';
+import { toast } from '../toast/ToastContext';
 
 export { PIP_COUNT_STORAGE_KEY, computePipDiff, isLeading };
 export const PIP_VISIBILITY_CHANGE_EVENT = 'bg:pip-visibility-change';
+export const PIP_COUNT_DISABLED_BRAVO_MESSAGE =
+    '🎩 Bravo ! En tournoi Live ou en Cash Game, personne ne compte les pips à ta place… Il est temps de faire chauffer les neurones comme un vrai Pro !';
 
 /**
  * Recommandation stratégique contextuelle selon l'écart de course (théorie Magriel / Robertie).
@@ -56,11 +59,15 @@ export function getSavedPipCountVisibility(defaultValue = true): boolean {
  */
 export function setSavedPipCountVisibility(visible: boolean): void {
     try {
+        const wasVisible = getSavedPipCountVisibility(true);
         if (typeof localStorage !== 'undefined') {
             localStorage.setItem(PIP_COUNT_STORAGE_KEY, String(visible));
         }
         if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent<boolean>(PIP_VISIBILITY_CHANGE_EVENT, { detail: visible }));
+        }
+        if (!visible && wasVisible) {
+            toast.success('🎩 Mode Tournoi Live & Cash Game', PIP_COUNT_DISABLED_BRAVO_MESSAGE, { duration: 5500 });
         }
     } catch {
         // ignore

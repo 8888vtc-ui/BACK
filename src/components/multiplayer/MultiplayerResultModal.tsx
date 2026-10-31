@@ -6,6 +6,7 @@ import type {
     MultiplayerMatchInfo,
     EloCalculationResult,
 } from '../../features/multiplayer/types';
+import type { CompleteGameAnalysis } from '../../features/rating/types';
 import { getEloTier } from '../../features/multiplayer/elo';
 import { useBoardTheme, getModalThemeClasses, type ThemeName } from '../../hooks/useBoardTheme';
 
@@ -15,9 +16,11 @@ export interface MultiplayerResultModalProps {
     localProfile: PlayerEloProfile;
     opponentProfile: PlayerEloProfile;
     eloResult: EloCalculationResult;
+    latestGameAnalysis?: CompleteGameAnalysis | null;
     onRematch: () => void;
     onFindNewOpponent?: () => void;
     onOpenReview?: () => void;
+    onTrainBlunders?: () => void;
     onClose: () => void;
     theme?: ThemeName;
 }
@@ -27,9 +30,11 @@ export default function MultiplayerResultModal({
     matchInfo,
     opponentProfile,
     eloResult,
+    latestGameAnalysis,
     onRematch,
     onFindNewOpponent,
     onOpenReview,
+    onTrainBlunders,
     onClose,
     theme,
 }: MultiplayerResultModalProps) {
@@ -122,6 +127,18 @@ export default function MultiplayerResultModal({
                             🛡️ Bouclier de Maîtrise PR activé : vous avez mieux joué que votre adversaire (0 Elo perdu) !
                         </div>
                     )}
+
+                    {latestGameAnalysis && (
+                        <div className="mt-3 rounded-xl border border-amber-400/30 bg-black/40 px-3 py-2 text-[11px] text-slate-200">
+                            <span className="font-bold text-amber-300">
+                                📋 Compte-Rendu Live : PR {latestGameAnalysis.performanceRating.toFixed(2)}
+                            </span>
+                            {' · '}
+                            <span>
+                                {latestGameAnalysis.breakdown.blunder + latestGameAnalysis.breakdown.howler + latestGameAnalysis.breakdown.doubtful} erreur(s) ajoutée(s) dans vos derniers Blunders
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 <div className="space-y-2.5">
@@ -145,6 +162,17 @@ export default function MultiplayerResultModal({
                         </button>
                     )}
 
+                    {onTrainBlunders && (
+                        <button
+                            type="button"
+                            onClick={onTrainBlunders}
+                            className="w-full rounded-xl border border-amber-400/50 bg-amber-950/60 py-2.5 text-xs font-extrabold text-amber-200 hover:border-amber-300 hover:bg-amber-900/60 transition-colors"
+                            data-testid="multiplayer-train-blunders-btn"
+                        >
+                            🎯 Comprendre &amp; S&apos;entraîner sur mes Blunders
+                        </button>
+                    )}
+
                     {onOpenReview && (
                         <button
                             type="button"
@@ -152,7 +180,7 @@ export default function MultiplayerResultModal({
                             className="w-full rounded-xl border border-white/10 bg-[#26160c] py-2.5 text-xs font-bold text-[#fce8b2] hover:border-[#f3c65f] transition-colors"
                             data-testid="multiplayer-open-review-btn"
                         >
-                            📊 Bilan &amp; Courbe PR
+                            📊 Compte-Rendu Complet &amp; Courbe PR
                         </button>
                     )}
 

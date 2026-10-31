@@ -51,7 +51,7 @@ export function useGameOverAnalysis({
     setLatestGameAnalysis,
     applyRemoteState,
 }: UseGameOverAnalysisParams) {
-    const handleGameOverAnalysis = useCallback((result: GameResult) => {
+    const handleGameOverAnalysis = useCallback((result: GameResult): CompleteGameAnalysis | null => {
         clearEmergencyCheckpoint();
         if (gameIdRef.current) {
             persistGameUpdate(gameIdRef.current, {
@@ -157,8 +157,10 @@ export function useGameOverAnalysis({
                     })
                     .catch(() => {});
             }
+            return analysis;
         } catch (e) {
             console.warn('[Persistence] Échec analyse fin de partie :', e);
+            return null;
         }
     }, [clearEmergencyCheckpoint, gameBoard, gameCrawford, gameCubeOwner, gameCubeValue, gameDifficulty, gameIdRef, gameMatchLength, gameMatchLog, gameScoreO, gameScoreX, isMultiplayerActive, setLatestGameAnalysis, setTurnsHistory, currentTurnDiceRef, currentTurnMovesRef, turnBoardBeforeRef, turnsHistoryRef]);
 

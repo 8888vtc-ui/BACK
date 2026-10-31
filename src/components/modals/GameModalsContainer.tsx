@@ -174,13 +174,14 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                 autoConnect={Boolean(modals.privateRoomInitialCode)}
             />
 
-            {multiplayer.status === 'game_over' && multiplayer.matchInfo && multiplayer.opponentProfile && multiplayer.eloResult && (
+            {multiplayer.status === 'game_over' && multiplayer.matchInfo && multiplayer.opponentProfile && multiplayer.eloResult && !isAnySecondaryModalOpen && (
                 <MultiplayerResultModal
                     isOpen={true}
                     matchInfo={multiplayer.matchInfo}
                     localProfile={multiplayer.localProfile}
                     opponentProfile={multiplayer.opponentProfile}
                     eloResult={multiplayer.eloResult}
+                    latestGameAnalysis={latestGameAnalysis}
                     onRematch={() => {
                         onResetGameHistory();
                         multiplayer.startMatchmaking(multiplayer.matchInfo?.matchLength || 7, { isRematch: true });
@@ -190,6 +191,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                         multiplayer.startMatchmaking(multiplayer.matchInfo?.matchLength || 7, { isRematch: false });
                     }}
                     onOpenReview={modals.openGameReview}
+                    onTrainBlunders={modals.openGameCourse}
                     onClose={() => {
                         multiplayer.leaveMatch();
                         game.resetMatch();
