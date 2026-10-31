@@ -50,13 +50,13 @@ export interface GameModalsContainerProps {
 }
 
 const BOT_DIFFICULTY_PR_MAP: Record<string, { pr: number; fr: string; en: string }> = {
-    beginner: { pr: 10.0, fr: 'Débutant', en: 'Beginner' },
-    easy: { pr: 9.2, fr: 'Amateur', en: 'Casual' },
-    intermediate: { pr: 8.2, fr: 'Intermédiaire', en: 'Intermediate' },
-    medium: { pr: 8.2, fr: 'Intermédiaire', en: 'Intermediate' },
-    hard: { pr: 4.5, fr: 'Expert', en: 'Expert' },
-    expert: { pr: 3.6, fr: 'Maître', en: 'Master' },
-    grandmaster: { pr: 1.8, fr: 'Grand-Maître', en: 'Grandmaster' },
+    beginner: { pr: 12.5, fr: 'Débutant', en: 'Beginner' },
+    easy: { pr: 10.5, fr: 'Amateur', en: 'Casual' },
+    intermediate: { pr: 7.5, fr: 'Intermédiaire', en: 'Intermediate' },
+    medium: { pr: 7.5, fr: 'Intermédiaire', en: 'Intermediate' },
+    hard: { pr: 3.5, fr: 'Expert', en: 'Expert' },
+    expert: { pr: 2.5, fr: 'Maître', en: 'Master' },
+    grandmaster: { pr: 0.6, fr: 'Grand-Maître', en: 'Grandmaster' },
 };
 
 const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({

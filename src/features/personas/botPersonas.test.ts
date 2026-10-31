@@ -87,7 +87,7 @@ describe('botPersonas — 4 Archétypes & Mode Adaptatif (Fun vs Pro)', () => {
         const expertPr = computeRealtimeBotErrorRate(turns, 'expert');
         const gmPr = computeRealtimeBotErrorRate(turns, 'grandmaster');
 
-        expect(beginnerPr).toBeLessThanOrEqual(10.0);
+        expect(beginnerPr).toBeLessThanOrEqual(MAX_BOT_DISPLAY_PR);
         expect(beginnerPr).toBeGreaterThan(intermediatePr);
         expect(intermediatePr).toBeGreaterThan(expertPr);
         expect(expertPr).toBeGreaterThan(gmPr);

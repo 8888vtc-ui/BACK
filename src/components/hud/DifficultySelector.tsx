@@ -24,7 +24,7 @@ const LEVELS: Array<{
             ply: '0-ply',
             badge: 'Style Intuitif',
             icon: '🟢',
-            tooltip: 'Joueur de café (PR ~16) : style humain intuitif, privilégie l\'attaque directe.',
+            tooltip: 'Arthur « Le Mauvais Joueur » (1420 Elo · PR 12.5) : style humain intuitif, privilégie l\'attaque directe.',
             activeClass: 'border-emerald-500/80 bg-emerald-950/60 text-emerald-200 shadow-emerald-500/20',
         },
         {
@@ -33,7 +33,7 @@ const LEVELS: Array<{
             ply: '1-ply',
             badge: 'Style Club',
             icon: '🟡',
-            tooltip: 'Habitué de club (PR ~9.5) : jeu de structure réaliste sans erreur absurde.',
+            tooltip: 'Elena « La Riviera » (1680 Elo · PR 7.5) : jeu de structure réaliste sans erreur absurde.',
             activeClass: 'border-yellow-500/80 bg-yellow-950/60 text-yellow-200 shadow-yellow-500/20',
         },
         {
@@ -42,7 +42,7 @@ const LEVELS: Array<{
             ply: '2-Ply',
             badge: 'Style Tournoi',
             icon: '🔴',
-            tooltip: 'Compétiteur de tournoi (PR ~4.5) : maîtrise des primes, du timing et du videau.',
+            tooltip: 'Marcus « L\'Homme d\'Affaires » (1950 Elo · PR 2.5) : maîtrise des primes, du timing et du videau.',
             activeClass: 'border-rose-500/80 bg-rose-950/60 text-rose-200 shadow-rose-500/20',
         },
         {
@@ -51,7 +51,7 @@ const LEVELS: Array<{
             ply: '3-Ply Sélectif',
             badge: 'Champion',
             icon: '🏆',
-            tooltip: 'Viktor Orlov — L\'Oracle de Monte-Carlo (PR < 1.5). Précision de niveau Champion du Monde.',
+            tooltip: 'Spinoza / Viktor Orlov (2150 Elo · PR 0.6). Précision neuronale de niveau Champion du Monde.',
             activeClass: 'border-amber-500/80 bg-amber-950/60 text-amber-200 shadow-amber-500/20',
         },
     ];

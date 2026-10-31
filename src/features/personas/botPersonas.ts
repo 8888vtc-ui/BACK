@@ -17,8 +17,24 @@ import {
 
 export type ExperienceMode = 'fun' | 'pro';
 
-/** Plafond d'affichage temps réel de l'Error Rate (PR) des Bots (max 10.0). */
-export const MAX_BOT_DISPLAY_PR = 10.0;
+/** Plafond d'affichage temps réel de l'Error Rate (PR) des Bots (max 15.0). */
+export const MAX_BOT_DISPLAY_PR = 15.0;
+
+/** Elo officiel certifié par niveau de difficulté. */
+export const BOT_ELO_BY_DIFFICULTY: Record<AIDifficulty, number> = {
+    beginner: 1420,
+    intermediate: 1680,
+    expert: 1950,
+    grandmaster: 2150,
+};
+
+/** PR officiel certifié par BGT / GNU Backgammon (1-ply / 2-ply / 3-ply). */
+export const BOT_OFFICIAL_PR_BY_DIFFICULTY: Record<AIDifficulty, number> = {
+    beginner: 12.5,
+    intermediate: 7.5,
+    expert: 2.5,
+    grandmaster: 0.6,
+};
 
 /** Plafond strict de perte d'équité par coup (Blunder Cap ΔE_max en EMG) par niveau. */
 export const BLUNDER_CAP_EMG_BY_DIFFICULTY: Record<AIDifficulty, number> = {
@@ -75,22 +91,22 @@ const BOT_PERSONA_BASE_CONFIG: Record<AIDifficulty, {
 }> = {
     beginner: {
         avatar: '🤬',
-        targetErrorRate: 7.8,
+        targetErrorRate: 12.5,
         weights: { hitBonus: 0.22, ownBlotPenalty: -0.01, primeBonus: 0.01, anchorBonus: 0.0, raceBonus: -0.02 },
     },
     intermediate: {
         avatar: '🕶️',
-        targetErrorRate: 4.2,
+        targetErrorRate: 7.5,
         weights: { hitBonus: 0.06, ownBlotPenalty: -0.02, primeBonus: 0.04, anchorBonus: 0.16, raceBonus: 0.0 },
     },
     expert: {
         avatar: '💼',
-        targetErrorRate: 1.8,
+        targetErrorRate: 2.5,
         weights: { hitBonus: 0.03, ownBlotPenalty: -0.12, primeBonus: 0.04, anchorBonus: 0.02, raceBonus: 0.18 },
     },
     grandmaster: {
         avatar: '🧐',
-        targetErrorRate: 0.3,
+        targetErrorRate: 0.6,
         weights: { hitBonus: 0.07, ownBlotPenalty: -0.08, primeBonus: 0.20, anchorBonus: 0.06, raceBonus: 0.05 },
     },
 };

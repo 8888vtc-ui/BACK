@@ -7,7 +7,11 @@
 
 import React from 'react';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
-import { getBotPersona } from '../../features/personas/botPersonas';
+import {
+    BOT_ELO_BY_DIFFICULTY,
+    BOT_OFFICIAL_PR_BY_DIFFICULTY,
+    getBotPersona,
+} from '../../features/personas/botPersonas';
 import { toggleOrientation, getSavedOrientation, saveOrientation } from './boardOrientation';
 import {
     BotPortraitMedallion,
@@ -33,8 +37,8 @@ export interface BoardLeftPlayerRailProps {
 
 function resolvePersonaMeta(difficulty: AIDifficulty, locale: string, prX?: number | null, prO?: number | null) {
     const activePersona = getBotPersona(difficulty, locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja');
-    const botElo = difficulty === 'grandmaster' ? '2150' : difficulty === 'expert' ? '1950' : difficulty === 'intermediate' ? '1680' : '1420';
-    const botDefaultPr = difficulty === 'grandmaster' ? '0.4' : difficulty === 'expert' ? '2.1' : difficulty === 'intermediate' ? '5.4' : '12.8';
+    const botElo = String(BOT_ELO_BY_DIFFICULTY[difficulty] ?? 1950);
+    const botDefaultPr = (BOT_OFFICIAL_PR_BY_DIFFICULTY[difficulty] ?? 2.5).toFixed(1);
     const playerPrValue = typeof prX === 'number' && Number.isFinite(prX) ? prX : 0;
     const opponentPrValue = typeof prO === 'number' && Number.isFinite(prO) ? prO.toFixed(1) : botDefaultPr;
     return { activePersona, botElo, playerPrValue, opponentPrValue };

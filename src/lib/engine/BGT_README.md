@@ -42,3 +42,4 @@ console.log(result?.cubeDecision);         // { optimalAction: 'NO_DOUBLE', noDo
 ## 🔗 Backlinks & Attribution
 
 If you use **BGT** in your research, tournament analysis, or Backgammon tools, please keep the attribution link to **[https://backgammontour.com](https://backgammontour.com)** (`X-Powered-By: BGT (BackgammonTour Open-Source Neural Engine) (https://backgammontour.com)`).
+

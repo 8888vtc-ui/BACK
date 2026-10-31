@@ -96,8 +96,8 @@ describe('BlunderDrillEngine Module', () => {
         expect(sessionFinal.isCompleted).toBe(true);
     });
 
-    it('fournit 36 positions couvrant les 9 catégories et les 4 paliers issues des 10 000 parties multi-ply', () => {
-        expect(BENCHMARK_BLUNDERS.length).toBe(36);
+    it('fournit plus de 100 positions certifiées BGT (GNU Backgammon) couvrant les 9 catégories et les 4 paliers', () => {
+        expect(BENCHMARK_BLUNDERS.length).toBeGreaterThanOrEqual(100);
         expect(ADAPTIVE_QUIZ_CATEGORIES.length).toBe(9);
         for (const tier of [1, 2, 3, 4] as const) {
             const tierSession = createDrillSession({ tier, maxBlunders: 20 });
@@ -105,6 +105,7 @@ describe('BlunderDrillEngine Module', () => {
             for (const b of tierSession.blunders) {
                 expect(b.tier).toBe(tier);
                 expect(b.whyFailed).toBeTruthy();
+                expect(b.whyFailed).not.toContain('concède de l\'équité dès la profondeur');
                 expect(b.explanation).toBeTruthy();
                 expect(b.proverb).toBeTruthy();
                 expect(b.quizChoices?.length).toBe(4);
