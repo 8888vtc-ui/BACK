@@ -187,7 +187,15 @@
   <url><loc>https://backgammontour.com/tournaments/clubs/jba-tokyo-lounge</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>https://backgammontour.com/tournaments/clubs/sydney-backgammon-club</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
 
-  <!-- 11. Référentiels GEO (Generative Engine Optimization) pour ChatGPT / Perplexity / Claude / Gemini -->
+  <!-- 11. Les 6 Pages Stratégiques par Pays / Marchés Linguistiques (/countries/[country]) -->
+  <url><loc>https://backgammontour.com/countries/france-monaco</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://backgammontour.com/countries/usa-uk</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://backgammontour.com/countries/deutschland-dach</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://backgammontour.com/countries/espana-latam</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://backgammontour.com/countries/brasil-portugal</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://backgammontour.com/countries/monde-arabe-mena</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
+
+  <!-- 12. Référentiels GEO (Generative Engine Optimization) pour ChatGPT / Perplexity / Claude / Gemini -->
   <url><loc>https://backgammontour.com/llms.txt</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://backgammontour.com/llms-full.txt</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
 </urlset>

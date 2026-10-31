@@ -387,7 +387,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 className="mt-2 rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-[11px] text-stone-400 space-y-2"
                             >
                                 <div className="font-bold uppercase tracking-wider text-[#f3c65f]">
-                                    ⚜️ Encyclopédie Backgammon, Méthode ERH &amp; Tournois Mondiaux
+                                    ⚜️ Encyclopédie Backgammon, Méthode ERH &amp; Éditions par Pays
                                 </div>
                                 <div className="flex flex-wrap gap-x-3 gap-y-1">
                                     <Link href="/academy#learn-rules" className="hover:text-white underline-offset-2 hover:underline">Règles du Backgammon en 5 min</Link>
@@ -401,6 +401,15 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                     <Link href="/academy/concepts/woolsey-law" className="hover:text-white underline-offset-2 hover:underline">Loi de Woolsey</Link>
                                     <Link href="/tournaments" className="hover:text-white underline-offset-2 hover:underline">Tournois &amp; Clubs Où Jouer</Link>
                                     <Link href="/progression" className="hover:text-white underline-offset-2 hover:underline">Calcul PR &amp; Indice ERH</Link>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 border-t border-white/10 text-[10px]">
+                                    <span className="font-bold text-amber-200/80">🌍 Éditions Nationales :</span>
+                                    <Link href="/countries/france-monaco" className="hover:text-white underline-offset-2 hover:underline">🇫🇷🇲🇨 France &amp; Monaco</Link>
+                                    <Link href="/countries/usa-uk" className="hover:text-white underline-offset-2 hover:underline">🇺🇸🇬🇧 USA &amp; UK</Link>
+                                    <Link href="/countries/deutschland-dach" className="hover:text-white underline-offset-2 hover:underline">🇩🇪🇦🇹🇨🇭 Deutschland &amp; DACH</Link>
+                                    <Link href="/countries/espana-latam" className="hover:text-white underline-offset-2 hover:underline">🇪🇸🇲🇽 España &amp; LatAm</Link>
+                                    <Link href="/countries/brasil-portugal" className="hover:text-white underline-offset-2 hover:underline">🇧🇷🇵🇹 Brasil &amp; Portugal (Gamão)</Link>
+                                    <Link href="/countries/monde-arabe-mena" className="hover:text-white underline-offset-2 hover:underline">🇸🇦🇦🇪 العالم العربي (طاولة)</Link>
                                 </div>
                             </footer>
                         </section>
