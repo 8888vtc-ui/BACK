@@ -116,7 +116,7 @@
   <url><loc>https://backgammontour.com/academy/openings/4-1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
   <url><loc>https://backgammontour.com/academy/openings/5-1</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
 
-  <!-- 7. Les 21 Pages Programmatiques des Concepts Stratégiques Grand-Maître (/academy/concepts/[slug]) -->
+  <!-- 7. Les 30 Pages Programmatiques des Concepts Stratégiques Grand-Maître (/academy/concepts/[slug]) -->
   <url><loc>https://backgammontour.com/academy/concepts/golden-point</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
   <url><loc>https://backgammontour.com/academy/concepts/bar-point</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
   <url><loc>https://backgammontour.com/academy/concepts/advanced-anchor</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
@@ -138,6 +138,15 @@
   <url><loc>https://backgammontour.com/academy/concepts/dmp-strategy</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
   <url><loc>https://backgammontour.com/academy/concepts/opening-philosophy</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
   <url><loc>https://backgammontour.com/academy/concepts/mochy-golden-rules</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/tardieu-strategic-concepts</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/michy-proverbs-opening</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/michy-endgame-technique</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/mochy-masterclass</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/keith-count</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/janowski-cube-model</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/back-checker-escape</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/jacoby-beaver-money</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://backgammontour.com/academy/concepts/gammon-save-gg-gs</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
 
   <!-- 8. Hub Mondial des Tournois & Carte Où Jouer (/tournaments) -->
   <url>
@@ -169,10 +178,11 @@
   <url><loc>https://backgammontour.com/tournaments/sao-paulo-open-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>https://backgammontour.com/tournaments/dubai-creek-masters-2027</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
 
-  <!-- 10. Les 16 Pages Programmatiques des Clubs & Salons Où Jouer (/tournaments/clubs/[slug]) -->
+  <!-- 10. Les 17 Pages Programmatiques des Clubs & Salons Où Jouer (/tournaments/clubs/[slug]) -->
   <url><loc>https://backgammontour.com/tournaments/clubs/paris-vie-deau</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>https://backgammontour.com/tournaments/clubs/backgammon-social-paris</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>https://backgammontour.com/tournaments/clubs/monte-carlo-society</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://backgammontour.com/tournaments/clubs/french-riviera-backgammon-club</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>https://backgammontour.com/tournaments/clubs/ancre-marseillaise</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>https://backgammontour.com/tournaments/clubs/lyon-backgammon-club</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>https://backgammontour.com/tournaments/clubs/backgammon-london</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
@@ -195,7 +205,8 @@
   <url><loc>https://backgammontour.com/countries/brasil-portugal</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
   <url><loc>https://backgammontour.com/countries/monde-arabe-mena</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
 
-  <!-- 12. Référentiels GEO (Generative Engine Optimization) pour ChatGPT / Perplexity / Claude / Gemini -->
+  <!-- 12. Référentiels GEO (Generative Engine Optimization) & Confidentialité RGPD -->
+  <url><loc>https://backgammontour.com/privacy</loc><changefreq>yearly</changefreq><priority>0.60</priority></url>
   <url><loc>https://backgammontour.com/llms.txt</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://backgammontour.com/llms-full.txt</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
 </urlset>
