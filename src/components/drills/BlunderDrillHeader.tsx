@@ -57,9 +57,28 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
 
     return (
         <div className="w-full shrink-0 space-y-1">
-            {/* Barre supérieure ultra-compacte (1 seule ligne) pour que le plateau + explications tiennent sur 1 écran */}
-            <header className="w-full flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#0e121b]/95 px-3 py-1.5 shadow-md">
+            {/* Barre supérieure ultra-compacte (1 seule ligne) avec Bouton Retour proéminent à gauche */}
+            <header className="w-full flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#0e121b]/95 px-2.5 py-1.5 shadow-md">
                 <div className="flex flex-wrap items-center gap-2">
+                    {onClose ? (
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            data-testid="drill-back-btn"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-[#f3c65f]/50 bg-[#1c130b] px-3 py-1 text-xs font-extrabold text-[#f3c65f] hover:border-[#f3c65f] hover:bg-[#2a1b0e] hover:text-white transition shadow"
+                        >
+                            <span>← Retour au Salon</span>
+                        </button>
+                    ) : (
+                        <Link
+                            href="/"
+                            data-testid="drill-back-btn"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-[#f3c65f]/50 bg-[#1c130b] px-3 py-1 text-xs font-extrabold text-[#f3c65f] hover:border-[#f3c65f] hover:bg-[#2a1b0e] hover:text-white transition shadow"
+                        >
+                            <span>← Retour au Salon</span>
+                        </Link>
+                    )}
+
                     <h1 className="text-xs sm:text-sm font-black tracking-tight text-[#fdf8eb]">
                         {drillMode === 'pr_math'
                             ? '🎯 Quizz PR · Mathématique Pure'
@@ -152,11 +171,6 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
                     <span className="sr-only" data-testid="mastered-count">
                         {seenCount} / {stats.totalBlunders}
                     </span>
-                    {onClose ? (
-                        <button type="button" onClick={onClose} className="rounded-lg border border-white/10 bg-[#150c07] px-2.5 py-0.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white transition">← Retour</button>
-                    ) : (
-                        <Link href="/" className="rounded-lg border border-white/10 bg-[#150c07] px-2.5 py-0.5 text-xs font-bold text-[#e2d2b5] hover:border-white/25 hover:text-white transition">← Retour</Link>
-                    )}
                 </div>
             </header>
 

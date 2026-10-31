@@ -14,7 +14,7 @@ import Board from '../board/Board';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { getAllBlunders, getBlunderBankStats, resetAllBlunderMastery, markBlunderAttempt } from '../../features/drills/blunderBank';
 import { validateDrillMove, validateDrillNotationChoice } from '../../features/drills/blunderDrillEngine';
-import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
+import { formatCoachMoveSequence, parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
 import {
     getAdaptivePlayerProfile,
     recordAdaptiveQuizOutcome,
@@ -258,12 +258,19 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             const remaining = computeLegalTargets({ ...boardState, board: newBoard }, currentBlunder.dice, newUsed);
             const turnFinished = (newUsed[0] && newUsed[1]) || (remaining.leftDieTargets.size === 0 && remaining.rightDieTargets.size === 0);
             if (turnFinished) {
-                const result = validateDrillMove(currentBlunder, newPlayedMoves, newBoard);
-                applyValidationFeedback(result);
+                setValidationResult(null);
             }
         },
-        [currentBlunder, validationResult, leftDieTargets, rightDieTargets, currentBoard, usedDice, boardState, selectedDie, applyValidationFeedback],
+        [currentBlunder, validationResult, leftDieTargets, rightDieTargets, currentBoard, usedDice, boardState, selectedDie],
     );
+
+    const handleValidateAttempt = useCallback(() => {
+        if (!currentBlunder || validationResult?.isCorrect) return;
+        const live = liveDrillRef.current;
+        if (live.playedMoves.length === 0) return;
+        const result = validateDrillMove(currentBlunder, live.playedMoves, live.board);
+        applyValidationFeedback(result);
+    }, [currentBlunder, validationResult, applyValidationFeedback]);
 
     const handleSelectQuizChoice = useCallback(
         (notation: string) => {
@@ -279,6 +286,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                     setCurrentBoard(previewBoard);
                     setPlayedMoves(moves);
                     setUsedDice([true, true]);
+                    liveDrillRef.current = { board: previewBoard, usedDice: [true, true], playedMoves: moves };
                 }
             } catch {
                 // ignore notation preview errors on cube actions
@@ -331,7 +339,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     };
 
     const handleNextBlunder = () => {
-        if (!validationResult?.isCorrect) return;
+        if (!validationResult) return;
         const all = getAllBlunders();
         const exclude = currentBlunder ? [currentBlunder.id] : [];
         const nextPick =
@@ -360,9 +368,47 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     };
 
     const activeCategoryId = currentBlunder ? normalizeToQuizCategory(currentBlunder.conceptId) : undefined;
+    const isTurnComplete =
+        playedMoves.length > 0 &&
+        ((usedDice[0] && usedDice[1]) || (leftDieTargets.size === 0 && rightDieTargets.size === 0));
+    const stagedNotation = useMemo(() => {
+        if (!currentBlunder || playedMoves.length === 0) return null;
+        return formatCoachMoveSequence(playedMoves, currentBlunder.player, currentBlunder.board);
+    }, [currentBlunder, playedMoves]);
+
+    const coachHighlight = useMemo(() => {
+        if (!validationResult || !currentBlunder) return null;
+        const expandTokens = (notation: string) =>
+            notation
+                .replace(/\*/g, '')
+                .trim()
+                .split(/\s+/)
+                .flatMap((tok) => {
+                    const parts = tok.split('/');
+                    if (parts.length > 2) {
+                        const res: string[] = [];
+                        for (let k = 0; k < parts.length - 1; k++) {
+                            res.push(`${parts[k]}/${parts[k + 1]}`);
+                        }
+                        return res;
+                    }
+                    return [tok];
+                })
+                .join(' ');
+        const optimalMoves = parseCoachNotationMoves(expandTokens(currentBlunder.optimalMove), currentBlunder.player);
+        const wrongMoves = validationResult.isCorrect
+            ? []
+            : playedMoves.length > 0
+                ? playedMoves
+                : parseCoachNotationMoves(expandTokens(validationResult.playedNotation), currentBlunder.player);
+        return {
+            played: wrongMoves,
+            optimal: optimalMoves,
+        };
+    }, [validationResult, currentBlunder, playedMoves]);
 
     return (
-        <div className="flex h-full max-h-[calc(100dvh-1rem)] w-full max-w-7xl mx-auto flex-col gap-2 p-1.5 sm:p-2.5 text-[#fdf8eb] overflow-hidden">
+        <div className="flex h-dvh max-h-dvh w-full max-w-[1600px] mx-auto flex-col gap-1.5 p-1 sm:p-2 text-[#fdf8eb] overflow-hidden">
             <BlunderDrillHeader
                 stats={stats}
                 adaptiveProfile={adaptiveProfile}
@@ -389,9 +435,9 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                     </div>
                 </div>
             ) : (
-                <div className="flex-1 min-h-0 w-full grid grid-cols-1 lg:grid-cols-12 gap-2.5 overflow-hidden">
+                <div className="flex-1 min-h-0 w-full grid grid-cols-1 lg:grid-cols-12 gap-2 overflow-hidden">
                     {/* COLONNE GAUCHE (8/12) : Plateau 100% visible en entier sans scroller */}
-                    <div className="lg:col-span-8 h-full min-h-0 min-w-0 flex items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#080a0f] p-1 sm:p-2 shadow-2xl">
+                    <div className="lg:col-span-8 h-full min-h-0 min-w-0 flex items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#080a0f] p-1 shadow-2xl">
                         <Board
                             state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets}
                             selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice}
@@ -402,12 +448,17 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                             onSelectDie={(d) => setSelectedDie(d)}
                             onDiceClick={() => setSelectedDie((prev) => (prev === 1 ? 0 : 1))}
                             onDeselect={() => { setSelectedPoint(null); setSelectedDie(null); }}
+                            onConfirm={handleValidateAttempt}
+                            onUndo={handleResetCurrentAttempt}
+                            canConfirm={isTurnComplete && !validationResult?.isCorrect}
+                            canUndo={playedMoves.length > 0 && !validationResult?.isCorrect}
+                            coachHighlight={coachHighlight}
                             theme={theme}
                         />
                     </div>
 
-                    {/* COLONNE DROITE (4/12) : Dés, Choix QCM Express & Explications côte-à-côte sur le même écran */}
-                    <div className="lg:col-span-4 h-full min-h-0 overflow-y-auto flex flex-col">
+                    {/* COLONNE DROITE (4/12) : Dés, Bouton Valider, Choix QCM Express & Explications côte-à-côte sur le même écran */}
+                    <div className="lg:col-span-4 h-full min-h-0 overflow-hidden flex flex-col">
                         <BlunderDrillFeedbackCard
                             currentBlunder={currentBlunder}
                             currentIndex={quizStepCount}
@@ -418,6 +469,9 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                             validationResult={validationResult}
                             onNextBlunder={handleNextBlunder}
                             onSelectQuizChoice={handleSelectQuizChoice}
+                            onValidateAttempt={handleValidateAttempt}
+                            canValidateAttempt={isTurnComplete}
+                            stagedNotation={stagedNotation}
                             drillMode={drillMode}
                         />
                     </div>
