@@ -49,9 +49,9 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
             }}
         >
             <div
-                className={`relative w-7 h-7 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center transition-all duration-150 overflow-hidden ${
+                className={`relative w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 [@media(max-height:600px)]:!w-7 [@media(max-height:600px)]:!h-7 rounded-md sm:rounded-lg flex items-center justify-center transition-all duration-150 overflow-hidden ${
                     canDouble
-                        ? 'ring-2 sm:ring-4 ring-amber-400/90 shadow-[0_0_22px_rgba(212,175,55,0.75)] cursor-pointer hover:scale-105 active:scale-95'
+                        ? 'ring-1 sm:ring-2 [@media(max-height:600px)]:!ring-1 ring-amber-400/90 shadow-[0_0_16px_rgba(212,175,55,0.75)] cursor-pointer hover:scale-105 active:scale-95'
                         : 'hover:scale-105'
                 }`}
                 style={{
@@ -70,7 +70,7 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
                 }
             >
                 <span
-                    className={`relative z-10 font-display text-xs sm:text-lg md:text-xl font-bold tabular-nums tracking-tight ${
+                    className={`relative z-10 font-display text-xs sm:text-base md:text-lg [@media(max-height:600px)]:!text-xs font-bold tabular-nums tracking-tight ${
                         canDouble ? 'text-[#090806]' : 'text-[#f5dfa0]'
                     }`}
                 >

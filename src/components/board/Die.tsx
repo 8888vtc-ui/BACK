@@ -120,7 +120,7 @@ const DieComponent: React.FC<DieProps> = ({
             onClick={onClick}
             aria-label={label ?? `Dé : ${value}`}
             title={label ?? `Dé : ${value}${used ? ' (déjà utilisé)' : ''}`}
-            className={`${sizeClass} relative rounded-xl flex items-center justify-center transition-all duration-200 select-none overflow-hidden ${rollAnimClass} ${used
+            className={`${sizeClass} relative rounded-[18%] flex items-center justify-center transition-all duration-200 select-none overflow-hidden ${rollAnimClass} ${used
                 ? 'opacity-40 scale-[0.92] saturate-50 brightness-90 cursor-not-allowed'
                 : active
                     ? 'ring-2 ring-sky-400 hover:scale-105'
@@ -132,22 +132,23 @@ const DieComponent: React.FC<DieProps> = ({
                 background: bodyBackground,
                 boxShadow,
                 border: borderStyle,
+                transform: rollIndex % 2 === 0 ? 'rotate(-7deg)' : 'rotate(9deg)',
                 animationDuration: animateRoll ? `${rollDurationMs}ms` : undefined,
                 animationTimingFunction: animateRoll ? DICE_ROLL_DECELERATION_EASING : undefined,
                 animationDelay: animateRoll && rollIndex > 0 ? `${rollIndex * 20}ms` : undefined,
             }}
         >
-            {/* Facette circulaire biseautée interne (ball-cornered precision die) */}
+            {/* Facette carrée biseautée interne (distinction franche avec les pions ronds) */}
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-[8%] rounded-full"
+                className="pointer-events-none absolute inset-[9%] rounded-[14%]"
                 style={{
                     background: facetBackground,
                     boxShadow: isEbony
-                        ? 'inset 0 1px 2px rgba(255, 255, 255, 0.14), inset 0 -1px 2px rgba(0, 0, 0, 0.55)'
+                        ? 'inset 0 1px 2px rgba(255, 255, 255, 0.18), inset 0 -1px 2px rgba(0, 0, 0, 0.55)'
                         : 'inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(140, 118, 82, 0.22)',
                     border: isEbony
-                        ? '1px solid rgba(148, 163, 184, 0.12)'
+                        ? '1px solid rgba(212, 175, 55, 0.22)'
                         : '1px solid rgba(255, 255, 255, 0.55)',
                 }}
             />
