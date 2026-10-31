@@ -24,7 +24,7 @@ export default function PuzzlesPage() {
     return (
         <main className="flex h-dvh overflow-y-auto flex-col items-center p-2 sm:p-5 bg-slate-950 text-slate-100">
             <ErrorBoundary name="Quizz Adaptatifs">
-                <BlunderDrillView />
+                <BlunderDrillView initialMode="pr_math" />
             </ErrorBoundary>
         </main>
     );
