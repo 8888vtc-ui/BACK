@@ -24,7 +24,7 @@ const BoardFrameComponent: React.FC<BoardFrameProps> = ({ children, theme }) => 
     const tokens = getBoardThemeTokens(theme).frame;
     return (
         <div
-            className="board-adaptive-shell relative w-full h-full max-md:portrait:h-auto max-md:portrait:aspect-[1.15/1] min-h-[240px] [@media(max-height:600px)]:!min-h-0 [@media(max-height:600px)]:!h-full [@media(max-height:600px)]:!w-full [@media(max-height:600px)]:!max-w-full [@media(max-height:600px)]:!aspect-auto max-w-full max-h-full min-w-0 md:min-h-0 md:max-w-[min(100%,calc((100dvh-130px)*1.375))] md:aspect-[11/8] md:!max-w-[min(100%,calc((100dvh-16px)*1.35))] md:!h-full mx-auto max-sm:portrait:rounded-none max-sm:portrait:border-x-0 rounded-xl sm:rounded-2xl p-1 sm:p-1.5 [@media(max-height:600px)]:!p-1 flex flex-col shadow-2xl select-none"
+            className="board-adaptive-shell relative w-full h-full max-md:portrait:h-auto max-md:portrait:aspect-[1.15/1] min-h-[240px] max-w-full max-h-full min-w-0 md:min-h-0 md:max-w-[min(100%,calc((100dvh-130px)*1.375))] md:aspect-[11/8] md:h-full [@media(max-height:600px)]:!min-h-0 [@media(max-height:600px)]:!h-full [@media(max-height:600px)]:!w-full [@media(max-height:600px)]:!max-w-full [@media(max-height:600px)]:!aspect-auto mx-auto max-sm:portrait:rounded-none max-sm:portrait:border-x-0 rounded-xl sm:rounded-2xl p-1 sm:p-1.5 [@media(max-height:600px)]:!p-0.5 flex flex-col shadow-2xl select-none"
             style={{
                 background: tokens.background,
                 boxShadow: tokens.boxShadow,
@@ -53,7 +53,7 @@ const FeltSurfaceComponent: React.FC<FeltSurfaceProps> = ({ children, theme }) =
     const tokens = getBoardThemeTokens(theme).felt;
     return (
         <div
-            className="relative flex-1 min-h-0 rounded-lg sm:rounded-xl p-0.5 sm:p-1 flex flex-col overflow-hidden"
+            className="relative flex-1 min-h-0 rounded-lg sm:rounded-xl p-0.5 sm:p-1 [@media(max-height:500px)]:!p-0 flex flex-col overflow-hidden"
             style={{
                 backgroundColor: tokens.backgroundColor,
                 backgroundImage: tokens.backgroundImage,

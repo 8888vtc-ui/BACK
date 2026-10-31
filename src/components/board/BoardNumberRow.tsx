@@ -21,7 +21,7 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
     onToggleOrientation,
 }) => (
     <div
-        className={`grid grid-cols-[1fr_auto_1fr_auto] items-center h-[16px] sm:h-auto px-1 sm:px-2.5 shrink-0 ${
+        className={`grid grid-cols-[1fr_auto_1fr_auto] items-center h-[16px] sm:h-auto [@media(max-height:500px)]:!h-[10px] [@media(max-height:500px)]:!py-0 px-1 sm:px-2.5 [@media(max-height:500px)]:!px-0.5 shrink-0 ${
             padding === 'top' ? 'pb-0.5 sm:pb-1' : 'pt-0.5 sm:pt-1'
         }`}
     >
@@ -29,7 +29,7 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
             {row.slice(0, 6).map((p) => (
                 <span
                     key={`num-${p}`}
-                    className="text-[10px] sm:text-xs font-sans font-bold tabular-nums tracking-normal text-slate-300 leading-none select-none min-w-0 text-center overflow-hidden"
+                    className="text-[10px] sm:text-xs [@media(max-height:500px)]:!text-[8px] font-sans font-bold tabular-nums tracking-normal text-slate-300 leading-none select-none min-w-0 text-center overflow-hidden"
                 >
                     {p}
                 </span>
@@ -40,7 +40,7 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
             {row.slice(6).map((p) => (
                 <span
                     key={`num-${p}`}
-                    className="text-[10px] sm:text-xs font-sans font-bold tabular-nums tracking-normal text-slate-300 leading-none select-none min-w-0 text-center overflow-hidden"
+                    className="text-[10px] sm:text-xs [@media(max-height:500px)]:!text-[8px] font-sans font-bold tabular-nums tracking-normal text-slate-300 leading-none select-none min-w-0 text-center overflow-hidden"
                 >
                     {p}
                 </span>
@@ -57,7 +57,7 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
                     aria-label="Inverser l'orientation du plateau"
                     title="Inverser l'orientation (sortie à gauche ou à droite)"
                     data-testid="orientation-toggle"
-                    className="px-1.5 py-0.5 rounded-md bg-[#1c0e06]/90 border border-[#d4af37]/45 text-[#f3c65f] hover:border-[#f3c65f] hover:text-white text-[10px] sm:text-xs font-serif font-bold shadow-inner transition-colors shrink-0"
+                    className="[@media(max-height:500px)]:hidden px-1.5 py-0.5 rounded-md bg-[#1c0e06]/90 border border-[#d4af37]/45 text-[#f3c65f] hover:border-[#f3c65f] hover:text-white text-[10px] sm:text-xs font-serif font-bold shadow-inner transition-colors shrink-0"
                 >
                     ⇄
                 </button>

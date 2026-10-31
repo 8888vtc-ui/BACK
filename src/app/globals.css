@@ -110,13 +110,14 @@
     }
   }
 
-  /* Conteneur Paysage Mobile : Pleine Largeur Panoramique & Pleine Hauteur (Zero-Clipping) */
-  @media (max-height: 600px) and (orientation: landscape) {
+  /* Conteneur Paysage Mobile : Pleine Largeur Panoramique & Pleine Hauteur (Zero-Clipping, Edge-to-Edge 2px) */
+  @media (max-height: 600px) and (orientation: landscape), (max-width: 932px) and (max-height: 500px) {
     .landscape-full-bleed {
-      padding-top: max(1px, env(safe-area-inset-top, 0px));
-      padding-bottom: max(1px, env(safe-area-inset-bottom, 0px));
-      padding-left: max(4px, env(safe-area-inset-left, 0px));
-      padding-right: max(4px, env(safe-area-inset-right, 0px));
+      padding: 2px !important;
+      width: 100dvw !important;
+      max-width: 100dvw !important;
+      height: 100dvh !important;
+      max-height: 100dvh !important;
     }
 
     .board-adaptive-shell {
@@ -126,8 +127,8 @@
       width: 100% !important;
       max-width: 100% !important;
       aspect-ratio: auto !important;
-      padding: 2px 6px !important;
-      border-radius: 14px !important;
+      padding: 2px 3px !important;
+      border-radius: 10px !important;
     }
   }
 }
