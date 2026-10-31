@@ -11,25 +11,14 @@ describe('AuthModal Component', () => {
         expect(html).toBe('');
     });
 
-    it('affiche le modal avec les boutons OAuth Google et Apple quand isOpen est vrai', () => {
+    it('affiche le modal avec le passeport joueur par défaut et OAuth Google quand isOpen est vrai', () => {
         const html = renderToStaticMarkup(
             <AuthModal isOpen={true} onClose={() => {}} />,
         );
 
-        expect(html).toContain('Connexion au Tournoi');
-        expect(html).toContain('Continuer avec Google');
-        expect(html).toContain('Continuer avec Apple');
-        expect(html).toContain('ou avec votre email');
-        expect(html).toContain('Adresse email');
-        expect(html).toContain('Mot de passe');
-        expect(html).toContain('Se connecter');
-    });
-
-    it('affiche les onglets de bascule Connexion et Créer un compte', () => {
-        const html = renderToStaticMarkup(
-            <AuthModal isOpen={true} onClose={() => {}} />,
-        );
-
+        expect(html).toContain('Inscription rapide requise');
+        expect(html).toContain('Continuer en 1 clic avec Google');
+        expect(html).toContain('Accès Rapide');
         expect(html).toContain('Connexion');
         expect(html).toContain('Créer un compte');
     });
