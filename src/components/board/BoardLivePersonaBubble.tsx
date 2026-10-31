@@ -99,8 +99,11 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
         }
 
         const boardSig = boardBefore ? boardBefore.join(',') : '';
+        const boardAfterSig = boardAfter ? boardAfter.join(',') : '';
+        const isBotBlockedOnBar = Boolean(boardAfter && (boardAfter[25] ?? 0) < 0 && boardSig === boardAfterSig);
         const diceSig = opponentDice ? `${turnsCount}:${opponentDice[0]}-${opponentDice[1]}` : '';
         const isBotDoubleJoker = Boolean(
+            !isBotBlockedOnBar &&
             opponentDice &&
             opponentDice[0] === opponentDice[1] &&
             diceSig !== lastOpponentDiceSigRef.current,
@@ -165,7 +168,7 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
     return (
         <div
             data-testid="board-bot-speech-bubble"
-            className="fixed top-[4.5rem] sm:top-14 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 sm:gap-2.5 rounded-2xl border border-[#d4af37]/45 bg-[#120e09]/95 px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-[#f7f3e8] shadow-[0_10px_28px_rgba(0,0,0,0.85)] backdrop-blur-md max-w-[94vw] sm:max-w-md animate-in fade-in duration-200"
+            className="fixed top-[4.5rem] sm:top-14 left-1/2 -translate-x-1/2 z-30 flex [@media(max-height:500px)]:hidden items-center gap-2 sm:gap-2.5 rounded-2xl border border-[#d4af37]/45 bg-[#120e09]/95 px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-[#f7f3e8] shadow-[0_10px_28px_rgba(0,0,0,0.85)] backdrop-blur-md max-w-[94vw] sm:max-w-md animate-in fade-in duration-200"
         >
             <BotPortraitMedallion character={difficulty} size="sm" isActive />
             <div className="min-w-0 flex-1 leading-snug">
