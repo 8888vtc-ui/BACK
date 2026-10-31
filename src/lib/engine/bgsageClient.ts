@@ -366,7 +366,7 @@ export async function selectBotMoveWithBgsage(
     }
 
     const bestCand = matchedCandidates[0];
-    // 1. Grandmaster ou Expert : verrouillage 100 % optimal
+    // 1. Grandmaster ou Expert : verrouillage 100 % optimal (un Pro joue à PR ~2.5)
     if (
         difficulty === 'grandmaster' ||
         difficulty === 'expert' ||
@@ -375,10 +375,10 @@ export async function selectBotMoveWithBgsage(
         return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply` };
     }
 
-    // 2. Calibrage Dopamine 80 % de victoires humaines contre le Bot (Beginner / Intermediate) :
-    //    Dans 80 % des décisions (Beginner) ou 65 % (Intermediate), le Bot joue un coup humain
-    //    naturellement sous-optimal (#2 à #4) pour laisser l'avantage stratégique au joueur humain.
-    const subOptimalThreshold = difficulty === 'beginner' ? 0.80 : 0.65;
+    // 2. Calibrage Dopamine Dégressif par Palier (80 % Débutant -> 68 % Club -> 50 % Pro) :
+    //    L'humain gagne ~80 % contre un bot Débutant pour créer l'addiction dès l'entrée,
+    //    puis la complaisance du bot descend crescendo en Club (~62 % d'imprécisions) et disparaît en Expert.
+    const subOptimalThreshold = difficulty === 'beginner' ? 0.80 : 0.62;
     if (matchedCandidates.length >= 2 && randomFn() < subOptimalThreshold) {
         const subPool = matchedCandidates.slice(1, Math.min(4, matchedCandidates.length));
         const pickIdx = difficulty === 'beginner' ? subPool.length - 1 : 0;

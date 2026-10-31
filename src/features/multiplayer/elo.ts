@@ -1,29 +1,32 @@
 /**
  * Moteur de calcul du double indice public : Classement Elo Méritocratique + PR Moyen Public
- * avec Boucle d'Addiction (Escrow Elo, Bouclier de Maîtrise, Série 1er Essai, Cristallisation)
+ * avec Courbe Dégressive d'Elo (+30 pts max), Plafond Dynamique indexé sur le PR Moyen Public
+ * (empêche de monter à des Elo irréalistes en battant des bots), Boucle d'Addiction Quizz
  * et Garde-fous Anti-Collusion Humain-Humain.
  *
  * Règles d'Or BackgammonTour :
  * 1. Verrou Méritocratique par le PR + Elo en Séquestre (Escrow) :
  *    Le vainqueur ne gagne AUCUN point Elo immédiat (`delta = 0`) si le PR de son adversaire
- *    est meilleur (`winnerPr > loserPr`). Toutefois, 50% de son gain théorique est placé en
- *    « Elo en Séquestre » (`escrowEloPoints`), déblocable en réussissant 2 Quizz de suite au 1er essai !
+ *    est meilleur (`winnerPr > loserPr`). 50% de son gain théorique est mis en « Elo en Séquestre »,
+ *    déblocable en réussissant 2 Quizz de suite au 1er essai !
  * 2. Bouclier de Maîtrise PR (Anti-Ragequit) :
- *    Si le perdant a joué un meilleur PR que le vainqueur (`loserPr < winnerPr`), son Bouclier de
- *    Maîtrise s'active : il perd `0 point Elo` (`prShieldActivated: true`).
- * 3. Plafond d'Écart Elo (Anti-Farming) :
- *    Si un joueur beaucoup plus fort (ex: 2000 Elo vs 1400 Elo, écart >= 500) gagne, il ne prend que `+1 Elo`.
- * 4. Prime d'Exploit Méritocratique :
- *    Si un outsider (ex: 1400 Elo vs 2000 Elo, écart >= 500) gagne ET réalise un meilleur PR (`winnerPr <= loserPr`),
- *    il remporte `+30 Elo`.
+ *    Si le perdant a joué un meilleur PR que le vainqueur (`loserPr < winnerPr`), il perd `0 Elo`.
+ * 3. Courbe Dégressive Continue des Points Elo (de +30 pts à +1 pt) :
+ *    - Le gain n'est JAMAIS fixe à 30 points : il varie de façon continue et dégressive (`computeScaledBaseEloGain`)
+ *      selon l'écart de niveau (`ratingGap = winnerRating - loserRating`) :
+ *        * Outsider à -500 Elo ou plus (ex: 1400 bat 2000 avec meilleur PR) -> `+30 Elo`
+ *        * Outsider à -250 Elo -> `~+23 Elo`
+ *        * Égalité (écart 0) -> `+15 Elo`
+ *        * Favori à +150 Elo -> `~+9 Elo`
+ *        * Favori à +300 Elo -> `~+4 Elo`
+ *        * Favori à +500 Elo ou plus (ex: 2000 bat 1400) -> `+1 Elo`
+ * 4. Plafond Elo Dynamique piloté par le PR Moyen Public (`computePrCeilingFactor`) :
+ *    C'est le PR qui gouverne l'Elo ! Un joueur ne peut pas monter à des Elo élevés en enchaînant les bots
+ *    si son PR Moyen Public ne suit pas :
+ *    `targetMaxEloForPr = 2250 - publicPr * 65` (ex: PR 10.0 -> plafond ~1600 Elo ; PR 6.0 -> ~1860 Elo ; PR 2.5 -> ~2085 Elo).
+ *    Plus l'Elo du joueur approche ou dépasse le plafond autorisé par son PR, plus son gain Elo diminue crescendo jusqu'à `+1 Elo`.
  * 5. Garde-fous Anti-Collusion Humain-Humain :
- *    - En salon privé (`isPrivateRoom: true`), aucun transfert d'Elo classé (`delta = 0`).
- *    - Quorum de décisions : il faut au moins `MIN_RANKED_DECISIONS_QUORUM` (6 décisions réelles)
- *      pour valider un transfert Elo complet ou la prime de `+30 Elo` (empêche l'abandon complice au tour 1).
- * 6. Boucle d'Addiction Quizz <-> Match (Série 1er Essai + Jauge de Cristallisation 5 Quizz) :
- *    - Série 1-2 au 1er essai : `-0.10 PR` | Série 3-4 : `-0.20 PR` | Série 5+ : `-0.35 PR`.
- *    - Maximum `5` Quizz crédités sur le PR public entre deux parties (`MAX_QUIZ_CRYSTALLIZATION_STACK = 5`).
- *      Jouer une partie cristallise les gains et remet la jauge à `0/5`.
+ *    - Salon privé (`isPrivateRoom: true`) ou moins de 6 décisions (`decisionsCount < 6`) -> `0 Elo`.
  */
 
 import type { Player } from '../../engine/backgammonEngine';
@@ -73,6 +76,8 @@ export function resetPublicPrForTests(): void {
 export interface MatchEloPrOptions {
     readonly prX?: number | null;
     readonly prO?: number | null;
+    readonly publicPrX?: number | null;
+    readonly publicPrO?: number | null;
     readonly decisionsCount?: number;
     readonly isPrivateRoom?: boolean;
 }
@@ -93,6 +98,63 @@ export function getKFactor(rating: number): number {
 export function calculateExpectedScore(ratingA: number, ratingB: number): number {
     const diff = (ratingB - ratingA) / 400;
     return 1 / (1 + Math.pow(10, diff));
+}
+
+/**
+ * Calcule le plafond Elo naturel correspondant à un PR Moyen Public donné.
+ * Exemple :
+ * - PR 12.0 -> Plafond 1470 Elo
+ * - PR 8.5  -> Plafond 1698 Elo
+ * - PR 5.0  -> Plafond 1925 Elo
+ * - PR 2.0  -> Plafond 2120 Elo
+ */
+export function getMaxTargetEloForPublicPr(publicPr: number): number {
+    const clampedPr = Math.max(MIN_PUBLIC_AVERAGE_PR, Math.min(20, publicPr));
+    return Math.round(2250 - clampedPr * 65);
+}
+
+/**
+ * Calcule le gain Elo dégressif continu entre +30 pts (outsider à -500 Elo) et +1 pt (favori à +500 Elo),
+ * avec amortissement par le Plafond PR (`publicPr`) pour empêcher toute inflation Elo contre les bots.
+ */
+export function computeDegressiveEloGain(
+    winnerRating: number,
+    loserRating: number,
+    winnerPublicPr?: number | null,
+): number {
+    const ratingGap = winnerRating - loserRating; // > 0 si favori gagne, < 0 si outsider gagne
+
+    let baseGain: number;
+    if (ratingGap >= 500) {
+        baseGain = 1;
+    } else if (ratingGap <= -500) {
+        baseGain = 30;
+    } else if (ratingGap >= 0) {
+        // Favori : descend progressivement de 16 pts (écart 0) jusqu'à 1 pt (écart +500)
+        const ratio = ratingGap / 500; // 0.0 -> 1.0
+        baseGain = Math.max(1, Math.round(16 * Math.pow(1 - ratio, 1.35)));
+    } else {
+        // Outsider : monte progressivement de 16 pts (écart 0) jusqu'à 30 pts (écart -500)
+        const ratio = Math.abs(ratingGap) / 500; // 0.0 -> 1.0
+        baseGain = Math.min(30, Math.round(16 + 14 * Math.pow(ratio, 0.9)));
+    }
+
+    // Frein de plafond piloté par le PR Moyen Public (empêche d'atteindre un Elo élevé sans améliorer son PR)
+    if (typeof winnerPublicPr === 'number' && Number.isFinite(winnerPublicPr) && baseGain > 1) {
+        const targetMaxElo = getMaxTargetEloForPublicPr(winnerPublicPr);
+        const distanceAboveCeiling = winnerRating - targetMaxElo;
+        if (distanceAboveCeiling >= 120) {
+            return 1;
+        }
+        if (distanceAboveCeiling > -100) {
+            // Entre (plafond - 100) et (plafond + 120), réduction progressive crescendo
+            const progress = (distanceAboveCeiling + 100) / 220; // 0.0 -> 1.0
+            const damping = Math.max(0.1, 1 - progress * 0.88);
+            baseGain = Math.max(1, Math.round(baseGain * damping));
+        }
+    }
+
+    return baseGain;
 }
 
 /**
@@ -133,7 +195,7 @@ export function readEscrowEloPoints(): number {
  * - Garde-fous Anti-Collusion (Salon privé = non classé, Quorum < 6 décisions = gain nul)
  * - Verrou méritocratique de PR + Elo en Séquestre (50% du gain théorique récupérable via 2 Quizz 1er essai)
  * - Bouclier de Maîtrise PR pour le perdant malchanceux (`loserPr < winnerPr` -> `0` perte Elo)
- * - Règle d'écart extrême (2000 vs 1400 -> +1 Elo ; 1400 bat 2000 avec meilleur PR -> +30 Elo).
+ * - Courbe Dégressive Continue de `+30 Elo` à `+1 Elo` + Plafond PR Moyen Public.
  */
 export function calculateMatchElo(
     playerXRating: number,
@@ -148,7 +210,6 @@ export function calculateMatchElo(
     const expectedScoreX = calculateExpectedScore(safeX, safeO);
     const expectedScoreO = 1 - expectedScoreX;
 
-    // Garde-fou Anti-Collusion 1 : Salon privé par code ou abandon précoce avant le quorum de 6 décisions
     const isPrivate = prOptions?.isPrivateRoom === true;
     const belowDecisionQuorum =
         typeof prOptions?.decisionsCount === 'number' &&
@@ -169,14 +230,8 @@ export function calculateMatchElo(
         };
     }
 
-    const actualScoreX = winner === 'X' ? 1 : 0;
-    const actualScoreO = winner === 'O' ? 1 : 0;
-
-    const kX = customK ?? getKFactor(safeX);
-    const kO = customK ?? getKFactor(safeO);
-
-    let deltaX = Math.round(kX * (actualScoreX - expectedScoreX));
-    let deltaO = Math.round(kO * (actualScoreO - expectedScoreO));
+    let deltaX = 0;
+    let deltaO = 0;
     let prBlockedGain = false;
     let prShieldActivated = false;
     let escrowEloPoints = 0;
@@ -191,39 +246,36 @@ export function calculateMatchElo(
     const prO = hasValidPrs ? (prOptions!.prO as number) : null;
 
     if (winner === 'X') {
-        const ratingGap = safeX - safeO;
-        const theoreticalGainX = Math.max(2, ratingGap >= 500 ? 1 : ratingGap <= -500 ? 30 : deltaX);
-        // 1. Verrou PR + Bouclier de Maîtrise pour O + Séquestre Elo pour X
+        const degressiveGainX =
+            customK !== undefined
+                ? Math.round(customK * (1 - expectedScoreX))
+                : computeDegressiveEloGain(safeX, safeO, prOptions?.publicPrX);
         if (prX !== null && prO !== null && prX > prO) {
-            escrowEloPoints = Math.max(1, Math.round(theoreticalGainX * 0.5));
+            escrowEloPoints = Math.max(1, Math.round(degressiveGainX * 0.5));
             storeEscrowEloPoints(escrowEloPoints);
             deltaX = 0;
-            deltaO = 0; // Bouclier de Maîtrise pour le perdant O qui a mieux joué !
+            deltaO = 0;
             prBlockedGain = true;
             prShieldActivated = true;
-        } else if (ratingGap >= 500) {
-            deltaX = 1;
-            deltaO = -1;
-        } else if (ratingGap <= -500) {
-            deltaX = 30;
-            deltaO = -30;
+        } else {
+            deltaX = degressiveGainX;
+            deltaO = -degressiveGainX;
         }
     } else {
-        const ratingGap = safeO - safeX;
-        const theoreticalGainO = Math.max(2, ratingGap >= 500 ? 1 : ratingGap <= -500 ? 30 : deltaO);
+        const degressiveGainO =
+            customK !== undefined
+                ? Math.round(customK * (1 - expectedScoreO))
+                : computeDegressiveEloGain(safeO, safeX, prOptions?.publicPrO);
         if (prX !== null && prO !== null && prO > prX) {
-            escrowEloPoints = Math.max(1, Math.round(theoreticalGainO * 0.5));
+            escrowEloPoints = Math.max(1, Math.round(degressiveGainO * 0.5));
             storeEscrowEloPoints(escrowEloPoints);
             deltaO = 0;
-            deltaX = 0; // Bouclier de Maîtrise pour le perdant X qui a mieux joué !
+            deltaX = 0;
             prBlockedGain = true;
             prShieldActivated = true;
-        } else if (ratingGap >= 500) {
-            deltaO = 1;
-            deltaX = -1;
-        } else if (ratingGap <= -500) {
-            deltaO = 30;
-            deltaX = -30;
+        } else {
+            deltaO = degressiveGainO;
+            deltaX = -degressiveGainO;
         }
     }
 
@@ -260,6 +312,20 @@ export function readPublicAveragePr(): number {
     } catch {
         return inMemoryPublicPr;
     }
+}
+
+/**
+ * Convertit le PR Moyen Public du joueur en palier minimal de difficulté de Quizz (1 à 4) :
+ * - PR > 9.0       -> Palier 1 (Fondamentaux 1-ply)
+ * - PR 5.5 à 9.0   -> Palier 2 (Club 2-ply)
+ * - PR 3.0 à 5.5   -> Palier 3 (Expert 2-ply/3-ply)
+ * - PR < 3.0       -> Palier 4 (Maître / Grand-Maître 3-ply)
+ */
+export function getTargetQuizTierFromPublicPr(publicPr: number = readPublicAveragePr()): 1 | 2 | 3 | 4 {
+    if (publicPr < 3.0) return 4;
+    if (publicPr <= 5.5) return 3;
+    if (publicPr <= 9.0) return 2;
+    return 1;
 }
 
 /**
@@ -337,7 +403,6 @@ export function rewardFirstTryQuizOnPublicPr(): {
     const deltaPr = Number((newPr - previousPr).toFixed(2));
     inMemoryPublicPr = newPr;
 
-    // Déblocage de l'Elo en Séquestre dès 2 réussites consécutives au 1er essai
     let unlockedEscrowElo = 0;
     const currentEscrow = readEscrowEloPoints();
     if (currentEscrow > 0 && inMemoryFirstTryStreak >= ESCROW_UNLOCK_STREAK_REQUIRED) {

@@ -11,6 +11,7 @@
  */
 
 import type { PlayerBlunderRecord, DrillTier } from './types';
+import { getTargetQuizTierFromPublicPr, readPublicAveragePr } from '../multiplayer/elo';
 
 export type AdaptiveQuizCategoryId =
     | 'opening'
@@ -371,9 +372,10 @@ export function selectNextAdaptiveQuiz(
     }
 
     const candidates = byCat.get(chosen.meta.id) ?? unseenPool;
-    const targetLevel = chosen.state.level;
+    const publicPrTierFloor = getTargetQuizTierFromPublicPr(readPublicAveragePr());
+    const targetLevel = Math.max(chosen.state.level, publicPrTierFloor) as DrillTier;
 
-    // Cherche d'abord un quizz du palier exact de la catégorie, sinon le palier le plus proche
+    // Cherche d'abord un quizz du palier exact (ou piloté par le PR du joueur), sinon le palier le plus proche
     const sortedByTierMatch = [...candidates].sort((a, b) => {
         const distA = Math.abs((a.tier ?? 1) - targetLevel);
         const distB = Math.abs((b.tier ?? 1) - targetLevel);
