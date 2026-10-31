@@ -189,7 +189,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     };
 
     return (
-        <div className="w-full max-w-full h-full min-h-0 min-w-0 flex-1 overflow-hidden relative grid grid-cols-[minmax(0,1fr)] lg:grid-cols-12 gap-1 sm:gap-3 max-w-[1920px] mx-auto px-0 sm:px-2 pb-0.5 sm:pb-1">
+        <div className="w-full max-w-full h-full min-h-0 min-w-0 flex-1 overflow-hidden relative grid grid-cols-[minmax(0,1fr)] lg:grid-cols-12 gap-1 sm:gap-3 [@media(max-height:500px)]:!gap-0 max-w-[1920px] mx-auto px-0 sm:px-2 pb-0.5 sm:pb-1 [@media(max-height:500px)]:!p-0">
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 -z-0"
@@ -225,7 +225,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     challengerProfile={challengerProfile}
                 />
 
-                <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 px-0 sm:px-3 py-0 sm:py-1.5 overflow-hidden">
+                <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 [@media(max-height:500px)]:!gap-1 px-0 sm:px-3 py-0 sm:py-1.5 [@media(max-height:500px)]:!p-0 overflow-hidden">
                     {!challengerProfile && (
                         <BoardLivePersonaBubble
                             difficulty={game.difficulty}
@@ -253,6 +253,16 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         prX={prX}
                         prO={prO}
                         challengerProfile={challengerProfile}
+                        isBrowserFullscreen={isBrowserFullscreen}
+                        isFocusFullBoard={isFocusFullBoard}
+                        onToggleFullscreen={handleToggleBrowserFullscreen}
+                        onToggleCoach={() => { setIsFocusFullBoard((v) => !v); onTriggerCoach(); }}
+                        onToggleTheme={onToggleTheme}
+                        onBackToLobby={onBackToLobby}
+                        canUndo={replay.isLive && game.canUndo}
+                        onUndo={replay.isLive ? game.undoMove : NOOP}
+                        autoConfirmEnabled={game.autoConfirmTurn}
+                        onToggleAutoConfirm={game.toggleAutoConfirmTurn}
                     />
 
                     {/* COLONNE CENTRALE : Plateau 100 % Hauteur */}
