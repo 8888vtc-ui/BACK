@@ -90,6 +90,10 @@ describe('MultiplayerLobbyModal', () => {
         expect(html).toContain('data-testid="matchmaking-searching"');
         expect(html).toContain('Annuler la recherche');
         expect(html).toContain('Tolérance stricte');
+        expect(html).toContain('data-testid="waiting-live-tournament-card"');
+        expect(html).toContain('Prochain Tournoi Live');
+        expect(html).toContain('data-testid="waiting-einstein-quiz-banner"');
+        expect(html).toContain('Faites des Quizz pour améliorer votre PR !');
     });
 
     it('affiche le code du salon privé créé lorsqu’un code est actif', () => {

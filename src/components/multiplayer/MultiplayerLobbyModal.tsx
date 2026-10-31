@@ -17,6 +17,7 @@ import { getEloTier } from '../../features/multiplayer/elo';
 import { type ThemeName } from '../../hooks/useBoardTheme';
 import { LobbyMatchedVersus } from './LobbyMatchedVersus';
 import { LobbyPrivateRoomTab } from './LobbyPrivateRoomTab';
+import { LobbySearchingWaitView } from './LobbySearchingWaitView';
 
 export interface MultiplayerLobbyModalProps {
     isOpen: boolean;
@@ -100,8 +101,12 @@ export default function MultiplayerLobbyModal({
                 {/* 1. En-tête du Joueur Local */}
                 <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4 pr-10">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500 text-base font-black text-slate-950 shadow-sm">
-                            {localProfile.displayName.charAt(0).toUpperCase()}
+                        <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-[#f3c65f]/40 bg-amber-500 text-base font-black text-slate-950 shadow-sm">
+                            {localProfile.avatarUrl ? (
+                                <img src={localProfile.avatarUrl} alt={localProfile.displayName} className="h-full w-full object-cover" />
+                            ) : (
+                                localProfile.displayName.charAt(0).toUpperCase()
+                            )}
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
@@ -146,40 +151,13 @@ export default function MultiplayerLobbyModal({
                         matchInfo={matchInfo}
                     />
                 ) : isSearchingPublic ? (
-                    /* ÉTAT RECHERCHE MATCHMAKING RAPIDE EN COURS */
-                    <div className="py-6 text-center space-y-4" data-testid="matchmaking-searching">
-                        <div className="relative mx-auto flex h-20 w-20 items-center justify-center">
-                            <div className="absolute inset-0 rounded-full border border-amber-400/30 animate-ping" />
-                            <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-amber-500/15 text-2xl text-amber-300">
-                                📡
-                            </div>
-                        </div>
-
-                        <div className="space-y-1">
-                            <div className="text-base font-bold text-white">
-                                Recherche d&apos;un adversaire...
-                            </div>
-                            <div className="text-xs text-slate-300 font-mono">
-                                Temps écoulé : {elapsedSeconds}s • Format : {selectedLength === 0 ? 'Money Game' : `${selectedLength} pts`}
-                            </div>
-                            <div className="text-xs text-amber-300/90">
-                                {elapsedSeconds < 5
-                                    ? 'Tolérance stricte (±100 Elo)'
-                                    : elapsedSeconds < 10
-                                      ? 'Élargissement de la recherche (±250 Elo)'
-                                      : 'Recherche élargie (Appariement prioritaire)'}
-                            </div>
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={onCancelSearch}
-                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 hover:text-white transition-colors"
-                            data-testid="cancel-matchmaking-button"
-                        >
-                            Annuler la recherche
-                        </button>
-                    </div>
+                    <LobbySearchingWaitView
+                        elapsedSeconds={elapsedSeconds}
+                        selectedLength={selectedLength}
+                        playerRating={localProfile.rating}
+                        playerAveragePr={localProfile.averagePr ?? 8.5}
+                        onCancelSearch={onCancelSearch}
+                    />
                 ) : (
                     <div className="space-y-4">
                         {/* Sélecteur de format commun : Match (Crawford) vs Money Game (Jacoby) */}
