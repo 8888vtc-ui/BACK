@@ -6,6 +6,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ConciergeSupportSection from '../../components/support/ConciergeSupportSection';
 
 export const metadata: Metadata = {
     title: 'Politique de Confidentialité & Conformité RGPD (0 Cookie Publicitaire) | Backgammon Tour',
@@ -81,10 +82,13 @@ export default function PrivacyGdprPage() {
                         4. Votre Droit à l’Effacement en 1 Clic (Art. 17 RGPD — Droit à l’Oubli)
                     </h2>
                     <p className="text-xs sm:text-sm text-stone-200 leading-relaxed">
-                        Vous pouvez à tout moment supprimer intégralement votre Passeport Joueur, votre profil et l’historique de vos parties en <strong>1 seul clic</strong> directement depuis votre menu utilisateur en haut à droite de l’écran via le bouton <strong>« 🗑️ Supprimer mes données (RGPD) »</strong>.
+                        Vous pouvez à tout moment supprimer intégralement votre Passeport Joueur, votre profil et l’historique de vos parties en <strong>1 seul clic</strong> directement depuis votre menu utilisateur en haut à droite de l’écran via le bouton <strong>« 🗑️ Supprimer mes données (RGPD) »</strong> ou ci-dessous.
                     </p>
                 </section>
+
+                <ConciergeSupportSection />
             </div>
         </main>
     );
 }
+

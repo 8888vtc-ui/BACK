@@ -266,6 +266,10 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                                     <span aria-hidden="true">⚡</span>
                                     <span>{isEn ? 'Unlimited VIP Coach' : 'Coach Illimité VIP'}</span>
                                 </Link>
+                                <Link href="/privacy#support" prefetch onClick={() => setIsDropdownOpen(false)} data-testid="user-menu-support-link" className="flex w-full items-center gap-2 rounded-xl px-3 py-2 font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition">
+                                    <span aria-hidden="true">🛎️</span>
+                                    <span>{isEn ? 'Concierge & Support' : 'Conciergerie & Support'}</span>
+                                </Link>
                                 {onOpenSettings && (
                                     <button type="button" onClick={() => { setIsDropdownOpen(false); onOpenSettings(); }} data-testid="user-menu-settings-btn" className="flex w-full items-center gap-2 rounded-xl px-3 py-2 font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition">
                                         <span aria-hidden="true">⚙️</span>
