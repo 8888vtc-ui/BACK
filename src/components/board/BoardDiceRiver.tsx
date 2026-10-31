@@ -74,12 +74,12 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
     };
 
     const dieSizeClass = isDouble
-        ? 'w-6 h-6 sm:w-9 sm:h-9 md:w-10 md:h-10 [@media(max-height:540px)]:!w-7 [@media(max-height:540px)]:!h-7'
-        : 'w-7 h-7 sm:w-10 sm:h-10 md:w-11 md:h-11 [@media(max-height:540px)]:!w-8 [@media(max-height:540px)]:!h-8';
+        ? 'w-5 h-5 sm:w-8 sm:h-8 md:w-9 md:h-9 [@media(max-height:540px)]:!w-5 [@media(max-height:540px)]:!h-5'
+        : 'w-6 h-6 sm:w-9 sm:h-9 md:w-10 md:h-10 [@media(max-height:540px)]:!w-6 [@media(max-height:540px)]:!h-6';
 
     return (
         <>
-            <div className="pointer-events-none absolute left-[25%] sm:left-[24%] top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center gap-1 sm:gap-3 [@media(max-height:540px)]:!gap-1.5 max-w-[46%] sm:max-w-[44%]">
+            <div className="pointer-events-none absolute left-[25%] sm:left-[24%] top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center gap-1 sm:gap-2.5 [@media(max-height:540px)]:!gap-1.5 max-w-[44%] sm:max-w-[42%]">
                 {dice && (
                     <div
                         data-testid="board-dice-pair"
@@ -105,7 +105,7 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                         }
                         onClick={handleContainerClick}
                         onKeyDown={handleContainerKeyDown}
-                        className={`pointer-events-auto flex items-center ${isDouble ? 'gap-0.5 sm:gap-2 [@media(max-height:540px)]:!gap-1 px-0.5 sm:px-2' : 'gap-1 sm:gap-2.5 [@media(max-height:540px)]:!gap-1.5 px-1 sm:px-2.5'} rounded-xl py-1 min-h-[34px] sm:min-h-[40px] cursor-pointer transition hover:bg-white/5 active:scale-95 touch-manipulation`}
+                        className={`pointer-events-auto flex items-center ${isDouble ? 'gap-0.5 sm:gap-1.5 [@media(max-height:540px)]:!gap-1' : 'gap-1 sm:gap-2 [@media(max-height:540px)]:!gap-1.5'} rounded-xl py-0.5 cursor-pointer transition active:scale-95 touch-manipulation drop-shadow-[0_6px_12px_rgba(0,0,0,0.75)]`}
                     >
                         {visibleDice.map((value, i) => {
                             const dieSlot: 0 | 1 = i === 0 ? 0 : 1;
@@ -155,10 +155,9 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                             <span
                                 data-testid="dice-order-indicator"
                                 aria-hidden="true"
-                                className="ml-0.5 flex flex-col items-center justify-center rounded-lg bg-slate-950/75 border border-white/10 px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-200/95 shadow-md backdrop-blur-sm"
+                                className="sr-only"
                             >
-                                <span className="text-[10px] sm:text-[11px] leading-none text-sky-300">⇄</span>
-                                <span className="leading-tight">{selectedDie === 1 ? '2→1' : '1→2'}</span>
+                                {selectedDie === 1 ? '2→1' : '1→2'}
                             </span>
                         )}
                     </div>
@@ -167,7 +166,7 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                 {opponentDice && (
                     <div
                         data-testid="opponent-dice"
-                        className="pointer-events-auto flex items-center gap-1.5 sm:gap-2.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-slate-950/65 border border-amber-500/35 shadow-xl backdrop-blur-sm"
+                        className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 [@media(max-height:540px)]:!gap-1.5 drop-shadow-[0_6px_12px_rgba(0,0,0,0.75)]"
                         title="Dés lancés par l'adversaire"
                     >
                         {opponentDice.map((value, i) => (
@@ -175,7 +174,7 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                                 key={`opp-${i}-${opponentDice[0]}-${opponentDice[1]}`}
                                 value={value}
                                 variant="ebony"
-                                sizeClass="w-8 h-8 sm:w-11 sm:h-11 md:w-12 md:h-12"
+                                sizeClass="w-6 h-6 sm:w-9 sm:h-9 md:w-10 md:h-10 [@media(max-height:540px)]:!w-6 [@media(max-height:540px)]:!h-6"
                                 rollIndex={i}
                                 animateRoll
                                 disabled
@@ -194,14 +193,8 @@ const BoardDiceRiverComponent: React.FC<BoardDiceRiverProps> = ({
                     tabIndex={-1}
                     aria-label={confirmOnClick ? 'Valider le tour' : "Inverser l'ordre des dés (côté droit de la rivière)"}
                     onClick={handleContainerClick}
-                    className="pointer-events-auto absolute left-[75%] sm:left-[74%] top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-[42%] h-10 rounded-xl cursor-pointer touch-manipulation active:bg-white/5"
-                >
-                    {canSwapOrder && (
-                        <span className="sm:hidden px-1.5 py-0.5 rounded-md bg-slate-950/45 border border-white/10 text-[10px] font-bold text-amber-200/70 tracking-wider">
-                            ⇄ {dice[selectedDie === 1 ? 1 : 0]}→{dice[selectedDie === 1 ? 0 : 1]}
-                        </span>
-                    )}
-                </div>
+                    className="pointer-events-auto absolute left-[75%] sm:left-[74%] top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-[42%] h-9 rounded-xl cursor-pointer touch-manipulation"
+                />
             )}
         </>
     );
