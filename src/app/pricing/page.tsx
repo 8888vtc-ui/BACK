@@ -59,7 +59,7 @@ export default function PricingPage() {
             {/* Bannière Offre de Lancement : Tout Gratuit pour attirer le trafic */}
             <div className="mb-5 w-full max-w-4xl rounded-2xl border border-emerald-500/40 bg-emerald-950/40 px-4 py-3 text-center text-xs sm:text-sm text-emerald-200 shadow-lg">
                 <strong className="text-emerald-300">🎁 OFFRE DE LANCEMENT ACTIVE : </strong>
-                Le Parcours Quizz Adaptatif (10 000 parties Multi-Ply) et le Coach Pédagogique 3.8 Flash sont actuellement <strong>100 % offerts en accès illimité</strong> pour tous les joueurs !
+                Le Parcours Quizz Adaptatif (<strong>19 413 Quiz 3-Ply certifiés GNU</strong> : 18 613 ER + 800 ERH), le moteur <strong>BT-Neural v5.0 Goliath MoE-6 (251 754 floats)</strong> et le Coach Pédagogique sont actuellement <strong>100 % offerts en accès illimité</strong> pour tous les joueurs !
             </div>
 
             {/* Vitrine centrale d'abonnement Prestige */}

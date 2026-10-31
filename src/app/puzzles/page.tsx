@@ -4,9 +4,9 @@ import BlunderDrillView from '../../components/drills/BlunderDrillView';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
 
 export const metadata: Metadata = {
-    title: 'Problèmes Tactiques Backgammon 3-Ply & Exercices de Videau',
+    title: '19 413 Problèmes Tactiques Backgammon 3-Ply Certifiés GNU & Exercices ER/ERH',
     description:
-        'Plus de 300 problèmes tactiques de Backgammon extraits de 10 000 parties de Grand-Maître : travailllez les 9 piliers (Ouvertures, Prime, Blitz, Backgame, Course et Videau).',
+        '19 413 problèmes tactiques de Backgammon (18 613 ER + 800 ERH) certifiés par GNU Backgammon [world class] : travaillez les 9 piliers (Ouvertures, Prime, Blitz, Backgame, Course et Videau).',
     alternates: {
         canonical: '/puzzles',
         languages: {

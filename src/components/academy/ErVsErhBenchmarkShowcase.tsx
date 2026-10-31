@@ -55,8 +55,8 @@ const CHAMPION_ROWS: readonly ChampionMetricRow[] = [
         highlight: true,
     },
     {
-        name: 'BT-Core v4.0 MoE-6 ER (Marcus)',
-        subtitle: '6 Réseaux Spécialisés par Phase · 97,73 % Précision 3-Ply (53 329 poids)',
+        name: 'BT-Core v5.0 Goliath MoE-6 ER (Marcus)',
+        subtitle: '6 Réseaux Complets par Phase · 251 754 floats (1,007 Mo) · 91,69 % Accord GNU 1-Ply',
         badge: 'RÉFÉRENCE ER PURE',
         winRate: '54,35 %',
         winsText: '1 848 / 3 400',
@@ -144,7 +144,7 @@ export const ErVsErhBenchmarkShowcase: React.FC = () => {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-white/10 pb-4">
                 <div className="space-y-1.5">
                     <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-950/60 px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-emerald-300">
-                        🔬 Étude Certifiée · 15 200 Parties &amp; 1 981 Quiz
+                        🔬 Étude Certifiée · 15 200 Parties &amp; 19 413 Quiz Certifiés GNU
                     </span>
                     <h2 id="er-vs-erh-heading" className="font-serif text-xl sm:text-2xl font-black tracking-wide text-[#fdf8eb]">
                         ER vs ERH : Pourquoi notre IA « Psychologique » bat le Robot Parfait
@@ -184,7 +184,7 @@ export const ErVsErhBenchmarkShowcase: React.FC = () => {
                         onClick={() => setTab('xgComparison')}
                         className={`rounded-xl border px-3.5 py-2 text-xs font-extrabold transition ${tab === 'xgComparison' ? 'border-[#f3c65f] bg-amber-500/20 text-[#fff9e6]' : 'border-white/10 bg-[#0b101b] text-slate-300 hover:border-white/25'}`}
                     >
-                        3. Supériorité vs XG &amp; 1 981 Quiz
+                        3. Supériorité vs XG &amp; 19 413 Quiz
                     </button>
                 </div>
             </div>
@@ -344,14 +344,14 @@ export const ErVsErhBenchmarkShowcase: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Barre d'action vers les 1 981 Quiz et les Adversaires */}
+                    {/* Barre d'action vers les 19 413 Quiz et les Adversaires */}
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[#d4af37]/40 bg-black/50 p-4">
                         <div className="space-y-1 text-center sm:text-left">
                             <div className="text-xs sm:text-sm font-black text-[#fdf8eb]">
-                                🎯 Entraînez-vous sur les 1 981 Quiz issus de nos 15 200 Parties (1 181 Quiz ER + 800 Quiz ERH)
+                                🎯 Entraînez-vous sur les 19 413 Quiz certifiés GNU Backgammon (18 613 Quiz ER + 800 Quiz ERH)
                             </div>
                             <p className="text-xs text-slate-300">
-                                Apprenez à la fois le coup mathématique MoE-6 parfait (Marcus) et le piège psychologique fatal (Viktor).
+                                100 % des 19 413 coups vérifiés (91,69 % d’accord direct en 1-ply pour Goliath MoE-6 sur 18 613 ER · 98,50 % pour BT-ERH sur 800 pièges humains).
                             </p>
                         </div>
                         <div className="flex flex-wrap items-center gap-2.5 shrink-0">
@@ -359,13 +359,13 @@ export const ErVsErhBenchmarkShowcase: React.FC = () => {
                                 href="/drills"
                                 className="rounded-xl border border-[#fef08a] bg-gradient-to-b from-[#f5cf70] to-[#b38428] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#1c1004] shadow hover:scale-105 transition"
                             >
-                                Lancer les 1 981 Quiz ER &amp; ERH
+                                Lancer les 19 413 Quiz ER &amp; ERH
                             </Link>
                             <Link
                                 href="/"
                                 className="rounded-xl border border-emerald-400/50 bg-emerald-950/80 px-4 py-2 text-xs font-extrabold uppercase tracking-wider text-emerald-200 hover:bg-emerald-900/80 transition"
                             >
-                                Défier Viktor (BT-ERH v4.0)
+                                Défier Viktor (BT-ERH v5.0)
                             </Link>
                         </div>
                     </div>
