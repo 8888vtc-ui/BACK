@@ -32,13 +32,17 @@ import {
 import { formatMoveSequenceNotation } from './evaluator';
 import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
 
+export const BGT_SUPPORTED_MATCH_LENGTHS = [0, 3, 7, 9, 11, 21] as const;
+export type BgtSupportedMatchLength = (typeof BGT_SUPPORTED_MATCH_LENGTHS)[number];
+
 export const BGT_ENGINE_METADATA = {
     name: 'BGT (BackgammonTour Open-Source Neural Engine)',
     shortName: 'bgt',
-    version: '1.0.0',
+    version: '1.1.0',
     license: 'GPL-3.0-or-later',
     homepage: 'https://backgammontour.com',
-    poweredBy: 'GNU Backgammon 1.08.003 & BackgammonTour.com',
+    poweredBy: 'GNU Backgammon 1.08.003 (Kazaross-XG2 MET) & BackgammonTour.com',
+    supportedMatchLengths: BGT_SUPPORTED_MATCH_LENGTHS,
 } as const;
 
 const DEFAULT_WINDOWS_GNUBG_DIR = 'C:\\Program Files (x86)\\gnubg';
@@ -267,10 +271,10 @@ export function parseBgtGnubgOutput(
         });
     }
 
-    // Parsing de la décision de videau (Cube analysis)
-    const noDoubleMatch = stdout.match(/No double\s+([+-]?\d+[.,]\d+)/i);
-    const doublePassMatch = stdout.match(/Double,\s*pass\s+([+-]?\d+[.,]\d+)/i);
-    const doubleTakeMatch = stdout.match(/Double,\s*take\s+([+-]?\d+[.,]\d+)/i);
+    // Parsing de la décision de videau (Cube analysis : Money Game & Match 3, 7, 9, 11, 21)
+    const noDoubleMatch = stdout.match(/No double\s+([+-]?\d+[.,]\d+)/i) ?? stdout.match(/No redouble\s+([+-]?\d+[.,]\d+)/i);
+    const doublePassMatch = stdout.match(/(?:Double|Redouble),\s*pass\s+([+-]?\d+[.,]\d+)/i);
+    const doubleTakeMatch = stdout.match(/(?:Double|Redouble),\s*take\s+([+-]?\d+[.,]\d+)/i);
     const properActionMatch = stdout.match(/Proper cube action:\s*(.+)/i);
 
     const noDouble = noDoubleMatch ? parseFloatLocale(noDoubleMatch[1]) : 0;
@@ -278,12 +282,26 @@ export function parseBgtGnubgOutput(
     const doubleTake = doubleTakeMatch ? parseFloatLocale(doubleTakeMatch[1]) : 0;
     const rawProper = properActionMatch ? properActionMatch[1].trim().toLowerCase() : '';
 
+    const matchLen = state.matchLength ?? 0;
+    const turnScore = state.turn === 'X' ? state.scoreX : state.scoreO;
+    const isPlayerAlreadyAtMatchMinusOne = matchLen > 0 && turnScore >= matchLen - 1;
+    const isCubeDeadByValue = matchLen > 0 && turnScore + state.cubeValue >= matchLen;
+    const isOpponentOwnedCube = state.cubeOwner !== null && state.cubeOwner !== state.turn;
+
     let optimalAction = 'NO_DOUBLE';
-    if (state.cubeOwner !== null && state.cubeOwner !== state.turn) {
+    if (isOpponentOwnedCube || state.crawford || isPlayerAlreadyAtMatchMinusOne || isCubeDeadByValue) {
         optimalAction = 'NO_DECISION';
+    } else if (rawProper.startsWith('too good to double') || rawProper.startsWith('too good to redouble')) {
+        optimalAction = rawProper.includes('pass') ? 'TOO_GOOD_PASS' : 'TOO_GOOD_TAKE';
     } else if (rawProper.startsWith('double, pass') || rawProper.startsWith('redouble, pass')) {
         optimalAction = 'DOUBLE_PASS';
-    } else if (rawProper.startsWith('double, take') || rawProper.startsWith('redouble, take') || rawProper.startsWith('optional double') || rawProper.startsWith('optional redouble')) {
+    } else if (
+        rawProper.startsWith('double, take') ||
+        rawProper.startsWith('redouble, take') ||
+        rawProper.startsWith('optional double') ||
+        rawProper.startsWith('optional redouble') ||
+        rawProper.startsWith('double, beaver')
+    ) {
         optimalAction = 'DOUBLE_TAKE';
     }
 
@@ -302,11 +320,8 @@ export function parseBgtGnubgOutput(
 }
 
 /**
- * Évalue une position XGID via le moteur neuronal local BGT (`gnubg-cli`).
- * Suit la convention AGENTS.md Section 3 :
- *   XG/OpenSage `1-ply` = `0-ply` GNU Backgammon (évaluation directe du réseau neuronal),
- *   XG/OpenSage `2-ply` = `1-ply` GNU Backgammon,
- *   XG/OpenSage `3-ply` = `2-ply` GNU Backgammon.
+ * Évalue une position XGID via le moteur neuronal local BGT (`gnubg-cli`)
+ * en Money Game (`matchLength = 0`) ou en Match (`3, 7, 9, 11, 21` points avec Kazaross-XG2).
  */
 export function evaluateWithBgtSync(
     xgid: string,
@@ -360,3 +375,4 @@ export function evaluateWithBgtSync(
         return null;
     }
 }
+
