@@ -18,6 +18,12 @@ import { EvaluateRequestSchema, validateJsonBody } from '../../../lib/security/s
 import { parseXGID, serializeCanonicalXGID } from '../../../engine/backgammonEngine';
 import { analyzeBoardMoves, analyzeBoardCube } from '../../../lib/engine/evaluator';
 import { ensureBgsageSafeXgid } from '../../../lib/engine/bgsageClient';
+import {
+    BGT_ENGINE_METADATA,
+    evaluateWithBgtSync,
+    inspectBgtWeightsFile,
+    isBgtAvailable,
+} from '../../../lib/engine/bgtEngine';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,10 +40,17 @@ const BACKEND_URL =
           ).replace(/\/+$/, '');
 
 export async function GET() {
+    const weights = inspectBgtWeightsFile();
     return NextResponse.json({
         service: 'backgammon-evaluate',
         status: 'online',
         engine: 'typescript-tri-phase',
+        bgt: {
+            ...BGT_ENGINE_METADATA,
+            cliAvailable: isBgtAvailable(),
+            weightsAvailable: weights.available,
+            weightsBytes: weights.byteLength,
+        },
         maxPly: 4,
         rateLimit: '60 req/min',
     });
@@ -58,7 +71,28 @@ export async function POST(req: NextRequest) {
 
     const { xgid, ply } = validation.data;
 
-    // 3. Évaluation via le moteur neuronal web Open Sage (Cloud Run) avec retry automatique
+    // 3. Priorité BGT Local (GNU Backgammon natif) si explicitement activé ou hors-test en local
+    if (process.env.NODE_ENV !== 'test' && process.env.BGT_ENGINE_DISABLED !== '1' && isBgtAvailable()) {
+        const bgtResult = evaluateWithBgtSync(xgid, ply ?? 2);
+        if (bgtResult) {
+            return NextResponse.json(
+                {
+                    ...bgtResult,
+                    poweredBy: BGT_ENGINE_METADATA.homepage,
+                },
+                {
+                    status: 200,
+                    headers: {
+                        'X-RateLimit-Limit': String(rateLimit.result.limit),
+                        'X-RateLimit-Remaining': String(rateLimit.result.remaining),
+                        'X-Powered-By': `${BGT_ENGINE_METADATA.name} (${BGT_ENGINE_METADATA.homepage})`,
+                    },
+                },
+            );
+        }
+    }
+
+    // 4. Évaluation via le moteur neuronal web Open Sage (Cloud Run) avec retry automatique
     //    et protection ensureBgsageSafeXgid lorsque la flèche 24 est vide.
     let canonicalXgid = ensureBgsageSafeXgid(xgid);
     try {
@@ -103,7 +137,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
             {
                 error: 'Service neuronal web temporairement indisponible',
-                message: 'Le moteur Open Sage Cloud Run n\'a pas répondu dans le délai imparti.',
+                message: 'Le moteur BGT / Open Sage Cloud Run n\'a pas répondu dans le délai imparti.',
             },
             {
                 status: 503,
@@ -115,7 +149,7 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    // 4. Environnement de test unitaire hors-ligne uniquement (NODE_ENV === 'test').
+    // 5. Environnement de test unitaire hors-ligne uniquement (NODE_ENV === 'test').
     try {
         const state = parseXGID(xgid);
         const dice: [number, number] = state.dice ?? [3, 1];
