@@ -21,6 +21,7 @@ import {
     onAuthStateChange,
     readPlayerPassport,
     clearPlayerPassport,
+    eraseAllPlayerGdprData,
     type PlayerPassport,
 } from '../../lib/supabase/auth';
 import type { Profile } from '../../lib/supabase/types';
@@ -273,10 +274,26 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                                 )}
                             </div>
 
-                            <div className="pt-1">
+                            <div className="pt-1 space-y-0.5">
                                 <button type="button" onClick={handleLogout} data-testid="auth-logout-btn" className="flex w-full items-center gap-2 rounded-xl px-3 py-2 font-semibold text-rose-400 hover:bg-rose-500/15 hover:text-rose-300 transition">
                                     <span aria-hidden="true">🚪</span>
                                     <span>{isEn ? 'Sign Out' : 'Déconnexion'}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    data-testid="gdpr-delete-data-btn"
+                                    onClick={async () => {
+                                        setIsDropdownOpen(false);
+                                        await eraseAllPlayerGdprData();
+                                        setLocalPassport(null);
+                                        setInternalUser(null);
+                                        setInternalProfile(null);
+                                        setInternalStatus(isSupabaseConfigured() ? 'anonymous' : 'offline');
+                                    }}
+                                    className="flex w-full items-center gap-2 rounded-xl px-3 py-1.5 text-[11px] font-medium text-slate-400 hover:bg-rose-950/40 hover:text-rose-200 transition"
+                                >
+                                    <span aria-hidden="true">🗑️</span>
+                                    <span>{isEn ? 'Delete My Data (GDPR)' : 'Supprimer mes données (RGPD)'}</span>
                                 </button>
                             </div>
                         </div>

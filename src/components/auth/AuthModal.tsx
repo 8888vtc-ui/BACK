@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import {
     signInWithEmail,
@@ -400,6 +401,23 @@ export default function AuthModal({
                                     ? 'Create My Account'
                                     : 'Créer mon compte'}
                     </button>
+
+                    <p
+                        data-testid="auth-gdpr-notice"
+                        className="pt-1 text-center text-[10px] leading-snug text-slate-400"
+                    >
+                        🔒{' '}
+                        {isEn
+                            ? 'GDPR & CNIL: your nickname, email and matches are used solely to save your ERH Index & ELO. Zero ad trackers, zero data resale, 1-click deletion. '
+                            : 'Conformité RGPD & CNIL : vos données (Pseudo, Email et parties) servent uniquement à sauvegarder votre Indice ERH et votre ELO. Zéro publicité, zéro revente, suppression en 1 clic. '}
+                        <Link
+                            href="/privacy"
+                            onClick={onClose}
+                            className="font-semibold text-[#f3c65f] underline hover:text-white"
+                        >
+                            {isEn ? 'Privacy Policy' : 'Charte RGPD'}
+                        </Link>
+                    </p>
                 </form>
             </div>
         </div>

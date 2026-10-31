@@ -401,6 +401,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                     <Link href="/academy/concepts/woolsey-law" className="hover:text-white underline-offset-2 hover:underline">Loi de Woolsey</Link>
                                     <Link href="/tournaments" className="hover:text-white underline-offset-2 hover:underline">Tournois &amp; Clubs Où Jouer</Link>
                                     <Link href="/progression" className="hover:text-white underline-offset-2 hover:underline">Calcul PR &amp; Indice ERH</Link>
+                                    <Link href="/privacy" data-testid="lobby-gdpr-privacy-link" className="text-emerald-300/90 hover:text-white underline-offset-2 hover:underline">🔒 Confidentialité &amp; RGPD (0 Cookie Pub)</Link>
                                 </div>
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 border-t border-white/10 text-[10px]">
                                     <span className="font-bold text-amber-200/80">🌍 Éditions Nationales :</span>

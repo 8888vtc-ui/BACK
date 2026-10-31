@@ -96,6 +96,52 @@ export function clearPlayerPassport(): void {
     }
 }
 
+const GDPR_LOCAL_STORAGE_KEYS: readonly string[] = [
+    PLAYER_PASSPORT_STORAGE_KEY,
+    'bg_adaptive_quiz_profile_v1',
+    'bg_blunder_bank_v2',
+    'backgammon_game_analyses_v1',
+    'backgammon.chameleonUxLayer',
+    'backgammon.swapDiceDate',
+    'bg_supabase_auth_token',
+];
+
+/**
+ * Exercice immédiat du Droit à l'Effacement / Droit à l'Oubli (Article 17 RGPD).
+ * Supprime les données du profil Supabase (si connecté) et purge intégralement
+ * les données personnelles et historiques de parties stockées localement.
+ */
+export async function eraseAllPlayerGdprData(): Promise<{ clearedKeys: number }> {
+    let clearedKeys = 0;
+
+    if (isSupabaseConfigured()) {
+        try {
+            const { data } = await supabase.auth.getUser();
+            const userId = data?.user?.id;
+            if (userId) {
+                await supabase.from('user_stats').delete().eq('user_id', userId);
+                await supabase.from('profiles').delete().eq('id', userId);
+            }
+            await supabase.auth.signOut();
+        } catch {
+            // Purge locale exécutée dans tous les cas
+        }
+    }
+
+    if (typeof window !== 'undefined' && window.localStorage) {
+        for (const key of GDPR_LOCAL_STORAGE_KEYS) {
+            try {
+                window.localStorage.removeItem(key);
+                clearedKeys += 1;
+            } catch {
+                // ignore
+            }
+        }
+    }
+
+    return { clearedKeys };
+}
+
 function generateCryptoPassportPassword(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
     const buf = new Uint32Array(16);
