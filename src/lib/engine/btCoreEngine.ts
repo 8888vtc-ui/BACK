@@ -35,12 +35,12 @@ import {
 } from '../../features/openings/openingDatabase';
 import {
     analyzeBoardCube,
-    evaluateBoard,
     formatMoveSequenceNotation,
     isPureRace,
     detectJanowskiPhase,
     computeJanowskiCubeEvaluation,
 } from './evaluator';
+import { evaluateBtNeuralBoard } from './btNeuralEvaluator';
 import {
     DISTINCT_DICE_ROLLS_21,
     evaluatePositionExpectiminimax2Ply,
@@ -159,29 +159,36 @@ export function computeBtCoreResidualCorrection(
 }
 
 /**
- * Évaluateur statique Propriétaire `BT-Core` 100 % antisymétrique (`E(P) = -E(O)`).
+ * Évaluateur statique Propriétaire `BT-Core v3.0 (BT-Neural)` :
+ * Combine le réseau neuronal profond `BT-Neural v3.0` (`250 -> 128 -> 64 -> 5 + Skip-Connection`,
+ * entraîné sur > 16 000 paires tactiques certifiées et distillations 3-ply `gnubg [world class]`),
+ * la table exacte de Bearoff à 54 264 états, Timmes 2026 et la taxonomie 24-Phases `Stage 11`.
  */
-export function evaluateBtCoreBoard(state: BoardState, _ply?: number): {
+export function evaluateBtCoreBoard(state: BoardState, ply?: number): {
     cubelessEquity: number;
     cubefulEquity: number;
     probabilities: Probabilities;
     stage11Phase: number;
 } {
-    const base = evaluateBoard(state, 0);
+    const base = evaluateBtNeuralBoard(state, ply, 0.45);
     const player = state.turn;
     const opponent: Player = player === 'X' ? 'O' : 'X';
     const offP = borneOffCount(state.board, player);
     const offO = borneOffCount(state.board, opponent);
 
     if (offP >= 15 || offO >= 15) {
-        return { ...base, stage11Phase: 0 };
+        return {
+            cubelessEquity: base.cubelessEquity,
+            cubefulEquity: base.cubefulEquity,
+            probabilities: base.probabilities,
+            stage11Phase: 0,
+        };
     }
 
     const s11 = toStage11Board(state, player);
     const phase = classifyStage11Phase(s11);
 
-    // Raffinement antisymétrique de sortie (Bear-off & Crossovers) :
-    // départage les coups de même pip count qui rentrent des pions dans le jan intérieur ou les sortent
+    // Raffinement antisymétrique de sortie (Bear-off & Crossovers)
     const offDiff = offP - offO;
     const crossDiff = countCrossovers(state.board, opponent) - countCrossovers(state.board, player);
     const raceRefinement = 0.008 * offDiff + 0.0025 * crossDiff;
