@@ -251,7 +251,15 @@ const BoardComponent: React.FC<BoardProps> = ({
                             barX: Math.max(0, bar.X - (hiddenAt.get(HIDDEN_X_BAR_KEY) ?? 0)),
                             barO: Math.max(0, bar.O - (hiddenAt.get(HIDDEN_O_BAR_KEY) ?? 0)),
                             isXTurn: isX, cubeValue: state.cubeValue, cubeOwner: state.cubeOwner, canDouble,
-                            onBarClick: handleBarClick, onBarRightClick: handleBarRightClick, onOfferDouble,
+                            onBarClick: (barPt) => {
+                                if (suppressClickAfterDragRef.current) {
+                                    suppressClickAfterDragRef.current = false;
+                                    return;
+                                }
+                                if (diceAnimation.areCheckerClicksLocked) return;
+                                handleBarClick(barPt);
+                            },
+                            onBarRightClick: handleBarRightClick, onOfferDouble,
                             xBarPoint: X_BAR, oBarPoint: O_BAR, theme, swapColors,
                             isDanced: barReentry.isDanced, dancedMessage: barReentry.dancedMessage,
                             pipX: pipCounts.X, pipO: pipCounts.O,
