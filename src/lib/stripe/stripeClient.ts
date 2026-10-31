@@ -166,8 +166,11 @@ export const stripe = {
                 const primaryPrice = params.line_items[0]?.price ?? STRIPE_PRICE_IDS.YEARLY;
                 const tier: SubscriptionTier = resolveTierFromPriceId(primaryPrice);
 
-                // Si une clé secrète Stripe réelle est configurée, appelle l'API officielle Stripe v1
-                if (secretKey && secretKey.startsWith('sk_live_')) {
+                // Si une clé secrète Stripe réelle (live ou test) est configurée, appelle l'API officielle Stripe v1
+                if (
+                    secretKey &&
+                    (secretKey.startsWith('sk_live_') || secretKey.startsWith('sk_test_'))
+                ) {
                     const formBody = encodeStripeCheckoutForm(params);
                     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
                         method: 'POST',

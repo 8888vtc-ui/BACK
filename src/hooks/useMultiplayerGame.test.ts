@@ -20,10 +20,15 @@ vi.mock('../lib/supabase/client', () => ({
     isSupabaseConfigured: vi.fn().mockReturnValue(false),
 }));
 
-vi.mock('../lib/supabase/auth', () => ({
-    getCurrentUser: vi.fn().mockResolvedValue(null),
-    getUserProfile: vi.fn().mockResolvedValue(null),
-}));
+vi.mock('../lib/supabase/auth', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('../lib/supabase/auth')>();
+    return {
+        ...actual,
+        getCurrentUser: vi.fn().mockResolvedValue(null),
+        getUserProfile: vi.fn().mockResolvedValue(null),
+        readPlayerPassport: vi.fn().mockReturnValue(null),
+    };
+});
 
 describe('useMultiplayerGame', () => {
     beforeEach(() => {

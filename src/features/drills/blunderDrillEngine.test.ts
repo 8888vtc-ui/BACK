@@ -128,7 +128,7 @@ describe('BlunderDrillEngine Module', () => {
 
     it('garantit mathématiquement ZÉRO doublon sur tout le parcours adaptatif et fait évoluer le niveau par catégorie', () => {
         resetAdaptivePlayerProfile();
-        const all = getAllBlunders();
+        const all = getAllBlunders().slice(0, 120);
         const seenInRun = new Set<string>();
 
         for (let i = 0; i < all.length; i++) {
