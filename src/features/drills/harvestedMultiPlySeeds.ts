@@ -3018,5 +3018,7124 @@ export const HARVESTED_MULTIPLY_9CAT_SEEDS: HarvestedSeedInput[] = [
             "En Money Game (Videau à 1), 24/18 surpasse 8/4 6/4 de +0.092 EMG.",
             "Évitez 8/4 6/4 qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 24/18."
         ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_1_63",
+        "tier": 4,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:63:0:0:0:0:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 24/21 13/7 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 7, 21, 24), concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 3 blot(s) exposé(s) (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 3 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui laisse 3 pion(s) isolé(s) (flèches 7, 21, 24) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_2_66",
+        "tier": 4,
+        "xgid": "XGID=-b----E-C-A-eD---cAe----A-:0:0:-1:66:0:0:0:0:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "13/7*/1*(2)",
+        "optimalMove": "24/18(2) 13/7*(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18(2) 13/7*(2)",
+            "13/7*/1*(2)",
+            "24/18 13/7*(3)",
+            "24/18(2) 13/7*/1*"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/7*/1*(2) (Money Game (Videau à 1)), vous manque la fermeture de la porte 7/18 et disperse vos constructeurs, concédant -0.092 EMG face à 24/18(2) 13/7*(2).",
+        "explanation": "Avec le jet 6-6 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18(2) 13/7*(2) : il ferme la porte 7 et 18 (+0.092 EMG sur 13/7*/1*(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 7 : vos deux dés permettent d'y fermer une porte (24/18(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18(2) 13/7*(2) ferme la porte 7 et 18.",
+            "En Money Game (Videau à 1), 24/18(2) 13/7*(2) surpasse 13/7*/1*(2) de +0.092 EMG.",
+            "Évitez 13/7*/1*(2) qui manque la fermeture de la porte 7/18 et disperse vos constructeurs ; privilégiez 24/18(2) 13/7*(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_3_51",
+        "tier": 3,
+        "xgid": "XGID=-b----EbC-A-eF---cbe----CA:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/7 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 10), concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 2 blot(s) exposé(s) (+0.097 EMG sur 13/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui laisse 1 pion(s) isolé(s) (flèches 10) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_4_52",
+        "tier": 4,
+        "xgid": "XGID=-b----EbD-A-eE---cbe---ABA:0:0:-1:52:0:0:0:0:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "24/22 13/8",
+        "acceptableMoves": [
+            "13/11 13/8"
+        ],
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "13/11 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 13/8 6/4 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 4, 10, 23), concédant -0.089 EMG face à 24/22 13/8.",
+        "explanation": "Avec le jet 5-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/8 : il repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 4 blot(s) exposé(s) (+0.089 EMG sur 13/8 6/4).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Regardez le mouvement partant de 24 (24/22...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/8 repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 4 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/22 13/8 surpasse 13/8 6/4 de +0.089 EMG.",
+            "Évitez 13/8 6/4 qui laisse 3 pion(s) isolé(s) (flèches 4, 10, 23) ; privilégiez 24/22 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_5_32",
+        "tier": 4,
+        "xgid": "XGID=-b--A-EbC--aeG---cbe-A-AB-:0:0:-1:32:0:0:0:0:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/8 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 11 et laisse l'initiative à l'adversaire, concédant -0.067 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il frappe le blot adverse sur la flèche 11 et ferme la porte 21 (+0.067 EMG sur 13/8).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Cherchez la frappe sur la flèche 11 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 frappe le blot adverse sur la flèche 11 et ferme la porte 21.",
+            "En Money Game (Videau à 1), 24/21 13/11 surpasse 13/8 de +0.067 EMG.",
+            "Évitez 13/8 qui refuse de frapper le blot adverse sur la flèche 11 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_6_51",
+        "tier": 3,
+        "xgid": "XGID=-b--A-EbC--beH---cbe-a-ACA:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/7 (Money Game (Videau à 1)), vous manque la fermeture de la porte 23 et disperse vos constructeurs, concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il ferme la porte 23 (+0.097 EMG sur 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez la flèche 23 : vos deux dés permettent d'y fermer une porte (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 ferme la porte 23.",
+            "En Money Game (Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui manque la fermeture de la porte 23 et disperse vos constructeurs ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_7_31",
+        "tier": 1,
+        "xgid": "XGID=-b--A-EbD--ceH---cbe-a-ACA:0:0:1:31:0:0:0:0:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.238,
+        "verdict": "howler",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23 13/10 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 4, 10), concédant -0.238 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il ferme la porte 5 (+0.238 EMG sur 24/23 13/10).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 5 : vos deux dés permettent d'y fermer une porte (8/5...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 ferme la porte 5.",
+            "En Money Game (Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.238 EMG.",
+            "Évitez 24/23 13/10 qui laisse 2 pion(s) isolé(s) (flèches 4, 10) ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_8_65",
+        "tier": 4,
+        "xgid": "XGID=-b--ABDbC--ceH---cbe-a-ACA:0:0:-1:65:0:0:0:0:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/18 13/8 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 4, 23), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 2 pion(s) isolé(s) (flèches 4, 23) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_9_51",
+        "tier": 3,
+        "xgid": "XGID=-b--ABDbC--ceG---cbe-a-ADA:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/7 (Money Game (Videau à 1)), vous manque la fermeture de la porte 23 et disperse vos constructeurs, concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il ferme la porte 23 (+0.097 EMG sur 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez la flèche 23 : vos deux dés permettent d'y fermer une porte (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 ferme la porte 23.",
+            "En Money Game (Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui manque la fermeture de la porte 23 et disperse vos constructeurs ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_10_33",
+        "tier": 3,
+        "xgid": "XGID=-b--ABDbD--ceF---cbe-a-BCA:0:0:-1:33:0:0:0:0:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "24/18(2)",
+        "optimalMove": "8/5(2) 6/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5(2) 6/3(2)",
+            "24/18(2)",
+            "24/21(2) 6/3(2)",
+            "24/21(2) 13/10(2)"
+        ],
+        "equityLoss": 0.127,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/18(2) (Money Game (Videau à 1)), vous manque la fermeture de la porte 3 et disperse vos constructeurs, concédant -0.127 EMG face à 8/5(2) 6/3(2).",
+        "explanation": "Avec le jet 3-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5(2) 6/3(2) : il ferme la porte 3 (+0.127 EMG sur 24/18(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (8/5(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5(2) 6/3(2) ferme la porte 3.",
+            "En Money Game (Videau à 1), 8/5(2) 6/3(2) surpasse 24/18(2) de +0.127 EMG.",
+            "Évitez 24/18(2) qui manque la fermeture de la porte 3 et disperse vos constructeurs ; privilégiez 8/5(2) 6/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_11_54",
+        "tier": 3,
+        "xgid": "XGID=-b-bAaFbF--ceF---cbe-a-CCA:0:0:-1:54:0:0:0:0:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15",
+            "13/9 13/8"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/4 (Money Game (Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 2 blot(s) exposé(s) (+0.113 EMG sur 13/4).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/20...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_12_51",
+        "tier": 3,
+        "xgid": "XGID=-b-bAaFbE--ceG---cbeaa-CDA:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/7 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 4), concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s) (+0.097 EMG sur 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui laisse 1 pion(s) isolé(s) (flèches 4) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_13_43",
+        "tier": 4,
+        "xgid": "XGID=-b-bAaFbF--ceF---cbeaa-DCA:0:0:-1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 21 (+0.090 EMG sur 13/6).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Cherchez la frappe sur la flèche 21 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 21.",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_14_53",
+        "tier": 4,
+        "xgid": "XGID=-b-bAaFbFa-ceG---cbeab-DDA:0:0:1:53:0:0:0:0:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/16 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 3 et laisse l'initiative à l'adversaire, concédant -0.083 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il frappe le blot adverse sur la flèche 3 (+0.083 EMG sur 24/16).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 3 (8/3...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 frappe le blot adverse sur la flèche 3.",
+            "En Money Game (Videau à 1), 8/3 6/3 surpasse 24/16 de +0.083 EMG.",
+            "Évitez 24/16 qui refuse de frapper le blot adverse sur la flèche 3 et laisse l'initiative à l'adversaire ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_15_65",
+        "tier": 4,
+        "xgid": "XGID=ab-AAaEbEa-ceG---cbeab-DDA:0:0:-1:65:0:0:0:0:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/18 13/8 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 3, 4), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 2 pion(s) isolé(s) (flèches 3, 4) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_16_42",
+        "tier": 2,
+        "xgid": "XGID=ab-AAaEbEa-ceF---cbeab-DEA:0:0:1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Money Game (Videau à 1)), vous manque la fermeture de la porte 4 et disperse vos constructeurs, concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Money Game (Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui manque la fermeture de la porte 4 et disperse vos constructeurs ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_17_42",
+        "tier": 2,
+        "xgid": "XGID=ab-ACaDbDa-ceF---cbeab-DEA:0:0:-1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/22 13/9 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 3, 9, 22), concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 1 blot(s) exposé(s) (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 8 (8/4...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 1 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui laisse 3 pion(s) isolé(s) (flèches 3, 9, 22) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_18_62",
+        "tier": 4,
+        "xgid": "XGID=ab-AAaEbEa-ceF---cbeab-DEA:0:0:-1:62:0:0:0:0:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/18 13/11",
+        "acceptableMoves": [
+            "24/16"
+        ],
+        "quizChoices": [
+            "24/18 13/11",
+            "24/22 24/18",
+            "24/16",
+            "13/11 13/7"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/22 24/18 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 3, 4, 22), concédant -0.065 EMG face à 24/18 13/11.",
+        "explanation": "Avec le jet 6-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/11 : il repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s) (+0.065 EMG sur 24/22 24/18).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/11 repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 13/11 surpasse 24/22 24/18 de +0.065 EMG.",
+            "Évitez 24/22 24/18 qui laisse 3 pion(s) isolé(s) (flèches 3, 4, 22) ; privilégiez 24/18 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_19_43",
+        "tier": 4,
+        "xgid": "XGID=acAAAaEbCa-deG---cceAb-DG-:0:0:-1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 9 (+0.090 EMG sur 13/6).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Cherchez la frappe sur la flèche 9 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 9.",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_20_33",
+        "tier": 3,
+        "xgid": "XGID=acAAAaEbCb-deH---cceAc-DH-:0:0:1:33:0:0:0:0:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "24/18(2)",
+        "optimalMove": "8/5(2) 6/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5(2) 6/3(2)",
+            "24/18(2)",
+            "24/21(2) 6/3(2)",
+            "24/21(2) 13/10(2)"
+        ],
+        "equityLoss": 0.127,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/18(2) (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 5 et laisse l'initiative à l'adversaire, concédant -0.127 EMG face à 8/5(2) 6/3(2).",
+        "explanation": "Avec le jet 3-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5(2) 6/3(2) : il frappe le blot adverse sur la flèche 5 et ferme la porte 3 et 5 (+0.127 EMG sur 24/18(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/5(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5(2) 6/3(2) frappe le blot adverse sur la flèche 5 et ferme la porte 3 et 5.",
+            "En Money Game (Videau à 1), 8/5(2) 6/3(2) surpasse 24/18(2) de +0.127 EMG.",
+            "Évitez 24/18(2) qui refuse de frapper le blot adverse sur la flèche 5 et laisse l'initiative à l'adversaire ; privilégiez 8/5(2) 6/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_21_41",
+        "tier": 3,
+        "xgid": "XGID=bcACABCbAb-deH---cceAc-DH-:0:0:1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "13/9 8/7",
+        "optimalMove": "24/23 13/9",
+        "acceptableMoves": [
+            "13/9 6/5"
+        ],
+        "quizChoices": [
+            "24/23 13/9",
+            "13/9 8/7",
+            "13/9 6/5",
+            "24/23 24/20"
+        ],
+        "equityLoss": 0.119,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/9 8/7 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 2, 4, 20), concédant -0.119 EMG face à 24/23 13/9.",
+        "explanation": "Avec le jet 4-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/9 : il repositionne idéalement vos bâtisseurs (24/23 13/9) avec seulement 4 blot(s) exposé(s) (+0.119 EMG sur 13/9 8/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/9 repositionne idéalement vos bâtisseurs (24/23 13/9) avec seulement 4 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/23 13/9 surpasse 13/9 8/7 de +0.119 EMG.",
+            "Évitez 13/9 8/7 qui laisse 3 pion(s) isolé(s) (flèches 2, 4, 20) ; privilégiez 24/23 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s0_m0_22_63",
+        "tier": 4,
+        "xgid": "XGID=adACABCb-a-deG---cceBc-EG-:0:0:1:63:0:0:0:0:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/21 13/7 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 2, 4), concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 3 blot(s) exposé(s) (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 3 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui laisse 2 pion(s) isolé(s) (flèches 2, 4) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_1_54",
+        "tier": 3,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:54:0:0:0:0:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15",
+            "13/9 13/8"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 13/4 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 4), concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 2 blot(s) exposé(s) (+0.113 EMG sur 13/4).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Regardez le mouvement partant de 24 (24/20...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui laisse 1 pion(s) isolé(s) (flèches 4) ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_2_61",
+        "tier": 2,
+        "xgid": "XGID=-b----E-D---eD---c-eA---A-:0:0:-1:61:0:0:0:0:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "13/7 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/7",
+            "13/6",
+            "13/7 6/5*",
+            "24/18 6/5*"
+        ],
+        "equityLoss": 0.153,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous manque la fermeture de la porte 7 et disperse vos constructeurs, concédant -0.153 EMG face à 13/7 8/7.",
+        "explanation": "Avec le jet 6-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/7 8/7 : il ferme la porte 7 (+0.153 EMG sur 13/6).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 7 : vos deux dés permettent d'y fermer une porte (13/7...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/7 8/7 ferme la porte 7.",
+            "En Money Game (Videau à 1), 13/7 8/7 surpasse 13/6 de +0.153 EMG.",
+            "Évitez 13/6 qui manque la fermeture de la porte 7 et disperse vos constructeurs ; privilégiez 13/7 8/7."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_3_61",
+        "tier": 2,
+        "xgid": "XGID=-b----EbE---eE---c-eA---A-:0:0:1:61:0:0:0:0:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "24/23 24/18",
+        "optimalMove": "13/7 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/7",
+            "24/23 24/18",
+            "24/23 13/7",
+            "13/6"
+        ],
+        "equityLoss": 0.172,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23 24/18 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 7 et laisse l'initiative à l'adversaire, concédant -0.172 EMG face à 13/7 8/7.",
+        "explanation": "Avec le jet 6-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/7 8/7 : il frappe le blot adverse sur la flèche 7 (+0.172 EMG sur 24/23 24/18).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 7 (13/7...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/7 8/7 frappe le blot adverse sur la flèche 7.",
+            "En Money Game (Videau à 1), 13/7 8/7 surpasse 24/23 24/18 de +0.172 EMG.",
+            "Évitez 24/23 24/18 qui refuse de frapper le blot adverse sur la flèche 7 et laisse l'initiative à l'adversaire ; privilégiez 13/7 8/7."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_4_43",
+        "tier": 4,
+        "xgid": "XGID=ab----EAD---eD---c-eA---A-:0:0:-1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 7, 20, 24), concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il repositionne idéalement vos bâtisseurs (24/21 13/9) avec seulement 4 blot(s) exposé(s) (+0.090 EMG sur 13/6).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/21...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 repositionne idéalement vos bâtisseurs (24/21 13/9) avec seulement 4 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui laisse 3 pion(s) isolé(s) (flèches 7, 20, 24) ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_5_32",
+        "tier": 4,
+        "xgid": "XGID=ab----EADa--eE---c-eAa--B-:0:0:1:32:0:0:0:0:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 13/8 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire, concédant -0.067 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il frappe le blot adverse sur la flèche 21 (+0.067 EMG sur 13/8).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Cherchez la frappe sur la flèche 21 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 frappe le blot adverse sur la flèche 21.",
+            "En Money Game (Videau à 1), 24/21 13/11 surpasse 13/8 de +0.067 EMG.",
+            "Évitez 13/8 qui refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_6_54",
+        "tier": 3,
+        "xgid": "XGID=-c--a-EADa-AeD---c-eAA--A-:0:0:1:54:0:0:0:0:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15",
+            "13/9 13/8"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/4 (Money Game (Videau à 1)), vous manque la fermeture de la porte 20 et disperse vos constructeurs, concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il ferme la porte 20 (+0.113 EMG sur 13/4).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 20 : vos deux dés permettent d'y fermer une porte (24/20...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 ferme la porte 20.",
+            "En Money Game (Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui manque la fermeture de la porte 20 et disperse vos constructeurs ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_7_63",
+        "tier": 4,
+        "xgid": "XGID=-c--a-EAEa-AeC---c-eBA----:0:0:-1:63:0:0:0:0:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/21 13/7 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 11), concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 5 blot(s) exposé(s) (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 5 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui laisse 1 pion(s) isolé(s) (flèches 11) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_8_65",
+        "tier": 4,
+        "xgid": "XGID=-c--a-EAEaaAeD---caeBA--A-:0:0:1:65:0:0:0:0:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/18 13/8 (Money Game (Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 7, 11, 18), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 3 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 3 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 4 pion(s) isolé(s) (flèches 7, 11, 18) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_9_31",
+        "tier": 1,
+        "xgid": "XGID=-c--a-EAEaaAeE---caeBA----:0:0:-1:31:0:0:0:0:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.238,
+        "verdict": "howler",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23 13/10 (Money Game (Videau à 1)), vous manque la fermeture de la porte 5 et disperse vos constructeurs, concédant -0.238 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il ferme la porte 5 (+0.238 EMG sur 24/23 13/10).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 5 : vos deux dés permettent d'y fermer une porte (8/5...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 ferme la porte 5.",
+            "En Money Game (Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.238 EMG.",
+            "Évitez 24/23 13/10 qui manque la fermeture de la porte 5 et disperse vos constructeurs ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_10_66",
+        "tier": 2,
+        "xgid": "XGID=-c--abFAFaaAeE---caeBA----:0:0:1:66:0:0:0:0:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "24/18 13/7(3)",
+        "optimalMove": "24/18(2) 13/7(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18(2) 13/7(2)",
+            "24/18 13/7(3)",
+            "24/18(2) 8/2(2)",
+            "13/7(2) 8/2(2)"
+        ],
+        "equityLoss": 0.213,
+        "verdict": "howler",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/18 13/7(3) (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 11, 18, 21), concédant -0.213 EMG face à 24/18(2) 13/7(2).",
+        "explanation": "Avec le jet 6-6 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18(2) 13/7(2) : il frappe le blot adverse sur la flèche 18 et ferme la porte 7 et 18 (+0.213 EMG sur 24/18 13/7(3)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Cherchez la frappe sur la flèche 18 (24/18(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18(2) 13/7(2) frappe le blot adverse sur la flèche 18 et ferme la porte 7 et 18.",
+            "En Money Game (Videau à 1), 24/18(2) 13/7(2) surpasse 24/18 13/7(3) de +0.213 EMG.",
+            "Évitez 24/18 13/7(3) qui laisse 3 pion(s) isolé(s) (flèches 11, 18, 21) ; privilégiez 24/18(2) 13/7(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_11_43",
+        "tier": 4,
+        "xgid": "XGID=ac--abFCFaaAeC---cBeBA--b-:0:0:-1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 9 et ferme la porte 21 (+0.090 EMG sur 13/6).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Cherchez la frappe sur la flèche 9 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 9 et ferme la porte 21.",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_12_64",
+        "tier": 4,
+        "xgid": "XGID=ac--abFCFbaAeD---cBeBa--aA:0:0:1:64:0:0:0:0:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "24/20 24/18",
+        "optimalMove": "8/2 6/2",
+        "acceptableMoves": [
+            "24/14",
+            "24/18 13/9"
+        ],
+        "quizChoices": [
+            "8/2 6/2",
+            "24/20 24/18",
+            "24/14",
+            "24/18 13/9"
+        ],
+        "equityLoss": 0.063,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/20 24/18 (Money Game (Videau à 1)), vous manque la fermeture de la porte 2 et disperse vos constructeurs, concédant -0.063 EMG face à 8/2 6/2.",
+        "explanation": "Avec le jet 6-4 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/2 6/2 : il ferme la porte 2 (+0.063 EMG sur 24/20 24/18).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez la flèche 2 : vos deux dés permettent d'y fermer une porte (8/2...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/2 6/2 ferme la porte 2.",
+            "En Money Game (Videau à 1), 8/2 6/2 surpasse 24/20 24/18 de +0.063 EMG.",
+            "Évitez 24/20 24/18 qui manque la fermeture de la porte 2 et disperse vos constructeurs ; privilégiez 8/2 6/2."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_13_65",
+        "tier": 4,
+        "xgid": "XGID=acB-abECEbaAeD---cBeBa--aA:0:0:-1:65:0:0:0:0:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/18 13/8 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 11), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 1 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 1 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 1 pion(s) isolé(s) (flèches 11) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_14_43",
+        "tier": 4,
+        "xgid": "XGID=acB-abECEbaAeC---cBeBa---A:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 21 (+0.090 EMG sur 13/6).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 21 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 21.",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_15_64",
+        "tier": 4,
+        "xgid": "XGID=acB-acECEaaAeB---cBeBA--aA:0:0:1:64:0:0:0:0:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "24/20 24/18",
+        "optimalMove": "8/2 6/2",
+        "acceptableMoves": [
+            "24/14",
+            "24/18 13/9"
+        ],
+        "quizChoices": [
+            "8/2 6/2",
+            "24/20 24/18",
+            "24/14",
+            "24/18 13/9"
+        ],
+        "equityLoss": 0.063,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/20 24/18 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 11, 21), concédant -0.063 EMG face à 8/2 6/2.",
+        "explanation": "Avec le jet 6-4 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/2 6/2 : il repositionne idéalement vos bâtisseurs (8/2 6/2) avec seulement 2 blot(s) exposé(s) (+0.063 EMG sur 24/20 24/18).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 8 (8/2...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/2 6/2 repositionne idéalement vos bâtisseurs (8/2 6/2) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 8/2 6/2 surpasse 24/20 24/18 de +0.063 EMG.",
+            "Évitez 24/20 24/18 qui laisse 2 pion(s) isolé(s) (flèches 11, 21) ; privilégiez 8/2 6/2."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_16_42",
+        "tier": 2,
+        "xgid": "XGID=acD-acDCDaaAeB---cBeBA--aA:0:0:-1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/22 13/9 (Money Game (Videau à 1)), vous manque la fermeture de la porte 4 et disperse vos constructeurs, concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il frappe le blot adverse sur la flèche 4 et ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 4 (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 frappe le blot adverse sur la flèche 4 et ferme la porte 4.",
+            "En Money Game (Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui manque la fermeture de la porte 4 et disperse vos constructeurs ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_17_22",
+        "tier": 4,
+        "xgid": "XGID=acD-ccECEaaAeB---cBeBA--aA:0:0:1:22:0:0:0:0:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "24/22 13/11 6/4(2)",
+        "optimalMove": "13/11(2) 6/4(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11(2) 6/4(2)",
+            "24/22 13/11 6/4(2)",
+            "24/22(2) 6/4(2)",
+            "13/9 6/4(2)"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/22 13/11 6/4(2) (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 13, 21, 22), concédant -0.068 EMG face à 13/11(2) 6/4(2).",
+        "explanation": "Avec le jet 2-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/11(2) 6/4(2) : il ferme la porte 11 (+0.068 EMG sur 24/22 13/11 6/4(2)).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez la flèche 11 : vos deux dés permettent d'y fermer une porte (13/11(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/11(2) 6/4(2) ferme la porte 11.",
+            "En Money Game (Videau à 1), 13/11(2) 6/4(2) surpasse 24/22 13/11 6/4(2) de +0.068 EMG.",
+            "Évitez 24/22 13/11 6/4(2) qui laisse 3 pion(s) isolé(s) (flèches 13, 21, 22) ; privilégiez 13/11(2) 6/4(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_18_42",
+        "tier": 2,
+        "xgid": "XGID=acD-acCCEaaCe----cBeBA--aA:0:0:-1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/22 13/9 (Money Game (Videau à 1)), vous manque la fermeture de la porte 4 et disperse vos constructeurs, concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il frappe le blot adverse sur la flèche 4 et ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 4 (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 frappe le blot adverse sur la flèche 4 et ferme la porte 4.",
+            "En Money Game (Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui manque la fermeture de la porte 4 et disperse vos constructeurs ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_19_53",
+        "tier": 4,
+        "xgid": "XGID=acD-ccDCFaaCe----cBeBA--aA:0:0:1:53:0:0:0:0:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/16 (Money Game (Videau à 1)), vous manque la fermeture de la porte 3 et disperse vos constructeurs, concédant -0.083 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il ferme la porte 3 (+0.083 EMG sur 24/16).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (8/3...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 ferme la porte 3.",
+            "En Money Game (Videau à 1), 8/3 6/3 surpasse 24/16 de +0.083 EMG.",
+            "Évitez 24/16 qui manque la fermeture de la porte 3 et disperse vos constructeurs ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_20_43",
+        "tier": 4,
+        "xgid": "XGID=acDBccCCEaaCe----cBeBA--aA:0:0:-1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 9 et ferme la porte 21 (+0.090 EMG sur 13/6).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Cherchez la frappe sur la flèche 9 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 9 et ferme la porte 21.",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_21_43",
+        "tier": 4,
+        "xgid": "XGID=acDBccCCEbaCeA---cBeBa--AA:0:0:-1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 21 (+0.090 EMG sur 13/6).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 21 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 21.",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s1_m0_22_52",
+        "tier": 4,
+        "xgid": "XGID=acDBccCCEcaCeB---cBeBb--BA:0:0:1:52:0:0:0:0:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "24/22 13/8",
+        "acceptableMoves": [
+            "13/11 13/8"
+        ],
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "13/11 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/8 6/4 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 13), concédant -0.089 EMG face à 24/22 13/8.",
+        "explanation": "Avec le jet 5-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/8 : il repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 3 blot(s) exposé(s) (+0.089 EMG sur 13/8 6/4).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/22...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/8 repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 3 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/22 13/8 surpasse 13/8 6/4 de +0.089 EMG.",
+            "Évitez 13/8 6/4 qui laisse 1 pion(s) isolé(s) (flèches 13) ; privilégiez 24/22 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_1_65",
+        "tier": 4,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:65:0:0:0:0:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 24/18 13/8 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 18, 24), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 1 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 1 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 2 pion(s) isolé(s) (flèches 18, 24) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_2_63",
+        "tier": 4,
+        "xgid": "XGID=-b----E-C---eF---c-e----A-:0:0:-1:63:0:0:0:0:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 24/18",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 24/18",
+            "24/15",
+            "24/21 13/7"
+        ],
+        "equityLoss": 0.07,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/21 24/18 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 18, 21), concédant -0.070 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 2 blot(s) exposé(s) (+0.070 EMG sur 24/21 24/18).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 13/10 surpasse 24/21 24/18 de +0.070 EMG.",
+            "Évitez 24/21 24/18 qui laisse 2 pion(s) isolé(s) (flèches 18, 21) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_3_42",
+        "tier": 2,
+        "xgid": "XGID=-b----E-C-a-eG---cae----B-:0:0:1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Money Game (Videau à 1)), vous manque la fermeture de la porte 4 et disperse vos constructeurs, concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Money Game (Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui manque la fermeture de la porte 4 et disperse vos constructeurs ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_4_63",
+        "tier": 4,
+        "xgid": "XGID=-b--B-D-B-a-eG---cae----B-:0:0:-1:63:0:0:0:0:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/21 13/7 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 18/10 et laisse l'initiative à l'adversaire, concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il frappe deux pions adverses sur les flèches 18 et 10 (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 18 (24/18...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 frappe deux pions adverses sur les flèches 18 et 10.",
+            "En Money Game (Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui refuse de frapper le blot adverse sur la flèche 18/10 et laisse l'initiative à l'adversaire ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_5_41",
+        "tier": 3,
+        "xgid": "XGID=-b--B-D-B-b-eH---cbe----C-:0:0:1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "13/9 8/7",
+        "optimalMove": "24/23 13/9",
+        "acceptableMoves": [
+            "13/9 6/5"
+        ],
+        "quizChoices": [
+            "24/23 13/9",
+            "13/9 8/7",
+            "13/9 6/5",
+            "24/23 24/20"
+        ],
+        "equityLoss": 0.119,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/9 8/7 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 7, 8, 9), concédant -0.119 EMG face à 24/23 13/9.",
+        "explanation": "Avec le jet 4-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/9 : il repositionne idéalement vos bâtisseurs (24/23 13/9) avec seulement 2 blot(s) exposé(s) (+0.119 EMG sur 13/9 8/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/9 repositionne idéalement vos bâtisseurs (24/23 13/9) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/23 13/9 surpasse 13/9 8/7 de +0.119 EMG.",
+            "Évitez 13/9 8/7 qui laisse 3 pion(s) isolé(s) (flèches 7, 8, 9) ; privilégiez 24/23 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_6_41",
+        "tier": 3,
+        "xgid": "XGID=-b--B-D-BAb-eG---cbe---AB-:0:0:-1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "13/9 8/7",
+        "optimalMove": "24/23 13/9",
+        "acceptableMoves": [
+            "13/9 6/5"
+        ],
+        "quizChoices": [
+            "24/23 13/9",
+            "13/9 8/7",
+            "13/9 6/5",
+            "24/23 24/20"
+        ],
+        "equityLoss": 0.119,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/9 8/7 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 7, 8, 23), concédant -0.119 EMG face à 24/23 13/9.",
+        "explanation": "Avec le jet 4-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/9 : il ferme la porte 9 et 23 (+0.119 EMG sur 13/9 8/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez la flèche 9 : vos deux dés permettent d'y fermer une porte (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/9 ferme la porte 9 et 23.",
+            "En Money Game (Videau à 1), 24/23 13/9 surpasse 13/9 8/7 de +0.119 EMG.",
+            "Évitez 13/9 8/7 qui laisse 3 pion(s) isolé(s) (flèches 7, 8, 23) ; privilégiez 24/23 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_7_54",
+        "tier": 3,
+        "xgid": "XGID=ab--B-D-Bab-eH---cbe--AAC-:0:0:1:54:0:0:0:0:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15",
+            "13/9 13/8"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/4 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 22, 23), concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 3 blot(s) exposé(s) (+0.113 EMG sur 13/4).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/20...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 3 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui laisse 2 pion(s) isolé(s) (flèches 22, 23) ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_8_33",
+        "tier": 3,
+        "xgid": "XGID=ab--B-D-Cab-eG---cbeA-AAB-:0:0:1:33:0:0:0:0:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "24/18(2)",
+        "optimalMove": "8/5(2) 6/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5(2) 6/3(2)",
+            "24/18(2)",
+            "24/21(2) 6/3(2)",
+            "24/21(2) 13/10(2)"
+        ],
+        "equityLoss": 0.127,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/18(2) (Money Game (Videau à 1)), vous manque la fermeture de la porte 3/5 et disperse vos constructeurs, concédant -0.127 EMG face à 8/5(2) 6/3(2).",
+        "explanation": "Avec le jet 3-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5(2) 6/3(2) : il ferme la porte 3 et 5 (+0.127 EMG sur 24/18(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (8/5(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5(2) 6/3(2) ferme la porte 3 et 5.",
+            "En Money Game (Videau à 1), 8/5(2) 6/3(2) surpasse 24/18(2) de +0.127 EMG.",
+            "Évitez 24/18(2) qui manque la fermeture de la porte 3/5 et disperse vos constructeurs ; privilégiez 8/5(2) 6/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_9_42",
+        "tier": 2,
+        "xgid": "XGID=ab-BBBB-Aab-eG---cbeA-AAB-:0:0:-1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/22 13/9 (Money Game (Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 8, 9, 20), concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 4 blot(s) exposé(s) (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 8 (8/4...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 4 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui laisse 5 pion(s) isolé(s) (flèches 8, 9, 20) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_10_63",
+        "tier": 4,
+        "xgid": "XGID=ab-BaBC-Bab-eG---cbeA-AABA:0:0:1:63:0:0:0:0:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/21 13/7 (Money Game (Videau à 1)), vous laisse 6 pion(s) isolé(s) (flèches 7, 20, 21), concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 4 blot(s) exposé(s) (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 4 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui laisse 6 pion(s) isolé(s) (flèches 7, 20, 21) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_11_31",
+        "tier": 1,
+        "xgid": "XGID=ab-BaBC-Baa-eF---caeA-AAAA:0:0:-1:31:0:0:0:0:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.238,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/23 13/10 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 10, 20, 22), concédant -0.238 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 5 blot(s) exposé(s) (+0.238 EMG sur 24/23 13/10).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 8 (8/5...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 5 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.238 EMG.",
+            "Évitez 24/23 13/10 qui laisse 3 pion(s) isolé(s) (flèches 10, 20, 22) ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_12_55",
+        "tier": 2,
+        "xgid": "XGID=ab-BaaD-Caa-eF---caeA-BBA-:0:0:-1:55:0:0:0:0:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3 8/3(2)",
+        "optimalMove": "13/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3(2)",
+            "13/3 8/3(2)",
+            "13/3 13/8(2)",
+            "13/8(4)"
+        ],
+        "equityLoss": 0.178,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/3 8/3(2) (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 8, 20, 24), concédant -0.178 EMG face à 13/3(2).",
+        "explanation": "Avec le jet 5-5 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/3(2) : il repositionne idéalement vos bâtisseurs (13/3(2)) avec seulement 2 blot(s) exposé(s) (+0.178 EMG sur 13/3 8/3(2)).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 13 (13/3(2)...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/3(2) repositionne idéalement vos bâtisseurs (13/3(2)) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 13/3(2) surpasse 13/3 8/3(2) de +0.178 EMG.",
+            "Évitez 13/3 8/3(2) qui laisse 3 pion(s) isolé(s) (flèches 8, 20, 24) ; privilégiez 13/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_13_51",
+        "tier": 3,
+        "xgid": "XGID=ab-aaaD-Caa-eH---caeA-BBAA:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/7 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 7, 20, 24), concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s) (+0.097 EMG sur 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui laisse 3 pion(s) isolé(s) (flèches 7, 20, 24) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_14_61",
+        "tier": 2,
+        "xgid": "XGID=ab-aaaD-Daa-eG---caeA-BC-A:0:0:-1:61:0:0:0:0:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "24/23 24/18",
+        "optimalMove": "13/7 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/7",
+            "24/23 24/18",
+            "24/23 13/7",
+            "13/6"
+        ],
+        "equityLoss": 0.172,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23 24/18 (Money Game (Videau à 1)), vous manque la fermeture de la porte 7 et disperse vos constructeurs, concédant -0.172 EMG face à 13/7 8/7.",
+        "explanation": "Avec le jet 6-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/7 8/7 : il ferme la porte 7 (+0.172 EMG sur 24/23 24/18).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 7 : vos deux dés permettent d'y fermer une porte (13/7...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/7 8/7 ferme la porte 7.",
+            "En Money Game (Videau à 1), 13/7 8/7 surpasse 24/23 24/18 de +0.172 EMG.",
+            "Évitez 24/23 24/18 qui manque la fermeture de la porte 7 et disperse vos constructeurs ; privilégiez 13/7 8/7."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_15_51",
+        "tier": 3,
+        "xgid": "XGID=ab-aaaDbEaa-eH---caeA-BC-A:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/7 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 20), concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s) (+0.097 EMG sur 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui laisse 1 pion(s) isolé(s) (flèches 20) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_16_55",
+        "tier": 2,
+        "xgid": "XGID=ab-aaaDbFaa-eG---caeA-BDaA:0:0:-1:55:0:0:0:0:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3 8/3(2)",
+        "optimalMove": "13/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3(2)",
+            "13/3 8/3(2)",
+            "13/3 13/8(2)",
+            "13/8(4)"
+        ],
+        "equityLoss": 0.178,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 13/3 8/3(2) (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 20), concédant -0.178 EMG face à 13/3(2).",
+        "explanation": "Avec le jet 5-5 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/3(2) : il frappe le blot adverse sur la flèche 3 et ferme la porte 3 (+0.178 EMG sur 13/3 8/3(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 3 (13/3(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/3(2) frappe le blot adverse sur la flèche 3 et ferme la porte 3.",
+            "En Money Game (Videau à 1), 13/3(2) surpasse 13/3 8/3(2) de +0.178 EMG.",
+            "Évitez 13/3 8/3(2) qui laisse 1 pion(s) isolé(s) (flèches 20) ; privilégiez 13/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_17_43",
+        "tier": 4,
+        "xgid": "XGID=ab-caaDbFaa-eI---caeA-BDaA:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 9 (+0.090 EMG sur 13/6).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Cherchez la frappe sur la flèche 9 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 9.",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_18_31",
+        "tier": 1,
+        "xgid": "XGID=-cacaaDbFAa-eH---caeAABDbA:0:0:1:31:0:0:0:0:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.238,
+        "verdict": "howler",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23 13/10 (Money Game (Videau à 1)), vous manque la fermeture de la porte 5 et disperse vos constructeurs, concédant -0.238 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il frappe le blot adverse sur la flèche 5 et ferme la porte 5 (+0.238 EMG sur 24/23 13/10).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/5...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 frappe le blot adverse sur la flèche 5 et ferme la porte 5.",
+            "En Money Game (Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.238 EMG.",
+            "Évitez 24/23 13/10 qui manque la fermeture de la porte 5 et disperse vos constructeurs ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_19_32",
+        "tier": 4,
+        "xgid": "XGID=acacaBCbEAa-eH---caeAABDbA:0:0:-1:32:0:0:0:0:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/8 (Money Game (Videau à 1)), vous manque la fermeture de la porte 21 et disperse vos constructeurs, concédant -0.067 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il ferme la porte 21 (+0.067 EMG sur 13/8).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 21 : vos deux dés permettent d'y fermer une porte (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 ferme la porte 21.",
+            "En Money Game (Videau à 1), 24/21 13/11 surpasse 13/8 de +0.067 EMG.",
+            "Évitez 13/8 qui manque la fermeture de la porte 21 et disperse vos constructeurs ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_20_43",
+        "tier": 4,
+        "xgid": "XGID=-dbdaBCbEAaAeH---caeAACEb-:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous manque la fermeture de la porte 9/21 et disperse vos constructeurs, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il ferme la porte 9 et 21 (+0.090 EMG sur 13/6).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 9 : vos deux dés permettent d'y fermer une porte (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 ferme la porte 9 et 21.",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui manque la fermeture de la porte 9/21 et disperse vos constructeurs ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_21_42",
+        "tier": 2,
+        "xgid": "XGID=-dbdaBCbEBaAeG---caeABCEc-:0:0:-1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/22 13/9 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 4 et laisse l'initiative à l'adversaire, concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il frappe le blot adverse sur la flèche 4 et ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 4 (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 frappe le blot adverse sur la flèche 4 et ferme la porte 4.",
+            "En Money Game (Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui refuse de frapper le blot adverse sur la flèche 4 et laisse l'initiative à l'adversaire ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s2_m0_22_52",
+        "tier": 4,
+        "xgid": "XGID=-dbdcBDbFBaAeG---caeABCEc-:0:0:1:52:0:0:0:0:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "24/22 13/8",
+        "acceptableMoves": [
+            "13/11 13/8"
+        ],
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "13/11 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/8 6/4 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 11, 20), concédant -0.089 EMG face à 24/22 13/8.",
+        "explanation": "Avec le jet 5-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/8 : il repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 2 blot(s) exposé(s) (+0.089 EMG sur 13/8 6/4).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/22...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/8 repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/22 13/8 surpasse 13/8 6/4 de +0.089 EMG.",
+            "Évitez 13/8 6/4 qui laisse 2 pion(s) isolé(s) (flèches 11, 20) ; privilégiez 24/22 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_1_53",
+        "tier": 4,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:53:0:0:0:0:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/16 (Money Game (Videau à 1)), vous manque la fermeture de la porte 3 et disperse vos constructeurs, concédant -0.083 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il ferme la porte 3 (+0.083 EMG sur 24/16).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (8/3...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 ferme la porte 3.",
+            "En Money Game (Videau à 1), 8/3 6/3 surpasse 24/16 de +0.083 EMG.",
+            "Évitez 24/16 qui manque la fermeture de la porte 3 et disperse vos constructeurs ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_2_63",
+        "tier": 4,
+        "xgid": "XGID=-b-B--D-B---eE---c-e----B-:0:0:-1:63:0:0:0:0:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "13/4",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 13/4 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 4), concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 3 blot(s) exposé(s) (+0.062 EMG sur 13/4).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 3 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 13/10 surpasse 13/4 de +0.062 EMG.",
+            "Évitez 13/4 qui laisse 1 pion(s) isolé(s) (flèches 4) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_3_65",
+        "tier": 4,
+        "xgid": "XGID=-b-B--D-B-a-eF---cae----C-:0:0:1:65:0:0:0:0:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/18 13/8 (Money Game (Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 18), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 0 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 0 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 1 pion(s) isolé(s) (flèches 18) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_4_61",
+        "tier": 2,
+        "xgid": "XGID=-b-B--D-B-a-eG---cae----B-:0:0:-1:61:0:0:0:0:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "24/23 24/18",
+        "optimalMove": "13/7 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/7",
+            "24/23 24/18",
+            "24/23 13/7",
+            "13/6"
+        ],
+        "equityLoss": 0.172,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23 24/18 (Money Game (Videau à 1)), vous manque la fermeture de la porte 7 et disperse vos constructeurs, concédant -0.172 EMG face à 13/7 8/7.",
+        "explanation": "Avec le jet 6-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/7 8/7 : il ferme la porte 7 (+0.172 EMG sur 24/23 24/18).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 7 : vos deux dés permettent d'y fermer une porte (13/7...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/7 8/7 ferme la porte 7.",
+            "En Money Game (Videau à 1), 13/7 8/7 surpasse 24/23 24/18 de +0.172 EMG.",
+            "Évitez 24/23 24/18 qui manque la fermeture de la porte 7 et disperse vos constructeurs ; privilégiez 13/7 8/7."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_5_11",
+        "tier": 4,
+        "xgid": "XGID=-b-B--D-B-a-eG---cbe---aD-:0:0:1:11:0:0:0:0:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Money Game (Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.090 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il ferme la porte 5 et 7 (+0.090 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 5 : vos deux dés permettent d'y fermer une porte (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) ferme la porte 5 et 7.",
+            "En Money Game (Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.090 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_6_11",
+        "tier": 4,
+        "xgid": "XGID=-b-B-BBB--a-eG---cbe---aD-:0:0:-1:11:0:0:0:0:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Money Game (Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.090 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il repositionne idéalement vos bâtisseurs (8/7(2) 6/5(2)) avec seulement 0 blot(s) exposé(s) (+0.090 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 8 (8/7(2)...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) repositionne idéalement vos bâtisseurs (8/7(2) 6/5(2)) avec seulement 0 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.090 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_7_61",
+        "tier": 2,
+        "xgid": "XGID=ab-B-aDaB-aAeG---cbeA--aDA:0:0:-1:61:0:0:0:0:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "24/23 24/18",
+        "optimalMove": "13/7 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/7",
+            "24/23 24/18",
+            "24/23 13/7",
+            "13/6"
+        ],
+        "equityLoss": 0.172,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23 24/18 (Money Game (Videau à 1)), vous manque la fermeture de la porte 7 et disperse vos constructeurs, concédant -0.172 EMG face à 13/7 8/7.",
+        "explanation": "Avec le jet 6-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/7 8/7 : il frappe le blot adverse sur la flèche 7 et ferme la porte 7 (+0.172 EMG sur 24/23 24/18).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 7 (13/7...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/7 8/7 frappe le blot adverse sur la flèche 7 et ferme la porte 7.",
+            "En Money Game (Videau à 1), 13/7 8/7 surpasse 24/23 24/18 de +0.172 EMG.",
+            "Évitez 24/23 24/18 qui manque la fermeture de la porte 7 et disperse vos constructeurs ; privilégiez 13/7 8/7."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_8_32",
+        "tier": 4,
+        "xgid": "XGID=ab-B-aDcC-aAeH---cbeA--aDA:0:0:1:32:0:0:0:0:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/8 (Money Game (Videau à 1)), vous manque la fermeture de la porte 11 et disperse vos constructeurs, concédant -0.067 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il ferme la porte 11 (+0.067 EMG sur 13/8).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez la flèche 11 : vos deux dés permettent d'y fermer une porte (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 ferme la porte 11.",
+            "En Money Game (Videau à 1), 24/21 13/11 surpasse 13/8 de +0.067 EMG.",
+            "Évitez 13/8 qui manque la fermeture de la porte 11 et disperse vos constructeurs ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_9_41",
+        "tier": 3,
+        "xgid": "XGID=ab-B-aDcC-aBeG---cbeAA-aCA:0:0:-1:41:0:0:0:0:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "13/9 8/7",
+        "optimalMove": "24/23 13/9",
+        "acceptableMoves": [
+            "13/9 6/5"
+        ],
+        "quizChoices": [
+            "24/23 13/9",
+            "13/9 8/7",
+            "13/9 6/5",
+            "24/23 24/20"
+        ],
+        "equityLoss": 0.119,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/9 8/7 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 23 et laisse l'initiative à l'adversaire, concédant -0.119 EMG face à 24/23 13/9.",
+        "explanation": "Avec le jet 4-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/9 : il frappe le blot adverse sur la flèche 23 (+0.119 EMG sur 13/9 8/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 23 (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/9 frappe le blot adverse sur la flèche 23.",
+            "En Money Game (Videau à 1), 24/23 13/9 surpasse 13/9 8/7 de +0.119 EMG.",
+            "Évitez 13/9 8/7 qui refuse de frapper le blot adverse sur la flèche 23 et laisse l'initiative à l'adversaire ; privilégiez 24/23 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_10_43",
+        "tier": 4,
+        "xgid": "XGID=ab-B-aDcCaaBeH---cbeAA-bDA:0:0:1:43:0:0:0:0:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/6 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 9 et ferme la porte 21 (+0.090 EMG sur 13/6).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Cherchez la frappe sur la flèche 9 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 9 et ferme la porte 21.",
+            "En Money Game (Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_11_31",
+        "tier": 1,
+        "xgid": "XGID=-caB-aDcCAaBeG---cbeAB-bCA:0:0:1:31:0:0:0:0:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.238,
+        "verdict": "howler",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23 13/10 (Money Game (Videau à 1)), vous manque la fermeture de la porte 5 et disperse vos constructeurs, concédant -0.238 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il frappe le blot adverse sur la flèche 5 et ferme la porte 5 (+0.238 EMG sur 24/23 13/10).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/5...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 frappe le blot adverse sur la flèche 5 et ferme la porte 5.",
+            "En Money Game (Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.238 EMG.",
+            "Évitez 24/23 13/10 qui manque la fermeture de la porte 5 et disperse vos constructeurs ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_12_51",
+        "tier": 3,
+        "xgid": "XGID=acaB-BCcBAaBeG---cbeAB-bCA:0:0:1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/7 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 9, 20), concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 2 blot(s) exposé(s) (+0.097 EMG sur 13/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui laisse 2 pion(s) isolé(s) (flèches 9, 20) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_13_54",
+        "tier": 3,
+        "xgid": "XGID=acaB-BCcCAaBeF---cbeAB-aBA:0:0:-1:54:0:0:0:0:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15",
+            "13/9 13/8"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/4 (Money Game (Videau à 1)), vous manque la fermeture de la porte 20 et disperse vos constructeurs, concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il ferme la porte 20 (+0.113 EMG sur 13/4).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 20 : vos deux dés permettent d'y fermer une porte (24/20...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 ferme la porte 20.",
+            "En Money Game (Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui manque la fermeture de la porte 20 et disperse vos constructeurs ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_14_51",
+        "tier": 3,
+        "xgid": "XGID=acaB-BCcBAaBeG---cbeaC-aD-:0:0:-1:51:0:0:0:0:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/7 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 23 et laisse l'initiative à l'adversaire, concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il frappe le blot adverse sur la flèche 23 (+0.097 EMG sur 13/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 23 (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 frappe le blot adverse sur la flèche 23.",
+            "En Money Game (Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui refuse de frapper le blot adverse sur la flèche 23 et laisse l'initiative à l'adversaire ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_15_62",
+        "tier": 4,
+        "xgid": "XGID=acaB-BCcAAaBeH---cbeaC-bE-:0:0:1:62:0:0:0:0:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/18 13/11",
+        "acceptableMoves": [
+            "24/16"
+        ],
+        "quizChoices": [
+            "24/18 13/11",
+            "24/22 24/18",
+            "24/16",
+            "13/11 13/7"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/22 24/18 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 8, 9, 22), concédant -0.065 EMG face à 24/18 13/11.",
+        "explanation": "Avec le jet 6-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/11 : il repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s) (+0.065 EMG sur 24/22 24/18).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/11 repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 13/11 surpasse 24/22 24/18 de +0.065 EMG.",
+            "Évitez 24/22 24/18 qui laisse 3 pion(s) isolé(s) (flèches 8, 9, 22) ; privilégiez 24/18 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_16_62",
+        "tier": 4,
+        "xgid": "XGID=acaB-BCcAAaCeG---caeaC-bD-:0:0:-1:62:0:0:0:0:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/18 13/11",
+        "acceptableMoves": [
+            "24/16"
+        ],
+        "quizChoices": [
+            "24/18 13/11",
+            "24/22 24/18",
+            "24/16",
+            "13/11 13/7"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/22 24/18 (Money Game (Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 8, 9, 18), concédant -0.065 EMG face à 24/18 13/11.",
+        "explanation": "Avec le jet 6-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/11 : il frappe le blot adverse sur la flèche 18 (+0.065 EMG sur 24/22 24/18).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 18 (24/18...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/11 frappe le blot adverse sur la flèche 18.",
+            "En Money Game (Videau à 1), 24/18 13/11 surpasse 24/22 24/18 de +0.065 EMG.",
+            "Évitez 24/22 24/18 qui laisse 4 pion(s) isolé(s) (flèches 8, 9, 18) ; privilégiez 24/18 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_17_42",
+        "tier": 2,
+        "xgid": "XGID=acaB-BCcAAaBeH---cbeaC-bE-:0:0:1:42:0:0:0:0:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 8, 22), concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Money Game (Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui laisse 2 pion(s) isolé(s) (flèches 8, 22) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_18_31",
+        "tier": 1,
+        "xgid": "XGID=acaBBBBc-AaBeH---cbeaC-bE-:0:0:-1:31:0:0:0:0:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.238,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/23 13/10 (Money Game (Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 9, 10), concédant -0.238 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 2 blot(s) exposé(s) (+0.238 EMG sur 24/23 13/10).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 8 (8/5...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.238 EMG.",
+            "Évitez 24/23 13/10 qui laisse 2 pion(s) isolé(s) (flèches 9, 10) ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_19_62",
+        "tier": 4,
+        "xgid": "XGID=acaBBaCcAAaBeH---cbeaC-bEA:0:0:-1:62:0:0:0:0:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/18 13/11",
+        "acceptableMoves": [
+            "24/16"
+        ],
+        "quizChoices": [
+            "24/18 13/11",
+            "24/22 24/18",
+            "24/16",
+            "13/11 13/7"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/22 24/18 (Money Game (Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 8, 9, 22), concédant -0.065 EMG face à 24/18 13/11.",
+        "explanation": "Avec le jet 6-2 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/11 : il repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s) (+0.065 EMG sur 24/22 24/18).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/11 repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18 13/11 surpasse 24/22 24/18 de +0.065 EMG.",
+            "Évitez 24/22 24/18 qui laisse 3 pion(s) isolé(s) (flèches 8, 9, 22) ; privilégiez 24/18 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_20_54",
+        "tier": 3,
+        "xgid": "XGID=acaBBaCcAAaAeI---cceaC-bFA:0:0:1:54:0:0:0:0:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15",
+            "13/9 13/8"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/4 (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 20 et laisse l'initiative à l'adversaire, concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il frappe le blot adverse sur la flèche 20 et ferme la porte 8 (+0.113 EMG sur 13/4).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Cherchez la frappe sur la flèche 20 (24/20...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 frappe le blot adverse sur la flèche 20 et ferme la porte 8.",
+            "En Money Game (Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui refuse de frapper le blot adverse sur la flèche 20 et laisse l'initiative à l'adversaire ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_21_33",
+        "tier": 3,
+        "xgid": "XGID=acbBBaCcBAaAeH---cceAC-bEA:0:0:1:33:0:0:0:0:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "24/18(2)",
+        "optimalMove": "8/5(2) 6/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5(2) 6/3(2)",
+            "24/18(2)",
+            "24/21(2) 6/3(2)",
+            "24/21(2) 13/10(2)"
+        ],
+        "equityLoss": 0.127,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/18(2) (Money Game (Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 5 et laisse l'initiative à l'adversaire, concédant -0.127 EMG face à 8/5(2) 6/3(2).",
+        "explanation": "Avec le jet 3-3 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5(2) 6/3(2) : il frappe le blot adverse sur la flèche 5 et ferme la porte 5 (+0.127 EMG sur 24/18(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/5(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5(2) 6/3(2) frappe le blot adverse sur la flèche 5 et ferme la porte 5.",
+            "En Money Game (Videau à 1), 8/5(2) 6/3(2) surpasse 24/18(2) de +0.127 EMG.",
+            "Évitez 24/18(2) qui refuse de frapper le blot adverse sur la flèche 5 et laisse l'initiative à l'adversaire ; privilégiez 8/5(2) 6/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s3_m0_22_66",
+        "tier": 2,
+        "xgid": "XGID=bcbDBBAc-AaAeH---cceAC-bEA:0:0:-1:66:0:0:0:0:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "24/18 13/7(3)",
+        "optimalMove": "24/18(2) 13/7(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18(2) 13/7(2)",
+            "24/18 13/7(3)",
+            "24/18(2) 8/2(2)",
+            "13/7(2) 8/2(2)"
+        ],
+        "equityLoss": 0.213,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/18 13/7(3) (Money Game (Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 6, 7, 9), concédant -0.213 EMG face à 24/18(2) 13/7(2).",
+        "explanation": "Avec le jet 6-6 en Money Game (Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18(2) 13/7(2) : il repositionne idéalement vos bâtisseurs (24/18(2) 13/7(2)) avec seulement 4 blot(s) exposé(s) (+0.213 EMG sur 24/18 13/7(3)).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/18(2)...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18(2) 13/7(2) repositionne idéalement vos bâtisseurs (24/18(2) 13/7(2)) avec seulement 4 blot(s) exposé(s).",
+            "En Money Game (Videau à 1), 24/18(2) 13/7(2) surpasse 24/18 13/7(3) de +0.213 EMG.",
+            "Évitez 24/18 13/7(3) qui laisse 5 pion(s) isolé(s) (flèches 6, 7, 9) ; privilégiez 24/18(2) 13/7(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_1_54",
+        "tier": 3,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:54:0:0:0:3:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.125,
+        "verdict": "blunder",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 13/4 (Match en 3 pts (0-0, Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 4), concédant -0.125 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 2 blot(s) exposé(s) (+0.125 EMG sur 13/4).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Regardez le mouvement partant de 24 (24/20...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.125 EMG.",
+            "Évitez 13/4 qui laisse 1 pion(s) isolé(s) (flèches 4) ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_2_54",
+        "tier": 4,
+        "xgid": "XGID=-b----E-C---eE-A-c-e----A-:0:0:-1:54:0:0:0:3:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/9 6/1*",
+        "optimalMove": "24/20 6/1*",
+        "acceptableMoves": [
+            "24/20 13/8"
+        ],
+        "quizChoices": [
+            "24/20 6/1*",
+            "13/9 6/1*",
+            "24/20 13/8",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.094,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/9 6/1* (Match en 3 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 9, 15, 24), concédant -0.094 EMG face à 24/20 6/1*.",
+        "explanation": "Avec le jet 5-4 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 6/1* : il repositionne idéalement vos bâtisseurs (24/20 6/1*) avec seulement 2 blot(s) exposé(s) (+0.094 EMG sur 13/9 6/1*).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 24 (24/20...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 6/1* repositionne idéalement vos bâtisseurs (24/20 6/1*) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 24/20 6/1* surpasse 13/9 6/1* de +0.094 EMG.",
+            "Évitez 13/9 6/1* qui laisse 3 pion(s) isolé(s) (flèches 9, 15, 24) ; privilégiez 24/20 6/1*."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_3_53",
+        "tier": 4,
+        "xgid": "XGID=-c----F-C--AeD-A-c-ea--AA-:0:0:-1:53:0:0:0:3:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/16 (Match en 3 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 3 et disperse vos constructeurs, concédant -0.083 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il ferme la porte 3 (+0.083 EMG sur 24/16).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (8/3...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 ferme la porte 3.",
+            "En Match en 3 pts (0-0, Videau à 1), 8/3 6/3 surpasse 24/16 de +0.083 EMG.",
+            "Évitez 24/16 qui manque la fermeture de la porte 3 et disperse vos constructeurs ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_4_63",
+        "tier": 4,
+        "xgid": "XGID=-c-b--G-D--AeD-A-c-ea--AA-:0:0:1:63:0:0:0:3:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.072,
+        "verdict": "doubtful",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 24/21 13/7 (Match en 3 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 7, 11, 15), concédant -0.072 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 5 blot(s) exposé(s) (+0.072 EMG sur 24/21 13/7).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 5 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.072 EMG.",
+            "Évitez 24/21 13/7 qui laisse 5 pion(s) isolé(s) (flèches 7, 11, 15) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_5_53",
+        "tier": 4,
+        "xgid": "XGID=-c-b--G-D-AAeC-A-cAea--A--:0:0:-1:53:0:0:0:3:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/16 (Match en 3 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 3 et laisse l'initiative à l'adversaire, concédant -0.083 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il frappe le blot adverse sur la flèche 3 (+0.083 EMG sur 24/16).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 3 (8/3...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 frappe le blot adverse sur la flèche 3.",
+            "En Match en 3 pts (0-0, Videau à 1), 8/3 6/3 surpasse 24/16 de +0.083 EMG.",
+            "Évitez 24/16 qui refuse de frapper le blot adverse sur la flèche 3 et laisse l'initiative à l'adversaire ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_6_43",
+        "tier": 3,
+        "xgid": "XGID=-c-d--H-E-AAeC-A-cAea--A--:0:0:1:43:0:0:0:3:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.102,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/6 (Match en 3 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 10, 11, 15), concédant -0.102 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il repositionne idéalement vos bâtisseurs (24/21 13/9) avec seulement 7 blot(s) exposé(s) (+0.102 EMG sur 13/6).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 24 (24/21...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 repositionne idéalement vos bâtisseurs (24/21 13/9) avec seulement 7 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 24/21 13/9 surpasse 13/6 de +0.102 EMG.",
+            "Évitez 13/6 qui laisse 5 pion(s) isolé(s) (flèches 10, 11, 15) ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_7_42",
+        "tier": 2,
+        "xgid": "XGID=-c-d--H-EAAAeB-A-cAeaA-Aa-:0:0:-1:42:0:0:0:3:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.178,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 3 pts (0-0, Videau à 1)), vous laisse 8 pion(s) isolé(s) (flèches 10, 11, 13), concédant -0.178 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.178 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Match en 3 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.178 EMG.",
+            "Évitez 24/22 13/9 qui laisse 8 pion(s) isolé(s) (flèches 10, 11, 13) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_8_51",
+        "tier": 3,
+        "xgid": "XGID=-c-db-I-FAAAeB-A-cAeaA-Aa-:0:0:1:51:0:0:0:3:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.106,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/7 (Match en 3 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 23 et disperse vos constructeurs, concédant -0.106 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il ferme la porte 23 (+0.106 EMG sur 13/7).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez la flèche 23 : vos deux dés permettent d'y fermer une porte (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 ferme la porte 23.",
+            "En Match en 3 pts (0-0, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.106 EMG.",
+            "Évitez 13/7 qui manque la fermeture de la porte 23 et disperse vos constructeurs ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_9_33",
+        "tier": 4,
+        "xgid": "XGID=-c-db-I-GAAaeB-A-cAeaA-AaA:0:0:1:33:0:0:0:3:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "13/10(2) 6/3(2)",
+        "optimalMove": "8/5(2) 6/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5(2) 6/3(2)",
+            "13/10(2) 6/3(2)",
+            "24/21(2) 6/3(2)",
+            "24/21(2) 13/10(2)"
+        ],
+        "equityLoss": 0.061,
+        "verdict": "doubtful",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/10(2) 6/3(2) (Match en 3 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 9, 15, 18), concédant -0.061 EMG face à 8/5(2) 6/3(2).",
+        "explanation": "Avec le jet 3-3 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5(2) 6/3(2) : il ferme la porte 5 (+0.061 EMG sur 13/10(2) 6/3(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 5 : vos deux dés permettent d'y fermer une porte (8/5(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5(2) 6/3(2) ferme la porte 5.",
+            "En Match en 3 pts (0-0, Videau à 1), 8/5(2) 6/3(2) surpasse 13/10(2) 6/3(2) de +0.061 EMG.",
+            "Évitez 13/10(2) 6/3(2) qui laisse 5 pion(s) isolé(s) (flèches 9, 15, 18) ; privilégiez 8/5(2) 6/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_10_53",
+        "tier": 4,
+        "xgid": "XGID=-c-bbBG-EAAaeB-A-cAeaA-AaA:0:0:-1:53:0:0:0:3:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/16 (Match en 3 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 3 et laisse l'initiative à l'adversaire, concédant -0.083 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il frappe le blot adverse sur la flèche 3 (+0.083 EMG sur 24/16).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 3 (8/3...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 frappe le blot adverse sur la flèche 3.",
+            "En Match en 3 pts (0-0, Videau à 1), 8/3 6/3 surpasse 24/16 de +0.083 EMG.",
+            "Évitez 24/16 qui refuse de frapper le blot adverse sur la flèche 3 et laisse l'initiative à l'adversaire ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_11_63",
+        "tier": 4,
+        "xgid": "XGID=ac-dbBH-FAAAeA-A-cAeaA-BbA:0:0:-1:63:0:0:0:3:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.072,
+        "verdict": "doubtful",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 24/21 13/7 (Match en 3 pts (0-0, Videau à 1)), vous laisse 6 pion(s) isolé(s) (flèches 7, 9, 10), concédant -0.072 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il ferme la porte 10 et 18 (+0.072 EMG sur 24/21 13/7).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 10 : vos deux dés permettent d'y fermer une porte (24/18...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 ferme la porte 10 et 18.",
+            "En Match en 3 pts (0-0, Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.072 EMG.",
+            "Évitez 24/21 13/7 qui laisse 6 pion(s) isolé(s) (flèches 7, 9, 10) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_12_52",
+        "tier": 3,
+        "xgid": "XGID=ac-dbBH-FAaAeB-A-caeaA-BaC:0:0:-1:52:0:0:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "24/22 13/8",
+        "acceptableMoves": [
+            "13/11 13/8"
+        ],
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "13/11 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.096,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/8 6/4 (Match en 3 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 9, 11, 13), concédant -0.096 EMG face à 24/22 13/8.",
+        "explanation": "Avec le jet 5-2 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/8 : il repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 6 blot(s) exposé(s) (+0.096 EMG sur 13/8 6/4).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 24 (24/22...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/8 repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 6 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 24/22 13/8 surpasse 13/8 6/4 de +0.096 EMG.",
+            "Évitez 13/8 6/4 qui laisse 5 pion(s) isolé(s) (flèches 9, 11, 13) ; privilégiez 24/22 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_13_31",
+        "tier": 1,
+        "xgid": "XGID=bc-ebBH-EAaAeC-A-caeAAAB-A:0:0:1:31:0:0:0:3:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.264,
+        "verdict": "howler",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 24/23 13/10 (Match en 3 pts (0-0, Videau à 1)), vous laisse 7 pion(s) isolé(s) (flèches 9, 10, 11), concédant -0.264 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 6 blot(s) exposé(s) (+0.264 EMG sur 24/23 13/10).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 8 (8/5...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 6 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.264 EMG.",
+            "Évitez 24/23 13/10 qui laisse 7 pion(s) isolé(s) (flèches 9, 10, 11) ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_14_65",
+        "tier": 4,
+        "xgid": "XGID=-d-ecDG-DAaAeC-A-caeAAAB-A:0:0:1:65:0:0:0:3:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.084,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 24/18 13/8 (Match en 3 pts (0-0, Videau à 1)), vous laisse 7 pion(s) isolé(s) (flèches 9, 11, 15), concédant -0.084 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 6 blot(s) exposé(s) (+0.084 EMG sur 24/18 13/8).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 6 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 24/13 surpasse 24/18 13/8 de +0.084 EMG.",
+            "Évitez 24/18 13/8 qui laisse 7 pion(s) isolé(s) (flèches 9, 11, 15) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_15_52",
+        "tier": 3,
+        "xgid": "XGID=-d-ecDG-DAaAeD-A-caeAAABaA:0:0:-1:52:0:0:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "24/22 13/8",
+        "acceptableMoves": [
+            "13/11 13/8"
+        ],
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "13/11 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.096,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/8 6/4 (Match en 3 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 22 et disperse vos constructeurs, concédant -0.096 EMG face à 24/22 13/8.",
+        "explanation": "Avec le jet 5-2 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/8 : il ferme la porte 22 (+0.096 EMG sur 13/8 6/4).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 22 : vos deux dés permettent d'y fermer une porte (24/22...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/8 ferme la porte 22.",
+            "En Match en 3 pts (0-0, Videau à 1), 24/22 13/8 surpasse 13/8 6/4 de +0.096 EMG.",
+            "Évitez 13/8 6/4 qui manque la fermeture de la porte 22 et disperse vos constructeurs ; privilégiez 24/22 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_16_52",
+        "tier": 3,
+        "xgid": "XGID=-d-ecDG-CAaAeE-A-caeABaB-A:0:0:-1:52:0:0:0:3:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "24/22 13/8",
+        "acceptableMoves": [
+            "13/11 13/8"
+        ],
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "13/11 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.096,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/8 6/4 (Match en 3 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 22 et laisse l'initiative à l'adversaire, concédant -0.096 EMG face à 24/22 13/8.",
+        "explanation": "Avec le jet 5-2 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/8 : il frappe le blot adverse sur la flèche 22 (+0.096 EMG sur 13/8 6/4).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Cherchez la frappe sur la flèche 22 (24/22...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/8 frappe le blot adverse sur la flèche 22.",
+            "En Match en 3 pts (0-0, Videau à 1), 24/22 13/8 surpasse 13/8 6/4 de +0.096 EMG.",
+            "Évitez 13/8 6/4 qui refuse de frapper le blot adverse sur la flèche 22 et laisse l'initiative à l'adversaire ; privilégiez 24/22 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_17_54",
+        "tier": 3,
+        "xgid": "XGID=-d-ecDG-BAaAeF-A-caeABbBAA:0:0:1:54:0:0:0:3:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.125,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/4 (Match en 3 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 20 et disperse vos constructeurs, concédant -0.125 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il ferme la porte 20 (+0.125 EMG sur 13/4).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 20 : vos deux dés permettent d'y fermer une porte (24/20...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 ferme la porte 20.",
+            "En Match en 3 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.125 EMG.",
+            "Évitez 13/4 qui manque la fermeture de la porte 20 et disperse vos constructeurs ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_18_31",
+        "tier": 1,
+        "xgid": "XGID=-d-ecDG-CAaAeE-A-caeBBbB-A:0:0:-1:31:0:0:0:3:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.264,
+        "verdict": "howler",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 24/23 13/10 (Match en 3 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 9, 10, 11), concédant -0.264 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 3 blot(s) exposé(s) (+0.264 EMG sur 24/23 13/10).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 8 (8/5...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.264 EMG.",
+            "Évitez 24/23 13/10 qui laisse 4 pion(s) isolé(s) (flèches 9, 10, 11) ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_19_64",
+        "tier": 4,
+        "xgid": "XGID=-d-ecBH-DAaAeE-A-caeBBbB-A:0:0:1:64:0:0:0:3:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "24/20 24/18",
+        "optimalMove": "24/14",
+        "acceptableMoves": [
+            "24/18 13/9",
+            "8/2 6/2"
+        ],
+        "quizChoices": [
+            "24/14",
+            "24/20 24/18",
+            "24/18 13/9",
+            "8/2 6/2"
+        ],
+        "equityLoss": 0.071,
+        "verdict": "doubtful",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 24/20 24/18 (Match en 3 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 9, 11, 15), concédant -0.071 EMG face à 24/14.",
+        "explanation": "Avec le jet 6-4 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/14 : il repositionne idéalement vos bâtisseurs (24/14) avec seulement 4 blot(s) exposé(s) (+0.071 EMG sur 24/20 24/18).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 24 (24/14...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/14 repositionne idéalement vos bâtisseurs (24/14) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 24/14 surpasse 24/20 24/18 de +0.071 EMG.",
+            "Évitez 24/20 24/18 qui laisse 4 pion(s) isolé(s) (flèches 9, 11, 15) ; privilégiez 24/14."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_20_53",
+        "tier": 4,
+        "xgid": "XGID=-d-ecBH-DAaAeEAA-caeBBbBaA:0:0:-1:53:0:0:0:3:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.083,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 24/16 (Match en 3 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 9, 11, 14), concédant -0.083 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il repositionne idéalement vos bâtisseurs (8/3 6/3) avec seulement 4 blot(s) exposé(s) (+0.083 EMG sur 24/16).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 8 (8/3...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 repositionne idéalement vos bâtisseurs (8/3 6/3) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 8/3 6/3 surpasse 24/16 de +0.083 EMG.",
+            "Évitez 24/16 qui laisse 5 pion(s) isolé(s) (flèches 9, 11, 14) ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_21_11",
+        "tier": 4,
+        "xgid": "XGID=-dAgcAI-EAaAeEAA-caeCBbBa-:0:0:-1:11:0:0:0:3:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23 6/5(3)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23 6/5(3)",
+            "24/22 6/5(2)",
+            "8/5 6/5"
+        ],
+        "equityLoss": 0.061,
+        "verdict": "doubtful",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23 6/5(3) (Match en 3 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 2, 9, 11), concédant -0.061 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il ferme la porte 5 et 7 (+0.061 EMG sur 24/23 6/5(3)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 5 : vos deux dés permettent d'y fermer une porte (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) ferme la porte 5 et 7.",
+            "En Match en 3 pts (0-0, Videau à 1), 8/7(2) 6/5(2) surpasse 24/23 6/5(3) de +0.061 EMG.",
+            "Évitez 24/23 6/5(3) qui laisse 5 pion(s) isolé(s) (flèches 2, 9, 11) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s4_m3_22_51",
+        "tier": 3,
+        "xgid": "XGID=--bhcbKcHAaAeE-A-caeCBbDa-:0:0:-1:51:0:0:0:3:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.106,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/7 (Match en 3 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 9, 11, 15), concédant -0.106 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 3 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 3 blot(s) exposé(s) (+0.106 EMG sur 13/7).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 3 pts (0-0, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.106 EMG.",
+            "Évitez 13/7 qui laisse 3 pion(s) isolé(s) (flèches 9, 11, 15) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_1_51",
+        "tier": 3,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:51:0:0:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 13/7 (Match en 7 pts (0-0, Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 7), concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 2 blot(s) exposé(s) (+0.097 EMG sur 13/7).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 7 pts (0-0, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui laisse 1 pion(s) isolé(s) (flèches 7) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_2_33",
+        "tier": 3,
+        "xgid": "XGID=-b----E-D---eD---c-e---AA-:0:0:-1:33:0:0:0:7:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "8/5(2) 6/3(2)",
+        "optimalMove": "24/21(2) 13/10(2)",
+        "acceptableMoves": [
+            "24/21(2) 6/3(2)"
+        ],
+        "quizChoices": [
+            "24/21(2) 13/10(2)",
+            "8/5(2) 6/3(2)",
+            "24/21(2) 6/3(2)",
+            "13/10(2) 6/3(2)"
+        ],
+        "equityLoss": 0.109,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 8/5(2) 6/3(2) (Match en 7 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 23, 24), concédant -0.109 EMG face à 24/21(2) 13/10(2).",
+        "explanation": "Avec le jet 3-3 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21(2) 13/10(2) : il ferme la porte 10 et 21 (+0.109 EMG sur 8/5(2) 6/3(2)).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 10 : vos deux dés permettent d'y fermer une porte (24/21(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21(2) 13/10(2) ferme la porte 10 et 21.",
+            "En Match en 7 pts (0-0, Videau à 1), 24/21(2) 13/10(2) surpasse 8/5(2) 6/3(2) de +0.109 EMG.",
+            "Évitez 8/5(2) 6/3(2) qui laisse 2 pion(s) isolé(s) (flèches 23, 24) ; privilégiez 24/21(2) 13/10(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_3_51",
+        "tier": 3,
+        "xgid": "XGID=-b-b--G-D--AeC---c-e-b-BB-:0:0:-1:51:0:0:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/7 (Match en 7 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 7, 11), concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 2 blot(s) exposé(s) (+0.097 EMG sur 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 7 pts (0-0, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui laisse 2 pion(s) isolé(s) (flèches 7, 11) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_4_53",
+        "tier": 4,
+        "xgid": "XGID=-b-b--G-C--AeD---c-e-b-AC-:0:0:1:53:0:0:0:7:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.081,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/16 (Match en 7 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 3 et laisse l'initiative à l'adversaire, concédant -0.081 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il frappe le blot adverse sur la flèche 3 (+0.081 EMG sur 24/16).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 3 (8/3...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 frappe le blot adverse sur la flèche 3.",
+            "En Match en 7 pts (0-0, Videau à 1), 8/3 6/3 surpasse 24/16 de +0.081 EMG.",
+            "Évitez 24/16 qui refuse de frapper le blot adverse sur la flèche 3 et laisse l'initiative à l'adversaire ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_5_52",
+        "tier": 4,
+        "xgid": "XGID=ab-A--F-B--AeD---c-e-b-AC-:0:0:-1:52:0:0:0:7:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "24/22 13/8",
+        "acceptableMoves": [
+            "13/11 13/8"
+        ],
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "13/11 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.089,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/8 6/4 (Match en 7 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 3, 4, 11), concédant -0.089 EMG face à 24/22 13/8.",
+        "explanation": "Avec le jet 5-2 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/8 : il repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 4 blot(s) exposé(s) (+0.089 EMG sur 13/8 6/4).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/22...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/8 repositionne idéalement vos bâtisseurs (24/22 13/8) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 7 pts (0-0, Videau à 1), 24/22 13/8 surpasse 13/8 6/4 de +0.089 EMG.",
+            "Évitez 13/8 6/4 qui laisse 4 pion(s) isolé(s) (flèches 3, 4, 11) ; privilégiez 24/22 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_6_11",
+        "tier": 4,
+        "xgid": "XGID=ab-A--F-A--BeD---c-e-baBC-:0:0:-1:11:0:0:0:7:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.094,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Match en 7 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 3, 8, 24), concédant -0.094 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il ferme la porte 5 et 7 (+0.094 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 5 : vos deux dés permettent d'y fermer une porte (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) ferme la porte 5 et 7.",
+            "En Match en 7 pts (0-0, Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.094 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui laisse 3 pion(s) isolé(s) (flèches 3, 8, 24) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_7_42",
+        "tier": 2,
+        "xgid": "XGID=ab-A-bHbC--BeD---c-e-baBC-:0:0:1:42:0:0:0:7:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.16,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 7 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 4 et disperse vos constructeurs, concédant -0.160 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.160 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Match en 7 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.160 EMG.",
+            "Évitez 24/22 13/9 qui manque la fermeture de la porte 4 et disperse vos constructeurs ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_8_11",
+        "tier": 4,
+        "xgid": "XGID=-aaABbGcB--BeD---c-e-baBC-:0:0:1:11:0:0:0:7:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.094,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Match en 7 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 3, 5, 24), concédant -0.094 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il frappe le blot adverse sur la flèche 5 (+0.094 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) frappe le blot adverse sur la flèche 5.",
+            "En Match en 7 pts (0-0, Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.094 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui laisse 3 pion(s) isolé(s) (flèches 3, 5, 24) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_9_63",
+        "tier": 4,
+        "xgid": "XGID=aaaABAEa---BeD---c-e-baBC-:0:0:-1:63:0:0:0:7:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.063,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/21 13/7 (Match en 7 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 3, 5, 7), concédant -0.063 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 4 blot(s) exposé(s) (+0.063 EMG sur 24/21 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 7 pts (0-0, Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.063 EMG.",
+            "Évitez 24/21 13/7 qui laisse 3 pion(s) isolé(s) (flèches 3, 5, 7) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_10_65",
+        "tier": 4,
+        "xgid": "XGID=aaaABAEa--aBeE---cae-baBD-:0:0:1:65:0:0:0:7:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.074,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/18 13/8 (Match en 7 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 3, 5, 8), concédant -0.074 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s) (+0.074 EMG sur 24/18 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 7 pts (0-0, Videau à 1), 24/13 surpasse 24/18 13/8 de +0.074 EMG.",
+            "Évitez 24/18 13/8 qui laisse 4 pion(s) isolé(s) (flèches 3, 5, 8) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_11_62",
+        "tier": 4,
+        "xgid": "XGID=aaaABAEa--aBeF---cae-baBC-:0:0:-1:62:0:0:0:7:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/18 13/11",
+        "acceptableMoves": [
+            "24/16"
+        ],
+        "quizChoices": [
+            "24/18 13/11",
+            "24/22 24/18",
+            "24/16",
+            "13/11 13/7"
+        ],
+        "equityLoss": 0.066,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/22 24/18 (Match en 7 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 3, 5, 18), concédant -0.066 EMG face à 24/18 13/11.",
+        "explanation": "Avec le jet 6-2 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/11 : il frappe le blot adverse sur la flèche 18 (+0.066 EMG sur 24/22 24/18).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Cherchez la frappe sur la flèche 18 (24/18...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/11 frappe le blot adverse sur la flèche 18.",
+            "En Match en 7 pts (0-0, Videau à 1), 24/18 13/11 surpasse 24/22 24/18 de +0.066 EMG.",
+            "Évitez 24/22 24/18 qui laisse 5 pion(s) isolé(s) (flèches 3, 5, 18) ; privilégiez 24/18 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_12_32",
+        "tier": 4,
+        "xgid": "XGID=aaaABAEa--aAeG---cbe-baBD-:0:0:1:32:0:0:0:7:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/8 (Match en 7 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 11 et disperse vos constructeurs, concédant -0.068 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il ferme la porte 11 (+0.068 EMG sur 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez la flèche 11 : vos deux dés permettent d'y fermer une porte (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 ferme la porte 11.",
+            "En Match en 7 pts (0-0, Videau à 1), 24/21 13/11 surpasse 13/8 de +0.068 EMG.",
+            "Évitez 13/8 qui manque la fermeture de la porte 11 et disperse vos constructeurs ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_13_32",
+        "tier": 4,
+        "xgid": "XGID=aaaABAEa--aBeF---cbe-aaBC-:0:0:-1:32:0:0:0:7:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/8 (Match en 7 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire, concédant -0.068 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il frappe le blot adverse sur la flèche 21 (+0.068 EMG sur 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Cherchez la frappe sur la flèche 21 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 frappe le blot adverse sur la flèche 21.",
+            "En Match en 7 pts (0-0, Videau à 1), 24/21 13/11 surpasse 13/8 de +0.068 EMG.",
+            "Évitez 13/8 qui refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_14_51",
+        "tier": 3,
+        "xgid": "XGID=aaaABAEa--aAeG---cbe-baBD-:0:0:1:51:0:0:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/7 (Match en 7 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 3, 5, 7), concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 4 blot(s) exposé(s) (+0.097 EMG sur 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 7 pts (0-0, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui laisse 4 pion(s) isolé(s) (flèches 3, 5, 7) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_15_41",
+        "tier": 3,
+        "xgid": "XGID=aaaABbEaA-aAeF---cbe-bACD-:0:0:1:41:0:0:0:7:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "13/9 8/7",
+        "optimalMove": "24/23 13/9",
+        "acceptableMoves": [
+            "13/9 6/5"
+        ],
+        "quizChoices": [
+            "24/23 13/9",
+            "13/9 8/7",
+            "13/9 6/5",
+            "24/23 24/20"
+        ],
+        "equityLoss": 0.118,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/9 8/7 (Match en 7 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 3, 7, 9), concédant -0.118 EMG face à 24/23 13/9.",
+        "explanation": "Avec le jet 4-1 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/9 : il repositionne idéalement vos bâtisseurs (24/23 13/9) avec seulement 5 blot(s) exposé(s) (+0.118 EMG sur 13/9 8/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/9 repositionne idéalement vos bâtisseurs (24/23 13/9) avec seulement 5 blot(s) exposé(s).",
+            "En Match en 7 pts (0-0, Videau à 1), 24/23 13/9 surpasse 13/9 8/7 de +0.118 EMG.",
+            "Évitez 13/9 8/7 qui laisse 5 pion(s) isolé(s) (flèches 3, 7, 9) ; privilégiez 24/23 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_16_61",
+        "tier": 2,
+        "xgid": "XGID=aaaABbEaAAaaeF---cbe-bACDA:0:0:1:61:0:0:0:7:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "24/23 24/18",
+        "optimalMove": "13/7 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/7",
+            "24/23 24/18",
+            "24/23 13/7",
+            "24/18 6/5"
+        ],
+        "equityLoss": 0.172,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23 24/18 (Match en 7 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 7 et laisse l'initiative à l'adversaire, concédant -0.172 EMG face à 13/7 8/7.",
+        "explanation": "Avec le jet 6-1 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/7 8/7 : il frappe le blot adverse sur la flèche 7 et ferme la porte 7 (+0.172 EMG sur 24/23 24/18).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 7 (13/7...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/7 8/7 frappe le blot adverse sur la flèche 7 et ferme la porte 7.",
+            "En Match en 7 pts (0-0, Videau à 1), 13/7 8/7 surpasse 24/23 24/18 de +0.172 EMG.",
+            "Évitez 24/23 24/18 qui refuse de frapper le blot adverse sur la flèche 7 et laisse l'initiative à l'adversaire ; privilégiez 13/7 8/7."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_17_32",
+        "tier": 4,
+        "xgid": "XGID=abaABbEB-AaaeE---cbe-bACDA:0:0:1:32:0:0:0:7:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/8 (Match en 7 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 11 et laisse l'initiative à l'adversaire, concédant -0.068 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il frappe le blot adverse sur la flèche 11 (+0.068 EMG sur 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Cherchez la frappe sur la flèche 11 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 frappe le blot adverse sur la flèche 11.",
+            "En Match en 7 pts (0-0, Videau à 1), 24/21 13/11 surpasse 13/8 de +0.068 EMG.",
+            "Évitez 13/8 qui refuse de frapper le blot adverse sur la flèche 11 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_18_11",
+        "tier": 4,
+        "xgid": "XGID=bbaABbEB-AaAeD---cbe-aACCA:0:0:-1:11:0:0:0:7:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.094,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Match en 7 pts (0-0, Videau à 1)), vous laisse 6 pion(s) isolé(s) (flèches 3, 5, 9), concédant -0.094 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il frappe le blot adverse sur la flèche 5 (+0.094 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) frappe le blot adverse sur la flèche 5.",
+            "En Match en 7 pts (0-0, Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.094 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui laisse 6 pion(s) isolé(s) (flèches 3, 5, 9) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_19_42",
+        "tier": 2,
+        "xgid": "XGID=bcaABdGaBAaAeD---cbe-AADC-:0:0:1:42:0:0:0:7:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.16,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 7 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 3, 11, 21), concédant -0.160 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 6 blot(s) exposé(s) (+0.160 EMG sur 24/22 13/9).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 8 (8/4...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 6 blot(s) exposé(s).",
+            "En Match en 7 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.160 EMG.",
+            "Évitez 24/22 13/9 qui laisse 3 pion(s) isolé(s) (flèches 3, 11, 21) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_20_32",
+        "tier": 4,
+        "xgid": "XGID=acaaDdFaAAaAeD---cbe-AADCA:0:0:1:32:0:0:0:7:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/8 (Match en 7 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 9, 11, 21), concédant -0.068 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il ferme la porte 11 et 21 (+0.068 EMG sur 13/8).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 11 : vos deux dés permettent d'y fermer une porte (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 ferme la porte 11 et 21.",
+            "En Match en 7 pts (0-0, Videau à 1), 24/21 13/11 surpasse 13/8 de +0.068 EMG.",
+            "Évitez 13/8 qui laisse 4 pion(s) isolé(s) (flèches 9, 11, 21) ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_21_51",
+        "tier": 3,
+        "xgid": "XGID=acaaDdFaAAaBeC---cbe-BADBA:0:0:1:51:0:0:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/7 (Match en 7 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 8 et disperse vos constructeurs, concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il ferme la porte 8 (+0.097 EMG sur 13/7).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 8 : vos deux dés permettent d'y fermer une porte (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 ferme la porte 8.",
+            "En Match en 7 pts (0-0, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui manque la fermeture de la porte 8 et disperse vos constructeurs ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s5_m7_22_33",
+        "tier": 3,
+        "xgid": "XGID=acaaDdFaBAaBeB---cbe-BAEAA:0:0:1:33:0:0:0:7:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "24/18(2)",
+        "optimalMove": "8/5(2) 6/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5(2) 6/3(2)",
+            "24/18(2)",
+            "24/21(2) 6/3(2)",
+            "24/21(2) 13/10(2)"
+        ],
+        "equityLoss": 0.125,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/18(2) (Match en 7 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 3 et disperse vos constructeurs, concédant -0.125 EMG face à 8/5(2) 6/3(2).",
+        "explanation": "Avec le jet 3-3 en Match en 7 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5(2) 6/3(2) : il frappe le blot adverse sur la flèche 3 et ferme la porte 3 (+0.125 EMG sur 24/18(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 3 (8/5(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5(2) 6/3(2) frappe le blot adverse sur la flèche 3 et ferme la porte 3.",
+            "En Match en 7 pts (0-0, Videau à 1), 8/5(2) 6/3(2) surpasse 24/18(2) de +0.125 EMG.",
+            "Évitez 24/18(2) qui manque la fermeture de la porte 3 et disperse vos constructeurs ; privilégiez 8/5(2) 6/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_1_31",
+        "tier": 1,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:31:5:3:0:7:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/20",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/20",
+            "24/23 24/21",
+            "24/23 13/10"
+        ],
+        "equityLoss": 0.224,
+        "verdict": "howler",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/20 (Match en 7 pts (5-3, Videau à 1)), vous manque la fermeture de la porte 5 et disperse vos constructeurs, concédant -0.224 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il ferme la porte 5 (+0.224 EMG sur 24/20).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 5 : vos deux dés permettent d'y fermer une porte (8/5...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 ferme la porte 5.",
+            "En Match en 7 pts (5-3, Videau à 1), 8/5 6/5 surpasse 24/20 de +0.224 EMG.",
+            "Évitez 24/20 qui manque la fermeture de la porte 5 et disperse vos constructeurs ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_2_32",
+        "tier": 4,
+        "xgid": "XGID=-b---BD-B---eE---c-e----B-:0:0:-1:32:5:3:0:7:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/10 6/4",
+        "optimalMove": "24/22 13/10",
+        "acceptableMoves": [
+            "24/21 13/11",
+            "24/22 24/21",
+            "13/11 13/10"
+        ],
+        "quizChoices": [
+            "24/22 13/10",
+            "13/10 6/4",
+            "24/21 13/11",
+            "24/22 24/21"
+        ],
+        "equityLoss": 0.086,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/10 6/4 (Match en 7 pts (5-3, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 4, 10), concédant -0.086 EMG face à 24/22 13/10.",
+        "explanation": "Avec le jet 3-2 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/10 : il repositionne idéalement vos bâtisseurs (24/22 13/10) avec seulement 3 blot(s) exposé(s) (+0.086 EMG sur 13/10 6/4).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 24 (24/22...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/10 repositionne idéalement vos bâtisseurs (24/22 13/10) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 7 pts (5-3, Videau à 1), 24/22 13/10 surpasse 13/10 6/4 de +0.086 EMG.",
+            "Évitez 13/10 6/4 qui laisse 2 pion(s) isolé(s) (flèches 4, 10) ; privilégiez 24/22 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_3_53",
+        "tier": 3,
+        "xgid": "XGID=-b---BD-B-a-eF---c-e--a-C-:0:0:1:53:5:3:0:7:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "13/10 13/8",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "13/10 13/8",
+            "24/21 13/8",
+            "24/16"
+        ],
+        "equityLoss": 0.111,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/10 13/8 (Match en 7 pts (5-3, Videau à 1)), vous manque la fermeture de la porte 3 et disperse vos constructeurs, concédant -0.111 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il ferme la porte 3 (+0.111 EMG sur 13/10 13/8).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (8/3...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 ferme la porte 3.",
+            "En Match en 7 pts (5-3, Videau à 1), 8/3 6/3 surpasse 13/10 13/8 de +0.111 EMG.",
+            "Évitez 13/10 13/8 qui manque la fermeture de la porte 3 et disperse vos constructeurs ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_4_31",
+        "tier": 1,
+        "xgid": "XGID=-b-B-BC-A-a-eF---c-e--a-C-:0:0:-1:31:5:3:0:7:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "13/9",
+            "13/10 6/5"
+        ],
+        "equityLoss": 0.285,
+        "verdict": "howler",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 24/23 13/10 (Match en 7 pts (5-3, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 8, 10, 23), concédant -0.285 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 0 blot(s) exposé(s) (+0.285 EMG sur 24/23 13/10).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 8 (8/5...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 0 blot(s) exposé(s).",
+            "En Match en 7 pts (5-3, Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.285 EMG.",
+            "Évitez 24/23 13/10 qui laisse 3 pion(s) isolé(s) (flèches 8, 10, 23) ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_5_51",
+        "tier": 3,
+        "xgid": "XGID=-b-B-aD-B-a-eF---c-e--a-CA:0:0:1:51:5:3:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.116,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/7 (Match en 7 pts (5-3, Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 7), concédant -0.116 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s) (+0.116 EMG sur 13/7).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s).",
+            "En Match en 7 pts (5-3, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.116 EMG.",
+            "Évitez 13/7 qui laisse 1 pion(s) isolé(s) (flèches 7) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_6_11",
+        "tier": 4,
+        "xgid": "XGID=-b-B-aD-C-a-eE---c-e--aABA:0:0:-1:11:5:3:0:7:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/22 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)",
+            "8/5 6/5"
+        ],
+        "equityLoss": 0.061,
+        "verdict": "doubtful",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/22 6/5(2) (Match en 7 pts (5-3, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 22, 23, 24), concédant -0.061 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il frappe le blot adverse sur la flèche 5 et ferme la porte 5 et 7 (+0.061 EMG sur 24/22 6/5(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) frappe le blot adverse sur la flèche 5 et ferme la porte 5 et 7.",
+            "En Match en 7 pts (5-3, Videau à 1), 8/7(2) 6/5(2) surpasse 24/22 6/5(2) de +0.061 EMG.",
+            "Évitez 24/22 6/5(2) qui laisse 3 pion(s) isolé(s) (flèches 22, 23, 24) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_7_41",
+        "tier": 2,
+        "xgid": "XGID=-b-B-cFbE-a-eE---c-e--aABA:0:0:1:41:5:3:0:7:8",
+        "dice": [
+            4,
+            1
+        ],
+        "playedMove": "24/20 8/7",
+        "optimalMove": "24/23 13/9",
+        "acceptableMoves": [
+            "24/23 24/20",
+            "24/20 6/5",
+            "13/9 6/5"
+        ],
+        "quizChoices": [
+            "24/23 13/9",
+            "24/20 8/7",
+            "24/23 24/20",
+            "24/20 6/5"
+        ],
+        "equityLoss": 0.162,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 24/20 8/7 (Match en 7 pts (5-3, Videau à 1)), vous manque la fermeture de la porte 23 et disperse vos constructeurs, concédant -0.162 EMG face à 24/23 13/9.",
+        "explanation": "Avec le jet 4-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/9 : il ferme la porte 23 (+0.162 EMG sur 24/20 8/7).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez la flèche 23 : vos deux dés permettent d'y fermer une porte (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/9 ferme la porte 23.",
+            "En Match en 7 pts (5-3, Videau à 1), 24/23 13/9 surpasse 24/20 8/7 de +0.162 EMG.",
+            "Évitez 24/20 8/7 qui manque la fermeture de la porte 23 et disperse vos constructeurs ; privilégiez 24/23 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_8_52",
+        "tier": 3,
+        "xgid": "XGID=-b-B-cFbEAa-eD---c-e--aBAA:0:0:-1:52:5:3:0:7:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "13/11 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 13/8",
+            "13/8 6/4",
+            "24/22 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.099,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/8 6/4 (Match en 7 pts (5-3, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 4, 9, 24), concédant -0.099 EMG face à 13/11 13/8.",
+        "explanation": "Avec le jet 5-2 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/11 13/8 : il repositionne idéalement vos bâtisseurs (13/11 13/8) avec seulement 3 blot(s) exposé(s) (+0.099 EMG sur 13/8 6/4).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 13 (13/11...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/11 13/8 repositionne idéalement vos bâtisseurs (13/11 13/8) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 7 pts (5-3, Videau à 1), 13/11 13/8 surpasse 13/8 6/4 de +0.099 EMG.",
+            "Évitez 13/8 6/4 qui laisse 3 pion(s) isolé(s) (flèches 4, 9, 24) ; privilégiez 13/11 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_9_53",
+        "tier": 3,
+        "xgid": "XGID=-b-B-cFbDAaaeF---c-e--aBAA:0:0:1:53:5:3:0:7:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "13/10 13/8",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "13/10 13/8",
+            "24/21 13/8",
+            "24/16"
+        ],
+        "equityLoss": 0.111,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/10 13/8 (Match en 7 pts (5-3, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 9, 10, 24), concédant -0.111 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il repositionne idéalement vos bâtisseurs (8/3 6/3) avec seulement 2 blot(s) exposé(s) (+0.111 EMG sur 13/10 13/8).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Regardez le mouvement partant de 8 (8/3...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 repositionne idéalement vos bâtisseurs (8/3 6/3) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 7 pts (5-3, Videau à 1), 8/3 6/3 surpasse 13/10 13/8 de +0.111 EMG.",
+            "Évitez 13/10 13/8 qui laisse 3 pion(s) isolé(s) (flèches 9, 10, 24) ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_10_63",
+        "tier": 4,
+        "xgid": "XGID=-b-D-cEbCAaaeF---c-e--aBAA:0:0:-1:63:5:3:0:7:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 24/18",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 24/18",
+            "24/15",
+            "13/10 13/7"
+        ],
+        "equityLoss": 0.07,
+        "verdict": "doubtful",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 24/21 24/18 (Match en 7 pts (5-3, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 10 et laisse l'initiative à l'adversaire, concédant -0.070 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il frappe le blot adverse sur la flèche 10 (+0.070 EMG sur 24/21 24/18).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Cherchez la frappe sur la flèche 10 (24/18...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 frappe le blot adverse sur la flèche 10.",
+            "En Match en 7 pts (5-3, Videau à 1), 24/18 13/10 surpasse 24/21 24/18 de +0.070 EMG.",
+            "Évitez 24/21 24/18 qui refuse de frapper le blot adverse sur la flèche 10 et laisse l'initiative à l'adversaire ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_11_11",
+        "tier": 4,
+        "xgid": "XGID=-b-D-cEbCAbaeG---cae--aBBA:0:0:1:11:5:3:0:7:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.077,
+        "verdict": "doubtful",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Match en 7 pts (5-3, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 7 et laisse l'initiative à l'adversaire, concédant -0.077 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il frappe le blot adverse sur la flèche 7 (+0.077 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 7 (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) frappe le blot adverse sur la flèche 7.",
+            "En Match en 7 pts (5-3, Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.077 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui refuse de frapper le blot adverse sur la flèche 7 et laisse l'initiative à l'adversaire ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_12_42",
+        "tier": 2,
+        "xgid": "XGID=ab-D-aCAAAbaeG---cae--aBBA:0:0:-1:42:5:3:0:7:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.177,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 7 pts (5-3, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 7, 8, 22), concédant -0.177 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.177 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Match en 7 pts (5-3, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.177 EMG.",
+            "Évitez 24/22 13/9 qui laisse 4 pion(s) isolé(s) (flèches 7, 8, 22) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_13_11",
+        "tier": 4,
+        "xgid": "XGID=ab-DbaDABAbaeG---cae--aBBA:0:0:1:11:5:3:0:7:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.077,
+        "verdict": "doubtful",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Match en 7 pts (5-3, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 7, 9), concédant -0.077 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il frappe le blot adverse sur la flèche 5 et ferme la porte 5 et 7 (+0.077 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) frappe le blot adverse sur la flèche 5 et ferme la porte 5 et 7.",
+            "En Match en 7 pts (5-3, Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.077 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui laisse 2 pion(s) isolé(s) (flèches 7, 9) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_14_52",
+        "tier": 3,
+        "xgid": "XGID=abaDbBBC-AbaeG---cae--aBBA:0:0:1:52:5:3:0:7:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "24/22 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "13/11 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.116,
+        "verdict": "blunder",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/8 6/4 (Match en 7 pts (5-3, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 22 et laisse l'initiative à l'adversaire, concédant -0.116 EMG face à 24/22 13/8.",
+        "explanation": "Avec le jet 5-2 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/8 : il frappe le blot adverse sur la flèche 22 (+0.116 EMG sur 13/8 6/4).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Cherchez la frappe sur la flèche 22 (24/22...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/8 frappe le blot adverse sur la flèche 22.",
+            "En Match en 7 pts (5-3, Videau à 1), 24/22 13/8 surpasse 13/8 6/4 de +0.116 EMG.",
+            "Évitez 13/8 6/4 qui refuse de frapper le blot adverse sur la flèche 22 et laisse l'initiative à l'adversaire ; privilégiez 24/22 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_15_63",
+        "tier": 4,
+        "xgid": "XGID=acaDbBBCAAbaeF---cae--ABAA:0:0:1:63:5:3:0:7:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 24/18",
+        "optimalMove": "24/15",
+        "acceptableMoves": [
+            "24/18 13/10"
+        ],
+        "quizChoices": [
+            "24/15",
+            "24/21 24/18",
+            "24/18 13/10",
+            "24/21 13/7"
+        ],
+        "equityLoss": 0.07,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/21 24/18 (Match en 7 pts (5-3, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 8, 9, 18), concédant -0.070 EMG face à 24/15.",
+        "explanation": "Avec le jet 6-3 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/15 : il repositionne idéalement vos bâtisseurs (24/15) avec seulement 4 blot(s) exposé(s) (+0.070 EMG sur 24/21 24/18).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/15...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/15 repositionne idéalement vos bâtisseurs (24/15) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 7 pts (5-3, Videau à 1), 24/15 surpasse 24/21 24/18 de +0.070 EMG.",
+            "Évitez 24/21 24/18 qui laisse 5 pion(s) isolé(s) (flèches 8, 9, 18) ; privilégiez 24/15."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_16_51",
+        "tier": 4,
+        "xgid": "XGID=acaDbBBCAAbaeF-A-cae--AB-A:0:0:-1:51:5:3:0:7:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "13/8 6/5"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "13/8 6/5",
+            "24/18"
+        ],
+        "equityLoss": 0.079,
+        "verdict": "doubtful",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/7 (Match en 7 pts (5-3, Videau à 1)), vous manque la fermeture de la porte 8 et disperse vos constructeurs, concédant -0.079 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il ferme la porte 8 (+0.079 EMG sur 13/7).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 8 : vos deux dés permettent d'y fermer une porte (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 ferme la porte 8.",
+            "En Match en 7 pts (5-3, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.079 EMG.",
+            "Évitez 13/7 qui manque la fermeture de la porte 8 et disperse vos constructeurs ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_17_21",
+        "tier": 4,
+        "xgid": "XGID=acaDbBBCaAbaeG-A-cae--AAAB:0:0:-1:21:5:3:0:7:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "13/10",
+        "optimalMove": "13/11 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 6/5",
+            "13/10",
+            "24/23 13/11",
+            "24/21"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "cube_decision",
+        "conceptName": "Stratégie de Score & Videau",
+        "whyFailed": "En jouant 13/10 (Match en 7 pts (5-3, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 11 et laisse l'initiative à l'adversaire, concédant -0.073 EMG face à 13/11 6/5.",
+        "explanation": "Avec le jet 2-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/11 6/5 : il frappe le blot adverse sur la flèche 11 (+0.073 EMG sur 13/10).",
+        "proverb": "Adaptez toujours votre prise de risque au score du match (table Kazaross-XG2) et à la valeur du videau.",
+        "hint": "Cherchez la frappe sur la flèche 11 (13/11...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/11 6/5 frappe le blot adverse sur la flèche 11.",
+            "En Match en 7 pts (5-3, Videau à 1), 13/11 6/5 surpasse 13/10 de +0.073 EMG.",
+            "Évitez 13/10 qui refuse de frapper le blot adverse sur la flèche 11 et laisse l'initiative à l'adversaire ; privilégiez 13/11 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_18_54",
+        "tier": 3,
+        "xgid": "XGID=acaDbACCaAbbeH-A-cae--ABB-:0:0:-1:54:5:3:0:7:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "13/9 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/9 13/8",
+            "13/4",
+            "24/20 13/8",
+            "24/15"
+        ],
+        "equityLoss": 0.114,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 13/4 (Match en 7 pts (5-3, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 8 et laisse l'initiative à l'adversaire, concédant -0.114 EMG face à 13/9 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/9 13/8 : il frappe le blot adverse sur la flèche 8 et ferme la porte 9 (+0.114 EMG sur 13/4).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 8 (13/9...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/9 13/8 frappe le blot adverse sur la flèche 8 et ferme la porte 9.",
+            "En Match en 7 pts (5-3, Videau à 1), 13/9 13/8 surpasse 13/4 de +0.114 EMG.",
+            "Évitez 13/4 qui refuse de frapper le blot adverse sur la flèche 8 et laisse l'initiative à l'adversaire ; privilégiez 13/9 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_19_55",
+        "tier": 2,
+        "xgid": "XGID=acaDbACCbabbeJ-A-cae--ABBA:0:0:1:55:5:3:0:7:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3 8/3(2)",
+        "optimalMove": "13/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3(2)",
+            "13/3 8/3(2)",
+            "13/3 13/8(2)",
+            "13/8(4)"
+        ],
+        "equityLoss": 0.18,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/3 8/3(2) (Match en 7 pts (5-3, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 5, 15, 22), concédant -0.180 EMG face à 13/3(2).",
+        "explanation": "Avec le jet 5-5 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/3(2) : il repositionne idéalement vos bâtisseurs (13/3(2)) avec seulement 3 blot(s) exposé(s) (+0.180 EMG sur 13/3 8/3(2)).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 13 (13/3(2)...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/3(2) repositionne idéalement vos bâtisseurs (13/3(2)) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 7 pts (5-3, Videau à 1), 13/3(2) surpasse 13/3 8/3(2) de +0.180 EMG.",
+            "Évitez 13/3 8/3(2) qui laisse 3 pion(s) isolé(s) (flèches 5, 15, 22) ; privilégiez 13/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_20_64",
+        "tier": 4,
+        "xgid": "XGID=acaFbACCbabbeH-A-cae--ABBA:0:0:-1:64:5:3:0:7:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "13/9 13/7",
+        "optimalMove": "8/2 6/2",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/2 6/2",
+            "13/9 13/7",
+            "24/18 13/9",
+            "24/14"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 13/9 13/7 (Match en 7 pts (5-3, Videau à 1)), vous manque la fermeture de la porte 2 et disperse vos constructeurs, concédant -0.067 EMG face à 8/2 6/2.",
+        "explanation": "Avec le jet 6-4 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/2 6/2 : il frappe le blot adverse sur la flèche 2 et ferme la porte 2 (+0.067 EMG sur 13/9 13/7).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 2 (8/2...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/2 6/2 frappe le blot adverse sur la flèche 2 et ferme la porte 2.",
+            "En Match en 7 pts (5-3, Videau à 1), 8/2 6/2 surpasse 13/9 13/7 de +0.067 EMG.",
+            "Évitez 13/9 13/7 qui manque la fermeture de la porte 2 et disperse vos constructeurs ; privilégiez 8/2 6/2."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_21_52",
+        "tier": 3,
+        "xgid": "XGID=accFbADCaabbeH-A-cae--ABBA:0:0:1:52:5:3:0:7:8",
+        "dice": [
+            5,
+            2
+        ],
+        "playedMove": "13/8 6/4",
+        "optimalMove": "24/22 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "13/11 13/8",
+            "13/6"
+        ],
+        "equityLoss": 0.116,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 13/8 6/4 (Match en 7 pts (5-3, Videau à 1)), vous manque la fermeture de la porte 22 et disperse vos constructeurs, concédant -0.116 EMG face à 24/22 13/8.",
+        "explanation": "Avec le jet 5-2 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/22 13/8 : il frappe le blot adverse sur la flèche 8 et ferme la porte 22 (+0.116 EMG sur 13/8 6/4).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 8 (24/22...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/22 13/8 frappe le blot adverse sur la flèche 8 et ferme la porte 22.",
+            "En Match en 7 pts (5-3, Videau à 1), 24/22 13/8 surpasse 13/8 6/4 de +0.116 EMG.",
+            "Évitez 13/8 6/4 qui manque la fermeture de la porte 22 et disperse vos constructeurs ; privilégiez 24/22 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s6_m7_22_21",
+        "tier": 4,
+        "xgid": "XGID=accFbaDCAabbeG-A-cae--BCAA:0:0:-1:21:5:3:0:7:8",
+        "dice": [
+            2,
+            1
+        ],
+        "playedMove": "13/10",
+        "optimalMove": "13/11 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11 6/5",
+            "13/10",
+            "24/23 13/11",
+            "24/21"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 13/10 (Match en 7 pts (5-3, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 5 et laisse l'initiative à l'adversaire, concédant -0.073 EMG face à 13/11 6/5.",
+        "explanation": "Avec le jet 2-1 en Match en 7 pts (5-3, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/11 6/5 : il frappe le blot adverse sur la flèche 5 (+0.073 EMG sur 13/10).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (13/11...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/11 6/5 frappe le blot adverse sur la flèche 5.",
+            "En Match en 7 pts (5-3, Videau à 1), 13/11 6/5 surpasse 13/10 de +0.073 EMG.",
+            "Évitez 13/10 qui refuse de frapper le blot adverse sur la flèche 5 et laisse l'initiative à l'adversaire ; privilégiez 13/11 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_1_42",
+        "tier": 2,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:42:0:0:0:9:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 9 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 4 et disperse vos constructeurs, concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Match en 9 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui manque la fermeture de la porte 4 et disperse vos constructeurs ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_2_61",
+        "tier": 2,
+        "xgid": "XGID=-b----E-CA--eD---c-e--A-A-:0:0:-1:61:0:0:0:9:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "24/23 24/18",
+        "optimalMove": "13/7 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/7",
+            "24/23 24/18",
+            "13/6",
+            "24/23 13/7"
+        ],
+        "equityLoss": 0.166,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23 24/18 (Match en 9 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 7 et disperse vos constructeurs, concédant -0.166 EMG face à 13/7 8/7.",
+        "explanation": "Avec le jet 6-1 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/7 8/7 : il ferme la porte 7 (+0.166 EMG sur 24/23 24/18).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 7 : vos deux dés permettent d'y fermer une porte (13/7...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/7 8/7 ferme la porte 7.",
+            "En Match en 9 pts (0-0, Videau à 1), 13/7 8/7 surpasse 24/23 24/18 de +0.166 EMG.",
+            "Évitez 24/23 24/18 qui manque la fermeture de la porte 7 et disperse vos constructeurs ; privilégiez 13/7 8/7."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_3_51",
+        "tier": 3,
+        "xgid": "XGID=-b----EbDA--eE---c-e--A-A-:0:0:1:51:0:0:0:9:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.096,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/7 (Match en 9 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 9, 22, 24), concédant -0.096 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 3 blot(s) exposé(s) (+0.096 EMG sur 13/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 9 pts (0-0, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.096 EMG.",
+            "Évitez 13/7 qui laisse 3 pion(s) isolé(s) (flèches 9, 22, 24) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_4_31",
+        "tier": 1,
+        "xgid": "XGID=-b----EbDA--eE---cAe--A---:0:0:-1:31:0:0:0:9:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.236,
+        "verdict": "howler",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23 13/10 (Match en 9 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 5 et disperse vos constructeurs, concédant -0.236 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il ferme la porte 5 (+0.236 EMG sur 24/23 13/10).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 5 : vos deux dés permettent d'y fermer une porte (8/5...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 ferme la porte 5.",
+            "En Match en 9 pts (0-0, Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.236 EMG.",
+            "Évitez 24/23 13/10 qui manque la fermeture de la porte 5 et disperse vos constructeurs ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_5_63",
+        "tier": 4,
+        "xgid": "XGID=-b---bFbEA--eE---cAe--A---:0:0:1:63:0:0:0:9:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 24/21 13/7 (Match en 9 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 18 et disperse vos constructeurs, concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il ferme la porte 18 (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 18 : vos deux dés permettent d'y fermer une porte (24/18...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 ferme la porte 18.",
+            "En Match en 9 pts (0-0, Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui manque la fermeture de la porte 18 et disperse vos constructeurs ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_6_42",
+        "tier": 2,
+        "xgid": "XGID=-b---bFbEAA-eD---cBe--A-a-:0:0:-1:42:0:0:0:9:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 9 pts (0-0, Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 10), concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Match en 9 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui laisse 1 pion(s) isolé(s) (flèches 10) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_7_65",
+        "tier": 4,
+        "xgid": "XGID=-b--bbGbFAA-eD---cBe--A-a-:0:0:1:65:0:0:0:9:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/18 13/8 (Match en 9 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 9, 10, 22), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 3 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 9 pts (0-0, Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 3 pion(s) isolé(s) (flèches 9, 10, 22) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_8_32",
+        "tier": 4,
+        "xgid": "XGID=-b--bbGbFAA-eE---cBe--A-b-:0:0:-1:32:0:0:0:9:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/8 (Match en 9 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 9, 10, 22), concédant -0.067 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il repositionne idéalement vos bâtisseurs (24/21 13/11) avec seulement 5 blot(s) exposé(s) (+0.067 EMG sur 13/8).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/21...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 repositionne idéalement vos bâtisseurs (24/21 13/11) avec seulement 5 blot(s) exposé(s).",
+            "En Match en 9 pts (0-0, Videau à 1), 24/21 13/11 surpasse 13/8 de +0.067 EMG.",
+            "Évitez 13/8 qui laisse 3 pion(s) isolé(s) (flèches 9, 10, 22) ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_9_62",
+        "tier": 4,
+        "xgid": "XGID=-b--bbGbFAAaeF---cBe-aA-a-:0:0:1:62:0:0:0:9:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/18 13/11",
+        "acceptableMoves": [
+            "24/16"
+        ],
+        "quizChoices": [
+            "24/18 13/11",
+            "24/22 24/18",
+            "24/16",
+            "13/11 13/7"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/22 24/18 (Match en 9 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 11 et laisse l'initiative à l'adversaire, concédant -0.065 EMG face à 24/18 13/11.",
+        "explanation": "Avec le jet 6-2 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/11 : il frappe le blot adverse sur la flèche 11 (+0.065 EMG sur 24/22 24/18).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 11 (24/18...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/11 frappe le blot adverse sur la flèche 11.",
+            "En Match en 9 pts (0-0, Videau à 1), 24/18 13/11 surpasse 24/22 24/18 de +0.065 EMG.",
+            "Évitez 24/22 24/18 qui refuse de frapper le blot adverse sur la flèche 11 et laisse l'initiative à l'adversaire ; privilégiez 24/18 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_10_11",
+        "tier": 4,
+        "xgid": "XGID=ab--bbGbFAAAeE---cCe-aA-b-:0:0:-1:11:0:0:0:9:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Match en 9 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 5, 9, 10), concédant -0.092 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il frappe deux pions adverses sur les flèches 7 et 5 (+0.092 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 7 (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) frappe deux pions adverses sur les flèches 7 et 5.",
+            "En Match en 9 pts (0-0, Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.092 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui laisse 5 pion(s) isolé(s) (flèches 5, 9, 10) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_11_43",
+        "tier": 4,
+        "xgid": "XGID=ab--bdIdHAAAeE---cCe-aA-b-:0:0:1:43:0:0:0:9:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/6 (Match en 9 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 21 et ferme la porte 9 (+0.090 EMG sur 13/6).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 21 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 21 et ferme la porte 9.",
+            "En Match en 9 pts (0-0, Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_12_55",
+        "tier": 2,
+        "xgid": "XGID=bb--bdIdHBAAeD---cCe-AA-c-:0:0:-1:55:0:0:0:9:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3 8/3(2)",
+        "optimalMove": "13/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3(2)",
+            "13/3 8/3(2)",
+            "13/3 13/8(2)",
+            "13/8(4)"
+        ],
+        "equityLoss": 0.178,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/3 8/3(2) (Match en 9 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 10, 11, 21), concédant -0.178 EMG face à 13/3(2).",
+        "explanation": "Avec le jet 5-5 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/3(2) : il ferme la porte 3 (+0.178 EMG sur 13/3 8/3(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (13/3(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/3(2) ferme la porte 3.",
+            "En Match en 9 pts (0-0, Videau à 1), 13/3(2) surpasse 13/3 8/3(2) de +0.178 EMG.",
+            "Évitez 13/3 8/3(2) qui laisse 4 pion(s) isolé(s) (flèches 10, 11, 21) ; privilégiez 13/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_13_55",
+        "tier": 2,
+        "xgid": "XGID=bb-bbdIdHBAAeF---cCe-AA-c-:0:0:1:55:0:0:0:9:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3 8/3(2)",
+        "optimalMove": "13/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3(2)",
+            "13/3 8/3(2)",
+            "13/3 13/8(2)",
+            "13/8(4)"
+        ],
+        "equityLoss": 0.178,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 13/3 8/3(2) (Match en 9 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 10, 11, 21), concédant -0.178 EMG face à 13/3(2).",
+        "explanation": "Avec le jet 5-5 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/3(2) : il frappe le blot adverse sur la flèche 3 (+0.178 EMG sur 13/3 8/3(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 3 (13/3(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/3(2) frappe le blot adverse sur la flèche 3.",
+            "En Match en 9 pts (0-0, Videau à 1), 13/3(2) surpasse 13/3 8/3(2) de +0.178 EMG.",
+            "Évitez 13/3 8/3(2) qui laisse 4 pion(s) isolé(s) (flèches 10, 11, 21) ; privilégiez 13/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_14_43",
+        "tier": 4,
+        "xgid": "XGID=bbaAbdIdHBAAeD---cCe-AA-c-:0:0:1:43:0:0:0:9:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/6 (Match en 9 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 21 et disperse vos constructeurs, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il ferme la porte 21 (+0.090 EMG sur 13/6).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 21 : vos deux dés permettent d'y fermer une porte (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 ferme la porte 21.",
+            "En Match en 9 pts (0-0, Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui manque la fermeture de la porte 21 et disperse vos constructeurs ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_15_31",
+        "tier": 1,
+        "xgid": "XGID=-bbAbeIdHCAAeC---cCe-BA-d-:0:0:1:31:0:0:0:9:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.236,
+        "verdict": "howler",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/23 13/10 (Match en 9 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 3, 11, 22), concédant -0.236 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 4 blot(s) exposé(s) (+0.236 EMG sur 24/23 13/10).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 8 (8/5...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 repositionne idéalement vos bâtisseurs (8/5 6/5) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 9 pts (0-0, Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.236 EMG.",
+            "Évitez 24/23 13/10 qui laisse 4 pion(s) isolé(s) (flèches 3, 11, 22) ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_16_22",
+        "tier": 4,
+        "xgid": "XGID=-bbAbcHdGCAAeC---cCe-BA-d-:0:0:-1:22:0:0:0:9:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "24/22 13/11 6/4(2)",
+        "optimalMove": "13/11(2) 6/4(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11(2) 6/4(2)",
+            "24/22 13/11 6/4(2)",
+            "24/22(2) 6/4(2)",
+            "13/9 6/4(2)"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/22 13/11 6/4(2) (Match en 9 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 3, 4, 10), concédant -0.068 EMG face à 13/11(2) 6/4(2).",
+        "explanation": "Avec le jet 2-2 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/11(2) 6/4(2) : il frappe le blot adverse sur la flèche 4 et ferme la porte 11 (+0.068 EMG sur 24/22 13/11 6/4(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 4 (13/11(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/11(2) 6/4(2) frappe le blot adverse sur la flèche 4 et ferme la porte 11.",
+            "En Match en 9 pts (0-0, Videau à 1), 13/11(2) 6/4(2) surpasse 24/22 13/11 6/4(2) de +0.068 EMG.",
+            "Évitez 24/22 13/11 6/4(2) qui laisse 3 pion(s) isolé(s) (flèches 3, 4, 10) ; privilégiez 13/11(2) 6/4(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_17_32",
+        "tier": 4,
+        "xgid": "XGID=-bbAdcJdGCAbeE---cCe-BA-dA:0:0:-1:32:0:0:0:9:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/8 (Match en 9 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 3, 10, 22), concédant -0.067 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il repositionne idéalement vos bâtisseurs (24/21 13/11) avec seulement 3 blot(s) exposé(s) (+0.067 EMG sur 13/8).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/21...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 repositionne idéalement vos bâtisseurs (24/21 13/11) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 9 pts (0-0, Videau à 1), 24/21 13/11 surpasse 13/8 de +0.067 EMG.",
+            "Évitez 13/8 qui laisse 3 pion(s) isolé(s) (flèches 3, 10, 22) ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_18_63",
+        "tier": 4,
+        "xgid": "XGID=-bbAdcJdHBAceF---cCe-AB-c-:0:0:-1:63:0:0:0:9:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/21 13/7 (Match en 9 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 3, 10), concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il ferme la porte 10 (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez la flèche 10 : vos deux dés permettent d'y fermer une porte (24/18...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 ferme la porte 10.",
+            "En Match en 9 pts (0-0, Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui laisse 2 pion(s) isolé(s) (flèches 3, 10) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_19_54",
+        "tier": 3,
+        "xgid": "XGID=-bbAdcKdGBaceG---cBe-AC-b-:0:0:-1:54:0:0:0:9:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/4 (Match en 9 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 3, 21), concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 3 blot(s) exposé(s) (+0.113 EMG sur 13/4).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/20...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 9 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui laisse 2 pion(s) isolé(s) (flèches 3, 21) ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_20_65",
+        "tier": 4,
+        "xgid": "XGID=-bbAdcKdFBaceH---cBeaAC-a-:0:0:1:65:0:0:0:9:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/18 13/8 (Match en 9 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 3, 21), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 9 pts (0-0, Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 2 pion(s) isolé(s) (flèches 3, 21) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_21_55",
+        "tier": 2,
+        "xgid": "XGID=a-cAdcKdFAaceI---cBeaBC-b-:0:0:-1:55:0:0:0:9:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3 8/3(2)",
+        "optimalMove": "13/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3(2)",
+            "13/3 8/3(2)",
+            "13/3 13/8(2)",
+            "13/8(4)"
+        ],
+        "equityLoss": 0.178,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/3 8/3(2) (Match en 9 pts (0-0, Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 9), concédant -0.178 EMG face à 13/3(2).",
+        "explanation": "Avec le jet 5-5 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/3(2) : il ferme la porte 3 (+0.178 EMG sur 13/3 8/3(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (13/3(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/3(2) ferme la porte 3.",
+            "En Match en 9 pts (0-0, Videau à 1), 13/3(2) surpasse 13/3 8/3(2) de +0.178 EMG.",
+            "Évitez 13/3 8/3(2) qui laisse 1 pion(s) isolé(s) (flèches 9) ; privilégiez 13/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s7_m9_22_42",
+        "tier": 2,
+        "xgid": "XGID=-BA-geIfEAaceJ---cBeABD-b-:0:0:-1:42:0:0:0:9:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 9 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 2, 20), concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 9 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 3 blot(s) exposé(s) (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 8 (8/4...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 9 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui laisse 2 pion(s) isolé(s) (flèches 2, 20) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_1_61",
+        "tier": 2,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:61:0:0:0:11:8",
+        "dice": [
+            6,
+            1
+        ],
+        "playedMove": "24/23 24/18",
+        "optimalMove": "13/7 8/7",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/7 8/7",
+            "24/23 24/18",
+            "24/23 13/7",
+            "24/18 6/5"
+        ],
+        "equityLoss": 0.171,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23 24/18 (Match en 11 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 7 et disperse vos constructeurs, concédant -0.171 EMG face à 13/7 8/7.",
+        "explanation": "Avec le jet 6-1 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/7 8/7 : il ferme la porte 7 (+0.171 EMG sur 24/23 24/18).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 7 : vos deux dés permettent d'y fermer une porte (13/7...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/7 8/7 ferme la porte 7.",
+            "En Match en 11 pts (0-0, Videau à 1), 13/7 8/7 surpasse 24/23 24/18 de +0.171 EMG.",
+            "Évitez 24/23 24/18 qui manque la fermeture de la porte 7 et disperse vos constructeurs ; privilégiez 13/7 8/7."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_2_33",
+        "tier": 3,
+        "xgid": "XGID=-b----EBB---eD---c-e----B-:0:0:-1:33:0:0:0:11:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "13/10(2) 6/3(2)",
+        "optimalMove": "24/21(2) 13/10(2)",
+        "acceptableMoves": [
+            "24/21(2) 6/3(2)",
+            "24/21(2) 8/5(2)"
+        ],
+        "quizChoices": [
+            "24/21(2) 13/10(2)",
+            "13/10(2) 6/3(2)",
+            "24/21(2) 6/3(2)",
+            "24/21(2) 8/5(2)"
+        ],
+        "equityLoss": 0.096,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/10(2) 6/3(2) (Match en 11 pts (0-0, Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.096 EMG face à 24/21(2) 13/10(2).",
+        "explanation": "Avec le jet 3-3 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21(2) 13/10(2) : il ferme la porte 10 et 21 (+0.096 EMG sur 13/10(2) 6/3(2)).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 10 : vos deux dés permettent d'y fermer une porte (24/21(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21(2) 13/10(2) ferme la porte 10 et 21.",
+            "En Match en 11 pts (0-0, Videau à 1), 24/21(2) 13/10(2) surpasse 13/10(2) 6/3(2) de +0.096 EMG.",
+            "Évitez 13/10(2) 6/3(2) qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 24/21(2) 13/10(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_3_63",
+        "tier": 4,
+        "xgid": "XGID=-b----EBB-b-eF---c-e-b--D-:0:0:1:63:0:0:0:11:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/21 13/7 (Match en 11 pts (0-0, Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 1 blot(s) exposé(s) (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 1 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_4_66",
+        "tier": 2,
+        "xgid": "XGID=-b----EBB-a-eE---cAe-b--C-:0:0:-1:66:0:0:0:11:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "24/18 13/7(3)",
+        "optimalMove": "24/18(2) 13/7(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18(2) 13/7(2)",
+            "24/18 13/7(3)",
+            "24/18(2) 8/2(2)",
+            "13/7(2) 8/2(2)"
+        ],
+        "equityLoss": 0.215,
+        "verdict": "howler",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 24/18 13/7(3) (Match en 11 pts (0-0, Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.215 EMG face à 24/18(2) 13/7(2).",
+        "explanation": "Avec le jet 6-6 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18(2) 13/7(2) : il ferme la porte 18 (+0.215 EMG sur 24/18 13/7(3)).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 18 : vos deux dés permettent d'y fermer une porte (24/18(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18(2) 13/7(2) ferme la porte 18.",
+            "En Match en 11 pts (0-0, Videau à 1), 24/18(2) 13/7(2) surpasse 24/18 13/7(3) de +0.215 EMG.",
+            "Évitez 24/18 13/7(3) qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 24/18(2) 13/7(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_5_54",
+        "tier": 3,
+        "xgid": "XGID=-b----EaB-a-eG---cbeAb-AE-:0:0:-1:54:0:0:0:11:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/4 (Match en 11 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 20 et disperse vos constructeurs, concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il ferme la porte 20 (+0.113 EMG sur 13/4).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 20 : vos deux dés permettent d'y fermer une porte (24/20...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 ferme la porte 20.",
+            "En Match en 11 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui manque la fermeture de la porte 20 et disperse vos constructeurs ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_6_32",
+        "tier": 4,
+        "xgid": "XGID=-b----EaA-a-eH---cbeab-AFA:0:0:1:32:0:0:0:11:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/8 (Match en 11 pts (0-0, Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 23), concédant -0.068 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il repositionne idéalement vos bâtisseurs (24/21 13/11) avec seulement 3 blot(s) exposé(s) (+0.068 EMG sur 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/21...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 repositionne idéalement vos bâtisseurs (24/21 13/11) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 24/21 13/11 surpasse 13/8 de +0.068 EMG.",
+            "Évitez 13/8 qui laisse 1 pion(s) isolé(s) (flèches 23) ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_7_11",
+        "tier": 4,
+        "xgid": "XGID=-b----EaA-aAeG---cbeaa-AEA:0:0:-1:11:0:0:0:11:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Match en 11 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 7 et laisse l'initiative à l'adversaire, concédant -0.092 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il frappe le blot adverse sur la flèche 7 et ferme la porte 5 et 7 (+0.092 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 7 (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) frappe le blot adverse sur la flèche 7 et ferme la porte 5 et 7.",
+            "En Match en 11 pts (0-0, Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.092 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui refuse de frapper le blot adverse sur la flèche 7 et laisse l'initiative à l'adversaire ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_8_43",
+        "tier": 4,
+        "xgid": "XGID=-b---bGcC-aAeG---cbeaa-AEA:0:0:1:43:0:0:0:11:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/6 (Match en 11 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il frappe le blot adverse sur la flèche 21 (+0.090 EMG sur 13/6).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Cherchez la frappe sur la flèche 21 (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 frappe le blot adverse sur la flèche 21.",
+            "En Match en 11 pts (0-0, Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui refuse de frapper le blot adverse sur la flèche 21 et laisse l'initiative à l'adversaire ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_9_65",
+        "tier": 4,
+        "xgid": "XGID=ab---bGcCAaAeF---cbeaA-ADA:0:0:-1:65:0:0:0:11:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.074,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/18 13/8 (Match en 11 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 9, 11, 21), concédant -0.074 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 4 blot(s) exposé(s) (+0.074 EMG sur 24/18 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 24/13 surpasse 24/18 13/8 de +0.074 EMG.",
+            "Évitez 24/18 13/8 qui laisse 4 pion(s) isolé(s) (flèches 9, 11, 21) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_10_33",
+        "tier": 3,
+        "xgid": "XGID=ab---bGcCAaBeD---cbeaA-BDA:0:0:-1:33:0:0:0:11:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "24/18(2)",
+        "optimalMove": "8/5(2) 6/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5(2) 6/3(2)",
+            "24/18(2)",
+            "24/21(2) 6/3(2)",
+            "24/21(2) 13/10(2)"
+        ],
+        "equityLoss": 0.125,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/18(2) (Match en 11 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 3 et disperse vos constructeurs, concédant -0.125 EMG face à 8/5(2) 6/3(2).",
+        "explanation": "Avec le jet 3-3 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5(2) 6/3(2) : il frappe le blot adverse sur la flèche 5 et ferme la porte 3 (+0.125 EMG sur 24/18(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/5(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5(2) 6/3(2) frappe le blot adverse sur la flèche 5 et ferme la porte 3.",
+            "En Match en 11 pts (0-0, Videau à 1), 8/5(2) 6/3(2) surpasse 24/18(2) de +0.125 EMG.",
+            "Évitez 24/18(2) qui manque la fermeture de la porte 3 et disperse vos constructeurs ; privilégiez 8/5(2) 6/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_11_43",
+        "tier": 4,
+        "xgid": "XGID=ab-b-dIcEAaBeD---cbeaA-BDA:0:0:1:43:0:0:0:11:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/6 (Match en 11 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 9/21 et disperse vos constructeurs, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il ferme la porte 9 et 21 (+0.090 EMG sur 13/6).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 9 : vos deux dés permettent d'y fermer une porte (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 ferme la porte 9 et 21.",
+            "En Match en 11 pts (0-0, Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui manque la fermeture de la porte 9/21 et disperse vos constructeurs ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_12_55",
+        "tier": 2,
+        "xgid": "XGID=ab-b-dIcEBaBeC---cbeaB-BCA:0:0:-1:55:0:0:0:11:8",
+        "dice": [
+            5,
+            5
+        ],
+        "playedMove": "13/3 8/3(2)",
+        "optimalMove": "13/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/3(2)",
+            "13/3 8/3(2)",
+            "13/3 13/8(2)",
+            "13/8(4)"
+        ],
+        "equityLoss": 0.179,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 13/3 8/3(2) (Match en 11 pts (0-0, Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.179 EMG face à 13/3(2).",
+        "explanation": "Avec le jet 5-5 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/3(2) : il frappe le blot adverse sur la flèche 3 (+0.179 EMG sur 13/3 8/3(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 3 (13/3(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/3(2) frappe le blot adverse sur la flèche 3.",
+            "En Match en 11 pts (0-0, Videau à 1), 13/3(2) surpasse 13/3 8/3(2) de +0.179 EMG.",
+            "Évitez 13/3 8/3(2) qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 13/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_13_42",
+        "tier": 2,
+        "xgid": "XGID=ab-d-dIcEBaBeE---cbeaB-BCA:0:0:1:42:0:0:0:11:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 11 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 4 et disperse vos constructeurs, concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Match en 11 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui manque la fermeture de la porte 4 et disperse vos constructeurs ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_14_43",
+        "tier": 4,
+        "xgid": "XGID=ab-dBdHcDBaBeE---cbeaB-BCA:0:0:-1:43:0:0:0:11:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/6 (Match en 11 pts (0-0, Videau à 1)), vous laisse 0 pion(s) isolé(s) (flèches exposées), concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il repositionne idéalement vos bâtisseurs (24/21 13/9) avec seulement 0 blot(s) exposé(s) (+0.090 EMG sur 13/6).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/21...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 repositionne idéalement vos bâtisseurs (24/21 13/9) avec seulement 0 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui laisse 0 pion(s) isolé(s) (flèches exposées) ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_15_62",
+        "tier": 4,
+        "xgid": "XGID=ab-dBdHcDAaCeE---cbeaA-CCA:0:0:-1:62:0:0:0:11:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/18 13/11",
+        "acceptableMoves": [
+            "24/16"
+        ],
+        "quizChoices": [
+            "24/18 13/11",
+            "24/22 24/18",
+            "24/16",
+            "13/11 13/7"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/22 24/18 (Match en 11 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 9, 21, 22), concédant -0.065 EMG face à 24/18 13/11.",
+        "explanation": "Avec le jet 6-2 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/11 : il repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s) (+0.065 EMG sur 24/22 24/18).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/11 repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 24/18 13/11 surpasse 24/22 24/18 de +0.065 EMG.",
+            "Évitez 24/22 24/18 qui laisse 4 pion(s) isolé(s) (flèches 9, 21, 22) ; privilégiez 24/18 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_16_43",
+        "tier": 4,
+        "xgid": "XGID=ab-dBdHcDAaBeF---cceaA-CDA:0:0:1:43:0:0:0:11:8",
+        "dice": [
+            4,
+            3
+        ],
+        "playedMove": "13/6",
+        "optimalMove": "24/21 13/9",
+        "acceptableMoves": [
+            "24/21 24/20",
+            "13/10 13/9",
+            "24/20 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/9",
+            "13/6",
+            "24/21 24/20",
+            "13/10 13/9"
+        ],
+        "equityLoss": 0.09,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/6 (Match en 11 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 9/21 et disperse vos constructeurs, concédant -0.090 EMG face à 24/21 13/9.",
+        "explanation": "Avec le jet 4-3 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/9 : il ferme la porte 9 et 21 (+0.090 EMG sur 13/6).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 9 : vos deux dés permettent d'y fermer une porte (24/21...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/9 ferme la porte 9 et 21.",
+            "En Match en 11 pts (0-0, Videau à 1), 24/21 13/9 surpasse 13/6 de +0.090 EMG.",
+            "Évitez 13/6 qui manque la fermeture de la porte 9/21 et disperse vos constructeurs ; privilégiez 24/21 13/9."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_17_53",
+        "tier": 4,
+        "xgid": "XGID=-a-dBeHdDBaBeE-A-cceaAACC-:0:0:-1:53:0:0:0:11:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.081,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/16 (Match en 11 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 15, 16, 21), concédant -0.081 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il repositionne idéalement vos bâtisseurs (8/3 6/3) avec seulement 3 blot(s) exposé(s) (+0.081 EMG sur 24/16).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 8 (8/3...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 repositionne idéalement vos bâtisseurs (8/3 6/3) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 8/3 6/3 surpasse 24/16 de +0.081 EMG.",
+            "Évitez 24/16 qui laisse 4 pion(s) isolé(s) (flèches 15, 16, 21) ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_18_62",
+        "tier": 4,
+        "xgid": "XGID=-ABgAeIdCB-BeE-AacceaAACC-:0:0:-1:62:0:0:0:11:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/18 13/11",
+        "acceptableMoves": [
+            "24/16"
+        ],
+        "quizChoices": [
+            "24/18 13/11",
+            "24/22 24/18",
+            "24/16",
+            "13/11 13/7"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/22 24/18 (Match en 11 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 1, 4, 15), concédant -0.065 EMG face à 24/18 13/11.",
+        "explanation": "Avec le jet 6-2 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/11 : il repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 5 blot(s) exposé(s) (+0.065 EMG sur 24/22 24/18).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/11 repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 5 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 24/18 13/11 surpasse 24/22 24/18 de +0.065 EMG.",
+            "Évitez 24/22 24/18 qui laisse 5 pion(s) isolé(s) (flèches 1, 4, 15) ; privilégiez 24/18 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_19_63",
+        "tier": 4,
+        "xgid": "XGID=-BCgAeHdBB-AeF-AacdeaAACD-:0:0:-1:63:0:0:0:11:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/21 13/7 (Match en 11 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 4, 11, 15), concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 6 blot(s) exposé(s) (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 6 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui laisse 4 pion(s) isolé(s) (flèches 4, 11, 15) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_20_42",
+        "tier": 2,
+        "xgid": "XGID=-BEgAeGdABaAeG-AaceeaAACE-:0:0:-1:42:0:0:0:11:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.159,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 11 pts (0-0, Videau à 1)), vous laisse 5 pion(s) isolé(s) (flèches 4, 8, 11), concédant -0.159 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il ferme la porte 4 (+0.159 EMG sur 24/22 13/9).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 ferme la porte 4.",
+            "En Match en 11 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.159 EMG.",
+            "Évitez 24/22 13/9 qui laisse 5 pion(s) isolé(s) (flèches 4, 8, 11) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_21_65",
+        "tier": 4,
+        "xgid": "XGID=-GEfAfBfBBbAeG-AaceeAAACE-:0:0:-1:65:0:0:0:11:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.074,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/18 13/8 (Match en 11 pts (0-0, Videau à 1)), vous laisse 6 pion(s) isolé(s) (flèches 4, 11, 15), concédant -0.074 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 6 blot(s) exposé(s) (+0.074 EMG sur 24/18 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 6 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 24/13 surpasse 24/18 13/8 de +0.074 EMG.",
+            "Évitez 24/18 13/8 qui laisse 6 pion(s) isolé(s) (flèches 4, 11, 15) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s8_m11_22_66",
+        "tier": 2,
+        "xgid": "XGID=-HEfAfAfBBbAeF-AaceeAAACF-:0:0:-1:66:0:0:0:11:8",
+        "dice": [
+            6,
+            6
+        ],
+        "playedMove": "24/18 13/7(3)",
+        "optimalMove": "24/18(2) 13/7(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/18(2) 13/7(2)",
+            "24/18 13/7(3)",
+            "24/18(2) 8/2(2)",
+            "13/7(2) 8/2(2)"
+        ],
+        "equityLoss": 0.215,
+        "verdict": "howler",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/18 13/7(3) (Match en 11 pts (0-0, Videau à 1)), vous laisse 7 pion(s) isolé(s) (flèches 4, 6, 11), concédant -0.215 EMG face à 24/18(2) 13/7(2).",
+        "explanation": "Avec le jet 6-6 en Match en 11 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18(2) 13/7(2) : il repositionne idéalement vos bâtisseurs (24/18(2) 13/7(2)) avec seulement 7 blot(s) exposé(s) (+0.215 EMG sur 24/18 13/7(3)).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/18(2)...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18(2) 13/7(2) repositionne idéalement vos bâtisseurs (24/18(2) 13/7(2)) avec seulement 7 blot(s) exposé(s).",
+            "En Match en 11 pts (0-0, Videau à 1), 24/18(2) 13/7(2) surpasse 24/18 13/7(3) de +0.215 EMG.",
+            "Évitez 24/18 13/7(3) qui laisse 7 pion(s) isolé(s) (flèches 4, 6, 11) ; privilégiez 24/18(2) 13/7(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_1_54",
+        "tier": 3,
+        "xgid": "XGID=-b----E-C---eE---c-e----B-:0:0:1:54:0:0:0:21:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 13/4 (Match en 21 pts (0-0, Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 4), concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 2 blot(s) exposé(s) (+0.113 EMG sur 13/4).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Regardez le mouvement partant de 24 (24/20...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui laisse 1 pion(s) isolé(s) (flèches 4) ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_2_54",
+        "tier": 4,
+        "xgid": "XGID=-b----E-D---eD---c-eA---A-:0:0:-1:54:0:0:0:21:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/20 6/1*",
+            "24/15"
+        ],
+        "equityLoss": 0.091,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/4 (Match en 21 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 20 et disperse vos constructeurs, concédant -0.091 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il ferme la porte 20 (+0.091 EMG sur 13/4).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 20 : vos deux dés permettent d'y fermer une porte (24/20...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 ferme la porte 20.",
+            "En Match en 21 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.091 EMG.",
+            "Évitez 13/4 qui manque la fermeture de la porte 20 et disperse vos constructeurs ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_3_54",
+        "tier": 3,
+        "xgid": "XGID=-c----F-D---eD---c-ea---BA:0:0:1:54:0:0:0:21:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/4 (Match en 21 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 20 et laisse l'initiative à l'adversaire, concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il frappe le blot adverse sur la flèche 20 (+0.113 EMG sur 13/4).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 20 (24/20...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 frappe le blot adverse sur la flèche 20.",
+            "En Match en 21 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui refuse de frapper le blot adverse sur la flèche 20 et laisse l'initiative à l'adversaire ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_4_63",
+        "tier": 4,
+        "xgid": "XGID=-c----F-D---eD-A-c-ea---AA:0:0:-1:63:0:0:0:21:8",
+        "dice": [
+            6,
+            3
+        ],
+        "playedMove": "24/21 13/7",
+        "optimalMove": "24/18 13/10",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/18 13/10",
+            "24/21 13/7",
+            "24/15",
+            "24/21 24/18"
+        ],
+        "equityLoss": 0.062,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/21 13/7 (Match en 21 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 7, 15, 21), concédant -0.062 EMG face à 24/18 13/10.",
+        "explanation": "Avec le jet 6-3 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/10 : il repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 3 blot(s) exposé(s) (+0.062 EMG sur 24/21 13/7).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/10 repositionne idéalement vos bâtisseurs (24/18 13/10) avec seulement 3 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 24/18 13/10 surpasse 24/21 13/7 de +0.062 EMG.",
+            "Évitez 24/21 13/7 qui laisse 3 pion(s) isolé(s) (flèches 7, 15, 21) ; privilégiez 24/18 13/10."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_5_54",
+        "tier": 3,
+        "xgid": "XGID=ac----F-D---eD-a-c-eA---C-:0:0:-1:54:0:0:0:21:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "advanced_anchor",
+        "conceptName": "Jeu de Retenue & Ancre Avancée",
+        "whyFailed": "En jouant 13/4 (Match en 21 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 20 et disperse vos constructeurs, concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il ferme la porte 20 (+0.113 EMG sur 13/4).",
+        "proverb": "Sécuriser un point d’ancrage haut (flèches 18 à 21) neutralise les menaces de gammon adverses.",
+        "hint": "Regardez la flèche 20 : vos deux dés permettent d'y fermer une porte (24/20...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 ferme la porte 20.",
+            "En Match en 21 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui manque la fermeture de la porte 20 et disperse vos constructeurs ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_6_31",
+        "tier": 1,
+        "xgid": "XGID=ac----F-C---eE-a-c-ea---DA:0:0:1:31:0:0:0:21:8",
+        "dice": [
+            3,
+            1
+        ],
+        "playedMove": "24/23 13/10",
+        "optimalMove": "8/5 6/5",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5 6/5",
+            "24/23 13/10",
+            "24/20",
+            "24/23 24/21"
+        ],
+        "equityLoss": 0.238,
+        "verdict": "howler",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/23 13/10 (Match en 21 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 5 et disperse vos constructeurs, concédant -0.238 EMG face à 8/5 6/5.",
+        "explanation": "Avec le jet 3-1 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5 6/5 : il ferme la porte 5 (+0.238 EMG sur 24/23 13/10).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 5 : vos deux dés permettent d'y fermer une porte (8/5...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5 6/5 ferme la porte 5.",
+            "En Match en 21 pts (0-0, Videau à 1), 8/5 6/5 surpasse 24/23 13/10 de +0.238 EMG.",
+            "Évitez 24/23 13/10 qui manque la fermeture de la porte 5 et disperse vos constructeurs ; privilégiez 8/5 6/5."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_7_54",
+        "tier": 3,
+        "xgid": "XGID=ac---BE-B---eE-a-c-ea---DA:0:0:1:54:0:0:0:21:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/4 (Match en 21 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 20 et laisse l'initiative à l'adversaire, concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il frappe le blot adverse sur la flèche 20 (+0.113 EMG sur 13/4).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Cherchez la frappe sur la flèche 20 (24/20...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 frappe le blot adverse sur la flèche 20.",
+            "En Match en 21 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui refuse de frapper le blot adverse sur la flèche 20 et laisse l'initiative à l'adversaire ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_8_33",
+        "tier": 3,
+        "xgid": "XGID=bc---BE-C---eD-a-c-eA---CA:0:0:-1:33:0:0:0:21:8",
+        "dice": [
+            3,
+            3
+        ],
+        "playedMove": "24/18(2)",
+        "optimalMove": "8/5(2) 6/3(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/5(2) 6/3(2)",
+            "24/18(2)",
+            "24/21(2) 6/3(2)",
+            "24/21(2) 13/10(2)"
+        ],
+        "equityLoss": 0.126,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/18(2) (Match en 21 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 20, 24), concédant -0.126 EMG face à 8/5(2) 6/3(2).",
+        "explanation": "Avec le jet 3-3 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/5(2) 6/3(2) : il ferme la porte 3 (+0.126 EMG sur 24/18(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 3 : vos deux dés permettent d'y fermer une porte (8/5(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/5(2) 6/3(2) ferme la porte 3.",
+            "En Match en 21 pts (0-0, Videau à 1), 8/5(2) 6/3(2) surpasse 24/18(2) de +0.126 EMG.",
+            "Évitez 24/18(2) qui laisse 2 pion(s) isolé(s) (flèches 20, 24) ; privilégiez 8/5(2) 6/3(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_9_11",
+        "tier": 4,
+        "xgid": "XGID=bc-b-aG-E---eD-a-c-eA--ACA:0:0:-1:11:0:0:0:21:8",
+        "dice": [
+            1,
+            1
+        ],
+        "playedMove": "24/23(2) 6/5(2)",
+        "optimalMove": "8/7(2) 6/5(2)",
+        "acceptableMoves": [
+            "24/22 6/5(2)"
+        ],
+        "quizChoices": [
+            "8/7(2) 6/5(2)",
+            "24/23(2) 6/5(2)",
+            "24/22 6/5(2)",
+            "24/23 6/5(3)"
+        ],
+        "equityLoss": 0.092,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/23(2) 6/5(2) (Match en 21 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 20, 24), concédant -0.092 EMG face à 8/7(2) 6/5(2).",
+        "explanation": "Avec le jet 1-1 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/7(2) 6/5(2) : il frappe le blot adverse sur la flèche 5 et ferme la porte 5 et 7 (+0.092 EMG sur 24/23(2) 6/5(2)).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 5 (8/7(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/7(2) 6/5(2) frappe le blot adverse sur la flèche 5 et ferme la porte 5 et 7.",
+            "En Match en 21 pts (0-0, Videau à 1), 8/7(2) 6/5(2) surpasse 24/23(2) 6/5(2) de +0.092 EMG.",
+            "Évitez 24/23(2) 6/5(2) qui laisse 2 pion(s) isolé(s) (flèches 20, 24) ; privilégiez 8/7(2) 6/5(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_10_22",
+        "tier": 4,
+        "xgid": "XGID=bc-b-cIbG--AeC-a-c-eA--BBA:0:0:-1:22:0:0:0:21:8",
+        "dice": [
+            2,
+            2
+        ],
+        "playedMove": "24/22 13/11 6/4(2)",
+        "optimalMove": "13/11(2) 6/4(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "13/11(2) 6/4(2)",
+            "24/22 13/11 6/4(2)",
+            "24/22(2) 6/4(2)",
+            "13/9 6/4(2)"
+        ],
+        "equityLoss": 0.068,
+        "verdict": "doubtful",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 24/22 13/11 6/4(2) (Match en 21 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 20, 22, 24), concédant -0.068 EMG face à 13/11(2) 6/4(2).",
+        "explanation": "Avec le jet 2-2 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 13/11(2) 6/4(2) : il ferme la porte 4 et 11 (+0.068 EMG sur 24/22 13/11 6/4(2)).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 4 : vos deux dés permettent d'y fermer une porte (13/11(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 13/11(2) 6/4(2) ferme la porte 4 et 11.",
+            "En Match en 21 pts (0-0, Videau à 1), 13/11(2) 6/4(2) surpasse 24/22 13/11 6/4(2) de +0.068 EMG.",
+            "Évitez 24/22 13/11 6/4(2) qui laisse 3 pion(s) isolé(s) (flèches 20, 22, 24) ; privilégiez 13/11(2) 6/4(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_11_64",
+        "tier": 4,
+        "xgid": "XGID=-cacbcKbG--beE-a-c-eB--BBA:0:0:1:64:0:0:0:21:8",
+        "dice": [
+            6,
+            4
+        ],
+        "playedMove": "24/20 24/18",
+        "optimalMove": "24/14",
+        "acceptableMoves": [
+            "8/2 6/2",
+            "24/18 13/9"
+        ],
+        "quizChoices": [
+            "24/14",
+            "24/20 24/18",
+            "8/2 6/2",
+            "24/18 13/9"
+        ],
+        "equityLoss": 0.063,
+        "verdict": "doubtful",
+        "conceptId": "opening",
+        "conceptName": "Ouvertures & Développement",
+        "whyFailed": "En jouant 24/20 24/18 (Match en 21 pts (0-0, Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 18), concédant -0.063 EMG face à 24/14.",
+        "explanation": "Avec le jet 6-4 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/14 : il repositionne idéalement vos bâtisseurs (24/14) avec seulement 2 blot(s) exposé(s) (+0.063 EMG sur 24/20 24/18).",
+        "proverb": "En ouverture, chaque porte intérieure ou ancre avancée construite sans blot vaut de l’or.",
+        "hint": "Regardez le mouvement partant de 24 (24/14...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/14 repositionne idéalement vos bâtisseurs (24/14) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 24/14 surpasse 24/20 24/18 de +0.063 EMG.",
+            "Évitez 24/20 24/18 qui laisse 1 pion(s) isolé(s) (flèches 18) ; privilégiez 24/14."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_12_62",
+        "tier": 4,
+        "xgid": "XGID=-cacbcKbG--beEAa-c-eB--BAA:0:0:-1:62:0:0:0:21:8",
+        "dice": [
+            6,
+            2
+        ],
+        "playedMove": "24/22 24/18",
+        "optimalMove": "24/18 13/11",
+        "acceptableMoves": [
+            "24/16"
+        ],
+        "quizChoices": [
+            "24/18 13/11",
+            "24/22 24/18",
+            "24/16",
+            "13/11 13/7"
+        ],
+        "equityLoss": 0.065,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/22 24/18 (Match en 21 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 14, 18, 22), concédant -0.065 EMG face à 24/18 13/11.",
+        "explanation": "Avec le jet 6-2 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/18 13/11 : il repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s) (+0.065 EMG sur 24/22 24/18).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/18...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/18 13/11 repositionne idéalement vos bâtisseurs (24/18 13/11) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 24/18 13/11 surpasse 24/22 24/18 de +0.065 EMG.",
+            "Évitez 24/22 24/18 qui laisse 3 pion(s) isolé(s) (flèches 14, 18, 22) ; privilégiez 24/18 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_13_65",
+        "tier": 4,
+        "xgid": "XGID=-cacbcKbG--ceFAa-caeB--BBA:0:0:1:65:0:0:0:21:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/18 13/8 (Match en 21 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 14, 18, 24), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 3 pion(s) isolé(s) (flèches 14, 18, 24) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_14_32",
+        "tier": 4,
+        "xgid": "XGID=-cacbcKbG--ceGAa-caeB--BAA:0:0:-1:32:0:0:0:21:8",
+        "dice": [
+            3,
+            2
+        ],
+        "playedMove": "13/8",
+        "optimalMove": "24/21 13/11",
+        "acceptableMoves": [
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "quizChoices": [
+            "24/21 13/11",
+            "13/8",
+            "13/11 13/10",
+            "24/22 13/10"
+        ],
+        "equityLoss": 0.067,
+        "verdict": "doubtful",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/8 (Match en 21 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 14, 24), concédant -0.067 EMG face à 24/21 13/11.",
+        "explanation": "Avec le jet 3-2 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/21 13/11 : il repositionne idéalement vos bâtisseurs (24/21 13/11) avec seulement 2 blot(s) exposé(s) (+0.067 EMG sur 13/8).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 24 (24/21...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/21 13/11 repositionne idéalement vos bâtisseurs (24/21 13/11) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 24/21 13/11 surpasse 13/8 de +0.067 EMG.",
+            "Évitez 13/8 qui laisse 2 pion(s) isolé(s) (flèches 14, 24) ; privilégiez 24/21 13/11."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_15_54",
+        "tier": 3,
+        "xgid": "XGID=-baebcKbG-AdeGAa-caeBA-BB-:0:0:1:54:0:0:0:21:8",
+        "dice": [
+            5,
+            4
+        ],
+        "playedMove": "13/4",
+        "optimalMove": "24/20 13/8",
+        "acceptableMoves": [
+            "24/15"
+        ],
+        "quizChoices": [
+            "24/20 13/8",
+            "13/4",
+            "24/15",
+            "13/9 13/8"
+        ],
+        "equityLoss": 0.113,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/4 (Match en 21 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 10, 14, 21), concédant -0.113 EMG face à 24/20 13/8.",
+        "explanation": "Avec le jet 5-4 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20 13/8 : il repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 4 blot(s) exposé(s) (+0.113 EMG sur 13/4).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/20...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20 13/8 repositionne idéalement vos bâtisseurs (24/20 13/8) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 24/20 13/8 surpasse 13/4 de +0.113 EMG.",
+            "Évitez 13/4 qui laisse 3 pion(s) isolé(s) (flèches 10, 14, 21) ; privilégiez 24/20 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_16_53",
+        "tier": 4,
+        "xgid": "XGID=-baebcKbH-AdeFAa-caeCA-BA-:0:0:-1:53:0:0:0:21:8",
+        "dice": [
+            5,
+            3
+        ],
+        "playedMove": "24/16",
+        "optimalMove": "8/3 6/3",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/3 6/3",
+            "24/16",
+            "24/21 13/8",
+            "13/10 13/8"
+        ],
+        "equityLoss": 0.082,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 24/16 (Match en 21 pts (0-0, Videau à 1)), vous laisse 4 pion(s) isolé(s) (flèches 10, 14, 16), concédant -0.082 EMG face à 8/3 6/3.",
+        "explanation": "Avec le jet 5-3 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/3 6/3 : il repositionne idéalement vos bâtisseurs (8/3 6/3) avec seulement 4 blot(s) exposé(s) (+0.082 EMG sur 24/16).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Regardez le mouvement partant de 8 (8/3...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/3 6/3 repositionne idéalement vos bâtisseurs (8/3 6/3) avec seulement 4 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 8/3 6/3 surpasse 24/16 de +0.082 EMG.",
+            "Évitez 24/16 qui laisse 4 pion(s) isolé(s) (flèches 10, 14, 16) ; privilégiez 8/3 6/3."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_17_44",
+        "tier": 3,
+        "xgid": "XGID=-AaebcKdJbBdeE-a-caeCA-BA-:0:0:-1:44:0:0:0:21:8",
+        "dice": [
+            4,
+            4
+        ],
+        "playedMove": "13/5(2)",
+        "optimalMove": "24/20(2) 13/9(2)",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/20(2) 13/9(2)",
+            "13/5(2)",
+            "24/20(2) 6/2(2)",
+            "24/20(2) 8/4(2)"
+        ],
+        "equityLoss": 0.107,
+        "verdict": "blunder",
+        "conceptId": "blot_safety",
+        "conceptName": "Sécurité des Blots & Duplication",
+        "whyFailed": "En jouant 13/5(2) (Match en 21 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire, concédant -0.107 EMG face à 24/20(2) 13/9(2).",
+        "explanation": "Avec le jet 4-4 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/20(2) 13/9(2) : il frappe le blot adverse sur la flèche 9 (+0.107 EMG sur 13/5(2)).",
+        "proverb": "Ne laissez jamais une cible directe gratuite quand une ligne coordonnée sécurise ou duplique vos pions.",
+        "hint": "Cherchez la frappe sur la flèche 9 (24/20(2)...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/20(2) 13/9(2) frappe le blot adverse sur la flèche 9.",
+            "En Match en 21 pts (0-0, Videau à 1), 24/20(2) 13/9(2) surpasse 13/5(2) de +0.107 EMG.",
+            "Évitez 13/5(2) qui refuse de frapper le blot adverse sur la flèche 9 et laisse l'initiative à l'adversaire ; privilégiez 24/20(2) 13/9(2)."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_18_42",
+        "tier": 2,
+        "xgid": "XGID=-A-cceLdHdBdeG-a-caeBA-BC-:0:0:-1:42:0:0:0:21:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.16,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 21 pts (0-0, Videau à 1)), vous laisse 3 pion(s) isolé(s) (flèches 1, 21, 22), concédant -0.160 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 2 blot(s) exposé(s) (+0.160 EMG sur 24/22 13/9).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 8 (8/4...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 repositionne idéalement vos bâtisseurs (8/4 6/4) avec seulement 2 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.160 EMG.",
+            "Évitez 24/22 13/9 qui laisse 3 pion(s) isolé(s) (flèches 1, 21, 22) ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_19_65",
+        "tier": 4,
+        "xgid": "XGID=-CK-bdBfGhBeeG-a-caeBA-BC-:0:0:-1:65:0:0:0:21:8",
+        "dice": [
+            6,
+            5
+        ],
+        "playedMove": "24/18 13/8",
+        "optimalMove": "24/13",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "24/13",
+            "24/18 13/8",
+            "13/8 13/7",
+            "13/2"
+        ],
+        "equityLoss": 0.073,
+        "verdict": "doubtful",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 24/18 13/8 (Match en 21 pts (0-0, Videau à 1)), vous laisse 2 pion(s) isolé(s) (flèches 18, 21), concédant -0.073 EMG face à 24/13.",
+        "explanation": "Avec le jet 6-5 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/13 : il repositionne idéalement vos bâtisseurs (24/13) avec seulement 1 blot(s) exposé(s) (+0.073 EMG sur 24/18 13/8).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/13...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/13 repositionne idéalement vos bâtisseurs (24/13) avec seulement 1 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 24/13 surpasse 24/18 13/8 de +0.073 EMG.",
+            "Évitez 24/18 13/8 qui laisse 2 pion(s) isolé(s) (flèches 18, 21) ; privilégiez 24/13."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_20_42",
+        "tier": 2,
+        "xgid": "XGID=-DK-bdBfFhBeeF-a-caeBA-BD-:0:0:-1:42:0:0:0:21:8",
+        "dice": [
+            4,
+            2
+        ],
+        "playedMove": "24/22 13/9",
+        "optimalMove": "8/4 6/4",
+        "acceptableMoves": [],
+        "quizChoices": [
+            "8/4 6/4",
+            "24/22 13/9",
+            "24/20 13/11",
+            "13/11 13/9"
+        ],
+        "equityLoss": 0.16,
+        "verdict": "blunder",
+        "conceptId": "blitz_attack",
+        "conceptName": "Blitz & Attaque de Jan",
+        "whyFailed": "En jouant 24/22 13/9 (Match en 21 pts (0-0, Videau à 1)), vous refuse de frapper le blot adverse sur la flèche 4 et laisse l'initiative à l'adversaire, concédant -0.160 EMG face à 8/4 6/4.",
+        "explanation": "Avec le jet 4-2 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 8/4 6/4 : il frappe le blot adverse sur la flèche 4 (+0.160 EMG sur 24/22 13/9).",
+        "proverb": "En Blitz, frapper dans le jan intérieur ou sur le tempo prive l’adversaire de tout contre-jeu.",
+        "hint": "Cherchez la frappe sur la flèche 4 (8/4...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 8/4 6/4 frappe le blot adverse sur la flèche 4.",
+            "En Match en 21 pts (0-0, Videau à 1), 8/4 6/4 surpasse 24/22 13/9 de +0.160 EMG.",
+            "Évitez 24/22 13/9 qui refuse de frapper le blot adverse sur la flèche 4 et laisse l'initiative à l'adversaire ; privilégiez 8/4 6/4."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_21_51",
+        "tier": 3,
+        "xgid": "XGID=-HN----lCjBeeF-a-caeBA-BD-:0:0:-1:51:0:0:0:21:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "backgame",
+        "conceptName": "Backgame & Timing Défensif",
+        "whyFailed": "En jouant 13/7 (Match en 21 pts (0-0, Videau à 1)), vous laisse 1 pion(s) isolé(s) (flèches 21), concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s) (+0.097 EMG sur 13/7).",
+        "proverb": "En défense profonde, préservez votre timing et évitez d’écraser prématurément votre propre jan intérieur.",
+        "hint": "Regardez le mouvement partant de 24 (24/23...) qui préserve votre structure.",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 repositionne idéalement vos bâtisseurs (24/23 13/8) avec seulement 1 blot(s) exposé(s).",
+            "En Match en 21 pts (0-0, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui laisse 1 pion(s) isolé(s) (flèches 21) ; privilégiez 24/23 13/8."
+        ]
+    },
+    {
+        "id": "bgt_gnu_s9_m21_22_51",
+        "tier": 3,
+        "xgid": "XGID=-IN----lAjBeeG-a-caeBA-AE-:0:0:-1:51:0:0:0:21:8",
+        "dice": [
+            5,
+            1
+        ],
+        "playedMove": "13/7",
+        "optimalMove": "24/23 13/8",
+        "acceptableMoves": [
+            "24/18"
+        ],
+        "quizChoices": [
+            "24/23 13/8",
+            "13/7",
+            "24/18",
+            "13/8 6/5"
+        ],
+        "equityLoss": 0.097,
+        "verdict": "blunder",
+        "conceptId": "prime_building",
+        "conceptName": "Construction de Prime (Mur)",
+        "whyFailed": "En jouant 13/7 (Match en 21 pts (0-0, Videau à 1)), vous manque la fermeture de la porte 8/23 et disperse vos constructeurs, concédant -0.097 EMG face à 24/23 13/8.",
+        "explanation": "Avec le jet 5-1 en Match en 21 pts (0-0, Videau à 1), le coup #1 certifié par BGT / GNU Backgammon est 24/23 13/8 : il ferme la porte 8 et 23 (+0.097 EMG sur 13/7).",
+        "proverb": "Fermer une porte entre les flèches 3 et 8 érige un barrage infranchissable devant les pions arrières adverses.",
+        "hint": "Regardez la flèche 8 : vos deux dés permettent d'y fermer une porte (24/23...) !",
+        "commentaryVariants": [
+            "Certifié #1 par BGT / GNU Backgammon : 24/23 13/8 ferme la porte 8 et 23.",
+            "En Match en 21 pts (0-0, Videau à 1), 24/23 13/8 surpasse 13/7 de +0.097 EMG.",
+            "Évitez 13/7 qui manque la fermeture de la porte 8/23 et disperse vos constructeurs ; privilégiez 24/23 13/8."
+        ]
     }
 ];
