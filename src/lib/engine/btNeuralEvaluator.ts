@@ -171,12 +171,77 @@ export function encodeBtNeural250Features(
     out[249] = state.dice === null ? 1.0 : 0.0;
 }
 
+/**
+ * 6 Phases Spécialisées du Moteur BT-Neural v4.0 MoE-6 :
+ * 0 = CONTACT, 1 = PRIME, 2 = BLITZ, 3 = CRASHED, 4 = BACKGAME, 5 = RACE
+ * Strictement symétrique entre X et O (garantit E(P) = -E(O)).
+ */
+export type BtPhase6 = 0 | 1 | 2 | 3 | 4 | 5;
+
+export function classifyPhase6FromFeatures(input: Float32Array): BtPhase6 {
+    const pBar = input[192];
+    const oBar = input[193];
+    const pFurthest = input[241];
+    const oFurthest = input[242];
+
+    if (pBar === 0 && oBar === 0 && pFurthest + oFurthest <= 1.001) {
+        return 5; // RACE
+    }
+
+    const pipDiffNorm = input[198];
+    const pBack = input[239];
+    const oBack = input[240];
+    const anchorsP = input[227] + input[228] + input[229] + input[230] + input[231] + input[232];
+    const anchorsO = input[233] + input[234] + input[235] + input[236] + input[237] + input[238];
+    if (
+        (anchorsP >= 1.9 && pBack >= 0.79 && pipDiffNorm <= -0.50) ||
+        (anchorsO >= 1.9 && oBack >= 0.79 && pipDiffNorm >= 0.50)
+    ) {
+        return 4; // BACKGAME
+    }
+
+    let stack123P = 0;
+    let stack123O = 0;
+    for (let r = 0; r < 3; r++) {
+        const offP = r * 4;
+        const offO = 96 + r * 4;
+        stack123P += input[offP] + input[offP + 1] + input[offP + 2] + input[offP + 3] * 2.0;
+        stack123O += input[offO] + input[offO + 1] + input[offO + 2] + input[offO + 3] * 2.0;
+    }
+    if (
+        (stack123P >= 6.9 && (oBack > 0 || oBar > 0)) ||
+        (stack123O >= 6.9 && (pBack > 0 || pBar > 0))
+    ) {
+        return 3; // CRASHED
+    }
+
+    const homeP = input[203] + input[204] + input[205] + input[206] + input[207] + input[208];
+    const homeO = input[209] + input[210] + input[211] + input[212] + input[213] + input[214];
+    const pBlots = input[199];
+    const oBlots = input[200];
+    if (
+        (homeP >= 2.9 && (oBar > 0 || (oBlots >= 0.39 && oBack <= 0.41))) ||
+        (homeO >= 2.9 && (pBar > 0 || (pBlots >= 0.39 && pBack <= 0.41)))
+    ) {
+        return 2; // BLITZ
+    }
+
+    const prime4P = input[218] + input[219] + input[220] > 0.5;
+    const prime4O = input[224] + input[225] + input[226] > 0.5;
+    if ((prime4P && (oBack > 0 || oBar > 0)) || (prime4O && (pBack > 0 || pBar > 0))) {
+        return 1; // PRIME
+    }
+
+    return 0; // CONTACT
+}
+
 export class BtNeuralEngine {
     private weights: BtNeuralWeights;
     private readonly inputBuf = new Float32Array(250);
     private readonly h1Buf = new Float32Array(128);
     private readonly h2Buf = new Float32Array(64);
     private readonly outBuf = new Float32Array(5);
+    private lastPhase6: BtPhase6 = 0;
 
     constructor(weights?: BtNeuralWeights) {
         this.weights = weights ?? getBtNeuralWeights();
@@ -186,16 +251,29 @@ export class BtNeuralEngine {
         this.weights = weights;
     }
 
+    public getLastPhase6(): BtPhase6 {
+        return this.lastPhase6;
+    }
+
     public evaluateProbabilities(state: BoardState, player: Player): Float32Array {
         encodeBtNeural250Features(state, player, this.inputBuf);
         const input = this.inputBuf;
-        const { w1, b1, w2, b2, w3, b3, linearOut } = this.weights;
+        const phase6 = classifyPhase6FromFeatures(input);
+        this.lastPhase6 = phase6;
+
+        const { w1, b1, w2, b2, w3, b3, linearOut, phaseExperts } = this.weights;
+        const expert = phaseExperts && phaseExperts.length === 6 ? phaseExperts[phase6] : undefined;
+        const effB2 = expert ? expert.b2Phase : b2;
+        const effW3 = expert ? expert.w3Phase : w3;
+        const effB3 = expert ? expert.b3Phase : b3;
+        const effLin = expert ? expert.linearOutPhase : linearOut;
+
         const h1 = this.h1Buf;
         const h2 = this.h2Buf;
         const out = this.outBuf;
 
         h1.set(b1);
-        out.set(b3);
+        out.set(effB3);
         for (let i = 0; i < 250; i++) {
             const xi = input[i];
             if (xi === 0) continue;
@@ -210,23 +288,32 @@ export class BtNeuralEngine {
                 h1[j + 6] += xi * w1[wOff + j + 6];
                 h1[j + 7] += xi * w1[wOff + j + 7];
             }
-            if (linearOut) {
+            if (effLin) {
                 const lOff = i * 5;
-                out[0] += xi * linearOut[lOff];
-                out[1] += xi * linearOut[lOff + 1];
-                out[2] += xi * linearOut[lOff + 2];
-                out[3] += xi * linearOut[lOff + 3];
-                out[4] += xi * linearOut[lOff + 4];
+                out[0] += xi * effLin[lOff];
+                out[1] += xi * effLin[lOff + 1];
+                out[2] += xi * effLin[lOff + 2];
+                out[3] += xi * effLin[lOff + 3];
+                out[4] += xi * effLin[lOff + 4];
             }
         }
-        for (let j = 0; j < 128; j += 4) {
-            if (h1[j] < 0) h1[j] = 0;
-            if (h1[j + 1] < 0) h1[j + 1] = 0;
-            if (h1[j + 2] < 0) h1[j + 2] = 0;
-            if (h1[j + 3] < 0) h1[j + 3] = 0;
+        if (expert) {
+            const g1 = expert.gamma1;
+            const bt1 = expert.beta1;
+            for (let j = 0; j < 128; j++) {
+                const v = h1[j] * g1[j] + bt1[j];
+                h1[j] = v > 0 ? v : 0;
+            }
+        } else {
+            for (let j = 0; j < 128; j += 4) {
+                if (h1[j] < 0) h1[j] = 0;
+                if (h1[j + 1] < 0) h1[j + 1] = 0;
+                if (h1[j + 2] < 0) h1[j + 2] = 0;
+                if (h1[j + 3] < 0) h1[j + 3] = 0;
+            }
         }
 
-        h2.set(b2);
+        h2.set(effB2);
         for (let i = 0; i < 128; i++) {
             const h1Val = h1[i];
             if (h1Val === 0) continue;
@@ -253,11 +340,11 @@ export class BtNeuralEngine {
             const h2Val = h2[i];
             if (h2Val === 0) continue;
             const wOff = i * 5;
-            out[0] += h2Val * w3[wOff];
-            out[1] += h2Val * w3[wOff + 1];
-            out[2] += h2Val * w3[wOff + 2];
-            out[3] += h2Val * w3[wOff + 3];
-            out[4] += h2Val * w3[wOff + 4];
+            out[0] += h2Val * effW3[wOff];
+            out[1] += h2Val * effW3[wOff + 1];
+            out[2] += h2Val * effW3[wOff + 2];
+            out[3] += h2Val * effW3[wOff + 3];
+            out[4] += h2Val * effW3[wOff + 4];
         }
 
         for (let k = 0; k < 5; k++) {

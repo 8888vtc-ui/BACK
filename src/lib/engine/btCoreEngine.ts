@@ -159,9 +159,9 @@ export function computeBtCoreResidualCorrection(
 }
 
 /**
- * Évaluateur statique Propriétaire `BT-Core v3.0 (BT-Neural)` :
- * Combine le réseau neuronal profond `BT-Neural v3.0` (`250 -> 128 -> 64 -> 5 + Skip-Connection`,
- * entraîné sur > 16 000 paires tactiques certifiées et distillations 3-ply `gnubg [world class]`),
+ * Évaluateur statique Propriétaire `BT-Core v4.0 (BT-Neural MoE-6)` :
+ * Combine les 6 réseaux neuronaux spécialisés par phase (`Contact`, `Prime`, `Blitz`, `Crashed`, `Backgame`, `Race` —
+ * `53 329` paramètres float32 distillés sur > 53 000 états 3-ply et > 81 000 paires tactiques certifiées),
  * la table exacte de Bearoff à 54 264 états, Timmes 2026 et la taxonomie 24-Phases `Stage 11`.
  */
 export function evaluateBtCoreBoard(state: BoardState, ply?: number): {
