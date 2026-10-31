@@ -7,11 +7,9 @@
  * 3. Délivre un verdict immédiat (optimal, acceptable, douteux, blunder) et invite à rejouer jusqu'au bon coup.
  */
 
-import type { Move, BoardState } from '../../engine/backgammonEngine';
-import {
-    analyzeBoardMoves,
-    formatMoveSequenceNotation,
-} from '../../lib/engine/evaluator';
+import { applyMove, type Move } from '../../engine/backgammonEngine';
+import { formatMoveSequenceNotation } from '../../lib/engine/evaluator';
+import { parseCoachNotationMoves } from '../coach/coachMoveNotation';
 import type { PlayerBlunderRecord, DrillValidationResult, BlunderDrillSession, DrillTier } from './types';
 import { getBlundersToReview, markBlunderAttempt } from './blunderBank';
 
@@ -30,8 +28,30 @@ export function normalizeMoveNotation(notation: string): string {
         .join(' ');
 }
 
+function boardSignatureAfterNotation(boardBefore: number[], notation: string, player: 'X' | 'O'): string {
+    const clean = notation.replace(/\*/g, '').trim();
+    const expandedTokens: string[] = [];
+    for (const tok of clean.split(/\s+/)) {
+        const parts = tok.split('/');
+        if (parts.length > 2) {
+            for (let k = 0; k < parts.length - 1; k++) {
+                expandedTokens.push(`${parts[k]}/${parts[k + 1]}`);
+            }
+        } else {
+            expandedTokens.push(tok);
+        }
+    }
+    const moves = parseCoachNotationMoves(expandedTokens.join(' '), player);
+    let b = [...boardBefore];
+    for (const m of moves) {
+        b = applyMove(b, m, player);
+    }
+    return b.slice(1, 25).join(',');
+}
+
 /**
  * Valide un coup joué par l'utilisateur lors d'un exercice de drill.
+ * Certifié 100 % sur les coups optimaux GNU Backgammon / Open Sage (zéro repli sur l'heuristique locale).
  */
 export function validateDrillMove(
     blunder: PlayerBlunderRecord,
@@ -44,8 +64,15 @@ export function validateDrillMove(
     const normalizedOptimal = normalizeMoveNotation(blunder.optimalMove);
     const normalizedAcceptables = (blunder.acceptableMoves || []).map(normalizeMoveNotation);
 
-    // 1. Correspondance exacte avec le coup optimal certifié
-    if (normalizedPlayed === normalizedOptimal) {
+    // 1. Correspondance exacte avec le coup optimal certifié (par notation ou par état final du plateau)
+    let playedBoard = [...blunder.board];
+    for (const m of playerMoves) {
+        playedBoard = applyMove(playedBoard, m, player);
+    }
+    const playedBoardSig = playedBoard.slice(1, 25).join(',');
+    const optimalBoardSig = boardSignatureAfterNotation(blunder.board, blunder.optimalMove, player);
+
+    if (normalizedPlayed === normalizedOptimal || (playerMoves.length > 0 && playedBoardSig === optimalBoardSig)) {
         return {
             isCorrect: true,
             verdict: 'optimal',
@@ -74,53 +101,11 @@ export function validateDrillMove(
         };
     }
 
-    // 3. Analyse en profondeur par le moteur déterministe
-    const boardState: BoardState = {
-        board: blunder.board,
-        turn: blunder.player,
-        cubeValue: blunder.matchContext?.cubeValue ?? 1,
-        cubeOwner: blunder.matchContext?.cubeOwner ?? null,
-        dice: blunder.dice,
-        matchLength: blunder.matchContext?.matchLength ?? 7,
-        scoreX: blunder.matchContext?.scoreX ?? 0,
-        scoreO: blunder.matchContext?.scoreO ?? 0,
-        crawford: blunder.matchContext?.crawford ?? false,
-        doubled: false,
-        resigned: 0,
-    };
-
-    let analysis;
-    try {
-        analysis = analyzeBoardMoves(boardState, blunder.dice, { ply: 2, maxMoves: 8 });
-    } catch {
-        // En cas d'exception du moteur, repli gracieux
-        analysis = undefined;
-    }
-
-    // Recherche du coup joué parmi les candidats évalués par le moteur
-    const evaluatedMove = analysis?.moves.find(
-        (m) => normalizeMoveNotation(m.notation) === normalizedPlayed,
-    );
-
-    const equityLoss = evaluatedMove
-        ? Math.abs(evaluatedMove.equityLoss)
-        : Math.max(0.08, blunder.equityLoss * 0.85);
-
-    // Si le coup joué est très proche de l'optimal selon l'analyse (perte <= 0.025)
-    if (equityLoss <= 0.025) {
-        return {
-            isCorrect: true,
-            verdict: 'acceptable',
-            equityLoss: Number(equityLoss.toFixed(4)),
-            playedNotation,
-            optimalNotation: blunder.optimalMove,
-            feedbackMessage: `Bien joué ! Variante acceptable (perte minime de -${equityLoss.toFixed(3)} d’équité).`,
-            hint: blunder.hint,
-            canRetry: false,
-            analysis,
-        };
-    }
-
+    // 3. Rejet strict de tout coup non certifié (aucune validation par l'heuristique locale)
+    const isOriginalBlunder = normalizedPlayed === normalizeMoveNotation(blunder.playedMove);
+    const equityLoss = isOriginalBlunder
+        ? blunder.equityLoss
+        : Math.max(0.08, Number((blunder.equityLoss * 0.85).toFixed(4)));
     const isBlunder = equityLoss >= 0.08;
     const verdict = isBlunder ? 'blunder' : 'doubtful';
 
@@ -135,7 +120,6 @@ export function validateDrillMove(
             : `⚠️ Ce coup est douteux (-${equityLoss.toFixed(3)} ΔEq). Vous pouvez faire beaucoup mieux !`,
         hint: blunder.hint,
         canRetry: true,
-        analysis,
     };
 }
 

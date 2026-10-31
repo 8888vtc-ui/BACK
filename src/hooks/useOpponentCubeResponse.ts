@@ -42,24 +42,26 @@ export function useOpponentCubeResponse({
             let cancelled = false;
             const timer = setTimeout(async () => {
                 if (!isCustomTestTiming) {
-                    try {
-                        const doublerState: BoardState = {
-                            ...boardState,
-                            turn: 'X',
-                            dice: null,
-                        };
-                        const sageCube = await evaluateBotCubeWithBgsage(doublerState, difficulty, 2000);
-                        if (!cancelled && sageCube) {
-                            if (sageCube.shouldTake) {
-                                dispatch({ type: 'TAKE_DOUBLE' });
-                            } else {
-                                dispatch({ type: 'PASS_DOUBLE' });
+                    const doublerState: BoardState = {
+                        ...boardState,
+                        turn: 'X',
+                        dice: null,
+                    };
+                    for (let attempt = 1; attempt <= 2; attempt++) {
+                        try {
+                            const sageCube = await evaluateBotCubeWithBgsage(doublerState, difficulty, 3500);
+                            if (!cancelled && sageCube) {
+                                dispatch({ type: sageCube.shouldTake ? 'TAKE_DOUBLE' : 'PASS_DOUBLE' });
+                                return;
                             }
-                            return;
+                        } catch {
+                            // Nouvel essai sur le moteur neuronal web Open Sage
                         }
-                    } catch {
-                        // Repli local si bgsage est indisponible
                     }
+                    if (!cancelled) {
+                        dispatch({ type: 'TAKE_DOUBLE' });
+                    }
+                    return;
                 }
 
                 if (cancelled) return;

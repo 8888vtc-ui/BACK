@@ -40,7 +40,7 @@ export const DOUBLES_CADENCE_FACTOR = 0.75;
 /** L'indicateur « réflexion » n'apparaît que si le calcul dépasse T2 + ce délai. */
 export const THINKING_INDICATOR_GRACE_MS = 250;
 /** Budget de la décision de videau pré-calculée. */
-export const CUBE_DECISION_BUDGET_MS = 600;
+export const CUBE_DECISION_BUDGET_MS = 1800;
 
 export const SPEED_PRESETS: Readonly<Record<GameSpeed, SpeedPreset>> = Object.freeze({
     coach: Object.freeze({

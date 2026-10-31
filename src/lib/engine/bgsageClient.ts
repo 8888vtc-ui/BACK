@@ -366,9 +366,10 @@ export async function selectBotMoveWithBgsage(
     }
 
     const bestCand = matchedCandidates[0];
-    // 1. Grandmaster ou Coup d'Évidence Visuelle (Point d'Or 5/20, Point de Barre 7/18, Frappe sûre) : verrouillage 100 % optimal
+    // 1. Grandmaster, Expert ou Coup d'Évidence Visuelle (fermeture de porte 2..8 / 17..23 ou frappe sûre) : verrouillage 100 % optimal
     if (
         difficulty === 'grandmaster' ||
+        difficulty === 'expert' ||
         matchedCandidates.length === 1 ||
         isVisuallyObviousBestMove(stateWithDice.board, bestCand.seq.board, player)
     ) {

@@ -106,22 +106,48 @@ export async function resolveOpponentMoveSequence({
     computeHardDeadlineMs,
     isCustomTestTiming,
 }: ResolveOpponentMoveParams): Promise<MoveSequence | null> {
+    if (legalSeqs.length === 0) return null;
+    if (legalSeqs.length === 1) return legalSeqs[0];
+
     const book = pickOpeningBook(currentBoard, rolledDice, legalSeqs, difficulty);
     if (book) return book;
 
-    if (isCustomTestTiming || legalSeqs.length <= 1) {
+    // Uniquement pour les tests unitaires synchrones qui injectent un opponentDelayMs explicite
+    if (isCustomTestTiming) {
         return pickLocalMove(stateWithDice, rolledDice, legalSeqs, difficulty);
     }
 
+    // En jeu réel, tout passe obligatoirement par le moteur neuronal web Open Sage (avec retry automatique)
+    const primaryTimeoutMs = Math.max(computeHardDeadlineMs, 4500);
     try {
         const sageChoice = await selectBotMoveWithBgsage(
             stateWithDice,
             legalSeqs,
             difficulty,
-            computeHardDeadlineMs,
+            primaryTimeoutMs,
         );
-        return sageChoice?.sequence ?? pickLocalMove(stateWithDice, rolledDice, legalSeqs, difficulty);
+        if (sageChoice?.sequence) {
+            return sageChoice.sequence;
+        }
     } catch {
-        return pickLocalMove(stateWithDice, rolledDice, legalSeqs, difficulty);
+        // Retry sur le moteur neuronal web ci-dessous
     }
+
+    try {
+        const fallbackDifficulty: AIDifficulty =
+            difficulty === 'grandmaster' ? 'expert' : difficulty;
+        const retryChoice = await selectBotMoveWithBgsage(
+            stateWithDice,
+            legalSeqs,
+            fallbackDifficulty,
+            4500,
+        );
+        if (retryChoice?.sequence) {
+            return retryChoice.sequence;
+        }
+    } catch {
+        // Dernier recours si le réseau client est totalement coupé
+    }
+
+    return legalSeqs[0] ?? null;
 }

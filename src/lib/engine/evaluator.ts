@@ -451,27 +451,33 @@ function longestPrime(board: number[], player: Player): number {
  * Compte les pions adverses piégés derrière la prime d'un joueur.
  */
 function trappedCheckersBehindPrime(board: number[], player: Player): number {
-    const prime = longestPrime(board, player);
-    if (prime < 2) return 0;
+    // Identifie la plus longue séquence de portes consécutives (>= 2 portes collées) et son front exact.
+    let bestLen = 0;
+    let bestStart = -1;
+    let bestEnd = -1;
+    let curLen = 0;
+    let curStart = -1;
 
-    // Trouve la flèche la plus avancée de la prime du joueur (le « front »).
-    // Pour X (avance 24 -> 1), le front est la flèche la plus basse de la prime.
-    // Pour O (avance 1 -> 24), le front est la flèche la plus haute de la prime.
-    let primeFront = -1;
     for (let p = 1; p <= 24; p++) {
         const v = board[p];
         const count = player === 'X' ? Math.max(0, v) : Math.max(0, -v);
         if (count >= 2) {
-            if (player === 'X') {
-                // X : front = flèche la plus basse (la plus avancée).
-                if (primeFront === -1 || p < primeFront) primeFront = p;
-            } else {
-                // O : front = flèche la plus haute (la plus avancée).
-                if (primeFront === -1 || p > primeFront) primeFront = p;
+            if (curLen === 0) curStart = p;
+            curLen++;
+            if (curLen > bestLen) {
+                bestLen = curLen;
+                bestStart = curStart;
+                bestEnd = p;
             }
+        } else {
+            curLen = 0;
         }
     }
-    if (primeFront === -1) return 0;
+    if (bestLen < 2 || bestStart === -1 || bestEnd === -1) return 0;
+
+    // Pour X (avance 24 -> 1), les pions O piégés sont sur les flèches > bestStart.
+    // Pour O (avance 1 -> 24), les pions X piégés sont sur les flèches < bestEnd.
+    const primeFront = player === 'X' ? bestStart : bestEnd;
 
     let trapped = 0;
     const opponent = player === 'X' ? 'O' : 'X';
@@ -479,8 +485,6 @@ function trappedCheckersBehindPrime(board: number[], player: Player): number {
         const v = board[p];
         const isOpp = opponent === 'X' ? v > 0 : v < 0;
         if (!isOpp) continue;
-        // Un pion adverse est « derrière » la prime s'il est plus reculé que le
-        // front de la prime (pour X : flèche > front ; pour O : flèche < front).
         const behind = player === 'X' ? p > primeFront : p < primeFront;
         if (behind) trapped += Math.abs(v);
     }
@@ -601,7 +605,7 @@ function evaluateContact(
             else keyPointsOpponent += wO;
         }
     }
-    z += 0.14 * (keyPointsPlayer - keyPointsOpponent);
+    z += 0.22 * (keyPointsPlayer - keyPointsOpponent);
 
     // 6. Pénalité de chandeliers et enterrement sur les flèches basses (antisymétrique).
     let stackingPenaltyPlayer = 0;

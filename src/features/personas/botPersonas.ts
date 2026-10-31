@@ -152,18 +152,23 @@ export function isVisuallyObviousBestMove(
     bestBoardAfter: ReadonlyArray<number>,
     player: 'X' | 'O' = 'O',
 ): boolean {
-    const goldenPt = player === 'X' ? 5 : 20;
-    const barPt = player === 'X' ? 7 : 18;
     const isMade = (b: ReadonlyArray<number>, pt: number) => (player === 'X' ? (b[pt] ?? 0) >= 2 : (b[pt] ?? 0) <= -2);
     const countOwnBlots = (b: ReadonlyArray<number>) => {
         let blots = 0;
         for (let p = 1; p <= 24; p++) if (b[p] === (player === 'X' ? 1 : -1)) blots++;
         return blots;
     };
-    const blotsDidNotIncrease = countOwnBlots(bestBoardAfter) <= countOwnBlots(boardBefore);
-    if (blotsDidNotIncrease && ((!isMade(boardBefore, goldenPt) && isMade(bestBoardAfter, goldenPt)) || (!isMade(boardBefore, barPt) && isMade(bestBoardAfter, barPt)))) {
+    const blotsBefore = countOwnBlots(boardBefore);
+    const blotsAfter = countOwnBlots(bestBoardAfter);
+    const blotsDidNotIncrease = blotsAfter <= blotsBefore;
+
+    // 1. Toute nouvelle porte fermée dans le jan intérieur (2..6 / 19..23) ou point de barre/avant-poste (7..8 / 17..18)
+    const crucialPoints = player === 'X' ? [2, 3, 4, 5, 6, 7, 8] : [23, 22, 21, 20, 19, 18, 17];
+    const closedCrucialPoint = crucialPoints.some((pt) => !isMade(boardBefore, pt) && isMade(bestBoardAfter, pt));
+    if (closedCrucialPoint && blotsAfter <= blotsBefore + 1) {
         return true;
     }
+
     const oppBarIdx = player === 'X' ? 25 : 0;
     const hitOpponent = Math.abs(bestBoardAfter[oppBarIdx] ?? 0) > Math.abs(boardBefore[oppBarIdx] ?? 0);
     return hitOpponent && blotsDidNotIncrease;
@@ -181,6 +186,7 @@ export function computePersonaBiasDelta(
     const hitsMade = Math.max(0, (boardAfter[0] ?? 0) - (boardBefore[0] ?? 0));
     let botBlots = 0;
     let botAnchorsInPlayerHome = 0;
+    let botHomePointsMade = 0;
     let maxBotPrime = 0;
     let currentPrime = 0;
     let candlesticks = 0;
@@ -193,6 +199,7 @@ export function computePersonaBiasDelta(
             currentPrime++;
             if (currentPrime > maxBotPrime) maxBotPrime = currentPrime;
             if (pt <= 6) botAnchorsInPlayerHome++;
+            if (pt >= 18 && pt <= 23) botHomePointsMade++;
         } else {
             currentPrime = 0;
         }
@@ -203,6 +210,7 @@ export function computePersonaBiasDelta(
         hitsMade * w.hitBonus +
         botBlots * w.ownBlotPenalty +
         Math.max(0, maxBotPrime - 2) * w.primeBonus +
+        botHomePointsMade * 0.04 +
         botAnchorsInPlayerHome * w.anchorBonus +
         candlestickBias
     );

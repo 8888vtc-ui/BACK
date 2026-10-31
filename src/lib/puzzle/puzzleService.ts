@@ -215,7 +215,7 @@ export const DAILY_PUZZLES_CATALOG: ReadonlyArray<DailyPuzzleDefinition> = [
         turn: 'X',
         dice: [4, 2],
         initialBoard: buildBoard(
-            { 5: 2, 6: 2, 7: 2, 8: 3, 13: 4, 24: 2 },
+            { 5: 2, 6: 3, 7: 2, 8: 3, 13: 3, 24: 2 },
             { 1: 2, 12: 5, 17: 3, 19: 5 },
         ),
         matchLength: 7,
@@ -227,7 +227,7 @@ export const DAILY_PUZZLES_CATALOG: ReadonlyArray<DailyPuzzleDefinition> = [
         doublingOfferedBy: null,
         opponentReplay: {
             boardBeforeOpponent: buildBoard(
-                { 5: 2, 6: 2, 7: 2, 8: 3, 13: 4, 24: 2 },
+                { 5: 2, 6: 3, 7: 2, 8: 3, 13: 3, 24: 2 },
                 { 1: 2, 12: 5, 16: 1, 17: 2, 19: 5 },
             ),
             opponentDice: [1, 1],
