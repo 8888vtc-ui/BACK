@@ -10,20 +10,88 @@ import { BENCHMARK_BLUNDERS } from './benchmarkBlunders';
 
 export const BLUNDER_BANK_STORAGE_KEY = 'bg_blunder_bank';
 
+const BENCHMARK_BY_ID = new Map<string, PlayerBlunderRecord>(
+    BENCHMARK_BLUNDERS.map((b) => [b.id, b]),
+);
+
 let memoryBankStore: PlayerBlunderRecord[] | null = null;
+let lastSyncedStorageRaw: string | null = null;
+
+interface BenchmarkProgressDelta {
+    id: string;
+    timesReviewed: number;
+    timesSolved: number;
+    isMastered: boolean;
+    lastAttemptDate?: string;
+}
+
+function cloneBenchmarkBlunder(b: PlayerBlunderRecord): PlayerBlunderRecord {
+    let localBoard: number[] | null = null;
+    return {
+        id: b.id,
+        createdAt: b.createdAt,
+        get board(): number[] {
+            if (!localBoard) {
+                localBoard = [...b.board];
+            }
+            return localBoard;
+        },
+        set board(val: number[]) {
+            localBoard = val;
+        },
+        dice: [b.dice[0], b.dice[1]] as [number, number],
+        player: b.player,
+        playedMove: b.playedMove,
+        optimalMove: b.optimalMove,
+        acceptableMoves: b.acceptableMoves,
+        quizChoices: b.quizChoices,
+        equityLoss: b.equityLoss,
+        verdict: b.verdict,
+        conceptId: b.conceptId,
+        conceptName: b.conceptName,
+        whyFailed: b.whyFailed,
+        explanation: b.explanation,
+        proverb: b.proverb,
+        hint: b.hint,
+        commentaryVariants: b.commentaryVariants,
+        tier: b.tier,
+        timesReviewed: b.timesReviewed,
+        timesSolved: b.timesSolved,
+        isMastered: b.isMastered,
+        lastAttemptDate: b.lastAttemptDate,
+        gameId: b.gameId,
+        matchContext: b.matchContext,
+    };
+}
 
 /**
  * Crée une copie propre et indépendante des blunders de référence par défaut.
  */
 export function createDefaultBenchmarkBlunders(): PlayerBlunderRecord[] {
-    return BENCHMARK_BLUNDERS.map((b) => ({
-        ...b,
-        board: [...b.board],
-        dice: [b.dice[0], b.dice[1]] as [number, number],
-        acceptableMoves: b.acceptableMoves ? [...b.acceptableMoves] : [],
-        commentaryVariants: b.commentaryVariants ? [...b.commentaryVariants] : undefined,
-        quizChoices: b.quizChoices ? [...b.quizChoices] : undefined,
-    }));
+    return BENCHMARK_BLUNDERS.map(cloneBenchmarkBlunder);
+}
+
+function serializeCompactBank(blunders: PlayerBlunderRecord[]): string {
+    const payload: Array<PlayerBlunderRecord | BenchmarkProgressDelta> = [];
+    for (const b of blunders) {
+        if (!BENCHMARK_BY_ID.has(b.id)) {
+            payload.push(b);
+        } else if (
+            b.timesReviewed > 0 ||
+            b.timesSolved > 0 ||
+            b.isMastered ||
+            Boolean(b.lastAttemptDate)
+        ) {
+            payload.push({
+                id: b.id,
+                timesReviewed: b.timesReviewed,
+                timesSolved: b.timesSolved,
+                isMastered: b.isMastered,
+                lastAttemptDate: b.lastAttemptDate,
+            });
+        }
+    }
+    return JSON.stringify(payload);
 }
 
 /**
@@ -40,41 +108,65 @@ export function getAllBlunders(): PlayerBlunderRecord[] {
 
     try {
         const raw = window.localStorage.getItem(BLUNDER_BANK_STORAGE_KEY);
+        if (memoryBankStore && raw !== null && raw === lastSyncedStorageRaw) {
+            return memoryBankStore;
+        }
+
         if (!raw) {
             const defaults = createDefaultBenchmarkBlunders();
-            window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, JSON.stringify(defaults));
+            const serialized = '[]';
+            window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, serialized);
+            memoryBankStore = defaults;
+            lastSyncedStorageRaw = serialized;
             return defaults;
         }
 
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-            // Fusionne automatiquement les nouveaux Quizz par Paliers de BENCHMARK_BLUNDERS
-            // si l'utilisateur avait une ancienne banque locale
+        const parsed: unknown = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
             const defaults = createDefaultBenchmarkBlunders();
-            const byId = new Map<string, PlayerBlunderRecord>();
-            for (const item of parsed as PlayerBlunderRecord[]) {
-                const benchMatch = defaults.find((d) => d.id === item.id);
-                byId.set(item.id, benchMatch ? { ...benchMatch, ...item, tier: item.tier ?? benchMatch.tier, whyFailed: item.whyFailed ?? benchMatch.whyFailed, proverb: item.proverb ?? benchMatch.proverb, commentaryVariants: item.commentaryVariants ?? benchMatch.commentaryVariants, quizChoices: item.quizChoices ?? benchMatch.quizChoices } : item);
-            }
-            let added = false;
+            const defaultById = new Map<string, PlayerBlunderRecord>();
             for (const def of defaults) {
-                if (!byId.has(def.id)) {
-                    byId.set(def.id, def);
-                    added = true;
+                defaultById.set(def.id, def);
+            }
+
+            const customBlunders: PlayerBlunderRecord[] = [];
+            for (const item of parsed as Array<Partial<PlayerBlunderRecord> & { id?: string }>) {
+                if (!item || typeof item.id !== 'string') continue;
+                const benchMatch = defaultById.get(item.id);
+                if (benchMatch) {
+                    benchMatch.timesReviewed = item.timesReviewed ?? benchMatch.timesReviewed;
+                    benchMatch.timesSolved = item.timesSolved ?? benchMatch.timesSolved;
+                    benchMatch.isMastered = item.isMastered ?? benchMatch.isMastered;
+                    if (item.lastAttemptDate !== undefined) {
+                        benchMatch.lastAttemptDate = item.lastAttemptDate;
+                    }
+                    if (typeof item.equityLoss === 'number' && item.equityLoss > benchMatch.equityLoss) {
+                        benchMatch.equityLoss = item.equityLoss;
+                    }
+                    if (typeof item.playedMove === 'string') {
+                        benchMatch.playedMove = item.playedMove;
+                    }
+                } else if (Array.isArray(item.board) && Array.isArray(item.dice)) {
+                    customBlunders.push(item as PlayerBlunderRecord);
                 }
             }
-            const merged = Array.from(byId.values());
-            if (added) {
-                window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, JSON.stringify(merged));
-            }
+
+            const merged = customBlunders.length > 0 ? [...customBlunders, ...defaults] : defaults;
+            memoryBankStore = merged;
+            lastSyncedStorageRaw = raw;
             return merged;
         }
 
         const defaults = createDefaultBenchmarkBlunders();
-        window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, JSON.stringify(defaults));
+        const serialized = '[]';
+        window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, serialized);
+        memoryBankStore = defaults;
+        lastSyncedStorageRaw = serialized;
         return defaults;
     } catch {
-        return createDefaultBenchmarkBlunders();
+        const defaults = createDefaultBenchmarkBlunders();
+        memoryBankStore = defaults;
+        return defaults;
     }
 }
 
@@ -85,7 +177,9 @@ export function saveAllBlunders(blunders: PlayerBlunderRecord[]): void {
     memoryBankStore = blunders;
     if (typeof window === 'undefined' || !window.localStorage) return;
     try {
-        window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, JSON.stringify(blunders));
+        const serialized = serializeCompactBank(blunders);
+        window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, serialized);
+        lastSyncedStorageRaw = serialized;
     } catch (e) {
         console.warn('[BlunderBank] Échec de sauvegarde locale :', e);
     }
@@ -110,8 +204,14 @@ export function recordBlunder(
     const blunders = getAllBlunders();
     const signature = getPositionSignature(data.board, data.dice, data.player);
 
+    const d0 = data.dice[0];
+    const d1 = data.dice[1];
     const existingIndex = blunders.findIndex(
-        (b) => getPositionSignature(b.board, b.dice, b.player) === signature,
+        (b) =>
+            !BENCHMARK_BY_ID.has(b.id) &&
+            b.player === data.player &&
+            ((b.dice[0] === d0 && b.dice[1] === d1) || (b.dice[0] === d1 && b.dice[1] === d0)) &&
+            getPositionSignature(b.board, b.dice, b.player) === signature,
     );
 
     const now = new Date().toISOString();
@@ -239,10 +339,10 @@ export function resetBlunderMastery(id: string): void {
  * Réinitialise la maîtrise de l'ensemble des erreurs de la banque.
  */
 export function resetAllBlunderMastery(): void {
-    const blunders = getAllBlunders().map((b) => ({
-        ...b,
-        isMastered: false,
-    }));
+    const blunders = getAllBlunders();
+    for (const b of blunders) {
+        b.isMastered = false;
+    }
     saveAllBlunders(blunders);
 }
 
@@ -282,7 +382,8 @@ export function getBlunderBankStats(): BlunderBankStats {
 export function clearBlunderBank(): void {
     const defaults = createDefaultBenchmarkBlunders();
     memoryBankStore = defaults;
+    lastSyncedStorageRaw = '[]';
     if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, JSON.stringify(defaults));
+        window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, '[]');
     }
 }

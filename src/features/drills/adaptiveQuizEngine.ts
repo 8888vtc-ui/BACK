@@ -375,15 +375,20 @@ export function selectNextAdaptiveQuiz(
     const publicPrTierFloor = getTargetQuizTierFromPublicPr(readPublicAveragePr());
     const targetLevel = Math.max(chosen.state.level, publicPrTierFloor) as DrillTier;
 
-    // Cherche d'abord un quizz du palier exact (ou piloté par le PR du joueur), sinon le palier le plus proche
-    const sortedByTierMatch = [...candidates].sort((a, b) => {
-        const distA = Math.abs((a.tier ?? 1) - targetLevel);
-        const distB = Math.abs((b.tier ?? 1) - targetLevel);
-        if (distA !== distB) return distA - distB;
-        return b.equityLoss - a.equityLoss;
-    });
+    // Cherche d'abord un quizz du palier exact (ou piloté par le PR du joueur), sinon le palier le plus proche en O(N)
+    let bestCandidate: PlayerBlunderRecord | null = null;
+    let bestDist = Infinity;
+    let bestLoss = -Infinity;
+    for (const c of candidates) {
+        const dist = Math.abs((c.tier ?? 1) - targetLevel);
+        if (dist < bestDist || (dist === bestDist && c.equityLoss > bestLoss)) {
+            bestCandidate = c;
+            bestDist = dist;
+            bestLoss = c.equityLoss;
+        }
+    }
 
-    const selectedQuiz = sortedByTierMatch[0] ?? unseenPool[0]!;
+    const selectedQuiz = bestCandidate ?? unseenPool[0]!;
     const reasonLabel =
         chosen.state.attempts === 0
             ? `Calibrage initial · ${chosen.meta.shortLabel} (Niv. ${targetLevel})`

@@ -43,11 +43,20 @@ export interface HarvestedSeedInput {
     commentaryVariants: string[];
 }
 
-function buildHarvestedBlunder(seed: HarvestedSeedInput, idx: number): PlayerBlunderRecord {
+function buildHarvestedBlunder(seed: HarvestedSeedInput, _idx: number): PlayerBlunderRecord {
+    let cachedBoard: number[] | null = null;
     return {
         id: seed.id,
-        createdAt: new Date(Date.UTC(2026, 0, 10 + idx)).toISOString(),
-        board: boardFromXgid(seed.xgid),
+        createdAt: '2026-01-10T00:00:00.000Z',
+        get board(): number[] {
+            if (!cachedBoard) {
+                cachedBoard = boardFromXgid(seed.xgid);
+            }
+            return cachedBoard;
+        },
+        set board(val: number[]) {
+            cachedBoard = val;
+        },
         dice: seed.dice,
         player: 'X',
         playedMove: seed.playedMove,
