@@ -162,10 +162,11 @@ export default function Home() {
     // Synchronisation match multijoueur ou Challenger International de Club
     useEffect(() => {
         if (userInitiatedMultiplayerRef.current && multiplayer.status === 'matched' && multiplayer.matchInfo) {
+            userInitiatedMultiplayerRef.current = false;
             const matchLen = multiplayer.matchInfo.matchLength;
             const opp = multiplayer.opponentProfile;
             if (multiplayer.matchInfo.isClubChallenger && opp) {
-                const timer = window.setTimeout(() => {
+                window.setTimeout(() => {
                     game.startNewMatch(matchLen, opp.clubBotDifficulty ?? 'intermediate');
                     resetGameHistory();
                     modals.closeMatchmaking();
@@ -178,8 +179,8 @@ export default function Home() {
                         `Match contre ${opp.displayName} (${opp.rating} Elo) en ${matchLen === 0 ? 'Money Game' : `${matchLen} pts`}.`,
                         'Adversaire Trouvé',
                     );
-                }, 1500);
-                return () => window.clearTimeout(timer);
+                }, 1350);
+                return;
             }
             game.resetMatch();
             modals.closeMatchmaking();

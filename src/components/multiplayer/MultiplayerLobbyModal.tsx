@@ -35,7 +35,7 @@ export interface MultiplayerLobbyModalProps {
 }
 
 const MATCH_FORMATS: ReadonlyArray<{ pts: number; label: string; sub: string }> = [
-    { pts: 0, label: 'Money Game', sub: 'Jacoby' },
+    { pts: 0, label: 'Money Game', sub: '1 pt · Jacoby' },
     { pts: 3, label: '3 pts', sub: 'Rapide' },
     { pts: 5, label: '5 pts', sub: 'Standard' },
     { pts: 7, label: '7 pts', sub: 'Tournoi' },
@@ -91,8 +91,7 @@ export default function MultiplayerLobbyModal({
                 <button
                     type="button"
                     onClick={onClose}
-                    disabled={status === 'matched' || status === 'connecting'}
-                    className="absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 hover:border-white/25 hover:text-white transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                    className="absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 hover:border-white/25 hover:text-white transition-colors"
                     aria-label="Fermer le salon multijoueur"
                 >
                     ✕

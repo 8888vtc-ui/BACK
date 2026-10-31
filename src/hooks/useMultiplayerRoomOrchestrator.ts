@@ -196,6 +196,10 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
             setMatchInfo(info);
             setOpponentProfile(opp);
             setStatus('matched');
+            // Fin de la présentation Versus (1.4s) : passage à 'idle' pour fermer la modale et laisser place au plateau
+            setTimeout(() => {
+                setStatus((prev) => (prev === 'matched' ? 'idle' : prev));
+            }, 1400);
             // Salutation courtoise et respectueuse de l'adversaire à l'ouverture de la table
             setTimeout(() => {
                 setQuickChatMessage({ player: 'O', messageId: 'gg' });
