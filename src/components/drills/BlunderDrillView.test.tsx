@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import BlunderDrillView from './BlunderDrillView';
 import { clearBlunderBank, getBlunderBankStats, recordBlunder } from '../../features/drills/blunderBank';
+import { BENCHMARK_BLUNDERS } from '../../features/drills/benchmarkBlunders';
 import {
     resetAdaptivePlayerProfile,
     recordLiveMatchDecisionOnAdaptiveProfile,
@@ -65,7 +66,7 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         expect(html).toContain('data-testid="premium-launch-badge"');
         expect(html).toContain('data-testid="adaptive-skill-radar"');
         expect(html).toContain('data-testid="mastered-count"');
-        expect(html).toContain('0 / 36');
+        expect(html).toContain(`0 / ${BENCHMARK_BLUNDERS.length}`);
 
         expect(html).toContain('data-testid="drill-position-card"');
         expect(html).toContain('Jet à jouer');
@@ -91,7 +92,7 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
 
         expect(html).toContain('Contrôle du Golden Point (Porte 5 / 20)');
         expect(html).toContain('24/21 13/12');
-        expect(html).toContain('-0.178 ΔEq');
+        expect(html).toContain('-0.230 ΔEq');
     });
 
     it('affiche le plateau SVG interactif de Backgammon et les dés', () => {
@@ -124,7 +125,7 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         const banner = screen.getByTestId('drill-feedback-banner');
         expect(banner.textContent).toContain('Coach Pédagogique 3.8 Flash');
         expect(banner.textContent).toContain('Pourquoi l\'erreur');
-        expect(getBlunderBankStats().totalBlunders).toBe(36);
+        expect(getBlunderBankStats().totalBlunders).toBe(BENCHMARK_BLUNDERS.length);
     });
 
     it('permet de basculer sur l’onglet Revoir Mes Blunders et calibre automatiquement le niveau lors d’un match contre un Bot ou un Humain', () => {

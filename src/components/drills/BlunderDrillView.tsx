@@ -14,6 +14,7 @@ import Board from '../board/Board';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { getAllBlunders, getBlunderBankStats, resetAllBlunderMastery, markBlunderAttempt } from '../../features/drills/blunderBank';
 import { validateDrillMove, validateDrillNotationChoice } from '../../features/drills/blunderDrillEngine';
+import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
 import {
     getAdaptivePlayerProfile,
     recordAdaptiveQuizOutcome,
@@ -265,8 +266,23 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
 
     const handleSelectQuizChoice = useCallback(
         (notation: string) => {
-            if (!currentBlunder || validationResult?.isCorrect) return;
+            if (!currentBlunder) return;
             impactLight();
+            try {
+                const moves = parseCoachNotationMoves(notation.replace(/\*/g, ''), currentBlunder.player);
+                if (moves.length > 0) {
+                    let previewBoard = [...currentBlunder.board];
+                    for (const m of moves) {
+                        previewBoard = applyMove(previewBoard, m, currentBlunder.player);
+                    }
+                    setCurrentBoard(previewBoard);
+                    setPlayedMoves(moves);
+                    setUsedDice([true, true]);
+                }
+            } catch {
+                // ignore notation preview errors on cube actions
+            }
+            if (validationResult?.isCorrect) return;
             const result = validateDrillNotationChoice(currentBlunder, notation);
             applyValidationFeedback(result);
         },
