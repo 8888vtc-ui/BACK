@@ -25,6 +25,7 @@ import {
     selectBestCoachVoice,
     voiceCoach,
 } from '../lib/sound/voiceCoach';
+import { soundEngine } from '../lib/sound/soundEngine';
 
 export {
     COACH_VOICE_STORAGE_KEY,
@@ -151,6 +152,7 @@ export function useCoachVoice(): UseCoachVoiceResult {
     const speak = useCallback(
         (text: string, options?: SpeakOptions): boolean => {
             if (typeof window === 'undefined' || !window.speechSynthesis) return false;
+            if (soundEngine.isMute() && !options?.force) return false;
             const activeEnabled = sharedState.isVoiceEnabled || readStoredVoiceEnabled();
             if (!activeEnabled && !options?.force) return false;
 

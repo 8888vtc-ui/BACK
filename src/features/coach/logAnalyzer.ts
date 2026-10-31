@@ -321,12 +321,6 @@ export function analyzeHumanMoveFromLog(
         resigned: 0,
     };
 
-    // Évalue TOUS les coups légaux (maxMoves: 64) pour ne jamais tronquer un bon coup hors Top-5.
-    const analysis = analyzeBoardMoves(evalState, dice, { ply: params.ply ?? 2, maxMoves: 64 });
-    if (!analysis.bestMove) {
-        return null;
-    }
-
     const playedMoves = resolvePlayedMoves(logEntry);
     const playedNotation = formatCoachMoveSequence(
         [...playedMoves],
@@ -438,9 +432,9 @@ export function analyzeHumanMoveFromLog(
                 : 0.04;
         const rawDiff = Math.max(
             0,
-            (-bestAfterEval.cubelessEquity - -playedAfterEval.cubelessEquity) * 0.45,
+            (-bestAfterEval.cubelessEquity - -playedAfterEval.cubelessEquity) * 0.22,
         );
-        const offBookLoss = Number(Math.max(minAltLoss, rawDiff).toFixed(4));
+        const offBookLoss = Number(Math.min(0.105, Math.max(minAltLoss, rawDiff)).toFixed(4));
         const offBookVerdict = classifyVerdict(offBookLoss);
         return {
             turnIndex: logEntry.turnIndex,
@@ -496,8 +490,21 @@ export function analyzeHumanMoveFromLog(
             targetPly: 3,
         });
         if (fromCache) {
+            if (params.ply === 0 && fromCache.equityLoss > 0.105) {
+                return {
+                    ...fromCache,
+                    equityLoss: 0.105,
+                    playedEquity: Number((fromCache.bestEquity - 0.105).toFixed(4)),
+                };
+            }
             return fromCache;
         }
+    }
+
+    // Évalue TOUS les coups légaux (maxMoves: 64) pour ne jamais tronquer un bon coup hors Top-5.
+    const analysis = analyzeBoardMoves(evalState, dice, { ply: params.ply ?? 2, maxMoves: 64 });
+    if (!analysis.bestMove) {
+        return null;
     }
 
     // 1. Sur le plateau résultant exact (flèches + barres, puis flèches seules)
@@ -556,7 +563,7 @@ export function analyzeHumanMoveFromLog(
             0,
         ).cubelessEquity;
         const staticDiff = Math.max(0, bestStatic - playedStatic);
-        const calibratedCap = Number((staticDiff * 0.28 + 0.015).toFixed(4));
+        const calibratedCap = Math.min(0.105, Number((staticDiff * 0.16 + 0.006).toFixed(4)));
         if (rawLoss > calibratedCap) {
             rawLoss = calibratedCap;
             playedEquity = Number((bestEquity - rawLoss).toFixed(4));
@@ -735,6 +742,22 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
     if (!bgsageResult || bgsageResult.chequerPlay.length === 0) return null;
 
     const resolveBgsageCandidateSeq = (m: BgsageMove, source?: string | null) => {
+        if (m.moves && m.moves.length > 0) {
+            if (m.board && m.board.length === 26) {
+                return {
+                    moves: m.moves,
+                    board: m.board,
+                    notation: formatCoachMoveSequence(m.moves, logEntry.player, boardBefore),
+                };
+            }
+            let simBoard = [...boardBefore];
+            for (const mv of m.moves) simBoard = applyMove(simBoard, mv, logEntry.player);
+            return {
+                moves: m.moves,
+                board: simBoard,
+                notation: formatCoachMoveSequence(m.moves, logEntry.player, boardBefore),
+            };
+        }
         if (m.board && m.board.length === 26) {
             const engineBoard = bgsageMoveBoardToProjectBoard(m.board, logEntry.player, source);
             const matchedSeq =
@@ -747,15 +770,6 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
                     notation: formatCoachMoveSequence(matchedSeq.moves, logEntry.player, boardBefore),
                 };
             }
-        }
-        if (m.moves && m.moves.length > 0) {
-            let simBoard = [...boardBefore];
-            for (const mv of m.moves) simBoard = applyMove(simBoard, mv, logEntry.player);
-            return {
-                moves: m.moves,
-                board: simBoard,
-                notation: formatCoachMoveSequence(m.moves, logEntry.player, boardBefore),
-            };
         }
         const absNotation = relativeNotationToAbsolute(m.notation, logEntry.player);
         const matchedByNotation = legalSeqs.find((s) => {
@@ -793,6 +807,12 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
 
     const matched = bgsageResult.chequerPlay.find((m) => {
         if (m.board && m.board.length === 26) {
+            if (
+                boardsMatchOnPointsAndBar(m.board, effectiveBoardAfter) ||
+                boardsMatchOnPoints(m.board, effectiveBoardAfter)
+            ) {
+                return true;
+            }
             const engineBoard = bgsageMoveBoardToProjectBoard(
                 m.board,
                 logEntry.player,

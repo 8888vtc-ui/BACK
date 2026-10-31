@@ -9,6 +9,7 @@ import {
     signInWithGoogle,
     registerPlayerPassportLead,
     resetPasswordForEmail,
+    readPlayerPassport,
     savePlayerPassport,
     STANDARD_USER_AVATARS,
     type PlayerExperienceTier,
@@ -82,16 +83,22 @@ export default function AuthModal({
             if (mode === 'signin') {
                 const { error, data } = await signInWithEmail({ email, password });
                 if (error) throw error;
+                const existingPassport = readPlayerPassport();
                 const userPseudo =
                     (typeof data.user?.user_metadata?.full_name === 'string' && data.user.user_metadata.full_name) ||
+                    existingPassport?.pseudo ||
                     email.split('@')[0] ||
                     'Joueur';
+                const userAvatar =
+                    (typeof data.user?.user_metadata?.avatar_url === 'string' && data.user.user_metadata.avatar_url) ||
+                    existingPassport?.avatarUrl ||
+                    selectedAvatarUrl;
                 savePlayerPassport({
                     pseudo: userPseudo,
                     email,
-                    experienceLevel,
-                    avatarUrl: selectedAvatarUrl,
-                    registeredAt: new Date().toISOString(),
+                    experienceLevel: existingPassport?.experienceLevel || experienceLevel,
+                    avatarUrl: userAvatar,
+                    registeredAt: existingPassport?.registeredAt || new Date().toISOString(),
                     supabaseSynced: true,
                 });
                 if (onSuccess) onSuccess();

@@ -235,7 +235,9 @@ export async function loadPlayerHubData(userId?: string | null): Promise<{
     // Lecture optionnelle du PR moyen stocké localement
     if (typeof window !== 'undefined' && window.localStorage) {
         try {
-            const rawPr = window.localStorage.getItem('bg_last_player_pr');
+            const rawPr =
+                window.localStorage.getItem('bg_public_average_pr_v1') ||
+                window.localStorage.getItem('bg_last_player_pr');
             if (rawPr) {
                 const parsedPr = Number(rawPr);
                 if (Number.isFinite(parsedPr) && parsedPr >= 0) {

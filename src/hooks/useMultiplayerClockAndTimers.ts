@@ -100,6 +100,8 @@ export function useMultiplayerClockAndTimers({
                 if (tick.isFlagFallen && !prev.isFlagFallen) {
                     if (matchInfo && tick.flagFallenPlayer === matchInfo.localRole) {
                         onTimeoutResign();
+                    } else if (matchInfo && tick.flagFallenPlayer) {
+                        onDisconnectForfeit(matchInfo.localRole);
                     }
                     return {
                         ...prev,

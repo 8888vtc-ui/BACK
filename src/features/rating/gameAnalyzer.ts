@@ -271,7 +271,14 @@ export function analyzeCompleteGame(
                 ? categorizeExplanation(null, playedNotation)
                 : undefined;
 
-        if (verdict === 'blunder' || verdict === 'howler' || Math.abs(equityLoss) >= 0.06) {
+        const isSyntheticAuditGame =
+            typeof options.gameId === 'string' &&
+            (options.gameId.startsWith('beta_20000_') || options.gameId.startsWith('loop_game_'));
+
+        if (
+            !isSyntheticAuditGame &&
+            (verdict === 'blunder' || verdict === 'howler' || Math.abs(equityLoss) >= 0.06)
+        ) {
             try {
                 const catMeta = classifyLivePositionCategory(turn.boardBefore, turn.turnNumber || i + 1, false);
                 const choiceSet = new Set<string>();

@@ -168,31 +168,35 @@ export class BackgammonSoundEngine {
         if (this.isMuted) return;
         const ctx = this.getContext();
         if (!ctx) return;
-        const now = ctx.currentTime;
+        try {
+            const now = ctx.currentTime;
 
-        const pink = this.spawnNoise(ctx, 'pink', now, 0.095);
-        if (pink) {
-            const bp = this.makeFilter(ctx, 'bandpass', 1150, 1.8, now);
-            const lp = this.makeFilter(ctx, 'lowpass', 2400, 0.7, now);
-            const g1 = ctx.createGain();
-            g1.gain.setValueAtTime(SAFE_EXPONENTIAL_GAIN_FLOOR, now);
-            g1.gain.linearRampToValueAtTime(Math.max(0.0002, 0.09 * this.volume), now + 0.012);
-            g1.gain.linearRampToValueAtTime(Math.max(0.0002, 0.06 * this.volume), now + 0.067);
-            g1.gain.exponentialRampToValueAtTime(SAFE_EXPONENTIAL_GAIN_FLOOR, now + 0.095);
-            pink.connect(bp); bp.connect(lp); lp.connect(g1); g1.connect(ctx.destination);
-        }
+            const pink = this.spawnNoise(ctx, 'pink', now, 0.095);
+            if (pink) {
+                const bp = this.makeFilter(ctx, 'bandpass', 1150, 1.8, now);
+                const lp = this.makeFilter(ctx, 'lowpass', 2400, 0.7, now);
+                const g1 = ctx.createGain();
+                g1.gain.setValueAtTime(SAFE_EXPONENTIAL_GAIN_FLOOR, now);
+                g1.gain.linearRampToValueAtTime(Math.max(0.0002, 0.09 * this.volume), now + 0.012);
+                g1.gain.linearRampToValueAtTime(Math.max(0.0002, 0.06 * this.volume), now + 0.067);
+                g1.gain.exponentialRampToValueAtTime(SAFE_EXPONENTIAL_GAIN_FLOOR, now + 0.095);
+                pink.connect(bp); bp.connect(lp); lp.connect(g1); g1.connect(ctx.destination);
+            }
 
-        const t2 = now + 0.095;
-        const lp2 = this.makeFilter(ctx, 'lowpass', 310, 2.4, t2);
-        const g2 = this.makeAdsrGain(ctx, t2, 0.38, 0.002, 0.065);
-        lp2.connect(g2); g2.connect(ctx.destination);
-        this.makeOsc(ctx, 'sine', 185, 68, 0.028, t2, 0.065, lp2);
+            const t2 = now + 0.095;
+            const lp2 = this.makeFilter(ctx, 'lowpass', 310, 2.4, t2);
+            const g2 = this.makeAdsrGain(ctx, t2, 0.38, 0.002, 0.065);
+            lp2.connect(g2); g2.connect(ctx.destination);
+            this.makeOsc(ctx, 'sine', 185, 68, 0.028, t2, 0.065, lp2);
 
-        const white = this.spawnNoise(ctx, 'white', t2, 0.015);
-        if (white) {
-            const bpW = this.makeFilter(ctx, 'bandpass', 2750, 3.2, t2);
-            const gW = this.makeAdsrGain(ctx, t2, 0.14, 0.001, 0.015);
-            white.connect(bpW); bpW.connect(gW); gW.connect(ctx.destination);
+            const white = this.spawnNoise(ctx, 'white', t2, 0.015);
+            if (white) {
+                const bpW = this.makeFilter(ctx, 'bandpass', 2750, 3.2, t2);
+                const gW = this.makeAdsrGain(ctx, t2, 0.14, 0.001, 0.015);
+                white.connect(bpW); bpW.connect(gW); gW.connect(ctx.destination);
+            }
+        } catch {
+            // AudioContext interrompu sur iOS/Android
         }
     }
 
@@ -201,37 +205,41 @@ export class BackgammonSoundEngine {
         if (this.isMuted) return;
         const ctx = this.getContext();
         if (!ctx) return;
-        const now = ctx.currentTime;
+        try {
+            const now = ctx.currentTime;
 
-        const outNode: AudioNode = (() => {
-            if (typeof ctx.createStereoPanner === 'function') {
-                const panner = ctx.createStereoPanner();
-                panner.pan.setValueAtTime(computePointStereoPan(pointIndex), now);
-                panner.connect(ctx.destination);
-                return panner;
+            const outNode: AudioNode = (() => {
+                if (typeof ctx.createStereoPanner === 'function') {
+                    const panner = ctx.createStereoPanner();
+                    panner.pan.setValueAtTime(computePointStereoPan(pointIndex), now);
+                    panner.connect(ctx.destination);
+                    return panner;
+                }
+                return ctx.destination;
+            })();
+
+            const bp1 = this.makeFilter(ctx, 'bandpass', 1850, 2.6, now);
+            const hp1 = this.makeFilter(ctx, 'highpass', 420, 0.7, now);
+            const g1 = this.makeAdsrGain(ctx, now, 0.58, 0.0015, 0.0415);
+            bp1.connect(hp1); hp1.connect(g1); g1.connect(outNode);
+
+            this.makeOsc(ctx, 'triangle', 1480, 640, 0.022, now, 0.042, bp1);
+            this.makeOsc(ctx, 'triangle', 2390, 1050, 0.022, now, 0.042, bp1);
+
+            const white = this.spawnNoise(ctx, 'white', now, 0.012);
+            if (white) {
+                const bpW = this.makeFilter(ctx, 'bandpass', 3300, 4.0, now);
+                white.connect(bpW); bpW.connect(bp1);
             }
-            return ctx.destination;
-        })();
 
-        const bp1 = this.makeFilter(ctx, 'bandpass', 1850, 2.6, now);
-        const hp1 = this.makeFilter(ctx, 'highpass', 420, 0.7, now);
-        const g1 = this.makeAdsrGain(ctx, now, 0.58, 0.0015, 0.0415);
-        bp1.connect(hp1); hp1.connect(g1); g1.connect(outNode);
-
-        this.makeOsc(ctx, 'triangle', 1480, 640, 0.022, now, 0.042, bp1);
-        this.makeOsc(ctx, 'triangle', 2390, 1050, 0.022, now, 0.042, bp1);
-
-        const white = this.spawnNoise(ctx, 'white', now, 0.012);
-        if (white) {
-            const bpW = this.makeFilter(ctx, 'bandpass', 3300, 4.0, now);
-            white.connect(bpW); bpW.connect(bp1);
+            const t2 = now + 0.012;
+            const lp2 = this.makeFilter(ctx, 'lowpass', 220, 3.8, t2);
+            const g2 = this.makeAdsrGain(ctx, t2, 0.48, 0.003, 0.095);
+            lp2.connect(g2); g2.connect(outNode);
+            this.makeOsc(ctx, 'sine', 142, 46, 0.095, t2, 0.095, lp2);
+        } catch {
+            // AudioContext interrompu sur iOS/Android
         }
-
-        const t2 = now + 0.012;
-        const lp2 = this.makeFilter(ctx, 'lowpass', 220, 3.8, t2);
-        const g2 = this.makeAdsrGain(ctx, t2, 0.48, 0.003, 0.095);
-        lp2.connect(g2); g2.connect(outNode);
-        this.makeOsc(ctx, 'sine', 142, 46, 0.095, t2, 0.095, lp2);
     }
 
     /** 3. Secousse du cornet en cuir (t = 0, 58, 122 ms) et rebonds polyrythmiques des 2 dés sur le noyer. */
@@ -239,36 +247,40 @@ export class BackgammonSoundEngine {
         if (this.isMuted) return;
         const ctx = this.getContext();
         if (!ctx) return;
-        const now = ctx.currentTime;
+        try {
+            const now = ctx.currentTime;
 
-        const cupPeaks = [0.24, 0.19, 0.27] as const;
-        DICE_CUP_SHAKE_TIMES_MS.forEach((ms, idx) => {
-            const t = now + ms / 1000;
-            const bp = this.makeFilter(ctx, 'bandpass', 650, 1.5, t);
-            const lp = this.makeFilter(ctx, 'lowpass', 1150, 0.9, t);
-            const g = this.makeAdsrGain(ctx, t, cupPeaks[idx] ?? 0.22, 0.004, 0.046);
-            bp.connect(lp); lp.connect(g); g.connect(ctx.destination);
-            this.makeOsc(ctx, 'triangle', 240, 130, 0.030, t, 0.046, bp);
-            const pink = this.spawnNoise(ctx, 'pink', t, 0.046);
-            if (pink) pink.connect(bp);
-        });
+            const cupPeaks = [0.24, 0.19, 0.27] as const;
+            DICE_CUP_SHAKE_TIMES_MS.forEach((ms, idx) => {
+                const t = now + ms / 1000;
+                const bp = this.makeFilter(ctx, 'bandpass', 650, 1.5, t);
+                const lp = this.makeFilter(ctx, 'lowpass', 1150, 0.9, t);
+                const g = this.makeAdsrGain(ctx, t, cupPeaks[idx] ?? 0.22, 0.004, 0.046);
+                bp.connect(lp); lp.connect(g); g.connect(ctx.destination);
+                this.makeOsc(ctx, 'triangle', 240, 130, 0.030, t, 0.046, bp);
+                const pink = this.spawnNoise(ctx, 'pink', t, 0.046);
+                if (pink) pink.connect(bp);
+            });
 
-        const triggerBounce = (ms: number, pf: number, baseGain: number, bounceIdx: number) => {
-            const t = now + ms / 1000;
-            const g = this.makeAdsrGain(ctx, t, baseGain * Math.pow(0.68, bounceIdx), 0.001, 0.029);
-            g.connect(ctx.destination);
-            this.makeOsc(ctx, 'sine', 420 * pf, 190 * pf, 0.015, t, 0.029, g);
-            const white = this.spawnNoise(ctx, 'white', t, 0.008);
-            if (white) {
-                for (const modeHz of [840, 2120] as const) {
-                    const bp = this.makeFilter(ctx, 'bandpass', modeHz * pf, 8.5, t);
-                    white.connect(bp); bp.connect(g);
+            const triggerBounce = (ms: number, pf: number, baseGain: number, bounceIdx: number) => {
+                const t = now + ms / 1000;
+                const g = this.makeAdsrGain(ctx, t, baseGain * Math.pow(0.68, bounceIdx), 0.001, 0.029);
+                g.connect(ctx.destination);
+                this.makeOsc(ctx, 'sine', 420 * pf, 190 * pf, 0.015, t, 0.029, g);
+                const white = this.spawnNoise(ctx, 'white', t, 0.008);
+                if (white) {
+                    for (const modeHz of [840, 2120] as const) {
+                        const bp = this.makeFilter(ctx, 'bandpass', modeHz * pf, 8.5, t);
+                        white.connect(bp); bp.connect(g);
+                    }
                 }
-            }
-        };
+            };
 
-        DIE_A_BOUNCE_TIMES_MS.forEach((ms, i) => triggerBounce(ms, DIE_A_PITCH_FACTOR, 0.42, i));
-        DIE_B_BOUNCE_TIMES_MS.forEach((ms, i) => triggerBounce(ms, DIE_B_PITCH_FACTOR, 0.38, i));
+            DIE_A_BOUNCE_TIMES_MS.forEach((ms, i) => triggerBounce(ms, DIE_A_PITCH_FACTOR, 0.42, i));
+            DIE_B_BOUNCE_TIMES_MS.forEach((ms, i) => triggerBounce(ms, DIE_B_PITCH_FACTOR, 0.38, i));
+        } catch {
+            // AudioContext interrompu sur iOS/Android
+        }
     }
 
     /** 4. Pose du videau (cube en laiton brossé sur bois massif : sub-bass 96->36 Hz + 3 partiels inharmoniques). */
@@ -276,27 +288,31 @@ export class BackgammonSoundEngine {
         if (this.isMuted) return;
         const ctx = this.getContext();
         if (!ctx) return;
-        const now = ctx.currentTime;
+        try {
+            const now = ctx.currentTime;
 
-        const lpSub = this.makeFilter(ctx, 'lowpass', 155, 4.2, now);
-        const gSub = this.makeAdsrGain(ctx, now, 0.65, 0.0025, 0.1575);
-        lpSub.connect(gSub); gSub.connect(ctx.destination);
-        this.makeOsc(ctx, 'sine', 96, 36, 0.070, now, 0.160, lpSub);
+            const lpSub = this.makeFilter(ctx, 'lowpass', 155, 4.2, now);
+            const gSub = this.makeAdsrGain(ctx, now, 0.65, 0.0025, 0.1575);
+            lpSub.connect(gSub); gSub.connect(ctx.destination);
+            this.makeOsc(ctx, 'sine', 96, 36, 0.070, now, 0.160, lpSub);
 
-        const lpBrass = this.makeFilter(ctx, 'lowpass', 2850, 1.4, now);
-        lpBrass.connect(ctx.destination);
+            const lpBrass = this.makeFilter(ctx, 'lowpass', 2850, 1.4, now);
+            lpBrass.connect(ctx.destination);
 
-        for (const [freqHz, peakGain, decaySec] of [[528, 0.28, 0.210], [1195, 0.14, 0.145], [2680, 0.06, 0.085]] as const) {
-            const g = this.makeAdsrGain(ctx, now, peakGain, 0.0015, decaySec);
-            g.connect(lpBrass);
-            this.makeOsc(ctx, 'sine', freqHz, null, 0, now, decaySec, g);
-        }
+            for (const [freqHz, peakGain, decaySec] of [[528, 0.28, 0.210], [1195, 0.14, 0.145], [2680, 0.06, 0.085]] as const) {
+                const g = this.makeAdsrGain(ctx, now, peakGain, 0.0015, decaySec);
+                g.connect(lpBrass);
+                this.makeOsc(ctx, 'sine', freqHz, null, 0, now, decaySec, g);
+            }
 
-        const pink = this.spawnNoise(ctx, 'pink', now, 0.045);
-        if (pink) {
-            const bp = this.makeFilter(ctx, 'bandpass', 920, 2.0, now);
-            const gP = this.makeAdsrGain(ctx, now, 0.18, 0.001, 0.045);
-            pink.connect(bp); bp.connect(gP); gP.connect(lpBrass);
+            const pink = this.spawnNoise(ctx, 'pink', now, 0.045);
+            if (pink) {
+                const bp = this.makeFilter(ctx, 'bandpass', 920, 2.0, now);
+                const gP = this.makeAdsrGain(ctx, now, 0.18, 0.001, 0.045);
+                pink.connect(bp); bp.connect(gP); gP.connect(lpBrass);
+            }
+        } catch {
+            // AudioContext interrompu sur iOS/Android
         }
     }
 
@@ -305,22 +321,26 @@ export class BackgammonSoundEngine {
         if (this.isMuted) return;
         const ctx = this.getContext();
         if (!ctx) return;
-        const now = ctx.currentTime;
-        const shift = computeBearOffPitchMultiplier(checkersInTray);
+        try {
+            const now = ctx.currentTime;
+            const shift = computeBearOffPitchMultiplier(checkersInTray);
 
-        const triggerSlot = (t: number, bpHz: number, f0: number, f1: number, peak: number, atk: number, dec: number) => {
-            const g = this.makeAdsrGain(ctx, t, peak, atk, atk + dec);
-            g.connect(ctx.destination);
-            this.makeOsc(ctx, 'triangle', f0 * shift, f1 * shift, 0.018, t, atk + dec, g);
-            const white = this.spawnNoise(ctx, 'white', t, atk + dec);
-            if (white) {
-                const bp = this.makeFilter(ctx, 'bandpass', bpHz * shift, 5.5, t);
-                white.connect(bp); bp.connect(g);
-            }
-        };
+            const triggerSlot = (t: number, bpHz: number, f0: number, f1: number, peak: number, atk: number, dec: number) => {
+                const g = this.makeAdsrGain(ctx, t, peak, atk, atk + dec);
+                g.connect(ctx.destination);
+                this.makeOsc(ctx, 'triangle', f0 * shift, f1 * shift, 0.018, t, atk + dec, g);
+                const white = this.spawnNoise(ctx, 'white', t, atk + dec);
+                if (white) {
+                    const bp = this.makeFilter(ctx, 'bandpass', bpHz * shift, 5.5, t);
+                    white.connect(bp); bp.connect(g);
+                }
+            };
 
-        triggerSlot(now, 2180, 590, 410, 0.30, 0.001, 0.034);
-        triggerSlot(now + 0.028, 2440, 660, 460, 0.22, 0.0015, 0.046);
+            triggerSlot(now, 2180, 590, 410, 0.30, 0.001, 0.034);
+            triggerSlot(now + 0.028, 2440, 660, 460, 0.22, 0.0015, 0.046);
+        } catch {
+            // AudioContext interrompu sur iOS/Android
+        }
     }
 
     /** 6. Coup brillant / optimal post-match : arpège D5 (587.33 Hz), A5 (880.00 Hz), E6 (1318.51 Hz). */
@@ -328,21 +348,25 @@ export class BackgammonSoundEngine {
         if (this.isMuted) return;
         const ctx = this.getContext();
         if (!ctx) return;
-        const now = ctx.currentTime;
+        try {
+            const now = ctx.currentTime;
 
-        const lp = this.makeFilter(ctx, 'lowpass', 3400, 0.7, now);
-        const hp = this.makeFilter(ctx, 'highpass', 300, 0.7, now);
-        lp.connect(hp); hp.connect(ctx.destination);
+            const lp = this.makeFilter(ctx, 'lowpass', 3400, 0.7, now);
+            const hp = this.makeFilter(ctx, 'highpass', 300, 0.7, now);
+            lp.connect(hp); hp.connect(ctx.destination);
 
-        for (const [freqHz, delaySec, peak] of [[587.33, 0, 0.20], [880.00, 0.018, 0.17], [1318.51, 0.036, 0.14]] as const) {
-            const t = now + delaySec;
-            const g = this.makeAdsrGain(ctx, t, peak, 0.012, 0.392);
-            g.connect(lp);
-            this.makeOsc(ctx, 'sine', freqHz, null, 0, t, 0.392, g);
-            const triGain = ctx.createGain();
-            triGain.gain.setValueAtTime(0.125, t);
-            triGain.connect(g);
-            this.makeOsc(ctx, 'triangle', freqHz, null, 0, t, 0.392, triGain);
+            for (const [freqHz, delaySec, peak] of [[587.33, 0, 0.20], [880.00, 0.018, 0.17], [1318.51, 0.036, 0.14]] as const) {
+                const t = now + delaySec;
+                const g = this.makeAdsrGain(ctx, t, peak, 0.012, 0.392);
+                g.connect(lp);
+                this.makeOsc(ctx, 'sine', freqHz, null, 0, t, 0.392, g);
+                const triGain = ctx.createGain();
+                triGain.gain.setValueAtTime(0.125, t);
+                triGain.connect(g);
+                this.makeOsc(ctx, 'triangle', freqHz, null, 0, t, 0.392, triGain);
+            }
+        } catch {
+            // AudioContext interrompu sur iOS/Android
         }
     }
 
@@ -351,25 +375,29 @@ export class BackgammonSoundEngine {
         if (this.isMuted) return;
         const ctx = this.getContext();
         if (!ctx) return;
-        const now = ctx.currentTime;
+        try {
+            const now = ctx.currentTime;
 
-        const lp = this.makeFilter(ctx, 'lowpass', 410, 1.2, now);
-        const g = this.makeAdsrGain(ctx, now, 0.24, 0.015, 0.225);
-        lp.connect(g); g.connect(ctx.destination);
+            const lp = this.makeFilter(ctx, 'lowpass', 410, 1.2, now);
+            const g = this.makeAdsrGain(ctx, now, 0.24, 0.015, 0.225);
+            lp.connect(g); g.connect(ctx.destination);
 
-        for (const baseHz of [196.0, 185.0] as const) {
-            const osc = ctx.createOscillator();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(this.jf(baseHz), now);
-            osc.frequency.linearRampToValueAtTime(this.jf(baseHz - 12), now + 0.140);
-            osc.connect(lp);
-            osc.start(now); osc.stop(now + 0.225 + SAFE_NODE_STOP_MARGIN_SEC);
-        }
+            for (const baseHz of [196.0, 185.0] as const) {
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(this.jf(baseHz), now);
+                osc.frequency.linearRampToValueAtTime(this.jf(baseHz - 12), now + 0.140);
+                osc.connect(lp);
+                osc.start(now); osc.stop(now + 0.225 + SAFE_NODE_STOP_MARGIN_SEC);
+            }
 
-        const pink = this.spawnNoise(ctx, 'pink', now, 0.030);
-        if (pink) {
-            const bp = this.makeFilter(ctx, 'bandpass', 310, 2.0, now);
-            pink.connect(bp); bp.connect(lp);
+            const pink = this.spawnNoise(ctx, 'pink', now, 0.030);
+            if (pink) {
+                const bp = this.makeFilter(ctx, 'bandpass', 310, 2.0, now);
+                pink.connect(bp); bp.connect(lp);
+            }
+        } catch {
+            // AudioContext interrompu sur iOS/Android
         }
     }
 

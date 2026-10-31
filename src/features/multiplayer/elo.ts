@@ -47,12 +47,43 @@ const STORAGE_KEY_FIRST_TRY_COUNT = 'bg_first_try_quiz_count_v1';
 const STORAGE_KEY_FIRST_TRY_STREAK = 'bg_first_try_quiz_streak_v1';
 const STORAGE_KEY_CRYSTALLIZATION_USED = 'bg_quiz_crystallization_used_v1';
 const STORAGE_KEY_ESCROW_ELO = 'bg_escrow_elo_points_v1';
+const STORAGE_KEY_LOCAL_ELO = 'bg_player_elo';
 
 let inMemoryPublicPr = DEFAULT_INITIAL_PUBLIC_PR;
 let inMemoryFirstTryCount = 0;
 let inMemoryFirstTryStreak = 0;
 let inMemoryCrystallizationUsed = 0;
 let inMemoryEscrowElo = 0;
+let inMemoryLocalElo = DEFAULT_INITIAL_ELO;
+
+export function readLocalPlayerElo(): number {
+    if (typeof window === 'undefined') return inMemoryLocalElo;
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY_LOCAL_ELO);
+        if (!raw) return inMemoryLocalElo;
+        const parsed = Number(raw);
+        if (!Number.isFinite(parsed) || parsed < MIN_ELO_RATING) {
+            return DEFAULT_INITIAL_ELO;
+        }
+        inMemoryLocalElo = Math.round(parsed);
+        return inMemoryLocalElo;
+    } catch {
+        return inMemoryLocalElo;
+    }
+}
+
+export function saveLocalPlayerElo(rating: number): number {
+    const safeRating = Math.max(MIN_ELO_RATING, Math.round(rating));
+    inMemoryLocalElo = safeRating;
+    if (typeof window !== 'undefined') {
+        try {
+            localStorage.setItem(STORAGE_KEY_LOCAL_ELO, String(safeRating));
+        } catch {
+            // Ignore
+        }
+    }
+    return safeRating;
+}
 
 export function resetPublicPrForTests(): void {
     inMemoryPublicPr = DEFAULT_INITIAL_PUBLIC_PR;
@@ -60,6 +91,7 @@ export function resetPublicPrForTests(): void {
     inMemoryFirstTryStreak = 0;
     inMemoryCrystallizationUsed = 0;
     inMemoryEscrowElo = 0;
+    inMemoryLocalElo = DEFAULT_INITIAL_ELO;
     if (typeof window !== 'undefined') {
         try {
             localStorage.removeItem(STORAGE_KEY_PUBLIC_PR);
@@ -67,6 +99,7 @@ export function resetPublicPrForTests(): void {
             localStorage.removeItem(STORAGE_KEY_FIRST_TRY_STREAK);
             localStorage.removeItem(STORAGE_KEY_CRYSTALLIZATION_USED);
             localStorage.removeItem(STORAGE_KEY_ESCROW_ELO);
+            localStorage.removeItem(STORAGE_KEY_LOCAL_ELO);
         } catch {
             // Ignore
         }
@@ -408,6 +441,7 @@ export function rewardFirstTryQuizOnPublicPr(): {
     if (currentEscrow > 0 && inMemoryFirstTryStreak >= ESCROW_UNLOCK_STREAK_REQUIRED) {
         unlockedEscrowElo = currentEscrow;
         storeEscrowEloPoints(0);
+        saveLocalPlayerElo(readLocalPlayerElo() + unlockedEscrowElo);
     }
 
     let totalFirstTrySolved = inMemoryFirstTryCount;

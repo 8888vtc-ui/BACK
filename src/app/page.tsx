@@ -247,8 +247,10 @@ export default function Home() {
                 }
                 break;
             case 'drills':
-            case 'puzzles':
                 navigateTo('/drills');
+                break;
+            case 'puzzles':
+                navigateTo('/puzzles');
                 break;
             case 'import_export':
                 modals.openExportImport();

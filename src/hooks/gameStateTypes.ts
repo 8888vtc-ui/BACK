@@ -185,7 +185,8 @@ export function createInitialGameState(
 ): BackgammonGameState {
     const isCrawford =
         matchLength > 0 &&
-        (initialScoreX === matchLength - 1 || initialScoreO === matchLength - 1);
+        (initialScoreX === matchLength - 1 || initialScoreO === matchLength - 1) &&
+        !(initialScoreX === matchLength - 1 && initialScoreO === matchLength - 1);
 
     return {
         boardState: {

@@ -230,8 +230,19 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 onConfirm={() => game.commitHumanMove()}
                 onUndo={game.undoMove}
                 onOpenCubeSheet={() => setIsCubeSheetOpen(true)}
-                onTakeDouble={game.takeDouble}
-                onPassDouble={game.passDouble}
+                onTakeDouble={() => {
+                    if (isMultiplayerActive) {
+                        void multiplayer.broadcastDoubleAccepted(game.state.cubeValue * 2);
+                    }
+                    game.takeDouble();
+                }}
+                onPassDouble={() => {
+                    if (isMultiplayerActive) {
+                        const offerer = game.doublingOfferedBy ?? (game.state.turn === 'X' ? 'O' : 'X');
+                        void multiplayer.broadcastDoublePassed(offerer);
+                    }
+                    game.passDouble();
+                }}
                 onOpenCoachDrawer={() => {
                     onTriggerCoach();
                     modals.openMobileDrawer();
@@ -248,9 +259,25 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 matchLength={game.state.matchLength}
                 crawford={game.state.crawford}
                 onClose={() => setIsCubeSheetOpen(false)}
-                onOfferDouble={game.offerDouble}
-                onTakeDouble={game.takeDouble}
-                onPassDouble={game.passDouble}
+                onOfferDouble={() => {
+                    if (isMultiplayerActive) {
+                        void multiplayer.broadcastDoubleOffered(game.state.cubeValue * 2);
+                    }
+                    game.offerDouble();
+                }}
+                onTakeDouble={() => {
+                    if (isMultiplayerActive) {
+                        void multiplayer.broadcastDoubleAccepted(game.state.cubeValue * 2);
+                    }
+                    game.takeDouble();
+                }}
+                onPassDouble={() => {
+                    if (isMultiplayerActive) {
+                        const offerer = game.doublingOfferedBy ?? (game.state.turn === 'X' ? 'O' : 'X');
+                        void multiplayer.broadcastDoublePassed(offerer);
+                    }
+                    game.passDouble();
+                }}
             />
 
             {/* 4. Tiroir mobile du Coach */}

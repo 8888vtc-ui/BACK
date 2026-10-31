@@ -10,7 +10,8 @@ import type {
 } from '../features/multiplayer/types';
 import {
     calculateMatchElo,
-    DEFAULT_INITIAL_ELO,
+    readLocalPlayerElo,
+    saveLocalPlayerElo,
     readPublicAveragePr,
     recordMatchIntoPublicAveragePr,
     type MatchEloPrOptions,
@@ -43,7 +44,7 @@ export function useMultiplayerLocalProfile({
             id: guestId,
             username: passport?.pseudo || `Joueur_${guestId.slice(-4)}`,
             displayName: passport?.pseudo || `Joueur #${guestId.slice(-4)}`,
-            rating: DEFAULT_INITIAL_ELO,
+            rating: readLocalPlayerElo(),
             averagePr: readPublicAveragePr(),
             avatarUrl: passport?.avatarUrl || STANDARD_USER_AVATARS[0].url,
             isGuest: true,
@@ -54,16 +55,19 @@ export function useMultiplayerLocalProfile({
         let mounted = true;
         async function loadProfile() {
             try {
+                const passport = readPlayerPassport();
                 const user = await getCurrentUser();
                 if (user && mounted) {
                     const prof = await getUserProfile(user.id);
+                    const syncedRating = prof?.rating || readLocalPlayerElo();
+                    saveLocalPlayerElo(syncedRating);
                     setLocalProfile({
                         id: user.id,
-                        username: prof?.username || user.email?.split('@')[0] || 'Joueur',
-                        displayName: prof?.display_name || 'Champion',
-                        rating: prof?.rating || DEFAULT_INITIAL_ELO,
+                        username: prof?.username || passport?.pseudo || user.email?.split('@')[0] || 'Joueur',
+                        displayName: prof?.display_name || passport?.pseudo || 'Champion',
+                        rating: syncedRating,
                         averagePr: readPublicAveragePr(),
-                        avatarUrl: prof?.avatar_url,
+                        avatarUrl: prof?.avatar_url || passport?.avatarUrl || STANDARD_USER_AVATARS[0].url,
                         isGuest: false,
                     });
                 }
@@ -91,6 +95,7 @@ export function useMultiplayerLocalProfile({
 
             const newLocalRating =
                 matchInfo.localRole === 'X' ? elo.playerXNewRating : elo.playerONewRating;
+            saveLocalPlayerElo(newLocalRating);
             const localMatchPr =
                 matchInfo.localRole === 'X' ? prOptions?.prX : prOptions?.prO;
             const updatedAveragePr =

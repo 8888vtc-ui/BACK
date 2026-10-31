@@ -6,7 +6,7 @@
  * Conforme à SCALABILITY.md (< 300 lignes, 0 any).
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { isValidRoomCode } from '../../features/multiplayer/realtimeSchema';
 
 export interface PrivateRoomModalProps {
@@ -50,12 +50,19 @@ export const PrivateRoomModal: React.FC<PrivateRoomModalProps> = ({
     const [isJoining, setIsJoining] = useState<boolean>(false);
     const [copiedCode, setCopiedCode] = useState<boolean>(false);
     const [copiedLink, setCopiedLink] = useState<boolean>(false);
+    const hasAutoAttemptedRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (initialRoomCode) {
             const normalized = initialRoomCode.trim().toUpperCase();
             setInputCode(normalized);
-            if (autoConnect && isValidRoomCode(normalized) && !privateRoomCode) {
+            if (
+                autoConnect &&
+                isValidRoomCode(normalized) &&
+                !privateRoomCode &&
+                hasAutoAttemptedRef.current !== normalized
+            ) {
+                hasAutoAttemptedRef.current = normalized;
                 void onJoinPrivateRoom(normalized).catch((err: unknown) => {
                     setJoinError(err instanceof Error ? err.message : 'Échec de connexion automatique.');
                 });
