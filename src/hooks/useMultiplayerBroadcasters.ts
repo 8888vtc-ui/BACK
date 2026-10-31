@@ -146,15 +146,30 @@ export function useMultiplayerBroadcasters({
 
     const sendQuickChat = useCallback(
         (messageId: 'gg' | 'nice_move' | 'unlucky' | 'thinking' | 'thanks') => {
-            if (!matchInfo || !realtimeRef.current) return;
+            if (!matchInfo) return;
             setQuickChatMessage({ player: matchInfo.localRole, messageId });
-            setTimeout(() => setQuickChatMessage(null), 3000);
-            realtimeRef.current.sendAction({
-                type: 'QUICK_CHAT',
-                player: matchInfo.localRole,
-                messageId,
-                timestamp: Date.now(),
-            });
+            setTimeout(() => setQuickChatMessage(null), 3200);
+            if (realtimeRef.current) {
+                realtimeRef.current.sendAction({
+                    type: 'QUICK_CHAT',
+                    player: matchInfo.localRole,
+                    messageId,
+                    timestamp: Date.now(),
+                });
+            } else if (matchInfo.isClubChallenger) {
+                const oppRole: Player = matchInfo.localRole === 'X' ? 'O' : 'X';
+                const replyMap: Record<typeof messageId, typeof messageId> = {
+                    gg: 'thanks',
+                    nice_move: 'thanks',
+                    thanks: 'gg',
+                    unlucky: 'nice_move',
+                    thinking: 'gg',
+                };
+                setTimeout(() => {
+                    setQuickChatMessage({ player: oppRole, messageId: replyMap[messageId] });
+                    setTimeout(() => setQuickChatMessage(null), 3200);
+                }, 1800);
+            }
         },
         [matchInfo, realtimeRef, setQuickChatMessage],
     );

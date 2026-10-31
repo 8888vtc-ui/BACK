@@ -297,12 +297,60 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 locale={locale}
             />
 
-            {/* 6. Bandeau actif Anti-Tilt de Zare + Joker Swap Dice (1/jour en partie IA) */}
-            {(tilt.showTiltAlert || (!isMultiplayerActive && game.isHumanTurn && Boolean(game.dice) && !swapDiceUsedToday)) && (
+            {/* 6. Bandeau actif Anti-Tilt de Zare + Joker Swap Dice + Quick Chat Adversaire */}
+            {(tilt.showTiltAlert ||
+                isMultiplayerActive ||
+                Boolean(multiplayer.matchInfo?.isClubChallenger) ||
+                (!isMultiplayerActive && game.isHumanTurn && Boolean(game.dice) && !swapDiceUsedToday)) && (
                 <div
                     data-testid="active-antitilt-swapdice-bar"
-                    className="fixed bottom-[4.6rem] left-2 sm:left-auto sm:bottom-16 sm:right-3 z-40 flex items-center gap-2 rounded-2xl border border-[#d4af37]/40 bg-[#0d0a08]/95 px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-[#f7f3e8] shadow-2xl backdrop-blur-md"
+                    className="fixed bottom-[4.6rem] left-2 sm:left-auto sm:bottom-16 sm:right-3 z-40 flex flex-wrap items-center gap-2 rounded-2xl border border-[#d4af37]/40 bg-[#0d0a08]/95 px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-[#f7f3e8] shadow-2xl backdrop-blur-md"
                 >
+                    {multiplayer.quickChatMessage && (
+                        <div
+                            data-testid="live-quick-chat-bubble"
+                            className="flex items-center gap-1.5 rounded-xl border border-[#f3c65f]/50 bg-[#1a1208] px-2.5 py-1 text-[11px] font-bold text-[#fde68a] animate-fade-in"
+                        >
+                            <span>
+                                {multiplayer.quickChatMessage.player === (multiplayer.matchInfo?.localRole ?? 'X')
+                                    ? 'Vous :'
+                                    : `${multiplayer.opponentProfile?.displayName ?? 'Adversaire'} :`}
+                            </span>
+                            <span>
+                                {multiplayer.quickChatMessage.messageId === 'gg'
+                                    ? '👋 Bonne partie !'
+                                    : multiplayer.quickChatMessage.messageId === 'nice_move'
+                                      ? '👏 Bien joué !'
+                                      : multiplayer.quickChatMessage.messageId === 'unlucky'
+                                        ? '😅 Pas de chance !'
+                                        : multiplayer.quickChatMessage.messageId === 'thinking'
+                                          ? '🤔 Je réfléchis...'
+                                          : '🙏 Merci !'}
+                            </span>
+                        </div>
+                    )}
+                    {(isMultiplayerActive || Boolean(multiplayer.matchInfo?.isClubChallenger)) && (
+                        <div className="flex items-center gap-1" role="group" aria-label="Messages rapides">
+                            {(
+                                [
+                                    { id: 'gg' as const, label: '👋' },
+                                    { id: 'nice_move' as const, label: '👏' },
+                                    { id: 'unlucky' as const, label: '😅' },
+                                    { id: 'thanks' as const, label: '🙏' },
+                                ]
+                            ).map((chat) => (
+                                <button
+                                    key={chat.id}
+                                    type="button"
+                                    data-testid={`quick-chat-btn-${chat.id}`}
+                                    onClick={() => multiplayer.sendQuickChat(chat.id)}
+                                    className="rounded-lg border border-white/10 bg-white/5 px-1.5 py-0.5 text-xs hover:border-[#f3c65f]/50 hover:bg-white/10 transition active:scale-95"
+                                >
+                                    {chat.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                     {tilt.showTiltAlert && (
                         <div className="flex items-center gap-1.5 text-amber-300 font-semibold">
                             <span>🧘 Pause Anti-Tilt : respirez 5s avant de jouer</span>

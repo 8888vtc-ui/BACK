@@ -85,10 +85,17 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
         modals.isOpeningBookModalOpen ||
         modals.isSubscriptionModalOpen;
 
+    const isClubChallengerGameOver = Boolean(
+        multiplayer.status === 'game_over' &&
+            multiplayer.matchInfo?.isClubChallenger &&
+            multiplayer.opponentProfile &&
+            multiplayer.eloResult,
+    );
+
     return (
         <>
-            {/* 1. Rapport de Formation Post-Match (masqué si une sous-modale d'inspection est ouverte pour éviter tout empilement) */}
-            {!isMultiplayerActive && game.phase === 'GAME_OVER' && game.gameResult && !isAnySecondaryModalOpen && (
+            {/* 1. Rapport de Formation Post-Match (masqué si une sous-modale d'inspection ou le bilan Elo Challenger est ouvert) */}
+            {!isMultiplayerActive && !isClubChallengerGameOver && game.phase === 'GAME_OVER' && game.gameResult && !isAnySecondaryModalOpen && (
                 <PostMatchTrainingReport
                     analysis={latestGameAnalysis}
                     winner={game.gameResult.winner}
@@ -174,7 +181,14 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                     localProfile={multiplayer.localProfile}
                     opponentProfile={multiplayer.opponentProfile}
                     eloResult={multiplayer.eloResult}
-                    onRematch={() => multiplayer.startMatchmaking(multiplayer.matchInfo?.matchLength || 7, { isRematch: true })}
+                    onRematch={() => {
+                        onResetGameHistory();
+                        multiplayer.startMatchmaking(multiplayer.matchInfo?.matchLength || 7, { isRematch: true });
+                    }}
+                    onFindNewOpponent={() => {
+                        onResetGameHistory();
+                        multiplayer.startMatchmaking(multiplayer.matchInfo?.matchLength || 7, { isRematch: false });
+                    }}
                     onOpenReview={modals.openGameReview}
                     onClose={() => {
                         multiplayer.leaveMatch();

@@ -16,6 +16,7 @@ export interface MultiplayerResultModalProps {
     opponentProfile: PlayerEloProfile;
     eloResult: EloCalculationResult;
     onRematch: () => void;
+    onFindNewOpponent?: () => void;
     onOpenReview?: () => void;
     onClose: () => void;
     theme?: ThemeName;
@@ -27,6 +28,7 @@ export default function MultiplayerResultModal({
     opponentProfile,
     eloResult,
     onRematch,
+    onFindNewOpponent,
     onOpenReview,
     onClose,
     theme,
@@ -109,6 +111,17 @@ export default function MultiplayerResultModal({
                         <span>{tier.badge}</span>
                         <span className={`font-semibold ${tier.colorClass}`}>{tier.title}</span>
                     </div>
+
+                    {eloResult.prBlockedGain && (eloResult.escrowEloPoints ?? 0) > 0 && (
+                        <div className="mt-2.5 rounded-xl border border-amber-400/40 bg-amber-950/50 px-3 py-1.5 text-[11px] font-semibold text-amber-200">
+                            🔒 +{eloResult.escrowEloPoints} Elo en séquestre (PR adverse meilleur) — réussissez 2 Quizz au 1er essai pour les débloquer !
+                        </div>
+                    )}
+                    {!isWinner && eloResult.prShieldActivated && (
+                        <div className="mt-2.5 rounded-xl border border-emerald-400/40 bg-emerald-950/50 px-3 py-1.5 text-[11px] font-semibold text-emerald-200">
+                            🛡️ Bouclier de Maîtrise PR activé : vous avez mieux joué que votre adversaire (0 Elo perdu) !
+                        </div>
+                    )}
                 </div>
 
                 <div className="space-y-2.5">
@@ -118,8 +131,19 @@ export default function MultiplayerResultModal({
                         className="w-full rounded-xl border border-[#f3c65f] bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] py-3 text-sm font-black uppercase tracking-wider text-[#1c1004] shadow-[0_4px_14px_rgba(212,175,55,0.3)] hover:brightness-105 transition-all"
                         data-testid="rematch-button"
                     >
-                        ⚡ Rejouer ({matchInfo.matchLength} pts)
+                        ⚡ Proposer une Revanche ({matchInfo.matchLength} pts)
                     </button>
+
+                    {onFindNewOpponent && (
+                        <button
+                            type="button"
+                            onClick={onFindNewOpponent}
+                            className="w-full rounded-xl border border-emerald-400/40 bg-emerald-950/50 py-2.5 text-xs font-extrabold text-emerald-200 hover:border-emerald-300 hover:bg-emerald-900/50 transition-colors"
+                            data-testid="find-new-opponent-button"
+                        >
+                            🔍 Trouver un nouvel adversaire
+                        </button>
+                    )}
 
                     {onOpenReview && (
                         <button

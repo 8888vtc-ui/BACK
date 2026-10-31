@@ -44,6 +44,7 @@ export interface MatchHudProps {
     coachQuotaBadge?: string; isVip?: boolean; autoConfirmMode?: AutoConfirmMode;
     onSelectAutoConfirmMode?: (mode: AutoConfirmMode) => void; gameSpeed?: GameSpeed;
     onSelectGameSpeed?: (speed: GameSpeed) => void;
+    customOpponentLabel?: string | null;
 }
 
 const FR_BOT_DISPLAY_NAMES: Record<AIDifficulty, string> = {
@@ -82,6 +83,7 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
     serverSeedHash, onOpenDiceAudit,
     lastMoveFeedback, notificationLevel, onChangeNotificationLevel,
     coachQuotaBadge, isVip, autoConfirmMode, onSelectAutoConfirmMode, gameSpeed, onSelectGameSpeed,
+    customOpponentLabel,
 }) => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
@@ -111,7 +113,7 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
 
     const activePersona = getBotPersona(difficulty, locale);
     const botFirstName = locale === 'fr' ? FR_BOT_DISPLAY_NAMES[difficulty] : activePersona.shortName;
-    const opponentDisplayLabel = `${activePersona.avatar} ${botFirstName}`;
+    const opponentDisplayLabel = customOpponentLabel || `${activePersona.avatar} ${botFirstName}`;
 
     const isHumanTurn = turn === playerColor;
     const barCount = boardState ? (turn === 'X' ? boardState.board[0] : Math.abs(boardState.board[25])) : 0;

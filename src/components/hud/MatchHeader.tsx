@@ -40,7 +40,8 @@ export interface MatchHeaderMultiplayerAdapter {
     broadcastDiceRolled: (dice: [number, number]) => void;
     broadcastDoubleAccepted: (cubeVal: number) => void;
     broadcastDoublePassed: (winner: Player) => void;
-    matchInfo?: { localRole?: Player } | null;
+    matchInfo?: { localRole?: Player; isClubChallenger?: boolean } | null;
+    opponentProfile?: { displayName?: string } | null;
 }
 
 export interface MatchHeaderProps {
@@ -231,6 +232,11 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                 onSelectAutoConfirmMode={game.setAutoConfirmMode}
                 gameSpeed={game.gameSpeed}
                 onSelectGameSpeed={game.setGameSpeed}
+                customOpponentLabel={
+                    multiplayer.matchInfo?.isClubChallenger
+                        ? multiplayer.opponentProfile?.displayName ?? null
+                        : null
+                }
             />
         </header>
     );
