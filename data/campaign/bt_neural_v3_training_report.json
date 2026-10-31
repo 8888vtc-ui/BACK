@@ -1,15 +1,50 @@
 {
-  "modelName": "BT-Neural v3.0 (250 -> 128 -> 64 -> 5 + Skip-Connection)",
-  "trainedAt": "2026-10-31T12:14:14Z",
+  "modelName": "BT-Neural v4.0 MoE-6 (Shared Trunk + 6 Specialized Phase Networks: Contact, Prime, Blitz, Crashed, Backgame, Race)",
+  "trainedAt": "2026-10-31T14:18:12Z",
   "hardware": "Intel(R) Core(TM) Ultra 7 258V (8 cores, 31.5 GB RAM)",
   "supervised3PlyPositions": 1920,
-  "certifiedTacticalMovePairs": 16289,
-  "epochs": 90,
-  "elapsedSeconds": 10.38,
-  "initial3PlyProbMse": 0.016953,
-  "final3PlyProbMse": 9.4e-05,
-  "initialPairwiseRankingAccuracyPct": 51.69,
-  "finalPairwiseRankingAccuracyPct": 94.95,
-  "exportedFloatCount": 41959,
-  "exportedBase64Bytes": 223784
+  "certifiedTacticalMovePairs": 17295,
+  "elapsedSeconds": 12.88,
+  "final3PlyProbMse": 0.000944,
+  "finalPairwiseRankingAccuracyPct": 93.3,
+  "exportedFloatCount": 53329,
+  "exportedBase64Bytes": 284424,
+  "phaseExperts": {
+    "CONTACT": {
+      "supervisedSamples": 856,
+      "pairwiseSamples": 5693,
+      "probMse": 0.000848,
+      "pairwiseAccuracyPct": 92.92
+    },
+    "PRIME": {
+      "supervisedSamples": 16,
+      "pairwiseSamples": 336,
+      "probMse": 0.001749,
+      "pairwiseAccuracyPct": 98.81
+    },
+    "BLITZ": {
+      "supervisedSamples": 468,
+      "pairwiseSamples": 1631,
+      "probMse": 0.000946,
+      "pairwiseAccuracyPct": 94.79
+    },
+    "CRASHED": {
+      "supervisedSamples": 254,
+      "pairwiseSamples": 730,
+      "probMse": 0.001204,
+      "pairwiseAccuracyPct": 95.89
+    },
+    "BACKGAME": {
+      "supervisedSamples": 148,
+      "pairwiseSamples": 8557,
+      "probMse": 0.000531,
+      "pairwiseAccuracyPct": 92.85
+    },
+    "RACE": {
+      "supervisedSamples": 178,
+      "pairwiseSamples": 348,
+      "probMse": 0.001304,
+      "pairwiseAccuracyPct": 93.1
+    }
+  }
 }
