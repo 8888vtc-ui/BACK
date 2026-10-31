@@ -105,6 +105,8 @@ export interface DrillValidationResult {
     feedbackMessage: string;
     /** Indice contextuel en cas d'erreur */
     hint?: string;
+    /** Explication géométrique et tactique spécifique expliquant POURQUOI le coup joué par l'utilisateur est une erreur */
+    specificMistakeReason?: string;
     /** Autorise une nouvelle tentative immédiate */
     canRetry: boolean;
     /** Analyse détaillée issue du moteur */

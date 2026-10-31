@@ -375,16 +375,32 @@ export function selectNextAdaptiveQuiz(
     const publicPrTierFloor = getTargetQuizTierFromPublicPr(readPublicAveragePr());
     const targetLevel = Math.max(chosen.state.level, publicPrTierFloor) as DrillTier;
 
-    // Cherche d'abord un quizz du palier exact (ou piloté par le PR du joueur), sinon le palier le plus proche en O(N)
+    // Cherche d'abord un quizz du palier exact (ou piloté par le PR du joueur), en priorisant
+    // les positions pédagogiques riches et réalistes (bench_ / harvest_ / bterh_ / quiz_) avant les positions brutes
+    const getPedagogicalPriority = (b: PlayerBlunderRecord): number => {
+        if (b.id.startsWith('bench_') || b.id.startsWith('harvest_')) return 4;
+        if (b.id.startsWith('bterh_')) return 3;
+        if (b.id.startsWith('quiz_')) return 2;
+        return 1;
+    };
+
     let bestCandidate: PlayerBlunderRecord | null = null;
     let bestDist = Infinity;
+    let bestPedagogy = -Infinity;
     let bestLoss = -Infinity;
     for (const c of candidates) {
         const dist = Math.abs((c.tier ?? 1) - targetLevel);
-        if (dist < bestDist || (dist === bestDist && c.equityLoss > bestLoss)) {
+        const pedagogy = getPedagogicalPriority(c);
+        const cappedLoss = Math.min(c.equityLoss, 0.55);
+        if (
+            dist < bestDist ||
+            (dist === bestDist && pedagogy > bestPedagogy) ||
+            (dist === bestDist && pedagogy === bestPedagogy && cappedLoss > bestLoss)
+        ) {
             bestCandidate = c;
             bestDist = dist;
-            bestLoss = c.equityLoss;
+            bestPedagogy = pedagogy;
+            bestLoss = cappedLoss;
         }
     }
 
