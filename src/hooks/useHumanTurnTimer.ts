@@ -36,6 +36,7 @@ export function useHumanTurnTimer({
     strictGamePhase,
     moveHistory,
     opponentStatusMessage,
+    autoConfirmTurn,
     autoConfirmMode,
     isDMP,
     matchLength,
@@ -75,11 +76,13 @@ export function useHumanTurnTimer({
                 (boardState.cubeOwner === null || boardState.cubeOwner === 'O') &&
                 (matchLength <= 0 || boardState.scoreO < matchLength - 1);
 
-            const shouldAutoCommit = shouldAutoConfirmTurn({
-                mode: autoConfirmMode,
-                isForcedSingleChoice,
-                opponentCanDoubleNextTurn,
-            });
+            const shouldAutoCommit =
+                autoConfirmTurn ||
+                shouldAutoConfirmTurn({
+                    mode: autoConfirmMode,
+                    isForcedSingleChoice,
+                    opponentCanDoubleNextTurn,
+                });
 
             if (shouldAutoCommit) {
                 const tAutoCommit = setTimeout(() => {
@@ -100,6 +103,7 @@ export function useHumanTurnTimer({
         opponentStatusMessage,
         clearHumanTimers,
         humanTimersRef,
+        autoConfirmTurn,
         autoConfirmMode,
         isDMP,
         matchLength,

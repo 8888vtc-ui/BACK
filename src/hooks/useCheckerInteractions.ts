@@ -68,6 +68,7 @@ export function useCheckerInteractions({
         rollDice,
         offerDouble,
         commitHumanMove,
+        undoMove,
         selected: gameSelected,
         playMove,
         leftDieTargets,
@@ -219,6 +220,14 @@ export function useCheckerInteractions({
         const allDests = Array.from(new Set([...leftDests, ...rightDests]));
 
         if (allDests.length === 0) {
+            const wasMovedHere =
+                Boolean(gameCanUndo) &&
+                Array.isArray(moveHistory) &&
+                moveHistory.some((h) => h.move?.to === point);
+            if (wasMovedHere && undoMove) {
+                undoMove();
+                return;
+            }
             if (gameSelected?.point === point) deselect();
             return;
         }
@@ -249,6 +258,9 @@ export function useCheckerInteractions({
         rightDieTargets,
         gameBoard,
         gameTurn,
+        gameCanUndo,
+        moveHistory,
+        undoMove,
         handlePlayMove,
     ]);
 

@@ -3,7 +3,6 @@ import type { Player } from '../../engine/backgammonEngine';
 import type { RawGameTurn } from '../../features/rating';
 import { persistMove } from '../../lib/offline/persistenceService';
 import { formatMoveSequenceNotationAbsolute } from '../../lib/engine/evaluator';
-import { toast } from '../../components/toast/ToastContext';
 import type { GamePhase } from '../gameStateReducer';
 
 export interface UseTurnHistoryRecorderParams {
@@ -91,9 +90,6 @@ export function useTurnHistoryRecorder({
 
             const hasMoves = Boolean(lastOpponentMoves && lastOpponentMoves.length > 0);
             const notation = hasMoves ? formatMoveSequenceNotationAbsolute(lastOpponentMoves!, 'O') : t('game.noMovePossible');
-            if (!hasMoves) {
-                toast.info(`L’IA a tiré [${lastOpponentDice[0]}-${lastOpponentDice[1]}] — ${notation}`, 'IA bloquée');
-            }
 
             if (lastOpponentMoves && lastOpponentMoves.length > 0) {
                 const lastTurn = turnsHistoryRef.current[turnsHistoryRef.current.length - 1];
