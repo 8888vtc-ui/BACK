@@ -49,6 +49,9 @@ export interface EloCalculationResult {
     expectedScoreX: number;
     expectedScoreO: number;
     prBlockedGain?: boolean;
+    prShieldActivated?: boolean;
+    escrowEloPoints?: number;
+    antiCollusionLimited?: boolean;
 }
 
 export interface MatchmakingQueueTicket {

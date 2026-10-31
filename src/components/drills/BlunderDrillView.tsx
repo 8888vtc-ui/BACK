@@ -26,7 +26,11 @@ import {
 } from '../../features/drills/adaptiveQuizEngine';
 import type { PlayerBlunderRecord, DrillValidationResult, BlunderBankStats } from '../../features/drills/types';
 import { impactLight, notificationSuccess, notificationError } from '../../lib/capacitor/haptics';
-import { rewardFirstTryQuizOnPublicPr } from '../../features/multiplayer/elo';
+import {
+    rewardFirstTryQuizOnPublicPr,
+    breakFirstTryQuizStreak,
+    MAX_QUIZ_CRYSTALLIZATION_STACK,
+} from '../../features/multiplayer/elo';
 import { toast } from '../toast/ToastContext';
 import BlunderDrillHeader, { type QuizDrillMode } from './BlunderDrillHeader';
 import BlunderDrillFeedbackCard from './BlunderDrillFeedbackCard';
@@ -132,9 +136,16 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
                     return next;
                 });
                 const prBonusLabel = prReward
-                    ? ` · PR Moyen Public : ${prReward.newPr.toFixed(2)} (${prReward.deltaPr.toFixed(2)})`
+                    ? prReward.crystallizationCapped
+                        ? ` · Jauge Quizz ${MAX_QUIZ_CRYSTALLIZATION_STACK}/${MAX_QUIZ_CRYSTALLIZATION_STACK} (Jouez 1 partie pour cristalliser votre PR ${prReward.newPr.toFixed(2)} !)`
+                        : ` · PR Public : ${prReward.newPr.toFixed(2)} (${prReward.deltaPr.toFixed(2)}) [${prReward.crystallizationUsed}/${MAX_QUIZ_CRYSTALLIZATION_STACK}]`
                     : '';
-                if (outcome.leveledUp) {
+                if (prReward && prReward.unlockedEscrowElo > 0) {
+                    toast.success(
+                        `+${prReward.unlockedEscrowElo} pts Elo en séquestre débloqués grâce à 2 Quizz réussis au 1er essai${prBonusLabel} !`,
+                        '🔓 Elo en Séquestre Débloqué !',
+                    );
+                } else if (outcome.leveledUp) {
                     toast.success(
                         `Niveau ${outcome.categoryState.level}/4 débloqué en ${outcome.categoryMeta.fullName}${prBonusLabel} !`,
                         '🚀 Montée de Palier !',
@@ -142,11 +153,16 @@ export default function BlunderDrillView({ initialConceptId, onClose }: BlunderD
                 } else {
                     toast.success(
                         `${outcome.categoryMeta.shortLabel} : Maîtrise ${outcome.categoryState.masteryScore}%${prBonusLabel}`,
-                        isFirstTry ? '🎯 1er Essai — PR Amélioré !' : '🎉 Bravo !',
+                        isFirstTry
+                            ? prReward && prReward.firstTryStreak >= 3
+                                ? `🔥 Série x${prReward.firstTryStreak} au 1er Essai — PR Turbo !`
+                                : '🎯 1er Essai — PR Amélioré !'
+                            : '🎉 Bravo !',
                     );
                 }
             } else {
                 failedOnCurrentQuizRef.current = true;
+                breakFirstTryQuizStreak();
                 notificationError();
                 markBlunderAttempt(currentBlunder.id, false);
                 const outcome = recordAdaptiveQuizOutcome(currentBlunder, false);
