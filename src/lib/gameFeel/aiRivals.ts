@@ -16,6 +16,7 @@ import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { CoachAnalysisHistoryEntry } from '../../hooks/useCoachHelpers';
 import type { Locale } from '../i18n/types';
 import { getBotPersona } from '../../features/personas/botPersonas';
+import { detectBrilliantMove } from '../../features/coach/lookahead36';
 
 export interface AiRivalPersona {
     readonly id: AIDifficulty;
@@ -172,8 +173,18 @@ export function computeDopamineMetricsFromHistory(
     const movesList = latest.candidates ?? latest.candidateMoves;
     const secondCandidate = movesList && movesList.length > 1 ? movesList[1] : undefined;
     const secondLoss = secondCandidate ? Math.abs(secondCandidate.equityLoss) : 0;
-    const isBrilliantMove =
-        latest.verdict === 'optimal' && Math.abs(latest.equityLoss) < 0.001 && secondLoss >= 0.06;
+    const fourGateEval =
+        latest.boardBefore && latest.boardAfter
+            ? detectBrilliantMove({
+                  boardBefore: latest.boardBefore,
+                  boardPlayed: latest.boardAfter,
+                  deltaEmgFromBest: latest.equityLoss,
+                  gapToSecondBestEmg: secondLoss,
+              })
+            : null;
+    const isBrilliantMove = fourGateEval
+        ? fourGateEval.isBrilliant || (latest.verdict === 'optimal' && Math.abs(latest.equityLoss) < 0.001 && secondLoss >= 0.06)
+        : latest.verdict === 'optimal' && Math.abs(latest.equityLoss) < 0.001 && secondLoss >= 0.06;
 
     let worstBlunderEntry: CoachAnalysisHistoryEntry | null = null;
     let maxLoss = 0;

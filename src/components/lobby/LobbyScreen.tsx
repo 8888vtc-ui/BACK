@@ -25,7 +25,7 @@ import { LobbyLeftSidebar, LobbyRightShowcaseColumn } from './LobbySidebarAndWid
 import { BotPortraitMedallion } from '../common/MonteCarloIcons';
 import { getSyncAcademySnapshot, loadPlayerHubData, type AcademyProgressSnapshot, type RecentMatchEntry } from '../../features/progression/userProgressionService';
 import { BOT_PERSONAS_BY_DIFFICULTY, getBotPersona } from '../../features/personas/botPersonas';
-import { readPlayerPassport } from '../../lib/supabase/auth';
+import { readPlayerPassport, savePlayerPassport, STANDARD_USER_AVATARS } from '../../lib/supabase/auth';
 import AuthModal from '../auth/AuthModal';
 import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
@@ -132,12 +132,23 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
 
     const handlePlay = () => {
         const passport = readPlayerPassport();
-        const isTestBypass =
-            process.env.NODE_ENV === 'test' &&
-            !(typeof window !== 'undefined' && (window as unknown as { __ENFORCE_PASSPORT_IN_TEST__?: boolean }).__ENFORCE_PASSPORT_IN_TEST__);
-        if (!displayName && !passport && !isTestBypass) {
+        const enforceGateInTest =
+            typeof window !== 'undefined' &&
+            Boolean((window as unknown as { __ENFORCE_PASSPORT_IN_TEST__?: boolean }).__ENFORCE_PASSPORT_IN_TEST__);
+        if (enforceGateInTest && !displayName && !passport) {
             setIsPassportGateOpen(true);
             return;
+        }
+        if (!displayName && !passport) {
+            const guestPassport = savePlayerPassport({
+                pseudo: 'Invité Monte-Carlo',
+                email: 'invite@backgammontour.com',
+                experienceLevel: 'intermediate',
+                avatarUrl: STANDARD_USER_AVATARS[0].url,
+                registeredAt: new Date().toISOString(),
+                supabaseSynced: false,
+            });
+            setDisplayName(guestPassport.pseudo);
         }
         executePlayNow();
     };

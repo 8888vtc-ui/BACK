@@ -104,14 +104,14 @@ export default function PricingPage() {
                                 ⚜ Coach Illimité VIP
                             </h3>
                             <span className="rounded-full border border-white/10 bg-[#3d181c] px-2.5 py-0.5 font-mono text-xs font-bold text-[#fce8b2]">
-                                Dès 6,67 € / mois
+                                Dès 8,25 € / mois (0,00 € au lancement)
                             </span>
                         </div>
                         <ul className="space-y-1.5 text-xs text-[#fdf8eb]">
                             <li>⚜ Analyses et explications du Coach IA illimitées (24h/24)</li>
-                            <li>⚜ Bibliothèque de révision des gaffes avec répétition espacée (FSRS)</li>
+                            <li>⚜ Bibliothèque de révision des 19 413 gaffes avec répétition espacée (FSRS)</li>
                             <li>⚜ Puzzles tactiques quotidiens illimités &amp; Drills personnalisés</li>
-                            <li>⚜ Essai gratuit de 7 jours sur la formule annuelle (-33 %, soit 39,89 € / an)</li>
+                            <li>⚜ Essai gratuit de 7 jours sur la formule annuelle (-45 %, soit 80,88 € / an d’économie)</li>
                             <li>⚜ Garantie Satisfait ou Remboursé pendant 30 jours sans condition</li>
                         </ul>
                     </div>
