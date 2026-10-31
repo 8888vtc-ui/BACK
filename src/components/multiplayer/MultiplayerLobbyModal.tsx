@@ -35,11 +35,11 @@ export interface MultiplayerLobbyModalProps {
 }
 
 const MATCH_FORMATS: ReadonlyArray<{ pts: number; label: string; sub: string }> = [
-    { pts: 0, label: 'Money', sub: 'Jacoby' },
-    { pts: 1, label: '1 pt', sub: 'Blitz' },
+    { pts: 0, label: 'Money Game', sub: 'Jacoby' },
     { pts: 3, label: '3 pts', sub: 'Rapide' },
     { pts: 5, label: '5 pts', sub: 'Standard' },
     { pts: 7, label: '7 pts', sub: 'Tournoi' },
+    { pts: 9, label: '9 pts', sub: 'Championship' },
     { pts: 11, label: '11 pts', sub: 'Master' },
 ];
 
@@ -85,7 +85,7 @@ export default function MultiplayerLobbyModal({
             data-testid="multiplayer-lobby-modal"
         >
             <div
-                className="relative w-full max-w-xl rounded-2xl border border-white/10 bg-slate-950/98 p-6 text-slate-100 shadow-2xl transition-all"
+                className="relative w-full max-w-xl max-h-[90dvh] overflow-y-auto overflow-x-hidden rounded-2xl border border-white/10 bg-slate-950/98 p-4 sm:p-6 text-slate-100 shadow-2xl transition-all"
             >
                 {/* Bouton Fermer */}
                 <button
@@ -99,27 +99,27 @@ export default function MultiplayerLobbyModal({
                 </button>
 
                 {/* 1. En-tête du Joueur Local */}
-                <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4 pr-10">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-[#f3c65f]/40 bg-amber-500 text-base font-black text-slate-950 shadow-sm">
+                <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4 pr-10 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#f3c65f]/40 bg-amber-500 text-base font-black text-slate-950 shadow-sm">
                             {localProfile.avatarUrl ? (
                                 <img src={localProfile.avatarUrl} alt={localProfile.displayName} className="h-full w-full object-cover" />
                             ) : (
                                 localProfile.displayName.charAt(0).toUpperCase()
                             )}
                         </div>
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <h2 className="text-base font-extrabold text-white">
+                        <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 min-w-0">
+                                <h2 className="text-base font-extrabold text-white truncate">
                                     {localProfile.displayName}
                                 </h2>
                                 {localProfile.isGuest && (
-                                    <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-slate-300">
+                                    <span className="shrink-0 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-slate-300">
                                         Invité
                                     </span>
                                 )}
                             </div>
-                            <div className="flex items-center gap-2 text-xs">
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs">
                                 <span>{localTier.badge}</span>
                                 <span className={localTier.colorClass}>{localTier.title}</span>
                                 <span className="text-slate-600">•</span>

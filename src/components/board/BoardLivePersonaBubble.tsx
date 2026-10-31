@@ -9,7 +9,7 @@
  * Strictement < 120 lignes, 0 any.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { AIDifficulty } from '../../engine/aiHeuristics';
 import { getBotPersona, readStoredExperienceMode } from '../../features/personas/botPersonas';
 import { useTranslation } from '../../i18n';
@@ -18,6 +18,23 @@ import {
     resolveMuskBotOrchestration,
 } from '../../features/personas/botEcosystemEngine';
 import { BotPortraitMedallion } from '../common/MonteCarloIcons';
+
+const VARIED_BLUNDER_COMMENTS: ReadonlyArray<string> = [
+    'Attention à la structure : garder tes portes connectées te donnera bien plus d’options au prochain tour.',
+    'Ce coup laisse une fenêtre de tir directe : pense à sécuriser ton blot avant d’ouvrir le jeu.',
+    'En gardant tes pions groupés, tu contrôles beaucoup mieux le centre du plateau.',
+    'Un coup tentant, mais consolider ton jan intérieur était encore plus fort ici !',
+    'Prends une seconde pour compter les dés adverses qui frappent avant d’avancer seul.',
+    'La course et le contact demandent deux plans différents : ici, la solidité primait.',
+];
+
+const VARIED_DOUBLE_JOKER_COMMENTS: ReadonlyArray<string> = [
+    'Les dés sourient à l’audace sur ce jet ! Voyons comment tu vas riposter.',
+    'Un joli double au bon moment… mais la partie est encore longue !',
+    'La roue tourne vite au Backgammon : garde ton sang-froid sur le prochain lancer.',
+    'Beau tempo sur ces dés, à toi de trouver la parade tactique !',
+    'Les doublés changent la course en un éclair, restons concentrés.',
+];
 
 export interface BoardLivePersonaBubbleProps {
     readonly difficulty?: AIDifficulty;
@@ -46,16 +63,54 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
 }) => {
     const [dismissedKey, setDismissedKey] = useState<string | null>(null);
     const [isMuted, setIsMuted] = useState<boolean>(false);
+    const shownTextsRef = useRef<Set<string>>(new Set());
+    const lastSpokenTurnRef = useRef<number>(-99);
+    const lastBoardBeforeSigRef = useRef<string>('');
+    const lastOpponentDiceSigRef = useRef<string>('');
     const { locale } = useTranslation();
     const persona = getBotPersona(difficulty, locale);
     const mode = readStoredExperienceMode();
 
+    useEffect(() => {
+        if (turnsCount === 0) {
+            shownTextsRef.current.clear();
+            lastSpokenTurnRef.current = -99;
+            lastBoardBeforeSigRef.current = '';
+            lastOpponentDiceSigRef.current = '';
+        }
+    }, [turnsCount]);
+
     const bubbleState = useMemo(() => {
         if (isPlayerThinking) return null;
 
-        const isBotDoubleJoker = Boolean(opponentDice && opponentDice[0] === opponentDice[1]);
+        if (turnsCount === 0) {
+            const openText = persona.dialogues.opening[mode];
+            return {
+                key: `opening-${difficulty}`,
+                text: openText,
+                showKarmaSwap: false,
+                showReplay: false,
+            };
+        }
+
+        // Anti-spam : au moins 4 tours d'écart entre deux bulles au cours d'une même partie
+        if (turnsCount - lastSpokenTurnRef.current < 4) {
+            return null;
+        }
+
+        const boardSig = boardBefore ? boardBefore.join(',') : '';
+        const diceSig = opponentDice ? `${turnsCount}:${opponentDice[0]}-${opponentDice[1]}` : '';
+        const isBotDoubleJoker = Boolean(
+            opponentDice &&
+            opponentDice[0] === opponentDice[1] &&
+            diceSig !== lastOpponentDiceSigRef.current,
+        );
         const absLoss = Math.abs(equityLoss ?? 0);
-        const isPlayerBlunder = (verdict === 'blunder' || verdict === 'error') && absLoss >= 0.08;
+        const isPlayerBlunder =
+            (verdict === 'blunder' || verdict === 'error') &&
+            absLoss >= 0.08 &&
+            boardSig.length > 0 &&
+            boardSig !== lastBoardBeforeSigRef.current;
 
         if (isPlayerBlunder || isBotDoubleJoker) {
             const pattern =
@@ -73,22 +128,25 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
                 locale: locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja',
             });
             if (decision.shouldSpeak && decision.parsedMessage) {
+                let candidateText = decision.parsedMessage.cleanText;
+                if (shownTextsRef.current.has(candidateText)) {
+                    const pool = isPlayerBlunder ? VARIED_BLUNDER_COMMENTS : VARIED_DOUBLE_JOKER_COMMENTS;
+                    const unseen = pool.find((line) => !shownTextsRef.current.has(line));
+                    if (!unseen) return null;
+                    candidateText = unseen;
+                }
+                shownTextsRef.current.add(candidateText);
+                lastSpokenTurnRef.current = turnsCount;
+                if (isPlayerBlunder) lastBoardBeforeSigRef.current = boardSig;
+                if (isBotDoubleJoker) lastOpponentDiceSigRef.current = diceSig;
+
                 return {
-                    key: `musk-${turnsCount}-${verdict ?? 'joker'}-${opponentDice?.join('-') ?? ''}`,
-                    text: decision.parsedMessage.cleanText,
+                    key: `musk-${turnsCount}-${isPlayerBlunder ? 'blunder' : 'joker'}`,
+                    text: candidateText,
                     showKarmaSwap: decision.showKarmaSwapCta,
                     showReplay: decision.showOneTapReplayCta,
                 };
             }
-        }
-
-        if (turnsCount === 0) {
-            return {
-                key: `opening-${difficulty}`,
-                text: persona.dialogues.opening[mode],
-                showKarmaSwap: false,
-                showReplay: false,
-            };
         }
 
         return null;

@@ -21,10 +21,12 @@ export interface PrivateRoomModalProps {
 }
 
 const MATCH_FORMATS: ReadonlyArray<{ pts: number; label: string; sub: string }> = [
-    { pts: 1, label: '1 pt', sub: 'Blitz' },
+    { pts: 0, label: 'Money Game', sub: 'Jacoby' },
     { pts: 3, label: '3 pts', sub: 'Rapide' },
     { pts: 5, label: '5 pts', sub: 'Standard' },
     { pts: 7, label: '7 pts', sub: 'Tournoi' },
+    { pts: 9, label: '9 pts', sub: 'Championship' },
+    { pts: 11, label: '11 pts', sub: 'Master' },
 ];
 
 export function buildPrivateRoomInviteUrl(roomCode: string): string {
@@ -180,7 +182,7 @@ export const PrivateRoomModal: React.FC<PrivateRoomModalProps> = ({
                     <div className="space-y-4">
                         <div>
                             <label className="block text-xs font-semibold text-slate-300 mb-2">Format du match :</label>
-                            <div className="grid grid-cols-4 gap-2">
+                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                                 {MATCH_FORMATS.map((format) => {
                                     const active = selectedLength === format.pts;
                                     return (

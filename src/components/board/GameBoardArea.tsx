@@ -226,18 +226,20 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                 />
 
                 <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 px-0 sm:px-3 py-0 sm:py-1.5 overflow-hidden">
-                    <BoardLivePersonaBubble
-                        difficulty={game.difficulty}
-                        isPlayerThinking={Boolean(game.state.turn === 'X' && game.state.dice)}
-                        turnsCount={effectiveTurns.length}
-                        verdict={displayCoach?.verdict ?? null}
-                        equityLoss={displayCoach?.equityLoss ?? null}
-                        boardBefore={displayCoach?.boardBefore}
-                        boardAfter={game.state.board}
-                        opponentDice={!displayState.dice ? game.lastOpponentDice : null}
-                        onReplayMove={handleSyncedReplayMove}
-                        onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
-                    />
+                    {!challengerProfile && (
+                        <BoardLivePersonaBubble
+                            difficulty={game.difficulty}
+                            isPlayerThinking={Boolean(game.state.turn === 'X' && game.state.dice)}
+                            turnsCount={effectiveTurns.length}
+                            verdict={displayCoach?.verdict ?? null}
+                            equityLoss={displayCoach?.equityLoss ?? null}
+                            boardBefore={displayCoach?.boardBefore}
+                            boardAfter={game.state.board}
+                            opponentDice={!displayState.dice ? game.lastOpponentDice : null}
+                            onReplayMove={handleSyncedReplayMove}
+                            onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
+                        />
+                    )}
 
                     <BoardLeftPlayerRail
                         difficulty={game.difficulty}

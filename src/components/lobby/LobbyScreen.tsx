@@ -70,9 +70,12 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     const [fairBag36Enabled, setFairBag36Enabled] = useState<boolean>(false);
 
     const matchFormats = useMemo(() => [
-        { value: 0, label: ui.lobby.moneyGame, hint: ui.lobby.formatMoneyHint }, { value: 1, label: '1 pt (DMP)', hint: 'Manche sèche (3 min)' },
-        { value: 3, label: '3 pts', hint: ui.lobby.formatShortHint }, { value: 5, label: '5 pts', hint: ui.lobby.formatFastHint },
-        { value: 7, label: '7 pts', hint: ui.lobby.formatStandardHint }, { value: 11, label: '11 pts', hint: ui.lobby.formatLongHint },
+        { value: 0, label: ui.lobby.moneyGame, hint: ui.lobby.formatMoneyHint },
+        { value: 3, label: '3 pts', hint: ui.lobby.formatShortHint },
+        { value: 5, label: '5 pts', hint: ui.lobby.formatFastHint },
+        { value: 7, label: '7 pts', hint: ui.lobby.formatStandardHint },
+        { value: 9, label: '9 pts', hint: 'Format Championnat' },
+        { value: 11, label: '11 pts', hint: ui.lobby.formatLongHint },
     ], [ui.lobby]);
 
     const opponents = useMemo<Array<{ value: AIDifficulty; label: string; hint: string }>>(() => {

@@ -72,7 +72,7 @@ export default function MultiplayerResultModal({
             className={`fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in ${modalClasses.overlay}`}
             data-testid="multiplayer-result-modal"
         >
-            <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-[#17110b]/98 via-[#0d121d]/98 to-[#070a10]/98 p-6 shadow-2xl text-center transition-all text-[#fdf8eb]">
+            <div className="relative w-full max-w-md max-h-[90dvh] overflow-y-auto overflow-x-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-[#17110b]/98 via-[#0d121d]/98 to-[#070a10]/98 p-5 sm:p-6 shadow-2xl text-center transition-all text-[#fdf8eb]">
                 <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-3xl border border-white/10 bg-white/5 text-4xl shadow-inner">
                     {isWinner ? '🏆' : '⚔️'}
                 </div>

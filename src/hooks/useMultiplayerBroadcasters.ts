@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback } from 'react';
+import type React from 'react';
+import { useCallback, useRef } from 'react';
 import type { Player, Move } from '../engine/backgammonEngine';
 import type { MultiplayerMatchInfo } from '../features/multiplayer/types';
 import type { MultiplayerRealtimeManager } from '../features/multiplayer/realtimeChannel';
@@ -144,6 +145,8 @@ export function useMultiplayerBroadcasters({
         [matchInfo, realtimeRef],
     );
 
+    const lastChallengerReplyRef = useRef<'gg' | 'nice_move' | 'unlucky' | 'thinking' | 'thanks' | null>(null);
+
     const sendQuickChat = useCallback(
         (messageId: 'gg' | 'nice_move' | 'unlucky' | 'thinking' | 'thanks') => {
             if (!matchInfo) return;
@@ -158,15 +161,18 @@ export function useMultiplayerBroadcasters({
                 });
             } else if (matchInfo.isClubChallenger) {
                 const oppRole: Player = matchInfo.localRole === 'X' ? 'O' : 'X';
-                const replyMap: Record<typeof messageId, typeof messageId> = {
-                    gg: 'thanks',
-                    nice_move: 'thanks',
-                    thanks: 'gg',
-                    unlucky: 'nice_move',
-                    thinking: 'gg',
+                const replyPools: Record<typeof messageId, ReadonlyArray<typeof messageId>> = {
+                    gg: ['thanks', 'gg', 'nice_move'],
+                    nice_move: ['thanks', 'gg'],
+                    thanks: ['gg', 'nice_move'],
+                    unlucky: ['nice_move', 'gg', 'thanks'],
+                    thinking: ['gg', 'thanks'],
                 };
+                const pool = replyPools[messageId];
+                const chosen = pool.find((r) => r !== lastChallengerReplyRef.current) ?? pool[0]!;
+                lastChallengerReplyRef.current = chosen;
                 setTimeout(() => {
-                    setQuickChatMessage({ player: oppRole, messageId: replyMap[messageId] });
+                    setQuickChatMessage({ player: oppRole, messageId: chosen });
                     setTimeout(() => setQuickChatMessage(null), 3200);
                 }, 1800);
             }

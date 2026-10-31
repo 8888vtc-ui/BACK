@@ -147,7 +147,7 @@ export const LobbySearchingWaitView: React.FC<LobbySearchingWaitViewProps> = ({
             <button
                 type="button"
                 onClick={onCancelSearch}
-                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 hover:text-white transition-colors"
+                className="min-h-[44px] rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-semibold text-slate-200 hover:border-white/25 hover:text-white transition-colors"
                 data-testid="cancel-matchmaking-button"
             >
                 Annuler la recherche
