@@ -154,10 +154,10 @@ describe('LobbyScreen', () => {
         expect(container.innerHTML).not.toContain('text-[8px]');
         expect(container.innerHTML).not.toContain('text-[9px]');
 
-        // 4. Bordure dorée (#f3c65f) sur la carte active et le bouton principal, border-white/10 sur les cartes inactives/secondaires
-        expect(cardAi.className).toContain('border-[#f3c65f]');
+        // 4. Bordure dorée (#f3c65f) sur la carte active ('multiplayer' par défaut) et le bouton principal, border-white/10 sur les cartes inactives/secondaires
+        expect(cardMulti.className).toContain('border-[#f3c65f]');
         expect(startBtn.className).toContain('border-[#f3c65f]');
-        expect(cardMulti.className).toContain('border-white/10');
+        expect(cardAi.className).toContain('border-white/10');
         expect(screen.getByTestId('player-profile-card').className).toContain('border-white/10');
         expect(screen.getByTestId('lobby-prematch-briefing').className).toContain('border-white/10');
         expect(screen.getByTestId('lobby-module-puzzles').className).toContain('border-white/10');

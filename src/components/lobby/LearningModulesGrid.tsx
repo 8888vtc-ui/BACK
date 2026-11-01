@@ -95,12 +95,18 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
                     icon="🎯"
                     title={ui.subpages.drillsLink}
                     tooltip="Équité Réelle Humaine (ERH) : mesure les pièges psychologiques et corrige vos erreurs récurrentes."
-                    liveMetricLabel={`${snapshot.blundersToReview} blunder${
-                        snapshot.blundersToReview > 1 ? 's' : ''
-                    } à revoir`}
+                    liveMetricLabel={
+                        snapshot.gamesPlayed === 0
+                            ? '0 blunder personnel (Jouez 1 match)'
+                            : `${snapshot.blundersToReview} blunder${snapshot.blundersToReview > 1 ? 's' : ''} à revoir`
+                    }
                     progressPct={drillPct}
                     actionBadge="Corriger →"
-                    highlightBadge={`ERH · ${snapshot.blundersMastered}/${snapshot.blundersTotal}`}
+                    highlightBadge={
+                        snapshot.gamesPlayed === 0
+                            ? 'Catalogue Pro (Défis Grand Maître)'
+                            : `ERH · ${snapshot.blundersMastered}/${snapshot.blundersTotal}`
+                    }
                     onSelect={handleSelect}
                 />
 

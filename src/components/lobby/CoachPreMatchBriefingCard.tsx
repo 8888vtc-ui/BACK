@@ -100,7 +100,7 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
                             Point clé : {humanConceptTitle}
                         </span>
                     )}
-                    <p className="text-xs text-slate-200 line-clamp-2 leading-relaxed flex-1 min-w-[200px]">
+                    <p className="text-xs text-slate-200 leading-relaxed flex-1 min-w-[200px]">
                         {adviceText}
                     </p>
                 </div>
