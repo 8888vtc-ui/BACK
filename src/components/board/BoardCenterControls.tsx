@@ -134,7 +134,7 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
     return (
         <div
             data-testid="board-center-controls"
-            className={`absolute ${isOpponentOfferingDouble ? 'left-1/2 flex' : 'left-[73%] sm:left-[72%] hidden md:flex [@media(max-height:500px)]:flex'} top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex-col items-center gap-1 pointer-events-none max-h-[34px] max-w-[40%] justify-center`}
+            className={`absolute ${isOpponentOfferingDouble ? 'left-1/2 flex' : 'left-[77%] sm:left-[76%] hidden md:flex [@media(max-height:500px)]:flex'} top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex-col items-center gap-1 pointer-events-none max-h-[34px] max-w-[40%] justify-center`}
         >
             {isOpponentOfferingDouble && onTakeDouble && onPassDouble && (
                 <div

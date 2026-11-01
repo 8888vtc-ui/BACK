@@ -184,7 +184,12 @@ const BoardComponent: React.FC<BoardProps> = ({
     if (isLoading) return <BoardSkeleton />;
 
     const visibleOpponentArrows =
-        coachHighlight || (state.dice && state.turn !== 'O') || doublingOfferedBy === player
+        coachHighlight ||
+        gamePhase === 'HUMAN_WAITING_ROLL' ||
+        gamePhase === 'HUMAN_MOVING' ||
+        gamePhase === 'HUMAN_READY_TO_COMMIT' ||
+        (state.dice && state.turn !== 'O') ||
+        doublingOfferedBy === player
             ? undefined
             : (opponentHighlight ?? undefined);
 
@@ -268,7 +273,7 @@ const BoardComponent: React.FC<BoardProps> = ({
 
                     <BoardDiceRiver
                         dice={isAiPhase ? null : state.dice} usedDice={usedDice} selectedDie={selectedDie}
-                        opponentDice={isAiPhase ? (state.dice ?? opponentDice) : opponentDice}
+                        opponentDice={isAiPhase ? (state.dice ?? opponentDice) : null}
                         onDiceClick={onDiceClick} onSelectDie={onSelectDie}
                         canConfirm={canConfirm && !autoConfirmEnabled && gamePhase === 'HUMAN_READY_TO_COMMIT'}
                         onConfirmTurn={handleConfirmWithClick}
