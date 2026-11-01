@@ -1,12 +1,12 @@
 {
   "modelName": "BT-Neural v5.0 Goliath MoE-6 (6 Complete Independent Deep Neural Networks: Contact, Prime, Blitz, Crashed, Backgame, Race)",
-  "trainedAt": "2026-11-01T00:06:22Z",
+  "trainedAt": "2026-11-01T05:33:13Z",
   "hardware": "Intel(R) Core(TM) Ultra 7 258V (8 cores, 31.5 GB RAM)",
   "supervised3PlyPositions": 300000,
-  "certifiedTacticalMovePairs": 26656,
-  "elapsedSeconds": 13.78,
-  "final3PlyProbMse": 0.003519,
-  "finalPairwiseRankingAccuracyPct": 93.53,
+  "certifiedTacticalMovePairs": 45743,
+  "elapsedSeconds": 18.02,
+  "final3PlyProbMse": 0.003514,
+  "finalPairwiseRankingAccuracyPct": 93.11,
   "parametersPerPhaseNetwork": 41959,
   "phaseNetworksCount": 6,
   "exportedFloatCount": 251754,
@@ -15,44 +15,44 @@
   "phaseExperts": {
     "CONTACT": {
       "networkParameters": 41959,
-      "supervisedSamples": 33574,
-      "pairwiseSamples": 6446,
-      "probMse": 0.001825,
-      "pairwiseAccuracyPct": 94.06
+      "supervisedSamples": 32334,
+      "pairwiseSamples": 8371,
+      "probMse": 0.001855,
+      "pairwiseAccuracyPct": 93.64
     },
     "PRIME": {
       "networkParameters": 41959,
-      "supervisedSamples": 658,
-      "pairwiseSamples": 335,
-      "probMse": 0.000489,
-      "pairwiseAccuracyPct": 99.39
+      "supervisedSamples": 612,
+      "pairwiseSamples": 368,
+      "probMse": 0.000546,
+      "pairwiseAccuracyPct": 99.7
     },
     "BLITZ": {
       "networkParameters": 41959,
-      "supervisedSamples": 43488,
-      "pairwiseSamples": 3130,
-      "probMse": 0.002295,
-      "pairwiseAccuracyPct": 95.89
+      "supervisedSamples": 43048,
+      "pairwiseSamples": 6160,
+      "probMse": 0.002332,
+      "pairwiseAccuracyPct": 95.43
     },
     "CRASHED": {
       "networkParameters": 41959,
-      "supervisedSamples": 106228,
-      "pairwiseSamples": 5237,
-      "probMse": 0.002793,
-      "pairwiseAccuracyPct": 91.2
+      "supervisedSamples": 112382,
+      "pairwiseSamples": 14014,
+      "probMse": 0.002884,
+      "pairwiseAccuracyPct": 91.1
     },
     "BACKGAME": {
       "networkParameters": 41959,
-      "supervisedSamples": 51488,
-      "pairwiseSamples": 10125,
-      "probMse": 0.003629,
-      "pairwiseAccuracyPct": 93.47
+      "supervisedSamples": 48146,
+      "pairwiseSamples": 13387,
+      "probMse": 0.003645,
+      "pairwiseAccuracyPct": 93.51
     },
     "RACE": {
       "networkParameters": 41959,
-      "supervisedSamples": 64564,
-      "pairwiseSamples": 1383,
-      "probMse": 0.006362,
+      "supervisedSamples": 63478,
+      "pairwiseSamples": 3443,
+      "probMse": 0.006206,
       "pairwiseAccuracyPct": 93.62
     }
   }
