@@ -29,6 +29,7 @@ export interface BlunderDrillFeedbackCardProps {
     onHoverQuizChoice?: (notation: string | null) => void;
     hoveredChoiceNotation?: string | null;
     drillMode?: 'adaptive' | 'pr_math' | 'personal_blunders' | 'speed_60s';
+    currentMetricScore?: number;
     ratingDelta?: number;
 }
 
@@ -45,6 +46,7 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
     onHoverQuizChoice,
     hoveredChoiceNotation = null,
     drillMode = 'adaptive',
+    currentMetricScore = 6.3,
     ratingDelta = 0,
 }) => {
     const isErMode = drillMode === 'pr_math';
@@ -113,6 +115,7 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                         currentBlunder={currentBlunder}
                         validationResult={validationResult}
                         isErMode={isErMode}
+                        currentMetricScore={currentMetricScore}
                         ratingDelta={ratingDelta}
                         onResetAttempt={onResetAttempt}
                         onToggleThreatPreview={onHoverQuizChoice}

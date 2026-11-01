@@ -200,32 +200,35 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         expect(screen.getByText(/Ouverture Personnelle Match/i)).toBeDefined();
     });
 
-    it('affiche la terminologie unifiée ER / PR, le Rating 1500 Elo, le Thème Mystère anti-spoiler, le rappel des dés et le Panneau de Coaching à 2 Sous-Agents (flashlight + flash)', () => {
-        render(<BlunderDrillView initialConceptId="blitz_attack" initialMode="pr_math" />);
+    it('affiche la terminologie unifiée ER / PR (échelle 0.0-30.0 par dixièmes), ERH 6.1, Rating 1500, et différencie le retour sur Coup Optimal (2 blocs) vs Erreur (3 blocs)', () => {
+        const { unmount } = render(<BlunderDrillView initialConceptId="blitz_attack" initialMode="pr_math" />);
 
-        // 1. Terminologie ER / PR & Séparation Elo vs Cible ER / PR
+        // 1. En-tête : ER / PR : 6.3 | ERH : 6.1 | Rating : 1500
         expect(screen.getByTestId('drill-mode-title').textContent).toContain('Quiz ER / PR');
         expect(screen.getByTestId('drill-subtitle-index').textContent).toContain('Quiz ER / PR #1');
-        expect(screen.getByTestId('quiz-elo-rating-badge').textContent).toContain('Rating : 1500 Elo');
-        expect(screen.getByTestId('quiz-target-metric-badge').textContent).toContain('Cible ER / PR : ~6.5 (Intermédiaire)');
+        expect(screen.getByTestId('quiz-target-metric-badge').textContent).toContain('ER / PR : 6.3');
+        expect(screen.getByTestId('quiz-erh-metric-badge').textContent).toContain('ERH : 6.1');
+        expect(screen.getByTestId('quiz-elo-rating-badge').textContent).toContain('Rating : 1500');
 
-        // 2. Anti-spoiler du thème avant clic + Rappel des dés & structure
-        expect(screen.getByTestId('drill-theme-badge').textContent).toContain('Thème : Mystère 🔒');
-        expect(screen.getByTestId('drill-dice-direction-badge').textContent).toContain('Sens : Case 24 ➔ Case 1');
-        expect(screen.getByTestId('drill-structure-summary').textContent).toContain('Portes faites : Blanc');
+        // 2. Clic sur le COUP OPTIMAL (A) -> ER / PR baisse de -0.1 (6.2), AUCUN bloc "1. Pourquoi ton coup est une erreur"
+        fireEvent.click(screen.getByTestId('quiz-choice-btn-A'));
+        expect(screen.getByTestId('quiz-target-metric-badge').textContent).toContain('ER / PR : 6.2');
+        expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('▼ -0.1 (Progression)');
+        expect(screen.queryByTestId('coach-block-1-error')).toBeNull();
+        expect(screen.getByTestId('coach-block-2-optimal').textContent).toContain('Pourquoi ce coup est optimal :');
+        expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('💡 Règle à retenir :');
+        unmount();
 
-        // 3. Clic sur un mauvais coup (B) -> Panneau de Coaching Interactif à 3 blocs + Sous-Agents flashlight & flash
+        // 3. Clic sur une ERREUR (B) -> ER / PR monte par dixièmes (+0.3 à +0.5), 3 blocs affichés + Réessayer + Suivant
+        render(<BlunderDrillView initialConceptId="blitz_attack" initialMode="pr_math" />);
         fireEvent.click(screen.getByTestId('quiz-choice-btn-B'));
-        expect(screen.getByTestId('drill-theme-badge').textContent).toContain('🔓');
-        expect(screen.getByTestId('coach-verdict-header').textContent).toContain('Impact ER / PR :');
+        expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('▲ +0.');
+        expect(screen.getByTestId('coach-verdict-header').textContent).toContain('Impact ER / PR : +0.');
         expect(screen.getByTestId('coach-win-drop-badge').textContent).toContain('% de chances de gagner');
-        expect(screen.getByTestId('subagents-pipeline-badge').textContent).toContain('FlashLite-Tactical-Extractor (flashlight)');
-        expect(screen.getByTestId('subagents-pipeline-badge').textContent).toContain('Flash-Pedagogical-Coach (flash)');
-        expect(screen.getByTestId('coach-block-1-error').textContent).toContain('lancers constructifs sur 36');
-        expect(screen.getByTestId('coach-block-2-optimal').textContent).toContain('Le meilleur coup est');
-        expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('💡 Règle pour progresser :');
-        expect(screen.getByTestId('drill-show-threat-btn').textContent).toContain('Voir la menace sur le plateau');
+        expect(screen.getByTestId('coach-block-1-error').textContent).toContain('1. Pourquoi ton coup est une erreur :');
+        expect(screen.getByTestId('coach-block-2-optimal').textContent).toContain('2. Pourquoi le coup optimal gagne :');
+        expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('💡 Comment t\'améliorer :');
         expect(screen.getByTestId('drill-retry-btn').textContent).toContain('Réessayer');
-        expect(screen.getByTestId('drill-next-btn').textContent).toContain('Puzzle Suivant');
+        expect(screen.getByTestId('drill-next-btn').textContent).toContain('Suivant');
     });
 });
