@@ -65,8 +65,8 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
                 }}
                 title={
                     cubeOwner === null
-                        ? `Videau centré (x${cubeValue})`
-                        : `Videau possédé par ${cubeOwner} (x${cubeValue})`
+                        ? `Videau : ${cubeValue} (Centré${cubeValue === 1 ? ' — Face 64' : ''})`
+                        : `Videau : ${cubeValue} (Possédé par ${cubeOwner})`
                 }
             >
                 <span
@@ -76,7 +76,8 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
                             : 'text-[#FFF8E7] drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)]'
                     }`}
                 >
-                    {display}
+                    {cubeValue === 1 ? '1' : display}
+                    {cubeValue === 1 && <span className="sr-only">64</span>}
                 </span>
             </div>
         </div>

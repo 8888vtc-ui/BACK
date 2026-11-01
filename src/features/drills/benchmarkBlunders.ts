@@ -58,8 +58,41 @@ export interface HarvestedSeedInput {
     commentaryVariants: string[];
 }
 
+function extractMatchContextFromXgid(xgid: string): NonNullable<PlayerBlunderRecord['matchContext']> {
+    // Format XGID: XGID=board:cube_val_exp:cube_pos:turn:dice:score_bottom:score_top:crawford:match_length:max_cube
+    const parts = xgid.split(':');
+    const cubeExp = Number(parts[1] ?? 0);
+    const cubeValue = cubeExp > 0 ? Math.pow(2, cubeExp) : 1;
+    const cubePos = Number(parts[2] ?? 0);
+    const turnRaw = Number(parts[3] ?? 1);
+    const scoreBottom = Number(parts[5] ?? 0);
+    const scoreTop = Number(parts[6] ?? 0);
+    const crawford = Number(parts[7] ?? 0) === 1;
+    const matchLength = Number(parts[8] ?? 7);
+
+    // Comme le plateau est orienté dans le référentiel de X, on aligne le score et le possesseur du videau
+    const scoreX = turnRaw === -1 ? scoreTop : scoreBottom;
+    const scoreO = turnRaw === -1 ? scoreBottom : scoreTop;
+    const cubeOwner =
+        cubePos === 0
+            ? null
+            : (cubePos === 1 && turnRaw === 1) || (cubePos === -1 && turnRaw === -1)
+                ? 'X'
+                : 'O';
+
+    return {
+        scoreX: Number.isFinite(scoreX) ? scoreX : 0,
+        scoreO: Number.isFinite(scoreO) ? scoreO : 0,
+        matchLength: Number.isFinite(matchLength) ? matchLength : 7,
+        cubeValue: Number.isFinite(cubeValue) ? cubeValue : 1,
+        cubeOwner,
+        crawford,
+    };
+}
+
 function buildHarvestedBlunder(seed: HarvestedSeedInput, _idx: number): PlayerBlunderRecord {
     let cachedBoard: number[] | null = null;
+    let cachedContext: NonNullable<PlayerBlunderRecord['matchContext']> | null = null;
     return {
         id: seed.id,
         createdAt: '2026-01-10T00:00:00.000Z',
@@ -71,6 +104,15 @@ function buildHarvestedBlunder(seed: HarvestedSeedInput, _idx: number): PlayerBl
         },
         set board(val: number[]) {
             cachedBoard = val;
+        },
+        get matchContext(): NonNullable<PlayerBlunderRecord['matchContext']> {
+            if (!cachedContext) {
+                cachedContext = extractMatchContextFromXgid(seed.xgid);
+            }
+            return cachedContext;
+        },
+        set matchContext(val: NonNullable<PlayerBlunderRecord['matchContext']>) {
+            cachedContext = val;
         },
         dice: seed.dice,
         player: 'X',
