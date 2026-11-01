@@ -5,7 +5,7 @@
  * @description Rails latéraux Haute-Horlogerie Monte-Carlo (< 300 lignes, 0 `any`).
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { PlayerEloProfile } from '../../features/multiplayer/types';
 import {
@@ -13,11 +13,13 @@ import {
     BOT_OFFICIAL_PR_BY_DIFFICULTY,
     getBotPersona,
 } from '../../features/personas/botPersonas';
+import { readPlayerPassport, STANDARD_USER_AVATARS } from '../../lib/supabase/auth';
 import { toggleOrientation, getSavedOrientation, saveOrientation } from './boardOrientation';
 import {
     BotPortraitMedallion,
     IconAstrolabeCoach,
     IconHorologyGear,
+    PERSONA_PHOTO_BY_ID,
 } from '../common/MonteCarloIcons';
 
 export interface BoardLeftPlayerRailProps {
@@ -165,9 +167,23 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     onToggleTheme, onBackToLobby, canUndo = false, onUndo, autoConfirmEnabled = false, onToggleAutoConfirm,
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [playerMeta, setPlayerMeta] = useState<{ pseudo: string; avatarUrl: string }>({
+        pseudo: 'Vous',
+        avatarUrl: STANDARD_USER_AVATARS[0].url,
+    });
+    useEffect(() => {
+        const passport = readPlayerPassport();
+        if (passport) {
+            setPlayerMeta({
+                pseudo: passport.pseudo,
+                avatarUrl: passport.avatarUrl || STANDARD_USER_AVATARS[0].url,
+            });
+        }
+    }, []);
     const { activePersona, botElo, playerPrValue, opponentPrValue, opponentDisplayName, opponentBadge } = resolvePersonaMeta(
         difficulty, locale, prX, prO, challengerProfile,
     );
+    const opponentPhotoUrl = PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg';
     const handleFlipDirection = () => {
         const next = toggleOrientation(getSavedOrientation());
         saveOrientation(next);
@@ -177,10 +193,10 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
         <aside
             aria-label="Joueurs et score du match"
             data-testid="board-left-player-rail"
-            className="hidden md:flex [@media(max-height:500px)]:!flex relative flex-col items-center justify-between w-44 md:w-52 xl:w-60 [@media(max-height:540px)]:!w-[98px] [@media(max-height:540px)]:!max-w-[104px] shrink-0 h-full min-h-0 overflow-visible py-2 [@media(max-height:540px)]:!py-1 px-2 [@media(max-height:540px)]:!px-1 select-none rounded-2xl [@media(max-height:540px)]:!rounded-xl border border-[#d4af37]/25 bg-gradient-to-b from-[#130e09]/95 via-[#0d0a08]/95 to-[#130e09]/95 shadow-[0_16px_40px_rgba(0,0,0,0.85)] z-30"
+            className="hidden md:flex [@media(max-height:500px)]:!flex relative flex-col items-center justify-between w-44 md:w-52 xl:w-60 [@media(max-height:540px)]:!w-[104px] [@media(max-height:540px)]:!max-w-[108px] shrink-0 h-full min-h-0 overflow-visible py-2 [@media(max-height:540px)]:!py-1 px-2 [@media(max-height:540px)]:!px-1 select-none rounded-2xl [@media(max-height:540px)]:!rounded-xl border border-[#d4af37]/25 bg-gradient-to-b from-[#130e09]/95 via-[#0d0a08]/95 to-[#130e09]/95 shadow-[0_16px_40px_rgba(0,0,0,0.85)] z-30"
         >
-            {/* 1. CARTE HAUT (IA / Adversaire) — En paysage mobile : Score (gros) + Chrono + Badge PR 1-ligne */}
-            <div className="flex w-full flex-col gap-1 [@media(max-height:540px)]:!gap-1 border-b border-[#d4af37]/20 pb-1.5 [@media(max-height:540px)]:!pb-1.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1.5 shrink-0">
+            {/* 1. CARTE HAUT (IA / Adversaire) — En paysage mobile : Vrai Nom + Mini-Avatar 28px (Pions Noirs) + Score + Chrono + Badge PR */}
+            <div className="flex w-full flex-col gap-1 [@media(max-height:540px)]:!gap-1 border-b border-[#d4af37]/20 pb-1.5 [@media(max-height:540px)]:!pb-1 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
                 <div className="flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-1">
                     <div className="[@media(max-height:540px)]:hidden flex flex-col items-center gap-0.5 min-w-0 flex-1">
                         <span className="truncate max-w-full font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight">
@@ -198,15 +214,31 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         </div>
                     </div>
 
-                    {/* Score IA (Gros) + Chrono + PR sur 1 ligne en Mobile Paysage */}
-                    <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
-                        <span className="hidden [@media(max-height:540px)]:inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-stone-400">
-                            <span className="h-2 w-2 rounded-full bg-stone-900 ring-1 ring-[#d4af37]/70" />
-                            IA
-                        </span>
+                    {/* Vrai nom complet de l'adversaire (avec text-overflow: ellipsis) */}
+                    <span
+                        data-testid="left-rail-mobile-opp-name"
+                        title={opponentDisplayName}
+                        className="hidden [@media(max-height:540px)]:block w-full truncate text-center text-[10px] font-bold text-[#f7f3e8] leading-tight"
+                    >
+                        {opponentDisplayName}
+                    </span>
+
+                    {/* Mini-Avatar 28px (bordure pions noirs) + Score IA */}
+                    <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1.5">
+                        <div className="hidden [@media(max-height:540px)]:relative [@media(max-height:540px)]:inline-flex shrink-0">
+                            <img
+                                src={opponentPhotoUrl}
+                                alt={opponentDisplayName}
+                                className="h-7 w-7 rounded-full object-cover border-2 border-[#18130f] ring-1 ring-[#d4af37] shadow-md"
+                            />
+                            <span
+                                title="Pions Noirs (O)"
+                                className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[#14110e] border border-[#d4af37] shadow"
+                            />
+                        </div>
                         <div
                             data-testid="left-rail-score-o"
-                            className="flex h-11 w-10 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-11 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-lg border-2 border-[#d4af37]/65 bg-gradient-to-b from-[#1a1510] to-[#090705] font-display text-xl [@media(max-height:540px)]:!text-lg font-black tabular-nums text-[#f7f3e8] shadow-inner"
+                            className="flex h-11 w-10 [@media(max-height:540px)]:!h-7 [@media(max-height:540px)]:!w-10 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-lg border-2 border-[#d4af37]/65 bg-gradient-to-b from-[#1a1510] to-[#090705] font-display text-xl [@media(max-height:540px)]:!text-base font-black tabular-nums text-[#f7f3e8] shadow-inner"
                             title="Points de l'adversaire"
                         >
                             {scoreO}
@@ -377,26 +409,42 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 )}
             </div>
 
-            {/* 3. CARTE BAS (Joueur Humain) — En paysage mobile : Score (gros) + Chrono + Badge PR 1-ligne */}
-            <div className="flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-1 border-t border-[#d4af37]/20 pt-1.5 [@media(max-height:540px)]:!pt-1.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1.5 shrink-0">
+            {/* 3. CARTE BAS (Joueur Humain) — En paysage mobile : Vrai Nom + Mini-Avatar 28px (Pions Blancs) + Score + Chrono + Badge PR */}
+            <div className="flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-1 border-t border-[#d4af37]/20 pt-1.5 [@media(max-height:540px)]:!pt-1 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
                 <div className="[@media(max-height:540px)]:hidden flex flex-col items-center gap-0.5 min-w-0 flex-1">
                     <div className="flex items-center gap-1 text-[11px] font-semibold tabular-nums whitespace-nowrap">
                         <span className="font-mono text-stone-200 font-bold">1500 Elo</span>
                     </div>
                     <BotPortraitMedallion character="player" size="lg" isActive={isXTurn} />
                     <span className="truncate max-w-full font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight">
-                        Vous
+                        {playerMeta.pseudo}
                     </span>
                 </div>
 
-                <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
-                    <span className="hidden [@media(max-height:540px)]:inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-200/90">
-                        <span className="h-2 w-2 rounded-full bg-[#f7f3e8] ring-1 ring-emerald-400" />
-                        VOUS
-                    </span>
+                {/* Vrai pseudo du joueur (avec text-overflow: ellipsis) */}
+                <span
+                    data-testid="left-rail-mobile-player-name"
+                    title={playerMeta.pseudo}
+                    className="hidden [@media(max-height:540px)]:block w-full truncate text-center text-[10px] font-bold text-[#f7f3e8] leading-tight"
+                >
+                    {playerMeta.pseudo}
+                </span>
+
+                <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1.5">
+                    <div className="hidden [@media(max-height:540px)]:relative [@media(max-height:540px)]:inline-flex shrink-0">
+                        <img
+                            src={playerMeta.avatarUrl}
+                            alt={playerMeta.pseudo}
+                            className="h-7 w-7 rounded-full object-cover border-2 border-[#f7f3e8] ring-1 ring-[#d4af37] shadow-md"
+                        />
+                        <span
+                            title="Pions Blancs (X)"
+                            className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[#f7f3e8] border border-[#3b2307] shadow"
+                        />
+                    </div>
                     <div
                         data-testid="left-rail-score-x"
-                        className="flex h-11 w-10 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-11 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-lg border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] font-display text-xl [@media(max-height:540px)]:!text-lg font-black tabular-nums text-[#0b0907] shadow-[0_4px_14px_rgba(212,175,55,0.28)]"
+                        className="flex h-11 w-10 [@media(max-height:540px)]:!h-7 [@media(max-height:540px)]:!w-10 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-lg border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] font-display text-xl [@media(max-height:540px)]:!text-base font-black tabular-nums text-[#0b0907] shadow-[0_4px_14px_rgba(212,175,55,0.28)]"
                     >
                         {scoreX}
                     </div>

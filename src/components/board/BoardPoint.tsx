@@ -147,7 +147,7 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                 viewBox="0 0 100 300"
                 preserveAspectRatio="none"
                 shapeRendering="geometricPrecision"
-                className="absolute inset-0 w-full h-[90%] pointer-events-none"
+                className="absolute inset-0 w-full h-[92%] pointer-events-none"
                 style={{ top: isTopRow ? 0 : 'auto', bottom: isTopRow ? 'auto' : 0 }}
             >
                 <defs>
@@ -187,7 +187,7 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                 data-testid={`point-stack-${pointNumber}`}
                 data-stack-compressed={stackLayout.isCompressed ? 'true' : 'false'}
                 data-stack-overlap={stackLayout.overlapPx}
-                className={`relative z-10 flex flex-col items-center w-full max-h-full overflow-hidden py-0.5 pointer-events-none ${
+                className={`relative z-10 flex flex-col items-center w-full max-h-full overflow-hidden py-0.5 [@media(max-height:540px)]:py-0 pointer-events-none ${
                     isTopRow ? 'justify-start' : 'justify-end mt-auto'
                 } ${isLockedByBar ? 'opacity-55 saturate-50' : ''}`}
             >
@@ -198,12 +198,14 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                         const isTop = idx === stackLayout.apexIndex;
                         const showCount = isTop ? stackLayout.badgeCount : undefined;
                         const showBlotRing = isBlotTarget && checkerCount === 1;
+                        const effectiveOverlapPx =
+                            checkerCount === 5 ? Math.max(stackLayout.overlapPx, 4) : stackLayout.overlapPx;
                         return (
                             <div
                                 key={idx}
                                 data-testid={`checker-p${pointNumber}-${idx}`}
                                 style={{
-                                    marginTop: idx > 0 ? `-${stackLayout.overlapPx}px` : '0px',
+                                    marginTop: idx > 0 ? `-${effectiveOverlapPx}px` : '0px',
                                     zIndex: isTopRow ? idx + 1 : stackLayout.visibleCheckers - idx,
                                 }}
                                 className={`relative checker-land pointer-events-auto transition-[transform,opacity] duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] ${

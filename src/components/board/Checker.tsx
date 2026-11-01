@@ -63,8 +63,8 @@ const CheckerComponent: React.FC<CheckerProps> = ({
             }`}
             onPointerDown={isInteractive ? onPointerDown : undefined}
             style={{
-                width: 'clamp(20px, min(6.5vw, calc((100dvh - 28px) / 12.6)), 52px)',
-                height: 'clamp(20px, min(6.5vw, calc((100dvh - 28px) / 12.6)), 52px)',
+                width: 'clamp(24px, min(6.4vw, calc((100dvh - 24px) / 9.8)), 54px)',
+                height: 'clamp(24px, min(6.4vw, calc((100dvh - 24px) / 9.8)), 54px)',
                 borderRadius: '9999px',
                 touchAction: 'manipulation',
                 transform: 'translate3d(0, 0, 0)',
@@ -143,8 +143,8 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                 {/* 1. Ombre portée franche pour détacher le pion de toute flèche claire ou foncée */}
                 <circle
                     cx="50"
-                    cy="53"
-                    r="48"
+                    cy="52.5"
+                    r="49"
                     fill="rgba(0, 0, 0, 0.68)"
                 />
 
@@ -152,7 +152,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                 <circle
                     cx="50"
                     cy="50"
-                    r="47"
+                    r="48.5"
                     fill={`url(#${outerBevelId})`}
                     stroke={
                         isInteractive
@@ -161,7 +161,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                               ? '#3b2307'
                               : '#d4af37'
                     }
-                    strokeWidth={isInteractive ? '4.2' : isWhite ? '2.6' : '1.8'}
+                    strokeWidth={isInteractive ? '4.2' : isWhite ? '2.4' : '1.8'}
                 />
 
                 {/* Anneau lumineux doublé lorsque le pion est jouable */}
@@ -169,7 +169,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                     <circle
                         cx="50"
                         cy="50"
-                        r="44.2"
+                        r="45.8"
                         fill="none"
                         stroke="#fef08a"
                         strokeWidth="2.2"
@@ -180,7 +180,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                 <circle
                     cx="50"
                     cy="50"
-                    r="42.5"
+                    r="44.8"
                     fill={`url(#${bodyGradId})`}
                     stroke={isWhite ? 'rgba(92, 60, 18, 0.55)' : 'rgba(212, 175, 55, 0.45)'}
                     strokeWidth="1.2"
@@ -190,7 +190,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                 <circle
                     cx="50"
                     cy="50"
-                    r="30"
+                    r="32"
                     fill={`url(#${dishGradId})`}
                     stroke={isWhite ? 'rgba(138, 98, 36, 0.55)' : 'rgba(212, 175, 55, 0.5)'}
                     strokeWidth="1.1"
