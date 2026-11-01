@@ -105,21 +105,29 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-3 border-l border-white/10 ml-3 mt-0.5'}`}>
                             <button
                                 type="button"
-                                data-testid="sidebar-submenu-ai"
-                                onClick={onSelectAiMode}
-                                className={subItemCls}
-                            >
-                                <IconAstrolabeCoach size={14} className="text-[#d4af37]" />
-                                {!collapsed && <span>Contre l’IA</span>}
-                            </button>
-                            <button
-                                type="button"
                                 data-testid="sidebar-submenu-find-opponent"
-                                onClick={() => (onFindOpponent ? onFindOpponent() : onOpenModule?.('multiplayer'))}
-                                className={subItemCls}
+                                onClick={() => (onSelectMultiplayerMode ? onSelectMultiplayerMode() : onFindOpponent ? onFindOpponent() : onOpenModule?.('multiplayer'))}
+                                className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
+                                    selectedMode === 'multiplayer'
+                                        ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
+                                        : 'text-stone-300 hover:bg-white/5 hover:text-white'
+                                }`}
                             >
                                 <IconWorldTourLive size={14} className="text-emerald-400" />
                                 {!collapsed && <span>Jouer en Ligne</span>}
+                            </button>
+                            <button
+                                type="button"
+                                data-testid="sidebar-submenu-ai"
+                                onClick={onSelectAiMode}
+                                className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
+                                    selectedMode === 'ai'
+                                        ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
+                                        : 'text-stone-300 hover:bg-white/5 hover:text-white'
+                                }`}
+                            >
+                                <IconAstrolabeCoach size={14} className="text-[#d4af37]" />
+                                {!collapsed && <span>Contre l’IA</span>}
                             </button>
                             <button
                                 type="button"
