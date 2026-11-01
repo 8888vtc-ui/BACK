@@ -69,7 +69,7 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
             role="button"
             tabIndex={0}
             aria-label={getTrayAriaLabel(board, player, isTarget)}
-            className={`relative flex-1 w-full min-w-0 sm:min-w-[44px] min-h-0 overflow-hidden flex flex-col items-center justify-between rounded-xl px-0.5 sm:px-1.5 py-1 sm:py-2 transition-all duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] select-none touch-manipulation ${
+            className={`relative flex-1 w-full min-w-0 sm:min-w-[44px] [@media(max-height:540px)]:!min-w-0 min-h-0 overflow-hidden flex flex-col items-center justify-between rounded-xl px-0.5 sm:px-1.5 [@media(max-height:540px)]:!px-0.5 py-1 sm:py-2 [@media(max-height:540px)]:!py-0.5 transition-all duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] select-none touch-manipulation ${
                 isTarget
                     ? 'border-2 border-emerald-400 bg-emerald-950/60 shadow-[0_0_20px_rgba(52,211,153,0.6)] cursor-pointer hover:scale-[1.02]'
                     : isOpponentToOff
@@ -176,7 +176,7 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
             {/* Compteur exact count/15 */}
             <span
                 data-testid={`tray-counter-${trayKey}`}
-                className="text-[10px] sm:text-xs [@media(max-height:540px)]:!text-[10px] font-black tabular-nums whitespace-nowrap text-amber-200/95 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
+                className="text-[10px] sm:text-xs [@media(max-height:540px)]:!text-[10px] font-black tabular-nums tracking-tight whitespace-nowrap text-amber-200/95 leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
             >
                 {formatBearOffCounter(clampedCount)}
             </span>
