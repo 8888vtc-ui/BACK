@@ -80,7 +80,7 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
                     )}
 
                     <h1 className="truncate text-[11px] sm:text-xs font-black tracking-tight text-[#fdf8eb]">
-                        {drillMode === 'pr_math' ? '🎯 Quizz PR (Maths)' : '🧠 Quizz ERH (Psycho)'}
+                        {drillMode === 'pr_math' ? '📐 Quizz PR (Maths)' : '🧠 Quizz ERH (Psycho)'}
                         <span className="sr-only">Parcours Adaptatif IA</span>
                     </h1>
                     <span className="sr-only" data-testid="premium-launch-badge">
@@ -134,7 +134,7 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
                                     : 'text-[#e2d2b5] hover:text-white'
                             }`}
                         >
-                            🎯 Quizz PR
+                            📐 Quizz PR (Maths)
                         </button>
                         <button
                             type="button"
