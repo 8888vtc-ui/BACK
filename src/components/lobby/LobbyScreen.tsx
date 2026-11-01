@@ -158,16 +158,31 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
         onOpenModule?.('multiplayer');
     };
 
-    return (
+        return (
         <main
             dir={dir} data-testid="lobby-main-scroll-container"
-            className="h-dvh max-h-dvh w-full overflow-y-auto overflow-x-hidden overscroll-y-contain bg-[#090806] text-[#f7f3e8] selection:bg-[#d4af37]/30 flex flex-col relative"
+            className="h-dvh max-h-dvh w-full overflow-y-auto overflow-x-hidden overscroll-y-contain bg-[#050505] text-[#f7f3e8] selection:bg-[#d4af37]/30 flex flex-col relative"
         >
             <AppNavbar
                 activeTab="play" onOpenModule={onOpenModule}
                 onSelectPlayTab={() => setSelectedMode('ai')}
                 onOpenSettings={() => { setSelectedMode('ai'); setShowOptions(true); }}
                 onUserResolved={handleUserResolved}
+                statusBadge={
+                    <button
+                        type="button"
+                        data-testid="lobby-auth-status"
+                        onClick={() => setIsPassportGateOpen(true)}
+                        title="Performance Rating (PR) : mesure la précision de vos coups, plus il est bas, meilleur vous êtes"
+                        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#12151C] px-2.5 py-1 text-xs font-semibold text-stone-200 hover:border-[#d4af37] hover:text-white transition"
+                    >
+                        <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                        <span className="max-w-[110px] truncate">{displayName ?? 'Invité'}</span>
+                        <span className="rounded bg-[#d4af37]/15 px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#f3c65f]">
+                            {snapshot.eloRating} Elo{snapshot.averagePR !== null ? ` · PR ${snapshot.averagePR.toFixed(1)}` : ''}
+                        </span>
+                    </button>
+                }
             />
 
             <div className="relative z-10 flex flex-1 w-full">
@@ -184,27 +199,9 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                     onOpenSettings={() => { setSelectedMode('ai'); setShowOptions(true); }}
                 />
 
-                <div className="mx-auto flex flex-1 w-full max-w-6xl items-start justify-center gap-6 px-4 py-5 sm:px-8 sm:py-6">
-                    <div className={`flex flex-1 min-w-0 ${showOptions ? 'max-w-5xl' : 'max-w-3xl'} flex-col gap-4`}>
-                        <header className="flex w-full flex-col sm:flex-row items-center justify-between gap-2 border-b border-white/10 pb-3">
-                            <div className="flex items-center gap-2.5">
-                                <h1 className="font-display text-xl sm:text-2xl italic font-bold tracking-wide text-[#f7f3e8]">BACKGAMMON</h1>
-                                <span className="rounded border border-[#d4af37]/35 bg-[#d4af37]/10 px-2 py-0.5 text-[11px] font-semibold tracking-wider uppercase text-[#f3d27a]">{ui.lobby.subtitle}</span>
-                            </div>
-                            <button
-                                type="button"
-                                data-testid="lobby-auth-status"
-                                onClick={() => setIsPassportGateOpen(true)}
-                                title="Mon profil joueur"
-                                className="inline-flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-stone-200 hover:border-[#f3c65f] hover:text-white transition"
-                            >
-                                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                                <span>{displayName ?? 'Invité'}</span>
-                                <span className="rounded bg-[#d4af37]/15 px-2 py-0.5 font-mono text-[11px] font-bold text-[#f3c65f]">
-                                    📊 {snapshot.eloRating} Elo {snapshot.averagePR !== null ? `· PR ${snapshot.averagePR.toFixed(1)}` : ''}
-                                </span>
-                            </button>
-                        </header>
+                <div className="mx-auto flex flex-1 w-full max-w-6xl items-start justify-center gap-6 px-4 py-4 sm:px-8 sm:py-5">
+                    <div className={`flex flex-1 min-w-0 ${showOptions ? 'max-w-5xl' : 'max-w-3xl'} flex-col gap-3.5`}>
+                        <h1 className="sr-only">BACKGAMMON</h1>
 
                         {selectedMode === 'ai' && showOptions && (
                             <section className="w-full">
@@ -222,8 +219,12 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                             <section aria-label="Modes de jeu" className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
                                 {mainCards.map((card) => {
                                     const active = selectedMode === card.id;
+                                    const cardTooltip =
+                                        card.id === 'training'
+                                            ? 'PR (Performance Rating) : précision mathématique · ERH (Équité Réelle Humaine) : psychologie et pièges adverses'
+                                            : undefined;
                                     return (
-                                        <button key={card.id} type="button" data-testid={`lobby-card-${card.id}`} aria-pressed={active} onClick={() => setSelectedMode(card.id)} className={`group relative flex flex-col items-start justify-between gap-1 rounded-2xl border p-3 sm:p-3.5 text-left transition-all duration-150 ${active ? 'border-[#f3c65f] bg-[#121629] shadow-[0_0_0_1px_rgba(243,198,95,0.25),0_8px_24px_rgba(0,0,0,0.45)]' : 'border-white/10 bg-[#121629]/60 hover:border-white/20 hover:bg-[#121629]'}`}>
+                                        <button key={card.id} type="button" data-testid={`lobby-card-${card.id}`} title={cardTooltip} aria-pressed={active} onClick={() => setSelectedMode(card.id)} className={`group relative flex flex-col items-start justify-between gap-1 rounded-2xl border p-3 sm:p-3.5 text-left transition-all duration-150 ${active ? 'border-[#f3c65f] bg-[#12151C] shadow-[0_0_0_1px_rgba(243,198,95,0.25),0_8px_24px_rgba(0,0,0,0.45)]' : 'border-white/10 bg-[#12151C]/60 hover:border-white/20 hover:bg-[#12151C]'}`}>
                                             <div className="flex w-full items-center justify-between gap-1.5 min-w-0">
                                                 <span className="text-sm sm:text-base font-bold text-white whitespace-nowrap truncate">{card.title}</span>
                                                 <span className={`shrink-0 whitespace-nowrap rounded-md px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold ${active ? 'bg-[#f3c65f]/15 text-[#f3c65f]' : 'bg-white/5 text-slate-400'}`}>{card.badge}</span>
@@ -262,7 +263,10 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                         <span className="w-full truncate text-[10px] font-bold uppercase tracking-normal text-[#f3c65f]">
                                                             {p.styleBadge}
                                                         </span>
-                                                        <span className="whitespace-nowrap rounded-md border border-[#d4af37]/35 bg-black/60 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-200 tracking-tight">
+                                                        <span
+                                                            title="Performance Rating : mesure la précision de vos coups, plus il est bas, meilleur vous êtes"
+                                                            className="whitespace-nowrap rounded-md border border-[#d4af37]/35 bg-black/60 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-200 tracking-tight cursor-help"
+                                                        >
                                                             {BOT_ELO_BY_DIFF[lvl]} · PR {p.targetErrorRate}
                                                         </span>
                                                     </button>
@@ -286,7 +290,10 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                 <span className="w-full truncate text-[10px] font-bold uppercase tracking-normal text-rose-300">
                                                     Boss Secret
                                                 </span>
-                                                <span className="whitespace-nowrap rounded-md border border-rose-400/40 bg-black/60 px-1.5 py-0.5 font-mono text-[10px] font-bold text-rose-200 tracking-tight">
+                                                <span
+                                                    title="Performance Rating : mesure la précision de vos coups, plus il est bas, meilleur vous êtes"
+                                                    className="whitespace-nowrap rounded-md border border-rose-400/40 bg-black/60 px-1.5 py-0.5 font-mono text-[10px] font-bold text-rose-200 tracking-tight cursor-help"
+                                                >
                                                     Elo ??? · PR 0.1
                                                 </span>
                                             </button>
@@ -294,9 +301,9 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
 
                                         <div data-testid="lobby-direct-format-bar" className="flex flex-wrap items-center justify-between gap-2 pt-1">
                                             <div className="flex flex-wrap items-center gap-1.5">
-                                                <div className="inline-flex rounded-xl border border-white/10 bg-black/40 p-0.5">
-                                                    <button type="button" data-testid="lobby-pill-match-mode" aria-pressed={matchLength > 0} onClick={() => setMatchLength((prev) => (prev === 0 ? 7 : prev))} className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${matchLength > 0 ? 'bg-[#f3c65f] text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}`}>🏆 Match</button>
-                                                    <button type="button" data-testid="lobby-pill-money-mode" aria-pressed={matchLength === 0} onClick={() => setMatchLength(0)} className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${matchLength === 0 ? 'bg-[#f3c65f] text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}`}>💰 Money Game</button>
+                                                <div className="inline-flex rounded-xl border border-white/10 bg-black/40 p-0.5 gap-0.5">
+                                                    <button type="button" data-testid="lobby-pill-match-mode" aria-pressed={matchLength > 0} onClick={() => setMatchLength((prev) => (prev === 0 ? 7 : prev))} className={`rounded-lg border px-2.5 py-1 text-xs font-bold transition ${matchLength > 0 ? 'border-[#d4af37] bg-[#d4af37]/15 text-[#f3c65f] shadow-sm' : 'border-transparent text-slate-300 hover:text-white'}`}>🏆 Match</button>
+                                                    <button type="button" data-testid="lobby-pill-money-mode" aria-pressed={matchLength === 0} onClick={() => setMatchLength(0)} className={`rounded-lg border px-2.5 py-1 text-xs font-bold transition ${matchLength === 0 ? 'border-[#d4af37] bg-[#d4af37]/15 text-[#f3c65f] shadow-sm' : 'border-transparent text-slate-300 hover:text-white'}`}>💰 Money Game</button>
                                                 </div>
                                                 {matchLength > 0 ? (
                                                     <div className="inline-flex items-center gap-1" role="group" aria-label="Points du match">
@@ -315,8 +322,9 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                     </>
                                 )}
 
+                                {/* UNIQUE BOUTON PLEIN OR (#D4AF37) + 3 BOUTONS UTILITAIRES DISCRETS */}
                                 <div className="max-sm:sticky max-sm:bottom-2 max-sm:z-30 max-sm:rounded-2xl max-sm:bg-[#0e0b08]/95 max-sm:p-2 max-sm:shadow-2xl max-sm:backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1" data-testid="lobby-tournament-quickbar">
-                                    <button type="button" data-testid="lobby-start-btn" onClick={handlePlay} className="flex-1 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#f3c65f] via-[#f7d77e] to-[#e5b548] px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_20px_rgba(243,198,95,0.35)] transition hover:brightness-105 active:scale-[0.99]">
+                                    <button type="button" data-testid="lobby-start-btn" onClick={handlePlay} className="flex-1 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f7d77e] to-[#b88924] px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-[#050505] shadow-[0_4px_20px_rgba(212,175,55,0.4)] transition hover:brightness-105 active:scale-[0.99]">
                                         🎲 {selectedMode === 'multiplayer'
                                             ? ui.lobby.cardMultiTitle
                                             : selectedMode === 'training'
@@ -324,9 +332,9 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                 : `${isMittensActive ? 'Lord Mittens' : selectedPersona.shortName} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`}
                                     </button>
                                     <div className="flex items-center justify-end gap-1.5 shrink-0">
-                                        <Link href="/tournaments" data-testid="lobby-quick-map-btn" className="rounded-xl border border-[#d4af37]/35 bg-[#d4af37]/10 px-3 py-2.5 text-xs font-semibold text-[#f3c65f] hover:bg-[#d4af37]/20 hover:text-white transition touch-manipulation">🌍 Carte : Tournois &amp; Clubs</Link>
-                                        <button type="button" data-testid="lobby-quick-scanner-btn" onClick={() => onOpenModule?.('import_export')} className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/[0.08] hover:text-white transition touch-manipulation">📷 Scanner</button>
-                                        <button type="button" data-testid="lobby-quick-clock-btn" onClick={() => setIsTableClockOpen(true)} className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/[0.08] hover:text-white transition touch-manipulation">⏱️ Pendule</button>
+                                        <Link href="/tournaments" data-testid="lobby-quick-map-btn" className="rounded-xl border border-white/10 bg-transparent px-3 py-2.5 text-xs font-semibold text-slate-300 hover:border-white/25 hover:bg-white/[0.04] hover:text-white transition touch-manipulation">🌍 Carte : Tournois &amp; Clubs</Link>
+                                        <button type="button" data-testid="lobby-quick-scanner-btn" onClick={() => onOpenModule?.('import_export')} className="rounded-xl border border-white/10 bg-transparent px-3 py-2.5 text-xs font-semibold text-slate-300 hover:border-white/25 hover:bg-white/[0.04] hover:text-white transition touch-manipulation">📷 Scanner</button>
+                                        <button type="button" data-testid="lobby-quick-clock-btn" onClick={() => setIsTableClockOpen(true)} className="rounded-xl border border-white/10 bg-transparent px-3 py-2.5 text-xs font-semibold text-slate-300 hover:border-white/25 hover:bg-white/[0.04] hover:text-white transition touch-manipulation">⏱️ Pendule</button>
                                     </div>
                                 </div>
                             </div>
@@ -378,13 +386,15 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                         )}
 
                         <section aria-label="Espace joueur et progression" data-testid="lobby-secondary-section" className={showOptions ? 'sr-only' : 'flex w-full flex-col gap-3 pt-1 pb-8'}>
-                            <PlayerProfileCard
-                                displayName={displayName} eloRating={snapshot.eloRating} averagePR={snapshot.averagePR}
-                                gamesPlayed={snapshot.gamesPlayed} winsCount={snapshot.winsCount} puzzleStreak={snapshot.puzzleStreak}
-                                onOpenReview={() => onOpenModule?.('stats')}
-                            />
                             <CoachPreMatchBriefingCard onOpenDrills={() => onOpenModule?.('drills')} />
-                            <LearningModulesGrid snapshot={snapshot} onOpenModule={onOpenModule} />
+                            <div className="flex w-full flex-col gap-3 rounded-2xl border border-white/10 bg-[#12151C]/70 p-3.5 shadow-xl">
+                                <PlayerProfileCard
+                                    displayName={displayName} eloRating={snapshot.eloRating} averagePR={snapshot.averagePR}
+                                    gamesPlayed={snapshot.gamesPlayed} winsCount={snapshot.winsCount} puzzleStreak={snapshot.puzzleStreak}
+                                    onOpenReview={() => onOpenModule?.('stats')}
+                                />
+                                <LearningModulesGrid snapshot={snapshot} onOpenModule={onOpenModule} />
+                            </div>
                             {recentMatches.length > 0 && (
                                 <RecentMatchesSummary matches={recentMatches} onReviewMatch={() => onOpenModule?.('stats')} onOpenImportExport={() => onOpenModule?.('import_export')} />
                             )}

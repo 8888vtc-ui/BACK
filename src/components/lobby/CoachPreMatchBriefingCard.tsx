@@ -100,7 +100,9 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
                             Point clé : {humanConceptTitle}
                         </span>
                     )}
-                    <p className="text-xs text-slate-300 truncate flex-1 min-w-[180px]">{adviceText}</p>
+                    <p className="text-xs text-slate-200 line-clamp-2 leading-relaxed flex-1 min-w-[200px]">
+                        {adviceText}
+                    </p>
                 </div>
 
                 {onOpenDrills && (
@@ -108,9 +110,9 @@ export const CoachPreMatchBriefingCard: React.FC<CoachPreMatchBriefingCardProps>
                         type="button"
                         data-testid="lobby-briefing-drill-btn"
                         onClick={() => onOpenDrills(topError?.concept_id)}
-                        className="shrink-0 rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-200 transition hover:border-amber-400/60 hover:bg-amber-500/20 hover:text-white"
+                        className="shrink-0 text-xs font-bold text-[#d4af37] underline-offset-4 transition hover:text-[#f3d27a] hover:underline"
                     >
-                        🎯 {topError ? 'Corriger en 2 min' : 'S’entraîner'}
+                        Voir l’exercice →
                     </button>
                 )}
             </div>
