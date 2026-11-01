@@ -190,3 +190,4 @@ export function buildFastCoachThreeLineVerdict(
         line3GoldenRule,
     };
 }
+
