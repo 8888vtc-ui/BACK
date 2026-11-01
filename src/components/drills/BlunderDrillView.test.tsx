@@ -199,4 +199,33 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         expect(screen.getByText(/Vos Blunders de Match/i)).toBeDefined();
         expect(screen.getByText(/Ouverture Personnelle Match/i)).toBeDefined();
     });
+
+    it('affiche la terminologie unifiée ER / PR, le Rating 1500 Elo, le Thème Mystère anti-spoiler, le rappel des dés et le Panneau de Coaching à 2 Sous-Agents (flashlight + flash)', () => {
+        render(<BlunderDrillView initialConceptId="blitz_attack" initialMode="pr_math" />);
+
+        // 1. Terminologie ER / PR & Séparation Elo vs Cible ER / PR
+        expect(screen.getByTestId('drill-mode-title').textContent).toContain('Quiz ER / PR');
+        expect(screen.getByTestId('drill-subtitle-index').textContent).toContain('Quiz ER / PR #1');
+        expect(screen.getByTestId('quiz-elo-rating-badge').textContent).toContain('Rating : 1500 Elo');
+        expect(screen.getByTestId('quiz-target-metric-badge').textContent).toContain('Cible ER / PR : ~6.5 (Intermédiaire)');
+
+        // 2. Anti-spoiler du thème avant clic + Rappel des dés & structure
+        expect(screen.getByTestId('drill-theme-badge').textContent).toContain('Thème : Mystère 🔒');
+        expect(screen.getByTestId('drill-dice-direction-badge').textContent).toContain('Sens : Case 24 ➔ Case 1');
+        expect(screen.getByTestId('drill-structure-summary').textContent).toContain('Portes faites : Blanc');
+
+        // 3. Clic sur un mauvais coup (B) -> Panneau de Coaching Interactif à 3 blocs + Sous-Agents flashlight & flash
+        fireEvent.click(screen.getByTestId('quiz-choice-btn-B'));
+        expect(screen.getByTestId('drill-theme-badge').textContent).toContain('🔓');
+        expect(screen.getByTestId('coach-verdict-header').textContent).toContain('Impact ER / PR :');
+        expect(screen.getByTestId('coach-win-drop-badge').textContent).toContain('% de chances de gagner');
+        expect(screen.getByTestId('subagents-pipeline-badge').textContent).toContain('FlashLite-Tactical-Extractor (flashlight)');
+        expect(screen.getByTestId('subagents-pipeline-badge').textContent).toContain('Flash-Pedagogical-Coach (flash)');
+        expect(screen.getByTestId('coach-block-1-error').textContent).toContain('lancers constructifs sur 36');
+        expect(screen.getByTestId('coach-block-2-optimal').textContent).toContain('Le meilleur coup est');
+        expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('💡 Règle pour progresser :');
+        expect(screen.getByTestId('drill-show-threat-btn').textContent).toContain('Voir la menace sur le plateau');
+        expect(screen.getByTestId('drill-retry-btn').textContent).toContain('Réessayer');
+        expect(screen.getByTestId('drill-next-btn').textContent).toContain('Puzzle Suivant');
+    });
 });
