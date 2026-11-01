@@ -235,6 +235,9 @@ Ces fichiers hérités ont été résolus ou doivent être découpés sous les s
 | [`src/features/knowledge/knowledgeBaseData.ts`](src/features/knowledge/knowledgeBaseData.ts) | 47 | ✅ Résolu (externalisé dans `knowledgeBaseData.json`) |
 | [`src/hooks/useBackgammonGame.ts`](src/hooks/useBackgammonGame.ts) | 164 | ✅ Résolu (conforme R1 < 200 lignes) |
 | [`src/hooks/useMultiplayerGame.ts`](src/hooks/useMultiplayerGame.ts) | 144 | ✅ Résolu (conforme R1 < 200 lignes) |
+| [`src/components/drills/BlunderDrillView.tsx`](src/components/drills/BlunderDrillView.tsx) | 288 | ✅ Résolu (conforme R1 < 300 lignes — découpé en `DrillHeader`, `DrillContextStrip`, `DrillChoicesGrid`, `DrillCoachFeedback`, `useDrillRating`) |
+| [`src/components/drills/BlunderDrillFeedbackCard.tsx`](src/components/drills/BlunderDrillFeedbackCard.tsx) | 114 | ✅ Résolu (conforme R1 < 300 lignes) |
+| [`src/hooks/useDrillRating.ts`](src/hooks/useDrillRating.ts) | 149 | ✅ Résolu (conforme R1 < 200 lignes, Zod-validé) |
 
 **Règle : aucun nouveau code ne doit s'ajouter à ces fichiers.** Toute modification
 doit passer par l'extraction d'un nouveau module conforme à la charte.
