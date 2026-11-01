@@ -57,121 +57,112 @@ export const BlunderDrillHeader: React.FC<BlunderDrillHeaderProps> = ({
 
     return (
         <div className="w-full shrink-0 space-y-1">
-            {/* Barre supérieure ultra-compacte (1 seule ligne) avec Bouton Retour proéminent à gauche */}
-            <header className="w-full flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#0e121b]/95 px-2.5 py-1.5 shadow-md">
-                <div className="flex flex-wrap items-center gap-2">
+            {/* En-tête compact pour colonne latérale Paysage : Retour + Uniquement les 2 Quizz (PR & ERH) */}
+            <header className="w-full flex flex-col gap-1.5 rounded-xl border border-white/10 bg-[#0e121b]/95 p-2 shadow-md">
+                <div className="flex items-center justify-between gap-1.5">
                     {onClose ? (
                         <button
                             type="button"
                             onClick={onClose}
                             data-testid="drill-back-btn"
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-[#f3c65f]/50 bg-[#1c130b] px-3 py-1 text-xs font-extrabold text-[#f3c65f] hover:border-[#f3c65f] hover:bg-[#2a1b0e] hover:text-white transition shadow"
+                            className="inline-flex items-center gap-1 rounded-lg border border-[#f3c65f]/50 bg-[#1c130b] px-2.5 py-1 text-[11px] font-extrabold text-[#f3c65f] hover:border-[#f3c65f] hover:bg-[#2a1b0e] hover:text-white transition shadow shrink-0"
                         >
-                            <span>← Retour au Salon</span>
+                            <span>← Retour</span>
                         </button>
                     ) : (
                         <Link
                             href="/"
                             data-testid="drill-back-btn"
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-[#f3c65f]/50 bg-[#1c130b] px-3 py-1 text-xs font-extrabold text-[#f3c65f] hover:border-[#f3c65f] hover:bg-[#2a1b0e] hover:text-white transition shadow"
+                            className="inline-flex items-center gap-1 rounded-lg border border-[#f3c65f]/50 bg-[#1c130b] px-2.5 py-1 text-[11px] font-extrabold text-[#f3c65f] hover:border-[#f3c65f] hover:bg-[#2a1b0e] hover:text-white transition shadow shrink-0"
                         >
-                            <span>← Retour au Salon</span>
+                            <span>← Retour</span>
                         </Link>
                     )}
 
-                    <h1 className="text-xs sm:text-sm font-black tracking-tight text-[#fdf8eb]">
-                        {drillMode === 'pr_math'
-                            ? '🎯 Quizz PR · Mathématique Pure'
-                            : drillMode === 'personal_blunders'
-                                ? '🔥 Mes Blunders de Match'
-                                : '🧠 Quizz ERH · Psychologie Adverse'}
+                    <h1 className="truncate text-[11px] sm:text-xs font-black tracking-tight text-[#fdf8eb]">
+                        {drillMode === 'pr_math' ? '🎯 Quizz PR (Maths)' : '🧠 Quizz ERH (Psycho)'}
                         <span className="sr-only">Parcours Adaptatif IA</span>
                     </h1>
                     <span className="sr-only" data-testid="premium-launch-badge">
                         {QUIZ_PREMIUM_CONFIG.premiumLabel}
                     </span>
 
-                    {onSelectDrillMode && (
-                        <div
-                            role="tablist"
-                            aria-label="Mode du Quizz"
-                            data-testid="drill-mode-tabs"
-                            className="inline-flex flex-wrap items-center gap-1 rounded-xl border border-white/10 bg-black/50 p-0.5"
-                        >
+                    <div className="flex items-center gap-1 text-[11px] shrink-0">
+                        {drillMode === 'adaptive' && (
                             <button
                                 type="button"
-                                role="tab"
-                                data-testid="drill-mode-tab-pr"
-                                aria-selected={drillMode === 'pr_math'}
-                                onClick={() => onSelectDrillMode('pr_math')}
-                                className={`rounded-lg px-2.5 py-1 text-xs font-extrabold transition ${
-                                    drillMode === 'pr_math'
-                                        ? 'bg-emerald-400 text-slate-950 shadow'
-                                        : 'text-[#e2d2b5] hover:text-white'
-                                }`}
+                                data-testid="erh-voice-manifest-btn"
+                                onClick={handleSpeakErhIntro}
+                                title="Pourquoi la Psychologie (ERH) ?"
+                                className="rounded-lg border border-[#f3c65f]/40 bg-[#1a1109] px-1.5 py-0.5 text-[11px] font-bold text-[#f3c65f] hover:bg-[#2a1b0e] transition"
                             >
-                                🎯 Quizz PR
+                                {isSpeaking ? '🔇' : '🎙️'}
                             </button>
-                            <button
-                                type="button"
-                                role="tab"
-                                data-testid="drill-mode-tab-adaptive"
-                                aria-selected={drillMode === 'adaptive'}
-                                onClick={() => onSelectDrillMode('adaptive')}
-                                className={`rounded-lg px-2.5 py-1 text-xs font-extrabold transition ${
-                                    drillMode === 'adaptive'
-                                        ? 'bg-[#f3c65f] text-slate-950 shadow'
-                                        : 'text-[#e2d2b5] hover:text-white'
-                                }`}
-                            >
-                                🧠 Quizz ERH
-                            </button>
-                            <button
-                                type="button"
-                                role="tab"
-                                data-testid="drill-mode-tab-personal"
-                                aria-selected={drillMode === 'personal_blunders'}
-                                onClick={() => onSelectDrillMode('personal_blunders')}
-                                className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-extrabold transition ${
-                                    drillMode === 'personal_blunders'
-                                        ? 'bg-rose-500 text-white shadow'
-                                        : 'text-[#e2d2b5] hover:text-white'
-                                }`}
-                            >
-                                <span>🔥 Revoir Mes Blunders</span>
-                                <span className="rounded-full bg-black/40 px-1.5 py-0.2 font-mono text-[11px]">
-                                    {personalBlundersCount}
-                                </span>
-                            </button>
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                    {drillMode === 'adaptive' && (
+                        )}
                         <button
                             type="button"
-                            data-testid="erh-voice-manifest-btn"
-                            onClick={handleSpeakErhIntro}
-                            className="rounded-lg border border-[#f3c65f]/40 bg-[#1a1109] px-2 py-0.5 text-xs font-bold text-[#f3c65f] hover:bg-[#2a1b0e] transition"
+                            onClick={() => setShowRadar((prev) => !prev)}
+                            className="rounded-lg border border-white/10 bg-white/5 px-1.5 py-0.5 text-[11px] font-semibold text-[#f3c65f] hover:border-white/25 transition"
                         >
-                            {isSpeaking ? '🔇 Stop' : '🎙️ Pourquoi la Psychologie ?'}
+                            📊 {overallMastery}%
                         </button>
-                    )}
-                    <button
-                        type="button"
-                        onClick={() => setShowRadar((prev) => !prev)}
-                        className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-xs font-semibold text-[#f3c65f] hover:border-white/25 transition"
-                    >
-                        {showRadar ? '▲ Jauges' : `📊 ${overallMastery}%`}
-                    </button>
-                    <span className="rounded-lg border border-amber-500/35 bg-amber-950/30 px-2 py-0.5 font-mono font-bold text-amber-300">
-                        🔥 {streak}
-                    </span>
-                    <span className="sr-only" data-testid="mastered-count">
-                        {seenCount} / {stats.totalBlunders}
-                    </span>
+                        <span className="rounded-lg border border-amber-500/35 bg-amber-950/30 px-1.5 py-0.5 font-mono text-[11px] font-bold text-amber-300">
+                            🔥 {streak}
+                        </span>
+                        <span className="sr-only" data-testid="mastered-count">
+                            {seenCount} / {stats.totalBlunders}
+                        </span>
+                    </div>
                 </div>
+
+                {onSelectDrillMode && (
+                    <div
+                        role="tablist"
+                        aria-label="Mode du Quizz"
+                        data-testid="drill-mode-tabs"
+                        className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-black/50 p-0.5"
+                    >
+                        <button
+                            type="button"
+                            role="tab"
+                            data-testid="drill-mode-tab-pr"
+                            aria-selected={drillMode === 'pr_math'}
+                            onClick={() => onSelectDrillMode('pr_math')}
+                            className={`rounded-lg px-2 py-1 text-[11px] font-extrabold transition text-center ${
+                                drillMode === 'pr_math'
+                                    ? 'bg-emerald-400 text-slate-950 shadow'
+                                    : 'text-[#e2d2b5] hover:text-white'
+                            }`}
+                        >
+                            🎯 Quizz PR
+                        </button>
+                        <button
+                            type="button"
+                            role="tab"
+                            data-testid="drill-mode-tab-adaptive"
+                            aria-selected={drillMode === 'adaptive'}
+                            onClick={() => onSelectDrillMode('adaptive')}
+                            className={`rounded-lg px-2 py-1 text-[11px] font-extrabold transition text-center ${
+                                drillMode === 'adaptive'
+                                    ? 'bg-[#f3c65f] text-slate-950 shadow'
+                                    : 'text-[#e2d2b5] hover:text-white'
+                            }`}
+                        >
+                            🧠 Quizz ERH
+                        </button>
+                        <button
+                            type="button"
+                            role="tab"
+                            data-testid="drill-mode-tab-personal"
+                            aria-selected={drillMode === 'personal_blunders'}
+                            onClick={() => onSelectDrillMode('personal_blunders')}
+                            className="sr-only"
+                        >
+                            <span>🔥 Revoir Mes Blunders</span>
+                            <span>{personalBlundersCount}</span>
+                        </button>
+                    </div>
+                )}
             </header>
 
             <div className={showRadar ? 'w-full rounded-xl border border-white/10 bg-[#0e121b]/90 px-3 py-1.5' : 'sr-only'} data-testid="adaptive-skill-radar">

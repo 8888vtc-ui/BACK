@@ -85,32 +85,32 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
     };
 
     return (
-        <section data-testid="drill-position-card" className="w-full h-full flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0e121b]/95 p-3 shadow-xl space-y-2 overflow-hidden">
-            <div className="space-y-2 overflow-y-auto pr-0.5">
-                <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/10 pb-1.5">
-                    <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <section data-testid="drill-position-card" className="w-full h-full flex flex-col justify-between rounded-xl border border-white/10 bg-[#0e121b]/95 p-2 sm:p-2.5 shadow-xl space-y-1.5 overflow-hidden">
+            <div className="space-y-1.5 overflow-y-auto pr-0.5">
+                <div className="flex flex-wrap items-center justify-between gap-1 border-b border-white/10 pb-1">
+                    <div className="flex flex-wrap items-center gap-1 text-[11px]">
                         <span className="font-bold text-[#f3c65f]">Quizz #{currentIndex + 1}</span>
                         <span className="sr-only">{totalBlunders}</span>
-                        <span className={`rounded border px-2 py-0.5 text-[11px] font-bold ${tierInfo.color}`}>
+                        <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${tierInfo.color}`}>
                             {tierInfo.badge}
                         </span>
-                        <span className="rounded border border-rose-500/40 bg-rose-950/80 px-2 py-0.5 text-[11px] font-bold text-rose-200">{currentBlunder.conceptName}</span>
+                        <span className="rounded border border-rose-500/40 bg-rose-950/80 px-1.5 py-0.5 text-[10px] font-bold text-rose-200">{currentBlunder.conceptName}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-black/40 px-2.5 py-0.5 text-xs">
+                    <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-black/40 px-2 py-0.5 text-[11px]">
                         <span className="text-[#a5b0c4] font-semibold">Jet à jouer :</span>
-                        <span className="rounded border border-white/10 bg-[#180c06] px-1.5 py-0.5 font-mono font-bold text-[#fdf8eb]">{currentBlunder.dice[0]}</span>
-                        <span className="rounded border border-white/10 bg-[#180c06] px-1.5 py-0.5 font-mono font-bold text-[#fdf8eb]">{currentBlunder.dice[1]}</span>
+                        <span className="rounded border border-white/10 bg-[#180c06] px-1 py-0.2 font-mono font-bold text-[#fdf8eb]">{currentBlunder.dice[0]}</span>
+                        <span className="rounded border border-white/10 bg-[#180c06] px-1 py-0.2 font-mono font-bold text-[#fdf8eb]">{currentBlunder.dice[1]}</span>
                     </div>
                 </div>
 
                 {/* Barre d'actions : Indice + Réinitialiser + Bouton VALIDER */}
-                <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-1 text-[11px]">
                     <span className="sr-only">
                         Erreur piégeuse à éviter : {currentBlunder.playedMove} (-{currentBlunder.equityLoss.toFixed(3)} ΔEq)
                     </span>
-                    <div className="flex items-center gap-1.5">
-                        <button type="button" onClick={onToggleHint} className="rounded-xl border border-white/10 bg-[#1a1109] px-2.5 py-1 text-xs font-bold text-[#f3c65f] hover:border-white/25 transition" data-testid="drill-hint-toggle">💡 {showHint ? 'Masquer' : 'Indice'}</button>
-                        <button type="button" onClick={onResetAttempt} className="rounded-xl border border-white/10 bg-black/40 px-2.5 py-1 text-xs font-semibold text-[#e2d2b5] hover:border-white/25 transition" data-testid="drill-reset-btn">↺ Réinitialiser</button>
+                    <div className="flex items-center gap-1">
+                        <button type="button" onClick={onToggleHint} className="rounded-lg border border-white/10 bg-[#1a1109] px-2 py-1 text-[11px] font-bold text-[#f3c65f] hover:border-white/25 transition" data-testid="drill-hint-toggle">💡 {showHint ? 'Masquer' : 'Indice'}</button>
+                        <button type="button" onClick={onResetAttempt} className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-[#e2d2b5] hover:border-white/25 transition" data-testid="drill-reset-btn">↺ Réinitialiser</button>
                     </div>
                     {onValidateAttempt && !validationResult?.isCorrect && (
                         <button
@@ -118,13 +118,13 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                             onClick={onValidateAttempt}
                             disabled={!canValidateAttempt}
                             data-testid="drill-validate-btn"
-                            className={`rounded-xl border px-3.5 py-1.5 text-xs font-black uppercase tracking-wide transition shadow-md ${
+                            className={`rounded-lg border px-2.5 py-1 text-[11px] font-black uppercase tracking-wide transition shadow-md ${
                                 canValidateAttempt
                                     ? 'border-emerald-300 bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 hover:brightness-110 animate-pulse'
                                     : 'border-white/10 bg-white/5 text-slate-500 cursor-not-allowed'
                             }`}
                         >
-                            ✓ Valider mon coup {stagedNotation ? `(${stagedNotation})` : ''}
+                            ✓ Valider {stagedNotation ? `(${stagedNotation})` : ''}
                         </button>
                     )}
                 </div>
@@ -133,22 +133,22 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                 {drillMode !== 'pr_math' && (
                     <div
                         data-testid="erh-opponent-scenario-card"
-                        className="rounded-xl border border-[#d4af37]/35 bg-gradient-to-r from-[#1c130b] via-[#130e09] to-[#1c130b] p-2 space-y-1"
+                        className="rounded-xl border border-[#d4af37]/35 bg-gradient-to-r from-[#1c130b] via-[#130e09] to-[#1c130b] p-1.5 space-y-1"
                     >
                         <div className="flex flex-wrap items-center justify-between gap-1">
-                            <span className="rounded-md border border-[#f3c65f]/50 bg-[#f3c65f]/15 px-2 py-0.5 text-[11px] font-extrabold text-[#f3c65f]">
+                            <span className="rounded-md border border-[#f3c65f]/50 bg-[#f3c65f]/15 px-1.5 py-0.5 text-[10px] font-extrabold text-[#f3c65f]">
                                 {erhScenario.badgeLabel}
                             </span>
                             <button
                                 type="button"
                                 data-testid="erh-scenario-voice-btn"
                                 onClick={handleSpeakErhBriefing}
-                                className="inline-flex items-center gap-1 rounded-lg border border-[#f3c65f]/40 bg-black/45 px-2 py-0.5 text-[11px] font-bold text-[#f3c65f] hover:bg-[#24190e] transition"
+                                className="inline-flex items-center gap-1 rounded-lg border border-[#f3c65f]/40 bg-black/45 px-1.5 py-0.5 text-[10px] font-bold text-[#f3c65f] hover:bg-[#24190e] transition"
                             >
                                 <span>{isSpeaking ? '🔇 Stop' : '🎙️ Écouter'}</span>
                             </button>
                         </div>
-                        <p className="text-xs text-amber-50/95 leading-snug font-medium">
+                        <p className="text-[11px] text-amber-50/95 leading-snug font-medium">
                             {erhScenario.psychologicalPrompt}
                         </p>
                     </div>
@@ -156,11 +156,11 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
 
                 {/* Mode Quiz Express QCM (4 propositions cliquables OU jeu direct sur le plateau) */}
                 {currentBlunder.quizChoices && currentBlunder.quizChoices.length > 0 && onSelectQuizChoice && !validationResult?.isCorrect && (
-                    <div className="rounded-xl border border-white/10 bg-black/35 p-2 space-y-1.5" data-testid="quiz-qcm-choices">
-                        <div className="flex items-center justify-between text-xs">
-                            <span className="font-bold text-[#f3c65f]">⚡ Choisissez un coup ou déplacez vos pions sur le plateau :</span>
+                    <div className="rounded-xl border border-white/10 bg-black/35 p-1.5 space-y-1" data-testid="quiz-qcm-choices">
+                        <div className="flex items-center justify-between text-[11px]">
+                            <span className="font-bold text-[#f3c65f]">⚡ Choisissez ou jouez sur le plateau :</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-1.5">
+                        <div className="grid grid-cols-2 gap-1">
                             {currentBlunder.quizChoices.map((choice) => {
                                 const isPickedWrong = validationResult && !validationResult.isCorrect && validationResult.playedNotation === choice;
                                 const isStaged = stagedNotation === choice;
@@ -169,7 +169,7 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                                         key={choice}
                                         type="button"
                                         onClick={() => onSelectQuizChoice(choice)}
-                                        className={`rounded-xl border px-2.5 py-1.5 font-mono text-xs font-extrabold transition ${
+                                        className={`rounded-lg border px-2 py-1 font-mono text-[11px] font-extrabold transition ${
                                             isPickedWrong
                                                 ? 'border-rose-500 bg-rose-950/70 text-rose-200'
                                                 : isStaged

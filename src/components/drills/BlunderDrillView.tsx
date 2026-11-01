@@ -408,25 +408,38 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     }, [validationResult, currentBlunder, playedMoves]);
 
     return (
-        <div className="flex h-dvh max-h-dvh w-full max-w-[1600px] mx-auto flex-col gap-1.5 p-1 sm:p-2 text-[#fdf8eb] overflow-hidden">
-            <BlunderDrillHeader
-                stats={stats}
-                adaptiveProfile={adaptiveProfile}
-                activeCategoryId={activeCategoryId}
-                adaptiveReasonLabel={reasonLabel}
-                drillMode={drillMode}
-                personalBlundersCount={personalBlundersCount}
-                speedSecondsLeft={speedSecondsLeft}
-                onSelectDrillMode={handleSelectDrillMode}
-                hearts={hearts}
-                streak={streak}
-                xp={xp}
-                onResetAllMastery={handleResetAllMastery}
-                onClose={onClose}
-            />
+        <div className="relative flex h-dvh max-h-dvh w-full max-w-[1920px] mx-auto flex-col p-1 sm:p-1.5 [@media(max-height:540px)]:!p-0.5 text-[#fdf8eb] overflow-hidden">
+            {/* Garde-fou Mobile Portrait : Quizz uniquement en mode Paysage sur portable */}
+            <div className="hidden [@media(max-width:640px)_and_(orientation:portrait)]:flex fixed inset-0 z-50 flex-col items-center justify-center gap-4 bg-[#07090e]/98 p-6 text-center backdrop-blur-md">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[#d4af37]/50 bg-[#1a120b] text-3xl shadow-xl">
+                    📱↻
+                </div>
+                <h2 className="font-display text-lg font-black text-[#f7f3e8]">
+                    Mode Paysage Requis pour les Quizz
+                </h2>
+                <p className="max-w-xs text-xs leading-relaxed text-[#e2d2b5]">
+                    Tournez votre téléphone à l&apos;horizontale pour afficher le plateau de Backgammon en pleine hauteur à côté des 2 Quizz (<strong>🎯 Quizz PR</strong> &amp; <strong>🧠 Quizz ERH</strong>).
+                </p>
+                {onClose ? (
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-xl border border-[#f3c65f]/60 bg-[#1c130b] px-4 py-2 text-xs font-extrabold text-[#f3c65f]"
+                    >
+                        ← Retour au Salon
+                    </button>
+                ) : (
+                    <Link
+                        href="/"
+                        className="rounded-xl border border-[#f3c65f]/60 bg-[#1c130b] px-4 py-2 text-xs font-extrabold text-[#f3c65f]"
+                    >
+                        ← Retour au Salon
+                    </Link>
+                )}
+            </div>
 
             {!currentBlunder ? (
-                <div className="w-full rounded-2xl border border-white/10 bg-[#0e121b] p-6 text-center shadow-2xl space-y-3">
+                <div className="w-full m-auto max-w-md rounded-2xl border border-white/10 bg-[#0e121b] p-6 text-center shadow-2xl space-y-3">
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[#2a170c] text-2xl">🏆</div>
                     <h2 className="text-lg font-black text-[#fdf8eb]">Parcours terminé ! (+{xp} XP)</h2>
                     <div className="flex flex-wrap justify-center gap-2.5 pt-2">
@@ -435,9 +448,9 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                     </div>
                 </div>
             ) : (
-                <div className="flex-1 min-h-0 w-full grid grid-cols-1 lg:grid-cols-12 gap-2 overflow-hidden">
-                    {/* COLONNE GAUCHE (8/12) : Plateau 100% visible en entier sans scroller */}
-                    <div className="lg:col-span-8 h-full min-h-0 min-w-0 flex items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#080a0f] p-1 shadow-2xl">
+                <div className="flex-1 min-h-0 h-full w-full grid grid-cols-12 gap-1.5 [@media(max-height:540px)]:!gap-1 overflow-hidden">
+                    {/* COLONNE GAUCHE (8/12) : Plateau 100 % de la hauteur verticale de l'écran (Zéro barre au-dessus ni en-dessous) */}
+                    <div className="col-span-8 h-full min-h-0 min-w-0 flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#080a0f] p-0.5 shadow-2xl">
                         <Board
                             state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets}
                             selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice}
@@ -457,23 +470,40 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                         />
                     </div>
 
-                    {/* COLONNE DROITE (4/12) : Dés, Bouton Valider, Choix QCM Express & Explications côte-à-côte sur le même écran */}
-                    <div className="lg:col-span-4 h-full min-h-0 overflow-hidden flex flex-col">
-                        <BlunderDrillFeedbackCard
-                            currentBlunder={currentBlunder}
-                            currentIndex={quizStepCount}
-                            totalBlunders={stats.totalBlunders}
-                            showHint={showHint}
-                            onToggleHint={() => setShowHint((prev) => !prev)}
-                            onResetAttempt={handleResetCurrentAttempt}
-                            validationResult={validationResult}
-                            onNextBlunder={handleNextBlunder}
-                            onSelectQuizChoice={handleSelectQuizChoice}
-                            onValidateAttempt={handleValidateAttempt}
-                            canValidateAttempt={isTurnComplete}
-                            stagedNotation={stagedNotation}
+                    {/* COLONNE DROITE (4/12) : En-tête (Retour + 2 Quizz PR/ERH) + Dés, QCM Express, Valider & Explications */}
+                    <div className="col-span-4 h-full min-h-0 min-w-0 overflow-hidden flex flex-col gap-1">
+                        <BlunderDrillHeader
+                            stats={stats}
+                            adaptiveProfile={adaptiveProfile}
+                            activeCategoryId={activeCategoryId}
+                            adaptiveReasonLabel={reasonLabel}
                             drillMode={drillMode}
+                            personalBlundersCount={personalBlundersCount}
+                            speedSecondsLeft={speedSecondsLeft}
+                            onSelectDrillMode={handleSelectDrillMode}
+                            hearts={hearts}
+                            streak={streak}
+                            xp={xp}
+                            onResetAllMastery={handleResetAllMastery}
+                            onClose={onClose}
                         />
+                        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+                            <BlunderDrillFeedbackCard
+                                currentBlunder={currentBlunder}
+                                currentIndex={quizStepCount}
+                                totalBlunders={stats.totalBlunders}
+                                showHint={showHint}
+                                onToggleHint={() => setShowHint((prev) => !prev)}
+                                onResetAttempt={handleResetCurrentAttempt}
+                                validationResult={validationResult}
+                                onNextBlunder={handleNextBlunder}
+                                onSelectQuizChoice={handleSelectQuizChoice}
+                                onValidateAttempt={handleValidateAttempt}
+                                canValidateAttempt={isTurnComplete}
+                                stagedNotation={stagedNotation}
+                                drillMode={drillMode}
+                            />
+                        </div>
                     </div>
                 </div>
             )}
