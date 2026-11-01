@@ -201,6 +201,9 @@ export default function Home() {
             game.startNewMatch(len, 'expert');
             resetGameHistory();
             setAppScreen('GAME');
+            window.setTimeout(() => {
+                game.rollDice();
+            }, 160);
             toast.success(tourneyName ? `${tourneyName} (${len} pts)` : `Match de tournoi en ${len} pts`, 'Entraînement Tournoi');
         }, [game, resetGameHistory]),
     });

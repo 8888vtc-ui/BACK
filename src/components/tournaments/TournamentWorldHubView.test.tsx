@@ -155,4 +155,31 @@ describe('TournamentWorldHubView', () => {
         expect(matches.length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText(/Page Club Officielle hébergée et offerte/i).length).toBeGreaterThanOrEqual(1);
     });
+
+    it('applique le protocole Elon Musk : hémisphère Nord (lat 38, lng 10, zoom 2.4), zéro coordonnée GPS brute, CTA S’entraîner en Or prioritaire et bouton JOUER CONTRE LE COACH IA dans la navbar', () => {
+        renderHub();
+
+        // 1. Pont d'acquisition Time-to-Fun < 3s dans la navbar supérieure à droite
+        const playCoachCta = screen.getByTestId('navbar-play-coach-cta') as HTMLAnchorElement;
+        expect(playCoachCta).toBeDefined();
+        expect(playCoachCta.textContent).toContain('JOUER CONTRE LE COACH IA');
+        expect(playCoachCta.getAttribute('href')).toContain('matchLength=7');
+
+        // 2. Recadrage par défaut de la carte sur l'hémisphère Nord (lat: 38, lng: 10, zoom: 2.4)
+        const viewport = screen.getByTestId('interactive-world-map-viewport');
+        expect(viewport.getAttribute('data-center-lat')).toBe('38');
+        expect(viewport.getAttribute('data-center-lng')).toBe('10');
+        expect(viewport.getAttribute('data-zoom')).toBe('2.4');
+
+        // 3. Fiche club (popup) : zéro coordonnée GPS brute (48.87°, 2.29°) et CTA "S'entraîner" primaire en Or (#D4AF37) à gauche
+        const popup = screen.getByTestId('map-floating-popup');
+        expect(popup.textContent).toContain('Paris, France');
+        expect(popup.textContent).not.toContain('48.87°');
+        expect(popup.textContent).not.toContain('2.29°');
+
+        const trainBtn = screen.getByTestId('map-popup-train-btn');
+        const detailBtn = screen.getByTestId('map-popup-action-btn');
+        expect(trainBtn.className).toContain('from-[#D4AF37]');
+        expect(trainBtn.compareDocumentPosition(detailBtn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
 });
