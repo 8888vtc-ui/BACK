@@ -51,15 +51,17 @@ Ne pas lire `README.md` en premier : il contient des chiffres marketing non vér
 - **Planification mémorielle** : utiliser exclusivement les équations **FSRS v5 à 19 paramètres** ($w_0$ à $w_{18}$) avec $\text{DECAY} = -0.5$ et $\text{FACTOR} = \frac{19}{81}$.
 - **Réglementation d'horloge** : en mode tournoi, appliquer le délai simple (**Bronstein delay** : compte à rebours du délai avant décompte de la réserve principale, sans incrément cumulatif).
 
-### Architecture "Tesla 3-Secondes" sur `/drills` & `/puzzles` (Vérité Métier `ER / PR` vs `ERH` vs `Rating`)
-- **Distinction stricte `ER / PR` (0.0–30.0), `ERH` (0.0–30.0) et `Rating` (1500)** :
-  - `ER / PR` (*Error Rate / Performance Rating*, initialisé à `6.3`) et `ERH` (*Error Rate Humain*, initialisé à `6.1`) évoluent sur l'échelle **`0.0` à `30.0`** exclusivement **par dixièmes** (`▼ -0.1` / `-0.2` en vert sur coup optimal, `▲ +0.3` / `+0.4` / `+0.5` en rouge sur erreur).
-  - `Rating` (`1500`) désigne le classement compétitif Glicko-2 / Elo et n'est jamais confondu avec l'`ER / PR`.
-  - L'en-tête (`DrillHeader.tsx`) affiche proprement : **`ER / PR : 6.3`** (avec delta en dixièmes) | **`ERH : 6.1`** | **`Rating : 1500`**.
-- **5 Sous-Agents en Coulisses (`FlashLite-Doc-Auditor`, `FlashLite-Board-Validator`, `FlashLite-Semantic-Bridge`, `Flash-Pedagogical-Coach`, `Flash-UX-Simplifier`)** :
+### Architecture "Tesla 3-Secondes" sur `/drills` & `/puzzles` (Focus Phase 1 `ER` 0.0–30.0, Certification 3-Ply GNU Backgammon & Sélection Adaptative `N+1`)
+- **Focus Exclusif Phase 1 sur l'`ER` (`0.0–30.0`) & Distinction stricte avec `Rating` (`1500`)** :
+  - `ER` (*Error Rate / Performance Rating*, initialisé à `6.3`) évolue sur l'échelle **`0.0` à `30.0`** exclusivement **par dixièmes** (`▼ -0.1` / `-0.2` en vert sur coup optimal, `▲ +0.2` / `+0.3` / `+0.4` / `+0.5` en rouge sur erreur). L'`ERH` est mis en attente pour la Phase 2.
+  - `Rating` (`1500`) désigne le classement compétitif Glicko-2 / Elo et n'est jamais confondu avec l'`ER`.
+- **Certification 3-Ply GNU Backgammon (`gnubg-cli.exe -t -q`) & Purge Totale** :
+  - Zéro quiz `0-ply`/`1-ply`/`2-ply`, zéro position de **Course Pure sans contact** (`isContact(board) === false`) dans la banque de quiz (`scripts/verify_3ply_with_gnubg.ts`, [`CERTIFICATION_3PLY_REPORT.md`](CERTIFICATION_3PLY_REPORT.md), `scripts/generate_50k_3ply_quizzes.ts`).
+  - Sélection adaptative **Niveau $N+1$** ($\text{Cible\_Quiz} = \max(1.0, \text{ER}_{\text{joueur}} - \Delta_{N+1})$) 100 % déterministe (zéro `Math.random()`) avec régulation dynamique Up & Down.
+- **6 Sous-Agents en Coulisses (`FlashLite-GNUBG-3Ply-Verifier`, `FlashLite-NonTrivial-Quiz-Filter`, `FlashLite-36Rolls-Geometric-Extractor`, `Flash-Adaptive-NPlus1-Selector`, `Flash-3Ply-Pedagogical-Coach`, `FlashLite-Doc-Coherence-Keeper`)** :
   - Tournent exclusivement en arrière-plan (aucun nom technique de sous-agent affiché dans l'UI).
-  - `FlashLite-Board-Validator` utilise `pipCount(board)` de `src/engine/backgammonEngine.ts` (`X_BAR = 0`, `O_BAR = 25`) comme source unique partagée entre le plateau et le texte.
-  - `FlashLite-Semantic-Bridge` vérifie mathématiquement `isContact(board)` : si `isContact === false` (Course Pure), il est formellement interdit d'afficher « Blitz & Attaque de Jan » ou de parler de frapper dans le jan.
+  - `FlashLite-36Rolls-Geometric-Extractor` utilise `pipCount(board)` de `src/engine/backgammonEngine.ts` (`X_BAR = 0`, `O_BAR = 25`) comme source unique partagée et vérifie les 15 pions par camp.
+  - `FlashLite-NonTrivial-Quiz-Filter` rejette mathématiquement 100 % des courses pures (`isContact(board) === false`) et des coups évidents ($> 0.120\text{ EMG}$).
 - **Découpage Modulaire Strict de `/drills` & `/puzzles` (5 sous-modules $< 220$ lignes)** :
   1. [`src/components/drills/DrillHeader.tsx`](src/components/drills/DrillHeader.tsx) : Barre supérieure (`← Retour`, titre `Quiz ER / PR` ou `Quiz ERH`, indicateurs `ER / PR : 6.3`, `ERH : 6.1`, `Rating : 1500`).
   2. [`src/components/drills/DrillContextStrip.tsx`](src/components/drills/DrillContextStrip.tsx) : 1 seule ligne de contexte (`Match X pts • Videau : X • Retard/Avance : X pips`). Thème masqué avant le clic, zéro sous-ligne verbeuse *"Portes faites..."*.

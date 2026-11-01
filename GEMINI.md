@@ -4,38 +4,33 @@
 
 ---
 
-## 1. Vérité Métier Absolue : `Rating (1500)` vs `ER / PR (0.0 à 30.0)` vs `ERH (0.0 à 30.0)`
+## 1. Vérité Métier Absolue : Focus Exclusif `ER` (`0.0` à `30.0`), Certification 3-Ply GNU Backgammon & Sélection Adaptative `N+1`
 
-Il est formellement interdit de mélanger le classement Elo/Glicko-2 avec les taux d'erreur `ER / PR` et `ERH` :
+Il est formellement interdit de mélanger le classement Elo/Glicko-2 avec le taux d'erreur `ER` (*Error Rate*) :
 
-1. **`Rating` (autour de `1500`)** :
-   - Classement compétitif Glicko-2 / Elo (ex. `Rating : 1500`). Ne jamais l'appeler « Niveau ER » ni l'additionner à des points d'`ER / PR`.
-2. **`ER / PR` (*Error Rate / Performance Rating*) — Échelle stricte de `0.0` à `30.0`** :
-   - `ER` et `PR` désignent la même métrique ($\text{ER / PR} = \Delta\text{EMG moyen par décision non forcée} \times 500$). Afficher systématiquement **`ER / PR`**.
-   - Échelle de **`0.0` (Perfection)** à **`30.0` (Novice)** — plus le chiffre est bas, meilleur est le joueur (initialisé à `6.3`).
-   - **Évolution exclusivement par dixièmes (`-0.1`, `-0.2` ou `+0.3`, `+0.4`, `+0.5`)** :
-     * ✅ **Coup Optimal (`0.000 EMG`)** : l'`ER / PR` baisse par dixièmes (ex. **`▼ -0.1 (Progression)`** en vert, passant de `6.3` ➔ `6.2`).
-     * ❌ **Erreur ou Blunder (ex. `-0.084 EMG`)** : l'`ER / PR` augmente par dixièmes selon la gravité (ex. **`▲ +0.4 (Erreur)`** en rouge, passant de `6.3` ➔ `6.7`).
-3. **`ERH` (*Error Rate Humain*) — Échelle stricte de `0.0` à `30.0`** :
-   - Métrique propriétaire calibrée sur l'erreur humaine (initialisée à `6.1`, évoluant par dixièmes). Le terme **`ERH`** reste strictement identique partout.
-4. **Affichage en haut à droite (`DrillHeader.tsx`)** :
-   - **`ER / PR : 6.3`** (avec badge d'évolution en dixièmes après le clic : `▼ -0.1 (Progression)` ou `▲ +0.4 (Erreur)`) | **`ERH : 6.1`** | **`Rating : 1500`**.
+1. **Focus Exclusif Phase 1 sur l'`ER` (`0.0` à `30.0`)** :
+   - `ER` (*Error Rate* officiel $\text{ER} = \Delta\text{EMG moyen par décision non forcée} \times 500$) évolue sur l'échelle stricte de **`0.0` (Perfection Grand-Maître)** à **`30.0` (Novice)** — plus le chiffre est bas, meilleur est le joueur (initialisé à `6.3`).
+   - L'`ERH` (*Error Rate Humain*) est mis en pause proprement pour la Phase 2 afin de concentrer 100 % de l'UI et du moteur sur l'**`ER`** et la certification **3-ply**.
+   - **Évolution exclusivement par dixièmes (`-0.1`, `-0.2` ou `+0.2`, `+0.3`, `+0.4`, `+0.5`)** :
+     * ✅ **Coup Optimal (`0.000 EMG`)** : l'`ER` baisse par dixièmes (ex. **`▼ -0.1 (Progression)`** en vert, passant de `6.3` ➔ `6.2`).
+     * ❌ **Erreur ou Blunder (ex. `-0.084 EMG`)** : l'`ER` augmente par dixièmes selon la gravité (ex. **`▲ +0.4 (Erreur)`** en rouge, passant de `6.3` ➔ `6.7`).
+2. **Preuve & Validation Officielle 3-Ply via GNU Backgammon (`gnubg-cli.exe -t -q`)** :
+   - Interdiction absolue des quiz `0-ply` / `1-ply` / `2-ply` et des positions de **Course Pure sans contact** (`isContact(board) === false` / `PURE_RACE`).
+   - Validation croisée via `scripts/verify_3ply_with_gnubg.ts` et rapport officiel [`CERTIFICATION_3PLY_REPORT.md`](CERTIFICATION_3PLY_REPORT.md) comparant le temps d'inférence réel, les 5 probabilités neuronales ($P(\text{win})$, $P(\text{win G})$, $P(\text{win BG})$, $P(\text{lose G})$, $P(\text{lose BG})$) et le $\Delta\text{EMG}$ du Top 5 en `3-ply cubeful`.
+3. **Sélection Adaptative Déterministe « Niveau $N+1$ » (Zéro `Math.random()`)** :
+   - $\text{ER}_{\text{joueur}}$ = moyenne pondérée entre l'`ER` en Quiz et l'`ER` en Analyse de Parties.
+   - **Règle du Niveau $N+1$** : $\text{Cible\_Quiz} = \max\left(1.0,\; \text{ER}_{\text{joueur}} - \Delta_{N+1}\right)$ avec auto-régulation dynamique **Up & Down** (baisse vers `5.0`, `3.5`, `2.0` sur série de réussites au 1er essai ; remontée de `+0.8` à `+1.2` sur 2 échecs consécutifs).
 
 ---
 
-## 2. Orchestration des 8 Sous-Agents en Coulisses (`Flash-Lite` & `Flash` — Zéro Nom Technique à l'Écran)
+## 2. Orchestration des 6 Sous-Agents Spécialisés en Coulisses (`Flash-Lite` & `Flash` — Zéro Nom Technique à l'Écran)
 
-1. **`FlashLite-Doc-Guardian` (`gemini-2.5-flash-lite`)** : Vérifie l'alignement terminologique (`ER / PR` 0–30, `ERH` 0–30, `Rating 1500`) et lève une alerte si une incohérence documentaire est détectée.
-2. **`FlashLite-3Ply-Engine-Supervisor` (`gemini-2.5-flash-lite`)** : Garantit que le moteur (`BT-Core v4.0` / `bgsage`) et le tableau `buildCandidateMathTable` évaluent les coups en **Vrai 3-ply cubeful** (21 tirages sur 36 + Janowski / Kazaross-XG2) sans jamais inventer d'équités (`-0.457`, `-0.558`, `-0.658 EMG` interdits).
-3. **`FlashLite-Board-Invariant-Checker` (`gemini-2.5-flash-lite`)** : Garantit en $< 10\text{ ms}$ qu'il y a exactement **15 pions par camp** (`X_BAR = 0`, `O_BAR = 25`), que le Pip Count est issu d'une **source unique partagée** (`pipCount(board)` de `backgammonEngine.ts`) et que les 4 coups `A/B/C/D` sont légaux et cohérents avec la règle (ex: `24/20 21/20` pour fermer l'ancre sur le point 20 avec 2 pions).
-4. **`FlashLite-Rollout-36-Simulator` (`gemini-2.5-flash-lite`)** : Simule les 21 tirages de dés (pondérés sur 36) à 1 tour (*1-Roll Lookahead*) pour compter exactement les lancers constructifs ($X/36$).
-5. **`FlashLite-Tactical-Taxonomy-Classifier` (`gemini-2.5-flash-lite`)** : Calcule mathématiquement `isContact(board)` et verrouille l'archétype exact (`PURE_RACE`, `BEAROFF`, `BLITZ`, `HOLDING_GAME`, `PRIME_VS_PRIME`).
-6. **`Flash-Nuanced-Pedagogical-Coach` (`gemini-2.5-flash`)** : Rédige l'explication « Tesla 3-Secondes » (18 à 28 mots max) :
-   - **Écart minime ($0.001 \le \Delta\text{EMG} \le 0.020$, ex: `-0.010 EMG`)** : `👍 Très bon coup ! (-0.010 EMG | 0 pénalité ER / PR)` ("Ton coup n'est vraiment pas un mauvais coup, mais tu peux gagner +0.010 EMG en jouant...").
-   - **1er essai raté (`Essais : 1/2 ❤️🖤`)** : Pénalité `+0.2` et **Indice Socratique ciblé** sans révéler la réponse optimale.
-   - **2e essai raté (`Essais : 0/2 🖤🖤`)** : Pénalité complète (`+0.3` à `+0.5`), solution 3-ply complète en 3 blocs.
-7. **`Flash-FSRS-Drill-Manager` (`gemini-2.5-flash`)** : Gère les **2 essais maximum (`Essais : 2/2 ❤️❤️`)**, réduit la pénalité de moitié si corrigé au 2e essai et crée automatiquement une carte de révision **FSRS v5** si $\Delta\text{EMG} \ge 0.080$.
-8. **`Flash-FullPage-UX-Optimizer` (`gemini-2.5-flash`)** : Garantit le plein écran `100dvh` zéro-scroll, le jeu libre sur le plateau (*Smart Point Click*) avec bouton `[✓ Valider mon coup]` et le tiroir repliable `[📊 Détails 3-ply]`.
+1. **`FlashLite-GNUBG-3Ply-Verifier` (`gemini-2.5-flash-lite`)** : Pilote l'interface CLI avec GNU Backgammon (`gnubg-cli.exe -t -q`), vérifie la concordance des probabilités `3-ply cubeful` et génère le rapport de certification [`CERTIFICATION_3PLY_REPORT.md`](CERTIFICATION_3PLY_REPORT.md).
+2. **`FlashLite-NonTrivial-Quiz-Filter` (`gemini-2.5-flash-lite`)** : Rejette 100 % des courses pures (`isContact(board) === false`), des coups forcés et des évidences ($> 0.120\text{ EMG}$ trivial) pour ne retenir que les dilemmes stratégiques à $\ge 4$ coups légaux non triviaux.
+3. **`FlashLite-36Rolls-Geometric-Extractor` (`gemini-2.5-flash-lite`)** : Calcule le Pip Count exact (source unique `pipCount(board)`), vérifie les **15 pions par camp** et simule les 36 lancers du tour suivant (*1-Roll Lookahead*).
+4. **`Flash-Adaptive-NPlus1-Selector` (`gemini-2.5-flash`)** : Calcule en temps réel l'`ER` combiné du joueur (Quiz + Parties) et sélectionne de manière 100 % déterministe le prochain quiz au **Niveau $N+1$** avec régulation dynamique Up/Down.
+5. **`Flash-3Ply-Pedagogical-Coach` (`gemini-2.5-flash`)** : Rédige l'indice socratique au 1er essai raté (`Essais : 1/2 ❤️🖤`), le feedback nuancé (`-0.010 EMG` = *Très bon coup ! 0 pénalité ER*) et la synthèse 3-ply finale en $< 28$ mots.
+6. **`FlashLite-Doc-Coherence-Keeper` (`gemini-2.5-flash-lite`)** : Audite en continu la documentation (`GEMINI.md`, `AGENTS.md`, `CERTIFICATION_3PLY_REPORT.md`) et bloque toute dérive vers le 0-ply ou l'aléatoire.
 
 ---
 
