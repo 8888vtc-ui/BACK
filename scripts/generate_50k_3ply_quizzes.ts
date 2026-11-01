@@ -33,7 +33,7 @@ import { analyzeBoardMoves } from '../src/lib/engine/evaluator';
 import { BTCORE_5000_HARVEST_SEEDS } from '../src/features/drills/btCore5000HarvestSeeds';
 
 const GNUBG_CLI_PATH = 'C:\\Program Files (x86)\\gnubg\\gnubg-cli.exe';
-const CHECKPOINT_FILE = path.join(process.cwd(), 'node_modules', '.cache', 'quizzes_3ply_50k_checkpoint.jsonl');
+const CHECKPOINT_FILE = path.join(process.cwd(), 'data', 'quizzes', 'quizzes_3ply_checkpoint.jsonl');
 
 export interface Certified3PlyQuizCandidateMove {
     readonly rank: number;
@@ -263,3 +263,4 @@ if (process.argv[1] && process.argv[1].endsWith('generate_50k_3ply_quizzes.ts'))
     const certified = runBatchCertification(batchSize);
     console.log(`[FlashLite-NonTrivial-Quiz-Filter] ${certified.length} quiz 3-ply non-triviaux certifiés dans le checkpoint.`);
 }
+

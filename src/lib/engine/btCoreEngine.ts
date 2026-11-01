@@ -250,6 +250,8 @@ export function analyzeBtCoreMoves(
         ply?: number;
         maxMoves?: number;
         timeBudgetMs?: number;
+        /** `false` = moteur seul, sans la table GNUBG (requis pour un audit indépendant). */
+        useCertifiedTable?: boolean;
     } = {},
 ): AnalyzeMovesResult {
     const xgid = serializeXGID(state);
@@ -439,7 +441,7 @@ export function analyzeBtCoreMoves(
     }
 
     // 4. Synchronisation avec la table certifiée GNU Backgammon 3-Ply Cubeful [grandmaster]
-    if (targetPly >= 3) {
+    if (targetPly >= 3 && options.useCertifiedTable !== false) {
         const canonBody = serializeCanonicalXGID({ ...state, dice }).split(':')[0] ?? '';
         const dA = Math.max(dice[0], dice[1]);
         const dB = Math.min(dice[0], dice[1]);
