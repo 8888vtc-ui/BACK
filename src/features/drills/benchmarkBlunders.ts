@@ -10,6 +10,7 @@
 
 import type { PlayerBlunderRecord, DrillTier, BlunderVerdict } from './types';
 import { parseXGID } from '../../engine/backgammonEngine';
+import { validateBoardState } from './drillSubAgentsPipeline';
 import { HARVESTED_MULTIPLY_9CAT_SEEDS } from './harvestedMultiPlySeeds';
 import { BTCORE_5000_HARVEST_SEEDS } from './btCore5000HarvestSeeds';
 import { BTERH_HARVEST_SEEDS } from './btErhHarvestSeeds';
@@ -33,9 +34,9 @@ function boardFromXgid(xgid: string): number[] {
         flipped[0] = -Math.abs(b[25] ?? 0); // Barre de X -> Barre de O (0)
         flipped[26] = Math.abs(b[27] ?? 0); // Off de O -> Off de X (26)
         flipped[27] = -Math.abs(b[26] ?? 0); // Off de X -> Off de O (27)
-        return flipped;
+        return validateBoardState(flipped, 'X').normalizedBoard;
     }
-    return b;
+    return validateBoardState(b, 'X').normalizedBoard;
 }
 
 export interface HarvestedSeedInput {

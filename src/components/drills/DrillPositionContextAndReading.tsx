@@ -2,63 +2,60 @@
 
 /**
  * @file src/components/drills/DrillPositionContextAndReading.tsx
- * @description Ligne unique ultra-compacte de contexte de position (`Match 9 pts (4-4) • Videau : 1 • Retard : -31 pips`)
- * et tableau de classement mathématique post-validation 3-Ply (Quiz ER).
- *
- * Audit Elon Musk :
- * - Suppression totale du bloc pré-validation « Lecture Mathématique du Tablier » (Structure de portes, Pions arrières, Objectif du Plan).
- * - Suppression du doublon de pips (`Blanc 96 pips vs Noir 65 pips`) déjà affiché sur la barre centrale.
- * - Remplacement des 3 boîtes grises par 1 seule ligne de contexte ultra-compacte.
- * - Strictement 0 `any`, < 150 lignes.
+ * @description Calculateur de télémétrie de position (couplé à `validateBoardState` 15 pions exacts)
+ * et tableau de classement mathématique post-validation 3-Ply (`ER / PR`).
+ * Strictement < 170 lignes, 0 `any` (GOVERNANCE.md & SCALABILITY.md).
  */
 
 import React from 'react';
 import type { PlayerBlunderRecord } from '../../features/drills/types';
+import { validateBoardState } from '../../features/drills/drillSubAgentsPipeline';
 
 export interface PositionTelemetry {
+    readonly isValid15Checkers: boolean;
     readonly whitePips: number;
     readonly blackPips: number;
     readonly pipDiff: number;
     readonly whiteHomePoints: number;
+    readonly whiteMadePoints: number;
+    readonly blackMadePoints: number;
+    readonly backCheckersSummary: string;
+    readonly awayLabel: string;
     readonly compactMatchLabel: string;
     readonly compactCubeLabel: string;
     readonly compactRaceDiffLabel: string;
     readonly singleLineContext: string;
+    readonly structureLineContext: string;
 }
 
 export function computePositionTelemetry(blunder: PlayerBlunderRecord): PositionTelemetry {
-    const board = blunder.board;
-    let whitePips = (board[0] > 0 ? board[0] : 0) * 25;
-    let blackPips = (board[25] < 0 ? -board[25] : 0) * 25;
+    const validated = validateBoardState(blunder.board, blunder.player);
+    const board = validated.normalizedBoard;
+
     let whiteHomePoints = 0;
-
-    for (let i = 1; i <= 24; i++) {
-        const v = board[i] ?? 0;
-        if (v > 0) {
-            whitePips += v * i;
-            if (v >= 2 && i <= 6) whiteHomePoints++;
-        } else if (v < 0) {
-            blackPips += -v * (25 - i);
-        }
+    for (let i = 1; i <= 6; i++) {
+        if ((board[i] ?? 0) >= 2) whiteHomePoints++;
     }
-
-    const isWhite = blunder.player === 'X';
-    const playerPips = isWhite ? whitePips : blackPips;
-    const oppPips = isWhite ? blackPips : whitePips;
-    const pipDiff = oppPips - playerPips; // > 0 = en avance, < 0 = en retard
 
     const ctx = blunder.matchContext;
     const matchLength = ctx?.matchLength ?? 0;
     const scoreX = ctx?.scoreX ?? 0;
     const scoreO = ctx?.scoreO ?? 0;
+    const awayX = Math.max(1, matchLength - scoreX);
+    const awayO = Math.max(1, matchLength - scoreO);
+    const awayLabel = matchLength === 0 ? 'Money Game' : `${awayX}-away / ${awayO}-away`;
+
     const compactMatchLabel =
         matchLength === 0
-            ? 'Money Game'
-            : `Match ${matchLength} pts (${scoreX}-${scoreO}${ctx?.crawford ? ' Cr' : ''})`;
+            ? 'Money Game (Cube Libre)'
+            : `Match ${matchLength} pts (${scoreX}-${scoreO}${ctx?.crawford ? ' Cr' : ''} • ${awayLabel})`;
 
     const cubeValue = ctx?.cubeValue ?? 1;
-    const compactCubeLabel = `Videau : ${cubeValue}`;
+    const cubeOwner = ctx?.cubeOwner ?? null;
+    const cubePosText = cubeOwner === null ? 'Centre' : cubeOwner === 'X' ? 'Blanc' : 'Noir';
+    const compactCubeLabel = `Videau : ${cubeValue} (${cubePosText})`;
 
+    const { pipDiff, whitePips, blackPips, whiteMadePoints, blackMadePoints, backCheckersSummary } = validated;
     const compactRaceDiffLabel =
         pipDiff === 0
             ? 'Égalité : 0 pip'
@@ -67,16 +64,23 @@ export function computePositionTelemetry(blunder: PlayerBlunderRecord): Position
                 : `Retard : ${pipDiff} pips`;
 
     const singleLineContext = `${compactMatchLabel} • ${compactCubeLabel} • ${compactRaceDiffLabel}`;
+    const structureLineContext = `Portes faites : Blanc ${whiteMadePoints} | Noir ${blackMadePoints} • Pions arrières : ${backCheckersSummary}`;
 
     return {
+        isValid15Checkers: validated.isValid15Checkers,
         whitePips,
         blackPips,
         pipDiff,
         whiteHomePoints,
+        whiteMadePoints,
+        blackMadePoints,
+        backCheckersSummary,
+        awayLabel,
         compactMatchLabel,
         compactCubeLabel,
         compactRaceDiffLabel,
         singleLineContext,
+        structureLineContext,
     };
 }
 
@@ -109,13 +113,9 @@ export function buildCandidateMathTable(
         const isBlunderMove = notation.trim() === blunder.playedMove.trim();
         let deltaEmg = 0;
         if (!isOptimal) {
-            if (isBlunderMove) {
-                deltaEmg = -baseLoss;
-            } else if (idx === 1) {
-                deltaEmg = -Number((baseLoss * 0.52).toFixed(3));
-            } else {
-                deltaEmg = -Number((baseLoss * (0.78 + idx * 0.22)).toFixed(3));
-            }
+            if (isBlunderMove) deltaEmg = -baseLoss;
+            else if (idx === 1) deltaEmg = -Number((baseLoss * 0.52).toFixed(3));
+            else deltaEmg = -Number((baseLoss * (0.78 + idx * 0.22)).toFixed(3));
         }
         const winDrop = Math.round(Math.abs(deltaEmg) * 48);
         const gammonDrop = Math.round(Math.abs(deltaEmg) * 22);
@@ -147,7 +147,7 @@ export const DrillPrMathRankingTable: React.FC<{
 }> = ({ rows }) => (
     <div data-testid="drill-pr-math-ranking" className="rounded-lg border border-emerald-400/30 bg-[#070a10] p-2 space-y-1">
         <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-emerald-300">
-            <span>📐 Classement ER 3-Ply (ΔEMG &amp; MWC)</span>
+            <span>📐 Classement ER / PR 3-Ply (ΔEMG &amp; MWC)</span>
             <span>Win % / Gammon %</span>
         </div>
         <div className="divide-y divide-white/5">
