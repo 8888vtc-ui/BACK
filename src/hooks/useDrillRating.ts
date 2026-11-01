@@ -3,13 +3,11 @@
 /**
  * @file src/hooks/useDrillRating.ts
  * @description Hook dédié (< 150 lignes, validation Zod stricte aux frontières I/O)
- * gérant de manière 100 % cloisonnée le score ER (dans le Quiz ER `/puzzles`)
- * et le score ERH (dans le Quiz ERH `/drills`).
- *
- * Invariants :
- * - Zéro mélange entre les payloads `ER` (`bg_quiz_er_rating_v1`) et `ERH` (`bg_quiz_erh_rating_v1`).
- * - Évolution temps réel à chaque coup (+ en vert sur coup optimal, - en rouge sur erreur).
- * - Strictement 0 `any`, < 150 lignes.
+ * gérant de manière 100 % cloisonnée :
+ * - `erPrScore` (`0.0` à `30.0`, initialisé à `6.3`, évolution par dixièmes `-0.1` / `+0.4`)
+ * - `erhScore` (`0.0` à `30.0`, initialisé à `6.1`, évolution par dixièmes `-0.1` / `+0.4`)
+ * - `eloRating` (`1500`)
+ * Strictement 0 `any`, < 150 lignes.
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -17,12 +15,17 @@ import { z } from 'zod';
 import {
     QUIZ_ER_STORAGE_KEY,
     QUIZ_ERH_STORAGE_KEY,
+    DEFAULT_ER_STATE,
+    DEFAULT_ERH_STATE,
     type QuizErState,
     type QuizErhState,
 } from '../features/drills/quizRatingStore';
+import { computeTenthsMetricDelta } from '../features/drills/drillSubAgentsPipeline';
 
 const QuizErStateSchema = z.object({
     mode: z.literal('ER'),
+    erPrScore: z.number().min(0).max(30).default(6.3),
+    lastDeltaTenths: z.number().default(0),
     erRating: z.number().int().min(400).max(3500),
     lastDeltaEr: z.number().int(),
     solvedCount: z.number().int().min(0),
@@ -31,54 +34,44 @@ const QuizErStateSchema = z.object({
 
 const QuizErhStateSchema = z.object({
     mode: z.literal('ERH'),
+    erhScore: z.number().min(0).max(30).default(6.1),
+    lastDeltaTenths: z.number().default(0),
     erhRating: z.number().int().min(400).max(3500),
     lastDeltaErh: z.number().int(),
     solvedCount: z.number().int().min(0),
     updatedAt: z.string(),
 });
 
-const FALLBACK_ER: QuizErState = {
-    mode: 'ER',
-    erRating: 1500,
-    lastDeltaEr: 0,
-    solvedCount: 0,
-    updatedAt: '2026-11-01T00:00:00.000Z',
-};
-
-const FALLBACK_ERH: QuizErhState = {
-    mode: 'ERH',
-    erhRating: 1500,
-    lastDeltaErh: 0,
-    solvedCount: 0,
-    updatedAt: '2026-11-01T00:00:00.000Z',
-};
-
 function readValidatedErState(): QuizErState {
-    if (typeof window === 'undefined' || !window.localStorage) return FALLBACK_ER;
+    if (typeof window === 'undefined' || !window.localStorage) return DEFAULT_ER_STATE;
     try {
         const raw = window.localStorage.getItem(QUIZ_ER_STORAGE_KEY);
-        if (!raw) return FALLBACK_ER;
+        if (!raw) return DEFAULT_ER_STATE;
         const parsed = QuizErStateSchema.safeParse(JSON.parse(raw));
-        return parsed.success ? parsed.data : FALLBACK_ER;
+        return parsed.success ? parsed.data : DEFAULT_ER_STATE;
     } catch {
-        return FALLBACK_ER;
+        return DEFAULT_ER_STATE;
     }
 }
 
 function readValidatedErhState(): QuizErhState {
-    if (typeof window === 'undefined' || !window.localStorage) return FALLBACK_ERH;
+    if (typeof window === 'undefined' || !window.localStorage) return DEFAULT_ERH_STATE;
     try {
         const raw = window.localStorage.getItem(QUIZ_ERH_STORAGE_KEY);
-        if (!raw) return FALLBACK_ERH;
+        if (!raw) return DEFAULT_ERH_STATE;
         const parsed = QuizErhStateSchema.safeParse(JSON.parse(raw));
-        return parsed.success ? parsed.data : FALLBACK_ERH;
+        return parsed.success ? parsed.data : DEFAULT_ERH_STATE;
     } catch {
-        return FALLBACK_ERH;
+        return DEFAULT_ERH_STATE;
     }
 }
 
 export interface UseDrillRatingReturn {
     readonly modeLabel: 'ER' | 'ERH';
+    readonly erPrScore: number;
+    readonly erhScore: number;
+    readonly activeMetricScore: number;
+    readonly activeTenthsDelta: number;
     readonly ratingValue: number;
     readonly ratingDelta: number;
     readonly solvedCount: number;
@@ -96,9 +89,10 @@ export function useDrillRating(isErMode: boolean): UseDrillRatingReturn {
     }, [isErMode]);
 
     const recordAttempt = useCallback(
-        (isCorrect: boolean, tier: number = 2, equityLoss: number = 0.08) => {
+        (isCorrect: boolean, tier: number = 2, equityLoss: number = 0.084) => {
             const safeTier = Math.max(1, Math.min(4, tier));
-            const delta = isCorrect
+            const tenthsDelta = computeTenthsMetricDelta(isCorrect, equityLoss);
+            const eloDelta = isCorrect
                 ? 10 + safeTier * 3
                 : -Math.max(8, Math.min(22, Math.round(8 + Math.abs(equityLoss) * 45)));
 
@@ -106,8 +100,10 @@ export function useDrillRating(isErMode: boolean): UseDrillRatingReturn {
                 const current = readValidatedErState();
                 const next: QuizErState = {
                     mode: 'ER',
-                    erRating: Math.max(800, current.erRating + delta),
-                    lastDeltaEr: delta,
+                    erPrScore: Math.max(0, Math.min(30, Number((current.erPrScore + tenthsDelta).toFixed(1)))),
+                    lastDeltaTenths: tenthsDelta,
+                    erRating: Math.max(800, current.erRating + eloDelta),
+                    lastDeltaEr: eloDelta,
                     solvedCount: current.solvedCount + 1,
                     updatedAt: new Date().toISOString(),
                 };
@@ -119,8 +115,10 @@ export function useDrillRating(isErMode: boolean): UseDrillRatingReturn {
                 const current = readValidatedErhState();
                 const next: QuizErhState = {
                     mode: 'ERH',
-                    erhRating: Math.max(800, current.erhRating + delta),
-                    lastDeltaErh: delta,
+                    erhScore: Math.max(0, Math.min(30, Number((current.erhScore + tenthsDelta).toFixed(1)))),
+                    lastDeltaTenths: tenthsDelta,
+                    erhRating: Math.max(800, current.erhRating + eloDelta),
+                    lastDeltaErh: eloDelta,
                     solvedCount: current.solvedCount + 1,
                     updatedAt: new Date().toISOString(),
                 };
@@ -135,6 +133,10 @@ export function useDrillRating(isErMode: boolean): UseDrillRatingReturn {
 
     return {
         modeLabel: isErMode ? 'ER' : 'ERH',
+        erPrScore: erState.erPrScore,
+        erhScore: erhState.erhScore,
+        activeMetricScore: isErMode ? erState.erPrScore : erhState.erhScore,
+        activeTenthsDelta: isErMode ? erState.lastDeltaTenths : erhState.lastDeltaTenths,
         ratingValue: isErMode ? erState.erRating : erhState.erhRating,
         ratingDelta: isErMode ? erState.lastDeltaEr : erhState.lastDeltaErh,
         solvedCount: isErMode ? erState.solvedCount : erhState.solvedCount,

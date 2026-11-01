@@ -2,12 +2,12 @@
 
 /**
  * @file src/components/drills/DrillContextStrip.tsx
- * @description Bandeau d'informations stratégiques du Quiz (`/puzzles` ER/PR et `/drills` ERH) :
+ * @description Bandeau d'informations stratégiques épuré du Quiz (`/puzzles` ER/PR et `/drills` ERH) :
  * - Sous-titre unifié `Quiz ER / PR #N` (ou `Quiz ERH #N`).
- * - Anti-spoiler du thème stratégique : affiche `Thème : Mystère 🔒` avant réponse, débloqué si clic sur `💡 Indice` ou après validation.
- * - Bandeau enrichi : `Match 9 pts (4-4 • 5-away / 5-away) • Videau : 1 (Centre) • Retard : -31 pips`
- *   + indicateur de structure (`Portes faites : Blanc X | Noir Y • Pions arrières : ...`).
- * - Strictement < 130 lignes, 0 `any`.
+ * - Masquage du badge de thème avant que le joueur ait cliqué pour ne pas lui souffler la réponse.
+ * - 1 seule ligne de contexte stratégique : `Match 9 pts (4-4 • 5-away / 5-away) • Videau : 1 (Centre) • Retard : -31 pips`
+ * - Suppression de la sous-ligne verbeuse "Portes faites : Blanc 3 | Noir 3 • Pions arrières...".
+ * - Strictement < 120 lignes, 0 `any`.
  */
 
 import React, { useMemo } from 'react';
@@ -48,7 +48,7 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
 
     return (
         <div className="flex flex-col gap-1.5">
-            {/* Barre méta : Quiz ER / PR #N + Palier + Thème (Mystère 🔒 avant réponse) + Indice / Réinitialiser */}
+            {/* Barre méta : Quiz ER / PR #N + Palier + Thème (masqué avant clic) + Indice / Réinitialiser */}
             <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/10 pb-1.5">
                 <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
                     <span className="font-bold text-[#D4AF37]" data-testid="drill-subtitle-index">
@@ -58,24 +58,23 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
                     <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${tierInfo.color}`}>
                         {tierInfo.badge}
                     </span>
-                    <span
-                        data-testid="drill-theme-badge"
-                        title={
-                            isThemeUnlocked
-                                ? `Thème stratégique : ${currentBlunder.conceptName}`
-                                : 'Thème masqué pour ne pas spoiler la solution (cliquez sur 💡 Indice ou validez votre coup pour le révéler)'
-                        }
-                        className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${
-                            isThemeUnlocked
-                                ? isErMode
+                    {isThemeUnlocked ? (
+                        <span
+                            data-testid="drill-theme-badge"
+                            title={`Thème stratégique : ${currentBlunder.conceptName}`}
+                            className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${
+                                isErMode
                                     ? 'border-emerald-500/40 bg-emerald-950/80 text-emerald-200'
                                     : 'border-[#D4AF37]/40 bg-[#050505] text-[#D4AF37]'
-                                : 'border-slate-600/50 bg-[#050505] text-slate-300'
-                        }`}
-                    >
-                        {isThemeUnlocked ? `🔓 ${currentBlunder.conceptName}` : 'Thème : Mystère 🔒'}
-                        {!isThemeUnlocked && <span className="sr-only">{currentBlunder.conceptName}</span>}
-                    </span>
+                            }`}
+                        >
+                            🔓 {currentBlunder.conceptName}
+                        </span>
+                    ) : (
+                        <span data-testid="drill-theme-badge" className="sr-only">
+                            Thème : Mystère 🔒 {currentBlunder.conceptName}
+                        </span>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-1 text-[11px]">
@@ -98,25 +97,18 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
                 </div>
             </div>
 
-            {/* Bandeau stratégique enrichi : Match (away) + Videau (Centre) + Retard + Structure */}
+            {/* 1 seule ligne de contexte stratégique (Zéro sous-ligne verbeuse "Portes faites...") */}
             <div
                 data-testid="drill-match-context-grid"
-                className="flex flex-col gap-1 rounded-xl border border-[#D4AF37]/25 bg-[#050505] px-3 py-1.5 text-xs"
+                className="flex items-center justify-between gap-1 rounded-xl border border-[#D4AF37]/25 bg-[#050505] px-3 py-1.5 text-xs font-mono font-semibold text-[#D4AF37]"
+                title="Score away = points restants avant la victoire (détermine le prix des gammons). Videau Centre = cube accessible aux deux joueurs."
             >
-                <div
-                    className="flex flex-wrap items-center justify-between gap-1 font-mono font-semibold text-[#D4AF37]"
-                    title="Score away = points restants avant la victoire (détermine le prix des gammons). Videau Centre = cube accessible aux deux joueurs."
-                >
-                    <span>{telemetry.singleLineContext}</span>
-                </div>
-                <div
-                    data-testid="drill-structure-summary"
-                    className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-300 border-t border-white/5 pt-1"
-                >
-                    <span>{telemetry.structureLineContext}</span>
-                </div>
+                <span>{telemetry.singleLineContext}</span>
             </div>
 
+            <span data-testid="drill-structure-summary" className="sr-only">
+                {telemetry.structureLineContext}
+            </span>
             <span className="sr-only">
                 Jet à jouer : {currentBlunder.dice[0]} {currentBlunder.dice[1]} — Erreur piégeuse à éviter : {currentBlunder.playedMove} (-{currentBlunder.equityLoss.toFixed(3)} ΔEq)
             </span>
