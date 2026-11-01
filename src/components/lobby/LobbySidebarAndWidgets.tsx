@@ -129,32 +129,6 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 <IconAstrolabeCoach size={14} className="text-[#d4af37]" />
                                 {!collapsed && <span>Contre l’IA</span>}
                             </button>
-                            <button
-                                type="button"
-                                data-testid="sidebar-submenu-match"
-                                onClick={onSelectMatchGame}
-                                className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
-                                    selectedMode === 'ai' && matchLength > 0 && isSubmenuOpen
-                                        ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
-                                        : 'text-stone-300 hover:bg-white/5 hover:text-white'
-                                }`}
-                            >
-                                <IconLuxuryCrown size={14} />
-                                {!collapsed && <span>Match (3 à 11 pts)</span>}
-                            </button>
-                            <button
-                                type="button"
-                                data-testid="sidebar-submenu-money"
-                                onClick={onSelectMoneyGame}
-                                className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
-                                    selectedMode === 'ai' && matchLength === 0 && isSubmenuOpen
-                                        ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
-                                        : 'text-stone-300 hover:bg-white/5 hover:text-white'
-                                }`}
-                            >
-                                <IconCasinoToken size={14} />
-                                {!collapsed && <span>Partie Simple</span>}
-                            </button>
                         </div>
                     )}
                 </div>
