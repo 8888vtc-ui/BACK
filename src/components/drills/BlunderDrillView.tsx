@@ -2,12 +2,11 @@
 
 /**
  * @file src/components/drills/BlunderDrillView.tsx
- * @description Orchestrateur modulaire du Quiz ER (`/puzzles`) et du Quiz ERH (`/drills`) :
+ * @description Orchestrateur modulaire du Quiz ER / PR (`/puzzles`) et du Quiz ERH (`/drills`) :
+ * - Garantit l'invariant des 15 pions par joueur via `validateBoardState(board)`.
  * - Délègue le rating isolé ER/ERH à `useDrillRating` (< 150 lignes, Zod-validé).
  * - Délègue le header unique à `DrillHeader` et le panneau droit à `BlunderDrillFeedbackCard`.
- * - Survol d'un choix A/B/C/D -> flèche de prévisualisation immédiate sur le plateau.
- * - Clic sur A/B/C/D (ou coup joué sur le plateau) -> validation en 1 clic sans bouton "Valider".
- * - Strictement < 270 lignes, 0 `any` (GOVERNANCE.md & SCALABILITY.md).
+ * - Strictement < 290 lignes, 0 `any` (GOVERNANCE.md & SCALABILITY.md).
  */
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -19,6 +18,7 @@ import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { useDrillRating } from '../../hooks/useDrillRating';
 import { getAllBlunders, getBlunderBankStats, resetAllBlunderMastery, markBlunderAttempt } from '../../features/drills/blunderBank';
 import { validateDrillMove, validateDrillNotationChoice } from '../../features/drills/blunderDrillEngine';
+import { validateBoardState } from '../../features/drills/drillSubAgentsPipeline';
 import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
 import {
     getAdaptivePlayerProfile, recordAdaptiveQuizOutcome, resetAdaptivePlayerProfile,
@@ -72,7 +72,11 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     const [currentBlunder, setCurrentBlunder] = useState<PlayerBlunderRecord | null>(() => initialSelection.quiz);
     const [reasonLabel, setReasonLabel] = useState<string>(() => initialSelection.reasonLabel);
-    const [currentBoard, setCurrentBoard] = useState<number[]>(() => currentBlunder?.board ?? new Array(28).fill(0));
+    const validatedInitialBoard = useMemo(
+        () => (currentBlunder ? validateBoardState(currentBlunder.board, currentBlunder.player).normalizedBoard : new Array<number>(28).fill(0)),
+        [currentBlunder],
+    );
+    const [currentBoard, setCurrentBoard] = useState<number[]>(() => validatedInitialBoard);
     const [playedMoves, setPlayedMoves] = useState<Move[]>([]);
     const [usedDice, setUsedDice] = useState<[boolean, boolean]>([false, false]);
     const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
@@ -86,7 +90,8 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     useEffect(() => {
         if (!currentBlunder) return;
-        setCurrentBoard(currentBlunder.board);
+        const cleanBoard = validateBoardState(currentBlunder.board, currentBlunder.player).normalizedBoard;
+        setCurrentBoard(cleanBoard);
         setPlayedMoves([]);
         setUsedDice([false, false]);
         setSelectedPoint(null);
@@ -95,7 +100,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         setValidationResult(null);
         setHoveredChoiceNotation(null);
         failedOnCurrentQuizRef.current = false;
-        liveDrillRef.current = { board: currentBlunder.board, usedDice: [false, false], playedMoves: [] };
+        liveDrillRef.current = { board: cleanBoard, usedDice: [false, false], playedMoves: [] };
     }, [currentBlunder]);
 
     const applyValidationFeedback = useCallback((result: DrillValidationResult) => {
@@ -120,7 +125,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     }, [currentBlunder, recordAttempt]);
 
     const boardState: BoardState = useMemo(() => ({
-        board: validationResult && currentBlunder ? currentBlunder.board : currentBoard,
+        board: validationResult && currentBlunder ? validatedInitialBoard : currentBoard,
         turn: currentBlunder?.player ?? 'X',
         cubeValue: currentBlunder?.matchContext?.cubeValue ?? 1,
         cubeOwner: currentBlunder?.matchContext?.cubeOwner ?? null,
@@ -131,7 +136,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         crawford: currentBlunder?.matchContext?.crawford ?? false,
         doubled: false,
         resigned: 0,
-    }), [currentBoard, currentBlunder, validationResult]);
+    }), [currentBoard, currentBlunder, validationResult, validatedInitialBoard]);
 
     const { leftDieTargets, rightDieTargets } = useMemo(() => {
         if (!currentBlunder) return { leftDieTargets: new Map<number, number[]>(), rightDieTargets: new Map<number, number[]>() };
@@ -141,16 +146,16 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     const handleResetCurrentAttempt = useCallback(() => {
         if (!currentBlunder) return;
-        setCurrentBoard(currentBlunder.board);
+        setCurrentBoard(validatedInitialBoard);
         setPlayedMoves([]);
         setUsedDice([false, false]);
         setSelectedPoint(null);
         setSelectedDie(null);
         setValidationResult(null);
         setHoveredChoiceNotation(null);
-        liveDrillRef.current = { board: currentBlunder.board, usedDice: [false, false], playedMoves: [] };
+        liveDrillRef.current = { board: validatedInitialBoard, usedDice: [false, false], playedMoves: [] };
         impactLight();
-    }, [currentBlunder]);
+    }, [currentBlunder, validatedInitialBoard]);
 
     const handlePlayMove = useCallback((from: number, to: number, explicitDie?: 0 | 1) => {
         if (!currentBlunder || validationResult !== null) return;
@@ -195,7 +200,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         try {
             const moves = parseCoachNotationMoves(expandNotationTokens(notation), currentBlunder.player);
             if (moves.length > 0) {
-                const previewBoard = moves.reduce((acc, m) => applyMove(acc, m, currentBlunder.player), [...currentBlunder.board]);
+                const previewBoard = moves.reduce((acc, m) => applyMove(acc, m, currentBlunder.player), [...validatedInitialBoard]);
                 setCurrentBoard(previewBoard);
                 setPlayedMoves(moves);
                 setUsedDice([true, true]);
@@ -203,7 +208,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             }
         } catch { /* ignore */ }
         applyValidationFeedback(validateDrillNotationChoice(currentBlunder, notation));
-    }, [currentBlunder, validationResult, applyValidationFeedback]);
+    }, [currentBlunder, validationResult, applyValidationFeedback, validatedInitialBoard]);
 
     const handleCheckerClick = useCallback((point: number) => {
         if (!currentBlunder || validationResult !== null) return;
@@ -253,7 +258,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     const coachHighlight = useMemo(() => {
         if (!currentBlunder) return null;
-        if (!validationResult && hoveredChoiceNotation) return { played: [], optimal: parseCoachNotationMoves(expandNotationTokens(hoveredChoiceNotation), currentBlunder.player) };
+        if (hoveredChoiceNotation) return { played: [], optimal: parseCoachNotationMoves(expandNotationTokens(hoveredChoiceNotation), currentBlunder.player) };
         if (!validationResult) return null;
         const optimalMoves = parseCoachNotationMoves(expandNotationTokens(currentBlunder.optimalMove), currentBlunder.player);
         const wrongMoves = validationResult.isCorrect ? [] : playedMoves.length > 0 ? playedMoves : parseCoachNotationMoves(expandNotationTokens(validationResult.playedNotation), currentBlunder.player);

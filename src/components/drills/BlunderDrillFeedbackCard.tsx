@@ -3,9 +3,9 @@
 /**
  * @file src/components/drills/BlunderDrillFeedbackCard.tsx
  * @description Panneau droit modulaire du Quiz (Architecture Tesla 3-Secondes / Monte-Carlo) :
- * - Compose `DrillContextStrip` (1 seule ligne : Match X pts • Videau : X • Retard : X pips).
- * - Compose `DrillChoicesGrid` (4 boutons A, B, C, D avec flèche au survol et validation 1-Clic sans bouton Valider).
- * - Compose `DrillCoachFeedback` (Progressive Disclosure : apparaît UNIQUEMENT après le clic en 3 lignes + XX/36 lancers constructifs).
+ * - Compose `DrillContextStrip` (Thème Mystère 🔒 avant réponse, score away, videau, retard et structure).
+ * - Compose `DrillChoicesGrid` (dés à jouer `🎲 Blanc joue 6-5`, sens `Case 24 ➔ Case 1`, 4 boutons A/B/C/D en 1-Clic).
+ * - Compose `DrillCoachFeedback` (Panneau de Coaching Interactif propulsé par `FlashLite-Tactical-Extractor` & `Flash-Pedagogical-Coach`).
  * - Strictement < 130 lignes, 0 `any` (GOVERNANCE.md & SCALABILITY.md).
  */
 
@@ -59,13 +59,14 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
             className="w-full h-full flex flex-col justify-between rounded-xl border border-white/10 bg-[#12151C]/95 p-2.5 sm:p-3 shadow-xl overflow-hidden"
         >
             <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-0.5">
-                {/* 1. Bandeau de contexte sur 1 ligne : Match X pts (Score) • Videau : X • Retard : X pips */}
+                {/* 1. Bandeau stratégique : Quiz ER / PR #N, Thème Mystère 🔒 avant réponse, Match (away), Videau (Centre), Retard, Portes & Pions arrières */}
                 <DrillContextStrip
                     currentBlunder={currentBlunder}
                     currentIndex={currentIndex}
                     totalBlunders={totalBlunders}
                     isErMode={isErMode}
                     showHint={showHint}
+                    isRevealed={validationResult !== null}
                     onToggleHint={onToggleHint}
                     onResetAttempt={onResetAttempt}
                 />
@@ -82,11 +83,12 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                     </div>
                 )}
 
-                {/* 2. Grille 2x2 des 4 coups A, B, C, D : Survol = flèche plateau, Clic = Validation 1-Clic */}
+                {/* 2. Grille 2x2 des 4 coups A, B, C, D + Rappel des dés & Sens de marche */}
                 {currentBlunder.quizChoices && currentBlunder.quizChoices.length > 0 && onSelectQuizChoice && (
                     <DrillChoicesGrid
                         choices={currentBlunder.quizChoices}
                         optimalMove={currentBlunder.optimalMove}
+                        dice={currentBlunder.dice}
                         isErMode={isErMode}
                         validationResult={validationResult}
                         hoveredChoiceNotation={hoveredChoiceNotation}
@@ -105,7 +107,7 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                     </div>
                 )}
 
-                {/* 3. Progressive Disclosure : le Coach IA n'apparaît QU'APRÈS le clic */}
+                {/* 3. Panneau de Coaching Interactif (FlashLite-Tactical-Extractor + Flash-Pedagogical-Coach) */}
                 {validationResult && (
                     <DrillCoachFeedback
                         currentBlunder={currentBlunder}
@@ -113,6 +115,7 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                         isErMode={isErMode}
                         ratingDelta={ratingDelta}
                         onResetAttempt={onResetAttempt}
+                        onToggleThreatPreview={onHoverQuizChoice}
                         onNextBlunder={onNextBlunder}
                     />
                 )}
