@@ -23,15 +23,19 @@ Il est formellement interdit de mélanger le classement Elo/Glicko-2 avec les ta
 
 ---
 
-## 2. Orchestration des 5 Sous-Agents en Coulisses (`Flash-Lite` & `Flash` — Zéro Nom Technique à l'Écran)
+## 2. Orchestration des 8 Sous-Agents en Coulisses (`Flash-Lite` & `Flash` — Zéro Nom Technique à l'Écran)
 
-1. **`FlashLite-Doc-Auditor` (`gemini-2.5-flash-lite`)** : Vérifie l'alignement terminologique (`ER / PR` 0–30, `ERH` 0–30, `Rating 1500`) entre documentation et code.
-2. **`FlashLite-Board-Validator` (`gemini-2.5-flash-lite`)** : Garantit en $< 50\text{ ms}$ qu'il y a exactement **15 pions par camp** (`X_BAR = 0`, `O_BAR = 25`), que le Pip Count est issu d'une **source unique partagée** (`pipCount(board)` de `backgammonEngine.ts` — zéro écart entre le plateau et le texte) et que les 4 coups `A/B/C/D` sont légaux.
-3. **`FlashLite-Semantic-Bridge` (`gemini-2.5-flash-lite`)** : Calcule mathématiquement `isContact(board)` et verrouille l'archétype exact (`PURE_RACE`, `BEAROFF`, `BLITZ`, `HOLDING_GAME`, `PRIME_VS_PRIME`). **Règle absolue** : si `isContact === false` (Course Pure), interdiction formelle d'étiqueter le puzzle `Blitz & Attaque de Jan` ou de parler de frapper dans le jan. Calcule aussi le `1-Roll Lookahead` sur 36 et le delta en dixièmes (`0.1` à `0.5`).
-4. **`Flash-Pedagogical-Coach` (`gemini-2.5-flash`)** : Rédige l'explication « Tesla 3-Secondes » (phrases courtes de 18 à 28 mots max) :
-   - **Si Erreur (`B`, `C`, `D`)** : Bannière Rouge/Ambre `❌ Erreur (-0.084 EMG | Impact ER / PR : +0.4 ➔ 6.7 | -7.5% de victoire)` + `1. Pourquoi ton coup est une erreur` + `2. Pourquoi le coup optimal gagne` + `💡 Comment t'améliorer`.
-   - **Si Coup Optimal (`A`)** : Bannière Verte/Or `✅ Coup Optimal ! (0.000 EMG | Impact ER / PR : -0.1 ➔ 6.2 | Équité 100%)` + **aucun bloc d'erreur** (uniquement `Pourquoi ce coup est optimal` + `💡 Règle à retenir`).
-5. **`Flash-UX-Simplifier` (`gemini-2.5-flash`)** : Interdit tout nom de sous-agent à l'écran, supprime la sous-ligne verbeuse *"Portes faites..."*, masque le badge de thème avant le clic et garantit le zéro-scroll.
+1. **`FlashLite-Doc-Guardian` (`gemini-2.5-flash-lite`)** : Vérifie l'alignement terminologique (`ER / PR` 0–30, `ERH` 0–30, `Rating 1500`) et lève une alerte si une incohérence documentaire est détectée.
+2. **`FlashLite-3Ply-Engine-Supervisor` (`gemini-2.5-flash-lite`)** : Garantit que le moteur (`BT-Core v4.0` / `bgsage`) et le tableau `buildCandidateMathTable` évaluent les coups en **Vrai 3-ply cubeful** (21 tirages sur 36 + Janowski / Kazaross-XG2) sans jamais inventer d'équités (`-0.457`, `-0.558`, `-0.658 EMG` interdits).
+3. **`FlashLite-Board-Invariant-Checker` (`gemini-2.5-flash-lite`)** : Garantit en $< 10\text{ ms}$ qu'il y a exactement **15 pions par camp** (`X_BAR = 0`, `O_BAR = 25`), que le Pip Count est issu d'une **source unique partagée** (`pipCount(board)` de `backgammonEngine.ts`) et que les 4 coups `A/B/C/D` sont légaux et cohérents avec la règle (ex: `24/20 21/20` pour fermer l'ancre sur le point 20 avec 2 pions).
+4. **`FlashLite-Rollout-36-Simulator` (`gemini-2.5-flash-lite`)** : Simule les 21 tirages de dés (pondérés sur 36) à 1 tour (*1-Roll Lookahead*) pour compter exactement les lancers constructifs ($X/36$).
+5. **`FlashLite-Tactical-Taxonomy-Classifier` (`gemini-2.5-flash-lite`)** : Calcule mathématiquement `isContact(board)` et verrouille l'archétype exact (`PURE_RACE`, `BEAROFF`, `BLITZ`, `HOLDING_GAME`, `PRIME_VS_PRIME`).
+6. **`Flash-Nuanced-Pedagogical-Coach` (`gemini-2.5-flash`)** : Rédige l'explication « Tesla 3-Secondes » (18 à 28 mots max) :
+   - **Écart minime ($0.001 \le \Delta\text{EMG} \le 0.020$, ex: `-0.010 EMG`)** : `👍 Très bon coup ! (-0.010 EMG | 0 pénalité ER / PR)` ("Ton coup n'est vraiment pas un mauvais coup, mais tu peux gagner +0.010 EMG en jouant...").
+   - **1er essai raté (`Essais : 1/2 ❤️🖤`)** : Pénalité `+0.2` et **Indice Socratique ciblé** sans révéler la réponse optimale.
+   - **2e essai raté (`Essais : 0/2 🖤🖤`)** : Pénalité complète (`+0.3` à `+0.5`), solution 3-ply complète en 3 blocs.
+7. **`Flash-FSRS-Drill-Manager` (`gemini-2.5-flash`)** : Gère les **2 essais maximum (`Essais : 2/2 ❤️❤️`)**, réduit la pénalité de moitié si corrigé au 2e essai et crée automatiquement une carte de révision **FSRS v5** si $\Delta\text{EMG} \ge 0.080$.
+8. **`Flash-FullPage-UX-Optimizer` (`gemini-2.5-flash`)** : Garantit le plein écran `100dvh` zéro-scroll, le jeu libre sur le plateau (*Smart Point Click*) avec bouton `[✓ Valider mon coup]` et le tiroir repliable `[📊 Détails 3-ply]`.
 
 ---
 

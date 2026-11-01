@@ -149,10 +149,19 @@ export function computeBtCoreResidualCorrection(
         }
     }
 
-    const offBefore = borneOffCount(beforeBoard as number[], player);
-    const offAfter = borneOffCount(afterBoard as number[], player);
-    if (offAfter > offBefore) {
-        delta += (offAfter - offBefore) * 0.025;
+    const deltaOff = borneOffCount(afterBoard as number[], player) - borneOffCount(beforeBoard as number[], player);
+    if (deltaOff > 0) {
+        delta += deltaOff * 0.025;
+    }
+
+    // Valorisation de la fermeture d'une ancre avancée dans le jan adverse (flèches relatives 20, 21, 18, 22)
+    for (const relAnchor of [20, 21, 18, 22] as const) {
+        const absPt = player === 'X' ? relAnchor : 25 - relAnchor;
+        const cB = player === 'X' ? Math.max(0, beforeBoard[absPt] ?? 0) : Math.max(0, -(beforeBoard[absPt] ?? 0));
+        const cA = player === 'X' ? Math.max(0, afterBoard[absPt] ?? 0) : Math.max(0, -(afterBoard[absPt] ?? 0));
+        if (cB < 2 && cA >= 2) {
+            delta += relAnchor === 20 ? 0.125 : relAnchor === 21 ? 0.095 : 0.085;
+        }
     }
 
     return Number(delta.toFixed(4));
@@ -290,7 +299,8 @@ export function analyzeBtCoreMoves(
             dice: null,
         };
         const oppEval = evaluateBtCoreBoard(oppState);
-        const equity = Number((-oppEval.cubefulEquity).toFixed(4));
+        const residual = computeBtCoreResidualCorrection(state.board, seq.board, player);
+        const equity = Number((-oppEval.cubefulEquity + residual).toFixed(4));
         const probs: Probabilities = {
             win: oppEval.probabilities.loseWin,
             winGammon: oppEval.probabilities.loseGammon,
@@ -318,9 +328,9 @@ export function analyzeBtCoreMoves(
 
     scored.sort((a, b) => b.equity - a.equity);
 
-    // 3. Recherche Profonde Expectiminimax 2-Ply (21 lancers pondérés) + Selective 3-Ply
-    const targetPly = options.ply ?? 2;
-    const budgetMs = options.timeBudgetMs ?? 100;
+    // 3. Recherche Profonde Expectiminimax 2-Ply (21 lancers pondérés) + Vrai 3-Ply Cubeful (ply >= 3)
+    const targetPly = options.ply ?? 3;
+    const budgetMs = options.timeBudgetMs ?? 120;
     const startTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
     const pureRace = isPureRace(state.board);
 
@@ -329,15 +339,16 @@ export function analyzeBtCoreMoves(
         let evaluated2Ply = 0;
         for (let i = 0; i < topCount; i++) {
             const elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startTime;
-            if (elapsed > budgetMs * 0.75 && i >= 2) break;
+            if (elapsed > budgetMs * 0.65 && i >= 2) break;
             const cand = scored[i];
             const res2Ply = evaluatePositionExpectiminimax2Ply(
                 { ...state, board: cand.seq.board, turn: opponent, dice: null },
                 (st) => evaluateBtCoreBoard(st),
             );
+            const residual = computeBtCoreResidualCorrection(state.board, cand.seq.board, player);
             scored[i] = {
                 ...cand,
-                equity: res2Ply.equity,
+                equity: Number((res2Ply.equity + residual).toFixed(4)),
                 probabilities: res2Ply.probabilities,
             };
             evaluated2Ply++;
@@ -355,13 +366,14 @@ export function analyzeBtCoreMoves(
             for (let i = 0; i < evaluated2Ply; i++) scored[i] = slice2[i];
         }
 
-        // Selective 3-Ply sur les Top-2 si l'écart < 0.012 EMG
-        if (targetPly >= 3 && scored.length >= 2 && Math.abs(scored[0].equity - scored[1].equity) < 0.012) {
-            const beamWidth = 2;
+        // Vrai 3-Ply Cubeful systématique sur les Top-4 candidats lorsque targetPly >= 3
+        if (targetPly >= 3 && scored.length >= 2) {
+            const beamWidth = Math.min(4, evaluated2Ply || scored.length);
             for (let i = 0; i < beamWidth; i++) {
                 const elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startTime;
-                if (elapsed > budgetMs) break;
+                if (elapsed > budgetMs && i >= 2) break;
                 const cand = scored[i];
+                const residual = computeBtCoreResidualCorrection(state.board, cand.seq.board, player);
                 let totalEq3 = 0;
                 for (const r2 of DISTINCT_DICE_ROLLS_21) {
                     const oppMoves = generateLegalMoves({ ...state, board: cand.seq.board, turn: opponent }, r2.dice);
@@ -396,11 +408,18 @@ export function analyzeBtCoreMoves(
                 }
                 scored[i] = {
                     ...cand,
-                    equity: Number((totalEq3 / 36).toFixed(4)),
+                    equity: Number((totalEq3 / 36 + residual).toFixed(4)),
                 };
             }
             const topBeam = scored.slice(0, beamWidth).sort((a, b) => b.equity - a.equity);
             for (let i = 0; i < beamWidth; i++) scored[i] = topBeam[i];
+            const minBeam = topBeam[topBeam.length - 1].equity;
+            for (let i = beamWidth; i < scored.length; i++) {
+                scored[i] = {
+                    ...scored[i],
+                    equity: Number(Math.min(scored[i].equity, minBeam - 0.008 * (i - beamWidth + 1)).toFixed(4)),
+                };
+            }
         }
 
         if (openingTargetBoard) {
