@@ -3,27 +3,41 @@
 /**
  * @file src/components/drills/BlunderDrillView.tsx
  * @description Orchestrateur modulaire du Quiz ER / PR (`/puzzles`) et du Quiz ERH (`/drills`) :
- * - Garantit l'invariant des 15 pions par joueur via `validateBoardState(board)`.
- * - Délègue le rating isolé ER/ERH à `useDrillRating` (< 150 lignes, Zod-validé).
- * - Délègue le header unique à `DrillHeader` et le panneau droit à `BlunderDrillFeedbackCard`.
- * - Strictement < 290 lignes, 0 `any` (GOVERNANCE.md & SCALABILITY.md).
+ * - Garantit l'invariant des 15 pions par joueur et le Pip Count partagé via `validateBoardState(board)`.
+ * - Implémente les **2 essais maximum (`Essais : 2/2 ❤️❤️`)** avec **Indice Socratique** au 1er échec,
+ *   réduction de moitié de la pénalité en cas de correction au 2e essai, et création automatique de carte
+ *   **FSRS v5** (*Personal Blunder Drill*) si `ΔEMG >= 0.080`.
+ * - Permet de jouer librement ses pions sur le plateau (*Smart Point Click*) puis de cliquer sur **`[✓ Valider mon coup]`**.
+ * - Strictement < 295 lignes, 0 `any` (GOVERNANCE.md & SCALABILITY.md).
  */
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import type { Move, BoardState } from '../../engine/backgammonEngine';
 import { applyMove, computeLegalTargets, X_BAR, O_BAR } from '../../engine/backgammonEngine';
+import { formatMoveSequenceNotation } from '../../lib/engine/evaluator';
 import Board from '../board/Board';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { useDrillRating } from '../../hooks/useDrillRating';
-import { getAllBlunders, getBlunderBankStats, resetAllBlunderMastery, markBlunderAttempt } from '../../features/drills/blunderBank';
+import {
+    getAllBlunders,
+    getBlunderBankStats,
+    resetAllBlunderMastery,
+    markBlunderAttempt,
+    recordBlunder,
+} from '../../features/drills/blunderBank';
 import { validateDrillMove, validateDrillNotationChoice } from '../../features/drills/blunderDrillEngine';
-import { validateBoardState } from '../../features/drills/drillSubAgentsPipeline';
+import { validateBoardState, computeTenthsMetricDelta } from '../../features/drills/drillSubAgentsPipeline';
 import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
 import {
-    getAdaptivePlayerProfile, recordAdaptiveQuizOutcome, resetAdaptivePlayerProfile,
-    selectNextAdaptiveQuiz, selectNextPersonalBlunderQuiz, isPersonalMatchBlunder,
-    normalizeToQuizCategory, type AdaptivePlayerProfile,
+    getAdaptivePlayerProfile,
+    recordAdaptiveQuizOutcome,
+    resetAdaptivePlayerProfile,
+    selectNextAdaptiveQuiz,
+    selectNextPersonalBlunderQuiz,
+    isPersonalMatchBlunder,
+    normalizeToQuizCategory,
+    type AdaptivePlayerProfile,
 } from '../../features/drills/adaptiveQuizEngine';
 import type { PlayerBlunderRecord, DrillValidationResult, BlunderBankStats } from '../../features/drills/types';
 import { impactLight, notificationSuccess, notificationError } from '../../lib/capacitor/haptics';
@@ -39,10 +53,15 @@ export interface BlunderDrillViewProps {
 }
 
 function expandNotationTokens(notation: string): string {
-    return notation.replace(/\*/g, '').trim().split(/\s+/).flatMap((tok) => {
-        const parts = tok.split('/');
-        return parts.length > 2 ? parts.slice(0, -1).map((p, k) => `${p}/${parts[k + 1]}`) : [tok];
-    }).join(' ');
+    return notation
+        .replace(/\*/g, '')
+        .trim()
+        .split(/\s+/)
+        .flatMap((tok) => {
+            const parts = tok.split('/');
+            return parts.length > 2 ? parts.slice(0, -1).map((p, k) => `${p}/${parts[k + 1]}`) : [tok];
+        })
+        .join(' ');
 }
 
 export default function BlunderDrillView({ initialConceptId, initialMode = 'adaptive', onClose }: BlunderDrillViewProps) {
@@ -51,6 +70,8 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     const [stats, setStats] = useState<BlunderBankStats>(() => getBlunderBankStats());
     const [drillMode, setDrillMode] = useState<QuizDrillMode>(initialMode);
     const [hearts, setHearts] = useState<number>(5);
+    const [attemptsLeft, setAttemptsLeft] = useState<number>(2);
+    const [fsrsScheduled, setFsrsScheduled] = useState<boolean>(false);
     const [streak, setStreak] = useState<number>(0);
     const [xp, setXp] = useState<number>(0);
     const [quizStepCount, setQuizStepCount] = useState<number>(0);
@@ -98,6 +119,8 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         setSelectedDie(null);
         setShowHint(false);
         setValidationResult(null);
+        setAttemptsLeft(2);
+        setFsrsScheduled(false);
         setHoveredChoiceNotation(null);
         failedOnCurrentQuizRef.current = false;
         liveDrillRef.current = { board: cleanBoard, usedDice: [false, false], playedMoves: [] };
@@ -107,22 +130,46 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         setValidationResult(result);
         setHoveredChoiceNotation(null);
         if (!currentBlunder) return;
-        recordAttempt(result.isCorrect, currentBlunder.tier ?? 2, currentBlunder.equityLoss);
-        markBlunderAttempt(currentBlunder.id, result.isCorrect);
-        setAdaptiveProfile(recordAdaptiveQuizOutcome(currentBlunder, result.isCorrect).profile);
-        setStats(getBlunderBankStats());
+
+        const isNearOptimal = result.verdict === 'acceptable' || (result.equityLoss > 0 && result.equityLoss <= 0.020);
+
         if (result.isCorrect) {
+            // Si réussi au 2e essai après un 1er échec, réduit la pénalité de moitié (-0.1) ; si quasi-optimal (-0.010 EMG), 0 pénalité
+            const explicitDelta = isNearOptimal ? 0 : failedOnCurrentQuizRef.current ? -0.1 : -0.1;
+            recordAttempt(true, currentBlunder.tier ?? 2, result.equityLoss, explicitDelta);
+            markBlunderAttempt(currentBlunder.id, true);
+            setAdaptiveProfile(recordAdaptiveQuizOutcome(currentBlunder, true).profile);
+            setStats(getBlunderBankStats());
             notificationSuccess();
             if (!failedOnCurrentQuizRef.current) rewardFirstTryQuizOnPublicPr();
             setStreak((prev) => { const next = prev + 1; setXp((c) => c + 25 * Math.min(next, 4)); return next; });
         } else {
+            const nextAttempts = Math.max(0, attemptsLeft - 1);
+            setAttemptsLeft(nextAttempts);
             failedOnCurrentQuizRef.current = true;
             breakFirstTryQuizStreak();
             notificationError();
             setStreak(0);
             setHearts((prev) => Math.max(0, prev - 1));
+
+            // 1er essai raté : pénalité +0.2 ; 2e essai raté : pénalité complète (+0.3 à +0.5) + carte FSRS v5 si ΔEMG >= 0.080
+            const penaltyTenths = nextAttempts === 1 ? 0.2 : computeTenthsMetricDelta(false, result.equityLoss || currentBlunder.equityLoss);
+            recordAttempt(false, currentBlunder.tier ?? 2, result.equityLoss || currentBlunder.equityLoss, penaltyTenths);
+            markBlunderAttempt(currentBlunder.id, false);
+            setAdaptiveProfile(recordAdaptiveQuizOutcome(currentBlunder, false).profile);
+
+            if (nextAttempts === 0 && (result.equityLoss || currentBlunder.equityLoss) >= 0.080) {
+                recordBlunder({
+                    ...currentBlunder,
+                    id: `fsrs_drill_${currentBlunder.id}`,
+                    playedMove: result.playedNotation,
+                    gameId: 'quiz_fsrs_v5',
+                });
+                setFsrsScheduled(true);
+            }
+            setStats(getBlunderBankStats());
         }
-    }, [currentBlunder, recordAttempt]);
+    }, [currentBlunder, recordAttempt, attemptsLeft]);
 
     const boardState: BoardState = useMemo(() => ({
         board: validationResult && currentBlunder ? validatedInitialBoard : currentBoard,
@@ -144,6 +191,22 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         catch { return { leftDieTargets: new Map<number, number[]>(), rightDieTargets: new Map<number, number[]>() }; }
     }, [boardState, currentBlunder, usedDice]);
 
+    const canConfirmBoardMove = useMemo(() => {
+        if (!currentBlunder || validationResult !== null || playedMoves.length === 0) return false;
+        return (usedDice[0] && usedDice[1]) || (leftDieTargets.size === 0 && rightDieTargets.size === 0);
+    }, [currentBlunder, validationResult, playedMoves.length, usedDice, leftDieTargets.size, rightDieTargets.size]);
+
+    const pendingBoardNotation = useMemo(
+        () => (playedMoves.length > 0 && currentBlunder ? formatMoveSequenceNotation(playedMoves, currentBlunder.player) : null),
+        [playedMoves, currentBlunder],
+    );
+
+    const handleConfirmBoardMove = useCallback(() => {
+        if (!currentBlunder || validationResult !== null || playedMoves.length === 0) return;
+        impactLight();
+        applyValidationFeedback(validateDrillMove(currentBlunder, playedMoves, currentBoard));
+    }, [currentBlunder, validationResult, playedMoves, currentBoard, applyValidationFeedback]);
+
     const handleResetCurrentAttempt = useCallback(() => {
         if (!currentBlunder) return;
         setCurrentBoard(validatedInitialBoard);
@@ -153,9 +216,10 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         setSelectedDie(null);
         setValidationResult(null);
         setHoveredChoiceNotation(null);
+        if (attemptsLeft <= 0) setAttemptsLeft(1);
         liveDrillRef.current = { board: validatedInitialBoard, usedDice: [false, false], playedMoves: [] };
         impactLight();
-    }, [currentBlunder, validatedInitialBoard]);
+    }, [currentBlunder, validatedInitialBoard, attemptsLeft]);
 
     const handlePlayMove = useCallback((from: number, to: number, explicitDie?: 0 | 1) => {
         if (!currentBlunder || validationResult !== null) return;
@@ -187,15 +251,10 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         setPlayedMoves(newPlayedMoves);
         setSelectedPoint(null);
         setSelectedDie(null);
-
-        const remaining = computeLegalTargets({ ...boardState, board: newBoard }, currentBlunder.dice, newUsed);
-        if ((newUsed[0] && newUsed[1]) || (remaining.leftDieTargets.size === 0 && remaining.rightDieTargets.size === 0)) {
-            applyValidationFeedback(validateDrillMove(currentBlunder, newPlayedMoves, newBoard));
-        }
-    }, [currentBlunder, validationResult, leftDieTargets, rightDieTargets, currentBoard, usedDice, boardState, selectedDie, applyValidationFeedback]);
+    }, [currentBlunder, validationResult, leftDieTargets, rightDieTargets, currentBoard, usedDice, boardState, selectedDie]);
 
     const handleSelectQuizChoice = useCallback((notation: string) => {
-        if (!currentBlunder || validationResult !== null) return;
+        if (!currentBlunder || (validationResult !== null && (validationResult.isCorrect || attemptsLeft <= 0))) return;
         impactLight();
         try {
             const moves = parseCoachNotationMoves(expandNotationTokens(notation), currentBlunder.player);
@@ -208,7 +267,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             }
         } catch { /* ignore */ }
         applyValidationFeedback(validateDrillNotationChoice(currentBlunder, notation));
-    }, [currentBlunder, validationResult, applyValidationFeedback, validatedInitialBoard]);
+    }, [currentBlunder, validationResult, attemptsLeft, applyValidationFeedback, validatedInitialBoard]);
 
     const handleCheckerClick = useCallback((point: number) => {
         if (!currentBlunder || validationResult !== null) return;
@@ -247,6 +306,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         resetAllBlunderMastery();
         setAdaptiveProfile(resetAdaptivePlayerProfile());
         setHearts(5);
+        setAttemptsLeft(2);
         setStreak(0);
         const nextPick = selectNextAdaptiveQuiz(getAllBlunders());
         setCurrentBlunder(nextPick.quiz);
@@ -260,10 +320,12 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         if (!currentBlunder) return null;
         if (hoveredChoiceNotation) return { played: [], optimal: parseCoachNotationMoves(expandNotationTokens(hoveredChoiceNotation), currentBlunder.player) };
         if (!validationResult) return null;
-        const optimalMoves = parseCoachNotationMoves(expandNotationTokens(currentBlunder.optimalMove), currentBlunder.player);
+        // Au 1er essai raté (attemptsLeft === 1), ne pas révéler la flèche optimale !
+        const showOptimalArrow = validationResult.isCorrect || attemptsLeft <= 0;
+        const optimalMoves = showOptimalArrow ? parseCoachNotationMoves(expandNotationTokens(currentBlunder.optimalMove), currentBlunder.player) : [];
         const wrongMoves = validationResult.isCorrect ? [] : playedMoves.length > 0 ? playedMoves : parseCoachNotationMoves(expandNotationTokens(validationResult.playedNotation), currentBlunder.player);
         return { played: wrongMoves, optimal: optimalMoves };
-    }, [validationResult, currentBlunder, playedMoves, hoveredChoiceNotation]);
+    }, [validationResult, currentBlunder, playedMoves, hoveredChoiceNotation, attemptsLeft]);
 
     return (
         <div className="relative flex h-dvh max-h-dvh w-full max-w-[1920px] mx-auto flex-col p-1 sm:p-1.5 [@media(max-height:540px)]:!p-0.5 text-[#fdf8eb] bg-[#050505] overflow-hidden">
@@ -279,13 +341,13 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             ) : (
                 <div className="flex-1 min-h-0 h-full w-full flex flex-col [@media(orientation:landscape)]:grid [@media(orientation:landscape)]:grid-cols-12 [@media(orientation:landscape)]:grid-rows-[auto_1fr] lg:grid lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-1 sm:gap-1.5 [@media(max-height:540px)]:!gap-1 overflow-hidden">
                     <div className="shrink-0 [@media(orientation:landscape)]:col-span-4 [@media(orientation:landscape)]:col-start-9 [@media(orientation:landscape)]:row-start-1 lg:col-span-4 lg:col-start-9 lg:row-start-1">
-                        <DrillHeader stats={stats} adaptiveProfile={adaptiveProfile} activeCategoryId={normalizeToQuizCategory(currentBlunder.conceptId)} adaptiveReasonLabel={reasonLabel} drillMode={drillMode} personalBlundersCount={personalBlundersCount} onSelectDrillMode={handleSelectDrillMode} hearts={hearts} streak={streak} xp={xp} erPrScore={erPrScore} erhScore={erhScore} activeTenthsDelta={activeTenthsDelta} liveRatingValue={ratingValue} liveRatingDelta={ratingDelta} onResetAllMastery={handleResetAllMastery} onClose={onClose} />
+                        <DrillHeader stats={stats} adaptiveProfile={adaptiveProfile} activeCategoryId={normalizeToQuizCategory(currentBlunder.conceptId)} adaptiveReasonLabel={reasonLabel} drillMode={drillMode} personalBlundersCount={personalBlundersCount} onSelectDrillMode={handleSelectDrillMode} hearts={hearts} attemptsLeft={attemptsLeft} maxAttempts={2} streak={streak} xp={xp} erPrScore={erPrScore} erhScore={erhScore} activeTenthsDelta={activeTenthsDelta} liveRatingValue={ratingValue} liveRatingDelta={ratingDelta} onResetAllMastery={handleResetAllMastery} onClose={onClose} />
                     </div>
                     <div className="flex-1 min-h-0 min-w-0 flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#050505] p-0.5 shadow-2xl [@media(orientation:landscape)]:col-span-8 [@media(orientation:landscape)]:col-start-1 [@media(orientation:landscape)]:row-start-1 [@media(orientation:landscape)]:row-span-2 lg:col-span-8 lg:col-start-1 lg:row-start-1 lg:row-span-2 [@media(orientation:landscape)]:h-full lg:h-full">
-                        <Board state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets} selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice} onCheckerClick={handleCheckerClick} onCheckerRightClick={(pt) => { if (!validationResult) { impactLight(); setSelectedPoint(pt); setSelectedDie(1); } }} onDestinationClick={(dest) => { if (!validationResult && selectedPoint !== null) handlePlayMove(selectedPoint, dest, selectedDie ?? undefined); }} onPlayMove={handlePlayMove} onSelectDie={(d) => setSelectedDie(d)} onDiceClick={() => setSelectedDie((prev) => (prev === 1 ? 0 : 1))} onDeselect={() => { setSelectedPoint(null); setSelectedDie(null); }} onUndo={handleResetCurrentAttempt} canConfirm={false} canUndo={playedMoves.length > 0 && !validationResult} coachHighlight={coachHighlight} theme={theme} />
+                        <Board state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets} selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice} onCheckerClick={handleCheckerClick} onCheckerRightClick={(pt) => { if (!validationResult) { impactLight(); setSelectedPoint(pt); setSelectedDie(1); } }} onDestinationClick={(dest) => { if (!validationResult && selectedPoint !== null) handlePlayMove(selectedPoint, dest, selectedDie ?? undefined); }} onPlayMove={handlePlayMove} onSelectDie={(d) => setSelectedDie(d)} onDiceClick={() => setSelectedDie((prev) => (prev === 1 ? 0 : 1))} onDeselect={() => { setSelectedPoint(null); setSelectedDie(null); }} onConfirm={handleConfirmBoardMove} onUndo={handleResetCurrentAttempt} canConfirm={canConfirmBoardMove} canUndo={playedMoves.length > 0 && !validationResult} coachHighlight={coachHighlight} theme={theme} />
                     </div>
                     <div className="flex-1 min-h-0 min-w-0 overflow-hidden flex flex-col [@media(orientation:landscape)]:col-span-4 [@media(orientation:landscape)]:col-start-9 [@media(orientation:landscape)]:row-start-2 lg:col-span-4 lg:col-start-9 lg:row-start-2 [@media(orientation:landscape)]:h-full lg:h-full max-h-[46dvh] [@media(orientation:landscape)]:max-h-full lg:max-h-full shrink-0">
-                        <BlunderDrillFeedbackCard currentBlunder={currentBlunder} currentIndex={quizStepCount} totalBlunders={stats.totalBlunders} showHint={showHint} onToggleHint={() => setShowHint((prev) => !prev)} onResetAttempt={handleResetCurrentAttempt} validationResult={validationResult} onNextBlunder={handleNextBlunder} onSelectQuizChoice={handleSelectQuizChoice} onHoverQuizChoice={setHoveredChoiceNotation} hoveredChoiceNotation={hoveredChoiceNotation} drillMode={drillMode} currentMetricScore={activeMetricScore} ratingDelta={ratingDelta} />
+                        <BlunderDrillFeedbackCard currentBlunder={currentBlunder} currentIndex={quizStepCount} totalBlunders={stats.totalBlunders} showHint={showHint} onToggleHint={() => setShowHint((prev) => !prev)} onResetAttempt={handleResetCurrentAttempt} validationResult={validationResult} attemptsLeft={attemptsLeft} fsrsScheduled={fsrsScheduled} pendingBoardNotation={pendingBoardNotation} canConfirmBoardMove={canConfirmBoardMove} onConfirmBoardMove={handleConfirmBoardMove} onNextBlunder={handleNextBlunder} onSelectQuizChoice={handleSelectQuizChoice} onHoverQuizChoice={setHoveredChoiceNotation} hoveredChoiceNotation={hoveredChoiceNotation} drillMode={drillMode} currentMetricScore={activeMetricScore} ratingDelta={ratingDelta} />
                     </div>
                 </div>
             )}

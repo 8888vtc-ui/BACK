@@ -200,11 +200,12 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         expect(screen.getByText(/Ouverture Personnelle Match/i)).toBeDefined();
     });
 
-    it('affiche la terminologie unifiée ER / PR (échelle 0.0-30.0 par dixièmes), ERH 6.1, Rating 1500, et différencie le retour sur Coup Optimal (2 blocs) vs Erreur (3 blocs)', () => {
+    it('affiche la terminologie unifiée ER / PR (échelle 0.0-30.0 par dixièmes), ERH 6.1, Rating 1500, les 2 essais (❤️❤️), l’indice socratique au 1er échec et la solution complète au 2e échec', () => {
         const { unmount } = render(<BlunderDrillView initialConceptId="blitz_attack" initialMode="pr_math" />);
 
-        // 1. En-tête : ER / PR : 6.3 | ERH : 6.1 | Rating : 1500
+        // 1. En-tête : Essais : 2/2 ❤️❤️ | ER / PR : 6.3 | ERH : 6.1 | Rating : 1500
         expect(screen.getByTestId('drill-mode-title').textContent).toContain('Quiz ER / PR');
+        expect(screen.getByTestId('quiz-attempts-counter').textContent).toContain('Essais : 2/2');
         expect(screen.getByTestId('drill-subtitle-index').textContent).toContain('Quiz ER / PR #1');
         expect(screen.getByTestId('quiz-target-metric-badge').textContent).toContain('ER / PR : 6.3');
         expect(screen.getByTestId('quiz-erh-metric-badge').textContent).toContain('ERH : 6.1');
@@ -219,15 +220,20 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('💡 Règle à retenir :');
         unmount();
 
-        // 3. Clic sur une ERREUR (B) -> ER / PR monte par dixièmes (+0.3 à +0.5), 3 blocs affichés + Réessayer + Suivant
+        // 3. 1er clic sur une ERREUR (B) -> Essais passe à 1/2 ❤️🖤, pénalité +0.2, Indice Socratique sans dévoiler la solution
         render(<BlunderDrillView initialConceptId="blitz_attack" initialMode="pr_math" />);
         fireEvent.click(screen.getByTestId('quiz-choice-btn-B'));
-        expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('▲ +0.');
-        expect(screen.getByTestId('coach-verdict-header').textContent).toContain('Impact ER / PR : +0.');
-        expect(screen.getByTestId('coach-win-drop-badge').textContent).toContain('% de chances de gagner');
+        expect(screen.getByTestId('quiz-attempts-counter').textContent).toContain('Essais : 1/2');
+        expect(screen.getByTestId('socratic-first-attempt-box').textContent).toContain('Indice Socratique');
+        expect(screen.queryByTestId('coach-block-1-error')).toBeNull();
+
+        // 4. 2e clic sur une ERREUR (C) -> Essais passe à 0/2 🖤🖤, 3 blocs complets + carte FSRS v5 + Suivant
+        fireEvent.click(screen.getByTestId('quiz-choice-btn-C'));
+        expect(screen.getByTestId('quiz-attempts-counter').textContent).toContain('Essais : 0/2');
         expect(screen.getByTestId('coach-block-1-error').textContent).toContain('1. Pourquoi ton coup est une erreur :');
         expect(screen.getByTestId('coach-block-2-optimal').textContent).toContain('2. Pourquoi le coup optimal gagne :');
         expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('💡 Comment t\'améliorer :');
+        expect(screen.getByTestId('fsrs-scheduled-badge').textContent).toContain('FSRS v5');
         expect(screen.getByTestId('drill-retry-btn').textContent).toContain('Réessayer');
         expect(screen.getByTestId('drill-next-btn').textContent).toContain('Suivant');
     });
