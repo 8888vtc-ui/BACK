@@ -2,10 +2,12 @@
 
 /**
  * @file src/components/drills/DrillChoicesGrid.tsx
- * @description Grille des 4 coups candidats A, B, C, D en validation 1-Clic immédiate :
+ * @description Grille des 4 coups candidats A, B, C, D + Validation du coup joué librement sur le plateau :
  * - Rappelle les dés à jouer (`🎲 Blanc joue 6-5`) et le sens de marche (`Sens : Case 24 ➔ Case 1`).
- * - Consigne unifiée : `Survolez pour prévisualiser, cliquez pour valider votre coup (ER / PR) :` (ou `(ERH)`).
- * - Strictement < 130 lignes, 0 `any`.
+ * - Permet soit de cliquer en 1-Clic sur A/B/C/D, soit de déplacer librement ses pions sur le plateau
+ *   (*Smart Point Click*) puis de cliquer sur `[✓ Valider mon coup]`.
+ * - En cas de 1er essai raté (`attemptsLeft === 1`), ne dévoile PAS la solution optimale en vert.
+ * - Strictement < 160 lignes, 0 `any`.
  */
 
 import React from 'react';
@@ -18,6 +20,10 @@ export interface DrillChoicesGridProps {
     readonly dice?: readonly [number, number];
     readonly isErMode: boolean;
     readonly validationResult: DrillValidationResult | null;
+    readonly attemptsLeft?: number;
+    readonly pendingBoardNotation?: string | null;
+    readonly canConfirmBoardMove?: boolean;
+    readonly onConfirmBoardMove?: () => void;
     readonly hoveredChoiceNotation: string | null;
     readonly onHoverChoice?: (notation: string | null) => void;
     readonly onHoverQuizChoice?: (notation: string | null) => void;
@@ -31,6 +37,10 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
     dice = [6, 5],
     isErMode,
     validationResult,
+    attemptsLeft = 2,
+    pendingBoardNotation = null,
+    canConfirmBoardMove = false,
+    onConfirmBoardMove,
     hoveredChoiceNotation,
     onHoverChoice,
     onHoverQuizChoice,
@@ -41,19 +51,23 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
     const handleHover = onHoverQuizChoice ?? onHoverChoice;
     const handleSelect = onSelectQuizChoice ?? onSelectChoice;
 
+    const isQuizLocked =
+        validationResult !== null && (validationResult.isCorrect || attemptsLeft <= 0);
+    const showSolutionHighlight = isQuizLocked;
+
     return (
         <div
             data-testid="quiz-qcm-choices"
-            className="rounded-xl border border-white/10 bg-[#050505]/90 p-2.5 space-y-2"
+            className="rounded-xl border border-white/10 bg-[#050505]/90 p-2 space-y-1.5 shrink-0"
         >
-            <div className="flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
+            <div className="flex flex-wrap items-center justify-between gap-1 text-[11px]">
                 <span
                     title={isErMode ? undefined : ERH_TOOLTIP_TEXT}
                     className={`font-bold ${isErMode ? 'text-emerald-300' : 'text-[#D4AF37]'}`}
                 >
                     {isErMode
-                        ? '📐 Survolez pour prévisualiser, cliquez pour valider votre coup (ER / PR) :'
-                        : '🧠 Survolez pour prévisualiser, cliquez pour valider votre coup (ERH) :'}
+                        ? '📐 Jouez sur le plateau ou cliquez un coup (ER / PR) :'
+                        : '🧠 Jouez sur le plateau ou cliquez un coup (ERH) :'}
                 </span>
                 <div
                     data-testid="drill-dice-direction-badge"
@@ -65,12 +79,12 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5">
                 {choices.map((choice, idx) => {
                     const letter = String.fromCharCode(65 + idx);
                     const isHovered = hoveredChoiceNotation === choice;
                     const isValidatedOptimal =
-                        validationResult !== null && choice.trim() === optimalMove.trim();
+                        showSolutionHighlight && choice.trim() === optimalMove.trim();
                     const isValidatedWrongUser =
                         validationResult !== null &&
                         !validationResult.isCorrect &&
@@ -80,18 +94,20 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
                         <button
                             key={choice}
                             type="button"
-                            disabled={validationResult !== null}
+                            disabled={isQuizLocked}
                             data-testid={`quiz-choice-btn-${letter}`}
                             onMouseEnter={() => handleHover?.(choice)}
                             onMouseLeave={() => handleHover?.(null)}
                             onFocus={() => handleHover?.(choice)}
                             onBlur={() => handleHover?.(null)}
                             onClick={() => handleSelect?.(choice)}
-                            className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 font-mono text-xs sm:text-sm font-extrabold transition ${
+                            className={`flex items-center justify-center gap-2 rounded-xl border px-2.5 py-1.5 font-mono text-xs sm:text-sm font-extrabold transition ${
                                 isValidatedOptimal
                                     ? 'border-emerald-400 bg-emerald-950/80 text-emerald-200 shadow-[0_0_12px_rgba(16,185,129,0.3)]'
                                     : isValidatedWrongUser
-                                        ? 'border-rose-400 bg-rose-950/80 text-rose-200'
+                                        ? attemptsLeft > 0
+                                            ? 'border-amber-400 bg-amber-950/80 text-amber-200'
+                                            : 'border-rose-400 bg-rose-950/80 text-rose-200'
                                         : isHovered
                                             ? 'border-[#D4AF37] bg-[#12151C] text-[#D4AF37] shadow-md'
                                             : isErMode
@@ -111,6 +127,17 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
                     );
                 })}
             </div>
+
+            {canConfirmBoardMove && onConfirmBoardMove && !isQuizLocked && (
+                <button
+                    type="button"
+                    onClick={onConfirmBoardMove}
+                    data-testid="drill-confirm-board-move-btn"
+                    className="w-full rounded-xl border border-emerald-400 bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-1.5 font-mono text-xs font-black uppercase tracking-wider text-white shadow-lg hover:brightness-110 transition"
+                >
+                    ✓ Valider mon coup sur le plateau {pendingBoardNotation ? `(${pendingBoardNotation})` : ''}
+                </button>
+            )}
         </div>
     );
 };

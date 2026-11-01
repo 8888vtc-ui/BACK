@@ -4,11 +4,12 @@
  * @file src/components/drills/DrillHeader.tsx
  * @description Barre supérieure unifiée du Quiz (Architecture Tesla 3-Secondes / Monte-Carlo) :
  * - Affiche clairement et sans troncature : `📐 Quiz ER / PR` (ou `🧠 Quiz ERH`).
+ * - Affiche le compteur d'essais `Essais : 2/2 ❤️❤️` ("Active Recall / 2e Chance").
  * - Affiche séparément en haut à droite :
  *   1. `ER / PR : 6.3` (avec badge d'évolution par dixièmes après clic : `▼ -0.1 (Progression)` en vert ou `▲ +0.4 (Erreur)` en rouge)
  *   2. `ERH : 6.1`
  *   3. `Rating : 1500`
- * - Strictement < 160 lignes, 0 `any`.
+ * - Strictement < 170 lignes, 0 `any`.
  */
 
 import React from 'react';
@@ -33,6 +34,8 @@ export interface DrillHeaderProps {
     readonly speedSecondsLeft?: number | null;
     readonly onSelectDrillMode?: (mode: QuizDrillMode) => void;
     readonly hearts?: number;
+    readonly attemptsLeft?: number;
+    readonly maxAttempts?: number;
     readonly streak?: number;
     readonly xp?: number;
     readonly erPrScore?: number;
@@ -55,6 +58,8 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
     drillMode = 'adaptive',
     personalBlundersCount = 0,
     onSelectDrillMode,
+    attemptsLeft = 2,
+    maxAttempts = 2,
     erPrScore = 6.3,
     erhScore = 6.1,
     activeTenthsDelta = 0,
@@ -67,6 +72,7 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
     const seenCount = adaptiveProfile?.seenQuizIds.length ?? 0;
     const modeLabel = isErMode ? 'ER' : 'ERH';
     const isImprovedTenths = activeTenthsDelta < 0;
+    const heartsDisplay = Array.from({ length: maxAttempts }, (_, idx) => (idx < attemptsLeft ? '❤️' : '🖤')).join('');
 
     return (
         <div className="w-full shrink-0">
@@ -90,6 +96,21 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                         {isErMode ? '📐 Quiz ER / PR' : '🧠 Quiz ERH'}
                         <span className="sr-only">Parcours Adaptatif IA</span>
                     </h1>
+
+                    <span
+                        data-testid="quiz-attempts-counter"
+                        title="2 essais maximum par position (Active Recall / 2e Chance)"
+                        className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 font-mono text-[10px] font-black ${
+                            attemptsLeft === 2
+                                ? 'border-emerald-400/40 bg-emerald-950/50 text-emerald-200'
+                                : attemptsLeft === 1
+                                    ? 'border-amber-400/50 bg-amber-950/60 text-amber-200'
+                                    : 'border-rose-400/50 bg-rose-950/60 text-rose-200'
+                        }`}
+                    >
+                        <span>Essais : {attemptsLeft}/{maxAttempts}</span>
+                        <span>{heartsDisplay}</span>
+                    </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-1.5 shrink-0" data-testid="quiz-live-rating-badge">
