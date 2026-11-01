@@ -172,10 +172,6 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                 setStats(getBlunderBankStats());
                 setStreak(0);
                 setHearts((prev) => Math.max(0, prev - 1));
-                toast.error(
-                    `Faute (-${result.equityLoss.toFixed(3)} ΔEq) en ${outcome.categoryMeta.shortLabel}. Le Coach cible cette lacune !`,
-                    '❌ Erreur analysée',
-                );
             }
         },
         [currentBlunder],
@@ -183,7 +179,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     const boardState: BoardState = useMemo(
         () => ({
-            board: currentBoard,
+            board: validationResult && currentBlunder ? currentBlunder.board : currentBoard,
             turn: currentBlunder?.player ?? 'X',
             cubeValue: currentBlunder?.matchContext?.cubeValue ?? 1,
             cubeOwner: currentBlunder?.matchContext?.cubeOwner ?? null,
@@ -195,7 +191,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             doubled: false,
             resigned: 0,
         }),
-        [currentBoard, currentBlunder],
+        [currentBoard, currentBlunder, validationResult],
     );
 
     const { leftDieTargets, rightDieTargets } = useMemo(() => {
@@ -221,7 +217,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     const handlePlayMove = useCallback(
         (from: number, to: number, explicitDie?: 0 | 1) => {
-            if (!currentBlunder || validationResult?.isCorrect) return;
+            if (!currentBlunder || validationResult !== null) return;
             const live = liveDrillRef.current;
             let liveTargets = { leftDieTargets, rightDieTargets };
             if (live.board !== currentBoard || live.usedDice !== usedDice) {
@@ -265,7 +261,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     );
 
     const handleValidateAttempt = useCallback(() => {
-        if (!currentBlunder || validationResult?.isCorrect) return;
+        if (!currentBlunder || validationResult !== null) return;
         const live = liveDrillRef.current;
         if (live.playedMoves.length === 0) return;
         const result = validateDrillMove(currentBlunder, live.playedMoves, live.board);
@@ -274,7 +270,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     const handleSelectQuizChoice = useCallback(
         (notation: string) => {
-            if (!currentBlunder) return;
+            if (!currentBlunder || validationResult !== null) return;
             impactLight();
             try {
                 const moves = parseCoachNotationMoves(notation.replace(/\*/g, ''), currentBlunder.player);
@@ -291,7 +287,6 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             } catch {
                 // ignore notation preview errors on cube actions
             }
-            if (validationResult?.isCorrect) return;
             const result = validateDrillNotationChoice(currentBlunder, notation);
             applyValidationFeedback(result);
         },
@@ -300,7 +295,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     const handleCheckerClick = useCallback(
         (point: number) => {
-            if (!currentBlunder || validationResult?.isCorrect) return;
+            if (!currentBlunder || validationResult !== null) return;
             const isPlayerX = currentBlunder.player === 'X';
             const hasChecker = isPlayerX
                 ? point === X_BAR ? currentBoard[X_BAR] > 0 : currentBoard[point] > 0
@@ -409,35 +404,6 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     return (
         <div className="relative flex h-dvh max-h-dvh w-full max-w-[1920px] mx-auto flex-col p-1 sm:p-1.5 [@media(max-height:540px)]:!p-0.5 text-[#fdf8eb] overflow-hidden">
-            {/* Garde-fou Mobile Portrait : Quizz uniquement en mode Paysage sur portable */}
-            <div className="hidden [@media(max-width:640px)_and_(orientation:portrait)]:flex fixed inset-0 z-50 flex-col items-center justify-center gap-4 bg-[#07090e]/98 p-6 text-center backdrop-blur-md">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[#d4af37]/50 bg-[#1a120b] text-3xl shadow-xl">
-                    📱↻
-                </div>
-                <h2 className="font-display text-lg font-black text-[#f7f3e8]">
-                    Mode Paysage Requis pour les Quizz
-                </h2>
-                <p className="max-w-xs text-xs leading-relaxed text-[#e2d2b5]">
-                    Tournez votre téléphone à l&apos;horizontale pour afficher le plateau de Backgammon en pleine hauteur à côté des 2 Quizz (<strong>🎯 Quizz PR</strong> &amp; <strong>🧠 Quizz ERH</strong>).
-                </p>
-                {onClose ? (
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="rounded-xl border border-[#f3c65f]/60 bg-[#1c130b] px-4 py-2 text-xs font-extrabold text-[#f3c65f]"
-                    >
-                        ← Retour au Salon
-                    </button>
-                ) : (
-                    <Link
-                        href="/"
-                        className="rounded-xl border border-[#f3c65f]/60 bg-[#1c130b] px-4 py-2 text-xs font-extrabold text-[#f3c65f]"
-                    >
-                        ← Retour au Salon
-                    </Link>
-                )}
-            </div>
-
             {!currentBlunder ? (
                 <div className="w-full m-auto max-w-md rounded-2xl border border-white/10 bg-[#0e121b] p-6 text-center shadow-2xl space-y-3">
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[#2a170c] text-2xl">🏆</div>
@@ -448,30 +414,9 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                     </div>
                 </div>
             ) : (
-                <div className="flex-1 min-h-0 h-full w-full grid grid-cols-12 gap-1.5 [@media(max-height:540px)]:!gap-1 overflow-hidden">
-                    {/* COLONNE GAUCHE (8/12) : Plateau 100 % de la hauteur verticale de l'écran (Zéro barre au-dessus ni en-dessous) */}
-                    <div className="col-span-8 h-full min-h-0 min-w-0 flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#080a0f] p-0.5 shadow-2xl">
-                        <Board
-                            state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets}
-                            selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice}
-                            onCheckerClick={handleCheckerClick}
-                            onCheckerRightClick={(pt) => { impactLight(); setSelectedPoint(pt); setSelectedDie(1); }}
-                            onDestinationClick={(dest) => { if (currentBlunder && selectedPoint !== null) handlePlayMove(selectedPoint, dest, selectedDie ?? undefined); }}
-                            onPlayMove={handlePlayMove}
-                            onSelectDie={(d) => setSelectedDie(d)}
-                            onDiceClick={() => setSelectedDie((prev) => (prev === 1 ? 0 : 1))}
-                            onDeselect={() => { setSelectedPoint(null); setSelectedDie(null); }}
-                            onConfirm={handleValidateAttempt}
-                            onUndo={handleResetCurrentAttempt}
-                            canConfirm={isTurnComplete && !validationResult?.isCorrect}
-                            canUndo={playedMoves.length > 0 && !validationResult?.isCorrect}
-                            coachHighlight={coachHighlight}
-                            theme={theme}
-                        />
-                    </div>
-
-                    {/* COLONNE DROITE (4/12) : En-tête (Retour + 2 Quizz PR/ERH) + Dés, QCM Express, Valider & Explications */}
-                    <div className="col-span-4 h-full min-h-0 min-w-0 overflow-hidden flex flex-col gap-1">
+                <div className="flex-1 min-h-0 h-full w-full flex flex-col [@media(orientation:landscape)]:grid [@media(orientation:landscape)]:grid-cols-12 [@media(orientation:landscape)]:grid-rows-[auto_1fr] lg:grid lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-1 sm:gap-1.5 [@media(max-height:540px)]:!gap-1 overflow-hidden">
+                    {/* 1. EN-TÊTE UNIQUE : En haut en Portrait, en haut à droite (col 9-12, row 1) en Paysage/Desktop */}
+                    <div className="shrink-0 [@media(orientation:landscape)]:col-span-4 [@media(orientation:landscape)]:col-start-9 [@media(orientation:landscape)]:row-start-1 lg:col-span-4 lg:col-start-9 lg:row-start-1">
                         <BlunderDrillHeader
                             stats={stats}
                             adaptiveProfile={adaptiveProfile}
@@ -487,23 +432,46 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
                             onResetAllMastery={handleResetAllMastery}
                             onClose={onClose}
                         />
-                        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
-                            <BlunderDrillFeedbackCard
-                                currentBlunder={currentBlunder}
-                                currentIndex={quizStepCount}
-                                totalBlunders={stats.totalBlunders}
-                                showHint={showHint}
-                                onToggleHint={() => setShowHint((prev) => !prev)}
-                                onResetAttempt={handleResetCurrentAttempt}
-                                validationResult={validationResult}
-                                onNextBlunder={handleNextBlunder}
-                                onSelectQuizChoice={handleSelectQuizChoice}
-                                onValidateAttempt={handleValidateAttempt}
-                                canValidateAttempt={isTurnComplete}
-                                stagedNotation={stagedNotation}
-                                drillMode={drillMode}
-                            />
-                        </div>
+                    </div>
+
+                    {/* 2. PLATEAU : Milieu en Portrait (flex-1), Gauche pleine hauteur (col 1-8, row 1-2) en Paysage/Desktop */}
+                    <div className="flex-1 min-h-0 min-w-0 flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#080a0f] p-0.5 shadow-2xl [@media(orientation:landscape)]:col-span-8 [@media(orientation:landscape)]:col-start-1 [@media(orientation:landscape)]:row-start-1 [@media(orientation:landscape)]:row-span-2 lg:col-span-8 lg:col-start-1 lg:row-start-1 lg:row-span-2 [@media(orientation:landscape)]:h-full lg:h-full">
+                        <Board
+                            state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets}
+                            selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice}
+                            onCheckerClick={handleCheckerClick}
+                            onCheckerRightClick={(pt) => { if (validationResult) return; impactLight(); setSelectedPoint(pt); setSelectedDie(1); }}
+                            onDestinationClick={(dest) => { if (!validationResult && currentBlunder && selectedPoint !== null) handlePlayMove(selectedPoint, dest, selectedDie ?? undefined); }}
+                            onPlayMove={handlePlayMove}
+                            onSelectDie={(d) => setSelectedDie(d)}
+                            onDiceClick={() => setSelectedDie((prev) => (prev === 1 ? 0 : 1))}
+                            onDeselect={() => { setSelectedPoint(null); setSelectedDie(null); }}
+                            onConfirm={handleValidateAttempt}
+                            onUndo={handleResetCurrentAttempt}
+                            canConfirm={isTurnComplete && !validationResult}
+                            canUndo={playedMoves.length > 0 && !validationResult}
+                            coachHighlight={coachHighlight}
+                            theme={theme}
+                        />
+                    </div>
+
+                    {/* 3. CARTE FEEDBACK / QCM : Bas en Portrait, Bas droite (col 9-12, row 2) en Paysage/Desktop */}
+                    <div className="flex-1 min-h-0 min-w-0 overflow-hidden flex flex-col [@media(orientation:landscape)]:col-span-4 [@media(orientation:landscape)]:col-start-9 [@media(orientation:landscape)]:row-start-2 lg:col-span-4 lg:col-start-9 lg:row-start-2 [@media(orientation:landscape)]:h-full lg:h-full max-h-[46dvh] [@media(orientation:landscape)]:max-h-full lg:max-h-full shrink-0">
+                        <BlunderDrillFeedbackCard
+                            currentBlunder={currentBlunder}
+                            currentIndex={quizStepCount}
+                            totalBlunders={stats.totalBlunders}
+                            showHint={showHint}
+                            onToggleHint={() => setShowHint((prev) => !prev)}
+                            onResetAttempt={handleResetCurrentAttempt}
+                            validationResult={validationResult}
+                            onNextBlunder={handleNextBlunder}
+                            onSelectQuizChoice={handleSelectQuizChoice}
+                            onValidateAttempt={handleValidateAttempt}
+                            canValidateAttempt={isTurnComplete}
+                            stagedNotation={stagedNotation}
+                            drillMode={drillMode}
+                        />
                     </div>
                 </div>
             )}

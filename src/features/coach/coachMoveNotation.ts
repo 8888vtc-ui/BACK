@@ -312,9 +312,10 @@ export function relativeNotationToAbsolute(notation: string, player: Player): st
  */
 export function parseCoachNotationMoves(notation: string, player: Player = 'X'): Move[] {
     if (!notation) return [];
+    const absNotation = player === 'O' ? relativeNotationToAbsolute(notation, 'O') : notation;
     const bar = player === 'X' ? X_BAR : O_BAR;
     const off = player === 'X' ? X_OFF : O_OFF;
-    return notation
+    return absNotation
         .trim()
         .split(/\s+/)
         .flatMap((token) => {

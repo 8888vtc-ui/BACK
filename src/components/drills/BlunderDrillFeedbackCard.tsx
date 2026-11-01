@@ -103,34 +103,36 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                     </div>
                 </div>
 
-                {/* Barre d'actions : Indice + Réinitialiser + Bouton VALIDER */}
-                <div className="flex flex-wrap items-center justify-between gap-1 text-[11px]">
-                    <span className="sr-only">
-                        Erreur piégeuse à éviter : {currentBlunder.playedMove} (-{currentBlunder.equityLoss.toFixed(3)} ΔEq)
-                    </span>
-                    <div className="flex items-center gap-1">
-                        <button type="button" onClick={onToggleHint} className="rounded-lg border border-white/10 bg-[#1a1109] px-2 py-1 text-[11px] font-bold text-[#f3c65f] hover:border-white/25 transition" data-testid="drill-hint-toggle">💡 {showHint ? 'Masquer' : 'Indice'}</button>
-                        <button type="button" onClick={onResetAttempt} className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-[#e2d2b5] hover:border-white/25 transition" data-testid="drill-reset-btn">↺ Réinitialiser</button>
+                {/* Barre d'actions : Indice + Réinitialiser + Bouton VALIDER (masquée dès que isAnswered est actif) */}
+                <span className="sr-only">
+                    Erreur piégeuse à éviter : {currentBlunder.playedMove} (-{currentBlunder.equityLoss.toFixed(3)} ΔEq)
+                </span>
+                {!validationResult && (
+                    <div className="flex flex-wrap items-center justify-between gap-1 text-[11px]">
+                        <div className="flex items-center gap-1">
+                            <button type="button" onClick={onToggleHint} className="rounded-lg border border-white/10 bg-[#1a1109] px-2 py-1 text-[11px] font-bold text-[#f3c65f] hover:border-white/25 transition" data-testid="drill-hint-toggle">💡 {showHint ? 'Masquer' : 'Indice'}</button>
+                            <button type="button" onClick={onResetAttempt} className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-[#e2d2b5] hover:border-white/25 transition" data-testid="drill-reset-btn">↺ Réinitialiser</button>
+                        </div>
+                        {onValidateAttempt && (
+                            <button
+                                type="button"
+                                onClick={onValidateAttempt}
+                                disabled={!canValidateAttempt}
+                                data-testid="drill-validate-btn"
+                                className={`rounded-lg border px-2.5 py-1 text-[11px] font-black uppercase tracking-wide transition shadow-md ${
+                                    canValidateAttempt
+                                        ? 'border-emerald-300 bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 hover:brightness-110 animate-pulse'
+                                        : 'border-white/10 bg-white/5 text-slate-500 cursor-not-allowed'
+                                }`}
+                            >
+                                ✓ Valider {stagedNotation ? `(${stagedNotation})` : ''}
+                            </button>
+                        )}
                     </div>
-                    {onValidateAttempt && !validationResult?.isCorrect && (
-                        <button
-                            type="button"
-                            onClick={onValidateAttempt}
-                            disabled={!canValidateAttempt}
-                            data-testid="drill-validate-btn"
-                            className={`rounded-lg border px-2.5 py-1 text-[11px] font-black uppercase tracking-wide transition shadow-md ${
-                                canValidateAttempt
-                                    ? 'border-emerald-300 bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 hover:brightness-110 animate-pulse'
-                                    : 'border-white/10 bg-white/5 text-slate-500 cursor-not-allowed'
-                            }`}
-                        >
-                            ✓ Valider {stagedNotation ? `(${stagedNotation})` : ''}
-                        </button>
-                    )}
-                </div>
+                )}
 
-                {/* Carte Psychologique ERH : affichée uniquement en mode Quizz ERH (Psychologie), jamais en Quizz PR */}
-                {drillMode !== 'pr_math' && (
+                {/* Carte Psychologique ERH : affichée uniquement en mode Quizz ERH (Psychologie) avant validation */}
+                {drillMode !== 'pr_math' && !validationResult && (
                     <div
                         data-testid="erh-opponent-scenario-card"
                         className="rounded-xl border border-[#d4af37]/35 bg-gradient-to-r from-[#1c130b] via-[#130e09] to-[#1c130b] p-1.5 space-y-1"
@@ -155,14 +157,13 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                 )}
 
                 {/* Mode Quiz Express QCM (4 propositions cliquables OU jeu direct sur le plateau) */}
-                {currentBlunder.quizChoices && currentBlunder.quizChoices.length > 0 && onSelectQuizChoice && !validationResult?.isCorrect && (
+                {currentBlunder.quizChoices && currentBlunder.quizChoices.length > 0 && onSelectQuizChoice && !validationResult && (
                     <div className="rounded-xl border border-white/10 bg-black/35 p-1.5 space-y-1" data-testid="quiz-qcm-choices">
                         <div className="flex items-center justify-between text-[11px]">
                             <span className="font-bold text-[#f3c65f]">⚡ Choisissez ou jouez sur le plateau :</span>
                         </div>
                         <div className="grid grid-cols-2 gap-1">
                             {currentBlunder.quizChoices.map((choice) => {
-                                const isPickedWrong = validationResult && !validationResult.isCorrect && validationResult.playedNotation === choice;
                                 const isStaged = stagedNotation === choice;
                                 return (
                                     <button
@@ -170,11 +171,9 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                                         type="button"
                                         onClick={() => onSelectQuizChoice(choice)}
                                         className={`rounded-lg border px-2 py-1 font-mono text-[11px] font-extrabold transition ${
-                                            isPickedWrong
-                                                ? 'border-rose-500 bg-rose-950/70 text-rose-200'
-                                                : isStaged
-                                                    ? 'border-emerald-400 bg-emerald-950/70 text-emerald-200'
-                                                    : 'border-white/15 bg-[#161b26] text-[#fdf8eb] hover:border-[#f3c65f] hover:bg-[#23190f] hover:text-[#f3c65f]'
+                                            isStaged
+                                                ? 'border-emerald-400 bg-emerald-950/70 text-emerald-200'
+                                                : 'border-white/15 bg-[#161b26] text-[#fdf8eb] hover:border-[#f3c65f] hover:bg-[#23190f] hover:text-[#f3c65f]'
                                         }`}
                                     >
                                         🎯 {choice}
@@ -185,18 +184,27 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                     </div>
                 )}
 
-                {showHint && currentBlunder.hint && (
-                    <div className="rounded-xl border border-white/10 bg-[#180c06]/90 p-2.5 text-xs text-[#fdf8eb] leading-snug" data-testid="drill-hint-box">
+                {showHint && currentBlunder.hint && !validationResult && (
+                    <div className="rounded-xl border border-white/10 bg-[#180c06]/90 p-2 text-[11px] text-[#fdf8eb] leading-snug" data-testid="drill-hint-box">
                         <span className="font-bold text-[#f3c65f]">💡 Indice : </span>{currentBlunder.hint}
                     </div>
                 )}
 
                 {validationResult && (
-                    <div className={`w-full rounded-xl border p-3 text-xs space-y-2 ${validationResult.isCorrect ? 'border-emerald-500/50 bg-emerald-950/60 text-emerald-100' : 'border-rose-500/60 bg-rose-950/70 text-rose-100'}`} data-testid="drill-feedback-banner">
-                        <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-1.5">
-                                <span className="text-base">{validationResult.isCorrect ? '👑' : '❌'}</span>
-                                <h3 className="text-xs sm:text-sm font-black">{validationResult.feedbackMessage}</h3>
+                    <div className={`w-full rounded-xl border p-2 text-[11px] space-y-1.5 ${validationResult.isCorrect ? 'border-emerald-500/50 bg-emerald-950/60 text-emerald-100' : 'border-rose-500/60 bg-rose-950/70 text-rose-100'}`} data-testid="drill-feedback-banner">
+                        {/* En-tête de verdict + Boutons d'action immédiats (Suivant / Réessayer) en haut pour Zéro Scroll */}
+                        <div className="flex flex-wrap items-center justify-between gap-1.5">
+                            <div className="flex items-center gap-1">
+                                <span className="text-sm">{validationResult.isCorrect ? '👑' : '❌'}</span>
+                                <h3 className="text-xs font-black">{validationResult.feedbackMessage}</h3>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                {!validationResult.isCorrect && (
+                                    <button type="button" onClick={onResetAttempt} className="rounded-lg border border-rose-400 bg-rose-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-rose-500 transition" data-testid="drill-retry-btn">↺ Réessayer</button>
+                                )}
+                                <button type="button" onClick={onNextBlunder} className="rounded-lg border border-emerald-400 bg-emerald-600 px-2.5 py-1 text-[10px] font-extrabold text-white hover:bg-emerald-500 transition shadow" data-testid="drill-next-btn">
+                                    {validationResult.isCorrect ? 'Suivant →' : 'Compris · Suivant →'}
+                                </button>
                             </div>
                         </div>
 
@@ -254,15 +262,6 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                                 📜 « {currentBlunder.proverb} »
                             </p>
                         )}
-
-                        <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
-                            {!validationResult.isCorrect && (
-                                <button type="button" onClick={onResetAttempt} className="rounded-xl border border-rose-400 bg-rose-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition" data-testid="drill-retry-btn">↺ Réessayer sur le plateau</button>
-                            )}
-                            <button type="button" onClick={onNextBlunder} className="rounded-xl border border-emerald-400 bg-emerald-600 px-3.5 py-1.5 text-xs font-extrabold text-white hover:bg-emerald-500 transition shadow" data-testid="drill-next-btn">
-                                {validationResult.isCorrect ? 'Quizz suivant →' : 'Compris · Quizz suivant →'}
-                            </button>
-                        </div>
                     </div>
                 )}
             </div>
