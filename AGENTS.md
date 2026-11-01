@@ -51,6 +51,16 @@ Ne pas lire `README.md` en premier : il contient des chiffres marketing non vér
 - **Planification mémorielle** : utiliser exclusivement les équations **FSRS v5 à 19 paramètres** ($w_0$ à $w_{18}$) avec $\text{DECAY} = -0.5$ et $\text{FACTOR} = \frac{19}{81}$.
 - **Réglementation d'horloge** : en mode tournoi, appliquer le délai simple (**Bronstein delay** : compte à rebours du délai avant décompte de la réserve principale, sans incrément cumulatif).
 
+### Architecture "Tesla 3-Secondes" sur `/drills` & `/puzzles` (Séparation Stricte ER vs ERH)
+- **Séparation 100 % étanche entre `ER` et `ERH`** : `/puzzles` affiche exclusivement le mode **Quiz ER** (mathématique pure / équité exacte) et `/drills` affiche exclusivement le mode **Quiz ERH** (pertinence humaine / psychologie adverse). Aucun double sélecteur d'onglets `Quizz PR | Quizz ERH` n'est toléré dans le panneau de droite.
+- **Évolution du Niveau en Temps Réel (`useDrillRating.ts` & `quizRatingStore.ts`)** : les stores `erRating` et `erhRating` sont strictement isolés (validés par Zod aux frontières I/O) et évoluent à chaque coup validé avec feedback visuel immédiat (`+` en vert / `-` en rouge).
+- **Découpage Modulaire Strict de `/drills` (5 sous-modules $< 200$ lignes)** :
+  1. [`src/components/drills/DrillHeader.tsx`](src/components/drills/DrillHeader.tsx) : Barre supérieure unique (`← Retour`, titre unique `Quiz ER` ou `Quiz ERH`, badge dynamique `Niveau ER` ou `Niveau ERH`).
+  2. [`src/components/drills/DrillContextStrip.tsx`](src/components/drills/DrillContextStrip.tsx) : 1 seule ligne de contexte (`Match X pts (Score) • Videau : X • Retard : X pips`). Zéro bloc « Jet à jouer » redondant, zéro pavé « Lecture Mathématique du Tablier » avant réponse.
+  3. [`src/components/drills/DrillChoicesGrid.tsx`](src/components/drills/DrillChoicesGrid.tsx) : 4 boutons `A`, `B`, `C`, `D` avec flèche de prévisualisation au survol (`hover`) et validation directe en **1 clic** (aucun bouton `✓ VALIDER`).
+  4. [`src/components/drills/DrillCoachFeedback.tsx`](src/components/drills/DrillCoachFeedback.tsx) : *Progressive Disclosure* — n'apparaît **qu'après le clic** avec le verdict du Coach IA (Gemini Flash / Flash-Lite) en 3 lignes claires + nombre exact de lancers constructifs sur 36 (`XX/36`) + bouton `Question suivante →`.
+  5. [`src/hooks/useDrillRating.ts`](src/hooks/useDrillRating.ts) : Hook dédié ($< 150$ lignes, validé par Zod) gérant séparément les scores `ER` et `ERH` en temps réel.
+
 ---
 
 ## 4. Architecture Modulaire des Règles Antigravity (`/.agents/rules/`)

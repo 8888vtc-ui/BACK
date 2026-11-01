@@ -75,7 +75,7 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | `subscription/` | Modale Soft Paywall VIP 3 paliers (`SubscriptionModal.tsx`, `SubscriptionPlanCards.tsx`, `SubscriptionTrialAndBenefits.tsx`), tunnel de rétention 3 étapes (`CancelFlowModal.tsx`) |
 | `openings/` | Assistant d'ouvertures (`OpeningBookModal.tsx`, `OpeningDetailView.tsx`, `OpeningAssistantBanner.tsx`) |
 | `knowledge/` | Base de connaissances pédagogiques (`KnowledgeBaseModal.tsx`, `KnowledgeConceptDetail.tsx`) |
-| `drills/` | Entraînement sur blunders (`BlunderDrillView.tsx`, `BlunderDrillHeader.tsx`, `BlunderDrillFeedbackCard.tsx`) |
+| `drills/` | Entraînement modulaire ER/ERH (`BlunderDrillView.tsx`, `DrillHeader.tsx`, `DrillContextStrip.tsx`, `DrillChoicesGrid.tsx`, `DrillCoachFeedback.tsx`, `BlunderDrillFeedbackCard.tsx`, `DrillPositionContextAndReading.tsx`) |
 | `puzzle/` | Composants V2 du Puzzle du Jour (`DailyPuzzleBoard.tsx`, `DailyPuzzleResultCard.tsx`, `DailyStreakBadge.tsx`) |
 | `share/` | Partage social viral HD Canvas (`ShareBlunderButton.tsx`) |
 | `tournaments/` | Hub mondial des tournois (`TournamentWorldHubView.tsx`, `TournamentCard.tsx`, `TournamentAgendaView.tsx`, `TournamentDetailView.tsx`, `TournamentResultsArchiveView.tsx`, `SubmitTournamentModal.tsx`) |
@@ -92,6 +92,7 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 | `useCheckerDragAndDrop.ts` & `dnd/` | Interaction gestuelle et tactile : `checkerSnappingPhysics.ts`, `checkerDragTypes.ts`, `checkerTargetHitbox.ts`, `checkerGestureHandlers.ts` |
 | `useCoach.ts`, `useCoachHelpers.ts` & `coach/` | Analyse log-driven et coach IA neuro-symbolique : `coachCubeEvaluator.ts`, `useCoachCubeEvaluator.ts`, `useCoachLogAnalyzer.ts`, `coachManualTrigger.ts`, `useCoachMatchStats.ts`, `useCoachHistoryState.ts`, `useCoachRoundWatcher.ts`, `useCoachReplay.ts`, `coachTypes.ts`, `coachStateBuilders.ts` |
 | `useDailyPuzzle.ts` & `puzzles/` | Gestion du puzzle du jour : `useDailyPuzzleIntro.ts`, `useDailyPuzzleEvaluation.ts`, `useDailyPuzzleMoveInput.ts` |
+| `useDrillRating.ts` | Hook dédié (< 150 lignes, validé par Zod) isolant les niveaux temps réel `ER` (`/puzzles`) et `ERH` (`/drills`) |
 | `useGamePersistence.ts` & `persistence/` | Persistance locale/cloud et crash recovery atomique : `gamePersistenceTypes.ts`, `useEmergencyPersistence.ts`, `useTurnHistoryRecorder.ts`, `useGameOverAnalysis.ts` |
 | `useCoachQuota.ts` | Suivi temps réel du quota gratuit de 3 analyses Coach IA / 24h et statut VIP |
 | `useCheckerInteractions.ts` | Interactions pions et dés (Smart Click 1 clic, clic droit = petit dé, drag-and-drop) |
