@@ -31,26 +31,37 @@ export interface ClubSubmissionInput {
 }
 
 const CITY_MAP_COORDS: Readonly<Record<string, { lat: number; lng: number; mapX: number; mapY: number }>> = {
-    paris: { lat: 48.85, lng: 2.35, mapX: 49.5, mapY: 27.5 },
-    lyon: { lat: 45.76, lng: 4.83, mapX: 50.2, mapY: 29.8 },
-    marseille: { lat: 43.29, lng: 5.36, mapX: 50.5, mapY: 31.5 },
-    nice: { lat: 43.71, lng: 7.26, mapX: 51.0, mapY: 31.2 },
-    'monte-carlo': { lat: 43.74, lng: 7.42, mapX: 51.2, mapY: 31.0 },
-    monaco: { lat: 43.74, lng: 7.42, mapX: 51.2, mapY: 31.0 },
-    bordeaux: { lat: 44.83, lng: -0.57, mapX: 48.2, mapY: 30.2 },
-    londres: { lat: 51.5, lng: -0.12, mapX: 48.5, mapY: 25.0 },
-    london: { lat: 51.5, lng: -0.12, mapX: 48.5, mapY: 25.0 },
-    bruxelles: { lat: 50.85, lng: 4.35, mapX: 50.1, mapY: 26.0 },
-    geneve: { lat: 46.2, lng: 6.14, mapX: 50.8, mapY: 29.2 },
-    istanbul: { lat: 41.0, lng: 28.97, mapX: 57.5, mapY: 33.0 },
-    athenes: { lat: 37.98, lng: 23.72, mapX: 55.5, mapY: 35.0 },
-    dubai: { lat: 25.2, lng: 55.27, mapX: 65.0, mapY: 42.5 },
-    tokyo: { lat: 35.67, lng: 139.65, mapX: 86.0, mapY: 36.5 },
-    sydney: { lat: -33.86, lng: 151.21, mapX: 89.5, mapY: 74.0 },
-    'new york': { lat: 40.71, lng: -74.0, mapX: 28.5, mapY: 32.5 },
-    'las vegas': { lat: 36.16, lng: -115.13, mapX: 18.5, mapY: 35.0 },
-    chicago: { lat: 41.87, lng: -87.62, mapX: 24.5, mapY: 31.5 },
-    montreal: { lat: 45.5, lng: -73.56, mapX: 29.0, mapY: 29.0 },
+    paris: { lat: 48.8566, lng: 2.3522, mapX: 49.5, mapY: 27.5 },
+    lyon: { lat: 45.7578, lng: 4.832, mapX: 50.2, mapY: 29.8 },
+    marseille: { lat: 43.2965, lng: 5.3698, mapX: 50.5, mapY: 31.5 },
+    nice: { lat: 43.7102, lng: 7.262, mapX: 51.0, mapY: 31.2 },
+    'villeneuve-loubet': { lat: 43.6584, lng: 7.1219, mapX: 50.9, mapY: 31.3 },
+    'monte-carlo': { lat: 43.7397, lng: 7.4273, mapX: 51.2, mapY: 31.0 },
+    monaco: { lat: 43.7397, lng: 7.4273, mapX: 51.2, mapY: 31.0 },
+    bordeaux: { lat: 44.8378, lng: -0.5792, mapX: 48.2, mapY: 30.2 },
+    londres: { lat: 51.5074, lng: -0.1278, mapX: 48.5, mapY: 25.0 },
+    london: { lat: 51.5074, lng: -0.1278, mapX: 48.5, mapY: 25.0 },
+    coventry: { lat: 52.4068, lng: -1.5197, mapX: 48.0, mapY: 24.4 },
+    bruxelles: { lat: 50.8503, lng: 4.3517, mapX: 50.1, mapY: 26.0 },
+    geneve: { lat: 46.2044, lng: 6.1432, mapX: 50.8, mapY: 29.2 },
+    niedernhausen: { lat: 50.1608, lng: 8.3164, mapX: 51.8, mapY: 26.5 },
+    copenhagen: { lat: 55.6761, lng: 12.5683, mapX: 52.8, mapY: 22.0 },
+    copenhague: { lat: 55.6761, lng: 12.5683, mapX: 52.8, mapY: 22.0 },
+    gibraltar: { lat: 36.1408, lng: -5.3536, mapX: 47.2, mapY: 35.8 },
+    kyrenia: { lat: 35.3364, lng: 33.3199, mapX: 58.8, mapY: 36.2 },
+    chypre: { lat: 35.3364, lng: 33.3199, mapX: 58.8, mapY: 36.2 },
+    istanbul: { lat: 41.0082, lng: 28.9784, mapX: 57.5, mapY: 33.0 },
+    athenes: { lat: 37.9838, lng: 23.7275, mapX: 55.5, mapY: 35.0 },
+    dubai: { lat: 25.2048, lng: 55.2708, mapX: 65.0, mapY: 42.5 },
+    tokyo: { lat: 35.6762, lng: 139.6503, mapX: 86.0, mapY: 36.5 },
+    sydney: { lat: -33.8688, lng: 151.2093, mapX: 89.5, mapY: 74.0 },
+    'new york': { lat: 40.7128, lng: -74.006, mapX: 28.5, mapY: 32.5 },
+    'las vegas': { lat: 36.1699, lng: -115.1398, mapX: 18.5, mapY: 35.0 },
+    'san antonio': { lat: 29.4241, lng: -98.4936, mapX: 22.2, mapY: 39.2 },
+    'fort lauderdale': { lat: 26.1224, lng: -80.1373, mapX: 26.8, mapY: 41.5 },
+    chicago: { lat: 41.8781, lng: -87.6298, mapX: 24.5, mapY: 31.5 },
+    montreal: { lat: 45.5017, lng: -73.5673, mapX: 29.0, mapY: 29.0 },
+    'sao paulo': { lat: -23.5505, lng: -46.6333, mapX: 35.8, mapY: 65.5 },
 };
 
 const REGION_DEFAULT_COORDS: Readonly<Record<TournamentRegion, { lat: number; lng: number; mapX: number; mapY: number }>> = {
@@ -69,9 +80,8 @@ export function resolveCityMapCoordinates(city: string, region: TournamentRegion
     return REGION_DEFAULT_COORDS[region] ?? REGION_DEFAULT_COORDS.europe;
 }
 
-export function getTournamentMapCoords(t: Pick<TournamentRecord, 'city' | 'region'>): { mapX: number; mapY: number } {
-    const c = resolveCityMapCoordinates(t.city, t.region);
-    return { mapX: c.mapX, mapY: c.mapY };
+export function getTournamentMapCoords(t: Pick<TournamentRecord, 'city' | 'region'>): { lat: number; lng: number; mapX: number; mapY: number } {
+    return resolveCityMapCoordinates(t.city, t.region);
 }
 
 function mapTournamentRowToRecord(row: TournamentRow): TournamentRecord {
