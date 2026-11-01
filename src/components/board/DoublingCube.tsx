@@ -70,8 +70,10 @@ const DoublingCubeComponent: React.FC<DoublingCubeProps> = ({
                 }
             >
                 <span
-                    className={`relative z-10 font-display text-xs sm:text-base md:text-lg [@media(max-height:600px)]:!text-xs font-bold tabular-nums tracking-tight ${
-                        canDouble ? 'text-[#090806]' : 'text-[#f5dfa0]'
+                    className={`relative z-10 font-sans text-[13px] sm:text-base md:text-lg [@media(max-height:600px)]:!text-[13px] font-extrabold tabular-nums tracking-tight leading-none ${
+                        canDouble
+                            ? 'text-[#090806] font-black drop-shadow-[0_1px_0_rgba(255,255,255,0.45)]'
+                            : 'text-[#FFF8E7] drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)]'
                     }`}
                 >
                     {display}
