@@ -1,26 +1,26 @@
 {
   "daemonStatus": "RUNNING_16H_8CORE_GOLIATH_MOE6_251754_FLOATS",
   "modelArchitecture": "BT-Neural v5.0 Goliath MoE-6 (6 Complete Networks x 41,959 = 251,754 float32)",
-  "startedAt": "2026-10-31T16:14:09.145Z",
-  "lastWaveUpdatedAt": "2026-10-31T17:14:56.025Z",
-  "elapsedHours": 1.013,
-  "remainingHours": 14.987,
-  "wavesCompleted": 67,
-  "waveDurationSeconds": 57.5,
-  "totalSupervised3PlyVectors": 234218,
-  "totalCertifiedTacticalPairs": 20197,
+  "startedAt": "2026-10-31T19:44:41.592Z",
+  "lastWaveUpdatedAt": "2026-11-01T00:06:51.426Z",
+  "elapsedHours": 4.369,
+  "remainingHours": 11.631,
+  "wavesCompleted": 354,
+  "waveDurationSeconds": 50.1,
+  "totalSupervised3PlyVectors": 561500,
+  "totalCertifiedTacticalPairs": 26656,
   "phaseSupervisedCounts": {
-    "CONTACT": 25924,
-    "PRIME": 494,
-    "BLITZ": 34198,
-    "CRASHED": 85194,
-    "BACKGAME": 37424,
-    "RACE": 50984
+    "CONTACT": 62870,
+    "PRIME": 1214,
+    "BLITZ": 82142,
+    "CRASHED": 202410,
+    "BACKGAME": 94780,
+    "RACE": 118084
   },
   "totalCertified3PlyQuizzes": 3000,
   "newQuizzesHarvestedInSession": 0,
   "lastGateDuplicateWinRatePct": 70,
-  "lastGateDuplicateNetPoints": 47,
+  "lastGateDuplicateNetPoints": 50,
   "lastWavePromoted": true,
-  "totalChampionPromotions": 67
+  "totalChampionPromotions": 353
 }
