@@ -73,7 +73,7 @@ describe('LobbyScreen', () => {
         fireEvent.click(screen.getByTestId('lobby-card-multiplayer'));
         const openMatches = screen.getByTestId('open-matches-table');
         expect(openMatches).toBeDefined();
-        expect(screen.getByTestId('private-salon-active-badge')).toBeDefined();
+        expect(screen.queryByTestId('private-salon-active-badge')).toBeNull();
         expect(screen.getByTestId('open-matches-quick-matchmaking')).toBeDefined();
         expect(screen.getByTestId('open-matches-private-code')).toBeDefined();
         expect(openMatches.innerHTML).not.toContain('text-[8px]');
@@ -85,7 +85,7 @@ describe('LobbyScreen', () => {
         expect(onOpenModule).toHaveBeenCalledWith('multiplayer');
 
         // Ouverture depuis le bouton principal doré
-        fireEvent.click(screen.getByTestId('lobby-start-btn'));
+        fireEvent.click(screen.getByTestId('quick-matchmaking-btn'));
         expect(onOpenModule).toHaveBeenCalledTimes(2);
     });
 
@@ -145,9 +145,9 @@ describe('LobbyScreen', () => {
         expect(startBtn.compareDocumentPosition(secondarySection) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
         expect(optionsToggle.compareDocumentPosition(startBtn) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
-        // 2. La section secondaire regroupe PlayerProfileCard, CoachPreMatchBriefingCard et LearningModulesGrid
+        // 2. La section secondaire regroupe PlayerProfileCard et LearningModulesGrid (sans bandeau Coach redondant)
         expect(secondarySection.querySelector('[data-testid="player-profile-card"]')).not.toBeNull();
-        expect(secondarySection.querySelector('[data-testid="lobby-prematch-briefing"]')).not.toBeNull();
+        expect(secondarySection.querySelector('[data-testid="lobby-prematch-briefing"]')).toBeNull();
         expect(secondarySection.querySelector('[data-testid="learning-modules-grid"]')).not.toBeNull();
 
         // 3. Aucun micro-texte text-[8px] ou text-[9px]
@@ -159,24 +159,21 @@ describe('LobbyScreen', () => {
         expect(startBtn.className).toContain('border-[#f3c65f]');
         expect(cardAi.className).toContain('border-white/10');
         expect(screen.getByTestId('player-profile-card').className).toContain('border-white/10');
-        expect(screen.getByTestId('lobby-prematch-briefing').className).toContain('border-white/10');
         expect(screen.getByTestId('lobby-module-puzzles').className).toContain('border-white/10');
     });
 
-    it('expose en 1 tap au-dessus de la ligne de flottaison le Scanner Photo et la Pendule WBF de Tournoi', () => {
-        const onOpenModule = vi.fn();
-        render(<LobbyScreen onStart={vi.fn()} onOpenModule={onOpenModule} />);
+    it('affiche les 3 cartes de modes sans troncature ("Entraînement & Défis") et supprime les doublons sous Salon de Jeu dans la Sidebar', () => {
+        render(<LobbyScreen onStart={vi.fn()} />);
 
-        const scannerBtn = screen.getByTestId('lobby-quick-scanner-btn');
-        const clockBtn = screen.getByTestId('lobby-quick-clock-btn');
-        expect(scannerBtn).toBeDefined();
-        expect(clockBtn).toBeDefined();
+        expect(screen.getByTestId('lobby-card-multiplayer').textContent).toContain('Jouer en Ligne');
+        expect(screen.getByTestId('lobby-card-ai').textContent).toContain('Jouer contre l’IA');
+        expect(screen.getByTestId('lobby-card-training').textContent).toContain('Entraînement & Défis');
 
-        fireEvent.click(scannerBtn);
-        expect(onOpenModule).toHaveBeenCalledWith('import_export');
-
-        fireEvent.click(clockBtn);
-        expect(screen.getByTestId('tournament-table-clock-modal')).toBeDefined();
+        // Sous Salon de Jeu dans la Sidebar, uniquement Jouer en Ligne et Contre l'IA
+        expect(screen.getByTestId('sidebar-submenu-find-opponent')).toBeDefined();
+        expect(screen.getByTestId('sidebar-submenu-ai')).toBeDefined();
+        expect(screen.queryByTestId('sidebar-submenu-match')).toBeNull();
+        expect(screen.queryByTestId('sidebar-submenu-money')).toBeNull();
     });
 
     it('permet de basculer en 1 tap entre Match (3/5/7/11 pts - Crawford) et Money Game (Jacoby) sans ouvrir de sous-menu', () => {

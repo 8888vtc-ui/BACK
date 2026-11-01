@@ -19,7 +19,6 @@ import AppNavbar from '../nav/AppNavbar';
 import PlayerProfileCard from './PlayerProfileCard';
 import RecentMatchesSummary from './RecentMatchesSummary';
 import LearningModulesGrid from './LearningModulesGrid';
-import CoachPreMatchBriefingCard from './CoachPreMatchBriefingCard';
 import TournamentTableClockModal from '../clock/TournamentTableClockModal';
 import { LobbyLeftSidebar } from './LobbySidebarAndWidgets';
 import { BotPortraitMedallion } from '../common/MonteCarloIcons';
@@ -91,9 +90,9 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     }, [locale]);
 
     const mainCards = useMemo<ReadonlyArray<{ id: LobbyMode; icon: string; badge: string; title: string; subtitle: string }>>(() => [
-        { id: 'multiplayer', icon: '🌐', badge: ui.lobby.cardMultiBadge, title: `🌐 ${ui.lobby.cardMultiTitle}`, subtitle: ui.lobby.cardMultiSubtitle },
-        { id: 'ai', icon: '🤖', badge: ui.lobby.cardAiBadge, title: `🤖 ${ui.lobby.cardAiTitle}`, subtitle: ui.lobby.cardAiSubtitle },
-        { id: 'training', icon: '🧩', badge: ui.lobby.cardTrainingBadge, title: `🧩 ${ui.lobby.cardTrainingTitle}`, subtitle: ui.lobby.cardTrainingSubtitle },
+        { id: 'multiplayer', icon: '🌐', badge: ui.lobby.cardMultiBadge, title: '🌐 Jouer en Ligne', subtitle: 'Adversaire direct ou Ami' },
+        { id: 'ai', icon: '🤖', badge: ui.lobby.cardAiBadge, title: '🤖 Jouer contre l’IA', subtitle: '5 Maîtres calibrés' },
+        { id: 'training', icon: '🧩', badge: ui.lobby.cardTrainingBadge, title: '🧩 Entraînement & Défis', subtitle: 'Quizz PR, ERH & Blunders' },
     ], [ui.lobby]);
 
     const selectedPersona = useMemo(() => getBotPersona(difficulty, locale) ?? BOT_PERSONAS_BY_DIFFICULTY[difficulty], [difficulty, locale]);
@@ -232,10 +231,10 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                     return (
                                         <button key={card.id} type="button" data-testid={`lobby-card-${card.id}`} title={cardTooltip} aria-pressed={active} onClick={() => setSelectedMode(card.id)} className={`group relative flex flex-col items-start justify-between gap-1 rounded-2xl border p-3 sm:p-3.5 text-left transition-all duration-150 ${active ? 'border-[#f3c65f] bg-[#12151C] shadow-[0_0_0_1px_rgba(243,198,95,0.25),0_8px_24px_rgba(0,0,0,0.45)]' : 'border-white/10 bg-[#12151C]/60 hover:border-white/20 hover:bg-[#12151C]'}`}>
                                             <div className="flex w-full items-center justify-between gap-1.5 min-w-0">
-                                                <span className="text-sm sm:text-base font-bold text-white whitespace-nowrap truncate">{card.title}</span>
-                                                <span className={`shrink-0 whitespace-nowrap rounded-md px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold ${active ? 'bg-[#f3c65f]/15 text-[#f3c65f]' : 'bg-white/5 text-slate-400'}`}>{card.badge}</span>
+                                                <span className="text-sm sm:text-base font-bold text-white whitespace-nowrap">{card.title}</span>
+                                                <span className={`shrink-0 whitespace-nowrap rounded-md px-1.5 sm:px-2 py-0.5 text-[11px] font-semibold ${active ? 'bg-[#f3c65f]/15 text-[#f3c65f]' : 'bg-white/5 text-slate-400'}`}>{card.badge}</span>
                                             </div>
-                                            <span className="text-xs text-slate-400 line-clamp-1">{card.subtitle}</span>
+                                            <span className="text-xs text-slate-400">{card.subtitle}</span>
                                         </button>
                                     );
                                 })}
@@ -342,20 +341,11 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                     </button>
                                 </div>
 
-                                {/* UNIQUE BOUTON PLEIN OR (#D4AF37) + 3 BOUTONS UTILITAIRES DISCRETS */}
-                                <div className="max-sm:sticky max-sm:bottom-2 max-sm:z-30 max-sm:rounded-2xl max-sm:bg-[#0e0b08]/95 max-sm:p-2 max-sm:shadow-2xl max-sm:backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1" data-testid="lobby-tournament-quickbar">
-                                    <button type="button" data-testid="lobby-start-btn" onClick={handlePlay} className="flex-1 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f7d77e] to-[#b88924] px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-[#050505] shadow-[0_4px_20px_rgba(212,175,55,0.4)] transition hover:brightness-105 active:scale-[0.99]">
-                                        {selectedMode === 'multiplayer'
-                                            ? `⚔️ TROUVER UN ADVERSAIRE · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`
-                                            : selectedMode === 'training'
-                                                ? `🧩 ${ui.lobby.cardTrainingTitle} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`
-                                                : `🎲 ${isMittensActive ? 'Lord Mittens' : selectedPersona.shortName} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`}
+                                {/* BOUTON PLEIN OR (#D4AF37) RÉSERVÉ AU MODE IA (PAS DE DOUBLON EN MODE EN LIGNE) */}
+                                <div className={selectedMode === 'ai' ? 'max-sm:sticky max-sm:bottom-2 max-sm:z-30 max-sm:rounded-2xl max-sm:bg-[#0e0b08]/95 max-sm:p-2 max-sm:shadow-2xl max-sm:backdrop-blur-md flex items-center justify-between gap-2 pt-1' : 'sr-only'} data-testid="lobby-tournament-quickbar">
+                                    <button type="button" data-testid="lobby-start-btn" onClick={handlePlay} className="w-full rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f7d77e] to-[#b88924] px-5 py-3 text-xs sm:text-sm font-black uppercase tracking-wider text-[#050505] shadow-[0_4px_20px_rgba(212,175,55,0.4)] transition hover:brightness-105 active:scale-[0.99]">
+                                        {`🎲 ${isMittensActive ? 'Lord Mittens' : selectedPersona.shortName} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`}
                                     </button>
-                                    <div className="flex items-center justify-end gap-1.5 shrink-0">
-                                        <Link href="/tournaments" data-testid="lobby-quick-map-btn" className="rounded-xl border border-white/10 bg-transparent px-3 py-2.5 text-xs font-semibold text-slate-300 hover:border-white/25 hover:bg-white/[0.04] hover:text-white transition touch-manipulation">🌍 Carte : Tournois &amp; Clubs</Link>
-                                        <button type="button" data-testid="lobby-quick-scanner-btn" onClick={() => onOpenModule?.('import_export')} className="rounded-xl border border-white/10 bg-transparent px-3 py-2.5 text-xs font-semibold text-slate-300 hover:border-white/25 hover:bg-white/[0.04] hover:text-white transition touch-manipulation">📷 Scanner</button>
-                                        <button type="button" data-testid="lobby-quick-clock-btn" onClick={() => setIsTableClockOpen(true)} className="rounded-xl border border-white/10 bg-transparent px-3 py-2.5 text-xs font-semibold text-slate-300 hover:border-white/25 hover:bg-white/[0.04] hover:text-white transition touch-manipulation">⏱️ Pendule</button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -394,8 +384,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                             </button>
                         )}
 
-                        <section aria-label="Espace joueur et progression" data-testid="lobby-secondary-section" className={showOptions ? 'sr-only' : 'flex w-full flex-col gap-3 pt-1 pb-8'}>
-                            <CoachPreMatchBriefingCard onOpenDrills={() => onOpenModule?.('drills')} />
+                        <section aria-label="Espace joueur et progression" data-testid="lobby-secondary-section" className={showOptions ? 'sr-only' : 'flex w-full flex-col gap-3 pt-1 pb-6'}>
                             <div className="flex w-full flex-col gap-3 rounded-2xl border border-white/10 bg-[#12151C]/70 p-3.5 shadow-xl">
                                 <PlayerProfileCard
                                     displayName={displayName} eloRating={snapshot.eloRating} averagePR={snapshot.averagePR}
