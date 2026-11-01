@@ -138,31 +138,28 @@ export const ErVsErhBenchmarkShowcase: React.FC = () => {
             id="er-vs-erh-manifesto"
             data-testid="er-vs-erh-showcase"
             aria-labelledby="er-vs-erh-heading"
-            className="rounded-3xl border border-[#d4af37]/40 bg-gradient-to-b from-[#17120a]/95 via-[#0c1220]/95 to-[#070a12]/95 p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.85)] space-y-5"
+            className="rounded-2xl border border-white/10 bg-slate-950/60 p-4 sm:p-6 space-y-4"
         >
-            {/* En-tête : Pourquoi nous avons brisé le dogme des robots classiques */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-white/10 pb-4">
-                <div className="space-y-1.5">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-950/60 px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-emerald-300">
-                        🔬 Étude Certifiée · 15 200 Parties &amp; 19 413 Quiz Certifiés GNU
-                    </span>
-                    <h2 id="er-vs-erh-heading" className="font-serif text-xl sm:text-2xl font-black tracking-wide text-[#fdf8eb]">
-                        ER vs ERH : Pourquoi notre IA « Psychologique » bat le Robot Parfait
+            {/* En-tête épuré + Onglets minimalistes au-dessus des cartes */}
+            <div className="space-y-3 border-b border-white/10 pb-3">
+                <div className="space-y-1">
+                    <h2 id="er-vs-erh-heading" className="font-serif text-lg sm:text-2xl font-bold tracking-wide text-[#fdf8eb]">
+                        ER vs ERH : L’IA Psychologique face au Robot Parfait
                     </h2>
                     <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
-                        Pendant 30 ans, les moteurs comme <strong>eXtreme Gammon (XG)</strong> et <strong>GNU</strong> ont joué selon l’<strong>ER (Équité Réelle)</strong> : ils supposent que l’adversaire est un ordinateur parfait. Nous avons créé l’<strong>ERH (Équité Réelle Humaine)</strong> et prouvé sur <strong>10 200 parties</strong> contre <strong>100 profils humains</strong> qu’il rapporte <strong>+30,9 % de points en plus</strong>.
+                        Les moteurs classiques (XG, GNU) jouent selon l’<strong>ER (Équité Réelle)</strong> en supposant un adversaire infaillible. Notre <strong>ERH (Équité Réelle Humaine)</strong> cible les angles morts humains et génère <strong>+30,9 % de points nets</strong> sur 10 200 parties certifiées.
                     </p>
                 </div>
 
-                {/* Sélecteur 3 Vues */}
-                <div className="flex flex-wrap gap-2 shrink-0" role="tablist" aria-label="Démonstration ER vs ERH">
+                {/* Onglets minimalistes directement au-dessus des cartes comparatives */}
+                <div className="inline-flex flex-wrap gap-1 rounded-xl border border-white/10 bg-slate-900/80 p-1" role="tablist" aria-label="Démonstration ER vs ERH">
                     <button
                         type="button"
                         role="tab"
                         data-testid="erh-tab-concept"
                         aria-selected={tab === 'concept'}
                         onClick={() => setTab('concept')}
-                        className={`rounded-xl border px-3.5 py-2 text-xs font-extrabold transition ${tab === 'concept' ? 'border-[#f3c65f] bg-amber-500/20 text-[#fff9e6]' : 'border-white/10 bg-[#0b101b] text-slate-300 hover:border-white/25'}`}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${tab === 'concept' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                     >
                         1. Comprendre en 30s
                     </button>
@@ -172,7 +169,7 @@ export const ErVsErhBenchmarkShowcase: React.FC = () => {
                         data-testid="erh-tab-proof"
                         aria-selected={tab === 'proof10200'}
                         onClick={() => setTab('proof10200')}
-                        className={`rounded-xl border px-3.5 py-2 text-xs font-extrabold transition ${tab === 'proof10200' ? 'border-emerald-400 bg-emerald-950/80 text-emerald-200' : 'border-white/10 bg-[#0b101b] text-slate-300 hover:border-white/25'}`}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${tab === 'proof10200' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                     >
                         2. Les 10 200 Parties
                     </button>
@@ -182,7 +179,7 @@ export const ErVsErhBenchmarkShowcase: React.FC = () => {
                         data-testid="erh-tab-xg"
                         aria-selected={tab === 'xgComparison'}
                         onClick={() => setTab('xgComparison')}
-                        className={`rounded-xl border px-3.5 py-2 text-xs font-extrabold transition ${tab === 'xgComparison' ? 'border-[#f3c65f] bg-amber-500/20 text-[#fff9e6]' : 'border-white/10 bg-[#0b101b] text-slate-300 hover:border-white/25'}`}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${tab === 'xgComparison' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                     >
                         3. Supériorité vs XG &amp; 19 413 Quiz
                     </button>
@@ -193,55 +190,49 @@ export const ErVsErhBenchmarkShowcase: React.FC = () => {
             {tab === 'concept' && (
                 <div data-testid="erh-panel-concept" className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <article className="rounded-2xl border border-white/10 bg-[#090d16]/90 p-5 space-y-3">
-                            <span className="inline-block rounded-lg border border-sky-400/30 bg-sky-500/10 px-2.5 py-1 text-xs font-black uppercase tracking-wider text-sky-300">
-                                🤖 L’Ancienne École : ER (XG / GNU / BT-Core)
-                            </span>
-                            <h3 className="font-serif text-base sm:text-lg font-bold text-[#fdf8eb]">
+                        <article className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+                            <div className="text-xs font-semibold text-sky-300">
+                                L’Ancienne École : ER (XG / GNU / BT-Core)
+                            </div>
+                            <h3 className="font-serif text-base font-bold text-[#fdf8eb]">
                                 « Je joue comme si mon adversaire était un supercalculateur »
                             </h3>
                             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                Imaginez deux coups presque identiques mathématiquement : le <strong>Coup A</strong> est évalué à <code className="text-sky-300">-0,112</code> et le <strong>Coup B</strong> à <code className="text-sky-300">-0,115</code> (seulement 3 millièmes d’écart).
-                            </p>
-                            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                Le robot classique choisit toujours le <strong>Coup A</strong>, même s’il donne à l’adversaire humain une position très simple et évidente à jouer au tour suivant.
+                                Entre un <strong>Coup A</strong> (<code className="text-sky-300">-0,112</code>) et un <strong>Coup B</strong> (<code className="text-sky-300">-0,115</code>), le robot classique choisit toujours le Coup A, même s’il donne à l’adversaire humain une réponse évidente au tour suivant.
                             </p>
                         </article>
 
-                        <article className="rounded-2xl border border-emerald-400/40 bg-gradient-to-b from-emerald-950/35 to-[#090d16]/95 p-5 space-y-3">
-                            <span className="inline-block rounded-lg border border-emerald-400/40 bg-emerald-500/15 px-2.5 py-1 text-xs font-black uppercase tracking-wider text-emerald-300">
-                                🧠 L’Innovation BackgammonTour : ERH (BT-ERH v3.0)
-                            </span>
-                            <h3 className="font-serif text-base sm:text-lg font-bold text-[#fdf8eb]">
+                        <article className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4 space-y-2">
+                            <div className="text-xs font-semibold text-emerald-300">
+                                L’Innovation BackgammonTour : ERH (BT-ERH v3.0)
+                            </div>
+                            <h3 className="font-serif text-base font-bold text-[#fdf8eb]">
                                 « Je choisis le coup sûr qui tend le piège le plus dur pour un humain »
                             </h3>
                             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                <strong>BT-ERH v3.0</strong> repère que le <strong>Coup B</strong> ne coûte que <code className="text-emerald-300">0,003 EMG</code> théoriques (strictement plafonné à <code className="text-emerald-300">≤ 0,015</code> pour ne jamais faire de mauvais coup), mais qu’il laisse <strong>4 tirs indirects cachés à 7 et 9 cases</strong> et un dilemme terrible.
-                            </p>
-                            <p className="text-xs sm:text-sm text-emerald-200 font-semibold leading-relaxed">
-                                Résultat : au tour suivant, l’humain se trompe 1 fois sur 3 et perd +0,120 d’équité !
+                                <strong>BT-ERH v3.0</strong> choisit le <strong>Coup B</strong> (écart plafonné à <code className="text-emerald-300">≤ 0,015 EMG</code>) car il dissimule <strong>4 tirs indirects à 7 et 9 cases</strong> : l’humain se trompe 1 fois sur 3 et perd +0,120 d’équité.
                             </p>
                         </article>
                     </div>
 
-                    {/* Les 3 Armes Secrètes de BT-ERH v3.0 */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="rounded-2xl border border-white/10 bg-black/40 p-4 space-y-1.5">
-                            <div className="text-xs font-extrabold uppercase tracking-wider text-[#f3c65f]">1. L’Angle Mort (&gt; 6 cases)</div>
+                    {/* Les 3 leviers cognitifs en ligne sobre */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 space-y-1">
+                            <div className="text-xs font-bold text-[#f3c65f]">1. L’Angle Mort (&gt; 6 cases)</div>
                             <p className="text-xs text-slate-300 leading-relaxed">
-                                L’œil humain voit très bien les tirs directs (1 à 6 cases), mais oublie fréquemment les combinaisons à 7, 8 ou 9 cases. ERH en profite systématiquement.
+                                L’œil humain repère les tirs directs (1–6), mais oublie fréquemment les combinaisons à 7, 8 ou 9 cases.
                             </p>
                         </div>
-                        <div className="rounded-2xl border border-white/10 bg-black/40 p-4 space-y-1.5">
-                            <div className="text-xs font-extrabold uppercase tracking-wider text-emerald-300">2. Le Dilemme Psychologique</div>
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 space-y-1">
+                            <div className="text-xs font-bold text-emerald-300">2. Le Dilemme Psychologique</div>
                             <p className="text-xs text-slate-300 leading-relaxed">
-                                Quand plusieurs coups semblent tentants (frapper un pion ou sécuriser une case), l’humain hésite et choisit souvent le piège.
+                                Face à deux options tentantes (frapper ou fermer une porte), l’humain hésite et commet la faute.
                             </p>
                         </div>
-                        <div className="rounded-2xl border border-white/10 bg-black/40 p-4 space-y-1.5">
-                            <div className="text-xs font-extrabold uppercase tracking-wider text-amber-300">3. Le Videau de Pression (×3)</div>
+                        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 space-y-1">
+                            <div className="text-xs font-bold text-amber-200">3. Le Videau de Pression (×3)</div>
                             <p className="text-xs text-slate-300 leading-relaxed">
-                                En doublant dès 65 % dans une position volatile, ERH force <strong>327 abandons</strong> (contre 107 pour un robot classique) car l’humain craint le Gammon.
+                                Doubler dès 65 % dans une position volatile provoque <strong>327 abandons</strong> (contre 107 en GTO).
                             </p>
                         </div>
                     </div>

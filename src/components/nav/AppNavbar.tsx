@@ -16,7 +16,6 @@ import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '../../lib/supabase/types';
 import UserAccountMenu, { type AuthStatus } from './UserAccountMenu';
-import LanguageSelector from './LanguageSelector';
 import type { LobbyModuleId } from '../lobby/LobbyScreen';
 import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
@@ -55,7 +54,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
     const navItems = useMemo<ReadonlyArray<NavItem>>(
         () => [
             { id: 'play', label: ui.navbar.play, icon: '🎲', href: '/', testId: 'nav-tab-play' },
-            { id: 'tournaments', label: ui.navbar.tournaments, icon: '🏆', href: '/tournaments', testId: 'nav-tab-tournaments' },
+            { id: 'tournaments', label: ui.navbar.tournaments, icon: '🌍', href: '/tournaments', testId: 'nav-tab-tournaments' },
             { id: 'puzzles', label: ui.navbar.puzzles, icon: '🧩', href: '/puzzles', moduleId: 'puzzles', testId: 'nav-tab-puzzles' },
             { id: 'drills', label: ui.navbar.drills, icon: '🎯', href: '/drills', moduleId: 'drills', testId: 'nav-tab-drills' },
             { id: 'openings', label: ui.navbar.openings, icon: '📖', href: '/academy', moduleId: 'openings', testId: 'nav-tab-openings' },
@@ -172,11 +171,8 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     })}
                 </div>
 
-                {/* Droite : Bouton PWA + Sélecteur de langue 6 marchés + Menu Compte Utilisateur */}
+                {/* Droite : Bouton PWA + Menu Compte Utilisateur (Langue 100 % auto-détectée) */}
                 <div className="flex items-center gap-2 shrink-0">
-                    <div className="hidden md:block">
-                        <LanguageSelector />
-                    </div>
                     {!isInstalled && canInstall && (
                         <button
                             type="button"
@@ -207,12 +203,6 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     data-testid="navbar-mobile-drawer"
                     className="border-t border-white/10 bg-slate-950/98 px-4 py-3 shadow-2xl lg:hidden"
                 >
-                    <div className="mb-2.5 flex items-center justify-between gap-2 border-b border-white/10 pb-2.5 md:hidden">
-                        <span className="truncate text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                            🌐 {ui.navbar.languageSelectorAria}
-                        </span>
-                        <LanguageSelector />
-                    </div>
                     <div className="grid grid-cols-2 gap-1.5">
                         {navItems.map((item) => {
                             const isActive = activeTab === item.id;
