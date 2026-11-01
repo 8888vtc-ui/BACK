@@ -2,13 +2,12 @@
 
 /**
  * @file src/components/drills/DrillContextStrip.tsx
- * @description Bandeau horizontal ultra-compact d'une seule ligne pour `/drills` et `/puzzles` :
- * `Match X pts (Score) • Videau : X • Retard : X pips`
- *
- * Invariants Tesla 3-Secondes / Audit Elon Musk :
- * - ZÉRO doublon de `Jet à jouer : 6 5` (déjà visible sur le plateau).
- * - ZÉRO `Trait aux Blancs...` et ZÉRO `Course : Blanc 96 pips vs Noir 65 pips` (déjà sur la barre centrale).
- * - Strictement < 120 lignes, 0 `any`.
+ * @description Bandeau d'informations stratégiques du Quiz (`/puzzles` ER/PR et `/drills` ERH) :
+ * - Sous-titre unifié `Quiz ER / PR #N` (ou `Quiz ERH #N`).
+ * - Anti-spoiler du thème stratégique : affiche `Thème : Mystère 🔒` avant réponse, débloqué si clic sur `💡 Indice` ou après validation.
+ * - Bandeau enrichi : `Match 9 pts (4-4 • 5-away / 5-away) • Videau : 1 (Centre) • Retard : -31 pips`
+ *   + indicateur de structure (`Portes faites : Blanc X | Noir Y • Pions arrières : ...`).
+ * - Strictement < 130 lignes, 0 `any`.
  */
 
 import React, { useMemo } from 'react';
@@ -21,6 +20,7 @@ export interface DrillContextStripProps {
     readonly totalBlunders: number;
     readonly isErMode: boolean;
     readonly showHint: boolean;
+    readonly isRevealed?: boolean;
     readonly onToggleHint: () => void;
     readonly onResetAttempt: () => void;
 }
@@ -38,32 +38,43 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
     totalBlunders,
     isErMode,
     showHint,
+    isRevealed = false,
     onToggleHint,
     onResetAttempt,
 }) => {
     const telemetry = useMemo(() => computePositionTelemetry(currentBlunder), [currentBlunder]);
     const tierInfo = TIER_LABELS[currentBlunder.tier ?? 1] ?? TIER_LABELS[1];
+    const isThemeUnlocked = showHint || isRevealed;
 
     return (
         <div className="flex flex-col gap-1.5">
-            {/* Barre méta : Quiz #N + Palier + Concept + Indice / Réinitialiser */}
+            {/* Barre méta : Quiz ER / PR #N + Palier + Thème (Mystère 🔒 avant réponse) + Indice / Réinitialiser */}
             <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/10 pb-1.5">
                 <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
-                    <span className="font-bold text-[#D4AF37]">
-                        {isErMode ? `Quiz ER #${currentIndex + 1}` : `Quiz ERH #${currentIndex + 1}`}
+                    <span className="font-bold text-[#D4AF37]" data-testid="drill-subtitle-index">
+                        {isErMode ? `Quiz ER / PR #${currentIndex + 1}` : `Quiz ERH #${currentIndex + 1}`}
                     </span>
                     <span className="sr-only">{totalBlunders}</span>
                     <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${tierInfo.color}`}>
                         {tierInfo.badge}
                     </span>
                     <span
+                        data-testid="drill-theme-badge"
+                        title={
+                            isThemeUnlocked
+                                ? `Thème stratégique : ${currentBlunder.conceptName}`
+                                : 'Thème masqué pour ne pas spoiler la solution (cliquez sur 💡 Indice ou validez votre coup pour le révéler)'
+                        }
                         className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${
-                            isErMode
-                                ? 'border-emerald-500/40 bg-emerald-950/80 text-emerald-200'
-                                : 'border-[#D4AF37]/40 bg-[#050505] text-[#D4AF37]'
+                            isThemeUnlocked
+                                ? isErMode
+                                    ? 'border-emerald-500/40 bg-emerald-950/80 text-emerald-200'
+                                    : 'border-[#D4AF37]/40 bg-[#050505] text-[#D4AF37]'
+                                : 'border-slate-600/50 bg-[#050505] text-slate-300'
                         }`}
                     >
-                        {currentBlunder.conceptName}
+                        {isThemeUnlocked ? `🔓 ${currentBlunder.conceptName}` : 'Thème : Mystère 🔒'}
+                        {!isThemeUnlocked && <span className="sr-only">{currentBlunder.conceptName}</span>}
                     </span>
                 </div>
 
@@ -87,12 +98,23 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
                 </div>
             </div>
 
-            {/* Ligne unique ultra-compacte : Match X pts (Score) • Videau : X • Retard : X pips */}
+            {/* Bandeau stratégique enrichi : Match (away) + Videau (Centre) + Retard + Structure */}
             <div
                 data-testid="drill-match-context-grid"
-                className="flex items-center justify-between gap-2 rounded-xl border border-[#D4AF37]/25 bg-[#050505] px-3 py-1.5 text-xs font-semibold"
+                className="flex flex-col gap-1 rounded-xl border border-[#D4AF37]/25 bg-[#050505] px-3 py-1.5 text-xs"
             >
-                <span className="truncate font-mono text-[#D4AF37]">{telemetry.singleLineContext}</span>
+                <div
+                    className="flex flex-wrap items-center justify-between gap-1 font-mono font-semibold text-[#D4AF37]"
+                    title="Score away = points restants avant la victoire (détermine le prix des gammons). Videau Centre = cube accessible aux deux joueurs."
+                >
+                    <span>{telemetry.singleLineContext}</span>
+                </div>
+                <div
+                    data-testid="drill-structure-summary"
+                    className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-300 border-t border-white/5 pt-1"
+                >
+                    <span>{telemetry.structureLineContext}</span>
+                </div>
             </div>
 
             <span className="sr-only">
@@ -103,4 +125,3 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
 };
 
 export default React.memo(DrillContextStrip);
-
