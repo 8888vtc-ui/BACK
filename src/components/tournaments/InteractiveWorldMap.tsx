@@ -36,14 +36,17 @@ interface CameraState {
     readonly scale: number;
     readonly focusX: number; // 0..1000
     readonly focusY: number; // 0..500
+    readonly lat: number;
+    readonly lng: number;
+    readonly zoom: number;
 }
 
 const PRESET_CAMERA: Readonly<Record<MapPresetRegionId, CameraState>> = {
-    world: { scale: 1, focusX: 500, focusY: 230 },
-    france: { scale: 4.5, focusX: 515, focusY: 122 },
-    europe: { scale: 2.6, focusX: 530, focusY: 122 },
-    americas: { scale: 2.0, focusX: 255, focusY: 185 },
-    asia: { scale: 2.4, focusX: 735, focusY: 165 },
+    world: { scale: 2.4, focusX: 528, focusY: 144, lat: 38, lng: 10, zoom: 2.4 },
+    france: { scale: 4.5, focusX: 515, focusY: 122, lat: 46, lng: 5, zoom: 4.5 },
+    europe: { scale: 2.6, focusX: 530, focusY: 122, lat: 46, lng: 11, zoom: 2.6 },
+    americas: { scale: 2.0, focusX: 255, focusY: 185, lat: 23, lng: -88, zoom: 2.0 },
+    asia: { scale: 2.4, focusX: 735, focusY: 165, lat: 31, lng: 85, zoom: 2.4 },
 };
 
 const GOLDEN_ANGLE_RAD = 2.39996323; // ~137.508°
@@ -236,23 +239,12 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
                 </button>
             </div>
 
-            {/* Légende temps réel en haut à gauche */}
-            <div className="pointer-events-none absolute top-3 left-3 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-[#070B12]/85 px-3 py-1.5 text-[11px] font-semibold text-slate-200 backdrop-blur-md">
-                <span className="inline-flex items-center gap-1.5 text-[#D4AF37]">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#D4AF37] shadow-[0_0_8px_#D4AF37]" />
-                    🏆 {tournaments.length} Tournois
-                </span>
-                <span className="text-slate-600">•</span>
-                <span className="inline-flex items-center gap-1.5 text-[#10B981]">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#10B981] shadow-[0_0_8px_#10B981]" />
-                    🏛️ {venues.length} Clubs &amp; Salons
-                </span>
-                <span className="text-slate-500 font-mono text-[10px]">({effectiveScale.toFixed(1)}×)</span>
-            </div>
-
             {/* Canevas Vectoriel TopoJSON world-atlas 1000×500 avec transition caméra cubic-bezier(0.22, 1, 0.36, 1) */}
             <div
                 data-testid="interactive-world-map-viewport"
+                data-center-lat={baseCam.lat}
+                data-center-lng={baseCam.lng}
+                data-zoom={effectiveScale}
                 className="w-full h-full flex items-center justify-center"
                 style={{
                     transform: `translate(${txPct}%, ${tyPct}%) scale(${effectiveScale})`,
@@ -429,17 +421,18 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
                             </div>
                             <div className="flex items-center justify-between gap-2 pt-1">
                                 <Link
-                                    href={`/tournaments/${activeTournament.slug}`}
-                                    data-testid="map-popup-action-btn"
-                                    className="flex-1 rounded-xl border border-[#D4AF37] bg-gradient-to-r from-[#D4AF37] to-[#b88924] px-3 py-2 text-center text-xs font-black text-[#070B12] shadow hover:brightness-105 transition"
-                                >
-                                    Voir les détails / S’inscrire →
-                                </Link>
-                                <Link
                                     href={`/?matchLength=${activeTournament.matchLengthMain}&tournament=${encodeURIComponent(activeTournament.name)}`}
-                                    className="rounded-xl border border-emerald-400/50 bg-emerald-500/15 px-3 py-2 text-xs font-bold text-emerald-200 hover:bg-emerald-500/25 transition"
+                                    data-testid="map-popup-train-btn"
+                                    className="flex-1 rounded-xl border border-[#D4AF37] bg-gradient-to-r from-[#D4AF37] via-[#f7d77e] to-[#b88924] px-3.5 py-2 text-center text-xs font-black text-[#070B12] shadow-[0_4px_16px_rgba(212,175,55,0.35)] hover:brightness-105 transition"
                                 >
                                     🎲 S’entraîner
+                                </Link>
+                                <Link
+                                    href={`/tournaments/${activeTournament.slug}`}
+                                    data-testid="map-popup-action-btn"
+                                    className="rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-center text-xs font-bold text-slate-200 hover:border-[#D4AF37] hover:text-white transition"
+                                >
+                                    Voir les détails / S’inscrire →
                                 </Link>
                             </div>
                         </div>
@@ -465,11 +458,11 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
                             </div>
                             <div className="grid grid-cols-1 gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-2.5 text-[11px]">
                                 <div>
-                                    <span className="text-slate-400">📍 Ville/Pays : </span>
+                                    <span className="text-slate-400">📍 Ville/Adresse : </span>
                                     <span className="font-semibold text-white">{activeVenue.city}, {activeVenue.countryName}</span>
-                                    <span className="ml-1.5 font-mono text-[10px] text-slate-400">
-                                        ({activeVenue.coordinates.lat.toFixed(2)}°, {activeVenue.coordinates.lng.toFixed(2)}°)
-                                    </span>
+                                    {activeVenue.address && (
+                                        <span className="text-slate-300"> — {activeVenue.address}</span>
+                                    )}
                                 </div>
                                 <div>
                                     <span className="text-slate-400">🕒 Horaires : </span>
@@ -482,17 +475,18 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
                             </div>
                             <div className="flex items-center justify-between gap-2 pt-1">
                                 <Link
-                                    href={`/tournaments/clubs/${activeVenue.slug}`}
-                                    data-testid="map-popup-action-btn"
-                                    className="flex-1 rounded-xl border border-[#D4AF37] bg-gradient-to-r from-[#D4AF37] to-[#b88924] px-3 py-2 text-center text-xs font-black text-[#070B12] shadow hover:brightness-105 transition"
-                                >
-                                    Voir les détails / S’inscrire →
-                                </Link>
-                                <Link
                                     href={`/?matchLength=7&tournament=${activeVenue.slug}`}
-                                    className="rounded-xl border border-emerald-400/50 bg-emerald-500/15 px-3 py-2 text-xs font-bold text-emerald-200 hover:bg-emerald-500/25 transition"
+                                    data-testid="map-popup-train-btn"
+                                    className="flex-1 rounded-xl border border-[#D4AF37] bg-gradient-to-r from-[#D4AF37] via-[#f7d77e] to-[#b88924] px-3.5 py-2 text-center text-xs font-black text-[#070B12] shadow-[0_4px_16px_rgba(212,175,55,0.35)] hover:brightness-105 transition"
                                 >
                                     🎲 S’entraîner
+                                </Link>
+                                <Link
+                                    href={`/tournaments/clubs/${activeVenue.slug}`}
+                                    data-testid="map-popup-action-btn"
+                                    className="rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-center text-xs font-bold text-slate-200 hover:border-[#D4AF37] hover:text-white transition"
+                                >
+                                    Voir les détails / S’inscrire →
                                 </Link>
                             </div>
                         </div>

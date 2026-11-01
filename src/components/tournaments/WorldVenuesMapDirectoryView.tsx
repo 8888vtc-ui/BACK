@@ -21,6 +21,8 @@ import InteractiveWorldMap, { type MapPresetRegionId } from './InteractiveWorldM
 export interface WorldVenuesMapDirectoryViewProps {
     readonly venues: ReadonlyArray<WorldBackgammonVenue>;
     readonly tournaments?: ReadonlyArray<TournamentRecord>;
+    readonly searchQuery?: string;
+    readonly onSearchQueryChange?: (q: string) => void;
     readonly showClubs?: boolean;
     readonly showTournaments?: boolean;
     readonly onToggleClubs?: () => void;
@@ -64,6 +66,8 @@ const inputCls = 'w-full rounded-xl border border-white/15 bg-[#070b13] px-3 py-
 const WorldVenuesMapDirectoryViewComponent: React.FC<WorldVenuesMapDirectoryViewProps> = ({
     venues,
     tournaments = [],
+    searchQuery = '',
+    onSearchQueryChange,
     showClubs: controlledShowClubs,
     showTournaments: controlledShowTournaments,
     onToggleClubs,
@@ -246,18 +250,34 @@ const WorldVenuesMapDirectoryViewComponent: React.FC<WorldVenuesMapDirectoryView
             )}
 
             <div className="relative rounded-2xl border border-white/10 bg-[#070b13] p-3 shadow-2xl overflow-hidden">
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 mb-2.5 px-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-semibold text-slate-200 mr-1">🗺️ Afficher :</span>
-                        <label className={`flex items-center gap-2 rounded-xl border px-3 py-1 cursor-pointer select-none font-semibold transition ${clubsChecked ? 'border-emerald-400/60 bg-emerald-500/15 text-emerald-200' : 'border-white/10 bg-white/5 text-slate-400'}`}>
+                {/* BARRE UNIQUE FUSIONNÉE (1 SEULE LIGNE COMPACTE : Recherche + 2 Bascules + 5 Pilules de Zoom) */}
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300 mb-3 px-1">
+                    {/* a) Champ de recherche */}
+                    <div className="relative flex-1 min-w-[200px] max-w-xs">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => onSearchQueryChange?.(e.target.value)}
+                            placeholder="Rechercher par ville, pays, club"
+                            data-testid="tournament-search-input"
+                            className="w-full rounded-xl border border-white/15 bg-white/5 pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-400 focus:border-[#d4af37] focus:outline-none"
+                        />
+                        <span className="absolute left-2.5 top-2 text-xs text-slate-400">🔍</span>
+                    </div>
+
+                    {/* b) Les deux bascules actives avec compteur intégré */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                        <label className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1 cursor-pointer select-none font-bold transition ${clubsChecked ? 'border-emerald-400/70 bg-emerald-500/15 text-emerald-200' : 'border-white/10 bg-white/5 text-slate-400'}`}>
                             <input type="checkbox" checked={clubsChecked} onChange={handleToggleClubs} data-testid="map-toggle-clubs" className="accent-emerald-400 rounded" />
-                            <span>🏛️ Clubs &amp; Salons ({venues.length})</span>
+                            <span>✓ Clubs &amp; Salons ({venues.length})</span>
                         </label>
-                        <label className={`flex items-center gap-2 rounded-xl border px-3 py-1 cursor-pointer select-none font-semibold transition ${tournamentsChecked ? 'border-[#d4af37]/70 bg-[#d4af37]/15 text-amber-200' : 'border-white/10 bg-white/5 text-slate-400'}`}>
+                        <label className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1 cursor-pointer select-none font-bold transition ${tournamentsChecked ? 'border-[#d4af37]/80 bg-[#d4af37]/15 text-amber-200' : 'border-white/10 bg-white/5 text-slate-400'}`}>
                             <input type="checkbox" checked={tournamentsChecked} onChange={handleToggleTournaments} data-testid="map-toggle-tournaments" className="accent-[#d4af37] rounded" />
-                            <span>🏆 Tournois ({tournaments.length})</span>
+                            <span>✓ Tournois ({tournaments.length})</span>
                         </label>
                     </div>
+
+                    {/* c) Pilules de zoom rapide */}
                     <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Zoom régional de la carte">
                         {MAP_ZOOM_PRESETS.map((z) => (
                             <button
