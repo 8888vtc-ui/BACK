@@ -8,9 +8,10 @@
  */
 
 import React, { useState } from 'react';
-import { applyMove, type BoardState } from '../../engine/backgammonEngine';
+import { applyMove, serializeCanonicalXGID, type BoardState } from '../../engine/backgammonEngine';
 import { evaluateBtCoreBoard, computeBtCoreResidualCorrection } from '../../lib/engine/btCoreEngine';
 import { evaluatePositionExpectiminimax2Ply } from '../../lib/engine/expectiminimax';
+import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../../lib/engine/gnubg3PlyCertifiedPositions';
 import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
 import type { PlayerBlunderRecord } from '../../features/drills/types';
 import { validateBoardState } from '../../features/drills/drillSubAgentsPipeline';
@@ -143,10 +144,54 @@ export function buildCandidateMathTable(
     );
     const optimalNorm = blunder.optimalMove.replace(/\*/g, '').trim().toLowerCase().split(/\s+/).sort().join(' ');
 
+    const canonBody = serializeCanonicalXGID({
+        board: baseBoard,
+        turn: player,
+        cubeValue: blunder.matchContext?.cubeValue ?? 1,
+        cubeOwner: blunder.matchContext?.cubeOwner ?? null,
+        dice: blunder.dice,
+        matchLength: blunder.matchContext?.matchLength ?? 7,
+        scoreX: blunder.matchContext?.scoreX ?? 0,
+        scoreO: blunder.matchContext?.scoreO ?? 0,
+        crawford: blunder.matchContext?.crawford ?? false,
+        doubled: false,
+        resigned: 0,
+    }).split(':')[0];
+    const dA = Math.max(blunder.dice[0], blunder.dice[1]);
+    const dB = Math.min(blunder.dice[0], blunder.dice[1]);
+    const certPos = GNUBG_3PLY_CERTIFIED_POSITIONS.find(
+        (p) =>
+            p.id === blunder.id ||
+            `cert_3ply_${p.id}` === blunder.id ||
+            (p.xgid.split(':')[0] === canonBody &&
+                Math.max(p.dice[0], p.dice[1]) === dA &&
+                Math.min(p.dice[0], p.dice[1]) === dB),
+    );
+    const certMap = new Map(
+        (certPos?.moves ?? []).map((m) => [
+            m.notation.replace(/\*/g, '').trim().toLowerCase().split(/\s+/).sort().join(' '),
+            m,
+        ]),
+    );
+
     const evaluated = rawChoices.map((notation) => {
         const norm = notation.replace(/\*/g, '').trim().toLowerCase().split(/\s+/).sort().join(' ');
         const isOptimal = norm === optimalNorm;
         const isAcceptable = acceptablesNorm.has(norm);
+        const certMove = certMap.get(norm);
+
+        if (certMove) {
+            return {
+                notation,
+                norm,
+                isOptimal: isOptimal || certMove.rank === 1,
+                isAcceptable: isAcceptable || certMove.equityLoss <= 0.015,
+                rawEquity: Number(certMove.equity.toFixed(3)),
+                winPct: Number((certMove.win * 100).toFixed(1)),
+                gammonPct: Number((certMove.winGammon * 100).toFixed(1)),
+                isUserChoice: notation.trim().toLowerCase() === playedNotation.trim().toLowerCase(),
+            };
+        }
 
         let afterBoard = [...baseBoard];
         try {

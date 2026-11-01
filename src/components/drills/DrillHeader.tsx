@@ -73,6 +73,7 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
     const modeLabel = isErMode ? 'ER' : 'ERH';
     const isImprovedTenths = activeTenthsDelta < 0;
     const heartsDisplay = Array.from({ length: maxAttempts }, (_, idx) => (idx < attemptsLeft ? '❤️' : '🖤')).join('');
+    const targetNPlus1Er = Math.max(1.0, Number((erPrScore - 1.3).toFixed(1)));
 
     return (
         <div className="w-full shrink-0">
@@ -124,9 +125,16 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                         <span className="sr-only">Cible ER / PR : ~6.5 (Intermédiaire)</span>
                     </span>
                     <span
+                        data-testid="quiz-nplus1-target-badge"
+                        title="Cible Niveau N+1 (Auto-régulation dynamique Up & Down sur votre ER)"
+                        className="inline-flex items-center rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#D4AF37]"
+                    >
+                        Cible N+1 : ER {targetNPlus1Er.toFixed(1)}
+                    </span>
+                    <span
                         data-testid="quiz-erh-metric-badge"
                         title={ERH_TOOLTIP_TEXT}
-                        className="inline-flex items-center rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#D4AF37]"
+                        className="sr-only"
                     >
                         ERH : {erhScore.toFixed(1)}
                     </span>
