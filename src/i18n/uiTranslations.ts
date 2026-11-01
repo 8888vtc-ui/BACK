@@ -83,7 +83,7 @@ export const UI_TRANSLATIONS: Record<PrimaryLocale, UiLocaleStrings> = {
         navbar: {
             brandSubtitle: 'Tour · Académie',
             play: 'Salon de Jeu',
-            tournaments: 'Tournois & Agenda',
+            tournaments: 'Carte : Tournois & Clubs',
             puzzles: 'Quizz PR',
             drills: 'Quizz ERH',
             openings: 'Ouvertures',
@@ -154,7 +154,7 @@ export const UI_TRANSLATIONS: Record<PrimaryLocale, UiLocaleStrings> = {
         navbar: {
             brandSubtitle: 'Tour · Academy',
             play: 'Game Salon',
-            tournaments: 'Tournaments & Calendar',
+            tournaments: 'Map: Tournaments & Clubs',
             puzzles: 'Puzzles',
             drills: 'Drills',
             openings: 'Openings',
@@ -225,7 +225,7 @@ export const UI_TRANSLATIONS: Record<PrimaryLocale, UiLocaleStrings> = {
         navbar: {
             brandSubtitle: 'Tour · Academia',
             play: 'Salón de Juego',
-            tournaments: 'Torneos y Agenda',
+            tournaments: 'Mapa: Torneos y Clubes',
             puzzles: 'Problemas',
             drills: 'Entrenamiento',
             openings: 'Aperturas',

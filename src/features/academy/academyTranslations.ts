@@ -65,8 +65,8 @@ export interface AcademyLocaleContent {
 export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
     fr: {
         heroBadge: 'BACKGAMMONTOUR.COM',
-        heroTitle: 'Backgammon Tour — Académie Grand-Maître & Théorie 3-Ply',
-        heroSubtitle: 'Référentiel stratégique officiel : les 15 rouleaux d’ouverture certifiés Monte-Carlo 3-Ply (PR 0.23), la mathématique du Videau (Take Point 21,5 %, Crawford, Jacoby, MET Kazaross-XG2) et le calcul du Performance Rating.',
+        heroTitle: 'Académie & Théorie 3-Ply',
+        heroSubtitle: 'Les 15 rouleaux d’ouverture certifiés, la mathématique du Videau et l’analyse du Performance Rating.',
         navOpenings: '1. Les 15 Ouvertures',
         navCube: '2. Maîtrise du Videau',
         navStrategy: '3. Stratégie & PR 3-Ply',
@@ -166,8 +166,8 @@ export const ACADEMY_CONTENT: Record<PrimaryLocale, AcademyLocaleContent> = {
     },
     en: {
         heroBadge: 'BACKGAMMONTOUR.COM',
-        heroTitle: 'Backgammon Tour — Academy & 3-Ply Theory',
-        heroSubtitle: 'Official strategy reference: all 15 opening rolls certified by Monte-Carlo 3-Ply (PR 0.23), Doubling Cube mathematics (21.5% Live Take Point, Crawford, Jacoby, Kazaross-XG2 MET), and Performance Rating mastery.',
+        heroTitle: 'Academy & 3-Ply Theory',
+        heroSubtitle: 'All 15 certified opening rolls, Doubling Cube mathematics, and Performance Rating mastery.',
         navOpenings: '1. The 15 Opening Rolls',
         navCube: '2. Doubling Cube Mastery',
         navStrategy: '3. Strategy & 3-Ply PR',

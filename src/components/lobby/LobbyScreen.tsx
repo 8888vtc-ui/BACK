@@ -324,6 +324,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                 : `${isMittensActive ? 'Lord Mittens' : selectedPersona.shortName} · ${matchLength === 0 ? 'MONEY GAME' : `MATCH ${matchLength} PTS`}`}
                                     </button>
                                     <div className="flex items-center justify-end gap-1.5 shrink-0">
+                                        <Link href="/tournaments" data-testid="lobby-quick-map-btn" className="rounded-xl border border-[#d4af37]/35 bg-[#d4af37]/10 px-3 py-2.5 text-xs font-semibold text-[#f3c65f] hover:bg-[#d4af37]/20 hover:text-white transition touch-manipulation">🌍 Carte : Tournois &amp; Clubs</Link>
                                         <button type="button" data-testid="lobby-quick-scanner-btn" onClick={() => onOpenModule?.('import_export')} className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/[0.08] hover:text-white transition touch-manipulation">📷 Scanner</button>
                                         <button type="button" data-testid="lobby-quick-clock-btn" onClick={() => setIsTableClockOpen(true)} className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-xs font-semibold text-slate-200 hover:bg-white/[0.08] hover:text-white transition touch-manipulation">⏱️ Pendule</button>
                                     </div>
