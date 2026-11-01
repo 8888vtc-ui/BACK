@@ -1,32 +1,37 @@
-# GEMINI.md — Charte Architecturale, Protocole d'Épure Elon Musk & Invariants Métier
+# GEMINI.md — Charte Architecturale, Vérité Métier ER/PR vs ERH vs Rating & Protocole d'Épure
 
-> **Statut : OBLIGATOIRE.** Ce fichier synchronise les règles maîtresses du projet avec [`AGENTS.md`](AGENTS.md), [`PROJECT_MAP.md`](PROJECT_MAP.md), [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md).
-
----
-
-## 1. Séparation Stricte des Modes d'Entraînement « ER » (`/puzzles`) et « ERH » (`/drills`)
-
-1. **Zéro Doublon d'Onglets** :
-   - La route `/puzzles` affiche **exclusivement** le mode **Quiz ER** (mathématique pure, calcul d'équité exacte $\Delta\text{EMG}$ / MWC).
-   - La route `/drills` affiche **exclusivement** le mode **Quiz ERH** (pertinence humaine, maximisation de l'erreur adverse sous pression).
-   - La barre d'onglets redondante `Quizz PR (Maths) | Quizz ERH` dans le panneau droit est **définitivement bannie**.
-2. **Isolation Totale des États & Niveaux en Temps Réel** :
-   - Les stores `erRating` et `erhRating` sont strictement séparés dans [`src/features/drills/quizRatingStore.ts`](src/features/drills/quizRatingStore.ts) et consommés via le hook dédié [`src/hooks/useDrillRating.ts`](src/hooks/useDrillRating.ts) (validation Zod aux frontières I/O `localStorage`).
-   - À chaque coup validé, le score du mode actif évolue en temps réel avec feedback visuel immédiat (`+` en vert / `-` en rouge) sans jamais polluer l'autre mode.
+> **Statut : OBLIGATOIRE.** Ce fichier constitue la source de vérité unique synchronisée avec [`AGENTS.md`](AGENTS.md), [`PROJECT_MAP.md`](PROJECT_MAP.md), [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md).
 
 ---
 
-## 2. Architecture « Tesla 3-Secondes » sur `/drills` & `/puzzles`
+## 1. Vérité Métier Absolue : `Rating (1500)` vs `ER / PR (0.0 à 30.0)` vs `ERH (0.0 à 30.0)`
 
-Le module d'entraînement est découpé en **5 sous-modules légers** (chacun $< 200$ lignes) orchestrés par [`BlunderDrillView.tsx`](src/components/drills/BlunderDrillView.tsx) ($< 300$ lignes) :
+Il est formellement interdit de mélanger le classement Elo/Glicko-2 avec les taux d'erreur `ER / PR` et `ERH` :
 
-| Module | Lignes | Responsabilité stricte |
-|---|---|---|
-| [`src/components/drills/DrillHeader.tsx`](src/components/drills/DrillHeader.tsx) | 149 | 1 seule ligne supérieure : bouton `← Retour`, titre unique (`Quiz ER` OU `Quiz ERH`) et badge dynamique `Niveau ER` / `Niveau ERH`. |
-| [`src/components/drills/DrillContextStrip.tsx`](src/components/drills/DrillContextStrip.tsx) | 97 | 1 seule ligne de contexte : `Match X pts (Score) • Videau : X • Retard : X pips`. Suppression de « Jet à jouer », « Trait aux Blancs » et « Course : Blanc vs Noir ». |
-| [`src/components/drills/DrillChoicesGrid.tsx`](src/components/drills/DrillChoicesGrid.tsx) | 90 | Grille 2×2 des 4 candidats (`A`, `B`, `C`, `D`) : flèche de prévisualisation au survol (`hover`) et validation directe en **1 clic** (suppression du bouton `✓ VALIDER`). |
-| [`src/components/drills/DrillCoachFeedback.tsx`](src/components/drills/DrillCoachFeedback.tsx) | 143 | *Progressive Disclosure* : masqué avant le clic. Apparaît **uniquement après le clic** avec le verdict du Coach IA (Gemini Flash / Flash-Lite) en 3 lignes + `XX/36` lancers constructifs + `Question suivante →`. |
-| [`src/hooks/useDrillRating.ts`](src/hooks/useDrillRating.ts) | 149 | Hook isolé gérant en temps réel l'évolution séparée du Niveau `ER` et du Niveau `ERH` avec validation Zod. |
+1. **`Rating` (autour de `1500`)** :
+   - Classement compétitif Glicko-2 / Elo (ex. `Rating : 1500`). Ne jamais l'appeler « Niveau ER » ni l'additionner à des points d'`ER / PR`.
+2. **`ER / PR` (*Error Rate / Performance Rating*) — Échelle stricte de `0.0` à `30.0`** :
+   - `ER` et `PR` désignent la même métrique ($\text{ER / PR} = \Delta\text{EMG moyen par décision non forcée} \times 500$). Afficher systématiquement **`ER / PR`**.
+   - Échelle de **`0.0` (Perfection)** à **`30.0` (Novice)** — plus le chiffre est bas, meilleur est le joueur (initialisé à `6.3`).
+   - **Évolution exclusivement par dixièmes (`-0.1`, `-0.2` ou `+0.3`, `+0.4`, `+0.5`)** :
+     * ✅ **Coup Optimal (`0.000 EMG`)** : l'`ER / PR` baisse par dixièmes (ex. **`▼ -0.1 (Progression)`** en vert, passant de `6.3` ➔ `6.2`).
+     * ❌ **Erreur ou Blunder (ex. `-0.084 EMG`)** : l'`ER / PR` augmente par dixièmes selon la gravité (ex. **`▲ +0.4 (Erreur)`** en rouge, passant de `6.3` ➔ `6.7`).
+3. **`ERH` (*Error Rate Humain*) — Échelle stricte de `0.0` à `30.0`** :
+   - Métrique propriétaire calibrée sur l'erreur humaine (initialisée à `6.1`, évoluant par dixièmes). Le terme **`ERH`** reste strictement identique partout.
+4. **Affichage en haut à droite (`DrillHeader.tsx`)** :
+   - **`ER / PR : 6.3`** (avec badge d'évolution en dixièmes après le clic : `▼ -0.1 (Progression)` ou `▲ +0.4 (Erreur)`) | **`ERH : 6.1`** | **`Rating : 1500`**.
+
+---
+
+## 2. Orchestration des 5 Sous-Agents en Coulisses (`Flash-Lite` & `Flash` — Zéro Nom Technique à l'Écran)
+
+1. **`FlashLite-Doc-Auditor` (`gemini-2.5-flash-lite`)** : Vérifie l'alignement terminologique (`ER / PR` 0–30, `ERH` 0–30, `Rating 1500`) entre documentation et code.
+2. **`FlashLite-Board-Validator` (`gemini-2.5-flash-lite`)** : Garantit en $< 50\text{ ms}$ qu'il y a exactement **15 pions par camp** (`X_BAR = 0`, `O_BAR = 25`), que le Pip Count est issu d'une **source unique partagée** (`pipCount(board)` de `backgammonEngine.ts` — zéro écart entre le plateau et le texte) et que les 4 coups `A/B/C/D` sont légaux.
+3. **`FlashLite-Semantic-Bridge` (`gemini-2.5-flash-lite`)** : Calcule mathématiquement `isContact(board)` et verrouille l'archétype exact (`PURE_RACE`, `BEAROFF`, `BLITZ`, `HOLDING_GAME`, `PRIME_VS_PRIME`). **Règle absolue** : si `isContact === false` (Course Pure), interdiction formelle d'étiqueter le puzzle `Blitz & Attaque de Jan` ou de parler de frapper dans le jan. Calcule aussi le `1-Roll Lookahead` sur 36 et le delta en dixièmes (`0.1` à `0.5`).
+4. **`Flash-Pedagogical-Coach` (`gemini-2.5-flash`)** : Rédige l'explication « Tesla 3-Secondes » (phrases courtes de 18 à 28 mots max) :
+   - **Si Erreur (`B`, `C`, `D`)** : Bannière Rouge/Ambre `❌ Erreur (-0.084 EMG | Impact ER / PR : +0.4 ➔ 6.7 | -7.5% de victoire)` + `1. Pourquoi ton coup est une erreur` + `2. Pourquoi le coup optimal gagne` + `💡 Comment t'améliorer`.
+   - **Si Coup Optimal (`A`)** : Bannière Verte/Or `✅ Coup Optimal ! (0.000 EMG | Impact ER / PR : -0.1 ➔ 6.2 | Équité 100%)` + **aucun bloc d'erreur** (uniquement `Pourquoi ce coup est optimal` + `💡 Règle à retenir`).
+5. **`Flash-UX-Simplifier` (`gemini-2.5-flash`)** : Interdit tout nom de sous-agent à l'écran, supprime la sous-ligne verbeuse *"Portes faites..."*, masque le badge de thème avant le clic et garantit le zéro-scroll.
 
 ---
 
@@ -36,5 +41,3 @@ Le module d'entraînement est découpé en **5 sous-modules légers** (chacun $<
 - **Hook React (`.ts`)** : $\le 200$ lignes max.
 - **Module de logique pure (`.ts`)** : $\le 400$ lignes max.
 - **Typage strict (`GOVERNANCE.md`)** : **ZÉRO `any`** en production, validation **Zod** aux frontières d'entrée/sortie.
-- **Direction Artistique « Haute Horlogerie / Monte-Carlo »** : Fond `#050505` (Noir Obsidienne), cartes `#12151C` (Anthracite profond), accents Or `#D4AF37`, Émeraude `#10B981`, Corail `#EF4444`.
-
