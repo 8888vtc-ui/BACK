@@ -128,6 +128,42 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         expect(getBlunderBankStats().totalBlunders).toBe(BENCHMARK_BLUNDERS.length);
     });
 
+    it('garantit la séparation stricte ER vs ERH, l’évolution dynamique du niveau (+ vert / - rouge), la ligne unique de contexte et l’absence du bouton Valider / Lecture Mathématique', () => {
+        // 1. Mode Quiz ER (/puzzles) : 100 % ER, 0 occurrence du mot ERH, évolution dynamique + en vert
+        const { unmount } = render(<BlunderDrillView initialConceptId="golden_point" initialMode="pr_math" />);
+        expect(screen.getByTestId('drill-mode-title').textContent).toContain('Quiz ER');
+        expect(screen.getByTestId('drill-mode-title').textContent).not.toContain('ERH');
+        expect(screen.queryByTestId('drill-mode-tabs')).toBeNull();
+        expect(screen.queryByTestId('drill-validate-btn')).toBeNull();
+        expect(screen.queryByTestId('drill-position-reading-card')).toBeNull();
+
+        const initialErBadge = screen.getByTestId('quiz-live-rating-badge');
+        expect(initialErBadge.textContent).toContain('Niveau ER : 1500');
+
+        const contextLine = screen.getByTestId('drill-match-context-grid');
+        expect(contextLine.textContent).toContain('Videau :');
+        expect(contextLine.textContent).not.toContain('Blanc 96 pips vs Noir');
+
+        // Validation en 1-Clic sur A (optimal) -> hausse immédiate du Niveau ER (+ vert) et bouton Question suivante →
+        fireEvent.click(screen.getByTestId('quiz-choice-btn-A'));
+        expect(screen.getByTestId('quiz-live-rating-badge').textContent).toContain('Niveau ER : 151');
+        expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('+');
+        expect(screen.getByTestId('drill-next-btn').textContent).toContain('Question suivante →');
+        expect(mockStore['bg_quiz_er_rating_v1']).toBeDefined();
+        expect(mockStore['bg_quiz_erh_rating_v1']).toBeUndefined();
+        unmount();
+
+        // 2. Mode Quiz ERH (/drills) : 100 % ERH, évolution dynamique - en rouge sur erreur, stockage séparé
+        render(<BlunderDrillView initialConceptId="golden_point" initialMode="adaptive" />);
+        expect(screen.getByTestId('drill-mode-title').textContent).toContain('Quiz ERH');
+        expect(screen.getByTestId('quiz-live-rating-badge').textContent).toContain('Niveau ERH : 1500');
+
+        // Clic sur B (erreur) -> baisse immédiate du Niveau ERH (- rouge)
+        fireEvent.click(screen.getByTestId('quiz-choice-btn-B'));
+        expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('-');
+        expect(mockStore['bg_quiz_erh_rating_v1']).toBeDefined();
+    });
+
     it('permet de basculer sur l’onglet Revoir Mes Blunders et calibre automatiquement le niveau lors d’un match contre un Bot ou un Humain', () => {
         const initialBoard = [0, -2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, -5, 5, 0, 0, 0, -3, 0, -5, 0, 0, 0, 0, 2, 0, 0, 0];
         const liveOutcome = recordLiveMatchDecisionOnAdaptiveProfile({
