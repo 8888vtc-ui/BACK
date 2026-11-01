@@ -12,6 +12,12 @@
 
 import type { PlayerBlunderRecord, DrillTier } from './types';
 import { getTargetQuizTierFromPublicPr, readPublicAveragePr } from '../multiplayer/elo';
+import {
+    getActiveNPlus1State,
+    isNonTrivialContact3PlyQuiz,
+    recordNPlus1AttemptRegulation,
+    selectDeterministicNPlus1Candidate,
+} from './adaptiveNPlus1Selector';
 
 export type AdaptiveQuizCategoryId =
     | 'opening'
@@ -292,6 +298,7 @@ export function recordAdaptiveQuizOutcome(
     });
 
     saveAdaptivePlayerProfile(nextProfile);
+    recordNPlus1AttemptRegulation(isCorrect, !isCorrect);
 
     return {
         profile: nextProfile,
@@ -303,10 +310,10 @@ export function recordAdaptiveQuizOutcome(
 }
 
 /**
- * Sélectionne le prochain Quizz du parcours automatique « Zéro Sous-Menu » :
- * 1. Exclut STRICTEMENT tous les Quizz déjà vus (`seenQuizIds`) pour garantir 0 répétition.
- * 2. Pondère chaque catégorie selon les faiblesses du joueur : Poids = (110 - masteryScore)^2.
- * 3. Choisit dans la catégorie retenue un Quizz correspondant au palier actuel (`level`) du joueur.
+ * Sélectionne le prochain Quizz du parcours automatique « Zéro Sous-Menu » (Niveau N+1 sur l'ER) :
+ * 1. Exclut STRICTEMENT tous les Quizz déjà vus (`seenQuizIds`) et 100 % des courses pures sans contact.
+ * 2. Pondère chaque catégorie de contact selon les faiblesses du joueur : Poids = (110 - masteryScore)^2.
+ * 3. Sélectionne de manière 100 % déterministe (zéro Math.random()) un quiz au Niveau N+1 (`targetQuizEr`).
  */
 export function selectNextAdaptiveQuiz(
     allBlunders: PlayerBlunderRecord[],
@@ -319,9 +326,10 @@ export function selectNextAdaptiveQuiz(
     const profile = getAdaptivePlayerProfile();
     const seenSet = new Set([...profile.seenQuizIds, ...excludeSessionIds]);
 
-    // 1. Filtrer les quizz jamais vus et écarter toute position dégénérée (ex: > 6 pions empilés sur 24 ou 1 en contact/blitz)
+    // 1. Filtrer les quizz jamais vus, écarter toute course pure (isContact === false) et toute position dégénérée
     const isRealisticQuizPosition = (b: PlayerBlunderRecord): boolean => {
         if (b.id.startsWith('quiz_')) return false;
+        if (!isNonTrivialContact3PlyQuiz(b)) return false;
         const board = b.board;
         if (!Array.isArray(board) || board.length < 26) return true;
         let xTotal = Math.max(0, board[25] ?? 0) + Math.max(0, board[26] ?? 0);
@@ -334,11 +342,14 @@ export function selectNextAdaptiveQuiz(
             if (Math.abs(v) > maxStack) maxStack = Math.abs(v);
         }
         if (xTotal > 15 || oTotal > 15) return false;
-        if (maxStack >= 8 && b.conceptId !== 'bearoff_technique') return false;
+        if (maxStack >= 8) return false;
         return true;
     };
 
     let unseenPool = allBlunders.filter((b) => !seenSet.has(b.id) && isRealisticQuizPosition(b));
+    if (unseenPool.length === 0) {
+        unseenPool = allBlunders.filter((b) => !seenSet.has(b.id) && isNonTrivialContact3PlyQuiz(b));
+    }
     if (unseenPool.length === 0) {
         unseenPool = allBlunders.filter((b) => !seenSet.has(b.id));
     }
@@ -346,7 +357,10 @@ export function selectNextAdaptiveQuiz(
     // Si le joueur a épuisé 100 % de la base entière, on réinitialise uniquement l'historique des vus hors session courante
     if (unseenPool.length === 0) {
         const sessionSet = new Set(excludeSessionIds);
-        unseenPool = allBlunders.filter((b) => !sessionSet.has(b.id));
+        unseenPool = allBlunders.filter((b) => !sessionSet.has(b.id) && isNonTrivialContact3PlyQuiz(b));
+        if (unseenPool.length === 0) {
+            unseenPool = allBlunders.filter((b) => !sessionSet.has(b.id));
+        }
         if (unseenPool.length === 0 && allBlunders.length > 0) {
             unseenPool = [...allBlunders];
         }
@@ -360,7 +374,7 @@ export function selectNextAdaptiveQuiz(
         };
     }
 
-    // 2. Grouper les quizz non vus par catégorie canonique
+    // 2. Grouper les quizz non vus par catégorie canonique (hors course/bearoff)
     const byCat = new Map<AdaptiveQuizCategoryId, PlayerBlunderRecord[]>();
     for (const item of unseenPool) {
         const catId = normalizeToQuizCategory(item.conceptId);
@@ -378,7 +392,7 @@ export function selectNextAdaptiveQuiz(
         return { meta, state: st, weight: weaknessWeight };
     });
 
-    // Tirage pondéré déterministe/pseudo-aléatoire basé sur le nombre de quizz vus et les faiblesses
+    // Sélection déterministe LCG basée sur le nombre de quizz vus et les faiblesses (Zéro Math.random())
     const totalWeight = weightedCats.reduce((acc, w) => acc + w.weight, 0);
     const seedVal = (profile.seenQuizIds.length * 9301 + 49297) % 233280;
     let pick = (seedVal / 233280) * totalWeight;
@@ -395,44 +409,13 @@ export function selectNextAdaptiveQuiz(
     const candidates = byCat.get(chosen.meta.id) ?? unseenPool;
     const publicPrTierFloor = getTargetQuizTierFromPublicPr(readPublicAveragePr());
     const targetLevel = Math.max(chosen.state.level, publicPrTierFloor) as DrillTier;
+    const nPlus1 = getActiveNPlus1State();
 
-    // Cherche d'abord un quizz du palier exact (ou piloté par le PR du joueur), en priorisant
-    // les positions pédagogiques riches et réalistes (bench_ / harvest_ / bterh_ / quiz_) avant les positions brutes
-    const getPedagogicalPriority = (b: PlayerBlunderRecord): number => {
-        if (b.id.startsWith('bench_') || b.id.startsWith('harvest_')) return 4;
-        if (b.id.startsWith('bterh_') || b.id.startsWith('bgt_gnu_')) return 3;
-        if (b.id.startsWith('btcore_')) return 2;
-        if (b.id.startsWith('quiz_')) return 0;
-        return 1;
-    };
+    const selectedQuiz =
+        selectDeterministicNPlus1Candidate(candidates, nPlus1.targetQuizEr, profile.seenQuizIds.length) ??
+        unseenPool[0]!;
 
-    let bestCandidate: PlayerBlunderRecord | null = null;
-    let bestDist = Infinity;
-    let bestPedagogy = -Infinity;
-    let bestLoss = -Infinity;
-    for (const c of candidates) {
-        const dist = Math.abs((c.tier ?? 1) - targetLevel);
-        const pedagogy = getPedagogicalPriority(c);
-        const cappedLoss = Math.min(c.equityLoss, 0.55);
-        if (
-            dist < bestDist ||
-            (dist === bestDist && pedagogy > bestPedagogy) ||
-            (dist === bestDist && pedagogy === bestPedagogy && cappedLoss > bestLoss)
-        ) {
-            bestCandidate = c;
-            bestDist = dist;
-            bestPedagogy = pedagogy;
-            bestLoss = cappedLoss;
-        }
-    }
-
-    const selectedQuiz = bestCandidate ?? unseenPool[0]!;
-    const reasonLabel =
-        chosen.state.attempts === 0
-            ? `Calibrage initial · ${chosen.meta.shortLabel} (Niv. ${targetLevel})`
-            : chosen.state.masteryScore < 50
-              ? `Ciblage faiblesse (${chosen.state.masteryScore}%) · ${chosen.meta.shortLabel} (Niv. ${targetLevel})`
-              : `Consolidation · ${chosen.meta.shortLabel} (Niv. ${targetLevel})`;
+    const reasonLabel = `Cible N+1 : ER ${nPlus1.targetQuizEr.toFixed(1)} · ${chosen.meta.shortLabel} (Niv. ${targetLevel})`;
 
     return {
         quiz: selectedQuiz,

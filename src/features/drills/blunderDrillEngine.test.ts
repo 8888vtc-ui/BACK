@@ -145,4 +145,37 @@ describe('BlunderDrillEngine Module', () => {
         expect(access.isLaunchPromoFree).toBe(true);
         expect(access.remainingFreeToday).toBe('unlimited');
     });
+
+    it('certifie 50 positions de contact 3-ply GNU Backgammon et applique la règle adaptative Niveau N+1 (Up/Down)', async () => {
+        const { GNUBG_3PLY_CERTIFIED_POSITIONS } = await import('../../lib/engine/gnubg3PlyCertifiedPositions');
+        const { computeNPlus1TargetEr, isNonTrivialContact3PlyQuiz } = await import('./adaptiveNPlus1Selector');
+
+        expect(GNUBG_3PLY_CERTIFIED_POSITIONS.length).toBe(50);
+        for (const pos of GNUBG_3PLY_CERTIFIED_POSITIONS) {
+            expect(pos.moves.length).toBeGreaterThanOrEqual(4);
+            expect(pos.moves[0]!.equityLoss).toBe(0);
+            expect(pos.moves[0]!.win).toBeGreaterThan(0);
+        }
+
+        // Niveau N+1 standard : Joueur ER 8.0 -> Cible ER 6.7
+        const normal = computeNPlus1TargetEr(8.0, 0, 0);
+        expect(normal.targetQuizEr).toBe(6.7);
+        expect(normal.regulationState).toBe('NORMAL');
+
+        // Auto-régulation Up (série de réussites au 1er essai) : baisse la cible vers Maître/GM
+        const boostUp = computeNPlus1TargetEr(8.0, 3, 0);
+        expect(boostUp.targetQuizEr).toBeLessThan(normal.targetQuizEr);
+        expect(boostUp.regulationState).toBe('BOOST_UP');
+
+        // Auto-régulation Down (2 échecs consécutifs) : remonte la cible (+0.8) pour redonner confiance
+        const reliefDown = computeNPlus1TargetEr(8.0, 0, 2);
+        expect(reliefDown.targetQuizEr).toBeGreaterThan(normal.targetQuizEr);
+        expect(reliefDown.regulationState).toBe('RELIEF_DOWN');
+
+        // Vérifie que les courses pures (race_management) sont rejetées à 100 %
+        const raceQuiz = BENCHMARK_BLUNDERS.find((b) => b.conceptId === 'race_management');
+        if (raceQuiz) {
+            expect(isNonTrivialContact3PlyQuiz(raceQuiz)).toBe(false);
+        }
+    });
 });
