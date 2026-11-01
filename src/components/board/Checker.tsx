@@ -63,8 +63,8 @@ const CheckerComponent: React.FC<CheckerProps> = ({
             }`}
             onPointerDown={isInteractive ? onPointerDown : undefined}
             style={{
-                width: 'clamp(24px, min(6.4vw, calc((100dvh - 24px) / 9.8)), 54px)',
-                height: 'clamp(24px, min(6.4vw, calc((100dvh - 24px) / 9.8)), 54px)',
+                width: 'clamp(22px, min(5.5vw, calc(100dvh / 12.8)), 48px)',
+                height: 'clamp(22px, min(5.5vw, calc(100dvh / 12.8)), 48px)',
                 borderRadius: '9999px',
                 touchAction: 'manipulation',
                 transform: 'translate3d(0, 0, 0)',
@@ -79,7 +79,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                 shapeRendering="geometricPrecision"
             >
                 <defs>
-                    {/* Biseau extérieur en Laiton / Bronze bruni (anti-Blanc-sur-Blanc) */}
+                    {/* Biseau extérieur en Laiton / Bronze bruni (anti-Blanc-sur-Blanc) & Double Anneau Or #D4AF37 pour Pions Noirs */}
                     <radialGradient id={outerBevelId} cx="35%" cy="30%" r="68%">
                         {isWhite ? (
                             <>
@@ -89,14 +89,14 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                             </>
                         ) : (
                             <>
-                                <stop offset="0%" stopColor="#d4af37" />
-                                <stop offset="50%" stopColor="#3f3222" />
-                                <stop offset="100%" stopColor="#090705" />
+                                <stop offset="0%" stopColor="#D4AF37" />
+                                <stop offset="48%" stopColor="#262A34" />
+                                <stop offset="100%" stopColor="#12141A" />
                             </>
                         )}
                     </radialGradient>
 
-                    {/* Corps du pion : Nacre d'Ivoire vs Ébène Obsidienne */}
+                    {/* Corps du pion : Nacre d'Ivoire vs Ardoise Obsidienne #1A1D24 (haut contraste sur triangles marron) */}
                     <radialGradient id={bodyGradId} cx="42%" cy="38%" r="58%">
                         {isWhite ? (
                             <>
@@ -106,9 +106,9 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                             </>
                         ) : (
                             <>
-                                <stop offset="0%" stopColor="#332b24" />
-                                <stop offset="65%" stopColor="#18130f" />
-                                <stop offset="100%" stopColor="#080604" />
+                                <stop offset="0%" stopColor="#2A2F3A" />
+                                <stop offset="60%" stopColor="#1A1D24" />
+                                <stop offset="100%" stopColor="#111318" />
                             </>
                         )}
                     </radialGradient>
@@ -123,9 +123,9 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                             </>
                         ) : (
                             <>
-                                <stop offset="0%" stopColor="#29221c" />
-                                <stop offset="75%" stopColor="#120e0b" />
-                                <stop offset="100%" stopColor="#050403" />
+                                <stop offset="0%" stopColor="#242832" />
+                                <stop offset="72%" stopColor="#1A1D24" />
+                                <stop offset="100%" stopColor="#0E1015" />
                             </>
                         )}
                     </radialGradient>
@@ -148,7 +148,7 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                     fill="rgba(0, 0, 0, 0.68)"
                 />
 
-                {/* 2. Couronne extérieure de sertissage (Sombre sur pion blanc pour contraste anti-blanc-sur-blanc) */}
+                {/* 2. Couronne extérieure de sertissage (Sombre sur pion blanc, Premier anneau Or #D4AF37 net sur pion noir) */}
                 <circle
                     cx="50"
                     cy="50"
@@ -159,10 +159,22 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                             ? '#10b981'
                             : isWhite
                               ? '#3b2307'
-                              : '#d4af37'
+                              : '#D4AF37'
                     }
-                    strokeWidth={isInteractive ? '4.2' : isWhite ? '2.4' : '1.8'}
+                    strokeWidth={isInteractive ? '4.2' : isWhite ? '2.4' : '2.8'}
                 />
+
+                {/* Second anneau doré #D4AF37 bien net pour les jetons noirs (double anneau haute visibilité) */}
+                {!isWhite && !isInteractive && (
+                    <circle
+                        cx="50"
+                        cy="50"
+                        r="44.2"
+                        fill="none"
+                        stroke="#D4AF37"
+                        strokeWidth="2.0"
+                    />
+                )}
 
                 {/* Anneau lumineux doublé lorsque le pion est jouable */}
                 {isInteractive && (
@@ -176,24 +188,24 @@ const CheckerComponent: React.FC<CheckerProps> = ({
                     />
                 )}
 
-                {/* 3. Corps tourné du pion */}
+                {/* 3. Corps tourné du pion (#1A1D24 pour noir) */}
                 <circle
                     cx="50"
                     cy="50"
-                    r="44.8"
+                    r="43.2"
                     fill={`url(#${bodyGradId})`}
-                    stroke={isWhite ? 'rgba(92, 60, 18, 0.55)' : 'rgba(212, 175, 55, 0.45)'}
-                    strokeWidth="1.2"
+                    stroke={isWhite ? 'rgba(92, 60, 18, 0.55)' : '#D4AF37'}
+                    strokeWidth={isWhite ? '1.2' : '1.4'}
                 />
 
                 {/* 4. Cuvette centrale horlogère */}
                 <circle
                     cx="50"
                     cy="50"
-                    r="32"
+                    r="31"
                     fill={`url(#${dishGradId})`}
-                    stroke={isWhite ? 'rgba(138, 98, 36, 0.55)' : 'rgba(212, 175, 55, 0.5)'}
-                    strokeWidth="1.1"
+                    stroke={isWhite ? 'rgba(138, 98, 36, 0.55)' : '#D4AF37'}
+                    strokeWidth={isWhite ? '1.1' : '1.5'}
                 />
 
                 <path

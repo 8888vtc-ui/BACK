@@ -110,15 +110,7 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
             aria-disabled={isLockedByBar && !isAnyTarget ? true : undefined}
             tabIndex={0}
             style={{ touchAction: 'none' }}
-            className={`relative flex-1 min-w-0 min-h-[44px] [@media(max-height:540px)]:min-h-0 h-full flex flex-col items-center select-none group cursor-pointer transition-all duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] touch-none ${
-                isSelected
-                    ? 'ring-2 ring-amber-400/90 rounded-lg bg-amber-400/5 shadow-[0_0_16px_rgba(251,191,36,0.4)]'
-                    : showLevel1
-                      ? 'rounded-lg bg-sky-400/10'
-                      : showLevel2 || showLevel3
-                        ? 'rounded-lg bg-sky-400/5'
-                        : ''
-            }`}
+            className="relative flex-1 min-w-0 min-h-[44px] [@media(max-height:540px)]:min-h-0 h-full flex flex-col items-center select-none group cursor-pointer transition-all duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] touch-none"
             onClick={(e) => onClickPoint(pointNumber, e)}
             onContextMenu={(e) => {
                 e.preventDefault();
@@ -198,19 +190,30 @@ const BoardPointComponent: React.FC<BoardPointProps> = ({
                         const isTop = idx === stackLayout.apexIndex;
                         const showCount = isTop ? stackLayout.badgeCount : undefined;
                         const showBlotRing = isBlotTarget && checkerCount === 1;
-                        const effectiveOverlapPx =
-                            checkerCount === 5 ? Math.max(stackLayout.overlapPx, 4) : stackLayout.overlapPx;
+                        const isFiveOrMore = checkerCount >= 5;
+                        const marginTopValue =
+                            idx === 0
+                                ? '0px'
+                                : isFiveOrMore
+                                  ? `calc(-1 * max(10%, ${stackLayout.overlapPx}px))`
+                                  : `-${stackLayout.overlapPx}px`;
                         return (
                             <div
                                 key={idx}
                                 data-testid={`checker-p${pointNumber}-${idx}`}
                                 style={{
-                                    marginTop: idx > 0 ? `-${effectiveOverlapPx}px` : '0px',
+                                    marginTop: marginTopValue,
                                     zIndex: isTopRow ? idx + 1 : stackLayout.visibleCheckers - idx,
                                 }}
                                 className={`relative checker-land pointer-events-auto transition-[transform,opacity] duration-150 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] ${
                                     isLockedByBar ? 'cursor-not-allowed' : ''
-                                } ${isForcedOrigin && isTop ? 'rounded-full ring-2 ring-amber-400 animate-pulse' : ''}`}
+                                } ${
+                                    isSelected && isTop
+                                        ? 'rounded-full ring-2 ring-[#fef08a] shadow-[0_0_16px_rgba(251,191,36,0.9)] scale-[1.05]'
+                                        : isForcedOrigin && isTop
+                                          ? 'rounded-full ring-2 ring-amber-400 animate-pulse'
+                                          : ''
+                                }`}
                             >
                                 {showBlotRing && (
                                     <span
