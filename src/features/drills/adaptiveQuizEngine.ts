@@ -319,8 +319,29 @@ export function selectNextAdaptiveQuiz(
     const profile = getAdaptivePlayerProfile();
     const seenSet = new Set([...profile.seenQuizIds, ...excludeSessionIds]);
 
-    // 1. Filtrer les quizz jamais vus
-    let unseenPool = allBlunders.filter((b) => !seenSet.has(b.id));
+    // 1. Filtrer les quizz jamais vus et écarter toute position dégénérée (ex: > 6 pions empilés sur 24 ou 1 en contact/blitz)
+    const isRealisticQuizPosition = (b: PlayerBlunderRecord): boolean => {
+        if (b.id.startsWith('quiz_')) return false;
+        const board = b.board;
+        if (!Array.isArray(board) || board.length < 26) return true;
+        let xTotal = Math.max(0, board[25] ?? 0) + Math.max(0, board[26] ?? 0);
+        let oTotal = Math.abs(Math.min(0, board[0] ?? 0)) + Math.abs(Math.min(0, board[27] ?? 0));
+        let maxStack = 0;
+        for (let pt = 1; pt <= 24; pt++) {
+            const v = board[pt] ?? 0;
+            if (v > 0) xTotal += v;
+            else if (v < 0) oTotal += Math.abs(v);
+            if (Math.abs(v) > maxStack) maxStack = Math.abs(v);
+        }
+        if (xTotal > 15 || oTotal > 15) return false;
+        if (maxStack >= 8 && b.conceptId !== 'bearoff_technique') return false;
+        return true;
+    };
+
+    let unseenPool = allBlunders.filter((b) => !seenSet.has(b.id) && isRealisticQuizPosition(b));
+    if (unseenPool.length === 0) {
+        unseenPool = allBlunders.filter((b) => !seenSet.has(b.id));
+    }
 
     // Si le joueur a épuisé 100 % de la base entière, on réinitialise uniquement l'historique des vus hors session courante
     if (unseenPool.length === 0) {
@@ -379,8 +400,9 @@ export function selectNextAdaptiveQuiz(
     // les positions pédagogiques riches et réalistes (bench_ / harvest_ / bterh_ / quiz_) avant les positions brutes
     const getPedagogicalPriority = (b: PlayerBlunderRecord): number => {
         if (b.id.startsWith('bench_') || b.id.startsWith('harvest_')) return 4;
-        if (b.id.startsWith('bterh_')) return 3;
-        if (b.id.startsWith('quiz_')) return 2;
+        if (b.id.startsWith('bterh_') || b.id.startsWith('bgt_gnu_')) return 3;
+        if (b.id.startsWith('btcore_')) return 2;
+        if (b.id.startsWith('quiz_')) return 0;
         return 1;
     };
 

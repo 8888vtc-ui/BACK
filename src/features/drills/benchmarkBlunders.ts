@@ -20,6 +20,21 @@ function boardFromXgid(xgid: string): number[] {
     for (let i = 0; i < parsed.board.length && i < 28; i++) {
         b[i] = parsed.board[i] ?? 0;
     }
+    // Si l'XGID avait le trait à O (turn === 'O'), la notation des coups du seed (ex: 8/4 6/4)
+    // est exprimée dans le référentiel relatif du joueur au trait (24 -> 1).
+    // On oriente donc le plateau dans le référentiel du joueur X (24 -> 1) pour que le rendu
+    // visuel, les flèches SVG et les coups légaux correspondent exactement à la notation !
+    if (parsed.turn === 'O') {
+        const flipped = new Array<number>(28).fill(0);
+        for (let pt = 1; pt <= 24; pt++) {
+            flipped[25 - pt] = -(b[pt] ?? 0);
+        }
+        flipped[25] = Math.abs(b[0] ?? 0); // Barre de O -> Barre de X (25)
+        flipped[0] = -Math.abs(b[25] ?? 0); // Barre de X -> Barre de O (0)
+        flipped[26] = Math.abs(b[27] ?? 0); // Off de O -> Off de X (26)
+        flipped[27] = -Math.abs(b[26] ?? 0); // Off de X -> Off de O (27)
+        return flipped;
+    }
     return b;
 }
 
