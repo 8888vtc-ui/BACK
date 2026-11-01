@@ -267,23 +267,37 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
 
                 {/* Contenu selon viewMode */}
                 {viewMode === 'grid' ? (
-                    sortedTournaments.length === 0 ? (
-                        <div className="rounded-2xl border border-white/10 bg-[#0b101b] p-12 text-center text-slate-400">
-                            <p className="text-base">Aucun tournoi ne correspond à vos critères de recherche.</p>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {sortedTournaments.map((t) => (
-                                <TournamentCard
-                                    key={t.id}
-                                    tournament={t}
-                                    isBookmarked={bookmarkedIds.has(t.id)}
-                                    onToggleBookmark={handleToggleBookmark}
-                                    onExportIcs={handleExportSingleIcs}
-                                />
-                            ))}
-                        </div>
-                    )
+                    <div className="flex flex-col gap-6">
+                        <WorldVenuesMapDirectoryView
+                            venues={filteredVenues}
+                            tournaments={sortedTournaments}
+                            showClubs={showMapClubs}
+                            showTournaments={showMapTournaments}
+                            onToggleClubs={() => setShowMapClubs((prev) => !prev)}
+                            onToggleTournaments={() => setShowMapTournaments((prev) => !prev)}
+                            isSubmitClubOpen={isSubmitClubModalOpen}
+                            onOpenSubmitClub={() => setIsSubmitClubModalOpen(true)}
+                            onCloseSubmitClub={() => setIsSubmitClubModalOpen(false)}
+                            onClubCreated={handleClubCreated}
+                        />
+                        {sortedTournaments.length === 0 ? (
+                            <div className="rounded-2xl border border-white/10 bg-[#0b101b] p-12 text-center text-slate-400">
+                                <p className="text-base">Aucun tournoi ne correspond à vos critères de recherche.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {sortedTournaments.map((t) => (
+                                    <TournamentCard
+                                        key={t.id}
+                                        tournament={t}
+                                        isBookmarked={bookmarkedIds.has(t.id)}
+                                        onToggleBookmark={handleToggleBookmark}
+                                        onExportIcs={handleExportSingleIcs}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 ) : viewMode === 'agenda' ? (
                     <TournamentAgendaView
                         monthGroups={monthGroups}

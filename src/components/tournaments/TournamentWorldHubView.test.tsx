@@ -28,18 +28,18 @@ describe('TournamentWorldHubView', () => {
         renderHub();
 
         expect(screen.getByTestId('tournament-world-hub-view')).toBeDefined();
-        expect(screen.getByText(/Monte-Carlo Backgammon World Championship/i)).toBeDefined();
-        expect(screen.getByText(/Paris Masters Backgammon FFB/i)).toBeDefined();
-        expect(screen.getByText(/Riviera Cup Nice/i)).toBeDefined();
+        expect(screen.getAllByText(/Monte-Carlo Backgammon World Championship/i).length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText(/Paris Masters Backgammon FFB/i).length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText(/Riviera Cup Nice/i).length).toBeGreaterThanOrEqual(1);
 
         // Filtre MEGA uniquement
         fireEvent.click(screen.getByTestId('filter-tier-mega'));
-        expect(screen.getByText(/Monte-Carlo Backgammon World Championship/i)).toBeDefined();
+        expect(screen.getAllByText(/Monte-Carlo Backgammon World Championship/i).length).toBeGreaterThanOrEqual(1);
         expect(screen.queryByText(/Riviera Cup Nice/i)).toBeNull();
 
         // Filtre MOYEN uniquement
         fireEvent.click(screen.getByTestId('filter-tier-moyen'));
-        expect(screen.getByText(/Riviera Cup Nice/i)).toBeDefined();
+        expect(screen.getAllByText(/Riviera Cup Nice/i).length).toBeGreaterThanOrEqual(1);
         expect(screen.queryByText(/Monte-Carlo Backgammon World Championship/i)).toBeNull();
     });
 
@@ -49,7 +49,7 @@ describe('TournamentWorldHubView', () => {
         const searchInput = screen.getByTestId('tournament-search-input');
         fireEvent.change(searchInput, { target: { value: 'Tokyo' } });
 
-        expect(screen.getByText(/Tokyo International Backgammon Festival/i)).toBeDefined();
+        expect(screen.getAllByText(/Tokyo International Backgammon Festival/i).length).toBeGreaterThanOrEqual(1);
         expect(screen.queryByText(/Las Vegas Open/i)).toBeNull();
 
         // Reset search & switch to Agenda view
