@@ -29,6 +29,7 @@ export interface AppNavbarProps {
     onSelectPlayTab?: () => void;
     onOpenSettings?: () => void;
     onUserResolved?: (user: User | null, profile: Profile | null, status: AuthStatus) => void;
+    statusBadge?: React.ReactNode;
 }
 
 interface NavItem {
@@ -46,6 +47,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
     onSelectPlayTab,
     onOpenSettings,
     onUserResolved,
+    statusBadge,
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { t, ui } = useTranslation();
@@ -147,8 +149,8 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     </Link>
                 </div>
 
-                {/* Centre : Onglets d'accès direct Desktop (Style Segmented Pill Pro) */}
-                <div className="hidden lg:flex items-center gap-0.5 rounded-xl border border-white/10 bg-slate-900/80 p-1">
+                {/* Centre : Liens sr-only (Navigation regroupée dans la Sidebar gauche sans doublon visuel dans la Topbar) */}
+                <div className="sr-only">
                     {navItems.map((item) => {
                         const isActive = activeTab === item.id;
                         return (
@@ -158,21 +160,18 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                                 prefetch
                                 data-testid={item.testId}
                                 onClick={(e) => handleItemClick(item, e)}
-                                className={`flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all duration-150 ${
-                                    isActive
-                                        ? 'bg-white/10 text-white shadow-sm'
-                                        : 'text-slate-400 hover:bg-white/[0.04] hover:text-slate-200'
-                                }`}
+                                className={isActive ? 'font-bold' : ''}
                             >
-                                <span aria-hidden="true" className="text-xs">{item.icon}</span>
+                                <span aria-hidden="true">{item.icon}</span>
                                 <span>{item.label}</span>
                             </Link>
                         );
                     })}
                 </div>
 
-                {/* Droite : Bouton PWA + Menu Compte Utilisateur (Langue 100 % auto-détectée) */}
+                {/* Droite : Statut Joueur/Invité + Elo + Bouton Installer l'App + Bouton Connexion */}
                 <div className="flex items-center gap-2 shrink-0">
+                    {statusBadge}
                     {!isInstalled && canInstall && (
                         <button
                             type="button"

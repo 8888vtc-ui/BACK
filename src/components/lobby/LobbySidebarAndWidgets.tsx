@@ -55,92 +55,194 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
 }) => {
     const [collapsed, setCollapsed] = useState(false);
     const [playGroupExpanded, setPlayGroupExpanded] = useState(true);
+    const [quizzGroupExpanded, setQuizzGroupExpanded] = useState(true);
+    const [studioGroupExpanded, setStudioGroupExpanded] = useState(false);
+    const [academyGroupExpanded, setAcademyGroupExpanded] = useState(false);
 
     const itemCls = 'flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold text-stone-300 hover:bg-white/5 hover:text-white transition';
+    const subItemCls = 'flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-stone-300 hover:bg-white/5 hover:text-white transition';
 
     return (
         <aside
             aria-label="Menu latéral principal"
             data-testid="lobby-left-sidebar"
-            className={`hidden lg:flex flex-col justify-between shrink-0 border-r border-white/10 bg-[#0b0907] py-4 transition-all duration-200 select-none overflow-y-auto ${collapsed ? 'w-16 px-2 items-center' : 'w-56 px-3'
+            className={`hidden lg:flex flex-col justify-between shrink-0 border-r border-white/10 bg-[#050505] py-4 transition-all duration-200 select-none overflow-y-auto ${collapsed ? 'w-16 px-2 items-center' : 'w-56 px-3'
                 }`}
         >
             <div className="flex flex-col gap-1.5 w-full">
-                {/* Bouton Principal Style Galaxy : Jeu Rapide */}
-                <button
-                    type="button"
-                    data-testid="sidebar-quick-play-btn"
-                    onClick={onQuickPlay}
-                    title="Lancer une partie rapide"
-                    className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-[#f5dfa0]/60 bg-gradient-to-r from-[#d4af37] via-[#f3d27a] to-[#b88924] px-3 py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#090806] shadow-[0_4px_16px_rgba(212,175,55,0.25)] transition hover:brightness-105 active:scale-95"
-                >
-                    <IconLuxuryDice className="text-[#090806]" size={16} />
-                    {!collapsed && <span>Jeu Rapide</span>}
-                </button>
+                {/* PILIER 1 : Salon de Jeu (Actif — Entrée de menu standard sans gros bouton plein Or concurrent) */}
+                <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1">
+                        <button
+                            type="button"
+                            data-testid="sidebar-quick-play-btn"
+                            onClick={onQuickPlay}
+                            title="Salon de Jeu (Actif)"
+                            className={`flex flex-1 items-center gap-2.5 rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                                selectedMode === 'ai' || selectedMode === 'multiplayer'
+                                    ? 'border-[#d4af37]/45 bg-[#12151C] text-[#f7f3e8] shadow-sm'
+                                    : 'border-transparent text-stone-300 hover:bg-white/5 hover:text-white'
+                            }`}
+                        >
+                            <IconLuxuryDice className="text-[#d4af37]" size={15} />
+                            {!collapsed && <span>Salon de Jeu</span>}
+                        </button>
+                        {!collapsed && (
+                            <button
+                                type="button"
+                                data-testid="sidebar-play-group-toggle"
+                                aria-expanded={playGroupExpanded}
+                                aria-label="Déplier les options du Salon de Jeu"
+                                onClick={() => setPlayGroupExpanded((v) => !v)}
+                                className="rounded-lg px-2 py-2 text-xs text-stone-400 hover:bg-white/5 hover:text-white transition"
+                            >
+                                <span aria-hidden="true">{playGroupExpanded ? '▾' : '▸'}</span>
+                            </button>
+                        )}
+                    </div>
 
-                {/* 1. Jouer */}
+                    {(playGroupExpanded || collapsed) && (
+                        <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-3 border-l border-white/10 ml-3 mt-0.5'}`}>
+                            <button
+                                type="button"
+                                data-testid="sidebar-submenu-ai"
+                                onClick={onSelectAiMode}
+                                className={subItemCls}
+                            >
+                                <IconAstrolabeCoach size={14} className="text-[#d4af37]" />
+                                {!collapsed && <span>Contre l’IA</span>}
+                            </button>
+                            <button
+                                type="button"
+                                data-testid="sidebar-submenu-find-opponent"
+                                onClick={() => (onFindOpponent ? onFindOpponent() : onOpenModule?.('multiplayer'))}
+                                className={subItemCls}
+                            >
+                                <IconWorldTourLive size={14} className="text-emerald-400" />
+                                {!collapsed && <span>Jouer en Ligne</span>}
+                            </button>
+                            <button
+                                type="button"
+                                data-testid="sidebar-submenu-match"
+                                onClick={onSelectMatchGame}
+                                className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
+                                    selectedMode === 'ai' && matchLength > 0 && isSubmenuOpen
+                                        ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
+                                        : 'text-stone-300 hover:bg-white/5 hover:text-white'
+                                }`}
+                            >
+                                <IconLuxuryCrown size={14} />
+                                {!collapsed && <span>Match (3 à 11 pts)</span>}
+                            </button>
+                            <button
+                                type="button"
+                                data-testid="sidebar-submenu-money"
+                                onClick={onSelectMoneyGame}
+                                className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
+                                    selectedMode === 'ai' && matchLength === 0 && isSubmenuOpen
+                                        ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
+                                        : 'text-stone-300 hover:bg-white/5 hover:text-white'
+                                }`}
+                            >
+                                <IconCasinoToken size={14} />
+                                {!collapsed && <span>Partie Simple</span>}
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* PILIER 2 : Puzzles & Quizz (Quizz PR, Quizz ERH & Blunders) */}
                 <button
                     type="button"
-                    data-testid="sidebar-play-group-toggle"
-                    aria-expanded={playGroupExpanded}
-                    onClick={() => setPlayGroupExpanded((v) => !v)}
+                    data-testid="sidebar-pillar-puzzles"
+                    aria-expanded={quizzGroupExpanded}
+                    onClick={() => setQuizzGroupExpanded((v) => !v)}
                     className={itemCls}
                 >
                     <span className="flex items-center gap-2.5">
-                        <IconLuxuryDice size={15} className="text-[#d4af37]" />
-                        {!collapsed && <span>Jouer</span>}
+                        <IconGeometricCompass size={15} className="text-emerald-400" />
+                        {!collapsed && <span>Puzzles &amp; Quizz</span>}
                     </span>
-                    {!collapsed && <span aria-hidden="true" className="text-stone-500">{playGroupExpanded ? '▾' : '▸'}</span>}
+                    {!collapsed && <span aria-hidden="true" className="text-stone-500">{quizzGroupExpanded ? '▾' : '▸'}</span>}
                 </button>
-
-                {(playGroupExpanded || collapsed) && (
+                {(quizzGroupExpanded || collapsed) && (
                     <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-3 border-l border-white/10 ml-3'}`}>
                         <button
                             type="button"
-                            data-testid="sidebar-submenu-find-opponent"
-                            onClick={() => (onFindOpponent ? onFindOpponent() : onOpenModule?.('multiplayer'))}
-                            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-stone-300 hover:bg-white/5 hover:text-white transition"
+                            onClick={() => onOpenModule?.('puzzles')}
+                            title="Performance Rating : mesure la précision mathématique de vos coups, plus il est bas, meilleur vous êtes"
+                            className={subItemCls}
                         >
-                            <IconWorldTourLive size={14} className="text-emerald-400" />
-                            {!collapsed && <span>Jouer en Ligne</span>}
+                            <IconGeometricCompass size={14} className="text-emerald-400" />
+                            {!collapsed && <span>Quizz PR</span>}
                         </button>
                         <button
                             type="button"
-                            data-testid="sidebar-submenu-match"
-                            onClick={onSelectMatchGame}
-                            className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${selectedMode === 'ai' && matchLength > 0 && isSubmenuOpen
-                                    ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
-                                    : 'text-stone-300 hover:bg-white/5 hover:text-white'
-                                }`}
+                            onClick={() => onOpenModule?.('drills')}
+                            title="Équité Réelle Humaine : mesure les pièges psychologiques qui provoquent le plus d'erreurs chez un adversaire humain"
+                            className={subItemCls}
                         >
-                            <IconLuxuryCrown size={14} />
-                            {!collapsed && <span>Match (3 à 11 pts)</span>}
-                        </button>
-                        <button
-                            type="button"
-                            data-testid="sidebar-submenu-money"
-                            onClick={onSelectMoneyGame}
-                            className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${selectedMode === 'ai' && matchLength === 0 && isSubmenuOpen
-                                    ? 'bg-[#d4af37]/15 text-[#fdf8eb]'
-                                    : 'text-stone-300 hover:bg-white/5 hover:text-white'
-                                }`}
-                        >
-                            <IconCasinoToken size={14} />
-                            {!collapsed && <span>Partie Simple</span>}
-                        </button>
-                        <button
-                            type="button"
-                            data-testid="sidebar-submenu-ai"
-                            onClick={onSelectAiMode}
-                            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-stone-300 hover:bg-white/5 hover:text-white transition"
-                        >
-                            <IconAstrolabeCoach size={14} />
-                            {!collapsed && <span>Contre l’IA</span>}
+                            <IconAstrolabeCoach size={14} className="text-[#f3d27a]" />
+                            {!collapsed && <span>Quizz ERH &amp; Blunders</span>}
                         </button>
                     </div>
                 )}
 
-                {/* 2. Tournois */}
+                {/* PILIER 3 : Studio d'Analyse (Analyse & Scanner) */}
+                <button
+                    type="button"
+                    data-testid="sidebar-pillar-studio"
+                    aria-expanded={studioGroupExpanded}
+                    onClick={() => setStudioGroupExpanded((v) => !v)}
+                    className={itemCls}
+                >
+                    <span className="flex items-center gap-2.5">
+                        <IconCameraScanner size={15} className="text-sky-400" />
+                        {!collapsed && <span>Studio d’Analyse</span>}
+                    </span>
+                    {!collapsed && <span aria-hidden="true" className="text-stone-500">{studioGroupExpanded ? '▾' : '▸'}</span>}
+                </button>
+                {(studioGroupExpanded || collapsed) && (
+                    <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-3 border-l border-white/10 ml-3'}`}>
+                        <button type="button" onClick={() => onOpenModule?.('stats')} className={subItemCls}>
+                            <IconAstrolabeCoach size={14} className="text-sky-400" />
+                            {!collapsed && <span>Analyse &amp; PR</span>}
+                        </button>
+                        <button type="button" onClick={() => onOpenModule?.('import_export')} className={subItemCls}>
+                            <IconCameraScanner size={14} className="text-[#f3d27a]" />
+                            {!collapsed && <span>Scanner &amp; Import</span>}
+                        </button>
+                    </div>
+                )}
+
+                {/* PILIER 4 : Académie (Ouvertures, Bibliothèque, Leçons) */}
+                <button
+                    type="button"
+                    data-testid="sidebar-pillar-academy"
+                    aria-expanded={academyGroupExpanded}
+                    onClick={() => setAcademyGroupExpanded((v) => !v)}
+                    className={itemCls}
+                >
+                    <span className="flex items-center gap-2.5">
+                        <IconGrimoireBook size={15} className="text-[#f3d27a]" />
+                        {!collapsed && <span>Académie</span>}
+                    </span>
+                    {!collapsed && <span aria-hidden="true" className="text-stone-500">{academyGroupExpanded ? '▾' : '▸'}</span>}
+                </button>
+                {(academyGroupExpanded || collapsed) && (
+                    <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-3 border-l border-white/10 ml-3'}`}>
+                        <button type="button" onClick={() => onOpenModule?.('openings')} className={subItemCls}>
+                            <IconGrimoireBook size={14} className="text-[#f3d27a]" />
+                            {!collapsed && <span>Ouvertures &amp; Bibliothèque</span>}
+                        </button>
+                        <Link href="/academy" className={subItemCls}>
+                            <IconLuxuryCrown size={14} className="text-emerald-400" />
+                            {!collapsed && <span>Leçons &amp; Théorie 3-Ply</span>}
+                        </Link>
+                    </div>
+                )}
+
+                {/* PILIER 5 : Carte : Tournois & Clubs */}
                 <button
                     type="button"
                     data-testid="sidebar-tournaments-live-btn"
@@ -149,49 +251,9 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                 >
                     <span className="flex items-center gap-2.5">
                         <IconWorldTourLive size={15} className="text-amber-400" />
-                        {!collapsed && <span>Tournois</span>}
+                        {!collapsed && <span>Carte : Tournois &amp; Clubs</span>}
                     </span>
                 </button>
-
-                {/* 3. Quizz PR (Mathématique) */}
-                <button type="button" onClick={() => onOpenModule?.('puzzles')} className={itemCls}>
-                    <span className="flex items-center gap-2.5">
-                        <IconGeometricCompass size={15} className="text-emerald-400" />
-                        {!collapsed && <span>Quizz PR</span>}
-                    </span>
-                </button>
-
-                {/* 4. Quizz ERH (Psychologie Adverse) */}
-                <button type="button" onClick={() => onOpenModule?.('drills')} className={itemCls}>
-                    <span className="flex items-center gap-2.5">
-                        <IconAstrolabeCoach size={15} className="text-[#f3d27a]" />
-                        {!collapsed && <span>Quizz ERH</span>}
-                    </span>
-                </button>
-
-                {/* 5. Analyse & Progression */}
-                <button type="button" onClick={() => onOpenModule?.('stats')} className={itemCls}>
-                    <span className="flex items-center gap-2.5">
-                        <IconCameraScanner size={15} className="text-sky-400" />
-                        {!collapsed && <span>Analyse</span>}
-                    </span>
-                </button>
-
-                {/* 6. Bibliothèque d'Ouvertures */}
-                <button type="button" onClick={() => onOpenModule?.('openings')} className={itemCls}>
-                    <span className="flex items-center gap-2.5">
-                        <IconGrimoireBook size={15} className="text-[#f3d27a]" />
-                        {!collapsed && <span>Bibliothèque</span>}
-                    </span>
-                </button>
-
-                {/* 7. Leçons & Académie */}
-                <Link href="/academy" className={itemCls}>
-                    <span className="flex items-center gap-2.5">
-                        <IconLuxuryCrown size={15} className="text-emerald-400" />
-                        {!collapsed && <span>Leçons</span>}
-                    </span>
-                </Link>
             </div>
 
             {/* Pied de barre latérale épuré (Inviter des amis, Mon Profil, Réglages, Réduire) */}
