@@ -20,8 +20,9 @@ export interface ModuleProgressCardProps {
     title: string;
     liveMetricLabel: string;
     progressPct: number;
-    actionBadge: 'Continuer' | "S'entraîner" | 'Analyser';
+    actionBadge: 'Continuer' | "S'entraîner" | 'Analyser' | 'Résoudre →' | 'Corriger →' | 'Étudier →';
     highlightBadge?: string | null;
+    tooltip?: string;
     onSelect: (id: LobbyModuleId) => void;
 }
 
@@ -34,6 +35,7 @@ const ModuleProgressCardComponent: React.FC<ModuleProgressCardProps> = ({
     progressPct,
     actionBadge,
     highlightBadge,
+    tooltip,
     onSelect,
 }) => {
     const clampedPct = Math.max(0, Math.min(100, Math.round(progressPct)));
@@ -42,6 +44,7 @@ const ModuleProgressCardComponent: React.FC<ModuleProgressCardProps> = ({
         <button
             type="button"
             data-testid={testId}
+            title={tooltip}
             onClick={() => onSelect(id)}
             className="group relative flex flex-col justify-between gap-2 rounded-xl border border-white/10 bg-slate-900/50 p-3 text-left transition-all duration-150 hover:border-white/25 hover:bg-slate-800/70 active:scale-[0.98]"
         >

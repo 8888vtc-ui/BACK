@@ -113,12 +113,15 @@ const PlayerProfileCardComponent: React.FC<PlayerProfileCardProps> = ({
                         </div>
                     </div>
 
-                    {/* Pilule PR */}
+                    {/* Pilule PR avec infobulle pédagogique Caméléon */}
                     <div
                         data-testid="player-pr-stat"
-                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a1f35] px-3 py-1.5"
+                        title="Performance Rating : mesure la précision de vos coups, plus il est bas, meilleur vous êtes"
+                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a1f35] px-3 py-1.5 cursor-help"
                     >
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">PR</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 underline decoration-dotted underline-offset-2">
+                            PR
+                        </span>
                         <span className="font-mono text-sm sm:text-base font-black text-white">
                             {averagePR !== null ? averagePR.toFixed(2) : '—'}
                         </span>

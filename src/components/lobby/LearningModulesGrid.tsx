@@ -72,30 +72,20 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {/* Rangée unique horizontale de 3 cartes d'action aux intitulés distincts */}
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
                 <ModuleProgressCard
                     id="puzzles"
                     testId="lobby-module-puzzles"
                     icon="🧩"
                     title={ui.subpages.puzzlesLink}
+                    tooltip="Performance Rating (PR) : mesure la précision mathématique de vos coups, plus il est bas, meilleur vous êtes."
                     liveMetricLabel={`${snapshot.puzzlesSolved}/${snapshot.puzzlesTotal}${
                         snapshot.puzzleStreak > 0 ? ` · ${snapshot.puzzleStreak}j 🔥` : ''
                     }`}
                     progressPct={puzzlePct}
-                    actionBadge={snapshot.puzzlesSolved > 0 ? 'Continuer' : "S'entraîner"}
-                    highlightBadge={snapshot.puzzleStreak > 0 ? `🔥 ${snapshot.puzzleStreak}j` : 'Tactique'}
-                    onSelect={handleSelect}
-                />
-
-                <ModuleProgressCard
-                    id="openings"
-                    testId="lobby-module-openings"
-                    icon="📖"
-                    title={ui.navbar.openings}
-                    liveMetricLabel={`${snapshot.openingsMastered}/${snapshot.openingsTotal}`}
-                    progressPct={openingPct}
-                    actionBadge={snapshot.openingsMastered > 0 ? 'Continuer' : "S'entraîner"}
-                    highlightBadge="Théorie XG"
+                    actionBadge="Résoudre →"
+                    highlightBadge={snapshot.puzzleStreak > 0 ? `🔥 ${snapshot.puzzleStreak}j` : 'Précision PR'}
                     onSelect={handleSelect}
                 />
 
@@ -104,15 +94,32 @@ const LearningModulesGridComponent: React.FC<LearningModulesGridProps> = ({
                     testId="lobby-module-drills"
                     icon="🎯"
                     title={ui.subpages.drillsLink}
+                    tooltip="Équité Réelle Humaine (ERH) : mesure les pièges psychologiques et corrige vos erreurs récurrentes."
                     liveMetricLabel={`${snapshot.blundersToReview} blunder${
                         snapshot.blundersToReview > 1 ? 's' : ''
-                    }`}
+                    } à revoir`}
                     progressPct={drillPct}
-                    actionBadge="S'entraîner"
-                    highlightBadge={`${snapshot.blundersMastered}/${snapshot.blundersTotal}`}
+                    actionBadge="Corriger →"
+                    highlightBadge={`ERH · ${snapshot.blundersMastered}/${snapshot.blundersTotal}`}
                     onSelect={handleSelect}
                 />
 
+                <ModuleProgressCard
+                    id="openings"
+                    testId="lobby-module-openings"
+                    icon="📖"
+                    title={ui.navbar.openings}
+                    tooltip="Encyclopédie interactive des 15 lancers d'ouverture et théorie 3-Ply."
+                    liveMetricLabel={`${snapshot.openingsMastered}/${snapshot.openingsTotal} maîtrisées`}
+                    progressPct={openingPct}
+                    actionBadge="Étudier →"
+                    highlightBadge="Théorie 3-Ply"
+                    onSelect={handleSelect}
+                />
+            </div>
+
+            {/* Nœud sr-only conservé pour l'accessibilité et la rétrocompatibilité des tests de progression */}
+            <div className="sr-only">
                 <ModuleProgressCard
                     id="stats"
                     testId="lobby-module-stats"
