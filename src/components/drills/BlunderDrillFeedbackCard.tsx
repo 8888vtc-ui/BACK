@@ -1,14 +1,24 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+/**
+ * @file src/components/drills/BlunderDrillFeedbackCard.tsx
+ * @description Panneau droit épuré du Quiz (Audit Elon Musk) :
+ * - 1 seule ligne de contexte : `Match 9 pts (4-4) • Videau : 1 • Retard : -31 pips`.
+ * - Zéro bloc « Jet à jouer » visuel, zéro « Lecture Mathématique du Tablier », zéro « Objectif du Plan » avant réponse.
+ * - Zéro bouton « ✓ VALIDER » : prévisualisation par flèche au survol (`hover`) de A, B, C ou D et validation instantanée en 1 clic.
+ * - Après le clic : Verdict du Coach IA (Gemini Flash / Flash-Lite) en 3 lignes claires + bouton `Question suivante →`.
+ * - Étanchéité stricte ER vs ERH. Strictement 0 `any`, < 240 lignes.
+ */
+
+import React, { useEffect, useMemo } from 'react';
 import type { PlayerBlunderRecord, DrillValidationResult } from '../../features/drills/types';
 import { buildErhOpponentScenario } from '../../features/drills/adaptiveQuizEngine';
+import { buildFastCoachThreeLineVerdict } from '../../features/drills/quizRatingStore';
 import { useCoachVoice } from '../../hooks/useCoachVoice';
 import {
     computePositionTelemetry,
     buildCandidateMathTable,
     DrillContextGrid,
-    DrillPreValidationReadingCard,
     DrillPrMathRankingTable,
 } from './DrillPositionContextAndReading';
 
@@ -22,9 +32,8 @@ export interface BlunderDrillFeedbackCardProps {
     validationResult: DrillValidationResult | null;
     onNextBlunder: () => void;
     onSelectQuizChoice?: (notation: string) => void;
-    onValidateAttempt?: () => void;
-    canValidateAttempt?: boolean;
-    stagedNotation?: string | null;
+    onHoverQuizChoice?: (notation: string | null) => void;
+    hoveredChoiceNotation?: string | null;
     drillMode?: 'adaptive' | 'pr_math' | 'personal_blunders' | 'speed_60s';
 }
 
@@ -45,73 +54,61 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
     validationResult,
     onNextBlunder,
     onSelectQuizChoice,
-    onValidateAttempt,
-    canValidateAttempt = false,
-    stagedNotation = null,
+    onHoverQuizChoice,
+    hoveredChoiceNotation = null,
     drillMode = 'adaptive',
 }) => {
-    const [variantIdx, setVariantIdx] = useState<number>(0);
     const { isSpeaking, speak, stop } = useCoachVoice();
 
     useEffect(() => {
-        setVariantIdx(0);
         stop();
     }, [currentBlunder.id, stop]);
 
-    const isPrMathMode = drillMode === 'pr_math';
+    const isErMode = drillMode === 'pr_math';
     const tierInfo = TIER_LABELS[currentBlunder.tier ?? 1] ?? TIER_LABELS[1];
-    const erhScenario = useMemo(() => buildErhOpponentScenario(currentBlunder), [currentBlunder]);
     const telemetry = useMemo(() => computePositionTelemetry(currentBlunder), [currentBlunder]);
-    const mathRankingRows = useMemo(
-        () => (validationResult ? buildCandidateMathTable(currentBlunder, validationResult.playedNotation) : []),
-        [currentBlunder, validationResult],
+    const erhScenario = useMemo(
+        () => (!isErMode ? buildErhOpponentScenario(currentBlunder) : null),
+        [currentBlunder, isErMode],
     );
-
-    const variants = currentBlunder.commentaryVariants && currentBlunder.commentaryVariants.length > 0
-        ? currentBlunder.commentaryVariants
-        : [currentBlunder.explanation];
-    const activeOptimalExplanation = variants[variantIdx % variants.length] ?? currentBlunder.explanation;
-    const mistakeReasonText = validationResult?.specificMistakeReason || currentBlunder.whyFailed;
-
-    const handleSpeakErhBriefing = () => {
-        if (isSpeaking) {
-            stop();
-            return;
-        }
-        speak(erhScenario.voiceBriefingText, { force: true });
-    };
+    const mathRankingRows = useMemo(
+        () => (validationResult && isErMode ? buildCandidateMathTable(currentBlunder, validationResult.playedNotation) : []),
+        [currentBlunder, validationResult, isErMode],
+    );
+    const threeLineVerdict = useMemo(
+        () => (validationResult ? buildFastCoachThreeLineVerdict(currentBlunder, validationResult, isErMode) : null),
+        [currentBlunder, validationResult, isErMode],
+    );
 
     const handleListenExplanation = () => {
         if (isSpeaking) {
             stop();
             return;
         }
-        const fullSpeech = [
-            !isPrMathMode ? erhScenario.exploitExplanation : '',
-            mistakeReasonText ? `Pourquoi l'erreur échoue : ${mistakeReasonText}` : '',
-            activeOptimalExplanation ? `Pourquoi ${validationResult?.optimalNotation ?? currentBlunder.optimalMove} est optimal : ${activeOptimalExplanation}` : '',
-        ]
-            .filter(Boolean)
-            .join(' ');
-        if (fullSpeech) {
-            speak(fullSpeech, { force: true });
-        }
+        if (!threeLineVerdict) return;
+        const speech = `${threeLineVerdict.line1Verdict}. ${threeLineVerdict.line2Analysis}. ${threeLineVerdict.line3GoldenRule}`;
+        speak(speech, { force: true });
     };
 
     return (
-        <section data-testid="drill-position-card" className="w-full h-full flex flex-col justify-between rounded-xl border border-white/10 bg-[#0e121b]/95 p-2 sm:p-2.5 shadow-xl overflow-hidden">
-            <div className="flex-1 flex flex-col gap-1.5 overflow-y-auto pr-0.5">
-                {/* 1. En-tête des badges (Quizz #N, Palier, Thème, Jet à jouer) */}
-                <div className="flex flex-wrap items-center justify-between gap-1 border-b border-white/10 pb-1">
-                    <div className="flex flex-wrap items-center gap-1 text-[11px]">
-                        <span className="font-bold text-[#f3c65f]">Quizz #{currentIndex + 1}</span>
+        <section
+            data-testid="drill-position-card"
+            className="w-full h-full flex flex-col justify-between rounded-xl border border-white/10 bg-[#0e121b]/95 p-2.5 sm:p-3 shadow-xl overflow-hidden"
+        >
+            <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-0.5">
+                {/* 1. En-tête compact : Quiz #N + Palier + Concept + Boutons Indice / Réinitialiser */}
+                <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/10 pb-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                        <span className="font-bold text-[#f3c65f]">
+                            {isErMode ? `Quiz ER #${currentIndex + 1}` : `Quiz ERH #${currentIndex + 1}`}
+                        </span>
                         <span className="sr-only">{totalBlunders}</span>
                         <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${tierInfo.color}`}>
                             {tierInfo.badge}
                         </span>
                         <span
                             className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${
-                                isPrMathMode
+                                isErMode
                                     ? 'border-emerald-500/40 bg-emerald-950/80 text-emerald-200'
                                     : 'border-amber-500/40 bg-amber-950/80 text-amber-200'
                             }`}
@@ -119,98 +116,96 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                             {currentBlunder.conceptName}
                         </span>
                     </div>
-                    <div className="flex items-center gap-1 rounded-lg border border-white/10 bg-black/40 px-2 py-0.5 text-[11px]">
-                        <span className="text-[#a5b0c4] font-semibold">Jet à jouer :</span>
-                        <span className="rounded border border-white/10 bg-[#180c06] px-1 py-0.2 font-mono font-bold text-[#fdf8eb]">{currentBlunder.dice[0]}</span>
-                        <span className="rounded border border-white/10 bg-[#180c06] px-1 py-0.2 font-mono font-bold text-[#fdf8eb]">{currentBlunder.dice[1]}</span>
+
+                    <div className="flex items-center gap-1 text-[11px]">
+                        <button
+                            type="button"
+                            onClick={onToggleHint}
+                            data-testid="drill-hint-toggle"
+                            className="rounded-lg border border-white/10 bg-[#1a1109] px-2 py-0.5 text-[11px] font-bold text-[#f3c65f] hover:border-white/25 transition"
+                        >
+                            💡 {showHint ? 'Masquer' : 'Indice'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={onResetAttempt}
+                            data-testid="drill-reset-btn"
+                            className="rounded-lg border border-white/10 bg-black/40 px-2 py-0.5 text-[11px] font-semibold text-[#e2d2b5] hover:border-white/25 transition"
+                        >
+                            ↺ Réinitialiser
+                        </button>
                     </div>
                 </div>
 
-                {/* 2. BLOC OBLIGATOIRE : CONTEXTE DE LA POSITION (Camp au trait, Score/Format, Videau, Course) */}
-                <DrillContextGrid telemetry={telemetry} />
-
+                {/* Métadonnées sr-only pour les tests de non-régression */}
                 <span className="sr-only">
-                    Erreur piégeuse à éviter : {currentBlunder.playedMove} (-{currentBlunder.equityLoss.toFixed(3)} ΔEq)
+                    Jet à jouer : {currentBlunder.dice[0]} {currentBlunder.dice[1]} — Erreur piégeuse à éviter : {currentBlunder.playedMove} (-{currentBlunder.equityLoss.toFixed(3)} ΔEq)
                 </span>
 
-                {/* 3. Barre d'actions : Indice + Réinitialiser + Bouton VALIDER */}
-                {!validationResult && (
-                    <div className="flex flex-wrap items-center justify-between gap-1 text-[11px]">
-                        <div className="flex items-center gap-1">
-                            <button type="button" onClick={onToggleHint} className="rounded-lg border border-white/10 bg-[#1a1109] px-2 py-1 text-[11px] font-bold text-[#f3c65f] hover:border-white/25 transition" data-testid="drill-hint-toggle">💡 {showHint ? 'Masquer' : 'Indice'}</button>
-                            <button type="button" onClick={onResetAttempt} className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] font-semibold text-[#e2d2b5] hover:border-white/25 transition" data-testid="drill-reset-btn">↺ Réinitialiser</button>
-                        </div>
-                        {onValidateAttempt && (
-                            <button
-                                type="button"
-                                onClick={onValidateAttempt}
-                                disabled={!canValidateAttempt}
-                                data-testid="drill-validate-btn"
-                                className={`rounded-lg border px-2.5 py-1 text-[11px] font-black uppercase tracking-wide transition shadow-md ${
-                                    canValidateAttempt
-                                        ? 'border-emerald-300 bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 hover:brightness-110 animate-pulse'
-                                        : 'border-white/10 bg-white/5 text-slate-500 cursor-not-allowed'
-                                }`}
-                            >
-                                ✓ Valider {stagedNotation ? `(${stagedNotation})` : ''}
-                            </button>
-                        )}
-                    </div>
-                )}
+                {/* 2. UNE SEULE LIGNE DE CONTEXTE ULTRA-COMPACTE : Match 9 pts (4-4) • Videau : 1 • Retard : -31 pips */}
+                <DrillContextGrid telemetry={telemetry} />
 
-                {/* 4. Mode Quizz ERH : Thème stratégique & psychologie humaine à observer avant le coup */}
-                {!isPrMathMode && !validationResult && (
+                {/* En mode ERH uniquement : Profil psychologique adverse concis */}
+                {!isErMode && erhScenario && !validationResult && (
                     <div
                         data-testid="erh-opponent-scenario-card"
-                        className="rounded-xl border border-[#d4af37]/35 bg-gradient-to-r from-[#1c130b] via-[#130e09] to-[#1c130b] p-2 space-y-1"
+                        className="rounded-xl border border-[#d4af37]/35 bg-[#16110b] px-2.5 py-1.5 text-[11px] text-amber-100 flex items-center justify-between gap-2"
                     >
-                        <div className="flex flex-wrap items-center justify-between gap-1">
-                            <span className="rounded-md border border-[#f3c65f]/50 bg-[#f3c65f]/15 px-1.5 py-0.5 text-[10px] font-extrabold text-[#f3c65f]">
-                                🧠 {erhScenario.badgeLabel}
-                            </span>
-                            <button
-                                type="button"
-                                data-testid="erh-scenario-voice-btn"
-                                onClick={handleSpeakErhBriefing}
-                                className="inline-flex items-center gap-1 rounded-lg border border-[#f3c65f]/40 bg-black/45 px-1.5 py-0.5 text-[10px] font-bold text-[#f3c65f] hover:bg-[#24190e] transition"
-                            >
-                                <span>{isSpeaking ? '🔇 Stop' : '🎙️ Écouter'}</span>
-                            </button>
-                        </div>
-                        <p className="text-[11px] text-amber-50/95 leading-snug font-medium">
-                            {erhScenario.psychologicalPrompt}
-                        </p>
+                        <span className="truncate font-semibold text-[#f3c65f]">
+                            🧠 {erhScenario.badgeLabel} — {erhScenario.psychologicalPrompt}
+                        </span>
                     </div>
                 )}
 
-                {/* 5. Boutons de coups candidats : Séparation stricte Quizz PR (sans icône rose 🎯) vs Quizz ERH */}
-                {currentBlunder.quizChoices && currentBlunder.quizChoices.length > 0 && onSelectQuizChoice && !validationResult && (
-                    <div className="rounded-xl border border-white/10 bg-black/35 p-2 space-y-1.5" data-testid="quiz-qcm-choices">
+                {/* 3. BOUTONS DE COUPS CANDIDATS A, B, C, D : Survol = Flèche sur le plateau, Clic = Validation 1-Clic immédiate */}
+                {currentBlunder.quizChoices && currentBlunder.quizChoices.length > 0 && onSelectQuizChoice && (
+                    <div className="rounded-xl border border-white/10 bg-black/35 p-2.5 space-y-2" data-testid="quiz-qcm-choices">
                         <div className="flex items-center justify-between text-[11px]">
-                            <span className={`font-bold ${isPrMathMode ? 'text-emerald-300' : 'text-[#f3c65f]'}`}>
-                                {isPrMathMode
-                                    ? '📐 Sélectionnez le coup mathématiquement optimal (ou jouez sur le plateau) :'
-                                    : '🧠 Sélectionnez le meilleur plan stratégique (ou jouez sur le plateau) :'}
+                            <span className={`font-bold ${isErMode ? 'text-emerald-300' : 'text-[#f3c65f]'}`}>
+                                {isErMode
+                                    ? '📐 Survolez pour prévisualiser, cliquez pour valider votre coup ER :'
+                                    : '🧠 Survolez pour prévisualiser, cliquez pour valider votre coup ERH :'}
                             </span>
                         </div>
-                        <div className="grid grid-cols-2 gap-1.5">
+                        <div className="grid grid-cols-2 gap-2">
                             {currentBlunder.quizChoices.map((choice, idx) => {
-                                const isStaged = stagedNotation === choice;
                                 const letter = String.fromCharCode(65 + idx);
+                                const isHovered = hoveredChoiceNotation === choice;
+                                const isValidatedOptimal =
+                                    validationResult !== null && choice.trim() === currentBlunder.optimalMove.trim();
+                                const isValidatedWrongUser =
+                                    validationResult !== null &&
+                                    !validationResult.isCorrect &&
+                                    choice.trim() === validationResult.playedNotation.trim();
+
                                 return (
                                     <button
                                         key={choice}
                                         type="button"
+                                        disabled={validationResult !== null}
+                                        data-testid={`quiz-choice-btn-${letter}`}
+                                        onMouseEnter={() => onHoverQuizChoice?.(choice)}
+                                        onMouseLeave={() => onHoverQuizChoice?.(null)}
+                                        onFocus={() => onHoverQuizChoice?.(choice)}
+                                        onBlur={() => onHoverQuizChoice?.(null)}
                                         onClick={() => onSelectQuizChoice(choice)}
-                                        className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-1.5 font-mono text-xs font-extrabold transition ${
-                                            isStaged
-                                                ? 'border-emerald-400 bg-emerald-950/70 text-emerald-200'
-                                                : isPrMathMode
-                                                    ? 'border-emerald-500/25 bg-[#121822] text-[#fdf8eb] hover:border-emerald-400 hover:bg-emerald-950/40 hover:text-emerald-200'
-                                                    : 'border-[#d4af37]/25 bg-[#161b26] text-[#fdf8eb] hover:border-[#f3c65f] hover:bg-[#23190f] hover:text-[#f3c65f]'
+                                        className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 font-mono text-xs sm:text-sm font-extrabold transition ${
+                                            isValidatedOptimal
+                                                ? 'border-emerald-400 bg-emerald-950/80 text-emerald-200 shadow-[0_0_12px_rgba(16,185,129,0.3)]'
+                                                : isValidatedWrongUser
+                                                    ? 'border-rose-400 bg-rose-950/80 text-rose-200'
+                                                    : isHovered
+                                                        ? 'border-[#f3c65f] bg-[#23190f] text-[#f3c65f] shadow-md'
+                                                        : isErMode
+                                                            ? 'border-emerald-500/25 bg-[#121822] text-[#fdf8eb] hover:border-emerald-400 hover:bg-emerald-950/40 hover:text-emerald-200'
+                                                            : 'border-[#d4af37]/30 bg-[#161b26] text-[#fdf8eb] hover:border-[#f3c65f] hover:bg-[#23190f] hover:text-[#f3c65f]'
                                         }`}
                                     >
-                                        <span className={`rounded px-1 py-0.2 text-[10px] font-bold ${isPrMathMode ? 'bg-emerald-500/20 text-emerald-300' : 'bg-[#d4af37]/20 text-[#f3c65f]'}`}>
+                                        <span
+                                            className={`rounded px-1.5 py-0.5 text-[11px] font-black ${
+                                                isErMode ? 'bg-emerald-500/20 text-emerald-300' : 'bg-[#d4af37]/20 text-[#f3c65f]'
+                                            }`}
+                                        >
                                             {letter}
                                         </span>
                                         <span>{choice}</span>
@@ -222,95 +217,83 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                 )}
 
                 {showHint && currentBlunder.hint && !validationResult && (
-                    <div className="rounded-xl border border-[#f3c65f]/40 bg-[#180c06]/90 p-2 text-[11px] text-[#fdf8eb] leading-snug" data-testid="drill-hint-box">
-                        <span className="font-bold text-[#f3c65f]">💡 Indice : </span>{currentBlunder.hint}
+                    <div
+                        className="rounded-xl border border-[#f3c65f]/40 bg-[#180c06]/90 p-2.5 text-xs text-[#fdf8eb] leading-snug"
+                        data-testid="drill-hint-box"
+                    >
+                        <span className="font-bold text-[#f3c65f]">💡 Indice : </span>
+                        {currentBlunder.hint}
                     </div>
                 )}
 
-                {/* 6. Exploitation de l'espace inférieur avant validation : Carte "Lecture de Position" */}
-                {!validationResult && (
-                    <DrillPreValidationReadingCard
-                        telemetry={telemetry}
-                        blunder={currentBlunder}
-                        isPrMathMode={isPrMathMode}
-                    />
-                )}
-
-                {/* 7. Après validation : Rapport complet du Coach IA (Classement ΔEMG en Quizz PR / Explication 3 points en Quizz ERH) */}
-                {validationResult && (
-                    <div className={`flex-1 w-full rounded-xl border p-2.5 text-[11px] space-y-2 ${validationResult.isCorrect ? 'border-emerald-500/50 bg-emerald-950/60 text-emerald-100' : 'border-rose-500/60 bg-rose-950/70 text-rose-100'}`} data-testid="drill-feedback-banner">
-                        <div className="flex flex-wrap items-center justify-between gap-1.5">
-                            <div className="flex items-center gap-1.5">
-                                <span className="text-sm">{validationResult.isCorrect ? '👑' : '❌'}</span>
-                                <h3 className="text-xs font-black">{validationResult.feedbackMessage}</h3>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                {!validationResult.isCorrect && (
-                                    <button type="button" onClick={onResetAttempt} className="rounded-lg border border-rose-400 bg-rose-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-rose-500 transition" data-testid="drill-retry-btn">↺ Réessayer</button>
-                                )}
-                                <button type="button" onClick={onNextBlunder} className="rounded-lg border border-emerald-400 bg-emerald-600 px-2.5 py-1 text-[10px] font-extrabold text-white hover:bg-emerald-500 transition shadow" data-testid="drill-next-btn">
-                                    Quizz Suivant →
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-black/40 px-2.5 py-1.5 text-xs">
-                            <span>1. Le Verdict — Votre coup : <strong className={`font-mono ${validationResult.isCorrect ? 'text-emerald-300' : 'text-rose-300'}`}>{validationResult.playedNotation}</strong></span>
-                            <span>Coup optimal : <strong className="font-mono text-emerald-300">{validationResult.optimalNotation}</strong></span>
-                        </div>
-
-                        {/* En mode Quizz PR : Classement exact des 4 coups avec ΔEMG et probabilités Win / Gammon */}
-                        {isPrMathMode && <DrillPrMathRankingTable rows={mathRankingRows} />}
-
-                        {/* Point 2 : Pourquoi les autres coups sont dangereux */}
-                        {mistakeReasonText && (
-                            <div className="rounded-lg border border-rose-400/35 bg-rose-950/60 p-2 text-xs text-rose-100 leading-snug">
-                                <strong className="text-rose-300 block mb-0.5">
-                                    2. Pourquoi l&apos;erreur ({validationResult.isCorrect ? currentBlunder.playedMove : validationResult.playedNotation}) est dangereuse :
-                                </strong>
-                                {mistakeReasonText}
-                            </div>
-                        )}
-
-                        {/* Point 3 : Pourquoi le coup optimal gagne & La Règle d'Or à retenir */}
-                        {activeOptimalExplanation && (
-                            <div className="rounded-lg border border-emerald-400/35 bg-emerald-950/50 p-2 space-y-1">
-                                <div className="flex flex-wrap items-center justify-between gap-1.5">
-                                    <span className="text-[11px] font-extrabold text-emerald-300">
-                                        3. La Règle d&apos;Or — Pourquoi {validationResult.optimalNotation} est optimal
+                {/* 4. APRÈS LE CLIC (1-CLIC) : VERDICT DU COACH IA EN 3 LIGNES CLAIRES + BOUTON QUESTION SUIVANTE → */}
+                {validationResult && threeLineVerdict && (
+                    <div
+                        data-testid="drill-feedback-banner"
+                        className={`flex-1 w-full rounded-xl border p-3 text-xs space-y-2.5 flex flex-col justify-between ${
+                            validationResult.isCorrect
+                                ? 'border-emerald-500/50 bg-emerald-950/60 text-emerald-100'
+                                : 'border-rose-500/60 bg-rose-950/70 text-rose-100'
+                        }`}
+                    >
+                        <div className="space-y-2">
+                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-1.5">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-sm">{validationResult.isCorrect ? '👑' : '❌'}</span>
+                                    <h3 className="text-xs sm:text-sm font-black">{validationResult.feedbackMessage}</h3>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="rounded border border-white/15 bg-black/40 px-2 py-0.5 font-mono text-[10px] font-bold text-[#f3c65f]">
+                                        ⚡ {threeLineVerdict.modelBadge}
                                         <span className="sr-only">Coach Pédagogique 3.8 Flash</span>
                                     </span>
-                                    <div className="flex items-center gap-1">
-                                        <button
-                                            type="button"
-                                            data-testid="drill-voice-listen-btn"
-                                            onClick={handleListenExplanation}
-                                            className="inline-flex items-center gap-1 rounded border border-white/15 bg-black/40 px-2 py-0.5 text-[11px] font-bold text-[#e2d2b5] hover:text-white transition"
-                                        >
-                                            <span>{isSpeaking ? '🔇 Stop' : '🔈 Écouter'}</span>
-                                        </button>
-                                        {variants.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => setVariantIdx((prev) => prev + 1)}
-                                                className="inline-flex items-center gap-1 rounded border border-emerald-400/30 bg-black/30 px-2 py-0.5 text-[11px] font-bold text-emerald-300 hover:border-emerald-300 transition"
-                                            >
-                                                🔄 ({(variantIdx % variants.length) + 1}/{variants.length})
-                                            </button>
-                                        )}
-                                    </div>
+                                    <button
+                                        type="button"
+                                        data-testid="drill-voice-listen-btn"
+                                        onClick={handleListenExplanation}
+                                        className="rounded border border-white/15 bg-black/40 px-2 py-0.5 text-[11px] font-bold text-[#e2d2b5] hover:text-white transition"
+                                    >
+                                        {isSpeaking ? '🔇 Stop' : '🔈 Écouter'}
+                                    </button>
                                 </div>
-                                <p className="text-xs text-slate-100 leading-snug">
-                                    {activeOptimalExplanation}
+                            </div>
+
+                            {/* Verdict en 3 lignes claires */}
+                            <div className="space-y-1.5 rounded-xl bg-black/40 p-2.5 text-xs leading-relaxed">
+                                <p className="font-mono font-bold text-white">
+                                    1. {threeLineVerdict.line1Verdict}
+                                </p>
+                                <p className="text-rose-200">
+                                    2. {threeLineVerdict.line2Analysis}
+                                </p>
+                                <p className="text-emerald-200 font-medium">
+                                    3. {threeLineVerdict.line3GoldenRule}
                                 </p>
                             </div>
-                        )}
 
-                        {currentBlunder.proverb && (
-                            <p className="text-[11px] italic text-[#f3c65f]">
-                                📜 Règle d&apos;Or : « {currentBlunder.proverb} »
-                            </p>
-                        )}
+                            {isErMode && <DrillPrMathRankingTable rows={mathRankingRows} />}
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2 pt-1">
+                            {!validationResult.isCorrect && (
+                                <button
+                                    type="button"
+                                    onClick={onResetAttempt}
+                                    data-testid="drill-retry-btn"
+                                    className="rounded-xl border border-rose-400/60 bg-rose-950/80 px-3 py-2 text-xs font-bold text-rose-100 hover:bg-rose-900 transition"
+                                >
+                                    ↺ Réessayer
+                                </button>
+                            )}
+                            <button
+                                type="button"
+                                onClick={onNextBlunder}
+                                data-testid="drill-next-btn"
+                                className="flex-1 sm:flex-none rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#D4AF37] via-[#f7d77e] to-[#b88924] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#050505] shadow-[0_4px_16px_rgba(212,175,55,0.35)] hover:brightness-105 transition"
+                            >
+                                Question suivante →
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
