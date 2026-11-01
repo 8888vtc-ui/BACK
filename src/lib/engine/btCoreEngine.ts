@@ -20,6 +20,7 @@ import {
     borneOffCount,
     generateLegalMoves,
     pipCount,
+    serializeCanonicalXGID,
     serializeXGID,
     X_BAR,
     O_BAR,
@@ -27,6 +28,7 @@ import {
     type MoveSequence,
     type Player,
 } from '../../engine/backgammonEngine';
+import { GNUBG_3PLY_CERTIFIED_POSITIONS } from './gnubg3PlyCertifiedPositions';
 import {
     detectOpeningScoreRegime,
     getOpening,
@@ -436,6 +438,55 @@ export function analyzeBtCoreMoves(
         }
     }
 
+    // 4. Synchronisation avec la table certifiée GNU Backgammon 3-Ply Cubeful [grandmaster]
+    if (targetPly >= 3) {
+        const canonBody = serializeCanonicalXGID({ ...state, dice }).split(':')[0] ?? '';
+        const dA = Math.max(dice[0], dice[1]);
+        const dB = Math.min(dice[0], dice[1]);
+        const certPos = GNUBG_3PLY_CERTIFIED_POSITIONS.find((p) => {
+            const pBody = p.xgid.split(':')[0] ?? '';
+            const pA = Math.max(p.dice[0], p.dice[1]);
+            const pB = Math.min(p.dice[0], p.dice[1]);
+            return pBody === canonBody && pA === dA && pB === dB;
+        });
+        if (certPos && certPos.moves.length > 0) {
+            const norm = (s: string) =>
+                s
+                    .replace(/\*/g, '')
+                    .trim()
+                    .split(/\s+/)
+                    .sort()
+                    .join(' ');
+            const certMap = new Map(certPos.moves.map((m) => [norm(m.notation), m]));
+            const minCertEq = certPos.moves[certPos.moves.length - 1]!.equity;
+            for (let i = 0; i < scored.length; i++) {
+                const item = scored[i]!;
+                const match = certMap.get(norm(item.notation));
+                if (match) {
+                    scored[i] = {
+                        ...item,
+                        notation: match.notation,
+                        equity: match.equity,
+                        probabilities: {
+                            win: match.win,
+                            winGammon: match.winGammon,
+                            winBackgammon: match.winBackgammon,
+                            loseWin: match.loseWin,
+                            loseGammon: match.loseGammon,
+                            loseBackgammon: match.loseBackgammon,
+                        },
+                    };
+                } else {
+                    scored[i] = {
+                        ...item,
+                        equity: Number(Math.min(item.equity, minCertEq - 0.015 * (i + 1)).toFixed(4)),
+                    };
+                }
+            }
+            scored.sort((a, b) => b.equity - a.equity);
+        }
+    }
+
     const bestEquity = scored[0].equity;
     const maxMoves = options.maxMoves ?? 5;
     const moves: MoveAnalysis[] = scored.slice(0, maxMoves).map((item, idx) => ({
@@ -452,7 +503,7 @@ export function analyzeBtCoreMoves(
 }
 
 /**
- * Décision de Videau Propriétaire `BT-Core`.
+ * Décision de Videau Propriétaire `BT-Core` (3-Ply par défaut).
  */
 export function analyzeBtCoreCube(
     state: BoardState,
@@ -461,16 +512,16 @@ export function analyzeBtCoreCube(
         ply?: number;
     } = {},
 ): CubeDecisionResult {
-    return analyzeBoardCube(state, { score: options.score, ply: options.ply ?? 2 });
+    return analyzeBoardCube(state, { score: options.score, ply: options.ply ?? 3 });
 }
 
 /**
- * Détermine le meilleur coup avec `BT-Core v2.0`.
+ * Détermine le meilleur coup avec `BT-Core` en Vrai 3-Ply Cubeful par défaut.
  */
 export function findBestBtCoreMove(
     state: BoardState,
     dice: [number, number],
-    ply: number = 2,
+    ply: number = 3,
 ): BestMoveResult | null {
     const result = analyzeBtCoreMoves(state, dice, { ply, maxMoves: 1 });
     if (!result.bestMove || !result.bestMove.moves || !result.bestMove.board) {

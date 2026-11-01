@@ -11,7 +11,7 @@
 import type { PlayerBlunderRecord, DrillTier, BlunderVerdict } from './types';
 import { parseXGID, X_BAR, O_BAR, X_OFF, O_OFF } from '../../engine/backgammonEngine';
 import { validateBoardState, resolveSemanticArchetype } from './drillSubAgentsPipeline';
-import { HARVESTED_MULTIPLY_9CAT_SEEDS } from './harvestedMultiPlySeeds';
+import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../../lib/engine/gnubg3PlyCertifiedPositions';
 import { BTCORE_5000_HARVEST_SEEDS } from './btCore5000HarvestSeeds';
 import { BTERH_HARVEST_SEEDS } from './btErhHarvestSeeds';
 
@@ -201,20 +201,20 @@ const HARVESTED_TIERED_SEEDS: HarvestedSeedInput[] = [
         tier: 2,
         xgid: 'XGID=abCBB-B---A-dC-----b-AccA-:0:0:1:14:0:0:0:7:8',
         dice: [1, 4],
-        playedMove: '4/3 6/2',
+        playedMove: '21/20 10/6',
         optimalMove: '24/20 21/20',
-        acceptableMoves: ['21/20 24/20', '10/9 24/20', '24/20 10/9'],
-        quizChoices: ['24/20 21/20', '10/9 24/20', '4/3 6/2', '21/20 10/6'],
-        equityLoss: 0.142,
+        acceptableMoves: ['21/20 24/20', '24/20 10/9', '10/9 24/20'],
+        quizChoices: ['24/20 21/20', '24/20 10/9', '13/9 10/9', '21/20 10/6'],
+        equityLoss: 0.022,
         verdict: 'blunder',
         conceptId: 'advanced_anchor',
         conceptName: 'Ancre avancée en jan adverse',
-        whyFailed: 'En jouant 4/3 6/2, vous dégradez votre propre jan intérieur et abandonnez la case 20 à l’adversaire.',
-        explanation: 'Le coup optimal 24/20 21/20 ferme immédiatement l’ancre avancée sur le point 20 (Golden Point adverse) avec vos pions des cases 24 et 21.',
+        whyFailed: 'En jouant 21/20 10/6, vous laissez un pion arrière isolé sur le point 24 et manquez l’ancre sur 20.',
+        explanation: 'En 3-ply GNU Backgammon [grandmaster], 24/20 21/20 ferme l’ancre sur le point 20 (76.0 % de gain) et 24/20 10/9 apporte un bâtisseur clé (+1.034 EMG).',
         proverb: 'Règle de Magriel : Sécuriser l’ancre sur le point 20 (24/20 21/20) coupe l’attaque adverse à la racine.',
-        hint: 'Utilisez le 4 (24/20) et le 1 (21/20) pour unir vos deux pions arrières et fermer l’ancre dorée sur le point 20.',
+        hint: 'Utilisez le 4 (24/20) et le 1 (21/20 ou 10/9) pour sécuriser le point 20 dans le jan adverse.',
         commentaryVariants: [
-            'Le coup optimal 24/20 21/20 verrouille l’ancre avancée sur la flèche 20 avec deux dames et stabilise votre défense.',
+            'En 3-ply GNU Backgammon, 24/20 21/20 (76.0 % de gain) et 24/20 10/9 (32.3 % de gammon) dominent à 0.009 EMG près.',
             'Fermer le point 20 (24/20 21/20) crée une forteresse imprenable dans le jan adverse.',
             'La variante 24/20 21/20 neutralise toute menace de gammon adverse en fondant l’ancre dorée.',
         ],
@@ -741,7 +741,44 @@ export const BENCHMARK_BLUNDERS: PlayerBlunderRecord[] = [
         isMastered: false,
     },
     ...HARVESTED_TIERED_SEEDS.map((seed, idx) => buildHarvestedBlunder(seed, idx)),
-    ...HARVESTED_MULTIPLY_9CAT_SEEDS.map((seed, idx) => buildHarvestedBlunder(seed, 30 + idx)),
-    ...BTCORE_5000_HARVEST_SEEDS.map((seed, idx) => buildHarvestedBlunder(seed, 16000 + idx)),
-    ...BTERH_HARVEST_SEEDS.map((seed, idx) => buildHarvestedBlunder(seed, 30000 + idx)),
+    ...GNUBG_3PLY_CERTIFIED_POSITIONS.filter((p) => p.id !== 'harvest_t2_anchor_14' && p.moves.length >= 4).map((p, idx) =>
+        buildHarvestedBlunder(
+            {
+                id: `cert_3ply_${p.id}`,
+                tier: (p.moves[1]?.equityLoss ?? 0.03) <= 0.025 ? 4 : (p.moves[1]?.equityLoss ?? 0.03) <= 0.055 ? 3 : 2,
+                xgid: p.xgid,
+                dice: [p.dice[0], p.dice[1]],
+                playedMove: p.moves[1]!.notation,
+                optimalMove: p.moves[0]!.notation,
+                acceptableMoves: p.moves
+                    .slice(1)
+                    .filter((m) => m.equityLoss <= 0.015)
+                    .map((m) => m.notation),
+                quizChoices: p.moves.slice(0, 4).map((m) => m.notation),
+                equityLoss: p.moves[1]!.equityLoss,
+                verdict: p.moves[1]!.equityLoss >= 0.08 ? 'blunder' : 'doubtful',
+                conceptId: p.conceptId,
+                conceptName: p.conceptName,
+                whyFailed: `En jouant ${p.moves[1]!.notation}, vous concédez -${p.moves[1]!.equityLoss.toFixed(3)} EMG face au coup 3-ply optimal ${p.moves[0]!.notation}.`,
+                explanation: `Certifié en Vrai 3-Ply Cubeful [grandmaster] par GNU Backgammon : ${p.moves[0]!.notation} (${(p.moves[0]!.win * 100).toFixed(1)}% de gain, ${(p.moves[0]!.winGammon * 100).toFixed(1)}% de gammon) surpasse ${p.moves[1]!.notation} de +${p.moves[1]!.equityLoss.toFixed(3)} EMG.`,
+                proverb: 'En position de contact 3-ply, synchronisez la sécurité de vos ancres et vos bâtisseurs pour les 36 prochains lancers.',
+                hint: `Analysez le coup maître ${p.moves[0]!.notation.split(' ')[0]} qui maximise votre équité à 3 plis.`,
+                commentaryVariants: [
+                    `Certifié GNU Backgammon 3-Ply [grandmaster] : ${p.moves[0]!.notation} domine ${p.moves[1]!.notation} de +${p.moves[1]!.equityLoss.toFixed(3)} EMG.`,
+                    `En Vrai 3-Ply Cubeful, ${p.moves[0]!.notation} maximise votre taux de victoire (${(p.moves[0]!.win * 100).toFixed(1)}%).`,
+                    `Évitez l'imprécision ${p.moves[1]!.notation} (-${p.moves[1]!.equityLoss.toFixed(3)} EMG) et privilégiez ${p.moves[0]!.notation}.`,
+                ],
+            },
+            30 + idx,
+        ),
+    ),
+    ...BTCORE_5000_HARVEST_SEEDS.filter(
+        (seed) =>
+            seed.conceptId !== 'race_management' &&
+            seed.conceptId !== 'bearoff_technique' &&
+            seed.quizChoices.length === 4,
+    ).map((seed, idx) => buildHarvestedBlunder(seed, 16000 + idx)),
+    ...BTERH_HARVEST_SEEDS.filter((seed) => seed.quizChoices.length === 4).map((seed, idx) =>
+        buildHarvestedBlunder(seed, 30000 + idx),
+    ),
 ];

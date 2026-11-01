@@ -68,6 +68,8 @@ export function isContactPosition(board: ReadonlyArray<number>): boolean {
     return maxWhitePt > minBlackPt;
 }
 
+export const isContact = isContactPosition;
+
 /**
  * Sous-Agent 3 : `FlashLite-Semantic-Bridge`
  * Verrouille l'archétype exact et empêche toute hallucination ("Blitz & Attaque de Jan" sur une Course Pure sans contact).
