@@ -38,7 +38,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             1
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -111,7 +111,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             1,
             4
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -184,7 +184,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             4
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -257,7 +257,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             3,
             3
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -330,7 +330,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             5
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -403,7 +403,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             2,
             6
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -476,7 +476,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             1,
             5
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -549,7 +549,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             2,
             2
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -622,7 +622,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             3
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -695,7 +695,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             1
         ],
-        "gnubgTimeMs": 927,
+        "gnubgTimeMs": 574,
         "moves": [
             {
                 "rank": 1,
@@ -768,7 +768,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             2
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -841,7 +841,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             2
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -914,7 +914,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             5
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -987,7 +987,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             5
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -1060,7 +1060,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             5
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -1133,7 +1133,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             2
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -1206,7 +1206,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             3,
             3
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -1279,7 +1279,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             2,
             3
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -1352,7 +1352,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             6
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -1425,7 +1425,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             4
         ],
-        "gnubgTimeMs": 789,
+        "gnubgTimeMs": 553,
         "moves": [
             {
                 "rank": 1,
@@ -1498,7 +1498,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             4
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -1571,7 +1571,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             2
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -1644,7 +1644,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             3
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -1717,7 +1717,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             4
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -1790,7 +1790,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             1
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -1863,7 +1863,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             1
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -1936,7 +1936,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             4
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -2009,7 +2009,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             3
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -2082,7 +2082,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             2
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -2155,7 +2155,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             3
         ],
-        "gnubgTimeMs": 1343,
+        "gnubgTimeMs": 789,
         "moves": [
             {
                 "rank": 1,
@@ -2228,7 +2228,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             2,
             5
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2301,7 +2301,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             1,
             1
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2374,7 +2374,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             3,
             4
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2447,7 +2447,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             5
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2520,7 +2520,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             5
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2593,7 +2593,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             5
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2666,7 +2666,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             3,
             3
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2739,7 +2739,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             2
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2812,7 +2812,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             5
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2885,7 +2885,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             3,
             3
         ],
-        "gnubgTimeMs": 917,
+        "gnubgTimeMs": 680,
         "moves": [
             {
                 "rank": 1,
@@ -2958,7 +2958,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             1,
             2
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,
@@ -3031,7 +3031,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             5,
             4
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,
@@ -3104,7 +3104,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             1
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,
@@ -3177,7 +3177,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             2,
             6
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,
@@ -3250,7 +3250,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             4,
             1
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,
@@ -3323,7 +3323,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             3
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,
@@ -3396,7 +3396,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             2,
             5
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,
@@ -3469,7 +3469,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             6,
             5
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,
@@ -3542,7 +3542,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             3,
             2
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,
@@ -3615,7 +3615,7 @@ export const GNUBG_3PLY_CERTIFIED_POSITIONS: ReadonlyArray<CertifiedGnubg3PlyPos
             2,
             4
         ],
-        "gnubgTimeMs": 1354,
+        "gnubgTimeMs": 706,
         "moves": [
             {
                 "rank": 1,

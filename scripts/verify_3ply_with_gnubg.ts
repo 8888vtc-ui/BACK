@@ -55,6 +55,14 @@ export interface GnubgPositionAudit3Ply {
     readonly gnubgTimeMs: number;
     readonly btCoreTimeMs: number;
     readonly gnubgMoves: GnubgMoveEval3Ply[];
+    readonly btTop1: string;
+    readonly top1Match: boolean;
+    readonly top3Overlap: number;
+    readonly btLossOfGnubgTop1: number | null;
+}
+
+function normMove(s: string): string {
+    return s.replace(/\*/g, '').trim().split(/\s+/).sort().join(' ');
 }
 
 function normalizeBoardForX(xgid: string): BoardState {
@@ -240,8 +248,21 @@ function main() {
 
             const state = normalizeBoardForX(item.xgid);
             const tBt0 = performance.now();
-            analyzeBtCoreMoves(state, item.dice, { ply: 3, maxMoves: 5, timeBudgetMs: 250 });
-            const btCoreTimeMs = Math.max(12, Math.round(performance.now() - tBt0));
+            const btRes = analyzeBtCoreMoves(state, item.dice, {
+                ply: 3,
+                maxMoves: 30,
+                timeBudgetMs: 250,
+                useCertifiedTable: false,
+            });
+            const btCoreTimeMs = Math.round(performance.now() - tBt0);
+            const btTop1 = btRes.moves[0]?.notation ?? '';
+            const gTop1 = gnubgMoves[0]!.notation;
+            const top1Match = normMove(btTop1) === normMove(gTop1);
+            const gTop3 = new Set(gnubgMoves.slice(0, 3).map((m) => normMove(m.notation)));
+            const top3Overlap = btRes.moves.slice(0, 3).filter((m) => gTop3.has(normMove(m.notation))).length;
+            // Perte d'équité (mesurée par GNUBG) du coup choisi par notre moteur
+            const gMatch = gnubgMoves.find((m) => normMove(m.notation) === normMove(btTop1));
+            const btLossOfGnubgTop1 = gMatch ? gMatch.equityLoss : null;
 
             audits.push({
                 index: audits.length + 1,
@@ -253,6 +274,10 @@ function main() {
                 gnubgTimeMs: avgGnubgMs,
                 btCoreTimeMs,
                 gnubgMoves,
+                btTop1,
+                top1Match,
+                top3Overlap,
+                btLossOfGnubgTop1,
             });
         }
         console.log(
@@ -326,11 +351,18 @@ export const GNUBG_3PLY_BY_XGID = new Map<string, CertifiedGnubg3PlyPosition>(
     // Generate CERTIFICATION_3PLY_REPORT.md
     const avgGnubg = Math.round(audits.reduce((s, a) => s + a.gnubgTimeMs, 0) / Math.max(1, audits.length));
     const avgBt = Math.round(audits.reduce((s, a) => s + a.btCoreTimeMs, 0) / Math.max(1, audits.length));
+    const n = Math.max(1, audits.length);
+    const top1Rate = Math.round((audits.filter((a) => a.top1Match).length / n) * 100);
+    const top3Rate = Math.round((audits.reduce((s, a) => s + a.top3Overlap, 0) / (n * 3)) * 100);
+    const inTop5 = audits.filter((a) => a.btLossOfGnubgTop1 !== null);
+    const avgLoss = inTop5.length > 0 ? inTop5.reduce((s, a) => s + (a.btLossOfGnubgTop1 ?? 0), 0) / inTop5.length : 0;
+    const outTop5 = audits.length - inTop5.length;
+    const enginePr = Number((avgLoss * 500).toFixed(1));
 
     const mdLines: string[] = [
         '# CERTIFICATION OFFICIELLE 3-PLY CUBEFUL — GNU BACKGAMMON (`gnubg-cli.exe -t -q`) vs MOTEUR 3-PLY',
         '',
-        '> **Statut : CERTIFIÉ 100 % VRAI 3-PLY CUBEFUL (`[grandmaster]`)**',
+        '> **Statut : RÉFÉRENCE GNU BACKGAMMON 3-PLY CUBEFUL `[grandmaster]` + AUDIT INDÉPENDANT DU MOTEUR BT-CORE**',
         '> - **Exécutable officiel utilisé** : `C:\\Program Files (x86)\\gnubg\\gnubg-cli.exe -t -q` (`GNU Backgammon 1.08.003-mingw`)',
         '> - **Poids neuronaux & tables** : `gnubg.weights`, `gnubg_os0.bd`, `gnubg_ts0.bd`',
         '> - **Script de vérification reproductible** : [`scripts/verify_3ply_with_gnubg.ts`](scripts/verify_3ply_with_gnubg.ts)',
@@ -357,9 +389,15 @@ export const GNUBG_3PLY_BY_XGID = new Map<string, CertifiedGnubg3PlyPosition>(
         `| **Positions de contact complexes auditées** | **${audits.length} / 50** (\`isContactPosition(board) === true\`, $\\ge 5$ coups légaux) |`,
         '| **Profondeur réelle certifiée par GNU Backgammon** | **`Cubeful 3-ply` (`3-ply cubeful prune [grandmaster]`)** |',
         `| **Temps d'inférence moyen GNU Backgammon 3-ply** | **${avgGnubg} ms / position** |`,
-        `| **Temps d'inférence moyen Moteur 3-ply (BT-Core + Table 3-ply)** | **${avgBt} ms / position** |`,
-        '| **Concordance Top-5 ($\\Delta\\text{EMG}$ & 5 probabilités neuronales)** | **100 % Exacte (0.0000 EMG d’écart via synchronisation 3-ply certifiée)** |',
-        '| **Positions de Course Pure (`isContact === false`)** | **0 (100 % purgées conformément à la directive)** |',
+        `| **Temps d'inférence moyen BT-Core 3-ply (moteur seul, sans table)** | **${avgBt} ms / position** |`,
+        `| **Coup #1 identique à GNUBG (moteur seul)** | **${top1Rate} %** |`,
+        `| **Recouvrement Top-3 (moteur seul)** | **${top3Rate} %** |`,
+        `| **Perte moyenne du coup BT-Core, mesurée par GNUBG** | **${avgLoss.toFixed(3)} EMG (≈ PR ${enginePr})** sur ${inTop5.length} positions ; ${outTop5} coup(s) hors Top-5 GNUBG (perte > Top-5, non chiffrée) |`,
+        '| **Positions de Course Pure (`isContact === false`) dans l’échantillon** | **0** |',
+        '',
+        '> [!IMPORTANT]',
+        '> Les valeurs affichées dans les quiz (`ΔEMG`, W%, G%, BG%) proviennent **directement de GNU Backgammon 3-ply** via `gnubg3PlyCertifiedPositions.ts`.',
+        '> Les métriques « moteur seul » ci-dessus mesurent l’écart réel de BT-Core avec cette référence : BT-Core n’est **pas** un équivalent de GNUBG 3-ply.',
         '',
         '---',
         '',
@@ -389,7 +427,7 @@ export const GNUBG_3PLY_BY_XGID = new Map<string, CertifiedGnubg3PlyPosition>(
             .map((m) => `#${m.rank} \`${m.notation}\` (${m.rank === 1 ? '0.000' : '-' + m.equityLoss.toFixed(3)})`)
             .join(', ');
         mdLines.push(
-            `| ${a.index} | **\`${a.id}\`**<br/>*${a.conceptName}*<br/>\`${a.xgid}\` | \`${a.dice[0]}-${a.dice[1]}\` | \`${a.gnubgTimeMs}ms\` / \`${a.btCoreTimeMs}ms\` | **\`${m1.notation}\`** (\`${m1.equity >= 0 ? '+' : ''}${m1.equity.toFixed(3)} EMG\`) | ${probsStr} | ${top5Str} |`,
+            `| ${a.index} | **\`${a.id}\`**<br/>*${a.conceptName}*<br/>\`${a.xgid}\` | \`${a.dice[0]}-${a.dice[1]}\` | \`${a.gnubgTimeMs}ms\` / \`${a.btCoreTimeMs}ms\` | **\`${m1.notation}\`** (\`${m1.equity >= 0 ? '+' : ''}${m1.equity.toFixed(3)} EMG\`)<br/>BT-Core : \`${a.btTop1}\` ${a.top1Match ? '✅' : a.btLossOfGnubgTop1 !== null ? `(-${a.btLossOfGnubgTop1.toFixed(3)})` : '(hors Top-5)'} | ${probsStr} | ${top5Str} |`,
         );
     }
 
