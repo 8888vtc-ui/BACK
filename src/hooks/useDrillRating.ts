@@ -75,8 +75,8 @@ export interface UseDrillRatingReturn {
     readonly ratingValue: number;
     readonly ratingDelta: number;
     readonly solvedCount: number;
-    readonly recordAttempt: (isCorrect: boolean, tier?: number, equityLoss?: number) => void;
-    readonly recordOutcome: (isCorrect: boolean, tier?: number, equityLoss?: number) => void;
+    readonly recordAttempt: (isCorrect: boolean, tier?: number, equityLoss?: number, explicitTenthsDelta?: number) => void;
+    readonly recordOutcome: (isCorrect: boolean, tier?: number, equityLoss?: number, explicitTenthsDelta?: number) => void;
 }
 
 export function useDrillRating(isErMode: boolean): UseDrillRatingReturn {
@@ -89,12 +89,18 @@ export function useDrillRating(isErMode: boolean): UseDrillRatingReturn {
     }, [isErMode]);
 
     const recordAttempt = useCallback(
-        (isCorrect: boolean, tier: number = 2, equityLoss: number = 0.084) => {
+        (isCorrect: boolean, tier: number = 2, equityLoss: number = 0.084, explicitTenthsDelta?: number) => {
             const safeTier = Math.max(1, Math.min(4, tier));
-            const tenthsDelta = computeTenthsMetricDelta(isCorrect, equityLoss);
-            const eloDelta = isCorrect
-                ? 10 + safeTier * 3
-                : -Math.max(8, Math.min(22, Math.round(8 + Math.abs(equityLoss) * 45)));
+            const tenthsDelta =
+                typeof explicitTenthsDelta === 'number'
+                    ? explicitTenthsDelta
+                    : computeTenthsMetricDelta(isCorrect, equityLoss);
+            const eloDelta =
+                tenthsDelta === 0
+                    ? 4
+                    : isCorrect
+                        ? 10 + safeTier * 3
+                        : -Math.max(8, Math.min(22, Math.round(8 + Math.abs(equityLoss) * 45)));
 
             if (isErMode) {
                 const current = readValidatedErState();

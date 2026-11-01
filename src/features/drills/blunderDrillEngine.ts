@@ -196,16 +196,16 @@ export function validateDrillMove(
         };
     }
 
-    // 2. Correspondance avec une variante acceptable pré-déclarée
+    // 2. Correspondance avec une variante acceptable pré-déclarée (Quasi-Optimal <= 0.020 EMG)
     if (normalizedAcceptables.includes(normalizedPlayed)) {
         return {
             isCorrect: true,
             verdict: 'acceptable',
-            equityLoss: 0.015,
+            equityLoss: 0.010,
             playedNotation,
             optimalNotation: blunder.optimalMove,
             feedbackMessage:
-                '✨ Variante solide et acceptable ! Votre coup préserve l’équité de la position.',
+                '👍 Très bon coup ! (-0.010 EMG | 0 pénalité ER / PR)',
             hint: blunder.hint,
             canRetry: false,
         };
@@ -264,11 +264,11 @@ export function validateDrillNotationChoice(
         return {
             isCorrect: true,
             verdict: 'acceptable',
-            equityLoss: 0.015,
+            equityLoss: 0.010,
             playedNotation: chosenNotation,
             optimalNotation: blunder.optimalMove,
             feedbackMessage:
-                '✨ Variante solide et acceptable ! Votre coup préserve l’équité de la position.',
+                '👍 Très bon coup ! (-0.010 EMG | 0 pénalité ER / PR)',
             hint: blunder.hint,
             canRetry: false,
         };

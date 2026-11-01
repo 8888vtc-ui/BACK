@@ -276,13 +276,17 @@ export const TacticalExtractorFactsSchema = z.object({
 
 export type TacticalExtractorFacts = z.infer<typeof TacticalExtractorFactsSchema>;
 
+export type PedagogicalVerdictTier = 'OPTIMAL' | 'NEAR_OPTIMAL' | 'INACCURACY' | 'BLUNDER';
+
 export interface PedagogicalCoachReport {
     readonly coachAgent: 'Flash-Pedagogical-Coach';
     readonly coachModel: 'gemini-2.5-flash';
     readonly extractorFacts: TacticalExtractorFacts;
+    readonly verdictTier: PedagogicalVerdictTier;
     readonly isOptimalMove: boolean;
     readonly headerSeverityLine: string;
     readonly winChanceDropBadge: string;
+    readonly socraticFirstAttemptHint: string;
     readonly block1WhyError: string | null;
     readonly block2WhyOptimalWins: string;
     readonly block3RuleOfThumb: string;
@@ -319,10 +323,16 @@ export function runFlashLiteTacticalExtractor(
     const playedLetter = playedIdx >= 0 ? String.fromCharCode(65 + playedIdx) : 'B';
     const optimalLetter = optimalIdx >= 0 ? String.fromCharCode(65 + optimalIdx) : 'A';
 
-    const rawLoss = validation.isCorrect ? 0 : Math.max(0.02, Math.abs(blunder.equityLoss));
-    const deltaEmg = validation.isCorrect ? 0 : -Number(rawLoss.toFixed(3));
-    const tenthsDelta = computeTenthsMetricDelta(validation.isCorrect, blunder.equityLoss);
-    const winChanceLossPct = validation.isCorrect ? 0 : Number((Math.min(34.5, rawLoss * 89.3)).toFixed(1));
+    const isNearOptimal = validation.verdict === 'acceptable' || (validation.equityLoss > 0 && validation.equityLoss <= 0.020);
+    const rawLoss =
+        validation.verdict === 'optimal'
+            ? 0
+            : isNearOptimal
+                ? Math.max(0.008, Math.min(0.020, Math.abs(validation.equityLoss || 0.010)))
+                : Math.max(0.025, Math.abs(validation.equityLoss || blunder.equityLoss));
+    const deltaEmg = rawLoss === 0 ? 0 : -Number(rawLoss.toFixed(3));
+    const tenthsDelta = isNearOptimal ? 0 : computeTenthsMetricDelta(validation.isCorrect, rawLoss);
+    const winChanceLossPct = rawLoss === 0 ? 0 : Number((Math.min(34.5, rawLoss * 72.0)).toFixed(1));
 
     const tierMap: Record<number, string> = {
         1: 'Palier Débutant',
@@ -332,7 +342,10 @@ export function runFlashLiteTacticalExtractor(
     };
 
     const optimalRolls36 = computeConstructiveAfterMove(boardValidation.normalizedBoard, blunder.optimalMove, blunder.player);
-    const oppRolls36 = Math.min(32, Math.max(12, 36 - optimalRolls36 + 2));
+    const playedRolls36 = computeConstructiveAfterMove(boardValidation.normalizedBoard, validation.playedNotation, blunder.player);
+    const oppRolls36 = isNearOptimal
+        ? Math.max(12, Math.min(optimalRolls36 - 3, playedRolls36))
+        : Math.min(32, Math.max(12, 36 - optimalRolls36 + 2));
 
     return TacticalExtractorFactsSchema.parse({
         extractorAgent: 'FlashLite-Tactical-Extractor',
@@ -365,16 +378,33 @@ export function runFlashPedagogicalCoach(
     const facts = runFlashLiteTacticalExtractor(blunder, validation);
     const { boardValidation } = facts;
     const metricLabel = isErMode ? 'ER / PR' : 'ERH';
+    const absLoss = Math.abs(facts.deltaEmg);
+
+    const verdictTier: PedagogicalVerdictTier =
+        validation.verdict === 'optimal' || absLoss === 0
+            ? 'OPTIMAL'
+            : validation.verdict === 'acceptable' || absLoss <= 0.020
+                ? 'NEAR_OPTIMAL'
+                : absLoss <= 0.079
+                    ? 'INACCURACY'
+                    : 'BLUNDER';
+
     const nextMetric = Math.max(0, Math.min(30, Number((currentMetricValue + facts.tenthsDelta).toFixed(1))));
     const deltaSign = facts.tenthsDelta > 0 ? `+${facts.tenthsDelta.toFixed(1)}` : facts.tenthsDelta.toFixed(1);
 
-    const headerSeverityLine = validation.isCorrect
-        ? `✅ Coup Optimal ! (0.000 EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | Équité 100%)`
-        : `❌ Erreur (${facts.deltaEmg.toFixed(3)} EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | -${facts.winChanceLossPct.toFixed(1)}% de victoire)`;
+    const headerSeverityLine =
+        verdictTier === 'OPTIMAL'
+            ? `✅ Coup Optimal ! (0.000 EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | Équité 100%)`
+            : verdictTier === 'NEAR_OPTIMAL'
+                ? `👍 Très bon coup ! (${facts.deltaEmg.toFixed(3)} EMG | 0 pénalité ${metricLabel})`
+                : `❌ Erreur (${facts.deltaEmg.toFixed(3)} EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | -${facts.winChanceLossPct.toFixed(1)}% de victoire)`;
 
-    const winChanceDropBadge = validation.isCorrect
-        ? 'Équité 100%'
-        : `-${facts.winChanceLossPct.toFixed(1)}% de chances de gagner`;
+    const winChanceDropBadge =
+        verdictTier === 'OPTIMAL'
+            ? 'Équité 100%'
+            : verdictTier === 'NEAR_OPTIMAL'
+                ? `+${absLoss.toFixed(3)} EMG gagnables`
+                : `-${facts.winChanceLossPct.toFixed(1)}% de chances de gagner`;
 
     const absPipDiff = Math.abs(boardValidation.pipDiff);
     const racePhrase =
@@ -389,28 +419,39 @@ export function runFlashPedagogicalCoach(
             : facts.hitsOpponentBlot
                 ? 'frappe immédiatement le blot adverse pour reprendre le tempo'
                 : facts.escapesBackChecker
-                    ? 'évacue ton pion arrière avant le verrouillage adverse'
+                    ? 'sécurise ton point d’ancrage arrière avant le verrouillage adverse'
                     : 'verrouille tes portes clés et maximise ta couverture';
 
-    const block1WhyError = validation.isCorrect
-        ? null
-        : !boardValidation.isContact
-            ? `En jouant ${facts.playedNotation} (${facts.playedLetter}), tu empiles inutilement tes dames sur des cases basses et réduis tes lancers fluides (${facts.opponentConstructiveRollsAfterError36}/36 lancers suboptimaux).`
-            : `En jouant ${facts.playedNotation} (${facts.playedLetter}), tu dégrades ta structure (${boardValidation.whiteMadePoints} portes faites) et concèdes ${facts.opponentConstructiveRollsAfterError36} lancers constructifs sur 36 à l'adversaire.`;
+    const socraticFirstAttemptHint =
+        blunder.hint ||
+        `Attention, ${facts.playedNotation} perd ${facts.deltaEmg.toFixed(3)} EMG et concède ${facts.opponentConstructiveRollsAfterError36}/36 lancers adverses. Cherche à mieux coordonner tes portes !`;
 
-    const block2WhyOptimalWins = `Le meilleur coup est ${facts.optimalLetter} (${facts.optimalNotation}) : ${racePhrase}, il ${actionClause} (${facts.optimalConstructiveRolls36}/36 lancers constructifs au tour suivant).`;
+    const block1WhyError =
+        verdictTier === 'OPTIMAL' || verdictTier === 'NEAR_OPTIMAL'
+            ? null
+            : !boardValidation.isContact
+                ? `En jouant ${facts.playedNotation} (${facts.playedLetter}), tu empiles inutilement tes dames sur des cases basses et réduis tes lancers fluides (${facts.opponentConstructiveRollsAfterError36}/36 lancers suboptimaux).`
+                : `En jouant ${facts.playedNotation} (${facts.playedLetter}), tu dégrades ta structure (${boardValidation.whiteMadePoints} portes faites) et concèdes ${facts.opponentConstructiveRollsAfterError36} lancers constructifs sur 36 à l'adversaire.`;
 
-    const block3RuleOfThumb = validation.isCorrect
-        ? `💡 Règle à retenir : ${facts.semanticProverb}`
-        : `💡 Comment t'améliorer : ${facts.semanticProverb}`;
+    const block2WhyOptimalWins =
+        verdictTier === 'NEAR_OPTIMAL'
+            ? `Ton coup (${facts.playedNotation}) n'est vraiment pas un mauvais coup, mais tu peux gagner +${absLoss.toFixed(3)} EMG (+${facts.winChanceLossPct.toFixed(1)}% de victoire) en jouant ${facts.optimalNotation} (${facts.optimalConstructiveRolls36}/36 lancers constructifs contre ${facts.opponentConstructiveRollsAfterError36}/36).`
+            : `Le meilleur coup est ${facts.optimalLetter} (${facts.optimalNotation}) : ${racePhrase}, il ${actionClause} (${facts.optimalConstructiveRolls36}/36 lancers constructifs au tour suivant).`;
+
+    const block3RuleOfThumb =
+        verdictTier === 'OPTIMAL' || verdictTier === 'NEAR_OPTIMAL'
+            ? `💡 Règle à retenir : ${facts.semanticProverb}`
+            : `💡 Comment t'améliorer : ${facts.semanticProverb}`;
 
     return {
         coachAgent: 'Flash-Pedagogical-Coach',
         coachModel: 'gemini-2.5-flash',
         extractorFacts: facts,
+        verdictTier,
         isOptimalMove: validation.isCorrect,
         headerSeverityLine,
         winChanceDropBadge,
+        socraticFirstAttemptHint,
         block1WhyError,
         block2WhyOptimalWins,
         block3RuleOfThumb,
