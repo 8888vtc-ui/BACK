@@ -70,6 +70,7 @@ export interface GameBoardAreaProps {
     onBackToLobby?: () => void;
     onToggleTheme?: () => void;
     challengerProfile?: PlayerEloProfile | null;
+    onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
 }
 
 const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
@@ -80,7 +81,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     onCandidateHover, turnsHistory, coachHistory = [], selectedCoachHistoryIndex = null,
     onSelectCoachHistoryIndex, onTriggerCoach, matchStats, matchStatsO, prX, prO, lastMoveFeedback, locale,
     gameId, matchContext, isMatchStarted = true, playerColor = 'X', onBackToLobby, onToggleTheme,
-    challengerProfile = null,
+    challengerProfile = null, onSendQuickChat,
 }) => {
     const isXTurn = game.state.turn === 'X';
     const [replayViewPhase, setReplayViewPhase] = useState<'before' | 'after'>('before');
@@ -253,6 +254,8 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         prX={prX}
                         prO={prO}
                         challengerProfile={challengerProfile}
+                        opponentDice={!displayState.dice ? game.lastOpponentDice : null}
+                        onSendQuickChat={onSendQuickChat}
                         isBrowserFullscreen={isBrowserFullscreen}
                         isFocusFullBoard={isFocusFullBoard}
                         onToggleFullscreen={handleToggleBrowserFullscreen}
@@ -281,7 +284,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                                 opponentHighlight={!replay.isLive && replay.selectedTurn?.player === 'O' && replayViewPhase === 'before' ? [...replay.selectedTurn.moves] : game.opponentHighlight}
                                 canDouble={replay.isLive && game.canDouble} doublingOfferedBy={game.doublingOfferedBy}
                                 onOfferDouble={replay.isLive ? game.offerDouble : NOOP} onTakeDouble={replay.isLive ? game.takeDouble : NOOP} onPassDouble={replay.isLive ? game.passDouble : NOOP}
-                                theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? game.gamePhase : 'REPLAY_VIEW'}
+                                theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? (game.gamePhase ?? 'AI_TURN_SHOWING_ARROWS') : 'REPLAY_VIEW'}
                                 onRoll={replay.isLive ? () => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); game.rollDice(); } : replay.returnToLive}
                                 onConfirm={replay.isLive ? () => game.commitHumanMove() : replay.returnToLive}
                                 canUndo={replay.isLive && game.canUndo} canConfirm={replay.isLive && game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}

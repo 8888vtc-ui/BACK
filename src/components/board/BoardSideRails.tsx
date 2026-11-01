@@ -37,6 +37,8 @@ export interface BoardLeftPlayerRailProps {
     readonly prX?: number | null;
     readonly prO?: number | null;
     readonly challengerProfile?: PlayerEloProfile | null;
+    readonly opponentDice?: [number, number] | null;
+    readonly onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
     readonly isBrowserFullscreen?: boolean;
     readonly isFocusFullBoard?: boolean;
     readonly onToggleFullscreen?: () => void;
@@ -163,10 +165,12 @@ BoardPortraitBottomHud.displayName = 'BoardPortraitBottomHud';
 export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.memo(({
     difficulty = 'expert', locale = 'fr', isXTurn, scoreX, scoreO, cubeValue, matchLength, turn,
     opponentClock = '02:36', playerClock = '02:14', delaySeconds = 12, prX, prO, challengerProfile,
+    opponentDice = null, onSendQuickChat,
     isBrowserFullscreen = false, isFocusFullBoard = true, onToggleFullscreen, onToggleCoach,
     onToggleTheme, onBackToLobby, canUndo = false, onUndo, autoConfirmEnabled = false, onToggleAutoConfirm,
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isQuickChatOpen, setIsQuickChatOpen] = useState(false);
     const [playerMeta, setPlayerMeta] = useState<{ pseudo: string; avatarUrl: string }>({
         pseudo: 'Vous',
         avatarUrl: STANDARD_USER_AVATARS[0].url,
@@ -193,11 +197,11 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
         <aside
             aria-label="Joueurs et score du match"
             data-testid="board-left-player-rail"
-            className="hidden md:flex [@media(max-height:500px)]:!flex relative flex-col items-center justify-between w-44 md:w-52 xl:w-60 [@media(max-height:540px)]:!w-[104px] [@media(max-height:540px)]:!max-w-[108px] shrink-0 h-full min-h-0 overflow-visible py-2 [@media(max-height:540px)]:!py-1 px-2 [@media(max-height:540px)]:!px-1 select-none rounded-2xl [@media(max-height:540px)]:!rounded-xl border border-[#d4af37]/25 bg-gradient-to-b from-[#130e09]/95 via-[#0d0a08]/95 to-[#130e09]/95 shadow-[0_16px_40px_rgba(0,0,0,0.85)] z-30"
+            className="hidden md:flex [@media(max-height:500px)]:!flex relative flex-col items-center justify-between w-44 md:w-52 xl:w-60 [@media(max-height:540px)]:!w-[86px] [@media(max-height:540px)]:!max-w-[88px] shrink-0 h-full min-h-0 overflow-visible py-2 [@media(max-height:540px)]:!py-0.5 px-2 [@media(max-height:540px)]:!px-0.5 select-none rounded-2xl [@media(max-height:540px)]:!rounded-xl border border-[#d4af37]/25 bg-gradient-to-b from-[#130e09]/95 via-[#0d0a08]/95 to-[#130e09]/95 shadow-[0_16px_40px_rgba(0,0,0,0.85)] z-30"
         >
-            {/* 1. CARTE HAUT (IA / Adversaire) — En paysage mobile : Vrai Nom + Mini-Avatar 28px (Pions Noirs) + Score + Chrono + Badge PR */}
-            <div className="flex w-full flex-col gap-1 [@media(max-height:540px)]:!gap-1 border-b border-[#d4af37]/20 pb-1.5 [@media(max-height:540px)]:!pb-1 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
-                <div className="flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-1">
+            {/* 1. CARTE HAUT (IA / Adversaire) — En paysage mobile : Carte fusionnée ultra-compacte (Nom + Elo + Mini-Avatar + Score + Chrono + PR) */}
+            <div className="flex w-full flex-col gap-1 [@media(max-height:540px)]:!gap-0.5 border-b border-[#d4af37]/20 pb-1.5 [@media(max-height:540px)]:!pb-0.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
+                <div className="flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-0.5">
                     <div className="[@media(max-height:540px)]:hidden flex flex-col items-center gap-0.5 min-w-0 flex-1">
                         <span className="truncate max-w-full font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight">
                             {opponentDisplayName}
@@ -214,31 +218,48 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         </div>
                     </div>
 
-                    {/* Vrai nom complet de l'adversaire (avec text-overflow: ellipsis) */}
-                    <span
-                        data-testid="left-rail-mobile-opp-name"
-                        title={opponentDisplayName}
-                        className="hidden [@media(max-height:540px)]:block w-full truncate text-center text-[10px] font-bold text-[#f7f3e8] leading-tight"
-                    >
-                        {opponentDisplayName}
-                    </span>
+                    {/* Nom + Elo sur mobile paysage */}
+                    <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
+                        <span
+                            data-testid="left-rail-mobile-opp-name"
+                            title={opponentDisplayName}
+                            className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight"
+                        >
+                            {opponentDisplayName}
+                        </span>
+                        <span
+                            data-testid="left-rail-mobile-opp-elo"
+                            className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap"
+                        >
+                            {botElo} Elo
+                        </span>
+                    </div>
 
-                    {/* Mini-Avatar 28px (bordure pions noirs) + Score IA */}
-                    <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1.5">
+                    {/* Mini-Avatar 22px + Score IA + Miniature Dés adverses (16px) */}
+                    <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
                         <div className="hidden [@media(max-height:540px)]:relative [@media(max-height:540px)]:inline-flex shrink-0">
                             <img
                                 src={opponentPhotoUrl}
                                 alt={opponentDisplayName}
-                                className="h-7 w-7 rounded-full object-cover border-2 border-[#18130f] ring-1 ring-[#d4af37] shadow-md"
+                                className="h-5 w-5 rounded-full object-cover border border-[#18130f] ring-1 ring-[#d4af37] shadow"
                             />
                             <span
                                 title="Pions Noirs (O)"
-                                className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[#14110e] border border-[#d4af37] shadow"
+                                className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#1A1D24] border border-[#d4af37]"
                             />
                         </div>
+                        {opponentDice && (
+                            <span
+                                data-testid="left-rail-opp-mini-dice"
+                                title={`Dernier jet adverse : ${opponentDice[0]}-${opponentDice[1]}`}
+                                className="hidden [@media(max-height:540px)]:inline-flex items-center justify-center h-4 px-1 rounded bg-[#1A1D24] border border-[#d4af37]/60 font-mono text-[8.5px] font-black text-[#f3d27a] tabular-nums whitespace-nowrap"
+                            >
+                                {opponentDice[0]}-{opponentDice[1]}
+                            </span>
+                        )}
                         <div
                             data-testid="left-rail-score-o"
-                            className="flex h-11 w-10 [@media(max-height:540px)]:!h-7 [@media(max-height:540px)]:!w-10 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-lg border-2 border-[#d4af37]/65 bg-gradient-to-b from-[#1a1510] to-[#090705] font-display text-xl [@media(max-height:540px)]:!text-base font-black tabular-nums text-[#f7f3e8] shadow-inner"
+                            className="flex h-11 w-10 [@media(max-height:540px)]:!h-6 [@media(max-height:540px)]:!w-7 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-md border-2 border-[#d4af37]/65 bg-gradient-to-b from-[#1a1510] to-[#090705] font-display text-xl [@media(max-height:540px)]:!text-sm font-black tabular-nums text-[#f7f3e8] shadow-inner"
                             title="Points de l'adversaire"
                         >
                             {scoreO}
@@ -246,7 +267,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     </div>
 
                     <div
-                        className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded-md py-0.5 px-1 font-mono text-[11px] font-extrabold tabular-nums whitespace-nowrap ${
+                        className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${
                             turn === 'O' ? 'bg-[#b45309] text-[#fef3c7] ring-1 ring-[#f5dfa0]' : 'bg-[#080605] text-stone-300 border border-white/10'
                         }`}
                     >
@@ -254,7 +275,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     </div>
 
                     <span
-                        className="hidden [@media(max-height:540px)]:inline-block w-full text-center rounded border border-[#d4af37]/50 bg-[#d4af37]/15 px-1 py-0.5 font-mono text-[10px] font-black text-[#f3d27a] whitespace-nowrap"
+                        className="hidden [@media(max-height:540px)]:inline-block w-full text-center rounded border border-[#d4af37]/50 bg-[#d4af37]/15 px-1 py-0.5 font-mono text-[9px] font-black text-[#f3d27a] whitespace-nowrap leading-none"
                         title={`Performance Rating : ${opponentPrValue}`}
                     >
                         PR {opponentPrValue}
@@ -409,8 +430,8 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 )}
             </div>
 
-            {/* 3. CARTE BAS (Joueur Humain) — En paysage mobile : Vrai Nom + Mini-Avatar 28px (Pions Blancs) + Score + Chrono + Badge PR */}
-            <div className="flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-1 border-t border-[#d4af37]/20 pt-1.5 [@media(max-height:540px)]:!pt-1 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
+            {/* 3. CARTE BAS (Joueur Humain) — En paysage mobile : Carte fusionnée ultra-compacte (Nom + Elo + Mini-Avatar + 💬 + Score + Chrono + PR) */}
+            <div className="relative flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-0.5 border-t border-[#d4af37]/20 pt-1.5 [@media(max-height:540px)]:!pt-0.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
                 <div className="[@media(max-height:540px)]:hidden flex flex-col items-center gap-0.5 min-w-0 flex-1">
                     <div className="flex items-center gap-1 text-[11px] font-semibold tabular-nums whitespace-nowrap">
                         <span className="font-mono text-stone-200 font-bold">1500 Elo</span>
@@ -421,37 +442,87 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     </span>
                 </div>
 
-                {/* Vrai pseudo du joueur (avec text-overflow: ellipsis) */}
-                <span
-                    data-testid="left-rail-mobile-player-name"
-                    title={playerMeta.pseudo}
-                    className="hidden [@media(max-height:540px)]:block w-full truncate text-center text-[10px] font-bold text-[#f7f3e8] leading-tight"
-                >
-                    {playerMeta.pseudo}
-                </span>
+                {/* Vrai pseudo du joueur + Elo en paysage mobile */}
+                <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
+                    <span
+                        data-testid="left-rail-mobile-player-name"
+                        title={playerMeta.pseudo}
+                        className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight"
+                    >
+                        {playerMeta.pseudo}
+                    </span>
+                    <span
+                        data-testid="left-rail-mobile-player-elo"
+                        className="font-mono text-[8.5px] font-bold text-emerald-300/90 tabular-nums whitespace-nowrap"
+                    >
+                        1500 Elo
+                    </span>
+                </div>
 
-                <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1.5">
+                <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
                     <div className="hidden [@media(max-height:540px)]:relative [@media(max-height:540px)]:inline-flex shrink-0">
                         <img
                             src={playerMeta.avatarUrl}
                             alt={playerMeta.pseudo}
-                            className="h-7 w-7 rounded-full object-cover border-2 border-[#f7f3e8] ring-1 ring-[#d4af37] shadow-md"
+                            className="h-5 w-5 rounded-full object-cover border border-[#f7f3e8] ring-1 ring-[#d4af37] shadow"
                         />
                         <span
                             title="Pions Blancs (X)"
-                            className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[#f7f3e8] border border-[#3b2307] shadow"
+                            className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#f7f3e8] border border-[#3b2307]"
                         />
                     </div>
+                    <button
+                        type="button"
+                        data-testid="left-rail-quick-chat-toggle"
+                        onClick={() => setIsQuickChatOpen((v) => !v)}
+                        title="Réactions rapides"
+                        aria-label="Ouvrir les émojis rapides"
+                        aria-expanded={isQuickChatOpen}
+                        className="flex h-6 w-6 items-center justify-center rounded-md border border-[#d4af37]/40 bg-[#1a140e] text-[11px] hover:border-[#d4af37] active:scale-95 transition shrink-0"
+                    >
+                        💬
+                    </button>
                     <div
                         data-testid="left-rail-score-x"
-                        className="flex h-11 w-10 [@media(max-height:540px)]:!h-7 [@media(max-height:540px)]:!w-10 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-lg border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] font-display text-xl [@media(max-height:540px)]:!text-base font-black tabular-nums text-[#0b0907] shadow-[0_4px_14px_rgba(212,175,55,0.28)]"
+                        className="flex h-11 w-10 [@media(max-height:540px)]:!h-6 [@media(max-height:540px)]:!w-7 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-md border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] font-display text-xl [@media(max-height:540px)]:!text-sm font-black tabular-nums text-[#0b0907] shadow-[0_4px_14px_rgba(212,175,55,0.28)]"
                     >
                         {scoreX}
                     </div>
                 </div>
 
+                {isQuickChatOpen && (
+                    <div
+                        data-testid="left-rail-quick-chat-popover"
+                        role="group"
+                        aria-label="Messages rapides"
+                        className="absolute left-full ml-1.5 bottom-1 z-50 flex items-center gap-1 rounded-xl border border-[#d4af37]/55 bg-[#120e0a]/98 px-2 py-1 shadow-[0_12px_28px_rgba(0,0,0,0.95)] backdrop-blur-md"
+                    >
+                        {(
+                            [
+                                { id: 'gg' as const, label: '👋' },
+                                { id: 'nice_move' as const, label: '👏' },
+                                { id: 'unlucky' as const, label: '😅' },
+                                { id: 'thanks' as const, label: '🙏' },
+                            ]
+                        ).map((chat) => (
+                            <button
+                                key={chat.id}
+                                type="button"
+                                data-testid={`quick-chat-btn-${chat.id}`}
+                                onClick={() => {
+                                    onSendQuickChat?.(chat.id);
+                                    setIsQuickChatOpen(false);
+                                }}
+                                className="rounded-lg border border-white/10 bg-white/5 px-1.5 py-0.5 text-xs hover:border-[#f3c65f]/50 hover:bg-white/10 transition active:scale-95"
+                            >
+                                {chat.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
                 <div
-                    className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded-md py-0.5 px-1 font-mono text-[11px] font-extrabold tabular-nums whitespace-nowrap ${
+                    className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${
                         turn === 'X' ? 'bg-[#065f46] text-emerald-50 ring-1 ring-emerald-400/70' : 'bg-[#080605] text-stone-300 border border-white/10'
                     }`}
                 >
@@ -460,7 +531,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                 <span
                     data-testid="left-rail-player-pr"
-                    className={`w-full [@media(min-height:541px)]:w-auto text-center rounded border px-1 py-0.5 font-mono text-[10px] font-black whitespace-nowrap ${
+                    className={`w-full [@media(min-height:541px)]:w-auto text-center rounded border px-1 py-0.5 font-mono text-[9px] font-black whitespace-nowrap leading-none ${
                         playerPrValue <= 4
                             ? 'border-emerald-400/50 bg-emerald-950/80 text-emerald-300'
                             : playerPrValue <= 8

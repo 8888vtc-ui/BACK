@@ -188,6 +188,11 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 onBackToLobby={onBackToLobby}
                 onToggleTheme={onToggleTheme}
                 challengerProfile={multiplayer.matchInfo?.isClubChallenger ? multiplayer.opponentProfile : null}
+                onSendQuickChat={
+                    isMultiplayerActive || Boolean(multiplayer.matchInfo?.isClubChallenger)
+                        ? multiplayer.sendQuickChat
+                        : undefined
+                }
             />
 
             {/* 3. Thumb-Dock Flottant Inférieur (MobileThumbDock) */}
@@ -306,13 +311,11 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 locale={locale}
             />
 
-            {/* 6. Bandeau actif Anti-Tilt de Zare + Quick Chat Adversaire */}
-            {(tilt.showTiltAlert ||
-                isMultiplayerActive ||
-                Boolean(multiplayer.matchInfo?.isClubChallenger)) && (
+            {/* 6. Bandeau actif Anti-Tilt de Zare + Bulle message reçu (sans barre d'émojis flottante sur les flèches 1-2-3) */}
+            {(tilt.showTiltAlert || Boolean(multiplayer.quickChatMessage)) && (
                 <div
                     data-testid="active-antitilt-swapdice-bar"
-                    className="fixed bottom-[4.6rem] left-2 sm:left-auto sm:bottom-16 sm:right-3 z-40 flex flex-wrap items-center gap-2 rounded-2xl border border-[#d4af37]/40 bg-[#0d0a08]/95 px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs text-[#f7f3e8] shadow-2xl backdrop-blur-md"
+                    className="fixed top-2 left-24 z-40 flex flex-wrap items-center gap-2 rounded-xl border border-[#d4af37]/40 bg-[#0d0a08]/95 px-2.5 py-1 text-xs text-[#f7f3e8] shadow-2xl backdrop-blur-md"
                 >
                     {multiplayer.quickChatMessage && (
                         <div
@@ -335,28 +338,6 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                                           ? '🤔 Je réfléchis...'
                                           : '🙏 Merci !'}
                             </span>
-                        </div>
-                    )}
-                    {(isMultiplayerActive || Boolean(multiplayer.matchInfo?.isClubChallenger)) && (
-                        <div className="flex items-center gap-1" role="group" aria-label="Messages rapides">
-                            {(
-                                [
-                                    { id: 'gg' as const, label: '👋' },
-                                    { id: 'nice_move' as const, label: '👏' },
-                                    { id: 'unlucky' as const, label: '😅' },
-                                    { id: 'thanks' as const, label: '🙏' },
-                                ]
-                            ).map((chat) => (
-                                <button
-                                    key={chat.id}
-                                    type="button"
-                                    data-testid={`quick-chat-btn-${chat.id}`}
-                                    onClick={() => multiplayer.sendQuickChat(chat.id)}
-                                    className="rounded-lg border border-white/10 bg-white/5 px-1.5 py-0.5 text-xs hover:border-[#f3c65f]/50 hover:bg-white/10 transition active:scale-95"
-                                >
-                                    {chat.label}
-                                </button>
-                            ))}
                         </div>
                     )}
                     {tilt.showTiltAlert && (
