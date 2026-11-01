@@ -225,10 +225,6 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                         </div>
 
                         <div className="flex flex-wrap items-center gap-1.5">
-                            <select value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value as TournamentRegion | 'all')} className={selectCls}>
-                                <option value="all">Toutes Régions</option><option value="europe">Europe</option><option value="north_america">Amérique du Nord</option>
-                                <option value="middle_east">Moyen-Orient</option><option value="asia_pacific">Asie-Pacifique</option><option value="latin_america">Amérique Latine</option>
-                            </select>
                             <select value={selectedFederation} onChange={(e) => setSelectedFederation(e.target.value as TournamentFederation | 'all')} className={selectCls}>
                                 <option value="all">Toutes Fédérations</option><option value="WBGF">WBGF</option><option value="USBGF">USBGF</option><option value="FFB">FFB</option>
                                 <option value="UKBGF">UKBGF</option><option value="EUBGF">EUBGF</option><option value="WBA">WBA</option>
@@ -269,6 +265,7 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                             onOpenSubmitClub={() => setIsSubmitClubModalOpen(true)}
                             onCloseSubmitClub={() => setIsSubmitClubModalOpen(false)}
                             onClubCreated={handleClubCreated}
+                            onRegionPresetSelect={(region) => setSelectedRegion(region)}
                         />
                         {sortedTournaments.length === 0 ? (
                             <div className="rounded-2xl border border-white/10 bg-[#0b101b] p-12 text-center text-slate-400">
@@ -312,6 +309,7 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                         onOpenSubmitClub={() => setIsSubmitClubModalOpen(true)}
                         onCloseSubmitClub={() => setIsSubmitClubModalOpen(false)}
                         onClubCreated={handleClubCreated}
+                        onRegionPresetSelect={(region) => setSelectedRegion(region)}
                     />
                 )}
             </main>

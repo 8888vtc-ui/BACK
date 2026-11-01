@@ -2,10 +2,11 @@
 
 /**
  * @file src/components/tournaments/InteractiveWorldMap.tsx
- * @description Carte du Monde Interactive SVG Haute Précision (Projection Mercator/Équirectangulaire 1000×500)
- * avec caméra CSS/SVG fluide (`cubic-bezier(0.22, 1, 0.36, 1)`), 35 pions interactifs (18 Tournois 🏆 Or #D4AF37
- * + 17 Clubs 🏛️ Émeraude #10B981), contrôles de zoom (+ / - / Réinitialiser la vue) et Popup flottante détaillée.
- * Strictement 0 `any`, SSR-safe, < 295 lignes (GOVERNANCE.md & SCALABILITY.md).
+ * @description Carte du Monde Interactive SVG Haute Précision (TopoJSON world-atlas 176 pays, 1000×500)
+ * avec fond mer #070B12, terre #111827, frontières fines #D4AF37/25, fonction spiralOffset anti-chevauchement
+ * lorsque deux marqueurs sont proches (distance < 0.8°), caméra CSS/SVG fluide (`cubic-bezier(0.22, 1, 0.36, 1)`),
+ * 35 pions interactifs (18 Tournois 🏆 Or #D4AF37 + 17 Clubs 🏛️ Émeraude #10B981) et Popup flottante.
+ * Strictement 0 `any`, SSR-safe (GOVERNANCE.md & SCALABILITY.md).
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -14,6 +15,7 @@ import type { WorldBackgammonVenue } from '../../features/tournaments/worldBackg
 import type { TournamentRecord } from '../../features/tournaments/tournamentTypes';
 import { getCountryFlagEmoji } from '../../features/tournaments/tournamentEngine';
 import { getTournamentMapCoords } from '../../lib/supabase/tournamentService';
+import { WORLD_ATLAS_COUNTRY_PATHS } from './worldAtlasPaths';
 
 export type MapPresetRegionId = 'world' | 'france' | 'europe' | 'americas' | 'asia';
 
@@ -37,86 +39,91 @@ interface CameraState {
 }
 
 const PRESET_CAMERA: Readonly<Record<MapPresetRegionId, CameraState>> = {
-    world: { scale: 1, focusX: 500, focusY: 250 },
-    france: { scale: 4.5, focusX: 502, focusY: 148 },
-    europe: { scale: 2.6, focusX: 518, focusY: 142 },
-    americas: { scale: 2.0, focusX: 255, focusY: 215 },
-    asia: { scale: 2.4, focusX: 735, focusY: 195 },
+    world: { scale: 1, focusX: 500, focusY: 230 },
+    france: { scale: 4.5, focusX: 515, focusY: 122 },
+    europe: { scale: 2.6, focusX: 530, focusY: 122 },
+    americas: { scale: 2.0, focusX: 255, focusY: 185 },
+    asia: { scale: 2.4, focusX: 735, focusY: 165 },
 };
 
-const CLUB_COLLISION_OFFSET: Readonly<Record<string, { dx: number; dy: number; labelDy: number }>> = {
-    'paris-vie-deau': { dx: -7, dy: -4, labelDy: -9 },
-    'backgammon-social-paris': { dx: 7, dy: -2, labelDy: 12 },
-    'lyon-backgammon-club': { dx: -6, dy: 0, labelDy: -8 },
-    'association-genevoise-backgammon': { dx: 8, dy: -4, labelDy: -8 },
-    'ancre-marseillaise': { dx: -7, dy: 6, labelDy: 12 },
-    'french-riviera-backgammon-club': { dx: -2, dy: 6, labelDy: 12 },
-    'monte-carlo-society': { dx: 9, dy: 2, labelDy: -8 },
-};
+const GOLDEN_ANGLE_RAD = 2.39996323; // ~137.508°
 
-const TOURNAMENT_COLLISION_OFFSET: Readonly<Record<string, { dx: number; dy: number }>> = {
-    'monte-carlo-world-championship-2027': { dx: 4, dy: -5 },
-    'riviera-cup-nice-2027': { dx: -5, dy: 3 },
-    'paris-masters-ffb-2026': { dx: 0, dy: -7 },
-    'grand-prix-lyon-2027': { dx: 4, dy: 2 },
-    'geneva-lake-classic-2027': { dx: 6, dy: -2 },
-    'london-weekend-open-2026': { dx: 5, dy: -4 },
-    'uk-backgammon-open-2027': { dx: -6, dy: -5 },
-};
+interface RawMarkerNode {
+    readonly key: string;
+    readonly kind: 'club' | 'tournament';
+    readonly id: string;
+    readonly slug: string;
+    readonly city: string;
+    readonly lat: number;
+    readonly lng: number;
+}
 
-/** Tracés continentaux détaillés (projection équirectangulaire calibrée 1000×500) */
-const WORLD_CONTINENT_PATHS: ReadonlyArray<{ readonly id: string; readonly d: string }> = [
-    // Amérique du Nord (Alaska, Canada, USA, Mexique, Amérique Centrale)
-    {
-        id: 'north-america',
-        d: 'M 55,65 L 125,52 L 210,58 L 285,72 L 325,105 L 308,138 L 285,165 L 270,192 L 245,208 L 222,205 L 205,228 L 235,248 L 218,255 L 185,225 L 158,185 L 145,148 L 115,112 L 68,95 Z',
-    },
-    // Groenland
-    {
-        id: 'greenland',
-        d: 'M 335,32 L 420,25 L 438,58 L 395,88 L 348,75 Z',
-    },
-    // Amérique du Sud
-    {
-        id: 'south-america',
-        d: 'M 255,252 L 312,258 L 368,295 L 362,348 L 328,405 L 292,462 L 272,455 L 268,385 L 248,320 Z',
-    },
-    // Royaume-Uni & Irlande
-    {
-        id: 'uk-ireland',
-        d: 'M 465,105 L 488,102 L 492,130 L 470,132 Z',
-    },
-    // Europe Occidentale, Centrale, Ibérie, Italie, Balkans & Scandinavie
-    {
-        id: 'continental-europe',
-        d: 'M 495,55 L 545,45 L 575,68 L 560,98 L 598,105 L 595,148 L 572,175 L 548,182 L 532,165 L 522,178 L 508,162 L 495,162 L 480,180 L 458,178 L 462,152 L 482,135 L 505,112 L 492,82 Z',
-    },
-    // Afrique & Madagascar
-    {
-        id: 'africa',
-        d: 'M 455,192 L 525,188 L 572,202 L 615,248 L 605,315 L 575,385 L 538,425 L 508,395 L 498,325 L 452,268 L 442,225 Z M 612,355 L 626,352 L 622,392 L 608,388 Z',
-    },
-    // Moyen-Orient, Péninsule Arabique, Asie & Japon
-    {
-        id: 'eurasia-middle-east',
-        d: 'M 575,62 L 725,48 L 885,62 L 945,95 L 912,145 L 875,185 L 855,235 L 805,265 L 775,228 L 732,265 L 698,218 L 658,232 L 612,228 L 585,185 L 595,142 Z',
-    },
-    // Archipel Japonais
-    {
-        id: 'japan',
-        d: 'M 852,155 L 875,162 L 868,195 L 846,188 Z',
-    },
-    // Asie du Sud-Est & Indonésie
-    {
-        id: 'se-asia-indonesia',
-        d: 'M 782,275 L 855,282 L 895,308 L 835,318 L 778,298 Z',
-    },
-    // Australie & Nouvelle-Zélande
-    {
-        id: 'australia-nz',
-        d: 'M 795,338 L 892,332 L 922,378 L 902,428 L 825,422 L 788,385 Z M 942,422 L 962,418 L 955,452 L 938,448 Z',
-    },
-];
+interface PositionedMarkerNode extends RawMarkerNode {
+    readonly svgX: number;
+    readonly svgY: number;
+    readonly labelDy: number;
+}
+
+/**
+ * Projette exactement (lat, lng) sur le référentiel équirectangulaire 1000×500 de `world-atlas`
+ * et applique un décalage radial en spirale (`spiralOffset`) dès que deux marqueurs ont `distance < 0.8°`.
+ */
+function computeSpiralOffsetMarkers(
+    nodes: ReadonlyArray<RawMarkerNode>,
+    pinScale: number,
+): ReadonlyArray<PositionedMarkerNode> {
+    const visited = new Set<string>();
+    const clusters: Array<RawMarkerNode[]> = [];
+
+    for (let i = 0; i < nodes.length; i++) {
+        const current = nodes[i];
+        if (!current || visited.has(current.key)) continue;
+        const cluster: RawMarkerNode[] = [current];
+        visited.add(current.key);
+
+        for (let j = i + 1; j < nodes.length; j++) {
+            const candidate = nodes[j];
+            if (!candidate || visited.has(candidate.key)) continue;
+            const dLat = current.lat - candidate.lat;
+            const dLng = current.lng - candidate.lng;
+            const degDist = Math.hypot(dLat, dLng);
+            if (degDist < 0.8) {
+                cluster.push(candidate);
+                visited.add(candidate.key);
+            }
+        }
+        clusters.push(cluster);
+    }
+
+    const positioned: PositionedMarkerNode[] = [];
+
+    for (const cluster of clusters) {
+        const count = cluster.length;
+        cluster.forEach((node, idx) => {
+            const baseSvgX = ((node.lng + 180) / 360) * 1000;
+            const baseSvgY = ((90 - node.lat) / 180) * 500;
+
+            let dx = 0;
+            let dy = 0;
+            if (count > 1) {
+                // Répartition radiale régulière / spirale d'or autour du barycentre géographique
+                const radius = (count === 2 ? 8.5 : 9.5 + idx * 2.2) * pinScale;
+                const angle = count <= 4 ? (idx * 2 * Math.PI) / count - Math.PI / 4 : idx * GOLDEN_ANGLE_RAD;
+                dx = Math.cos(angle) * radius;
+                dy = Math.sin(angle) * radius;
+            }
+
+            positioned.push({
+                ...node,
+                svgX: Number((baseSvgX + dx).toFixed(2)),
+                svgY: Number((baseSvgY + dy).toFixed(2)),
+                labelDy: dy >= 0 ? 11.5 : -8.5,
+            });
+        });
+    }
+
+    return positioned;
+}
 
 const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
     venues,
@@ -140,10 +147,45 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
     const effectiveScale = Math.max(1, Math.min(6, Number((baseCam.scale + zoomDelta).toFixed(2))));
 
     // Inverse scale factor so markers stay crisp and readable when zoomed in
-    const pinScale = useMemo(() => Math.max(0.32, Math.min(1, 1 / Math.pow(effectiveScale, 0.72))), [effectiveScale]);
+    const pinScale = useMemo(() => Math.max(0.28, Math.min(1, 1 / Math.pow(effectiveScale, 0.75))), [effectiveScale]);
 
     const txPct = useMemo(() => ((500 - baseCam.focusX) / 1000) * 100 * effectiveScale, [baseCam.focusX, effectiveScale]);
     const tyPct = useMemo(() => ((250 - baseCam.focusY) / 500) * 100 * effectiveScale, [baseCam.focusY, effectiveScale]);
+
+    const positionedMarkers = useMemo(() => {
+        const raw: RawMarkerNode[] = [];
+        if (showClubs) {
+            for (const v of venues) {
+                raw.push({
+                    key: `club-${v.id}`,
+                    kind: 'club',
+                    id: v.id,
+                    slug: v.slug,
+                    city: v.city,
+                    lat: v.coordinates.lat,
+                    lng: v.coordinates.lng,
+                });
+            }
+        }
+        if (showTournaments) {
+            for (const t of tournaments) {
+                const coords = getTournamentMapCoords(t);
+                raw.push({
+                    key: `tournament-${t.id}`,
+                    kind: 'tournament',
+                    id: t.id,
+                    slug: t.slug,
+                    city: t.city,
+                    lat: coords.lat,
+                    lng: coords.lng,
+                });
+            }
+        }
+        return computeSpiralOffsetMarkers(raw, pinScale);
+    }, [venues, tournaments, showClubs, showTournaments, pinScale]);
+
+    const clubMarkers = useMemo(() => positionedMarkers.filter((m) => m.kind === 'club'), [positionedMarkers]);
+    const tournamentMarkers = useMemo(() => positionedMarkers.filter((m) => m.kind === 'tournament'), [positionedMarkers]);
 
     const activeVenue = useMemo(
         () => (selectedVenueId ? venues.find((v) => v.id === selectedVenueId) ?? null : null),
@@ -157,10 +199,10 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
     return (
         <div
             data-testid="interactive-world-map"
-            className="min-h-[520px] h-[520px] w-full bg-[#090D16] rounded-2xl border border-[#D4AF37]/30 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.85)] select-none"
+            className="min-h-[520px] h-[520px] w-full bg-[#070B12] rounded-2xl border border-[#D4AF37]/30 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.85)] select-none"
         >
             {/* Contrôles Caméra (+ / - / Réinitialiser la vue) en haut à droite */}
-            <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 rounded-xl border border-[#D4AF37]/35 bg-[#090D16]/90 p-1.5 shadow-xl backdrop-blur-md">
+            <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 rounded-xl border border-[#D4AF37]/35 bg-[#070B12]/90 p-1.5 shadow-xl backdrop-blur-md">
                 <button
                     type="button"
                     data-testid="map-zoom-in-btn"
@@ -195,7 +237,7 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
             </div>
 
             {/* Légende temps réel en haut à gauche */}
-            <div className="pointer-events-none absolute top-3 left-3 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-[#090D16]/85 px-3 py-1.5 text-[11px] font-semibold text-slate-200 backdrop-blur-md">
+            <div className="pointer-events-none absolute top-3 left-3 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-[#070B12]/85 px-3 py-1.5 text-[11px] font-semibold text-slate-200 backdrop-blur-md">
                 <span className="inline-flex items-center gap-1.5 text-[#D4AF37]">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#D4AF37] shadow-[0_0_8px_#D4AF37]" />
                     🏆 {tournaments.length} Tournois
@@ -208,7 +250,7 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
                 <span className="text-slate-500 font-mono text-[10px]">({effectiveScale.toFixed(1)}×)</span>
             </div>
 
-            {/* Canevas Vectoriel 1000×500 avec transition caméra cubic-bezier(0.22, 1, 0.36, 1) */}
+            {/* Canevas Vectoriel TopoJSON world-atlas 1000×500 avec transition caméra cubic-bezier(0.22, 1, 0.36, 1) */}
             <div
                 data-testid="interactive-world-map-viewport"
                 className="w-full h-full flex items-center justify-center"
@@ -223,127 +265,117 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
                     className="w-full h-full select-none"
                     preserveAspectRatio="xMidYMid meet"
                     role="img"
-                    aria-label="Carte mondiale interactive des 18 tournois et 17 clubs de backgammon"
+                    aria-label="Carte mondiale interactive haute précision des 18 tournois et 17 clubs de backgammon"
                 >
                     <defs>
-                        <radialGradient id="oceanGlow" cx="50%" cy="48%" r="60%">
-                            <stop offset="0%" stopColor="#111C30" />
-                            <stop offset="100%" stopColor="#090D16" />
-                        </radialGradient>
                         <pattern id="mapGraticule" width="50" height="50" patternUnits="userSpaceOnUse">
-                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(212,175,55,0.08)" strokeWidth="0.6" />
+                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(212,175,55,0.05)" strokeWidth="0.4" />
                         </pattern>
                     </defs>
 
-                    {/* Fond océanique + grille de méridiens/parallèles */}
-                    <rect width="1000" height="500" fill="url(#oceanGlow)" />
+                    {/* Fond mer #070B12 + grille géographique */}
+                    <rect width="1000" height="500" fill="#070B12" />
                     <rect width="1000" height="500" fill="url(#mapGraticule)" />
-                    {/* Équateur & Tropiques */}
-                    <line x1="0" y1="250" x2="1000" y2="250" stroke="rgba(212,175,55,0.16)" strokeWidth="0.7" strokeDasharray="4 4" />
-                    <line x1="0" y1="185" x2="1000" y2="185" stroke="rgba(56,189,248,0.10)" strokeWidth="0.5" strokeDasharray="2 4" />
-                    <line x1="0" y1="315" x2="1000" y2="315" stroke="rgba(56,189,248,0.10)" strokeWidth="0.5" strokeDasharray="2 4" />
+                    <line x1="0" y1="250" x2="1000" y2="250" stroke="rgba(212,175,55,0.12)" strokeWidth="0.5" strokeDasharray="4 4" />
 
-                    {/* Masses continentales haute visibilité */}
-                    <g fill="#152238" stroke="#D4AF37" strokeOpacity="0.45" strokeWidth={0.9 * pinScale}>
-                        {WORLD_CONTINENT_PATHS.map((continent) => (
-                            <path key={continent.id} d={continent.d} />
+                    {/* Fond cartographique officiel TopoJSON world-atlas (176 pays) : terre #111827 et frontières fines #D4AF37/25 */}
+                    <g
+                        fill="#111827"
+                        stroke="#D4AF37"
+                        strokeOpacity="0.25"
+                        strokeWidth={Math.max(0.22, 0.55 * pinScale)}
+                        strokeLinejoin="round"
+                    >
+                        {WORLD_ATLAS_COUNTRY_PATHS.map((country) => (
+                            <path key={country.id} d={country.d} />
                         ))}
                     </g>
 
                     {/* PIONS ÉMERAUDE (#10B981, icône 🏛️) : 17 CLUBS & SALONS */}
-                    {showClubs &&
-                        venues.map((venue) => {
-                            const isSelected = activeVenue?.id === venue.id;
-                            const offset = CLUB_COLLISION_OFFSET[venue.slug] ?? { dx: 0, dy: 0, labelDy: -8 };
-                            const pinX = venue.coordinates.mapX * 10 + offset.dx * pinScale;
-                            const pinY = venue.coordinates.mapY * 5 + offset.dy * pinScale;
-                            const r = (isSelected ? 7.2 : 5.4) * pinScale;
+                    {clubMarkers.map((marker) => {
+                        const isSelected = activeVenue?.id === marker.id;
+                        const r = (isSelected ? 6.8 : 5.0) * pinScale;
 
-                            return (
-                                <g
-                                    key={venue.id}
-                                    data-testid={`map-pin-${venue.slug}`}
-                                    onClick={() => onSelectVenue(venue.id)}
-                                    className="cursor-pointer group"
+                        return (
+                            <g
+                                key={marker.key}
+                                data-testid={`map-pin-${marker.slug}`}
+                                onClick={() => onSelectVenue(marker.id)}
+                                className="cursor-pointer group"
+                            >
+                                <circle cx={marker.svgX} cy={marker.svgY} r={10 * pinScale} fill="#10B981" opacity={isSelected ? 0.38 : 0.16} />
+                                <circle
+                                    cx={marker.svgX}
+                                    cy={marker.svgY}
+                                    r={r}
+                                    fill="#10B981"
+                                    stroke="#ecfdf5"
+                                    strokeWidth={(isSelected ? 1.8 : 1.1) * pinScale}
+                                />
+                                <text
+                                    x={marker.svgX}
+                                    y={marker.svgY + 2.2 * pinScale}
+                                    textAnchor="middle"
+                                    fontSize={6.0 * pinScale}
+                                    className="pointer-events-none"
                                 >
-                                    <circle cx={pinX} cy={pinY} r={11 * pinScale} fill="#10B981" opacity={isSelected ? 0.38 : 0.16} />
-                                    <circle
-                                        cx={pinX}
-                                        cy={pinY}
-                                        r={r}
-                                        fill="#10B981"
-                                        stroke="#ecfdf5"
-                                        strokeWidth={(isSelected ? 2 : 1.2) * pinScale}
-                                    />
-                                    <text
-                                        x={pinX}
-                                        y={pinY + 2.4 * pinScale}
-                                        textAnchor="middle"
-                                        fontSize={6.5 * pinScale}
-                                        className="pointer-events-none"
-                                    >
-                                        🏛️
-                                    </text>
-                                    <text
-                                        x={pinX}
-                                        y={pinY + offset.labelDy * pinScale}
-                                        textAnchor="middle"
-                                        fill={isSelected ? '#6ee7b7' : '#e2e8f0'}
-                                        fontSize={(isSelected ? 10 : 8.2) * pinScale}
-                                        fontWeight="bold"
-                                        className="pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)]"
-                                    >
-                                        {venue.city}
-                                    </text>
-                                </g>
-                            );
-                        })}
+                                    🏛️
+                                </text>
+                                <text
+                                    x={marker.svgX}
+                                    y={marker.svgY + marker.labelDy * pinScale}
+                                    textAnchor="middle"
+                                    fill={isSelected ? '#6ee7b7' : '#e2e8f0'}
+                                    fontSize={(isSelected ? 9.5 : 7.6) * pinScale}
+                                    fontWeight="bold"
+                                    className="pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.95)]"
+                                >
+                                    {marker.city}
+                                </text>
+                            </g>
+                        );
+                    })}
 
                     {/* PIONS OR LUMINEUX (#D4AF37, icône 🏆 avec effet pulse) : 18 TOURNOIS */}
-                    {showTournaments &&
-                        tournaments.map((t) => {
-                            const isSelected = activeTournament?.id === t.id;
-                            const coords = getTournamentMapCoords(t);
-                            const offset = TOURNAMENT_COLLISION_OFFSET[t.slug] ?? { dx: 5, dy: -4 };
-                            const pinX = coords.mapX * 10 + offset.dx * pinScale;
-                            const pinY = coords.mapY * 5 + offset.dy * pinScale;
-                            const r = (isSelected ? 8.0 : 6.2) * pinScale;
+                    {tournamentMarkers.map((marker) => {
+                        const isSelected = activeTournament?.id === marker.id;
+                        const r = (isSelected ? 7.4 : 5.6) * pinScale;
 
-                            return (
-                                <g
-                                    key={t.id}
-                                    data-testid={`map-pin-tournament-${t.slug}`}
-                                    onClick={() => onSelectTournament(t.id)}
-                                    className="cursor-pointer group"
-                                >
-                                    <circle cx={pinX} cy={pinY} r={13 * pinScale} fill="#D4AF37" opacity={isSelected ? 0.45 : 0.25}>
-                                        <animate
-                                            attributeName="r"
-                                            values={`${8 * pinScale};${16 * pinScale};${8 * pinScale}`}
-                                            dur="2.2s"
-                                            repeatCount="indefinite"
-                                        />
-                                    </circle>
-                                    <circle
-                                        cx={pinX}
-                                        cy={pinY}
-                                        r={r}
-                                        fill="#D4AF37"
-                                        stroke="#090D16"
-                                        strokeWidth={1.5 * pinScale}
+                        return (
+                            <g
+                                key={marker.key}
+                                data-testid={`map-pin-tournament-${marker.slug}`}
+                                onClick={() => onSelectTournament(marker.id)}
+                                className="cursor-pointer group"
+                            >
+                                <circle cx={marker.svgX} cy={marker.svgY} r={12 * pinScale} fill="#D4AF37" opacity={isSelected ? 0.45 : 0.24}>
+                                    <animate
+                                        attributeName="r"
+                                        values={`${7.5 * pinScale};${14.5 * pinScale};${7.5 * pinScale}`}
+                                        dur="2.2s"
+                                        repeatCount="indefinite"
                                     />
-                                    <text
-                                        x={pinX}
-                                        y={pinY + 2.5 * pinScale}
-                                        textAnchor="middle"
-                                        fontSize={7.2 * pinScale}
-                                        className="pointer-events-none"
-                                    >
-                                        🏆
-                                    </text>
-                                </g>
-                            );
-                        })}
+                                </circle>
+                                <circle
+                                    cx={marker.svgX}
+                                    cy={marker.svgY}
+                                    r={r}
+                                    fill="#D4AF37"
+                                    stroke="#070B12"
+                                    strokeWidth={1.3 * pinScale}
+                                />
+                                <text
+                                    x={marker.svgX}
+                                    y={marker.svgY + 2.3 * pinScale}
+                                    textAnchor="middle"
+                                    fontSize={6.6 * pinScale}
+                                    className="pointer-events-none"
+                                >
+                                    🏆
+                                </text>
+                            </g>
+                        );
+                    })}
                 </svg>
             </div>
 
@@ -351,7 +383,7 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
             {(activeTournament || activeVenue) && (
                 <div
                     data-testid="map-floating-popup"
-                    className="absolute bottom-3 left-3 right-3 sm:left-auto sm:right-3 sm:w-[420px] z-30 rounded-2xl border border-[#D4AF37]/60 bg-[#090D16]/95 p-4 text-xs text-slate-100 shadow-[0_16px_40px_rgba(0,0,0,0.95)] backdrop-blur-md"
+                    className="absolute bottom-3 left-3 right-3 sm:left-auto sm:right-3 sm:w-[420px] z-30 rounded-2xl border border-[#D4AF37]/60 bg-[#070B12]/95 p-4 text-xs text-slate-100 shadow-[0_16px_40px_rgba(0,0,0,0.95)] backdrop-blur-md"
                 >
                     {activeTournament ? (
                         <div className="flex flex-col gap-2">
@@ -399,7 +431,7 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
                                 <Link
                                     href={`/tournaments/${activeTournament.slug}`}
                                     data-testid="map-popup-action-btn"
-                                    className="flex-1 rounded-xl border border-[#D4AF37] bg-gradient-to-r from-[#D4AF37] to-[#b88924] px-3 py-2 text-center text-xs font-black text-[#090D16] shadow hover:brightness-105 transition"
+                                    className="flex-1 rounded-xl border border-[#D4AF37] bg-gradient-to-r from-[#D4AF37] to-[#b88924] px-3 py-2 text-center text-xs font-black text-[#070B12] shadow hover:brightness-105 transition"
                                 >
                                     Voir les détails / S’inscrire →
                                 </Link>
@@ -452,7 +484,7 @@ const InteractiveWorldMapComponent: React.FC<InteractiveWorldMapProps> = ({
                                 <Link
                                     href={`/tournaments/clubs/${activeVenue.slug}`}
                                     data-testid="map-popup-action-btn"
-                                    className="flex-1 rounded-xl border border-[#D4AF37] bg-gradient-to-r from-[#D4AF37] to-[#b88924] px-3 py-2 text-center text-xs font-black text-[#090D16] shadow hover:brightness-105 transition"
+                                    className="flex-1 rounded-xl border border-[#D4AF37] bg-gradient-to-r from-[#D4AF37] to-[#b88924] px-3 py-2 text-center text-xs font-black text-[#070B12] shadow hover:brightness-105 transition"
                                 >
                                     Voir les détails / S’inscrire →
                                 </Link>
