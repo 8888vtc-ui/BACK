@@ -2,64 +2,43 @@
 
 /**
  * @file src/components/drills/DrillPositionContextAndReading.tsx
- * @description Composant de Contexte de la Position (Camp au trait & Sens, Score/Format, Videau, Course)
- * et Lecture de Position / Rapport Mathématique (Quizz PR ΔEMG vs Quizz ERH 3 Points) pour `/puzzles`.
- * Strictement 0 `any`, < 260 lignes (GOVERNANCE.md & SCALABILITY.md).
+ * @description Ligne unique ultra-compacte de contexte de position (`Match 9 pts (4-4) • Videau : 1 • Retard : -31 pips`)
+ * et tableau de classement mathématique post-validation 3-Ply (Quiz ER).
+ *
+ * Audit Elon Musk :
+ * - Suppression totale du bloc pré-validation « Lecture Mathématique du Tablier » (Structure de portes, Pions arrières, Objectif du Plan).
+ * - Suppression du doublon de pips (`Blanc 96 pips vs Noir 65 pips`) déjà affiché sur la barre centrale.
+ * - Remplacement des 3 boîtes grises par 1 seule ligne de contexte ultra-compacte.
+ * - Strictement 0 `any`, < 150 lignes.
  */
 
-import React, { useMemo } from 'react';
-import type { PlayerBlunderRecord, DrillValidationResult } from '../../features/drills/types';
+import React from 'react';
+import type { PlayerBlunderRecord } from '../../features/drills/types';
 
 export interface PositionTelemetry {
     readonly whitePips: number;
     readonly blackPips: number;
     readonly pipDiff: number;
-    readonly whiteMadePointsTotal: number;
     readonly whiteHomePoints: number;
-    readonly blackMadePointsTotal: number;
-    readonly blackHomePoints: number;
-    readonly whiteBackCheckers: number;
-    readonly whiteBlots: number;
-    readonly blackBlots: number;
-    readonly turnLabel: string;
-    readonly scoreLabel: string;
-    readonly cubeLabel: string;
-    readonly raceLabel: string;
+    readonly compactMatchLabel: string;
+    readonly compactCubeLabel: string;
+    readonly compactRaceDiffLabel: string;
+    readonly singleLineContext: string;
 }
 
 export function computePositionTelemetry(blunder: PlayerBlunderRecord): PositionTelemetry {
     const board = blunder.board;
     let whitePips = (board[0] > 0 ? board[0] : 0) * 25;
     let blackPips = (board[25] < 0 ? -board[25] : 0) * 25;
-
-    let whiteMadePointsTotal = 0;
     let whiteHomePoints = 0;
-    let blackMadePointsTotal = 0;
-    let blackHomePoints = 0;
-    let whiteBackCheckers = board[0] > 0 ? board[0] : 0;
-    let whiteBlots = 0;
-    let blackBlots = 0;
 
     for (let i = 1; i <= 24; i++) {
         const v = board[i] ?? 0;
         if (v > 0) {
             whitePips += v * i;
-            if (v >= 2) {
-                whiteMadePointsTotal++;
-                if (i <= 6) whiteHomePoints++;
-            } else if (v === 1) {
-                whiteBlots++;
-            }
-            if (i >= 19) whiteBackCheckers += v;
+            if (v >= 2 && i <= 6) whiteHomePoints++;
         } else if (v < 0) {
-            const absV = -v;
-            blackPips += absV * (25 - i);
-            if (absV >= 2) {
-                blackMadePointsTotal++;
-                if (i >= 19) blackHomePoints++;
-            } else if (absV === 1) {
-                blackBlots++;
-            }
+            blackPips += -v * (25 - i);
         }
     }
 
@@ -68,49 +47,36 @@ export function computePositionTelemetry(blunder: PlayerBlunderRecord): Position
     const oppPips = isWhite ? blackPips : whitePips;
     const pipDiff = oppPips - playerPips; // > 0 = en avance, < 0 = en retard
 
-    const turnLabel = isWhite
-        ? '⚪ Trait aux Blancs (Sortie en bas à droite, case 1)'
-        : '⚫ Trait aux Noirs (Sortie en haut à droite, case 24)';
-
     const ctx = blunder.matchContext;
     const matchLength = ctx?.matchLength ?? 0;
     const scoreX = ctx?.scoreX ?? 0;
     const scoreO = ctx?.scoreO ?? 0;
-    const scoreLabel =
+    const compactMatchLabel =
         matchLength === 0
-            ? 'Money Game (Jacoby)'
-            : `Match en ${matchLength} pts — Score : ${scoreX}-${scoreO}${ctx?.crawford ? ' (Crawford)' : ''}`;
+            ? 'Money Game'
+            : `Match ${matchLength} pts (${scoreX}-${scoreO}${ctx?.crawford ? ' Cr' : ''})`;
 
     const cubeValue = ctx?.cubeValue ?? 1;
-    const cubeOwner = ctx?.cubeOwner ?? null;
-    const cubeLabel =
-        cubeOwner === null
-            ? `Videau : ${cubeValue} (Centré)`
-            : `Videau : ${cubeValue} (${cubeOwner === 'X' ? 'Blancs' : 'Noirs'})`;
+    const compactCubeLabel = `Videau : ${cubeValue}`;
 
-    const diffLabel =
+    const compactRaceDiffLabel =
         pipDiff === 0
             ? 'Égalité : 0 pip'
             : pipDiff > 0
                 ? `Avance : +${pipDiff} pips`
                 : `Retard : ${pipDiff} pips`;
-    const raceLabel = `Course : Blanc ${whitePips} pips vs Noir ${blackPips} pips (${diffLabel})`;
+
+    const singleLineContext = `${compactMatchLabel} • ${compactCubeLabel} • ${compactRaceDiffLabel}`;
 
     return {
         whitePips,
         blackPips,
         pipDiff,
-        whiteMadePointsTotal,
         whiteHomePoints,
-        blackMadePointsTotal,
-        blackHomePoints,
-        whiteBackCheckers,
-        whiteBlots,
-        blackBlots,
-        turnLabel,
-        scoreLabel,
-        cubeLabel,
-        raceLabel,
+        compactMatchLabel,
+        compactCubeLabel,
+        compactRaceDiffLabel,
+        singleLineContext,
     };
 }
 
@@ -170,60 +136,9 @@ export function buildCandidateMathTable(
 export const DrillContextGrid: React.FC<{ readonly telemetry: PositionTelemetry }> = ({ telemetry }) => (
     <div
         data-testid="drill-match-context-grid"
-        className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 rounded-xl border border-white/10 bg-[#080b11] p-2 text-[11px]"
+        className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#080b11] px-3 py-1.5 text-xs font-semibold text-slate-200"
     >
-        <div className="flex items-center gap-1.5 text-slate-200 font-semibold">
-            <span>{telemetry.turnLabel}</span>
-        </div>
-        <div className="flex items-center justify-between gap-1.5 text-slate-300">
-            <span className="font-semibold text-amber-200">🏆 {telemetry.scoreLabel}</span>
-            <span className="rounded border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#f3c65f]">
-                🎲 {telemetry.cubeLabel}
-            </span>
-        </div>
-        <div className="sm:col-span-2 flex items-center justify-between border-t border-white/5 pt-1 text-[11px] font-mono text-sky-200">
-            <span>🏁 {telemetry.raceLabel}</span>
-        </div>
-    </div>
-);
-
-export const DrillPreValidationReadingCard: React.FC<{
-    readonly telemetry: PositionTelemetry;
-    readonly blunder: PlayerBlunderRecord;
-    readonly isPrMathMode: boolean;
-}> = ({ telemetry, blunder, isPrMathMode }) => (
-    <div
-        data-testid="drill-position-reading-card"
-        className="flex-1 rounded-xl border border-white/10 bg-[#080b11]/90 p-2.5 flex flex-col justify-between gap-2 text-[11px]"
-    >
-        <div className="space-y-1.5">
-            <div className="flex items-center justify-between border-b border-white/10 pb-1">
-                <span className="font-extrabold uppercase tracking-wider text-[#f3c65f]">
-                    {isPrMathMode ? '📐 Lecture Mathématique du Tablier' : '🧠 Lecture Stratégique & Plan de Jeu'}
-                </span>
-                <span className="font-mono text-[10px] text-slate-400">Analyse 3-Ply</span>
-            </div>
-            <div className="grid grid-cols-2 gap-1.5">
-                <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                    <div className="text-[10px] uppercase font-semibold text-slate-400">Structure de Portes</div>
-                    <div className="mt-0.5 font-bold text-white">
-                        ⚪ {telemetry.whiteMadePointsTotal} portes ({telemetry.whiteHomePoints} jan) · ⚫ {telemetry.blackMadePointsTotal} portes ({telemetry.blackHomePoints} jan)
-                    </div>
-                </div>
-                <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                    <div className="text-[10px] uppercase font-semibold text-slate-400">Pions Arrières &amp; Blots</div>
-                    <div className="mt-0.5 font-bold text-amber-200">
-                        {telemetry.whiteBackCheckers} pion(s) arrière(s) · {telemetry.whiteBlots} blot(s) X vs {telemetry.blackBlots} blot(s) O
-                    </div>
-                </div>
-            </div>
-            <p className="rounded-lg border border-white/5 bg-black/40 p-2 text-slate-300 leading-relaxed">
-                <strong className="text-white">Objectif du Plan : </strong>
-                {isPrMathMode
-                    ? `Comparez l'équité cubeful (ΔEMG) entre la prise de risque offensive et la sécurisation de votre structure avec un différentiel de ${telemetry.pipDiff > 0 ? `+${telemetry.pipDiff}` : telemetry.pipDiff} pips.`
-                    : `Observez la menace adverse (${telemetry.blackHomePoints} portes noires dans le jan) et choisissez le plan qui maximise la pression tout en limitant les retours directs.`}
-            </p>
-        </div>
+        <span className="truncate font-mono text-[#f3c65f]">{telemetry.singleLineContext}</span>
     </div>
 );
 
@@ -232,7 +147,7 @@ export const DrillPrMathRankingTable: React.FC<{
 }> = ({ rows }) => (
     <div data-testid="drill-pr-math-ranking" className="rounded-lg border border-emerald-400/30 bg-[#070a10] p-2 space-y-1">
         <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-emerald-300">
-            <span>📐 Classement Mathématique 3-Ply (ΔEMG &amp; MWC)</span>
+            <span>📐 Classement ER 3-Ply (ΔEMG &amp; MWC)</span>
             <span>Win % / Gammon %</span>
         </div>
         <div className="divide-y divide-white/5">
@@ -266,4 +181,3 @@ export const DrillPrMathRankingTable: React.FC<{
         </div>
     </div>
 );
-
