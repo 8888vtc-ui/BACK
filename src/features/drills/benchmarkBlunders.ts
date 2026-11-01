@@ -9,8 +9,8 @@
  */
 
 import type { PlayerBlunderRecord, DrillTier, BlunderVerdict } from './types';
-import { parseXGID } from '../../engine/backgammonEngine';
-import { validateBoardState } from './drillSubAgentsPipeline';
+import { parseXGID, X_BAR, O_BAR, X_OFF, O_OFF } from '../../engine/backgammonEngine';
+import { validateBoardState, resolveSemanticArchetype } from './drillSubAgentsPipeline';
 import { HARVESTED_MULTIPLY_9CAT_SEEDS } from './harvestedMultiPlySeeds';
 import { BTCORE_5000_HARVEST_SEEDS } from './btCore5000HarvestSeeds';
 import { BTERH_HARVEST_SEEDS } from './btErhHarvestSeeds';
@@ -23,17 +23,17 @@ function boardFromXgid(xgid: string): number[] {
     }
     // Si l'XGID avait le trait à O (turn === 'O'), la notation des coups du seed (ex: 8/4 6/4)
     // est exprimée dans le référentiel relatif du joueur au trait (24 -> 1).
-    // On oriente donc le plateau dans le référentiel du joueur X (24 -> 1) pour que le rendu
-    // visuel, les flèches SVG et les coups légaux correspondent exactement à la notation !
+    // On oriente donc le plateau dans le référentiel du joueur X (24 -> 1) en respectant
+    // strictement les constantes backgammonEngine (X_BAR = 0, O_BAR = 25, X_OFF = 26, O_OFF = 27) !
     if (parsed.turn === 'O') {
         const flipped = new Array<number>(28).fill(0);
         for (let pt = 1; pt <= 24; pt++) {
             flipped[25 - pt] = -(b[pt] ?? 0);
         }
-        flipped[25] = Math.abs(b[0] ?? 0); // Barre de O -> Barre de X (25)
-        flipped[0] = -Math.abs(b[25] ?? 0); // Barre de X -> Barre de O (0)
-        flipped[26] = Math.abs(b[27] ?? 0); // Off de O -> Off de X (26)
-        flipped[27] = -Math.abs(b[26] ?? 0); // Off de X -> Off de O (27)
+        flipped[X_BAR] = Math.abs(b[O_BAR] ?? 0); // Barre de O (25) -> Barre de X (0)
+        flipped[O_BAR] = -Math.abs(b[X_BAR] ?? 0); // Barre de X (0) -> Barre de O (25)
+        flipped[X_OFF] = Math.abs(b[O_OFF] ?? 0); // Off de O (27) -> Off de X (26)
+        flipped[O_OFF] = -Math.abs(b[X_OFF] ?? 0); // Off de X (26) -> Off de O (27)
         return validateBoardState(flipped, 'X').normalizedBoard;
     }
     return validateBoardState(b, 'X').normalizedBoard;
@@ -94,17 +94,33 @@ function extractMatchContextFromXgid(xgid: string): NonNullable<PlayerBlunderRec
 function buildHarvestedBlunder(seed: HarvestedSeedInput, _idx: number): PlayerBlunderRecord {
     let cachedBoard: number[] | null = null;
     let cachedContext: NonNullable<PlayerBlunderRecord['matchContext']> | null = null;
+    let cachedSemantic: ReturnType<typeof resolveSemanticArchetype> | null = null;
+    const ensureBoard = (): number[] => {
+        if (!cachedBoard) {
+            cachedBoard = boardFromXgid(seed.xgid);
+        }
+        return cachedBoard;
+    };
+    const ensureSemantic = (): ReturnType<typeof resolveSemanticArchetype> => {
+        if (!cachedSemantic) {
+            cachedSemantic = resolveSemanticArchetype(ensureBoard(), {
+                conceptId: seed.conceptId,
+                conceptName: seed.conceptName,
+                proverb: seed.proverb,
+                optimalMove: seed.optimalMove,
+            });
+        }
+        return cachedSemantic;
+    };
     return {
         id: seed.id,
         createdAt: '2026-01-10T00:00:00.000Z',
         get board(): number[] {
-            if (!cachedBoard) {
-                cachedBoard = boardFromXgid(seed.xgid);
-            }
-            return cachedBoard;
+            return ensureBoard();
         },
         set board(val: number[]) {
             cachedBoard = val;
+            cachedSemantic = null;
         },
         get matchContext(): NonNullable<PlayerBlunderRecord['matchContext']> {
             if (!cachedContext) {
@@ -123,11 +139,29 @@ function buildHarvestedBlunder(seed: HarvestedSeedInput, _idx: number): PlayerBl
         quizChoices: seed.quizChoices,
         equityLoss: seed.equityLoss,
         verdict: seed.verdict,
-        conceptId: seed.conceptId,
-        conceptName: seed.conceptName,
+        get conceptId(): string {
+            return ensureSemantic().conceptId;
+        },
+        set conceptId(val: string) {
+            seed.conceptId = val;
+            cachedSemantic = null;
+        },
+        get conceptName(): string {
+            return ensureSemantic().conceptName;
+        },
+        set conceptName(val: string) {
+            seed.conceptName = val;
+            cachedSemantic = null;
+        },
         whyFailed: seed.whyFailed,
         explanation: seed.explanation,
-        proverb: seed.proverb,
+        get proverb(): string {
+            return ensureSemantic().proverb;
+        },
+        set proverb(val: string) {
+            seed.proverb = val;
+            cachedSemantic = null;
+        },
         hint: seed.hint,
         commentaryVariants: seed.commentaryVariants,
         tier: seed.tier,

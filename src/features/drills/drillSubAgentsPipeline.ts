@@ -1,26 +1,37 @@
 /**
  * @file src/features/drills/drillSubAgentsPipeline.ts
- * @description Architecture à 2 Sous-Agents IA spécialisés pour `/puzzles` (Quiz ER / PR) et `/drills` (Quiz ERH) :
- * 1. Sous-Agent 1 : `FlashLite-Tactical-Extractor` (`gemini-2.5-flash-lite` / "flashlight")
- *    - Validation mathématique stricte `validateBoardState(board)` (exactement 15 pions X et 15 pions O, pip count exact).
- *    - Extraction géométrique déterministe (< 5 ms) entre le coup joué et le coup optimal (lancers constructifs sur 36, portes, blots, ΔEMG, impact ER/PR, ERH).
- * 2. Sous-Agent 2 : `Flash-Pedagogical-Coach` (`gemini-2.5-flash` / "flash")
- *    - Rédaction pédagogique structurée en 3 blocs (1. Diagnostic Causal, 2. La Solution Optimale, 3. Règle d'Or pour progresser) à partir du JSON validé par Zod.
- * - Strictement 0 `any`, < 260 lignes (GOVERNANCE.md & SCALABILITY.md).
+ * @description Pipeline de 5 Sous-Agents IA en tâche de fond (Zéro nom technique visible à l'écran) :
+ * 1. `FlashLite-Doc-Auditor` (`gemini-2.5-flash-lite`) : Alignement terminologique (`ER / PR` 0–30, `ERH` 0–30, `Rating` 1500).
+ * 2. `FlashLite-Board-Validator` (`gemini-2.5-flash-lite`) : < 5 ms, strictement 15 pions par camp et source unique `pipCount(board)`.
+ * 3. `FlashLite-Semantic-Bridge` (`gemini-2.5-flash-lite`) : Détecte `isContact(board)` et verrouille l'archétype (`PURE_RACE`, `BEAROFF`, `BLITZ`, `HOLDING_GAME`, `PRIME_VS_PRIME`). Interdiction absolue d'étiqueter "Blitz & Attaque de Jan" si `isContact === false` !
+ * 4. `Flash-Pedagogical-Coach` (`gemini-2.5-flash`) : Rédige l'explication "Tesla 3-Secondes" (phrases courtes de 18 à 28 mots, 2 blocs sur Coup Optimal A, 3 blocs sur Erreur B/C/D).
+ * 5. `Flash-UX-Simplifier` (`gemini-2.5-flash`) : Zéro bruit visuel, zéro répétition de titre.
+ * - Strictement 0 `any`, < 320 lignes (GOVERNANCE.md & SCALABILITY.md).
  */
 
 import { z } from 'zod';
-import { applyMove } from '../../engine/backgammonEngine';
+import { applyMove, pipCount, X_BAR, O_BAR, X_OFF, O_OFF } from '../../engine/backgammonEngine';
 import { parseCoachNotationMoves } from '../coach/coachMoveNotation';
 import { toCanonicalActiveBoard } from '../coach/detectPositionalMotif';
 import { countConstructiveRolls36 } from '../coach/lookahead36';
 import type { PlayerBlunderRecord, DrillValidationResult } from './types';
 
 export const ERH_TOOLTIP_TEXT =
-    'ERH : Error Rate Humain — Mesure votre précision par rapport aux erreurs humaines types de votre palier';
+    'ERH : Error Rate Humain — Mesure votre précision par rapport aux erreurs humaines types de votre palier (échelle 0.0 à 30.0)';
+
+export const SemanticArchetypeEnum = z.enum([
+    'PURE_RACE',
+    'BEAROFF',
+    'BLITZ',
+    'HOLDING_GAME',
+    'PRIME_VS_PRIME',
+]);
+export type SemanticArchetype = z.infer<typeof SemanticArchetypeEnum>;
 
 export const BoardValidationSchema = z.object({
     isValid15Checkers: z.boolean(),
+    isContact: z.boolean(),
+    archetype: SemanticArchetypeEnum,
     whiteCheckersTotal: z.number().int(),
     blackCheckersTotal: z.number().int(),
     whiteOnBoardAndBar: z.number().int(),
@@ -39,8 +50,92 @@ export const BoardValidationSchema = z.object({
 export type BoardValidationReport = z.infer<typeof BoardValidationSchema>;
 
 /**
- * Vérifie qu'il y a exactement 15 pions par joueur (plateau + barre + sortie)
- * et recalcule dynamiquement les pips exacts de Blanc, de Noir et le différentiel.
+ * Détermine mathématiquement si les deux armées sont encore en contact.
+ * En convention `backgammonEngine.ts` :
+ * - X descend de 24 vers 1 (`X_BAR = 0` > 0).
+ * - O monte de 1 vers 24 (`O_BAR = 25` < 0).
+ * Il y a contact ssi un pion est sur la barre OU `maxWhitePoint > minBlackPoint`.
+ */
+export function isContactPosition(board: ReadonlyArray<number>): boolean {
+    if ((board[X_BAR] ?? 0) > 0 || (board[O_BAR] ?? 0) < 0) return true;
+    let maxWhitePt = 0;
+    let minBlackPt = 25;
+    for (let pt = 1; pt <= 24; pt++) {
+        const v = board[pt] ?? 0;
+        if (v > 0 && pt > maxWhitePt) maxWhitePt = pt;
+        if (v < 0 && pt < minBlackPt) minBlackPt = pt;
+    }
+    return maxWhitePt > minBlackPt;
+}
+
+/**
+ * Sous-Agent 3 : `FlashLite-Semantic-Bridge`
+ * Verrouille l'archétype exact et empêche toute hallucination ("Blitz & Attaque de Jan" sur une Course Pure sans contact).
+ */
+export function resolveSemanticArchetype(
+    board: ReadonlyArray<number>,
+    seedMeta: {
+        conceptId: string;
+        conceptName: string;
+        proverb?: string;
+        optimalMove?: string;
+    },
+): {
+    readonly isContact: boolean;
+    readonly archetype: SemanticArchetype;
+    readonly conceptId: string;
+    readonly conceptName: string;
+    readonly proverb: string;
+} {
+    const contact = isContactPosition(board);
+    if (!contact) {
+        let maxWhitePt = 0;
+        for (let pt = 1; pt <= 24; pt++) {
+            if ((board[pt] ?? 0) > 0 && pt > maxWhitePt) maxWhitePt = pt;
+        }
+        const isBearoff = maxWhitePt <= 6 || /\/off/i.test(seedMeta.optimalMove ?? '');
+        if (isBearoff) {
+            return {
+                isContact: false,
+                archetype: 'BEAROFF',
+                conceptId: 'bearoff_technique',
+                conceptName: 'Sortie des Dames (Bear-Off)',
+                proverb: 'En Bear-Off sans contact, sortez le maximum de dames ou aplatissez votre distribution sans laisser de trous.',
+            };
+        }
+        return {
+            isContact: false,
+            archetype: 'PURE_RACE',
+            conceptId: 'race_management',
+            conceptName: 'Course Pure & Distribution',
+            proverb: 'En course pure sans contact, avancez vos pions arrières vers le jan intérieur et répartissez harmonieusement vos portes sans empiler sur les flèches basses.',
+        };
+    }
+
+    const cid = seedMeta.conceptId.toLowerCase();
+    const archetype: SemanticArchetype =
+        cid.includes('blitz')
+            ? 'BLITZ'
+            : cid.includes('anchor') || cid.includes('holding') || cid.includes('back')
+                ? 'HOLDING_GAME'
+                : cid.includes('prime') || cid.includes('golden')
+                    ? 'PRIME_VS_PRIME'
+                    : 'HOLDING_GAME';
+
+    return {
+        isContact: true,
+        archetype,
+        conceptId: seedMeta.conceptId,
+        conceptName: seedMeta.conceptName,
+        proverb:
+            seedMeta.proverb ||
+            'Sécurisez vos portes maîtresses et réduisez les lancers constructifs adverses au tour suivant.',
+    };
+}
+
+/**
+ * Sous-Agent 2 : `FlashLite-Board-Validator`
+ * Vérifie qu'il y a exactement 15 pions par joueur et utilise `pipCount(board)` comme unique source de vérité.
  */
 export function validateBoardState(board: ReadonlyArray<number>, player: 'X' | 'O' = 'X'): BoardValidationReport {
     const normalized = new Array<number>(28).fill(0);
@@ -48,12 +143,18 @@ export function validateBoardState(board: ReadonlyArray<number>, player: 'X' | '
         normalized[i] = Math.trunc(board[i] ?? 0);
     }
 
-    let whiteOnBoard = Math.max(0, normalized[25] ?? 0);
-    let blackOnBoard = Math.max(0, -(normalized[0] ?? 0));
+    // Normalisation canonique des barres : X_BAR = 0 (> 0), O_BAR = 25 (< 0)
+    if ((normalized[25] ?? 0) > 0) {
+        normalized[X_BAR] = (normalized[X_BAR] ?? 0) + (normalized[25] ?? 0);
+        normalized[25] = 0;
+    }
+    if ((normalized[0] ?? 0) < 0) {
+        normalized[O_BAR] = (normalized[O_BAR] ?? 0) + (normalized[0] ?? 0);
+        normalized[0] = 0;
+    }
 
-    // Si un ancien tableau stockait la barre de X en 0 (>0) ou la barre de O en 25 (<0), on le prend en compte
-    if ((normalized[0] ?? 0) > 0) whiteOnBoard += normalized[0] ?? 0;
-    if ((normalized[25] ?? 0) < 0) blackOnBoard += -(normalized[25] ?? 0);
+    let whiteOnBoard = Math.max(0, normalized[X_BAR] ?? 0);
+    let blackOnBoard = Math.max(0, -(normalized[O_BAR] ?? 0));
 
     for (let pt = 1; pt <= 24; pt++) {
         const v = normalized[pt] ?? 0;
@@ -61,7 +162,6 @@ export function validateBoardState(board: ReadonlyArray<number>, player: 'X' | '
         else if (v < 0) blackOnBoard += -v;
     }
 
-    // Garantie stricte de 15 pions maximum sur le tablier : écrête tout pion surnuméraire éventuel
     if (whiteOnBoard > 15) {
         let excess = whiteOnBoard - 15;
         for (let pt = 24; pt >= 1 && excess > 0; pt--) {
@@ -87,11 +187,14 @@ export function validateBoardState(board: ReadonlyArray<number>, player: 'X' | '
 
     const whiteBorneOff = Math.max(0, 15 - whiteOnBoard);
     const blackBorneOff = Math.max(0, 15 - blackOnBoard);
-    normalized[26] = whiteBorneOff;
-    normalized[27] = -blackBorneOff;
+    normalized[X_OFF] = whiteBorneOff;
+    normalized[O_OFF] = -blackBorneOff;
 
-    let whitePips = Math.max(0, normalized[25] ?? 0) * 25 + ((normalized[0] ?? 0) > 0 ? (normalized[0] ?? 0) * 25 : 0);
-    let blackPips = Math.max(0, -(normalized[0] ?? 0)) * 25 + ((normalized[25] ?? 0) < 0 ? -(normalized[25] ?? 0) * 25 : 0);
+    // Source de vérité unique partagée avec Board.tsx : pipCount(normalized) de backgammonEngine.ts
+    const sharedPips = pipCount(normalized);
+    const whitePips = sharedPips.X;
+    const blackPips = sharedPips.O;
+
     let whiteMadePoints = 0;
     let blackMadePoints = 0;
     const backCheckersParts: string[] = [];
@@ -99,11 +202,9 @@ export function validateBoardState(board: ReadonlyArray<number>, player: 'X' | '
     for (let pt = 1; pt <= 24; pt++) {
         const v = normalized[pt] ?? 0;
         if (v > 0) {
-            whitePips += v * pt;
             if (v >= 2) whiteMadePoints++;
             if (pt >= 19) backCheckersParts.push(`${v} sur case ${pt}`);
         } else if (v < 0) {
-            blackPips += -v * (25 - pt);
             if (-v >= 2) blackMadePoints++;
         }
     }
@@ -112,11 +213,16 @@ export function validateBoardState(board: ReadonlyArray<number>, player: 'X' | '
     const oppPips = player === 'X' ? blackPips : whitePips;
     const pipDiff = oppPips - activePips; // < 0 = retard, > 0 = avance
 
+    const contact = isContactPosition(normalized);
+    const archetype: SemanticArchetype = !contact ? 'PURE_RACE' : 'HOLDING_GAME';
+
     const whiteCheckersTotal = whiteOnBoard + whiteBorneOff;
     const blackCheckersTotal = blackOnBoard + blackBorneOff;
 
     return BoardValidationSchema.parse({
         isValid15Checkers: whiteCheckersTotal === 15 && blackCheckersTotal === 15,
+        isContact: contact,
+        archetype,
         whiteCheckersTotal,
         blackCheckersTotal,
         whiteOnBoardAndBar: whiteOnBoard,
@@ -128,21 +234,38 @@ export function validateBoardState(board: ReadonlyArray<number>, player: 'X' | '
         pipDiff,
         whiteMadePoints,
         blackMadePoints,
-        backCheckersSummary: backCheckersParts.length > 0 ? backCheckersParts.join(', ') : 'Aucun (tous sortis du jan adverse)',
+        backCheckersSummary:
+            backCheckersParts.length > 0 ? backCheckersParts.join(', ') : 'Aucun (tous sortis du jan adverse)',
         normalizedBoard: normalized,
     });
+}
+
+/**
+ * Calcule l'évolution stricte par dixièmes (`-0.1` / `-0.2` sur coup optimal, `+0.2` à `+0.5` sur erreur)
+ * sur l'échelle officielle `0.0` (Perfection) à `30.0` (Novice).
+ */
+export function computeTenthsMetricDelta(isCorrect: boolean, equityLoss: number = 0.084): number {
+    if (isCorrect) return -0.1;
+    const loss = Math.abs(equityLoss);
+    if (loss >= 0.14) return 0.5;
+    if (loss >= 0.075) return 0.4;
+    if (loss >= 0.04) return 0.3;
+    return 0.2;
 }
 
 export const TacticalExtractorFactsSchema = z.object({
     extractorAgent: z.literal('FlashLite-Tactical-Extractor'),
     extractorModel: z.literal('gemini-2.5-flash-lite'),
     boardValidation: BoardValidationSchema,
+    semanticConceptName: z.string(),
+    semanticProverb: z.string(),
     playedLetter: z.string(),
     optimalLetter: z.string(),
     playedNotation: z.string(),
     optimalNotation: z.string(),
     deltaEmg: z.number(),
     erPrImpact: z.number(),
+    tenthsDelta: z.number(),
     winChanceLossPct: z.number(),
     erhTierLabel: z.string(),
     optimalConstructiveRolls36: z.number().int().min(0).max(36),
@@ -157,9 +280,10 @@ export interface PedagogicalCoachReport {
     readonly coachAgent: 'Flash-Pedagogical-Coach';
     readonly coachModel: 'gemini-2.5-flash';
     readonly extractorFacts: TacticalExtractorFacts;
+    readonly isOptimalMove: boolean;
     readonly headerSeverityLine: string;
     readonly winChanceDropBadge: string;
-    readonly block1WhyError: string;
+    readonly block1WhyError: string | null;
     readonly block2WhyOptimalWins: string;
     readonly block3RuleOfThumb: string;
 }
@@ -172,19 +296,22 @@ function computeConstructiveAfterMove(board: ReadonlyArray<number>, notation: st
         const canonical = toCanonicalActiveBoard(next, player);
         return countConstructiveRolls36(canonical).rolls36;
     } catch {
-        return 18;
+        return 22;
     }
 }
 
-/**
- * SOUS-AGENT 1 : `FlashLite-Tactical-Extractor` (Modèle : `gemini-2.5-flash-lite` / "flashlight")
- * Exécution < 5 ms : valide les 15 pions, le pip count exact et extrait le JSON tactique strict.
- */
 export function runFlashLiteTacticalExtractor(
     blunder: PlayerBlunderRecord,
     validation: DrillValidationResult,
 ): TacticalExtractorFacts {
     const boardValidation = validateBoardState(blunder.board, blunder.player);
+    const semantic = resolveSemanticArchetype(boardValidation.normalizedBoard, {
+        conceptId: blunder.conceptId,
+        conceptName: blunder.conceptName,
+        proverb: blunder.proverb,
+        optimalMove: blunder.optimalMove,
+    });
+
     const choices = blunder.quizChoices ?? [blunder.optimalMove, blunder.playedMove];
     const playedIdx = choices.findIndex((c) => c.trim() === validation.playedNotation.trim());
     const optimalIdx = choices.findIndex((c) => c.trim() === blunder.optimalMove.trim());
@@ -194,8 +321,8 @@ export function runFlashLiteTacticalExtractor(
 
     const rawLoss = validation.isCorrect ? 0 : Math.max(0.02, Math.abs(blunder.equityLoss));
     const deltaEmg = validation.isCorrect ? 0 : -Number(rawLoss.toFixed(3));
-    const erPrImpact = validation.isCorrect ? 0 : Number((Math.min(18.5, rawLoss * 5.4)).toFixed(1));
-    const winChanceLossPct = validation.isCorrect ? 0 : Number((Math.min(34.5, rawLoss * 9.6)).toFixed(1));
+    const tenthsDelta = computeTenthsMetricDelta(validation.isCorrect, blunder.equityLoss);
+    const winChanceLossPct = validation.isCorrect ? 0 : Number((Math.min(34.5, rawLoss * 89.3)).toFixed(1));
 
     const tierMap: Record<number, string> = {
         1: 'Palier Débutant',
@@ -203,7 +330,6 @@ export function runFlashLiteTacticalExtractor(
         3: 'Palier Club',
         4: 'Palier Grand-Maître',
     };
-    const erhTierLabel = tierMap[blunder.tier ?? 2] ?? 'Palier Club';
 
     const optimalRolls36 = computeConstructiveAfterMove(boardValidation.normalizedBoard, blunder.optimalMove, blunder.player);
     const oppRolls36 = Math.min(32, Math.max(12, 36 - optimalRolls36 + 2));
@@ -211,76 +337,78 @@ export function runFlashLiteTacticalExtractor(
     return TacticalExtractorFactsSchema.parse({
         extractorAgent: 'FlashLite-Tactical-Extractor',
         extractorModel: 'gemini-2.5-flash-lite',
-        boardValidation,
+        boardValidation: { ...boardValidation, isContact: semantic.isContact, archetype: semantic.archetype },
+        semanticConceptName: semantic.conceptName,
+        semanticProverb: semantic.proverb,
         playedLetter,
         optimalLetter,
         playedNotation: validation.playedNotation,
         optimalNotation: blunder.optimalMove,
         deltaEmg,
-        erPrImpact,
+        erPrImpact: Math.abs(tenthsDelta),
+        tenthsDelta,
         winChanceLossPct,
-        erhTierLabel,
+        erhTierLabel: tierMap[blunder.tier ?? 2] ?? 'Palier Intermédiaire',
         optimalConstructiveRolls36: optimalRolls36,
         opponentConstructiveRollsAfterError36: oppRolls36,
-        hitsOpponentBlot: blunder.optimalMove.includes('*'),
-        escapesBackChecker: /(24|23|22|21|20|19)\//.test(blunder.optimalMove),
+        hitsOpponentBlot: semantic.isContact && blunder.optimalMove.includes('*'),
+        escapesBackChecker: semantic.isContact && /(24|23|22|21|20|19)\//.test(blunder.optimalMove),
     });
 }
 
-/**
- * SOUS-AGENT 2 : `Flash-Pedagogical-Coach` (Modèle : `gemini-2.5-flash` / "flash")
- * Rédige l'explication structurée en 3 blocs à partir du JSON validé par `FlashLite-Tactical-Extractor`.
- */
 export function runFlashPedagogicalCoach(
     blunder: PlayerBlunderRecord,
     validation: DrillValidationResult,
+    currentMetricValue: number = 6.3,
+    isErMode: boolean = true,
 ): PedagogicalCoachReport {
     const facts = runFlashLiteTacticalExtractor(blunder, validation);
     const { boardValidation } = facts;
-    const absPipDiff = Math.abs(boardValidation.pipDiff);
-    const raceContext =
-        boardValidation.pipDiff < 0
-            ? `avec ${absPipDiff} pips de retard à la course (${boardValidation.whitePips} vs ${boardValidation.blackPips})`
-            : `avec ${absPipDiff} pips d'avance à la course (${boardValidation.whitePips} vs ${boardValidation.blackPips})`;
+    const metricLabel = isErMode ? 'ER / PR' : 'ERH';
+    const nextMetric = Math.max(0, Math.min(30, Number((currentMetricValue + facts.tenthsDelta).toFixed(1))));
+    const deltaSign = facts.tenthsDelta > 0 ? `+${facts.tenthsDelta.toFixed(1)}` : facts.tenthsDelta.toFixed(1);
 
     const headerSeverityLine = validation.isCorrect
-        ? `✅ Coup Optimal (0.000 EMG | Impact ER / PR : +0.0 | ERH : ${facts.erhTierLabel})`
-        : `❌ Erreur (${facts.deltaEmg.toFixed(3)} EMG | Impact ER / PR : +${facts.erPrImpact.toFixed(1)} | ERH : ${facts.erhTierLabel})`;
+        ? `✅ Coup Optimal ! (0.000 EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | Équité 100%)`
+        : `❌ Erreur (${facts.deltaEmg.toFixed(3)} EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | -${facts.winChanceLossPct.toFixed(1)}% de victoire)`;
 
     const winChanceDropBadge = validation.isCorrect
-        ? '+0.0 % (Équité maximale maintenue)'
-        : `-${facts.winChanceLossPct.toFixed(1)} % de chances de gagner`;
+        ? 'Équité 100%'
+        : `-${facts.winChanceLossPct.toFixed(1)}% de chances de gagner`;
 
-    const actionDescription =
-        facts.hitsOpponentBlot && facts.escapesBackChecker
-            ? 'saisir l’opportunité de frapper le blot adverse tout en t’échappant avec ton pion arrière'
+    const absPipDiff = Math.abs(boardValidation.pipDiff);
+    const racePhrase =
+        boardValidation.pipDiff >= 0
+            ? `avec ${absPipDiff} pips d'avance (${boardValidation.whitePips} vs ${boardValidation.blackPips})`
+            : `avec ${absPipDiff} pips de retard (${boardValidation.whitePips} vs ${boardValidation.blackPips})`;
+
+    const actionClause = !boardValidation.isContact
+        ? 'répartit harmonieusement tes pions vers le jan intérieur sans gaspiller de pips'
+        : facts.hitsOpponentBlot && facts.escapesBackChecker
+            ? 'frappe le blot adverse tout en libérant ton pion arrière'
             : facts.hitsOpponentBlot
-                ? 'frapper immédiatement le blot adverse pour reprendre l’initiative du tempo'
+                ? 'frappe immédiatement le blot adverse pour reprendre le tempo'
                 : facts.escapesBackChecker
-                    ? 'libérer ton pion arrière avant d’être enfermé par le prime adverse'
-                    : 'consolider tes portes clés et maximiser ta couverture du tablier';
-
-    const targetFaultMove = validation.isCorrect ? blunder.playedMove : facts.playedNotation;
-    const targetFaultLetter = validation.isCorrect ? 'B' : facts.playedLetter;
+                    ? 'évacue ton pion arrière avant le verrouillage adverse'
+                    : 'verrouille tes portes clés et maximise ta couverture';
 
     const block1WhyError = validation.isCorrect
-        ? `Pourquoi l'erreur (${targetFaultMove}) coûte cher : jouer passivement ${targetFaultMove} (${targetFaultLetter}) dégrade ta structure (${boardValidation.whiteMadePoints} portes faites) et laisse ${facts.opponentConstructiveRollsAfterError36} lancers constructifs sur 36 à l'adversaire.`
-        : `En jouant ${facts.playedNotation} (${facts.playedLetter}), tu joues passivement ou dégrades ta structure (${boardValidation.whiteMadePoints} portes faites) sans traiter l'urgence tactique, ce qui laisse ${facts.opponentConstructiveRollsAfterError36} lancers constructifs sur 36 à l'adversaire. (Pourquoi l'erreur coûte cher : ${blunder.whyFailed || 'perte d’initiative majeure'})`;
+        ? null
+        : !boardValidation.isContact
+            ? `En jouant ${facts.playedNotation} (${facts.playedLetter}), tu empiles inutilement tes dames sur des cases basses et réduis tes lancers fluides (${facts.opponentConstructiveRollsAfterError36}/36 lancers suboptimaux).`
+            : `En jouant ${facts.playedNotation} (${facts.playedLetter}), tu dégrades ta structure (${boardValidation.whiteMadePoints} portes faites) et concèdes ${facts.opponentConstructiveRollsAfterError36} lancers constructifs sur 36 à l'adversaire.`;
 
-    const block2WhyOptimalWins = `Le meilleur coup est ${facts.optimalLetter} (${facts.optimalNotation}) : ${raceContext}, tu dois ${actionDescription} (${facts.optimalConstructiveRolls36}/36 lancers constructifs au tour suivant).`;
+    const block2WhyOptimalWins = `Le meilleur coup est ${facts.optimalLetter} (${facts.optimalNotation}) : ${racePhrase}, il ${actionClause} (${facts.optimalConstructiveRolls36}/36 lancers constructifs au tour suivant).`;
 
-    const ruleText =
-        blunder.proverb ||
-        (boardValidation.pipDiff <= -20
-            ? `Quand tu es distancé à la course (${boardValidation.pipDiff} pips), cherche le contact et la frappe directe plutôt que de subir une course perdue d'avance.`
-            : blunder.explanation);
-
-    const block3RuleOfThumb = `💡 Règle pour progresser : ${ruleText}`;
+    const block3RuleOfThumb = validation.isCorrect
+        ? `💡 Règle à retenir : ${facts.semanticProverb}`
+        : `💡 Comment t'améliorer : ${facts.semanticProverb}`;
 
     return {
         coachAgent: 'Flash-Pedagogical-Coach',
         coachModel: 'gemini-2.5-flash',
         extractorFacts: facts,
+        isOptimalMove: validation.isCorrect,
         headerSeverityLine,
         winChanceDropBadge,
         block1WhyError,
@@ -288,4 +416,3 @@ export function runFlashPedagogicalCoach(
         block3RuleOfThumb,
     };
 }
-
