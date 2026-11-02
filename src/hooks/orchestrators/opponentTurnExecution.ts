@@ -22,7 +22,7 @@ import type {
 } from '../gameStateReducer';
 import { annotateOpponentMoveHits } from '../gameStateReducer';
 import { evaluateOpponentDoubleAsync } from './opponentCubeDecision';
-import { resolveOpponentMoveSequence, pickOpeningBook, pickLocalMove } from './opponentMoveCalculator';
+import { resolveOpponentMoveSequence, pickOpeningBook, pickTestStubMove } from './opponentMoveCalculator';
 import { runOpponentAnimation } from './opponentAnimationRunner';
 
 export const BOT_FLIGHT_ESTIMATE_MS = 250;
@@ -191,8 +191,7 @@ export async function executeOpponentTurn({
 
     let best: ReturnType<typeof pickOpeningBook> = null;
     if (isCustomTestTiming) {
-        best = pickOpeningBook(currentBoardState.board, rolledDice, legalSeqs, difficulty) ??
-            pickLocalMove(stateWithDice, rolledDice, legalSeqs, difficulty);
+        best = pickTestStubMove(currentBoardState.board, rolledDice, legalSeqs, difficulty);
     } else {
         const movePromise = resolveOpponentMoveSequence({
             stateWithDice,
@@ -202,6 +201,11 @@ export async function executeOpponentTurn({
             difficulty,
             computeHardDeadlineMs: preset.COMPUTE_HARD_DEADLINE_MS,
             isCustomTestTiming,
+            isAborted: isTurnAborted,
+            onEngineRetry: (attempt) =>
+                revealDice(
+                    `${initialStatus} — Moteur Open Sage injoignable, nouvelle tentative (${attempt})…`,
+                ),
         });
 
         const [resolved] = await Promise.all([

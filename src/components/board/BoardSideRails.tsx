@@ -9,8 +9,6 @@ import React, { useEffect, useState } from 'react';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { PlayerEloProfile } from '../../features/multiplayer/types';
 import {
-    BOT_ELO_BY_DIFFICULTY,
-    BOT_OFFICIAL_PR_BY_DIFFICULTY,
     getBotPersona,
 } from '../../features/personas/botPersonas';
 import { readPlayerPassport, STANDARD_USER_AVATARS } from '../../lib/supabase/auth';
@@ -59,10 +57,10 @@ function resolvePersonaMeta(
     challengerProfile?: PlayerEloProfile | null,
 ) {
     const activePersona = getBotPersona(difficulty, locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja');
-    const botElo = challengerProfile ? String(challengerProfile.rating) : String(BOT_ELO_BY_DIFFICULTY[difficulty] ?? 1950);
-    const botDefaultPr = (BOT_OFFICIAL_PR_BY_DIFFICULTY[difficulty] ?? 2.5).toFixed(1);
+    // Aucun Elo ni PR « officiel » inventé pour le bot : PR mesuré en partie (Open Sage), sinon « — ».
+    const botElo = challengerProfile ? String(challengerProfile.rating) : '—';
     const playerPrValue = typeof prX === 'number' && Number.isFinite(prX) ? prX : 0;
-    const opponentPrValue = typeof prO === 'number' && Number.isFinite(prO) ? prO.toFixed(1) : botDefaultPr;
+    const opponentPrValue = typeof prO === 'number' && Number.isFinite(prO) ? prO.toFixed(1) : '—';
     const opponentDisplayName = challengerProfile ? challengerProfile.displayName : activePersona.shortName;
     const opponentBadge = challengerProfile
         ? challengerProfile.countryName

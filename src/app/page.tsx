@@ -30,7 +30,8 @@ import { useCheckerSoundFeedback } from '../hooks/useCheckerSoundFeedback';
 import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
 import { readStoredPlayerColor } from '../components/hud/ColorSelector';
-import { computeRealtimeBotErrorRate, MAX_BOT_DISPLAY_PR } from '../features/personas/botPersonas';
+import { MAX_BOT_DISPLAY_PR } from '../features/personas/botPersonas';
+import { getBotRealPr, resetBotRealPr } from '../features/personas/botRealPr';
 import type { Player } from '../engine/backgammonEngine';
 
 /** Vues exclusives de l'application (une seule montée à la fois). */
@@ -47,7 +48,7 @@ export default function Home() {
     // État maître : aucune modale superposée au plateau au démarrage.
     const [appScreen, setAppScreen] = useState<AppScreen>('LOBBY');
     const userInitiatedMultiplayerRef = useRef<boolean>(false);
-    const livePrRef = useRef<{ prX: number; prO: number }>({ prX: 0, prO: 8.5 });
+    const livePrRef = useRef<{ prX: number; prO: number | null }>({ prX: 0, prO: null });
 
     // Anti-hydratation : lecture des préférences post-montage client
     useEffect(() => {
@@ -121,9 +122,15 @@ export default function Home() {
     }, [isLiveMatch, rawTriggerCoach]);
 
     const prX = matchStatsX.decisionsCount > 0 ? (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500 : 0.0;
+    // PR réel du bot : pertes d'équité mesurées par Open Sage sur ses propres coups (null tant que rien n'est mesuré).
+    const botMatchLogLength = game.matchLog.length;
+    useEffect(() => {
+        if (botMatchLogLength === 0) resetBotRealPr();
+    }, [botMatchLogLength]);
+    const measuredBotPr = getBotRealPr().pr;
     const prO = matchStatsO.decisionsCount > 0
         ? Math.min(MAX_BOT_DISPLAY_PR, (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500)
-        : computeRealtimeBotErrorRate(game.matchLog, game.difficulty);
+        : measuredBotPr;
     livePrRef.current = { prX, prO };
 
     // Interaction pions et dés
