@@ -53,6 +53,8 @@ describe('aiHumanizedTiming — Fluidité de l’Adversaire IA (Audit 19 / 20)',
                 rollDurationMs: 0,
                 previewDurationMs: 0,
                 subMoveSpacingMs: 0,
+                // Stub de test (pas de réseau) : première séquence légale. En production : Open Sage.
+                selectMove: async (_st, seqs) => seqs[0] ?? null,
             },
             {
                 onPhaseChange: vi.fn(),

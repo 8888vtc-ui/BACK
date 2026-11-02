@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { parseCoachNotationMoves } from '../coach/coachMoveNotation';
 import {
     normalizeMoveNotation,
     validateDrillMove,
@@ -28,11 +29,8 @@ describe('BlunderDrillEngine Module', () => {
     });
 
     it('valide immédiatement un coup direct identique au coup optimal', () => {
-        const blunder = BENCHMARK_BLUNDERS[0]; // Optimal: '8/5 6/5'
-        const moves = [
-            { from: 8, to: 5 },
-            { from: 6, to: 5 },
-        ];
+        const blunder = BENCHMARK_BLUNDERS[0]!;
+        const moves = parseCoachNotationMoves(blunder.optimalMove, 'X');
 
         const result = validateDrillMove(blunder, moves);
         expect(result.isCorrect).toBe(true);
@@ -43,11 +41,9 @@ describe('BlunderDrillEngine Module', () => {
     });
 
     it('valide une variante acceptable déclarée avec une perte d’équité minimale', () => {
-        const blunder = BENCHMARK_BLUNDERS[0]; // Acceptable: ['6/5 8/5']
-        const moves = [
-            { from: 6, to: 5 },
-            { from: 8, to: 5 },
-        ];
+        const blunder = BENCHMARK_BLUNDERS[0]!;
+        const notation = blunder.acceptableMoves?.[0] ?? blunder.optimalMove;
+        const moves = parseCoachNotationMoves(notation, 'X');
 
         const result = validateDrillMove(blunder, moves);
         expect(result.isCorrect).toBe(true);
@@ -56,17 +52,13 @@ describe('BlunderDrillEngine Module', () => {
     });
 
     it('rejette un coup erroné en signalant un blunder et autorise la tentative de rejouer', () => {
-        const blunder = BENCHMARK_BLUNDERS[0]; // Golden point 3-1
-        // Joue le mauvais coup : 24/21 13/12
-        const badMoves = [
-            { from: 24, to: 21 },
-            { from: 13, to: 12 },
-        ];
+        const blunder = BENCHMARK_BLUNDERS.find((b) => b.equityLoss >= 0.08) ?? BENCHMARK_BLUNDERS[0]!;
+        const badMoves = parseCoachNotationMoves(blunder.playedMove, 'X');
 
         const result = validateDrillMove(blunder, badMoves);
         expect(result.isCorrect).toBe(false);
         expect(result.canRetry).toBe(true);
-        expect(result.equityLoss).toBeGreaterThan(0.025);
+        expect(result.equityLoss).toBeGreaterThan(0.08);
         expect(result.hint).toBeDefined();
         expect(result.feedbackMessage).toContain('Rejouez jusqu’à trouver le bon coup');
     });

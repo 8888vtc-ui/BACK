@@ -116,9 +116,10 @@ describe('BlunderBank Module', () => {
     });
 
     it('filtre les erreurs à réviser par conceptId', () => {
-        const goldenPointBlunders = getBlundersToReview('golden_point');
-        expect(goldenPointBlunders.length).toBeGreaterThan(0);
-        expect(goldenPointBlunders.every((b) => b.conceptId === 'golden_point')).toBe(true);
+        const concept = BENCHMARK_BLUNDERS[0]!.conceptId;
+        const filtered = getBlundersToReview(concept);
+        expect(filtered.length).toBeGreaterThan(0);
+        expect(filtered.every((b) => b.conceptId === concept)).toBe(true);
     });
 
     it('met à jour la maîtrise et les compteurs lors de markBlunderAttempt', () => {

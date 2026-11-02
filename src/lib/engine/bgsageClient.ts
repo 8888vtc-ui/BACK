@@ -7,7 +7,6 @@ import {
     applyMove,
     borneOffCount,
     serializeCanonicalXGID,
-    serializeXGID,
     type BoardState,
     type Move,
     type MoveSequence,
@@ -33,42 +32,21 @@ import { bgsageCacheKey, getCachedBgsageEvaluation, setCachedBgsageEvaluation } 
 export { clearBgsageEvaluationCache, bgsageEvaluationCacheSize, BGSAGE_CACHE_MAX_ENTRIES } from './bgsageCache';
 
 export interface BgsageProbabilities {
-    /** P(victoire totale) [0..1]. */
     win: number;
-    /** P(gammon cumulé, incluant les backgammons conformément à la norme bgsage C++ / XG). */
     winGammon: number;
-    /** P(backgammon). */
     winBackgammon: number;
-    /** P(défaite totale) = 1 - win. */
     loseWin: number;
-    /** P(gammon adverse cumulé, incluant les backgammons). */
     loseGammon: number;
-    /** P(backgammon adverse). */
     loseBackgammon: number;
-    /** P(gammon sans backgammon) optionnelle pour éviter toute ambiguïté. */
     winGammonExclusive?: number;
-    /** P(gammon adverse sans backgammon) optionnelle. */
     loseGammonExclusive?: number;
-    /** P(victoire simple sans gammon ni backgammon) optionnelle. */
     winSingle?: number;
-    /** P(défaite simple) optionnelle. */
     loseSingle?: number;
-    /** P(gammon cumulé) explicite. */
     winGammonCumulative?: number;
-    /** P(gammon adverse cumulé) explicite. */
     loseGammonCumulative?: number;
 }
 
-/**
- * Calcule l'équité cubeless normalisée sans double comptage des backgammons :
- *
- * Formule canonique eXtreme Gammon / GNU Backgammon :
- * Equity = (W - L) + (W_g - L_g) + (W_bg - L_bg)
- * lorsque W_g et L_g sont cumulatifs (incluent déjà les backgammons).
- *
- * Si les probabilités exclusives sont fournies (sans backgammons) :
- * Equity = (W - L) + (W_g_excl - L_g_excl) + 2 * (W_bg - L_bg).
- */
+/** Calcule l'équité cubeless normalisée sans double comptage des backgammons (norme XG / GNUBG). */
 export function calculateCubelessEquity(probs: BgsageProbabilities): number {
     const w = probs.win;
     const l = probs.loseWin ?? 1.0 - w;
@@ -117,13 +95,7 @@ export interface BgsageEvaluateResponse {
 
 const DEFAULT_CLOUD_RUN_URL = 'https://bgsage-service-468274233732.europe-west1.run.app';
 
-/**
- * Résout l'URL de base du service d'évaluation :
- * - Côté navigateur (`window` défini) : utilise uniquement le proxy interne `/api/evaluate`
- *   (sauf si `NEXT_PUBLIC_BACKEND_URL` est explicitement forcé), afin de ne jamais exposer
- *   l'URL Google Cloud Run dans l'onglet Réseau (DevTools) du client.
- * - Côté serveur / Node : cible directement `BACKEND_URL` / `GNUBG_BACKEND_URL` ou Cloud Run.
- */
+/** Résout l'URL de base du service d'évaluation (proxy `/api/evaluate` côté client, Cloud Run côté serveur). */
 export function resolveBgsageBaseUrl(): string {
     if (typeof window !== 'undefined') {
         if (process.env.NODE_ENV === 'test') {
@@ -141,10 +113,7 @@ export function resolveBgsageBaseUrl(): string {
     return raw.replace(/\/+$/, '');
 }
 
-/**
- * Convertit un plateau `m.board` (26 entiers) vers la convention absolue `board[0..25]`.
- * Si `source === 'typescript-tri-phase'`, le plateau est déjà dans le référentiel projet (`board[0..25]`).
- */
+/** Convertit un plateau `m.board` (26 entiers) vers la convention absolue `board[0..25]`. */
 export function bgsageMoveBoardToProjectBoard(
     bgsageBoard: ReadonlyArray<number>,
     player: Player,
@@ -192,10 +161,7 @@ export function boardsMatchOnPointsAndBar(a: ReadonlyArray<number>, b: ReadonlyA
     );
 }
 
-/**
- * Apparie un candidat `BgsageMove` contre `legalSeqs` par ses sous-coups ou sa notation
- * convertie en numérotation absolue (`formatMoveSequenceNotationAbsolute`).
- */
+/** Apparie un candidat `BgsageMove` contre `legalSeqs` par ses sous-coups ou sa notation absolue. */
 function matchCandidateMoveByNotation(
     m: BgsageMove,
     legalSeqs: ReadonlyArray<MoveSequence>,
@@ -224,20 +190,17 @@ function matchCandidateMoveByNotation(
     const normRawTarget = normalizeCoachNotation(m.notation);
 
     if (normAbsTarget) {
-        // 1. Appariement direct ou insensible à l'ordre via formatMoveSequenceNotationAbsolute
         const directMatch = legalSeqs.find(
             (seq) => normalizeCoachNotation(formatMoveSequenceNotationAbsolute(seq.moves, player)) === normAbsTarget,
         );
         if (directMatch) return directMatch;
 
-        // 2. Appariement sur le différentiel de plateau (coups chaînés ex. 24/13 vs 24/18 18/13)
         const diffMatch = legalSeqs.find((seq) => {
             const diffMoves = movesFromBoardDiff(boardBefore, seq.board, player);
             return normalizeCoachNotation(formatMoveSequenceNotationAbsolute(diffMoves, player)) === normAbsTarget;
         });
         if (diffMatch) return diffMatch;
 
-        // 3. Replay des sous-coups parsés en notation absolue sur boardBefore
         const parsedMoves = parseCoachNotationMoves(absTarget, player);
         if (parsedMoves.length > 0) {
             let sim = [...boardBefore];
@@ -249,7 +212,6 @@ function matchCandidateMoveByNotation(
         }
     }
 
-    // 4. Repli si l'appelant a fourni une notation déjà absolue pour O
     if (player === 'O' && normRawTarget && normRawTarget !== normAbsTarget) {
         const rawMatch = legalSeqs.find(
             (seq) => normalizeCoachNotation(formatMoveSequenceNotationAbsolute(seq.moves, player)) === normRawTarget,
@@ -272,9 +234,7 @@ export function ensureBgsageSafeXgid(xgid: string): string {
     return xgid;
 }
 
-/**
- * Évalue une position XGID via le bgsage-service avec cache LRU (200 entrées, clé `${safeXgid}|${ply}`).
- */
+/** Évalue une position XGID via le bgsage-service avec cache LRU (200 entrées, clé `${safeXgid}|${ply}`). */
 export async function evaluateWithBgsage(
     xgid: string,
     ply: number = 2,
@@ -317,23 +277,19 @@ export async function evaluateWithBgsage(
     }
 }
 
-/**
- * Sélectionne le coup d'un bot IA via Open Sage selon son niveau (grandmaster: 3-ply, expert: 2-ply, intermediate/beginner: 1-ply).
- */
+/** Sélectionne le coup d'un bot IA exclusivement via Open Sage (grandmaster: 3-ply, expert: 2-ply, autres: 1-ply + cap ΔE_max). */
 export async function selectBotMoveWithBgsage(
     stateWithDice: BoardState,
     legalSeqs: MoveSequence[],
     difficulty: AIDifficulty = 'expert',
     timeoutMs: number = 3500,
-    randomFn: () => number = Math.random,
+    selectorFn: () => number = () => 0.5,
     precomputedResponse?: BgsageEvaluateResponse | null,
 ): Promise<{
     sequence: MoveSequence;
     cubeDecision?: BgsageCubeDecision;
     evalLevel: string;
-    /** Perte d'équité réelle (EMG, ≥ 0) du coup choisi par rapport au meilleur coup Open Sage. 0 si forcé. */
     equityLoss: number;
-    /** true si un seul coup légal (exclu du calcul de PR, norme XG). */
     isForced: boolean;
 } | null> {
     if (legalSeqs.length === 0) return null;
@@ -358,7 +314,6 @@ export async function selectBotMoveWithBgsage(
         }
     }
 
-    // Si aucun plateau n'a correspondu, tente un appariement par notation absolue contre legalSeqs
     if (matchedCandidates.length === 0) {
         for (const m of resp.chequerPlay) {
             const found = matchCandidateMoveByNotation(m, legalSeqs, stateWithDice.board, player);
@@ -368,7 +323,6 @@ export async function selectBotMoveWithBgsage(
         }
     }
 
-    // Ne JAMAIS retourner legalSeqs[0] par défaut : retourne null pour basculer sur pickLocal() (findBestBoardMove)
     if (matchedCandidates.length === 0) {
         return null;
     }
@@ -376,20 +330,13 @@ export async function selectBotMoveWithBgsage(
     const bestCand = matchedCandidates[0];
     const lossOf = (c: { move: BgsageMove }): number =>
         Number(Math.max(0, bestCand.move.equity - c.move.equity).toFixed(4));
-    // 1. Grandmaster ou Expert : toujours le meilleur coup Open Sage
-    if (
-        difficulty === 'grandmaster' ||
-        difficulty === 'expert' ||
-        matchedCandidates.length === 1
-    ) {
+
+    if (difficulty === 'grandmaster' || difficulty === 'expert' || matchedCandidates.length === 1) {
         return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply`, equityLoss: 0, isForced: false };
     }
 
-    // 2. Calibrage Dopamine Dégressif par Palier (80 % Débutant -> 68 % Club -> 50 % Pro) :
-    //    L'humain gagne ~80 % contre un bot Débutant pour créer l'addiction dès l'entrée,
-    //    puis la complaisance du bot descend crescendo en Club (~62 % d'imprécisions) et disparaît en Expert.
     const subOptimalThreshold = difficulty === 'beginner' ? 0.80 : 0.62;
-    if (matchedCandidates.length >= 2 && randomFn() < subOptimalThreshold) {
+    if (matchedCandidates.length >= 2 && selectorFn() < subOptimalThreshold) {
         const subPool = matchedCandidates.slice(1, Math.min(4, matchedCandidates.length));
         const pickIdx = difficulty === 'beginner' ? subPool.length - 1 : 0;
         const chosenSub = subPool[pickIdx] ?? matchedCandidates[1];
@@ -406,11 +353,10 @@ export async function selectBotMoveWithBgsage(
         return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply`, equityLoss: 0, isForced: false };
     }
 
-    // 3. Filtrage déterministe « Premier Principe » : Plafond Blunder Cap ΔE_max + Biais Cognitif Persona
+    // Filtrage déterministe « Premier Principe » : Plafond Blunder Cap ΔE_max + Biais Cognitif Persona (0 bruit sur les équités)
     const topEq = bestCand.move.cubelessEquity ?? bestCand.move.equity;
     const blunderCap = BLUNDER_CAP_EMG_BY_DIFFICULTY[difficulty] ?? 0.035;
     const biasScale = difficulty === 'beginner' ? 0.35 : difficulty === 'intermediate' ? 0.22 : 0.08;
-    const jitter = (randomFn() - 0.5) * (difficulty === 'beginner' ? 0.008 : 0.002);
 
     const plausiblePool = matchedCandidates.filter((c, idx) => {
         if (idx === 0) return true;
@@ -423,7 +369,7 @@ export async function selectBotMoveWithBgsage(
     for (const cand of plausiblePool) {
         const baseEq = cand.move.cubelessEquity ?? cand.move.equity;
         const personaBias = computePersonaBiasDelta(stateWithDice.board, cand.seq.board, difficulty) * biasScale;
-        const score = baseEq + personaBias + (cand === bestCand ? 0 : jitter);
+        const score = baseEq + personaBias;
         if (score > bestScore) {
             bestScore = score;
             chosen = cand;

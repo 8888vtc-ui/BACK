@@ -8,10 +8,9 @@
  */
 
 import React, { useState } from 'react';
-import { applyMove, serializeCanonicalXGID, type BoardState } from '../../engine/backgammonEngine';
-import { evaluateBtCoreBoard, computeBtCoreResidualCorrection } from '../../lib/engine/btCoreEngine';
-import { evaluatePositionExpectiminimax2Ply } from '../../lib/engine/expectiminimax';
+import { applyMove, serializeCanonicalXGID } from '../../engine/backgammonEngine';
 import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../../lib/engine/gnubg3PlyCertifiedPositions';
+import { GNUBG_3PLY_QUIZ_BANK } from '../../features/drills/gnubg3PlyQuizBank';
 import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
 import type { PlayerBlunderRecord } from '../../features/drills/types';
 import { validateBoardState } from '../../features/drills/drillSubAgentsPipeline';
@@ -92,6 +91,8 @@ export function computePositionTelemetry(blunder: PlayerBlunderRecord): Position
 export interface CandidateMathRankRow {
     readonly rank: number;
     readonly notation: string;
+    /** false = coup absent de l'analyse GNUBG 3-ply : affiché « non évalué », aucune valeur inventée. */
+    readonly isEvaluated: boolean;
     readonly equity: number;
     readonly deltaEmg: number;
     readonly winPct: number;
@@ -100,164 +101,121 @@ export interface CandidateMathRankRow {
     readonly isUserChoice: boolean;
 }
 
-function expandNotationForSim(notation: string): string {
-    return notation
-        .replace(/\*/g, '')
-        .trim()
-        .split(/\s+/)
-        .flatMap((tok) => {
-            const parts = tok.split('/');
-            return parts.length > 2 ? parts.slice(0, -1).map((p, k) => `${p}/${parts[k + 1]}`) : [tok];
-        })
-        .join(' ');
+interface GnubgMoveValues {
+    readonly rank: number;
+    readonly notation: string;
+    readonly equityLoss: number;
+    readonly win: number;
+    readonly winGammon: number;
 }
 
-/**
- * Évalue en VRAI Multi-Ply Cubeful (`BT-Core v4.0` + `evaluatePositionExpectiminimax2Ply`)
- * chaque coup candidat (et le coup joué librement sur le plateau s'il diffère des 4 choix)
- * pour garantir 0 donnée factice et l'exactitude des écarts ΔEMG (y compris les nuances à -0.010 EMG).
- */
-export function buildCandidateMathTable(
-    blunder: PlayerBlunderRecord,
-    playedNotation: string,
-): ReadonlyArray<CandidateMathRankRow> {
-    const validated = validateBoardState(blunder.board, blunder.player);
-    const baseBoard = validated.normalizedBoard;
-    const player = blunder.player;
-    const opponent = player === 'X' ? 'O' : 'X';
+function normNotation(s: string): string {
+    return s.replace(/\*/g, '').trim().toLowerCase().split(/\s+/).sort().join(' ');
+}
 
-    const rawChoices =
-        blunder.quizChoices && blunder.quizChoices.length > 0
-            ? [...blunder.quizChoices]
-            : [blunder.optimalMove, blunder.playedMove];
-
-    if (
-        playedNotation &&
-        playedNotation.trim() &&
-        !rawChoices.some((c) => c.trim().toLowerCase() === playedNotation.trim().toLowerCase())
-    ) {
-        rawChoices.push(playedNotation.trim());
+/** Développe `8/4(2)`, les coups chaînés et `bar` en sous-coups simples. */
+function expandNotationForSim(notation: string): string {
+    const out: string[] = [];
+    for (const raw of notation.replace(/\*/g, '').trim().split(/\s+/)) {
+        const rep = raw.match(/^(.+)\((\d)\)$/);
+        const parts = (rep ? rep[1]! : raw).toLowerCase().replace('bar', '25').replace('off', '0').split('/');
+        const steps: string[] = [];
+        for (let k = 0; k < parts.length - 1; k++) steps.push(`${parts[k]}/${parts[k + 1]}`);
+        for (let c = 0; c < (rep ? Number(rep[2]) : 1); c++) out.push(...steps);
     }
+    return out.join(' ');
+}
 
-    const acceptablesNorm = new Set(
-        (blunder.acceptableMoves ?? []).map((m) => m.replace(/\*/g, '').trim().toLowerCase().split(/\s+/).sort().join(' ')),
-    );
-    const optimalNorm = blunder.optimalMove.replace(/\*/g, '').trim().toLowerCase().split(/\s+/).sort().join(' ');
+function boardKeyAfter(baseBoard: readonly number[], notation: string, player: 'X' | 'O'): string | null {
+    try {
+        let b = [...baseBoard];
+        for (const m of parseCoachNotationMoves(expandNotationForSim(notation), player)) b = applyMove(b, m, player);
+        return b.slice(0, 26).join(',');
+    } catch {
+        return null;
+    }
+}
 
+/** Valeurs GNUBG 3-ply de la position (table certifiée ou banque de quiz), par id puis par XGID + dés. */
+function findGnubgMoves(blunder: PlayerBlunderRecord, baseBoard: number[]): readonly GnubgMoveValues[] {
+    const byId =
+        GNUBG_3PLY_CERTIFIED_POSITIONS.find((p) => p.id === blunder.id)?.moves ??
+        GNUBG_3PLY_QUIZ_BANK.find((q) => q.id === blunder.id)?.candidateMoves3Ply;
+    if (byId) return byId;
     const canonBody = serializeCanonicalXGID({
         board: baseBoard,
-        turn: player,
+        turn: blunder.player,
         cubeValue: blunder.matchContext?.cubeValue ?? 1,
         cubeOwner: blunder.matchContext?.cubeOwner ?? null,
         dice: blunder.dice,
-        matchLength: blunder.matchContext?.matchLength ?? 7,
+        matchLength: blunder.matchContext?.matchLength ?? 0,
         scoreX: blunder.matchContext?.scoreX ?? 0,
         scoreO: blunder.matchContext?.scoreO ?? 0,
         crawford: blunder.matchContext?.crawford ?? false,
         doubled: false,
         resigned: 0,
     }).split(':')[0];
-    const dA = Math.max(blunder.dice[0], blunder.dice[1]);
-    const dB = Math.min(blunder.dice[0], blunder.dice[1]);
-    const certPos = GNUBG_3PLY_CERTIFIED_POSITIONS.find(
-        (p) =>
-            p.id === blunder.id ||
-            `cert_3ply_${p.id}` === blunder.id ||
-            (p.xgid.split(':')[0] === canonBody &&
-                Math.max(p.dice[0], p.dice[1]) === dA &&
-                Math.min(p.dice[0], p.dice[1]) === dB),
+    const sameDice = (d: readonly [number, number]): boolean =>
+        Math.max(d[0], d[1]) === Math.max(blunder.dice[0], blunder.dice[1]) &&
+        Math.min(d[0], d[1]) === Math.min(blunder.dice[0], blunder.dice[1]);
+    return (
+        GNUBG_3PLY_CERTIFIED_POSITIONS.find((p) => p.xgid.split(':')[0] === canonBody && sameDice(p.dice))?.moves ??
+        GNUBG_3PLY_QUIZ_BANK.find((q) => q.xgid.split(':')[0] === canonBody && sameDice(q.dice))?.candidateMoves3Ply ??
+        []
     );
-    const certMap = new Map(
-        (certPos?.moves ?? []).map((m) => [
-            m.notation.replace(/\*/g, '').trim().toLowerCase().split(/\s+/).sort().join(' '),
-            m,
-        ]),
-    );
+}
 
-    const evaluated = rawChoices.map((notation) => {
-        const norm = notation.replace(/\*/g, '').trim().toLowerCase().split(/\s+/).sort().join(' ');
-        const isOptimal = norm === optimalNorm;
-        const isAcceptable = acceptablesNorm.has(norm);
-        const certMove = certMap.get(norm);
+/**
+ * Classement des coups candidats avec les valeurs EXACTES de GNU Backgammon 3-ply cubeful.
+ * Un coup absent de l'analyse GNUBG est marqué « non évalué » : plus aucun moteur local ni écart forcé.
+ */
+export function buildCandidateMathTable(
+    blunder: PlayerBlunderRecord,
+    playedNotation: string,
+): ReadonlyArray<CandidateMathRankRow> {
+    const baseBoard = validateBoardState(blunder.board, blunder.player).normalizedBoard;
+    const player = blunder.player;
 
-        if (certMove) {
-            return {
-                notation,
-                norm,
-                isOptimal: isOptimal || certMove.rank === 1,
-                isAcceptable: isAcceptable || certMove.equityLoss <= 0.015,
-                rawEquity: Number(certMove.equity.toFixed(3)),
-                winPct: Number((certMove.win * 100).toFixed(1)),
-                gammonPct: Number((certMove.winGammon * 100).toFixed(1)),
-                isUserChoice: notation.trim().toLowerCase() === playedNotation.trim().toLowerCase(),
-            };
-        }
+    const rawChoices =
+        blunder.quizChoices && blunder.quizChoices.length > 0
+            ? [...blunder.quizChoices]
+            : [blunder.optimalMove, blunder.playedMove];
+    if (playedNotation.trim() && !rawChoices.some((c) => normNotation(c) === normNotation(playedNotation))) {
+        rawChoices.push(playedNotation.trim());
+    }
 
-        let afterBoard = [...baseBoard];
-        try {
-            const moves = parseCoachNotationMoves(expandNotationForSim(notation), player);
-            for (const m of moves) afterBoard = applyMove(afterBoard, m, player);
-        } catch {
-            // fallback
-        }
+    const gnubgMoves = findGnubgMoves(blunder, baseBoard);
+    const byBoard = new Map<string, GnubgMoveValues>();
+    const byNotation = new Map<string, GnubgMoveValues>();
+    for (const m of gnubgMoves) {
+        byNotation.set(normNotation(m.notation), m);
+        const k = boardKeyAfter(baseBoard, m.notation, player);
+        if (k && !byBoard.has(k)) byBoard.set(k, m);
+    }
+    const optimalNorm = normNotation(blunder.optimalMove);
 
-        const resultingState: BoardState = {
-            board: afterBoard,
-            turn: opponent,
-            cubeValue: blunder.matchContext?.cubeValue ?? 1,
-            cubeOwner: blunder.matchContext?.cubeOwner ?? null,
-            dice: null,
-            matchLength: blunder.matchContext?.matchLength ?? 7,
-            scoreX: blunder.matchContext?.scoreX ?? 0,
-            scoreO: blunder.matchContext?.scoreO ?? 0,
-            crawford: blunder.matchContext?.crawford ?? false,
-            doubled: false,
-            resigned: 0,
-        };
-
-        const eval2Ply = evaluatePositionExpectiminimax2Ply(resultingState, (st) => evaluateBtCoreBoard(st, 3));
-        const residual = computeBtCoreResidualCorrection(baseBoard, afterBoard, player);
-        const rawEquity = Number((eval2Ply.equity + residual).toFixed(3));
-
+    const rows = rawChoices.map((notation) => {
+        const k = boardKeyAfter(baseBoard, notation, player);
+        const m = (k ? byBoard.get(k) : undefined) ?? byNotation.get(normNotation(notation));
         return {
             notation,
-            norm,
-            isOptimal,
-            isAcceptable,
-            rawEquity,
-            winPct: Number((eval2Ply.probabilities.win * 100).toFixed(1)),
-            gammonPct: Number((eval2Ply.probabilities.winGammon * 100).toFixed(1)),
-            isUserChoice: notation.trim().toLowerCase() === playedNotation.trim().toLowerCase(),
+            isEvaluated: Boolean(m),
+            equity: m ? -m.equityLoss : Number.NaN,
+            deltaEmg: m ? -m.equityLoss : Number.NaN,
+            winPct: m ? Math.round(m.win * 100) : Number.NaN,
+            gammonPct: m ? Math.round(m.winGammon * 100) : Number.NaN,
+            isOptimal: m ? m.equityLoss === 0 : normNotation(notation) === optimalNorm,
+            isUserChoice: normNotation(notation) === normNotation(playedNotation),
         };
     });
 
-    const optEntry = evaluated.find((e) => e.isOptimal) ?? evaluated[0];
-    const optEquity = optEntry ? Math.max(optEntry.rawEquity, ...evaluated.map((e) => e.rawEquity)) : 0;
-
-    const rows = evaluated.map((e) => {
-        let deltaEmg = 0;
-        if (!e.isOptimal) {
-            const computedDiff = Number((e.rawEquity - optEquity).toFixed(3));
-            if (e.isAcceptable) {
-                deltaEmg = Math.max(-0.018, Math.min(-0.008, computedDiff < 0 ? computedDiff : -0.010));
-            } else {
-                deltaEmg = computedDiff < -0.005 ? computedDiff : -Math.max(0.032, Number((Math.abs(blunder.equityLoss || 0.084) * 0.65).toFixed(3)));
-            }
-        }
-        return {
-            notation: e.notation,
-            equity: Number((optEquity + deltaEmg).toFixed(3)),
-            deltaEmg,
-            winPct: Math.round(e.winPct),
-            gammonPct: Math.round(e.gammonPct),
-            isOptimal: e.isOptimal,
-            isUserChoice: e.isUserChoice,
-        };
+    rows.sort((a, b) => {
+        if (a.isEvaluated !== b.isEvaluated) return a.isEvaluated ? -1 : 1;
+        return b.deltaEmg - a.deltaEmg;
     });
-
-    rows.sort((a, b) => b.deltaEmg - a.deltaEmg);
     return rows.map((r, i) => ({ ...r, rank: i + 1 }));
 }
+
 
 export const DrillPrMathRankingTable: React.FC<{
     readonly rows: ReadonlyArray<CandidateMathRankRow>;
@@ -293,12 +251,20 @@ export const DrillPrMathRankingTable: React.FC<{
                             {r.isUserChoice && !r.isOptimal && <span className="text-[10px] text-rose-400">✗ Joué</span>}
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className={r.deltaEmg === 0 ? 'text-emerald-300' : r.deltaEmg >= -0.02 ? 'text-amber-300' : 'text-rose-300'}>
-                                {r.deltaEmg === 0 ? '0.000' : r.deltaEmg.toFixed(3)} EMG
-                            </span>
-                            <span className="text-[10px] text-slate-400">
-                                W:{r.winPct}% · G:{r.gammonPct}%
-                            </span>
+                            {r.isEvaluated ? (
+                                <>
+                                    <span className={r.deltaEmg === 0 ? 'text-emerald-300' : r.deltaEmg >= -0.02 ? 'text-amber-300' : 'text-rose-300'}>
+                                        {r.deltaEmg === 0 ? '0.000' : r.deltaEmg.toFixed(3)} EMG
+                                    </span>
+                                    <span className="text-[10px] text-slate-400">
+                                        W:{r.winPct}% · G:{r.gammonPct}%
+                                    </span>
+                                </>
+                            ) : (
+                                <span className="text-[10px] text-slate-500" title="Coup absent de l'analyse GNU Backgammon 3-ply">
+                                    non évalué
+                                </span>
+                            )}
                         </div>
                     </div>
                 ))}

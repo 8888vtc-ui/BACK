@@ -29,8 +29,54 @@ import {
     type BoardState,
 } from '../src/engine/backgammonEngine';
 import { isContactPosition, resolveSemanticArchetype } from '../src/features/drills/drillSubAgentsPipeline';
-import { analyzeBoardMoves } from '../src/lib/engine/evaluator';
-import { BTCORE_5000_HARVEST_SEEDS } from '../src/features/drills/btCore5000HarvestSeeds';
+
+/**
+ * Positions candidates à soumettre à GNUBG : `data/quizzes/candidate_positions.jsonl`
+ * (1 objet par ligne : { "id", "xgid", "dice": [d1, d2], "conceptId" }).
+ * L'ancienne source (banque BT-Core 5000, non vérifiée) a été supprimée lors de la purge db_clean_v3.
+ */
+interface CandidatePosition {
+    readonly id: string;
+    readonly xgid: string;
+    readonly dice: [number, number];
+    readonly conceptId: string;
+}
+
+const CANDIDATES_FILE = path.join(process.cwd(), 'data', 'quizzes', 'candidate_positions.jsonl');
+
+function loadCandidatePositions(): CandidatePosition[] {
+    if (!fs.existsSync(CANDIDATES_FILE)) {
+        throw new Error(
+            `Fichier de positions candidates introuvable : ${CANDIDATES_FILE}. ` +
+                'Aucune source de repli : fournissez des positions réelles (XGID) avant de générer des quiz.',
+        );
+    }
+    return fs
+        .readFileSync(CANDIDATES_FILE, 'utf8')
+        .split(/\r?\n/)
+        .filter(Boolean)
+        .map((l) => JSON.parse(l) as CandidatePosition);
+}
+
+/** Lance gnubg-cli en lot et renvoie un bloc de sortie par XGID. */
+function runGnubgHints(xgids: readonly string[], plies: number, hintCount: number): string[] {
+    const cmdLines = [
+        'set output mwc off',
+        `set evaluation chequerplay evaluation plies ${plies}`,
+        'set evaluation chequerplay evaluation cubeful on',
+        'set evaluation movefilter 3 0 0 8 0.16',
+        'set evaluation movefilter 3 1 0 8 0.16',
+        'set evaluation movefilter 3 2 0 5 0.16',
+    ];
+    for (const x of xgids) cmdLines.push(`set xgid ${x}`, `hint ${hintCount}`);
+    cmdLines.push('quit');
+    const cmdFile = path.join(process.cwd(), 'node_modules', '.cache', `gnubg_gen_${plies}ply.cmd`);
+    fs.mkdirSync(path.dirname(cmdFile), { recursive: true });
+    fs.writeFileSync(cmdFile, cmdLines.join('\n'), 'ascii');
+    const proc = spawnSync(GNUBG_CLI_PATH, ['-t', '-q', '-c', cmdFile], { encoding: 'utf8', timeout: 300000 });
+    if (proc.error) throw proc.error;
+    return proc.stdout.split('GNU Backgammon  Position ID:').slice(1);
+}
 
 const GNUBG_CLI_PATH = 'C:\\Program Files (x86)\\gnubg\\gnubg-cli.exe';
 const CHECKPOINT_FILE = path.join(process.cwd(), 'data', 'quizzes', 'quizzes_3ply_checkpoint.jsonl');
@@ -157,9 +203,8 @@ export function runBatchCertification(maxBatchCount: number = 60): Certified3Ply
         }
     }
 
-    const candidates = BTCORE_5000_HARVEST_SEEDS.filter((seed) => {
+    const candidates = loadCandidatePositions().filter((seed) => {
         if (existingById.has(seed.id)) return false;
-        if (seed.conceptId === 'race_management' || seed.conceptId === 'bearoff_technique') return false;
         const parts = seed.xgid.split(':');
         if (parts[3] !== '1') return false;
         const state = normalizeBoardForX(seed.xgid);
@@ -174,31 +219,9 @@ export function runBatchCertification(maxBatchCount: number = 60): Certified3Ply
         return Array.from(existingById.values());
     }
 
-    const cmdLines = [
-        'set output mwc off',
-        'set evaluation chequerplay evaluation plies 3',
-        'set evaluation chequerplay evaluation cubeful on',
-        'set evaluation movefilter 3 0 0 8 0.16',
-        'set evaluation movefilter 3 1 0 8 0.16',
-        'set evaluation movefilter 3 2 0 5 0.16',
-        'set evaluation cubedecision evaluation plies 3',
-    ];
-    for (const c of candidates) {
-        cmdLines.push(`set xgid ${c.xgid}`);
-        cmdLines.push('hint 5');
-    }
-    cmdLines.push('quit');
-
-    const cmdFile = path.join(path.dirname(CHECKPOINT_FILE), 'batch_50k_gen.cmd');
-    fs.writeFileSync(cmdFile, cmdLines.join('\n'), 'ascii');
-
-    const proc = spawnSync(GNUBG_CLI_PATH, ['-t', '-q', '-c', cmdFile], {
-        encoding: 'utf8',
-        timeout: 120000,
-    });
-    if (proc.error) throw proc.error;
-
-    const blocks = proc.stdout.split('GNU Backgammon  Position ID:').slice(1);
+    // 3-ply cubeful (référence) + 0-ply GNUBG (coup « naïf », remplace l'ancienne heuristique locale)
+    const blocks = runGnubgHints(candidates.map((c) => c.xgid), 3, 5);
+    const blocks0Ply = runGnubgHints(candidates.map((c) => c.xgid), 0, 1);
     const appendStream: string[] = [];
 
     for (let i = 0; i < candidates.length; i++) {
@@ -215,8 +238,7 @@ export function runBatchCertification(maxBatchCount: number = 60): Certified3Ply
 
         const state = normalizeBoardForX(seed.xgid);
         const legal = generateLegalMoves(state, seed.dice);
-        const eval0Ply = analyzeBoardMoves(state, seed.dice, { ply: 0, maxMoves: 1 });
-        const top0PlyNotation = eval0Ply.bestMove?.notation ?? '';
+        const top0PlyNotation = parseGnubgMoves(blocks0Ply[i] ?? '')[0]?.notation ?? '';
         const is3PlyTrapVs0Ply = top0PlyNotation !== '' && top0PlyNotation !== m1.notation;
         const isFineWindow = m2.equityLoss >= 0.008 && m3.equityLoss <= 0.085;
 
@@ -224,7 +246,7 @@ export function runBatchCertification(maxBatchCount: number = 60): Certified3Ply
 
         const semantic = resolveSemanticArchetype(state.board, {
             conceptId: seed.conceptId,
-            conceptName: seed.conceptName,
+            conceptName: seed.conceptId,
             optimalMove: m1.notation,
         });
         if (!semantic.isContact || semantic.archetype === 'PURE_RACE' || semantic.archetype === 'BEAROFF') {

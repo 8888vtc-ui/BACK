@@ -26,7 +26,7 @@ import {
     type BoardState,
 } from '../src/engine/backgammonEngine';
 import { isContactPosition } from '../src/features/drills/drillSubAgentsPipeline';
-import { BTCORE_5000_HARVEST_SEEDS } from '../src/features/drills/btCore5000HarvestSeeds';
+import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../src/lib/engine/gnubg3PlyCertifiedPositions';
 import { analyzeBtCoreMoves } from '../src/lib/engine/btCoreEngine';
 
 const GNUBG_CLI_PATH = 'C:\\Program Files (x86)\\gnubg\\gnubg-cli.exe';
@@ -163,30 +163,21 @@ function select50ComplexContactPositions() {
     });
     seenXgids.add(anchor20Xgid);
 
-    for (const seed of BTCORE_5000_HARVEST_SEEDS) {
+    // Re-vérification des positions déjà validées (l'ancienne banque BT-Core a été purgée, db_clean_v3).
+    for (const seed of GNUBG_3PLY_CERTIFIED_POSITIONS) {
         if (selected.length >= 50) break;
         if (seenXgids.has(seed.xgid)) continue;
-        if (seed.conceptId === 'race_management' || seed.conceptId === 'bearoff_technique') continue;
-        // Ensure X is on roll so gnubg notation matches X 24->1
         const parts = seed.xgid.split(':');
         if (parts[3] !== '1') continue;
 
         const state = normalizeBoardForX(seed.xgid);
         if (!isContactPosition(state.board)) continue;
 
-        const pips = pipCount(state.board);
-        if (pips.X < 65 || pips.O < 65) continue;
-
-        const legal = generateLegalMoves(state, seed.dice);
-        if (legal.length < 5) continue;
-
-        if (seed.equityLoss < 0.008 || seed.equityLoss > 0.115) continue;
-
         seenXgids.add(seed.xgid);
         selected.push({
             id: seed.id,
             xgid: seed.xgid,
-            dice: seed.dice,
+            dice: [seed.dice[0], seed.dice[1]],
             conceptId: seed.conceptId,
             conceptName: seed.conceptName,
         });

@@ -18,7 +18,8 @@ import {
     generateLegalMoves,
     MoveSequence,
 } from '../engine/backgammonEngine';
-import { selectBestOpponentSequence } from '../engine/aiHeuristics';
+import { selectBotMoveWithBgsage } from '../lib/engine/bgsageClient';
+import { recordBotMoveEquityLoss } from '../features/personas/botRealPr';
 import { formatMoveSequenceNotationAbsolute } from '../lib/engine/evaluator';
 import {
     AI_SUB_MOVE_SPACING_MS,
@@ -71,7 +72,16 @@ export async function runAiTurnAction(
         };
 
         const legalSeqs = generateLegalMoves(stateWithDice, [dice[0], dice[1]]);
-        const bestSeq = selectBestOpponentSequence(legalSeqs, 'O', difficulty);
+        // R-BOT-1 : coup choisi par Open Sage uniquement (plus d'heuristique locale). Échec = erreur, jamais de coup de remplacement.
+        const selectMove =
+            params.selectMove ??
+            (async (st: BoardState, seqs: MoveSequence[]): Promise<MoveSequence | null> => {
+                const choice = await selectBotMoveWithBgsage(st, seqs, difficulty);
+                if (!choice) throw new Error('Moteur Open Sage indisponible : coup du bot non calculé.');
+                recordBotMoveEquityLoss(choice.equityLoss, choice.isForced);
+                return choice.sequence;
+            });
+        const bestSeq = legalSeqs.length === 1 ? legalSeqs[0]! : await selectMove(stateWithDice, legalSeqs);
 
         if (bestSeq && bestSeq.moves.length > 0) {
             movesPlayed = bestSeq.moves;

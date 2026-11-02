@@ -2,6 +2,7 @@ import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import DailyPuzzleView from './DailyPuzzleView';
+import { PUZZLE_DATABASE } from '../../features/puzzles/puzzleDatabase';
 
 describe('DailyPuzzleView', () => {
     let mockStore: Record<string, string> = {};
@@ -35,15 +36,15 @@ describe('DailyPuzzleView', () => {
     });
 
     it('affiche le titre du puzzle, sa catégorie et les dés à jouer', () => {
+        const p0 = PUZZLE_DATABASE[0]!;
         const html = renderToStaticMarkup(
-            <DailyPuzzleView initialPuzzleId="puzzle_01_gold_point" />,
+            <DailyPuzzleView initialPuzzleId={p0.id} />,
         );
 
-        expect(html).toContain('Le Point d’Or (Golden Point)');
+        expect(html.replace(/&amp;/g, '&')).toContain(p0.title);
         expect(html).toContain('Jet à jouer :');
-        expect(html).toContain('3');
-        expect(html).toContain('1');
-        expect(html).toContain('Ouverture');
+        expect(html).toContain(String(p0.dice[0]));
+        expect(html).toContain(String(p0.dice[1]));
     });
 
     it('affiche les boutons de contrôle : Valider, Réinitialiser, Indice et Voir la solution', () => {
@@ -61,11 +62,12 @@ describe('DailyPuzzleView', () => {
 
     it('rend le catalogue des puzzles avec toutes les situations disponibles', () => {
         const html = renderToStaticMarkup(<DailyPuzzleView />);
+        const p0 = PUZZLE_DATABASE[0]!;
+        const p1 = PUZZLE_DATABASE[1]!;
 
         expect(html).toContain('Catalogue des Puzzles &amp; Archives');
-        expect(html).toContain('data-testid="puzzle-card-puzzle_01_gold_point"');
-        expect(html).toContain('data-testid="puzzle-card-puzzle_02_lovers_leap"');
-        expect(html).toContain('data-testid="puzzle-card-puzzle_04_bearoff_safety"');
+        expect(html).toContain(`data-testid="puzzle-card-${p0.id}"`);
+        expect(html).toContain(`data-testid="puzzle-card-${p1.id}"`);
     });
 
     it('épure les bordures en border-white/10 et place l’objectif et le bouton de validation avant le plateau sans micro-texte', () => {

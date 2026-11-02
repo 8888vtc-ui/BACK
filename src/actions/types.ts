@@ -3,7 +3,7 @@
  * Gouvernés par les 5 Lois Fondamentales de SCALABILITY.md.
  */
 
-import type { Player, Move } from '../engine/backgammonEngine';
+import type { Player, Move, BoardState, MoveSequence } from '../engine/backgammonEngine';
 import type { AIDifficulty } from '../engine/aiHeuristics';
 
 /**
@@ -73,6 +73,11 @@ export interface RunAiTurnParams {
     /** Espacement entre chaque sous-coup de l'IA (défaut : 180ms — Audit 19/20). */
     readonly subMoveSpacingMs?: number;
     readonly isGameOver?: boolean;
+    /**
+     * Sélecteur de coup. Défaut : Open Sage (`selectBotMoveWithBgsage`). Les tests injectent un stub.
+     * Aucun moteur heuristique local n'est autorisé (R-BOT-1).
+     */
+    readonly selectMove?: (state: BoardState, legalSeqs: MoveSequence[]) => Promise<MoveSequence | null>;
 }
 
 /**

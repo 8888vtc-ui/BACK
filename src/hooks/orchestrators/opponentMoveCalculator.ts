@@ -8,7 +8,7 @@ import { recordBotMoveEquityLoss } from '../../features/personas/botRealPr';
  * Sélection du coup du bot — OPEN SAGE UNIQUEMENT (décision du 2026-11-01).
  *
  * L'audit `scripts/audit_bots_vs_gnubg.ts` (référence GNU Backgammon 3-ply, 50 positions) a montré que
- * les moteurs locaux (BT-Core, BT-ERH, heuristiques, `pickLocalMove`) ne sont PAS exploitables :
+ * les moteurs locaux (BT-Core, BT-ERH, heuristiques, ancien repli local) ne sont PAS exploitables :
  * ~40 % de coups identiques à GNUBG, quel que soit le niveau affiché. Ils ont été retirés du chemin de jeu.
  *
  * Si Open Sage ne répond pas, on réessaie et on affiche un message ; on ne joue JAMAIS un coup local
