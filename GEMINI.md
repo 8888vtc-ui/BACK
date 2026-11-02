@@ -2,6 +2,11 @@
 
 > **Statut : OBLIGATOIRE.** Ce fichier constitue la source de vérité unique synchronisée avec [`AGENTS.md`](AGENTS.md), [`PROJECT_MAP.md`](PROJECT_MAP.md), [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md).
 
+> 🚨 **AVERTISSEMENT BOTS (2026-11-01) — voir [`BOTS_AUDIT_POSTMORTEM.md`](BOTS_AUDIT_POSTMORTEM.md).**
+> Nos bots locaux (BT-Core « 3-ply », BT-ERH, « BT-Neural Goliath MoE-6 », heuristiques) ne sont **pas exploitables** :
+> mesurés contre GNU Backgammon 3-ply, ils jouent comme une heuristique simple. Seul **Open Sage (Cloud Run)** est conservé pour jouer.
+> Les PR/Elo « officiels certifiés » des bots étaient saisis à la main : supprimés. Ne jamais réécrire « certifié » sans mesure GNUBG versionnée.
+
 ---
 
 ## 1. Vérité Métier Absolue : Focus Exclusif `ER` (`0.0` à `30.0`), Certification 3-Ply GNU Backgammon & Sélection Adaptative `N+1`

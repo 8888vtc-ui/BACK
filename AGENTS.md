@@ -20,6 +20,14 @@ Ne pas lire `README.md` en premier : il contient des chiffres marketing non vér
 
 ## 2. Règles absolues (issues de GOVERNANCE.md)
 
+> 🚨 **BOTS — LIRE [`BOTS_AUDIT_POSTMORTEM.md`](BOTS_AUDIT_POSTMORTEM.md)** : nos bots locaux (BT-Core, BT-ERH, « Goliath »,
+> heuristiques) ont été mesurés contre GNU Backgammon 3-ply le 2026-11-01 et sont **NON EXPLOITABLES** (~40 % de coups
+> identiques, quel que soit le niveau affiché). Les PR/Elo « certifiés » des bots étaient **inventés**.
+> - **R-BOT-1** : tous les coups de bot passent par **Open Sage** (`selectBotMoveWithBgsage`). Aucun moteur local ne joue.
+> - **R-BOT-2** : aucun PR/Elo/niveau « certifié » sans mesure reproductible contre GNU Backgammon (script + résultats versionnés).
+> - **R-BOT-3** : PR du bot affiché = mesure réelle (`src/features/personas/botRealPr.ts`) ou « — ». Jamais de valeur par défaut.
+> - **R-BOT-4** : un test de force doit utiliser une référence externe (GNUBG), jamais le moteur ou sa propre baseline.
+
 - **Règle 2 — Zéro donnée factice** : INTERDIT de retourner des valeurs codées en dur
   en repli. Si une dépendance échoue → `throw new Error(...)` ou `Result<T, Error>`.
   Jamais de mock silencieux, jamais d'équité inventée.
