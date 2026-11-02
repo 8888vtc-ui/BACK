@@ -10,16 +10,15 @@ import type { AIDifficulty } from '../../engine/aiHeuristics';
 import type { MatchStats } from '../../hooks/useCoach';
 import {
     BOT_PERSONAS_BY_DIFFICULTY,
-    computeRealtimeBotErrorRate,
     generateBotChatReply,
     getBotPersona,
-    MAX_BOT_DISPLAY_PR,
     readStoredExperienceMode,
     storeExperienceMode,
     type BotPersonaTurnLike,
     type ExperienceMode,
 } from '../../features/personas/botPersonas';
 import { buildSilentTutorBotLuckExplanation } from '../../features/coach/tacticalExplainer';
+import { getBotRealPr } from '../../features/personas/botRealPr';
 
 export interface BotPersonaChatCardProps {
     readonly difficulty?: AIDifficulty;
@@ -62,7 +61,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
         matchStats && matchStats.decisionsCount > 0
             ? (matchStats.totalEquityLoss / matchStats.decisionsCount) * 500
             : 0.0;
-    const botLivePr = computeRealtimeBotErrorRate(turnsHistory, activePersonaId);
+    const botLivePr = getBotRealPr().pr;
     const lastBotTurn = [...(turnsHistory ?? [])].reverse().find((t) => t.player === 'O');
     const silentTutorLuckNote = lastBotTurn
         ? buildSilentTutorBotLuckExplanation({
@@ -168,7 +167,6 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                         >
                             <span className="text-base leading-none">{p.avatar}</span>
                             <span className="mt-1 w-full truncate text-[10px] font-bold">{p.shortName}</span>
-                            <span className="mt-0.5 font-mono text-[10px] text-amber-300">PR {Math.min(MAX_BOT_DISPLAY_PR, p.targetErrorRate).toFixed(1)}</span>
                         </button>
                     );
                 })}
@@ -281,7 +279,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
             <div data-testid="coach-idle-session-stats" className="flex items-center justify-between rounded-xl border border-white/10 bg-slate-950 px-3 py-1.5 font-mono text-[11px] shadow-inner">
                 <span className="text-white font-bold">Vous : PR {prValue.toFixed(1)}</span>
                 <span data-testid="persona-live-pr-badge" className="text-amber-300 font-bold" title="Error Rate temps réel du Bot (plafonné à 10.0)">
-                    Bot : PR {botLivePr.toFixed(1)}
+                    Bot : PR {botLivePr === null ? '—' : botLivePr.toFixed(1)}
                 </span>
                 <span className="text-rose-300 font-bold">{matchStats?.blundersCount ?? 0} blunder{(matchStats?.blundersCount ?? 0) > 1 ? 's' : ''}</span>
             </div>

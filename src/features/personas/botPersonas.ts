@@ -17,24 +17,12 @@ import {
 
 export type ExperienceMode = 'fun' | 'pro';
 
-/** Plafond d'affichage temps réel de l'Error Rate (PR) des Bots (max 15.0). */
+/** Plafond d'affichage du PR mesuré (max 15.0). */
 export const MAX_BOT_DISPLAY_PR = 15.0;
 
-/** Elo officiel certifié par niveau de difficulté. */
-export const BOT_ELO_BY_DIFFICULTY: Record<AIDifficulty, number> = {
-    beginner: 1420,
-    intermediate: 1680,
-    expert: 1950,
-    grandmaster: 2150,
-};
-
-/** PR officiel certifié par BGT / GNU Backgammon (1-ply / 2-ply / 3-ply). */
-export const BOT_OFFICIAL_PR_BY_DIFFICULTY: Record<AIDifficulty, number> = {
-    beginner: 12.5,
-    intermediate: 7.5,
-    expert: 2.5,
-    grandmaster: 0.6,
-};
+// SUPPRIMÉ le 2026-11-01 : BOT_ELO_BY_DIFFICULTY et BOT_OFFICIAL_PR_BY_DIFFICULTY.
+// Ces Elo (1420→2150) et PR (12.5→0.6) « officiels certifiés » étaient saisis à la main et jamais mesurés.
+// Le PR du bot est désormais mesuré en partie : voir `botRealPr.ts`.
 
 /** Plafond strict de perte d'équité par coup (Blunder Cap ΔE_max en EMG) par niveau. */
 export const BLUNDER_CAP_EMG_BY_DIFFICULTY: Record<AIDifficulty, number> = {
@@ -232,30 +220,8 @@ export function computePersonaBiasDelta(
     );
 }
 
-/**
- * Calcule en temps réel l'Error Rate (PR) du Bot à partir des coups joués dans `matchLog`,
- * reflétant le caractère tactique de chaque persona tout en plafonnant strictement à `MAX_BOT_DISPLAY_PR` (10.0).
- */
-export function computeRealtimeBotErrorRate(
-    matchLog: ReadonlyArray<BotPersonaTurnLike> | undefined | null,
-    difficulty: AIDifficulty = 'expert',
-): number {
-    const persona = getBotPersona(difficulty);
-    const basePr = Math.min(MAX_BOT_DISPLAY_PR, persona.targetErrorRate);
-    const botTurns = (matchLog ?? []).filter((t) => t.player === 'O');
-    if (botTurns.length === 0) return basePr;
-
-    let cumulativePr = 0;
-    for (let i = 0; i < botTurns.length; i++) {
-        const turn = botTurns[i];
-        const biasDelta = computePersonaBiasDelta(turn.boardBefore, turn.boardAfter, difficulty);
-        const blotsLeft = turn.boardAfter.slice(1, 25).filter((v) => v === -1).length;
-        const turnPr = basePr + (blotsLeft - 1.5) * 0.25 - biasDelta * 1.8;
-        cumulativePr += Math.max(0.1, Math.min(MAX_BOT_DISPLAY_PR, turnPr));
-    }
-    const livePr = (basePr + cumulativePr) / (botTurns.length + 1);
-    return Number(Math.max(0.1, Math.min(MAX_BOT_DISPLAY_PR, livePr)).toFixed(1));
-}
+// SUPPRIMÉ le 2026-11-01 : computeRealtimeBotErrorRate (PR inventé = valeur cible + nombre de blots).
+// Remplacé par le PR réel mesuré par Open Sage : `getBotRealPr()` dans `botRealPr.ts`.
 
 const APPSTORE_GUARDRAIL_REGEX = /\b(sex|nude|nsfw|idiot|stupide|con|merde|insulte|téléphone|rendez-vous)\b/i;
 

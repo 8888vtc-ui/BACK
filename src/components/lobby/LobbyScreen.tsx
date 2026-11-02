@@ -41,11 +41,12 @@ export interface LobbyScreenProps {
     initialMatchLength?: number; initialDifficulty?: AIDifficulty; initialCoachEnabled?: boolean; initialClockPreset?: LobbyClockPreset;
 }
 
-const BOT_ELO_BY_DIFF: Record<AIDifficulty, string> = {
-    beginner: '1420 Elo',
-    intermediate: '1680 Elo',
-    expert: '1950 Elo',
-    grandmaster: '2150 Elo',
+/** Description factuelle du moteur réel de chaque niveau (cf. selectBotMoveWithBgsage). Aucun Elo/PR inventé. */
+const BOT_ENGINE_LABEL_BY_DIFF: Record<AIDifficulty, string> = {
+    beginner: 'Open Sage 1-ply · fautes volontaires',
+    intermediate: 'Open Sage 1-ply · imprécisions',
+    expert: 'Open Sage 2-ply',
+    grandmaster: 'Open Sage 3-ply',
 };
 
 const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
@@ -284,10 +285,10 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                                         {p.styleBadge}
                                                     </span>
                                                     <span
-                                                        title="Performance Rating : mesure la précision de vos coups, plus il est bas, meilleur vous êtes"
+                                                        title="Moteur réel utilisé par ce niveau. Le PR du bot est mesuré en direct pendant la partie."
                                                         className="whitespace-nowrap rounded-md border border-[#d4af37]/35 bg-black/60 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-200 tracking-tight cursor-help"
                                                     >
-                                                        {BOT_ELO_BY_DIFF[lvl]} · PR {p.targetErrorRate}
+                                                        {BOT_ENGINE_LABEL_BY_DIFF[lvl]}
                                                     </span>
                                                 </button>
                                             );
