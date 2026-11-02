@@ -23,7 +23,6 @@ import {
 } from '../src/engine/backgammonEngine';
 import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../src/lib/engine/gnubg3PlyCertifiedPositions';
 import { parseCoachNotationMoves } from '../src/features/coach/coachMoveNotation';
-import { pickLocalMove } from '../src/hooks/orchestrators/opponentMoveCalculator';
 import { selectBotMoveWithBgsage } from '../src/lib/engine/bgsageClient';
 import { findBestBoardMove } from '../src/lib/engine/evaluator';
 import { analyzeBtCoreMoves } from '../src/lib/engine/btCoreEngine';
@@ -102,11 +101,8 @@ const BOTS: Array<{ id: string; label: string; pick: BotPick }> = [
             return r?.sequence ?? null;
         }) as BotPick,
     })),
-    ...LOCAL_LEVELS.map((lvl) => ({
-        id: `local_fallback_${lvl}`,
-        label: `Repli local hors-ligne — niveau ${lvl} (pickLocalMove)`,
-        pick: (async (st, d, legal) => pickLocalMove(st, d, legal, lvl)) as BotPick,
-    })),
+    // Les bots de repli local (`pickLocalMove`, BT-ERH) ont été supprimés le 2026-11-01 après cet audit
+    // (≈ 40 % de coups identiques à GNUBG). Leurs résultats historiques sont dans BOTS_AUDIT_POSTMORTEM.md.
     {
         id: 'btcore_3ply_engine_only',
         label: 'BT-Core « 3-ply » seul (sans table GNUBG)',
