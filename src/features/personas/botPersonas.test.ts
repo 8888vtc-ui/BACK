@@ -93,8 +93,8 @@ describe('botPersonas — 4 Archétypes & Mode Adaptatif (Fun vs Pro)', () => {
         boardAfterMake20[20] = -2; // Ferme le Point d'Or (20 pour O) sans blot
 
         expect(isVisuallyObviousBestMove(boardBefore, boardAfterMake20, 'O')).toBe(true);
-        expect(BLUNDER_CAP_EMG_BY_DIFFICULTY.beginner).toBe(0.16);
-        expect(BLUNDER_CAP_EMG_BY_DIFFICULTY.intermediate).toBe(0.085);
+        expect(BLUNDER_CAP_EMG_BY_DIFFICULTY.beginner).toBe(0.115);
+        expect(BLUNDER_CAP_EMG_BY_DIFFICULTY.intermediate).toBe(0.075);
         expect(BLUNDER_CAP_EMG_BY_DIFFICULTY.expert).toBe(0.035);
         expect(BLUNDER_CAP_EMG_BY_DIFFICULTY.grandmaster).toBe(0.0);
     });

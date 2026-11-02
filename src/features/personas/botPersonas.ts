@@ -26,8 +26,8 @@ export const MAX_BOT_DISPLAY_PR = 15.0;
 
 /** Plafond strict de perte d'équité par coup (Blunder Cap ΔE_max en EMG) par niveau. */
 export const BLUNDER_CAP_EMG_BY_DIFFICULTY: Record<AIDifficulty, number> = {
-    beginner: 0.16,
-    intermediate: 0.085,
+    beginner: 0.115,
+    intermediate: 0.075,
     expert: 0.035,
     grandmaster: 0.0,
 };

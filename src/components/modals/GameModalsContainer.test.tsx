@@ -72,6 +72,7 @@ describe('GameModalsContainer Component', () => {
 
     it('transmet botPr et botCategory à PostMatchTrainingReport en fin de manche', () => {
         const props = buildDummyProps();
+        props.prO = 8.2;
         props.game = {
             ...props.game,
             phase: 'GAME_OVER',

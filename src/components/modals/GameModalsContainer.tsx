@@ -49,14 +49,14 @@ export interface GameModalsContainerProps {
     locale?: string;
 }
 
-const BOT_DIFFICULTY_PR_MAP: Record<string, { pr: number; fr: string; en: string }> = {
-    beginner: { pr: 12.5, fr: 'Débutant', en: 'Beginner' },
-    easy: { pr: 10.5, fr: 'Amateur', en: 'Casual' },
-    intermediate: { pr: 7.5, fr: 'Intermédiaire', en: 'Intermediate' },
-    medium: { pr: 7.5, fr: 'Intermédiaire', en: 'Intermediate' },
-    hard: { pr: 3.5, fr: 'Expert', en: 'Expert' },
-    expert: { pr: 2.5, fr: 'Maître', en: 'Master' },
-    grandmaster: { pr: 0.6, fr: 'Grand-Maître', en: 'Grandmaster' },
+const BOT_DIFFICULTY_LABEL_MAP: Record<string, { fr: string; en: string }> = {
+    beginner: { fr: 'Débutant', en: 'Beginner' },
+    easy: { fr: 'Amateur', en: 'Casual' },
+    intermediate: { fr: 'Intermédiaire', en: 'Intermediate' },
+    medium: { fr: 'Intermédiaire', en: 'Intermediate' },
+    hard: { fr: 'Expert', en: 'Expert' },
+    expert: { fr: 'Maître', en: 'Master' },
+    grandmaster: { fr: 'Grand-Maître', en: 'Grandmaster' },
 };
 
 const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
@@ -76,7 +76,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
 }) => {
     const isEn = Boolean(locale && locale !== 'fr');
     const botDiffKey = (latestGameAnalysis?.opponentDifficulty ?? game.difficulty ?? 'intermediate').toLowerCase();
-    const botMeta = BOT_DIFFICULTY_PR_MAP[botDiffKey] ?? BOT_DIFFICULTY_PR_MAP.intermediate;
+    const botMeta = BOT_DIFFICULTY_LABEL_MAP[botDiffKey] ?? BOT_DIFFICULTY_LABEL_MAP.intermediate;
     const isAnySecondaryModalOpen =
         modals.isGameReviewModalOpen ||
         modals.isExportImportModalOpen ||
@@ -106,7 +106,7 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                     matchLength={game.state.matchLength}
                     isMatchOver={game.isMatchOver}
                     gameId={latestGameAnalysis?.gameId ?? `game_${game.state.scoreX}_${game.state.scoreO}`}
-                    botPr={Math.min(10.0, prO ?? botMeta.pr)}
+                    botPr={prO !== null && prO !== undefined ? Math.min(10.0, prO) : null}
                     botCategory={isEn ? botMeta.en : botMeta.fr}
                     onNextGame={() => {
                         onResetGameHistory();

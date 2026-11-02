@@ -9,13 +9,13 @@ import {
     selectClubChallengerForRating,
 } from './clubChallengerPool';
 
-describe('ClubChallengerPool — 100 Bots Actifs, Verrou 7 Jours & Exception Revanche', () => {
+describe('ClubChallengerPool — 300 Profils Humains Naturels, Verrou 7 Jours & Exception Revanche', () => {
     beforeEach(() => {
         resetClubChallengerCooldownsForTests();
     });
 
-    it('contient exactement 100 bots internationaux actifs avec pseudo, drapeau et niveau plafonné à expert', () => {
-        expect(CLUB_CHALLENGER_SEEDS.length).toBe(100);
+    it('contient exactement 300 profils internationaux actifs avec pseudo naturel, drapeau et niveau plafonné à expert', () => {
+        expect(CLUB_CHALLENGER_SEEDS.length).toBe(300);
         const ids = new Set<string>();
         const usernames = new Set<string>();
         for (const seed of CLUB_CHALLENGER_SEEDS) {
@@ -26,31 +26,29 @@ describe('ClubChallengerPool — 100 Bots Actifs, Verrou 7 Jours & Exception Rev
             ids.add(seed.id);
             usernames.add(seed.username);
         }
-        expect(ids.size).toBe(100);
-        expect(usernames.size).toBe(100);
+        expect(ids.size).toBe(300);
+        expect(usernames.size).toBe(300);
     });
 
-    it('associe correctement les paliers Elo du débutant (1450) au club (1680) et au pro (1900+) sans jamais renvoyer grandmaster', () => {
+    it('associe correctement les paliers Elo (<1500 beginner, 1500–1650 intermediate, >1650 expert) sans jamais renvoyer grandmaster', () => {
         expect(resolveChallengerDifficultyForElo(1400)).toBe('beginner');
-        expect(resolveChallengerDifficultyForElo(1500)).toBe('beginner');
+        expect(resolveChallengerDifficultyForElo(1495)).toBe('beginner');
+        expect(resolveChallengerDifficultyForElo(1500)).toBe('intermediate');
         expect(resolveChallengerDifficultyForElo(1650)).toBe('intermediate');
-        expect(resolveChallengerDifficultyForElo(1780)).toBe('intermediate');
-        expect(resolveChallengerDifficultyForElo(1850)).toBe('expert');
+        expect(resolveChallengerDifficultyForElo(1655)).toBe('expert');
         expect(resolveChallengerDifficultyForElo(2400)).toBe('expert');
     });
 
-    it('empêche de rejouer contre le même bot pendant 7 jours (1 semaine), sauf en cas de revanche explicite', () => {
+    it('empêche de rejouer contre le même profil pendant 7 jours (1 semaine), sauf en cas de revanche explicite', () => {
         const t0 = 1_730_000_000_000;
         const firstOpp = selectClubChallengerForRating(1500, { nowMs: t0 });
         expect(isClubChallengerOnWeeklyCooldown(firstOpp.username, t0 + 1000)).toBe(true);
 
-        // Sur 25 recherches successives dans la même semaine, le joueur ne retombe JAMAIS sur firstOpp
         for (let i = 1; i <= 25; i++) {
             const nextOpp = selectClubChallengerForRating(1500, { nowMs: t0 + i * 60_000 });
             expect(nextOpp.username).not.toBe(firstOpp.username);
         }
 
-        // Si le joueur demande explicitement une revanche (isRematch: true), il peut rejouer immédiatement contre firstOpp
         const rematchOpp = selectClubChallengerForRating(1500, {
             isRematch: true,
             previousChallenger: firstOpp,
@@ -58,30 +56,33 @@ describe('ClubChallengerPool — 100 Bots Actifs, Verrou 7 Jours & Exception Rev
         });
         expect(rematchOpp.username).toBe(firstOpp.username);
 
-        // Au-delà d'une semaine (7 jours + 1s), le verrou expire
         const afterOneWeek = t0 + 120_000 + BOT_WEEKLY_COOLDOWN_MS + 1000;
         expect(isClubChallengerOnWeeklyCooldown(firstOpp.username, afterOneWeek)).toBe(false);
     });
 
-    it('génère un profil PlayerEloProfile complet avec drapeau, pseudo et difficulté adaptée', () => {
-        const beginnerOpp = selectClubChallengerForRating(1480);
+    it('génère un profil PlayerEloProfile complet avec drapeau, pseudo, rating non rond et cible ER/PR cohérente', () => {
+        const beginnerOpp = selectClubChallengerForRating(1420);
         expect(beginnerOpp.clubBotDifficulty).toBe('beginner');
         expect(beginnerOpp.countryFlag).toBeTruthy();
         expect(beginnerOpp.displayName).toContain(beginnerOpp.username);
-        expect(beginnerOpp.rating).toBeGreaterThanOrEqual(1350);
-        expect(beginnerOpp.rating).toBeLessThanOrEqual(1600);
+        expect(beginnerOpp.rating).toBeLessThan(1500);
+        expect(beginnerOpp.rating % 10).not.toBe(0);
+        expect(beginnerOpp.averagePr).toBeGreaterThanOrEqual(6.0);
+        expect(beginnerOpp.averagePr).toBeLessThanOrEqual(9.0);
 
-        const proOpp = selectClubChallengerForRating(1920);
+        const proOpp = selectClubChallengerForRating(1820);
         expect(proOpp.clubBotDifficulty).toBe('expert');
-        expect(proOpp.rating).toBeGreaterThanOrEqual(1780);
-        expect(proOpp.rating).toBeLessThanOrEqual(1985);
+        expect(proOpp.rating).toBeGreaterThan(1650);
+        expect(proOpp.rating % 10).not.toBe(0);
+        expect(proOpp.averagePr).toBeGreaterThanOrEqual(1.0);
+        expect(proOpp.averagePr).toBeLessThanOrEqual(2.0);
     });
 
-    it('calcule un délai d’appariement réaliste compris entre 2,6s et 4,4s', () => {
+    it('calcule un délai d’appariement réaliste compris entre 3,5s et 8,5s (3500..8500 ms)', () => {
         for (let i = 0; i < 10; i++) {
             const delay = computeRealisticMatchmakingDelayMs();
-            expect(delay).toBeGreaterThanOrEqual(2600);
-            expect(delay).toBeLessThanOrEqual(4400);
+            expect(delay).toBeGreaterThanOrEqual(3500);
+            expect(delay).toBeLessThanOrEqual(8500);
         }
     });
 });
