@@ -327,9 +327,17 @@ export async function selectBotMoveWithBgsage(
     timeoutMs: number = 3500,
     randomFn: () => number = Math.random,
     precomputedResponse?: BgsageEvaluateResponse | null,
-): Promise<{ sequence: MoveSequence; cubeDecision?: BgsageCubeDecision; evalLevel: string } | null> {
+): Promise<{
+    sequence: MoveSequence;
+    cubeDecision?: BgsageCubeDecision;
+    evalLevel: string;
+    /** Perte d'équité réelle (EMG, ≥ 0) du coup choisi par rapport au meilleur coup Open Sage. 0 si forcé. */
+    equityLoss: number;
+    /** true si un seul coup légal (exclu du calcul de PR, norme XG). */
+    isForced: boolean;
+} | null> {
     if (legalSeqs.length === 0) return null;
-    if (legalSeqs.length === 1) return { sequence: legalSeqs[0], evalLevel: 'forced' };
+    if (legalSeqs.length === 1) return { sequence: legalSeqs[0], evalLevel: 'forced', equityLoss: 0, isForced: true };
 
     const ply = difficulty === 'grandmaster' ? 3 : difficulty === 'expert' ? 2 : 1;
     const xgid = serializeCanonicalXGID(stateWithDice);
@@ -366,13 +374,15 @@ export async function selectBotMoveWithBgsage(
     }
 
     const bestCand = matchedCandidates[0];
-    // 1. Grandmaster ou Expert : verrouillage 100 % optimal (un Pro joue à PR ~2.5)
+    const lossOf = (c: { move: BgsageMove }): number =>
+        Number(Math.max(0, bestCand.move.equity - c.move.equity).toFixed(4));
+    // 1. Grandmaster ou Expert : toujours le meilleur coup Open Sage
     if (
         difficulty === 'grandmaster' ||
         difficulty === 'expert' ||
         matchedCandidates.length === 1
     ) {
-        return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply` };
+        return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply`, equityLoss: 0, isForced: false };
     }
 
     // 2. Calibrage Dopamine Dégressif par Palier (80 % Débutant -> 68 % Club -> 50 % Pro) :
@@ -387,11 +397,13 @@ export async function selectBotMoveWithBgsage(
             sequence: chosenSub.seq,
             cubeDecision: resp.cubeDecision,
             evalLevel: difficulty === 'beginner' ? 'bgsage-1ply-beginner' : `bgsage-${ply}ply`,
+            equityLoss: lossOf(chosenSub),
+            isForced: false,
         };
     }
 
     if (isVisuallyObviousBestMove(stateWithDice.board, bestCand.seq.board, player)) {
-        return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply` };
+        return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply`, equityLoss: 0, isForced: false };
     }
 
     // 3. Filtrage déterministe « Premier Principe » : Plafond Blunder Cap ΔE_max + Biais Cognitif Persona
@@ -422,6 +434,8 @@ export async function selectBotMoveWithBgsage(
         sequence: chosen.seq,
         cubeDecision: resp.cubeDecision,
         evalLevel: difficulty === 'beginner' ? 'bgsage-1ply-beginner' : `bgsage-${ply}ply`,
+        equityLoss: lossOf(chosen),
+        isForced: false,
     };
 }
 
