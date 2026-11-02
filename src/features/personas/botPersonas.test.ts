@@ -3,7 +3,6 @@ import {
     BLUNDER_CAP_EMG_BY_DIFFICULTY,
     BOT_PERSONAS_BY_DIFFICULTY,
     computePersonaBiasDelta,
-    computeRealtimeBotErrorRate,
     computeSwapDiceComparison,
     generateBotChatReply,
     getBotPersona,
@@ -66,31 +65,22 @@ describe('botPersonas — 4 Archétypes & Mode Adaptatif (Fun vs Pro)', () => {
         }
     });
 
-    it('calcule en temps réel l’Error Rate (PR) des Bots avec un plafond strict à 10.0', () => {
-        const boardBefore = new Array<number>(26).fill(0);
-        const boardAfterWeak = new Array<number>(26).fill(0);
-        // 6 pions isolés pour pousser l'erreur du bot débutant au-delà du nominal
-        boardAfterWeak[2] = -1;
-        boardAfterWeak[4] = -1;
-        boardAfterWeak[7] = -1;
-        boardAfterWeak[9] = -1;
-        boardAfterWeak[11] = -1;
-        boardAfterWeak[14] = -1;
+    it('ne fournit plus de PR inventé : le PR du bot est mesuré (botRealPr) et vaut null tant que rien n’est mesuré', async () => {
+        const { getBotRealPr, recordBotMoveEquityLoss, resetBotRealPr } = await import('./botRealPr');
+        resetBotRealPr();
+        expect(getBotRealPr().pr).toBeNull();
 
-        const turns = [
-            { player: 'O' as const, dice: [3, 1] as const, boardBefore, boardAfter: boardAfterWeak },
-            { player: 'O' as const, dice: [5, 2] as const, boardBefore, boardAfter: boardAfterWeak },
-        ];
+        recordBotMoveEquityLoss(0.5, true); // coup forcé : ignoré (norme XG)
+        expect(getBotRealPr().pr).toBeNull();
 
-        const beginnerPr = computeRealtimeBotErrorRate(turns, 'beginner');
-        const intermediatePr = computeRealtimeBotErrorRate(turns, 'intermediate');
-        const expertPr = computeRealtimeBotErrorRate(turns, 'expert');
-        const gmPr = computeRealtimeBotErrorRate(turns, 'grandmaster');
+        recordBotMoveEquityLoss(0, false);
+        recordBotMoveEquityLoss(0.02, false);
+        // PR = (0.02 / 2) × 500 = 5.0
+        expect(getBotRealPr().pr).toBe(5.0);
+        expect(getBotRealPr().decisions).toBe(2);
 
-        expect(beginnerPr).toBeLessThanOrEqual(MAX_BOT_DISPLAY_PR);
-        expect(beginnerPr).toBeGreaterThan(intermediatePr);
-        expect(intermediatePr).toBeGreaterThan(expertPr);
-        expect(expertPr).toBeGreaterThan(gmPr);
+        resetBotRealPr();
+        expect(getBotRealPr().pr).toBeNull();
     });
 
     it('verrouille les coups d’évidence visuelle (Point d’Or 5/20, Point de Barre 7/18, frappe sûre) et respecte les Blunder Caps ΔE_max', () => {

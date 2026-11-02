@@ -1,5 +1,11 @@
 /**
  * @file src/lib/engine/btCoreEngine.ts
+ *
+ * ⚠️ NON EXPLOITABLE COMME BOT (audit GNU Backgammon 3-ply du 2026-11-01, voir BOTS_AUDIT_POSTMORTEM.md) :
+ * ~47 % de coups identiques à GNUBG, niveau d'une heuristique simple. Retiré du chemin de jeu ;
+ * conservé uniquement comme évaluateur d'appoint. Les affirmations ci-dessous (« 3-Ply », « Grand-Maître »)
+ * décrivent l'intention de conception, PAS un niveau mesuré.
+ *
  * @description Moteur Propriétaire Local BackgammonTour « BT-Core v2.0 » (Machine-vs-Machine GTO).
  *
  * Architecture 100 % antisymétrique (`E(P) = -E(O)`) combinant :
