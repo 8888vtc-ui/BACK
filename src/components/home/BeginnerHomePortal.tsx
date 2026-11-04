@@ -35,15 +35,15 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                 <div className="rounded-2xl border border-white/[0.08] bg-[#0b0e14]/90 p-5 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex flex-col gap-1 text-center sm:text-left">
                         <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-400">
-                            {isEn ? '🌱 Beginner Mode · Guided Progression' : '🌱 Mode Débutant · Progression Guidée'}
+                            {isEn ? '🌱 Beginner Mode · The Alliance of Luck & Strategy' : "🌱 Mode Débutant · L'Alliance du Hasard et de la Stratégie"}
                         </span>
                         <h2 className="text-lg sm:text-xl font-black text-white">
-                            {isEn ? 'Learn & play stress-free, at your own pace' : 'Apprenez et jouez sans stress, à votre rythme'}
+                            {isEn ? 'The thrill of dice, the power of strategy' : 'Le suspense des dés, la puissance de la stratégie'}
                         </h2>
                         <p className="text-xs sm:text-sm text-stone-300 max-w-xl">
                             {isEn
-                                ? 'Simplified rules, clear explanations in plain English, and caring advice move after move.'
-                                : 'Règles simplifiées, explications claires en français courant et conseils bienveillants coup après coup.'}
+                                ? 'On a single roll, anyone can get lucky. But over 36 combinations, mastering the doubling cube and avoiding blunders makes you win consistently.'
+                                : "Sur une manche, n'importe qui peut avoir de la chance. Mais sur les 36 combinaisons, maîtriser le videau et éviter les blunders vous fait triompher sur la durée."}
                         </p>
                     </div>
                 </div>
@@ -120,13 +120,13 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                         <div className="flex flex-col">
                             <h4 className="text-xs sm:text-sm font-bold text-white">
                                 {isEn
-                                    ? '📖 Master Guide: Strategy vs Luck, Doubling Cube & Blunders'
-                                    : '📖 Guide Officiel : Stratégie vs Hasard, Videau & Blunders'}
+                                    ? '📖 Master Guide: Luck & Strategy, Monte Carlo, Cube & Blunders'
+                                    : '📖 Guide Officiel : Hasard & Stratégie, Monte-Carlo, Videau & Blunders'}
                             </h4>
                             <p className="text-[11px] text-stone-400">
                                 {isEn
-                                    ? '6 illustrated audio chapters to master the depth of backgammon in 5 minutes.'
-                                    : '6 chapitres audio illustrés pour comprendre la profondeur du jeu en 5 minutes.'}
+                                    ? '6 illustrated audio chapters explaining why luck thrills and 36-roll statistics crown champions.'
+                                    : '6 chapitres audio expliquant pourquoi le hasard émerveille et comment les 36 lancers sacrent les champions.'}
                             </p>
                         </div>
                     </div>

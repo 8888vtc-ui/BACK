@@ -31,22 +31,22 @@ export function LiveProfessorCoachOverlay({
   const getProfessorPrompt = (): string => {
     if (isBlunderFeedback) {
       return lang === 'fr'
-        ? "Attention : ce coup laisse un pion vulnérable ou oublie une porte clé. Cliquez sur « Réessayer le coup » pour trouver le meilleur déplacement !"
-        : 'Careful: this move leaves a vulnerable blot or misses a key gate. Click "Retry Move" to find the safer play!';
+        ? "Attention : ce coup est un 'Blunder' (une gaffe qui gâche vos chances de victoire). Cliquez sur « Réessayer le coup » pour trouver le meilleur coup statistique !"
+        : "Careful: this move is a 'Blunder' (a mistake that hurts your winning chances). Click 'Retry Move' to find the best statistical play!";
     }
     if (hintRequested) {
       return lang === 'fr'
-        ? 'Astuce du Professeur : Cherchez à former une porte (2 pions ensemble, idéalement sur la flèche 5) ou à mettre vos pions isolés à l’abri !'
-        : 'Professor Tip: Aim to make a gate (2 checkers together, ideally on point 5) or bring isolated checkers to safety!';
+        ? 'Astuce du Professeur : Cherchez à faire une porte (idéalement sur la flèche 5) pour maîtriser les 36 combinaisons de dés et protéger vos pions !'
+        : 'Professor Tip: Aim to build a gate (ideally on the 5-point) to command the 36 dice combinations and protect your checkers!';
     }
     if (dice) {
       return lang === 'fr'
-        ? `🎲 Vous avez lancé ${dice[0]}-${dice[1]} : selon vous, quel est le meilleur coup ici ? Où devez-vous déplacer vos pions pour être en sécurité ?`
-        : `🎲 You rolled ${dice[0]}-${dice[1]}: what do you think is the best move here? Where should you move your checkers to stay safe?`;
+        ? `🎲 Vous avez lancé ${dice[0]}-${dice[1]} : selon vous, où devez-vous déplacer vos pions pour mettre les statistiques de votre côté ?`
+        : `🎲 You rolled ${dice[0]}-${dice[1]}: where do you think you should move your checkers to put the odds on your side?`;
     }
     return lang === 'fr'
-      ? 'Le Professeur vous accompagne à votre rythme : lancez les dés ou demandez un conseil à tout moment.'
-      : 'The Professor guides you at your own pace: roll the dice or ask for advice anytime.';
+      ? "Le Professeur vous accompagne : le hasard lance les dés, mais c'est votre stratégie qui fait la différence. Demandez un conseil à tout moment !"
+      : "The Professor guides you: dice bring the luck, but your strategy makes the difference. Ask for advice anytime!";
   };
 
   const handleSpeakPrompt = () => {

@@ -23,18 +23,18 @@ export interface BeginnerVideoEpisode {
 export const BEGINNER_5_VIDEOS_PLAYLIST: BeginnerVideoEpisode[] = [
   {
     id: 1,
-    titleFr: "Épisode 1 : Le But Ultime & Le Sens de Marche",
-    titleEn: "Episode 1: The Goal & Movement Direction",
+    titleFr: "Épisode 1 : Le But Ultime & L'Alliance Hasard-Stratégie",
+    titleEn: "Episode 1: The Goal & Luck-Strategy Alliance",
     durationLabel: "25s",
-    descriptionFr: "Comment traverser le plateau et rapatrier ses 15 pions dans son jardin.",
-    descriptionEn: "How to navigate the 24 points and bring all 15 checkers home.",
+    descriptionFr: "Comment traverser le plateau et pourquoi la stratégie gouverne le hasard sur la durée.",
+    descriptionEn: "How to navigate the 24 points and why strategy governs luck over time.",
     cues: [
       {
         id: "e1-1",
         startSec: 0,
         durationSec: 8,
-        frText: "Bienvenue au Backgammon ! Votre mission : ramener vos 15 pions dans votre camp avant l'adversaire.",
-        enText: "Welcome to Backgammon! Your mission: bring all 15 checkers into your home board first.",
+        frText: "Bienvenue au Backgammon ! Le jeu marie avec passion hasard et stratégie : sur une manche la chance sourit, mais vos choix décident de la victoire !",
+        enText: "Welcome to Backgammon! The game blends luck and strategy: in one game luck can swing, but your choices decide the match!",
         highlightPoints: [1, 2, 3, 4, 5, 6],
         boardAction: 'INTRO',
       },
@@ -168,8 +168,8 @@ export const BEGINNER_5_VIDEOS_PLAYLIST: BeginnerVideoEpisode[] = [
     titleFr: "Épisode 5 : Le Videau (Doubling Cube) & Les Points",
     titleEn: "Episode 5: The Doubling Cube & Match Points",
     durationLabel: "30s",
-    descriptionFr: "Le dé numéroté 2, 4, 8, 16, 32, 64 qui multiplie les enjeux et dompte le hasard.",
-    descriptionEn: "The cube numbered 2, 4, 8, 16, 32, 64 that raises stakes and masters luck.",
+    descriptionFr: "Le dé numéroté 2, 4, 8, 16, 32, 64 qui multiplie les enjeux et sacre les champions.",
+    descriptionEn: "The cube numbered 2, 4, 8, 16, 32, 64 that raises stakes and crowns champions.",
     cues: [
       {
         id: "e5-1",
@@ -191,8 +191,8 @@ export const BEGINNER_5_VIDEOS_PLAYLIST: BeginnerVideoEpisode[] = [
         id: "e5-3",
         startSec: 20,
         durationSec: 10,
-        frText: "Maîtriser le videau vous permet de gagner des matchs même quand les dés sont capricieux. C'est l'âme du Backgammon !",
-        enText: "Mastering the cube lets you win matches even when dice are stubborn. This is the true soul of Backgammon!",
+        frText: "Maîtriser le videau et les statistiques sur les 36 combinaisons sépare le joueur chanceux du champion du monde. C'est l'âme du Backgammon !",
+        enText: "Mastering the cube and the 36 dice combinations separates lucky players from world champions. This is the true soul of Backgammon!",
         highlightCube: true,
       },
     ],
