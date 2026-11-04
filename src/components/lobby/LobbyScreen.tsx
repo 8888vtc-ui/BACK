@@ -30,6 +30,11 @@ import { readPlayerPassport, savePlayerPassport, STANDARD_USER_AVATARS } from '.
 import AuthModal from '../auth/AuthModal';
 import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { BeginnerHomePortal } from '../home/BeginnerHomePortal';
+import { IntermediateHomePortal } from '../home/IntermediateHomePortal';
+import { ExpertHomePortal } from '../home/ExpertHomePortal';
+import { PlayerTierGateSwitch } from '../navigation/PlayerTierGateSwitch';
 
 export type LobbyModuleId = 'multiplayer' | 'openings' | 'stats' | 'drills' | 'puzzles' | 'import_export' | 'tournaments';
 type LobbyMode = 'ai' | 'multiplayer' | 'training';
@@ -62,6 +67,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
 }) => {
     const { ui, dir, locale } = useTranslation();
     const { canInstall, isInstalled, handleInstallClick } = usePwaInstall();
+    const { tierGate, setTierGate } = usePlayerTierGate();
     const [matchLength, setMatchLength] = useState<number>(initialMatchLength);
     const [difficulty, setDifficulty] = useState<AIDifficulty>(initialDifficulty);
     const [coachEnabled, setCoachEnabled] = useState<boolean>(initialCoachEnabled);
@@ -158,14 +164,16 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                 statusBadge={
                     <button
                         type="button" data-testid="lobby-auth-status" onClick={() => setIsPassportGateOpen(true)}
-                        title="Performance Rating (PR) : mesure la précision de vos coups, plus il est bas, meilleur vous êtes"
+                        title="Profil de Joueur"
                         className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#0B0E14]/90 px-2.5 py-1 text-xs font-semibold text-zinc-200 hover:border-[#D4AF37]/60 hover:text-white transition"
                     >
                         <span className="h-2 w-2 rounded-full bg-[#10B981]" />
                         <span className="max-w-[110px] truncate">{displayName ?? 'Invité'}</span>
-                        <span className="rounded bg-[#D4AF37]/15 px-1.5 py-0.5 font-mono tabular-nums text-[11px] font-bold text-[#F3E5AB]">
-                            {snapshot.eloRating} Elo{snapshot.averagePR !== null ? ` · PR ${snapshot.averagePR.toFixed(1)}` : ''}
-                        </span>
+                        {tierGate !== 'BEGINNER' && (
+                            <span className="rounded bg-[#D4AF37]/15 px-1.5 py-0.5 font-mono tabular-nums text-[11px] font-bold text-[#F3E5AB]">
+                                {snapshot.eloRating} Elo{snapshot.averagePR !== null ? ` · PR ${snapshot.averagePR.toFixed(1)}` : ''}
+                            </span>
+                        )}
                     </button>
                 }
             />
@@ -186,6 +194,33 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                 <div className="mx-auto flex flex-1 min-h-0 w-full max-w-6xl items-start justify-center gap-6 px-4 py-3 sm:px-8 sm:py-4 overflow-y-auto">
                     <div className={`flex flex-1 min-w-0 ${showOptions ? 'max-w-5xl' : 'max-w-4xl'} flex-col gap-3.5`}>
                         <h1 className="sr-only">BACKGAMMON</h1>
+
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-2">
+                            <span className="text-xs font-semibold text-stone-300">
+                                Choisissez votre expérience en 1 clic (modifiable à tout moment)
+                            </span>
+                            <PlayerTierGateSwitch currentGate={tierGate} onSelectGate={setTierGate} compact />
+                        </div>
+
+                        {tierGate === 'BEGINNER' && (
+                            <BeginnerHomePortal
+                                onStartGuidedGame={() => onStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor, clockPreset })}
+                                onOpenAcademy={() => { if (onOpenModule) onOpenModule('openings'); }}
+                            />
+                        )}
+                        {tierGate === 'INTERMEDIATE' && (
+                            <IntermediateHomePortal
+                                onFindOpponent={() => onStart({ matchLength: 5, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset })}
+                                onInviteFriend={() => onOpenModule?.('multiplayer')}
+                                onOpenQuizzes={() => onOpenModule?.('puzzles')}
+                            />
+                        )}
+                        {tierGate === 'EXPERT' && (
+                            <ExpertHomePortal
+                                onStartExpertMatch={(len) => onStart({ matchLength: len, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset })}
+                                onOpen3PlyQuizzes={() => onOpenModule?.('drills')}
+                            />
+                        )}
 
                         {selectedMode === 'ai' && showOptions && (
                             <section className="w-full">

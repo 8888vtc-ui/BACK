@@ -20,6 +20,8 @@ import type { LobbyModuleId } from '../lobby/LobbyScreen';
 import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
 import IosInstallModal from '../pwa/IosInstallModal';
+import { PlayerTierGateSwitch } from '../navigation/PlayerTierGateSwitch';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 
 export type NavTabId = 'play' | 'tournaments' | 'puzzles' | 'drills' | 'openings' | 'progression' | 'academy';
 
@@ -52,6 +54,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { t, ui } = useTranslation();
     const { canInstall, isInstalled, showIosModal, setShowIosModal, handleInstallClick } = usePwaInstall();
+    const { tierGate, setTierGate } = usePlayerTierGate();
 
     const navItems = useMemo<ReadonlyArray<NavItem>>(
         () => [
@@ -152,7 +155,10 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     </span>
                 </div>
 
-                {/* Centre : Liens sr-only (Navigation regroupée dans la Sidebar gauche sans doublon visuel dans la Topbar) */}
+                {/* Centre : Sélecteur 3 Portes visible + Liens sr-only */}
+                <div className="hidden md:flex items-center">
+                    <PlayerTierGateSwitch currentGate={tierGate} onSelectGate={setTierGate} compact />
+                </div>
                 <div className="sr-only">
                     {navItems.map((item) => {
                         const isActive = activeTab === item.id;
@@ -214,6 +220,15 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     data-testid="navbar-mobile-drawer"
                     className="border-t border-white/10 bg-slate-950/98 px-4 py-3 shadow-2xl lg:hidden"
                 >
+                    <div className="pb-2.5 mb-2.5 border-b border-white/10 flex justify-center">
+                        <PlayerTierGateSwitch
+                            currentGate={tierGate}
+                            onSelectGate={(g) => {
+                                setTierGate(g);
+                                setIsMobileMenuOpen(false);
+                            }}
+                        />
+                    </div>
                     <div className="grid grid-cols-2 gap-1.5">
                         {navItems.map((item) => {
                             const isActive = activeTab === item.id;
