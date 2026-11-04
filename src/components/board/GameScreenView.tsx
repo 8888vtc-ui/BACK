@@ -12,6 +12,8 @@ import GameBoardArea from './GameBoardArea';
 import CoachMobileDrawer from '../coach/CoachMobileDrawer';
 import GameModalsContainer from '../modals/GameModalsContainer';
 import CubeBottomSheet from '../modals/CubeBottomSheet';
+import { BeginnerGuidedMatchHUD } from '../hud/BeginnerGuidedMatchHUD';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { useCoachQuota } from '../../hooks/useCoachQuota';
 import { useTiltDetector } from '../../hooks/useTiltDetector';
 import type { ThemeName, CoachHighlight } from './boardThemes';
@@ -85,6 +87,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     openingEntry, onApplyOpeningMove, onResetGameHistory, gameId, playerColor,
 }) => {
     const [isCubeSheetOpen, setIsCubeSheetOpen] = useState(false);
+    const { tierGate } = usePlayerTierGate();
     const quota = useCoachQuota({ locale });
     const tilt = useTiltDetector({ windowSize: 6 });
     const lastRecordedFeedbackRef = useRef<LastMoveFeedback | null>(null);
@@ -148,6 +151,15 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                     isVip={quota.isVip}
                 />
             </div>
+
+            {/* 1.5. Bandeau Mode Guidé Débutant (Zéro-Stress) */}
+            {tierGate === 'BEGINNER' && !isMultiplayerActive && (
+                <BeginnerGuidedMatchHUD
+                    canUndo={game.canUndo}
+                    onUndoMove={game.undoMove}
+                    onAskTip={onTriggerCoach}
+                />
+            )}
 
             {/* 2. Plateau 100% visible (Zero-Scroll, 3 Colonnes sur Desktop/Paysage) */}
             <GameBoardArea

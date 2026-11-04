@@ -17,6 +17,7 @@ import {
 } from '../../features/drills/drillSubAgentsPipeline';
 import { evaluateMoveBlunderGate } from '../../lib/coachSystemPrompt';
 import { useCoachVoice } from '../../hooks/useCoachVoice';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { buildCandidateMathTable, DrillPrMathRankingTable } from './DrillPositionContextAndReading';
 
 export interface DrillCoachFeedbackProps {
@@ -46,6 +47,8 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
     onToggleThreatPreview,
     onNextBlunder,
 }) => {
+    const { tierGate } = usePlayerTierGate();
+    const isBeginner = tierGate === 'BEGINNER';
     const { isSpeaking, speak, stop } = useCoachVoice();
     const [threatHighlighted, setThreatHighlighted] = useState<boolean>(false);
     const handleRetry = onResetAttempt ?? onRetryAttempt;
@@ -106,11 +109,15 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                         title="ER / PR : Error Rate / Performance Rating officiel (0.0 = Perfection, 30.0 = Novice)"
                         className="font-mono text-xs font-black text-white"
                     >
-                        {isFirstFailureSocratic
-                            ? `⚠️ 1er Essai Imprécis (${coachReport.extractorFacts.deltaEmg.toFixed(3)} EMG | Impact ER / PR : +0.2 | Essais : 1/2 ❤️🖤)`
-                            : isNearOptimal
-                                ? gateCheck.feedbackMessage
-                                : coachReport.headerSeverityLine}
+                        {isBeginner
+                            ? validationResult.isCorrect
+                                ? '✅ Bravo ! Coup parfait qui protège vos pions et maximise vos chances de victoire.'
+                                : '⚠️ Attention : ce coup laisse un pion vulnérable. Essayez plutôt de sécuriser une porte.'
+                            : isFirstFailureSocratic
+                                ? `⚠️ 1er Essai Imprécis (${coachReport.extractorFacts.deltaEmg.toFixed(3)} EMG | Impact ER / PR : +0.2 | Essais : 1/2 ❤️🖤)`
+                                : isNearOptimal
+                                    ? gateCheck.feedbackMessage
+                                    : coachReport.headerSeverityLine}
                     </span>
                     <div className="flex items-center gap-1.5">
                         <span
@@ -179,7 +186,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                     </div>
                 )}
 
-                {!isFirstFailureSocratic && isErMode && <DrillPrMathRankingTable rows={mathRankingRows} />}
+                {!isFirstFailureSocratic && isErMode && !isBeginner && <DrillPrMathRankingTable rows={mathRankingRows} />}
             </div>
 
             {/* 3. BOUTONS D'ACTION TOUJOURS VISIBLES EN BAS (Zéro Scroll) */}

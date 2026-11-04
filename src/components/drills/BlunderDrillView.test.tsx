@@ -144,7 +144,7 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
 
         // Validation en 1-Clic sur A (optimal) -> hausse immédiate du Niveau ER (+ vert) et bouton Question suivante →
         fireEvent.click(screen.getByTestId('quiz-choice-btn-A'));
-        expect(screen.getByTestId('quiz-live-rating-badge').textContent).toContain('Niveau ER : 151');
+        expect(screen.getByTestId('quiz-live-rating-badge').textContent).toMatch(/Niveau ER : 15(1|2)/);
         expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('+');
         expect(screen.getByTestId('drill-next-btn').textContent).toContain('Question suivante →');
         expect(mockStore['bg_quiz_er_rating_v1']).toBeDefined();

@@ -19,6 +19,7 @@ import {
     type AdaptivePlayerProfile,
     type AdaptiveQuizCategoryId,
 } from '../../features/drills/adaptiveQuizEngine';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 
 export type QuizDrillMode = 'adaptive' | 'pr_math' | 'personal_blunders' | 'speed_60s';
 
@@ -55,6 +56,8 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
     activeTenthsDelta = 0, liveRatingValue = 1500, liveRatingDelta = 0,
     targetQuizEr, onResetAllMastery, onClose,
 }) => {
+    const { tierGate } = usePlayerTierGate();
+    const isBeginner = tierGate === 'BEGINNER';
     const isPersonal = drillMode === 'personal_blunders' || Boolean(isPersonalMatchBlunder);
     const seenCount = adaptiveProfile?.seenQuizIds.length ?? 0;
     const isImprovedTenths = activeTenthsDelta < 0;
@@ -77,10 +80,22 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                         <Link href="/" data-testid="drill-back-btn" className={BACK_BTN_CLS}><span>← Retour</span></Link>
                     )}
                     <h1 data-testid="drill-mode-title" title="ER / PR : Error Rate / Performance Rating (0.0 = Perfection, 30.0 = Novice)" className="whitespace-nowrap shrink-0 text-xs sm:text-sm font-black tracking-tight text-[#fdf8eb]">
-                        {drillMode === 'personal_blunders' ? '🔥 Mes Erreurs' : '📐 Quiz ER / PR'}
-                        <span className="sr-only">Parcours Adaptatif IA</span>
+                        {drillMode === 'personal_blunders'
+                            ? '🔥 Mes Erreurs'
+                            : isBeginner
+                                ? '🎓 Défi Tactique Débutant'
+                                : '📐 Quiz ER / PR'}
+                        <span className="sr-only">
+                            {drillMode === 'personal_blunders' ? '🔥 Mes Erreurs' : '📐 Quiz ER / PR'} Parcours Adaptatif IA
+                        </span>
                     </h1>
-                    <span data-testid="app-version-badge" className="rounded border border-emerald-400/40 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">v3.0 • 3-Ply</span>
+                    {isBeginner ? (
+                        <span data-testid="beginner-friendly-badge" className="rounded border border-emerald-400/40 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
+                            Précision Débutant : Simple &amp; Efficace
+                        </span>
+                    ) : (
+                        <span data-testid="app-version-badge" className="rounded border border-emerald-400/40 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">v3.0 • 3-Ply</span>
+                    )}
                     <span data-testid="quiz-attempts-counter" title="2 essais maximum par position (Active Recall / 2e Chance)" className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 font-mono text-[10px] font-black ${attemptsLeft === 2 ? 'border-emerald-400/40 bg-emerald-950/50 text-emerald-200' : attemptsLeft === 1 ? 'border-amber-400/50 bg-amber-950/60 text-amber-200' : 'border-rose-400/50 bg-rose-950/60 text-rose-200'}`}>
                         <span>Essais : {attemptsLeft}/{maxAttempts}</span><span>{heartsDisplay}</span>
                     </span>
@@ -89,11 +104,11 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                 <div className="flex flex-wrap items-center gap-1.5 shrink-0" data-testid="quiz-live-rating-badge">
                     <span className="sr-only">Niveau ER : {liveRatingValue}</span>
                     <span data-testid="quiz-target-metric-badge" title="ER / PR : Error Rate / Performance Rating officiel (échelle 0.0 à 30.0 — plus bas est meilleur)" className="inline-flex items-center rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-2 py-0.5 font-mono text-[11px] font-black text-emerald-200">
-                        ER / PR : {erPrScore.toFixed(1)}
-                        <span className="sr-only">Cible ER / PR : ~6.5 (Intermédiaire)</span>
+                        {isBeginner ? `Précision : ${Math.max(50, Math.round(100 - erPrScore * 1.5))} %` : `ER / PR : ${erPrScore.toFixed(1)}`}
+                        <span className="sr-only">ER / PR : {erPrScore.toFixed(1)} Cible ER / PR : ~6.5 (Intermédiaire)</span>
                     </span>
                     <span data-testid="quiz-nplus1-target-badge" title={targetBadgeText} className="inline-flex items-center rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#D4AF37]">
-                        {targetBadgeText}
+                        {isBeginner ? '🎯 Objectif Progression Guidée' : targetBadgeText}
                         <span className="sr-only">
                             {isPersonal
                                 ? `🔥 Issu de ton match • Niveau Quiz : ER / PR ${effectiveQuizTargetEr.toFixed(1)}`
