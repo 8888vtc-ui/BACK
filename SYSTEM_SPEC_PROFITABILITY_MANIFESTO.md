@@ -1,53 +1,47 @@
 # 🏛️ MANIFESTE DIRECTEUR — PERFECTION PRODUIT MAX & MONOPOLE TECHNOLOGIQUE (2026)
 
 > **LOI ABSOLUE DU DÉPÔT POUR LES AGENTS IA (ARGON / GEMINI 3.8 FLASH / CLAUDE) :**
-> L'application est actuellement estimée à **70 % de sa cible finale**.
+> L'application est actuellement estimée à **30 % de sa vision finale d'élite**.
+> **THÈSE COMMERCIALE CENTRALE** : Pourquoi Galaxy domine aujourd'hui ? Parce qu'aucune vraie plateforme concurrente n'est techniquement et visuellement à la page. Plus notre jeu est « costaud » (moteur infaillible, design haute horlogerie, chambres privées officielles pour les fédérations avec mot de passe, 3D web immersive et audio physique), plus la migration des joueurs de Galaxy et des clubs vers notre plateforme sera naturelle et massive.
 > **INTERDICTION FORMELLE de disperser les efforts sur la commercialisation tant que le produit n'a pas atteint 100 % de Perfection Technique, Mathématique et Esthétique.**
-> Dans un monde où l'IA est omniprésente, notre seul monopole ("Moat") consiste à créer **le meilleur produit de Backgammon jamais conçu** : plus précis, plus beau, plus fluide et plus pédagogique qu'eXtreme Gammon 2 (XG2) et Backgammon Galaxy réunis.
+> Dans un monde où l'IA est omniprésente, notre seul monopole ("Moat") consiste à créer **le meilleur produit de Backgammon jamais conçu** : plus précis, plus beau, plus fluide, plus robuste et plus addictif qu'eXtreme Gammon 2 (XG2) et Backgammon Galaxy réunis.
 
 ---
 
-## 1. DOCTRINE « PERFECTION PRODUIT MAX » (DE 70 % À 100 %)
+## 1. DOCTRINE « PERFECTION PRODUIT MAX » (ROADMAP DE 30 % À 100 %)
 
-### 1.1. Les 4 Piliers Non-Négociables de la Perfection (Priorité Exclusives)
+### 1.1. Les 6 Piliers Stratégiques Non-Négociables
 
-1. **PILIER A — Intelligence Irréprochable du Bot & Vérité Mathématique (Zéro Coup Douteux)** :
-   - **Zéro repli sur un coup arbitraire (`legalSeqs[0]`)** : si Open Sage (`bgsage-service` Cloud Run) ou `/api/evaluate` subit une latence ou une absence de champ `board`, le Bot a **interdiction absolue** de jouer `legalSeqs[0]`. Il doit systématiquement résoudre le coup optimal via le moteur tri-phase + table Bear-Off exacte 54 264 états (`findBestBoardMove` dans `src/lib/engine/evaluator.ts`).
-   - **Fidélité 100 % de l'encodage XGID & Miroir Joueur O** : validation mathématique bout-en-bout entre `serializeXGID` (`src/engine/backgammonEngine.ts`), `xgid_to_board` (`bgsage-service/app/xgid.py`) et `bgsageMoveBoardToProjectBoard` (`src/lib/engine/bgsageClient.ts`), y compris lorsque `O` (Bot) a des pions sur la barre (`O_BAR = 25`) ou en sortie (`O_OFF = 25`).
-   - **4 Niveaux de Bot calibrés avec précision** :
-     - *Grand-Maître* : Open Sage 3-ply (PR ~0.23) / repli local 2-ply exact.
-     - *Expert* : Open Sage 2-ply / repli local 2-ply exact.
-     - *Intermédiaire* : Open Sage 1-ply / repli local 1-ply `evaluator.ts`.
-     - *Débutant* : Open Sage 1-ply + bruit gaussien contrôlé.
+1. **PILIER A — Robustesse Fondamentale & Vérification 100 % Verte (Le Socle 30 %)** :
+   - Éradication totale des faux bots locaux au profit exclusif d'**Open Sage 3-ply Cloud Run** (24 réseaux neuronaux `stage11`, PR mesuré réel).
+   - Suivi rigoureux de l'`ER / PR (0.0–30.0)` en direct coup par coup et distinction nette avec le `Rating (1500 Elo)`.
+   - Zéro mock, zéro probabilité inventée, conformité absolue du videau en Match Play.
+   - 1 700+ tests unitaires et intégration sans la moindre régression.
 
-2. **PILIER B — Esthétique Haute-Horlogerie « Cercle Monte-Carlo » & Zéro Surcharge Visuelle** :
-   - **Stabilité géométrique absolue du plateau** : le plateau (`Board.tsx`) ne doit **JAMAIS** sauter, se redimensionner brutalement (ex: passage `col-span-12` $\to$ `col-span-8` au 1er coup joué) ni être écrasé par des bandeaux superflus.
-   - **Éradication de l'empilement des barres parasites** :
-     - Pas de doublon de Pip Count entre `MatchHud` et `PipCountBadge`.
-     - Intégration harmonieuse et discrète de `DopamineJuiceBanner` et `MoveTimelineBar` sans jamais compresser la hauteur du feutre (`FeltSurface`).
-     - Hiérarchie typographique, alignements au pixel près, contrastes WCAG AA et transitions fluides à **60 FPS constants** (`transform` et `opacity` uniquement).
+2. **PILIER B — Chambres Privées & Tournois Officiels pour les Fédérations (WBGF, FFBG)** :
+   - **Salons avec mot de passe & code d'accès** : Espace sécurisé dédié aux clubs et fédérations pour organiser des compétitions officielles sans perturbation externe.
+   - **Formats de tournoi homologués** : Matchs en 5, 7, 9, 11, 21 points, horloges Bronstein WBGF officielles (délai 12s non cumulatif), arbre à élimination directe et rondes suisses.
+   - **Exportation officielle XG / .mat** : Génération instantanée des feuilles de match pour validation des classements fédéraux.
 
-3. **PILIER C — Pédagogie Neuro-Symbolique Google Gemini (`gemini-3.8-flash` & `gemini-3.6`) Sans Hallucination** :
-   - **Usage exclusif de l'API directe Google Generative Language** (`https://generativelanguage.googleapis.com/v1beta/openai/`) :
-     - Temps réel SSE (`/api/coach`) : **`gemini-3.8-flash`**.
-     - Analyse profonde & revue de match (`/api/coach/review`) : **`gemini-3.6`**.
-     - Repli économique / hors-ligne : **`gemini-3.5`** puis moteur déterministe local (`generateRuleBasedExplanation`).
-   - **Séparation stricte Calcul / Langage** : le moteur déterministe calcule 100 % des métriques (`Equity`, `Error EMG`, `Pip Count`, `Shots/36`, `Cube Action`, `Game Phase`) et les verrouille via `symbolicAudit.ts`.
-   - **Cache L2 Serveur Supabase (`public.coach_explanations`)** : indexé par `position_key` (SHA-256) pour un affichage en 0 ms sur toute position déjà rencontrée.
+3. **PILIER C — Esthétique 3D Écrin Horloger (Desktop) & 2D Zero-Friction (Mobile)** :
+   - **Option 3D Perspective Desktop** : Rendu biseauté inspiré de Snowie Pro et XG (plateau incliné à 25°, pions nacre et obsidienne avec chanfrein, ombres douces et reflets laiton).
+   - **Mode 2D Native Mobile** : Maintien strict de la vue zénithale fluide à 120 FPS pour un Time-to-Fun < 3s sans chauffe de batterie.
+   - **Sélecteur 3 Tapis Précieux** : Émeraude Impériale, Bleu Nuit Saphir, Havane Cuir & Bordeaux.
 
-4. **PILIER D — Fiabilité « Zéro Gros Bug, Zéro Petit Bug » sur 100 % des Flux** :
-   - **Interactions Plateau** : Smart Point Click 1-clic (`smartClickResolver.ts`), clic droit dé secondaire, clic sur les dés (permutation / confirmation), drag-and-drop 0 re-render, Undo sous-coup par sous-coup, videau (`Offer / Take / Pass`) et règle de Crawford.
-   - **Modules Actifs** :
-     - **Salon Privé sur Code (`BG-XXXX`)** : connexion temps réel instantanée entre 2 joueurs, pendules WBF/Fischer et audit dés SHA-256 (`DiceAuditModal.tsx`).
-     - **Puzzles Quotidiens V2 (`/daily-puzzle` & `/puzzles`)** et **Gammon Academy (`/academy`)**.
-     - **Banque d'entraînement de Blunders (`/drills`)** alimentée par `public.recurring_errors`.
+4. **PILIER D — Psychoacoustique Procédurale Rayleigh-Woodhouse & Haptique (0 ms)** :
+   - Fin du son plastique agressif : 4 signatures acoustiques physiques (feutre anglais, bois noble, ivoire de dés, jeton lourd 14g).
+   - Jitter stochastique ±4 % anti-fatigue auditive.
+   - Micro-haptique Apple Core Haptics (`.ahap`) sèche lors des frappes et du videau.
 
-5. **PILIER E — Écosystème de Bots Personnifiés, Interface Adaptative (« UI Caméléon ») & Addiction Positive** :
-   - **Incarnation des 4 Adversaires (Fin du Robot Muet)** : Transformer les 4 paliers actuels (*Léo, Sofia, Kenji, Viktor*) en **4 Archétypes Vivants** dotés à la fois d'un **biais tactique dans le moteur** (`evaluator.ts` / `bgsageClient.ts`) et d'une **personnalité conversationnelle temps réel (< 500 ms)** :
-     1. **Le Mauvais Joueur (Style Blitz Agressif)** : Surpondère les frappes, casse ses portes pour attaquer et peste avec mauvaise foi contre les dés (*Luck Rating* / *Huge Joker*), sans jamais insulter l'intelligence du joueur (conformité étude CMU).
-     2. **La Dragueuse « Riviera Monte-Carlo » (Style Holding & Pièges)** : Conserve des ancres hautes, pose des pions appâts (*blots* calculés) et taquine avec l'élégance d'un salon privé de Monte-Carlo (avec garde-fous stricts App Store Section 1.2 : filtrage E/S + boutons *Signaler / Muet*).
-     3. **L'Homme d'Affaires High-Roller (Style Course Pure & Videau Actif)** : Optimise le *Pip Count*, négocie agressivement le Videau (*Doubling Cube*) et enseigne les seuils mathématiques de *Take / Pass* (25 %).
-     4. **L'Intellectuel Grand-Maître (Style Positionnel & Barricade / Prime)** : Construit des murs de 5–6 portes consécutives et enseigne les probabilités sur 36 en 2–3 phrases maximum.
+5. **PILIER E — Pédagogie XAI Tesla 3-Secondes & Quizz Adaptatifs N+1 sur Radar des Faiblesses** :
+   - Ciblage adaptatif : $\text{Target\_PR} = \max(1.0, \text{PR} - 0.5)$.
+   - Profiling du joueur en 8 catégories tactiques (Ouverture, Blitz, Prime, Holding, Backgame, Course, Bear-off, Videau) pour entraîner précisément ses points faibles.
+   - Micro-copie explicative immédiate : 1. Pourquoi ton coup est une erreur, 2. Pourquoi le coup optimal gagne, 3. Le proverbe Grand-Maître à retenir.
+
+6. **PILIER F — Rétention & Transparence Absolue (Chouette & Audit SHA-256)** :
+   - **Mode Chouette Multijoueur** : 3 à 5 joueurs en ligne avec multi-videaux indépendants.
+   - **Commit-Reveal SHA-256** : Preuve cryptographique que les dés étaient pré-tirés et inaltérables.
+   - **Grille Gammon36** : Mode entraînement équitable sans remise sur 36 lancers.
    - **Double Environnement Adaptatif (« S'amuser pour le Débutant » ↔ « S'améliorer pour le Pro »)** :
      - **Mode Découverte / Ludique (Débutant)** : Interface épurée, format court 1 point (DMP) ou sans hasard (**Gammon36**), repères visuels sur les portes et pions isolés, et **Tuteur Préventif incarné par le Bot** qui réagit *avant* la validation d'une grosse gaffe (> 0,12 EMG) sans jargon intimidant.
      - **Mode Master / Pro (Expert)** : HUD analytique complet (perte d'équité en millipoints EMG, *Performance Rating* PR, Keith Count, distribution sur 36), zéro interruption pendant le coup et sparring spécialisé à haute profondeur (2-ply / 3-ply Open Sage).
