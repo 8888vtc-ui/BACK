@@ -12,6 +12,27 @@ export interface BeginnerInteractiveGuideModalProps {
   onOpenQuizzes?: () => void;
 }
 
+const VICTORY_TYPES = {
+  SIMPLE: {
+    labelFr: 'Simple (1 pt)',
+    labelEn: 'Single (1 pt)',
+    descFr: 'L’adversaire a déjà sorti au moins 1 dame de son plateau.',
+    descEn: 'The opponent has already borne off at least 1 checker.',
+  },
+  GAMMON: {
+    labelFr: 'Gammon (×2)',
+    labelEn: 'Gammon (×2)',
+    descFr: 'Tu as sorti tes 15 dames alors que l’adversaire n’en a sorti aucune !',
+    descEn: 'You bore off all 15 checkers while opponent bore off none!',
+  },
+  BACKGAMMON: {
+    labelFr: 'Backgammon (×3)',
+    labelEn: 'Backgammon (×3)',
+    descFr: 'L’adversaire n’a sorti aucune dame ET il lui reste encore un pion sur la barre ou dans ta maison !',
+    descEn: 'Opponent bore off none AND still has a checker on the bar or in your home!',
+  },
+} as const;
+
 export function BeginnerInteractiveGuideModal({
   isOpen,
   onClose,
@@ -22,6 +43,7 @@ export function BeginnerInteractiveGuideModal({
   const lang = locale === 'en' ? 'en' : 'fr';
   const [chapterIndex, setChapterIndex] = useState<number>(0);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [victoryType, setVictoryType] = useState<'SIMPLE' | 'GAMMON' | 'BACKGAMMON'>('SIMPLE');
 
   const chapter = BEGINNER_MASTER_GUIDE_CHAPTERS[chapterIndex] || BEGINNER_MASTER_GUIDE_CHAPTERS[0];
 
@@ -179,8 +201,51 @@ export function BeginnerInteractiveGuideModal({
             </div>
           )}
 
+          {/* Sélecteur Interactif de Victoires Simple / Gammon / Backgammon */}
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+            <div className="text-[11px] font-bold text-stone-300 mb-1.5">
+              {lang === 'fr' ? '🏆 Les 3 Niveaux de Victoire :' : '🏆 The 3 Victory Levels:'}
+            </div>
+            <div data-testid="guide-victory-types-selector" className="grid grid-cols-3 gap-1.5 mb-2">
+              {(['SIMPLE', 'GAMMON', 'BACKGAMMON'] as const).map((vtKey) => {
+                const vt = VICTORY_TYPES[vtKey];
+                const isSel = victoryType === vtKey;
+                return (
+                  <button
+                    key={vtKey}
+                    type="button"
+                    data-testid={`victory-type-${vtKey.toLowerCase()}`}
+                    onClick={() => setVictoryType(vtKey)}
+                    className={`py-1 px-1.5 rounded-lg border text-center text-xs font-bold transition ${
+                      isSel
+                        ? 'bg-[#D4AF37] border-[#F3E5AB] text-slate-950 font-black shadow'
+                        : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10'
+                    }`}
+                  >
+                    {lang === 'fr' ? vt.labelFr : vt.labelEn}
+                  </button>
+                );
+              })}
+            </div>
+            <p data-testid="victory-type-description" className="text-xs text-amber-200/90 font-medium bg-black/40 p-2 rounded-lg border border-white/5">
+              {lang === 'fr' ? VICTORY_TYPES[victoryType].descFr : VICTORY_TYPES[victoryType].descEn}
+            </p>
+          </div>
+
+          {/* Explication ERA Adaptatif */}
+          <div data-testid="guide-era-explanation" className="rounded-xl border border-sky-500/30 bg-sky-950/20 p-2.5 text-xs text-sky-200">
+            <div className="font-bold text-sky-300 mb-0.5">
+              ⚡ {lang === 'fr' ? 'Error Rate Adaptatif (ERA) :' : 'Adaptive Error Rate (ERA):'}
+            </div>
+            <p>
+              {lang === 'fr'
+                ? "Contrairement à l'ER théorique qui suppose un robot parfait, l'ERA adapte les décisions de videau et le plan de jeu au niveau réel adverse pour étouffer le hasard."
+                : "Unlike theoretical ER assuming a perfect bot, ERA adapts cube decisions and game plan to the opponent's true level to overcome variance."}
+            </p>
+          </div>
+
           {/* Règle d'Or à retenir */}
-          <div className="rounded-xl border border-[#D4AF37]/40 bg-gradient-to-r from-[#18130a] to-[#0d0b07] p-3.5 text-xs sm:text-sm font-bold text-[#F3E5AB]">
+          <div className="rounded-xl border border-[#D4AF37]/40 bg-gradient-to-r from-[#18130a] to-[#0d0b07] p-3 text-xs sm:text-sm font-bold text-[#F3E5AB]">
             💡 {lang === 'fr' ? chapter.keyTakeawayFr : chapter.keyTakeawayEn}
           </div>
         </div>

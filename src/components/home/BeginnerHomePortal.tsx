@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { BookOpen, Play, Sparkles } from 'lucide-react';
+import { BookOpen, Play, Sparkles, Dices } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { BeginnerInteractiveGuideModal } from '../beginner/BeginnerInteractiveGuideModal';
+import { BeginnerOpeningMovesExplorer } from '../beginner/BeginnerOpeningMovesExplorer';
 
 interface BeginnerHomePortalProps {
     readonly onStartGuidedGame: () => void;
@@ -17,6 +18,7 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
     const { locale } = useTranslation();
     const isEn = locale === 'en';
     const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
+    const [isOpeningExplorerOpen, setIsOpeningExplorerOpen] = useState<boolean>(false);
 
     const handleOpenAcademy = () => {
         if (onOpenAcademy) {
@@ -130,23 +132,39 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                             </p>
                         </div>
                     </div>
-                    <button
-                        type="button"
-                        data-testid="beginner-open-guide-btn"
-                        onClick={() => setIsGuideOpen(true)}
-                        className="shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs font-bold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition"
-                    >
-                        <span>{isEn ? 'LISTEN TO THE 6 CHAPTERS' : 'LIRE & ÉCOUTER LES 6 CHAPITRES'}</span>
-                    </button>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <button
+                            type="button"
+                            data-testid="beginner-openings-btn"
+                            onClick={() => setIsOpeningExplorerOpen(true)}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-[#D4AF37]/40 bg-[#D4AF37]/15 px-3 py-2 text-xs font-bold text-[#F3E5AB] hover:bg-[#D4AF37]/25 active:scale-95 transition"
+                        >
+                            <Dices size={14} className="text-[#D4AF37]" />
+                            <span>{isEn ? '15 OPENINGS SIMULATOR' : '15 COUPS D’OUVERTURE'}</span>
+                        </button>
+                        <button
+                            type="button"
+                            data-testid="beginner-open-guide-btn"
+                            onClick={() => setIsGuideOpen(true)}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs font-bold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition"
+                        >
+                            <span>{isEn ? 'LISTEN TO THE 6 CHAPTERS' : 'LIRE & ÉCOUTER LES 6 CHAPITRES'}</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Modal Guide Interactif Bilingue */}
+            {/* Modales Interactives Bilingues */}
             <BeginnerInteractiveGuideModal
                 isOpen={isGuideOpen}
                 onClose={() => setIsGuideOpen(false)}
                 onStartGuidedMatch={onStartGuidedGame}
                 onOpenQuizzes={handleOpenAcademy}
+            />
+
+            <BeginnerOpeningMovesExplorer
+                isOpen={isOpeningExplorerOpen}
+                onClose={() => setIsOpeningExplorerOpen(false)}
             />
         </>
     );

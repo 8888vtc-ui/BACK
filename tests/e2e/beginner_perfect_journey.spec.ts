@@ -215,4 +215,113 @@ test.describe('Circuit Débutant Parfait (Porte 1) — E2E Journey', () => {
         await page.setViewportSize({ width: 1440, height: 900 });
         await expect(portal).toBeVisible();
     });
+
+    test('Test Playwright #7 : Simulateur des 15 Coups d’Ouverture & Animation Plateau (3-1, 6-1)', async ({ page }) => {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.getByTestId('tier-gate-btn-beginner').first().click();
+
+        const openBtn = page.getByTestId('beginner-openings-btn');
+        await expect(openBtn).toBeVisible();
+        await openBtn.click();
+
+        const modal = page.getByTestId('beginner-opening-explorer-modal');
+        await expect(modal).toBeVisible();
+
+        // Vérification du coup par défaut 3-1
+        await expect(page.getByTestId('opening-roll-3-1')).toBeVisible();
+        const expText = page.getByTestId('opening-explanation-text');
+        await expect(expText).toContainText(/case 5|5-point/i);
+
+        // Clic sur le coup 6-1 (Bar point / case 7)
+        const roll61 = page.getByTestId('opening-roll-6-1');
+        await expect(roll61).toBeVisible();
+        await roll61.click();
+        await expect(expText).toContainText(/case 7|bar|7-point/i);
+        await expect(page.getByTestId('opening-board-display')).toBeVisible();
+
+        await page.getByTestId('opening-close-btn').click();
+        await expect(modal).not.toBeVisible();
+    });
+
+    test('Test Playwright #8 : Jauge de Course Simplifiée & Conseil de Plan de Jeu', async ({ page }) => {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.getByTestId('tier-gate-btn-beginner').first().click();
+
+        const playGuidedBtn = page.getByTestId('beginner-play-btn');
+        await expect(playGuidedBtn).toBeVisible();
+        await playGuidedBtn.click();
+
+        const overlay = page.getByTestId('live-professor-coach-overlay');
+        await expect(overlay).toBeVisible({ timeout: 15000 });
+
+        const compass = page.getByTestId('beginner-race-compass');
+        await expect(compass).toBeVisible();
+        await expect(compass).toContainText(/Course|Race|cases|steps|avance|lead/i);
+    });
+
+    test('Test Playwright #9 : Sélecteur de Victoires (Simple / Gammon / Backgammon) & Explication ERA', async ({ page }) => {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.getByTestId('tier-gate-btn-beginner').first().click();
+
+        const openGuideBtn = page.getByTestId('beginner-open-guide-btn');
+        await expect(openGuideBtn).toBeVisible();
+        await openGuideBtn.click();
+
+        const guideModal = page.getByTestId('beginner-interactive-guide-modal');
+        await expect(guideModal).toBeVisible();
+
+        // Sélecteur de victoires
+        await expect(page.getByTestId('guide-victory-types-selector')).toBeVisible();
+        await page.getByTestId('victory-type-gammon').click();
+        await expect(page.getByTestId('victory-type-description')).toContainText(/15 dames|15 checkers/i);
+
+        await page.getByTestId('victory-type-backgammon').click();
+        await expect(page.getByTestId('victory-type-description')).toContainText(/barre|bar/i);
+
+        // Explication ERA
+        const eraBox = page.getByTestId('guide-era-explanation');
+        await expect(eraBox).toBeVisible();
+        await expect(eraBox).toContainText(/Error Rate Adaptatif|Adaptive Error Rate|ERA/i);
+
+        await page.getByTestId('guide-close-btn').click();
+    });
+
+    test('Test Playwright #10 : Bouton Rejouer, Badge Coup de Maître & Anti-Frustration', async ({ page }) => {
+        const consoleErrors: string[] = [];
+        page.on('pageerror', (err) => consoleErrors.push(err.message));
+
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.getByTestId('tier-gate-btn-beginner').first().click();
+
+        const playGuidedBtn = page.getByTestId('beginner-play-btn');
+        await expect(playGuidedBtn).toBeVisible();
+        await playGuidedBtn.click();
+
+        const overlay = page.getByTestId('live-professor-coach-overlay');
+        await expect(overlay).toBeVisible({ timeout: 15000 });
+
+        // Bouton Rejouer
+        const undoBtn = page.getByTestId('professor-undo-move-btn');
+        await expect(undoBtn).toBeVisible();
+
+        // Badge Coup de Maître
+        const masterBadge = page.getByTestId('master-move-badge');
+        await expect(masterBadge).toBeVisible();
+        await expect(masterBadge).toContainText(/\+50 PTS/i);
+
+        // Alerte Anti-Frustration
+        const rulesBtn = page.getByRole('button', { name: /Movement rules\?|Aide déplacements \?/i });
+        await expect(rulesBtn).toBeVisible();
+        await rulesBtn.click();
+        const alertBox = page.getByTestId('anti-frustration-alert');
+        await expect(alertBox).toBeVisible();
+        await expect(alertBox).toContainText(/Barre centrale|Porte fermée|Bar|gate/i);
+
+        // Vérification zéro crash console
+        expect(consoleErrors.filter(msg => !msg.includes('WebSocket') && !msg.includes('net::ERR'))).toEqual([]);
+    });
 });
