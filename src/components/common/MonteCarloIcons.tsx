@@ -198,7 +198,7 @@ export const BotPortraitMedallion: React.FC<BotPortraitMedallionProps> = React.m
                     strokeWidth="1"
                 />
 
-                {/* Photographie de Portrait Haute-Couture Monte-Carlo ou Blason Royal plein cadre (92 %) */}
+                {/* Photographie de Portrait ou Blason Royal plein cadre centré (92 %) */}
                 {photoUrl && (
                     <image
                         href={photoUrl}
@@ -206,7 +206,8 @@ export const BotPortraitMedallion: React.FC<BotPortraitMedallionProps> = React.m
                         y="3"
                         width="74"
                         height="74"
-                        preserveAspectRatio="xMidYMin slice"
+                        preserveAspectRatio="xMidYMid slice"
+                        style={{ imageRendering: 'auto' }}
                         clipPath={`url(#${clipId})`}
                     />
                 )}

@@ -7,6 +7,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { readPlayerPassport, STANDARD_USER_AVATARS } from '../../lib/supabase/auth';
+import { getAllGameAnalyses } from '../../features/rating/gameAnalysisStorage';
 import { toggleOrientation, getSavedOrientation, saveOrientation } from './boardOrientation';
 import { BotPortraitMedallion, IconHorologyGear } from '../common/MonteCarloIcons';
 import { CountryFlagSvg } from '../common/CountryFlagSvg';
@@ -14,10 +15,13 @@ import {
     BoardPortraitTopHud,
     BoardPortraitBottomHud,
     BoardRightActionRail,
+    BOARD_SWATCH_OPTIONS,
     resolvePersonaMeta,
+    resolvePrBadgeClasses,
     type BoardLeftPlayerRailProps,
     type BoardRightActionRailProps,
 } from './BoardPortraitAndActionRails';
+import { useBoardTheme } from '../../hooks/useBoardTheme';
 
 export {
     BoardPortraitTopHud,
@@ -33,27 +37,61 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     opponentClock = '02:36', playerClock = '02:14', delaySeconds = 12, prX, prO, challengerProfile,
     opponentDice = null, onSendQuickChat,
     isBrowserFullscreen = false, isFocusFullBoard = true, onToggleFullscreen, onToggleCoach,
-    onToggleTheme, onBackToLobby, canUndo = false, onUndo, autoConfirmEnabled = false, onToggleAutoConfirm,
+    onBackToLobby, canUndo = false, onUndo, autoConfirmEnabled = false, onToggleAutoConfirm,
+    autoRollEnabled = false, onToggleAutoRoll,
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isQuickChatOpen, setIsQuickChatOpen] = useState(false);
-    const [playerMeta, setPlayerMeta] = useState<{ pseudo: string; avatarUrl: string }>({
-        pseudo: 'Vous',
+    const { theme: activeTheme, setTheme } = useBoardTheme();
+    const [playerMeta, setPlayerMeta] = useState<{
+        pseudo: string;
+        avatarUrl: string;
+        countryName: string;
+        isGuest: boolean;
+        careerPr: number | null;
+    }>({
+        pseudo: 'Joueur Invité',
         avatarUrl: STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg',
+        countryName: 'France',
+        isGuest: true,
+        careerPr: null,
     });
     useEffect(() => {
         const passport = readPlayerPassport();
-        if (passport) {
-            setPlayerMeta({
-                pseudo: passport.pseudo || 'Vous',
-                avatarUrl: passport.avatarUrl || (STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg'),
-            });
+        const rawPseudo = (passport?.pseudo ?? '').trim();
+        const isGuest =
+            !passport ||
+            passport.email === 'invite@backgammontour.com' ||
+            /^invit[eé]|^joueur invit[eé]/i.test(rawPseudo);
+        let careerPr: number | null = null;
+        if (!isGuest) {
+            const analyses = getAllGameAnalyses();
+            let totalLoss = 0;
+            let totalDec = 0;
+            for (const a of analyses) {
+                const dec = a.unforcedDecisionsCount || a.decisionsCount || 0;
+                if (dec > 0) {
+                    totalLoss += a.totalEquityLoss;
+                    totalDec += dec;
+                }
+            }
+            if (totalDec >= 3) {
+                careerPr = Number(Math.max(0, (totalLoss / totalDec) * 500).toFixed(1));
+            }
         }
+        setPlayerMeta({
+            pseudo: isGuest ? 'Joueur Invité' : (rawPseudo || 'Vous'),
+            avatarUrl: passport?.avatarUrl || (STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg'),
+            countryName: passport?.countryName || 'France',
+            isGuest,
+            careerPr,
+        });
     }, []);
     const {
-        activePersona,
         botElo,
-        playerPrValue,
+        playerPrNum,
+        playerPrLabel,
+        opponentPrNum,
         opponentPrValue,
         opponentDisplayName,
         opponentBadge,
@@ -88,19 +126,19 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             isActive={!isXTurn}
                             customPhotoUrl={challengerProfile ? opponentPhotoUrl : null}
                         />
-                        <div className="flex items-center gap-1 text-[11px] font-semibold tabular-nums whitespace-nowrap">
-                            <span className="font-mono text-stone-200 font-bold">{botElo} Elo</span>
-                            {opponentPrValue !== '—' && (
-                                <span className="rounded border border-[#d4af37]/50 bg-[#d4af37]/20 px-1 py-0.2 font-mono text-[9px] font-black text-[#f3d27a] whitespace-nowrap">
-                                    PR {opponentPrValue}
-                                </span>
-                            )}
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
+                            <span className="font-mono text-stone-200 font-bold">
+                                {challengerProfile ? `${botElo} Elo` : 'IA 3-Ply'}
+                            </span>
+                            <span className={`inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap ${resolvePrBadgeClasses(opponentPrNum)}`}>
+                                PR Match : {opponentPrValue}
+                            </span>
                         </div>
                     </div>
 
                     <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
                         <span data-testid="left-rail-mobile-opp-name" title={opponentDisplayName} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">{opponentDisplayName}</span>
-                        <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">{botElo} Elo</span>
+                        <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">{challengerProfile ? `${botElo} Elo` : 'IA 3-Ply'}</span>
                     </div>
 
                     <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
@@ -126,9 +164,10 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <span>Connecté · Match classé</span>
                     </div>
                 ) : (
-                    <p data-testid="left-rail-persona-quote" className="[@media(max-height:540px)]:hidden rounded-lg border border-[#d4af37]/25 bg-black/45 px-2 py-1 text-[10px] italic text-amber-100/90 leading-snug line-clamp-2 text-center">
-                        « {activePersona.dialogues.opening.fun} »
-                    </p>
+                    <div data-testid="left-rail-bot-engine-badge" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-[#d4af37]/25 bg-black/45 px-2 py-1 text-[10px] font-semibold text-[#f3d27a]">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
+                        <span>IA Open Sage 3-Ply</span>
+                    </div>
                 )}
             </div>
 
@@ -172,22 +211,21 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                                 <span className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-black ${autoConfirmEnabled ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50' : 'bg-white/10 text-stone-300'}`}>{autoConfirmEnabled ? 'ON' : 'OFF'}</span>
                             </button>
                         )}
-                        {onToggleFullscreen && (
-                            <button type="button" onClick={() => { onToggleFullscreen(); setIsMobileMenuOpen(false); }} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                                <span>⛶ Plein écran</span><span className="text-[10px] text-[#f3d27a]">{isBrowserFullscreen ? 'Quitter' : 'Activer'}</span>
+                        {onToggleAutoRoll && (
+                            <button type="button" data-testid="left-rail-auto-roll-toggle" onClick={onToggleAutoRoll} className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
+                                <span>🎲 Lancer auto des dés</span>
+                                <span className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-black ${autoRollEnabled ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50' : 'bg-white/10 text-stone-300'}`}>{autoRollEnabled ? 'ON' : 'OFF'}</span>
                             </button>
                         )}
-                        {onToggleCoach && (
-                            <button type="button" onClick={() => { onToggleCoach(); setIsMobileMenuOpen(false); }} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                                <span>🧭 Maître-Coach IA</span><span className="text-[10px] text-[#f3d27a]">{!isFocusFullBoard ? 'Masquer' : 'Ouvrir'}</span>
-                            </button>
-                        )}
-                        <div className="grid grid-cols-2 gap-1">
-                            {onToggleTheme && (
-                                <button type="button" onClick={() => { onToggleTheme(); setIsMobileMenuOpen(false); }} className="rounded-xl border border-white/10 bg-white/[0.04] px-2 py-1.5 text-[10px] font-semibold text-center hover:border-[#d4af37]/50 transition">🎨 Tapis</button>
-                            )}
-                            <button type="button" onClick={() => { handleFlipDirection(); setIsMobileMenuOpen(false); }} className="rounded-xl border border-white/10 bg-white/[0.04] px-2 py-1.5 text-[10px] font-semibold text-center hover:border-[#d4af37]/50 transition">⇄ Sens 1..24</button>
+                        <div className="grid grid-cols-3 gap-1">
+                            {BOARD_SWATCH_OPTIONS.map((sw) => (
+                                <button key={sw.id} type="button" onClick={() => setTheme(sw.id)} className={`flex flex-col items-center gap-0.5 rounded-lg border py-1 text-[9.5px] font-bold ${activeTheme === sw.id ? 'border-[#f3c65f] bg-[#d4af37]/20 text-white' : 'border-white/10 bg-black/40 text-stone-300'}`}>
+                                    <span className={`h-3 w-5 rounded border ${sw.ringClass}`} style={{ backgroundColor: sw.bgHex }} />
+                                    <span>{sw.label}</span>
+                                </button>
+                            ))}
                         </div>
+                        <button type="button" onClick={() => { handleFlipDirection(); setIsMobileMenuOpen(false); }} className="rounded-xl border border-white/10 bg-white/[0.04] px-2 py-1.5 text-[10px] font-semibold text-center hover:border-[#d4af37]/50 transition">⇄ Sens 1..24</button>
                         {onBackToLobby && (
                             <button type="button" onClick={() => { setIsMobileMenuOpen(false); onBackToLobby(); }} className="flex items-center justify-between rounded-xl border border-rose-500/35 bg-rose-950/40 px-2.5 py-1.5 text-[11px] font-bold text-rose-200 hover:bg-rose-950/70 transition">
                                 <span>🚪 Quitter la table</span><span className="text-[10px]">Salon →</span>
@@ -197,12 +235,24 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 )}
             </div>
 
-            {/* 3. CARTE BAS (Joueur Humain) */}
+            {/* 3. CARTE BAS (Joueur Humain : Invité vs Inscrit) */}
             <div className="relative flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-0.5 border-t border-[#d4af37]/20 pt-1.5 [@media(max-height:540px)]:!pt-0.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
                 <div className="[@media(max-height:540px)]:hidden flex flex-col items-center gap-0.5 min-w-0 flex-1">
-                    <div className="flex items-center gap-1 text-[11px] font-semibold tabular-nums whitespace-nowrap">
-                        <span className="font-mono text-stone-200 font-bold">1500 Elo</span>
-                    </div>
+                    {playerMeta.isGuest ? (
+                        <span data-testid="left-rail-guest-badge" className="inline-flex items-center gap-1 rounded-full border border-stone-500/40 bg-stone-900/70 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-stone-300 whitespace-nowrap">
+                            Invité · Salon Libre
+                        </span>
+                    ) : (
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
+                            <CountryFlagSvg countryName={playerMeta.countryName} />
+                            <span className="font-mono text-stone-200 font-bold">1500 Elo</span>
+                            {playerMeta.careerPr !== null && (
+                                <span data-testid="left-rail-career-pr" className="font-mono text-[10px] font-bold text-[#f3d27a]">
+                                    · PR Moy. {playerMeta.careerPr.toFixed(1)}
+                                </span>
+                            )}
+                        </div>
+                    )}
                     <BotPortraitMedallion character="player" size="lg" isActive={isXTurn} customPhotoUrl={playerMeta.avatarUrl} />
                     <span className="truncate max-w-full font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight">
                         {playerMeta.pseudo}
@@ -211,7 +261,9 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                 <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
                     <span data-testid="left-rail-mobile-player-name" title={playerMeta.pseudo} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">{playerMeta.pseudo}</span>
-                    <span data-testid="left-rail-mobile-player-elo" className="font-mono text-[8.5px] font-bold text-emerald-300/90 tabular-nums whitespace-nowrap">1500 Elo</span>
+                    <span data-testid="left-rail-mobile-player-elo" className="font-mono text-[8.5px] font-bold text-emerald-300/90 tabular-nums whitespace-nowrap">
+                        {playerMeta.isGuest ? 'Invité' : '1500 Elo'}
+                    </span>
                 </div>
 
                 <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
@@ -235,11 +287,9 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                 <span
                     data-testid="left-rail-player-pr"
-                    className={`w-full [@media(min-height:541px)]:w-auto text-center rounded border px-1 py-0.5 font-mono text-[9px] font-black whitespace-nowrap leading-none ${
-                        playerPrValue <= 4 ? 'border-emerald-400/50 bg-emerald-950/80 text-emerald-300' : playerPrValue <= 8 ? 'border-amber-400/50 bg-amber-950/80 text-amber-300' : 'border-rose-400/50 bg-rose-950/80 text-rose-300'
-                    }`}
+                    className={`w-full [@media(min-height:541px)]:w-auto inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap leading-none ${resolvePrBadgeClasses(playerPrNum)}`}
                 >
-                    PR {playerPrValue.toFixed(2)}
+                    PR Match : {playerPrLabel}
                 </span>
             </div>
         </aside>

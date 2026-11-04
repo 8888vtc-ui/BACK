@@ -1,0 +1,196 @@
+{
+  "timestamp": "2026-11-02T12:15:38.872Z",
+  "part1": {
+    "quiz1Checker": {
+      "xgid": "XGID=---B-BDbB-C-b----abd-bb-B-:0:0:1:45:0:0:0:7:10",
+      "pips": "134 vs 122 pips",
+      "bgsage3PlyTopMoves": [
+        {
+          "rank": 1,
+          "notation": "24/20 10/5",
+          "equity": -0.8522,
+          "loss": 0,
+          "cubelessEquity": -0.5177,
+          "probabilities": {
+            "win": 0.3104,
+            "winGammon": 0.0859,
+            "winBackgammon": 0.004,
+            "loseGammon": 0.2222,
+            "loseBackgammon": 0.0062
+          }
+        },
+        {
+          "rank": 2,
+          "notation": "24/15",
+          "equity": -0.8837,
+          "loss": 0.0315,
+          "cubelessEquity": -0.5343,
+          "probabilities": {
+            "win": 0.3056,
+            "winGammon": 0.0683,
+            "winBackgammon": 0.0032,
+            "loseGammon": 0.2118,
+            "loseBackgammon": 0.0051
+          }
+        },
+        {
+          "rank": 3,
+          "notation": "24/20 6/1",
+          "equity": -1,
+          "loss": 0.1478,
+          "cubelessEquity": -0.6157,
+          "probabilities": {
+            "win": 0.2907,
+            "winGammon": 0.0862,
+            "winBackgammon": 0.0039,
+            "loseGammon": 0.2784,
+            "loseBackgammon": 0.0087
+          }
+        },
+        {
+          "rank": 4,
+          "notation": "10/5 6/2",
+          "equity": -1,
+          "loss": 0.1478,
+          "cubelessEquity": -0.6262,
+          "probabilities": {
+            "win": 0.2396,
+            "winGammon": 0.0529,
+            "winBackgammon": 0.002,
+            "loseGammon": 0.1536,
+            "loseBackgammon": 0.0068
+          }
+        }
+      ],
+      "gnubg3PlyTopMoves": [
+        {
+          "rank": 1,
+          "notation": "24/20 10/5",
+          "equity": -0.837,
+          "loss": 0
+        },
+        {
+          "rank": 2,
+          "notation": "24/15",
+          "equity": -0.871,
+          "loss": 0.035
+        },
+        {
+          "rank": 3,
+          "notation": "24/20 6/1",
+          "equity": -1,
+          "loss": 0.163
+        },
+        {
+          "rank": 4,
+          "notation": "10/5 8/4",
+          "equity": -1,
+          "loss": 0.163
+        },
+        {
+          "rank": 5,
+          "notation": "10/5 6/2",
+          "equity": -1,
+          "loss": 0.163
+        },
+        {
+          "rank": 6,
+          "notation": "8/4 8/3",
+          "equity": -1,
+          "loss": 0.163
+        }
+      ],
+      "agreementTop1": true
+    },
+    "quiz2Cube": {
+      "xgid": "XGID=---B-BDbB-C-b----abd-bb-B-:0:0:1:45:1:2:0:5:10",
+      "pips": "134 vs 122 pips",
+      "matchLength": 5,
+      "score": "1-2",
+      "bgsageCubeDecision": "No Double",
+      "gnubgCubeDecision": "No Double / Take",
+      "bgsageNoDoubleEq": -0.6762,
+      "bgsageDoubleTakeEq": -1.5996,
+      "gnubgNoDoubleEq": -0.759,
+      "gnubgDoubleTakeEq": -1.65,
+      "agreement": true
+    },
+    "quiz2CubeAttacker": {
+      "xgid": "XGID=-b-BB-DBA----B-c-bBdb-b---:0:0:1:45:1:2:0:5:10",
+      "pips": "122 vs 134 pips",
+      "matchLength": 5,
+      "score": "1-2",
+      "bgsageCubeDecision": "Double/Pass",
+      "gnubgCubeDecision": "Double / Pass",
+      "bgsageNoDoubleEq": 0.9172,
+      "bgsageDoubleTakeEq": 1.5019,
+      "gnubgNoDoubleEq": 0.942,
+      "gnubgDoubleTakeEq": 1.473,
+      "agreement": true
+    }
+  },
+  "part2": {
+    "sampleSize": 30,
+    "openSage1Ply": {
+      "agreementTop1Pct": 60,
+      "meanAbsDeltaEmg": 0.0145,
+      "pr": 7.25,
+      "latencyMs": 455
+    },
+    "openSage2Ply": {
+      "agreementTop1Pct": 73.3,
+      "meanAbsDeltaEmg": 0.0055,
+      "pr": 2.76,
+      "latencyMs": 513
+    },
+    "openSage3Ply": {
+      "agreementTop1Pct": 73.3,
+      "meanAbsDeltaEmg": 0.005,
+      "pr": 2.52,
+      "latencyMs": 807
+    },
+    "gnubg3PlyMeasuredByOpenSage3Ply": {
+      "meanAbsDeltaEmg": 0.0046,
+      "pr": 2.32
+    }
+  },
+  "part3": {
+    "duplicateMatches": 10,
+    "totalDuplicateDecisions": 60,
+    "openSageDuplicateScore": "6.0 - 4.0 (+0.1417 EMG net)",
+    "openSageDuplicatePr": 0.55,
+    "gnubgDuplicatePr": 1.73,
+    "divergencePositions": [
+      {
+        "xgid": "XGID=-A-BBBDb--B------bcbBdb---:0:0:1:26:2:1:1:3:10",
+        "context": "Match 3 pts (2-1 Crawford • 1-away / 2-away) • Coup #12 (PRIME_VS_PRIME)",
+        "pips": "109 vs 107 pips",
+        "openSageChoice": "20/14 6/4",
+        "gnubgChoice": "10/8 10/4",
+        "openSageEquity": -1,
+        "gnubgEquity": -0.274,
+        "analysis": "Sur cette position (109 vs 107 pips), Open Sage 3-ply (24 réseaux stage11) choisit 20/14 6/4 (-1.0000 EMG, plan racing) tandis que GNU Backgammon 3-ply choisit 10/8 10/4 (-0.2740 EMG)."
+      },
+      {
+        "xgid": "XGID=---B-BDbB-C-b----abd-bb-B-:0:0:1:45:4:2:1:5:10",
+        "context": "Match 5 pts (4-2 Crawford • 1-away / 3-away) • Coup #10 (PRIME_VS_PRIME)",
+        "pips": "134 vs 122 pips",
+        "openSageChoice": "24/15",
+        "gnubgChoice": "24/20 10/5",
+        "openSageEquity": -0.8561,
+        "gnubgEquity": -0.406,
+        "analysis": "Sur cette position (134 vs 122 pips), Open Sage 3-ply (24 réseaux stage11) choisit 24/15 (-0.8561 EMG, plan racing) tandis que GNU Backgammon 3-ply choisit 24/20 10/5 (-0.4060 EMG)."
+      },
+      {
+        "xgid": "XGID=-b--A-EAF---b----d-cBaba--:1:1:1:42:9:10:0:11:10",
+        "context": "Match 11 pts (9-10 Gammon-Go • 2-away / 1-away) • Coup #10 (BLITZ)",
+        "pips": "129 vs 136 pips",
+        "openSageChoice": "8/5 7/4",
+        "gnubgChoice": "8/4 7/5",
+        "openSageEquity": 0.1311,
+        "gnubgEquity": 0.123,
+        "analysis": "Sur cette position (129 vs 136 pips), Open Sage 3-ply (24 réseaux stage11) choisit 8/5 7/4 (0.1311 EMG, plan attacking) tandis que GNU Backgammon 3-ply choisit 8/4 7/5 (0.1230 EMG)."
+      }
+    ]
+  }
+}

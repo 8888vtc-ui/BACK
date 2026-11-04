@@ -96,35 +96,35 @@ const SNOWIE_CLASSIC: BoardThemeTokens = {
 const TOURNAMENT: BoardThemeTokens = {
     frame: {
         background:
-            'repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 7px), linear-gradient(145deg, #4d2613 0%, #371b0e 40%, #23110a 75%, #150906 100%)',
+            'repeating-linear-gradient(90deg, rgba(0,0,0,0.14) 0px, rgba(0,0,0,0.14) 1px, transparent 1px, transparent 7px), linear-gradient(145deg, #542318 0%, #3a160f 40%, #240c08 75%, #140604 100%)',
         boxShadow:
             '0 36px 90px rgba(0, 0, 0, 0.88), 0 10px 30px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 205, 155, 0.3), inset 0 -3px 8px rgba(0, 0, 0, 0.75), inset 0 0 50px rgba(0, 0, 0, 0.45)',
-        border: '1.5px solid rgba(195, 125, 60, 0.65)',
-        bevelBorder: '1px solid rgba(220, 145, 85, 0.35)',
+        border: '1.5px solid rgba(217, 138, 78, 0.68)',
+        bevelBorder: '1px solid rgba(235, 165, 110, 0.38)',
     },
     felt: {
-        backgroundColor: '#0c4022',
-        backgroundImage: 'radial-gradient(ellipse at 50% 48%, #1b6d3b 0%, #12552d 34%, #0b3d1f 64%, #052412 100%)',
+        backgroundColor: '#310e15',
+        backgroundImage: 'radial-gradient(ellipse at 50% 48%, #581925 0%, #3f111b 36%, #290a11 68%, #160408 100%)',
         boxShadow:
-            'inset 0 0 115px rgba(0, 0, 0, 0.7), inset 0 4px 10px rgba(0, 0, 0, 0.55), inset 0 -3px 8px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.4)',
-        border: '2px solid rgba(20, 12, 6, 0.9)',
-        halo: 'radial-gradient(ellipse at 50% 50%, rgba(110, 231, 140, 0.14) 0%, rgba(74, 222, 128, 0.05) 40%, transparent 70%)',
-        inset: 'inset 0 0 0 1px rgba(195, 125, 60, 0.32)',
+            'inset 0 0 115px rgba(0, 0, 0, 0.75), inset 0 4px 10px rgba(0, 0, 0, 0.55), inset 0 -3px 8px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.4)',
+        border: '2px solid rgba(24, 10, 8, 0.92)',
+        halo: 'radial-gradient(ellipse at 50% 50%, rgba(244, 114, 94, 0.14) 0%, rgba(217, 119, 6, 0.06) 40%, transparent 70%)',
+        inset: 'inset 0 0 0 1px rgba(217, 138, 78, 0.35)',
     },
     points: {
-        light: ['#dfc693', '#c8a86e', '#b18d4f', '#967134'],
-        dark: ['#7c2b1d', '#611f10', '#3a1006', '#140402'],
-        lightStroke: 'rgba(56, 35, 10, 0.75)',
-        darkStroke: 'rgba(212, 175, 55, 0.32)',
-        lightInlay: 'rgba(255, 240, 200, 0.3)',
-        darkInlay: 'rgba(0, 0, 0, 0.45)',
+        light: ['#e6cfa3', '#cfb07c', '#b59258', '#96733a'],
+        dark: ['#4a2210', '#38180a', '#240e05', '#120602'],
+        lightStroke: 'rgba(56, 30, 12, 0.78)',
+        darkStroke: 'rgba(235, 180, 110, 0.38)',
+        lightInlay: 'rgba(255, 240, 205, 0.32)',
+        darkInlay: 'rgba(0, 0, 0, 0.48)',
     },
     bar: {
         background:
-            'repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 8px), linear-gradient(180deg, #3a1c0e 0%, #26120a 50%, #3a1c0e 100%)',
+            'repeating-linear-gradient(0deg, rgba(0,0,0,0.14) 0px, rgba(0,0,0,0.14) 1px, transparent 1px, transparent 8px), linear-gradient(180deg, #421910 0%, #260d08 50%, #421910 100%)',
         boxShadow:
-            'inset 0 0 16px rgba(0, 0, 0, 0.8), inset 1px 0 0 rgba(255, 200, 150, 0.2), inset -1px 0 0 rgba(255, 200, 150, 0.2), 0 0 12px rgba(0, 0, 0, 0.5)',
-        borderColor: 'rgba(184, 115, 51, 0.8)',
+            'inset 0 0 16px rgba(0, 0, 0, 0.85), inset 1px 0 0 rgba(255, 200, 150, 0.22), inset -1px 0 0 rgba(255, 200, 150, 0.22), 0 0 12px rgba(0, 0, 0, 0.5)',
+        borderColor: 'rgba(205, 133, 63, 0.82)',
     },
 };
 

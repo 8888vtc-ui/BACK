@@ -67,11 +67,36 @@ export const STANDARD_USER_AVATARS: ReadonlyArray<StandardUserAvatarOption> = [
     },
 ] as const;
 
+export interface PassportCountryOption {
+    readonly code: string;
+    readonly nameFr: string;
+    readonly nameEn: string;
+}
+
+export const PASSPORT_COUNTRY_OPTIONS: ReadonlyArray<PassportCountryOption> = [
+    { code: 'FR', nameFr: 'France', nameEn: 'France' },
+    { code: 'MC', nameFr: 'Monaco', nameEn: 'Monaco' },
+    { code: 'CH', nameFr: 'Suisse', nameEn: 'Switzerland' },
+    { code: 'BE', nameFr: 'Belgique', nameEn: 'Belgium' },
+    { code: 'CA', nameFr: 'Canada', nameEn: 'Canada' },
+    { code: 'GB', nameFr: 'Royaume-Uni', nameEn: 'United Kingdom' },
+    { code: 'US', nameFr: 'États-Unis', nameEn: 'United States' },
+    { code: 'DE', nameFr: 'Allemagne', nameEn: 'Germany' },
+    { code: 'IT', nameFr: 'Italie', nameEn: 'Italy' },
+    { code: 'ES', nameFr: 'Espagne', nameEn: 'Spain' },
+    { code: 'SE', nameFr: 'Suède', nameEn: 'Sweden' },
+    { code: 'TR', nameFr: 'Turquie', nameEn: 'Turkey' },
+    { code: 'GR', nameFr: 'Grèce', nameEn: 'Greece' },
+    { code: 'JP', nameFr: 'Japon', nameEn: 'Japan' },
+] as const;
+
 export interface PlayerPassport {
     readonly pseudo: string;
     readonly email: string;
     readonly experienceLevel: PlayerExperienceTier;
     readonly avatarUrl?: string;
+    readonly countryName?: string;
+    readonly countryCode?: string;
     readonly registeredAt: string;
     readonly supabaseSynced?: boolean;
 }
@@ -104,6 +129,14 @@ export function readPlayerPassport(): PlayerPassport | null {
                     typeof parsed.avatarUrl === 'string' && parsed.avatarUrl.trim().length > 0
                         ? parsed.avatarUrl.trim()
                         : STANDARD_USER_AVATARS[0].url,
+                countryName:
+                    typeof parsed.countryName === 'string' && parsed.countryName.trim().length > 0
+                        ? parsed.countryName.trim()
+                        : 'France',
+                countryCode:
+                    typeof parsed.countryCode === 'string' && parsed.countryCode.trim().length > 0
+                        ? parsed.countryCode.trim().toUpperCase()
+                        : 'FR',
                 registeredAt: parsed.registeredAt ?? new Date().toISOString(),
                 supabaseSynced: Boolean(parsed.supabaseSynced),
             };
@@ -210,20 +243,40 @@ export async function registerPlayerPassportLead(params: {
     email: string;
     experienceLevel: PlayerExperienceTier;
     avatarUrl?: string;
+    countryName?: string;
+    countryCode?: string;
     password?: string;
 }): Promise<{ passport: PlayerPassport; error: Error | null }> {
     const cleanPseudo = params.pseudo.trim();
     const cleanEmail = params.email.trim().toLowerCase();
     const chosenAvatar = params.avatarUrl?.trim() || STANDARD_USER_AVATARS[0].url;
+    const chosenCountryName = params.countryName?.trim() || 'France';
+    const chosenCountryCode = (params.countryCode?.trim() || 'FR').toUpperCase();
     if (cleanPseudo.length < 2) {
         return {
-            passport: { pseudo: cleanPseudo, email: cleanEmail, experienceLevel: params.experienceLevel, avatarUrl: chosenAvatar, registeredAt: new Date().toISOString() },
+            passport: {
+                pseudo: cleanPseudo,
+                email: cleanEmail,
+                experienceLevel: params.experienceLevel,
+                avatarUrl: chosenAvatar,
+                countryName: chosenCountryName,
+                countryCode: chosenCountryCode,
+                registeredAt: new Date().toISOString(),
+            },
             error: new Error('Veuillez indiquer un pseudo (2 caractères minimum).'),
         };
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
         return {
-            passport: { pseudo: cleanPseudo, email: cleanEmail, experienceLevel: params.experienceLevel, avatarUrl: chosenAvatar, registeredAt: new Date().toISOString() },
+            passport: {
+                pseudo: cleanPseudo,
+                email: cleanEmail,
+                experienceLevel: params.experienceLevel,
+                avatarUrl: chosenAvatar,
+                countryName: chosenCountryName,
+                countryCode: chosenCountryCode,
+                registeredAt: new Date().toISOString(),
+            },
             error: new Error('Veuillez indiquer une adresse email valide.'),
         };
     }
@@ -244,6 +297,8 @@ export async function registerPlayerPassportLead(params: {
                         username: cleanPseudo,
                         experience_level: params.experienceLevel,
                         avatar_url: chosenAvatar,
+                        country_name: chosenCountryName,
+                        country_code: chosenCountryCode,
                     },
                 },
             });
@@ -263,6 +318,8 @@ export async function registerPlayerPassportLead(params: {
         email: cleanEmail,
         experienceLevel: params.experienceLevel,
         avatarUrl: chosenAvatar,
+        countryName: chosenCountryName,
+        countryCode: chosenCountryCode,
         registeredAt: new Date().toISOString(),
         supabaseSynced,
     });

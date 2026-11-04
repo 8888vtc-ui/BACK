@@ -131,7 +131,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
         if (enforceGateInTest && !displayName && !passport) { setIsPassportGateOpen(true); return; }
         if (!displayName && !passport) {
             const guestPassport = savePlayerPassport({
-                pseudo: 'Invité Monte-Carlo', email: 'invite@backgammontour.com', experienceLevel: 'intermediate',
+                pseudo: 'Joueur Invité', email: 'invite@backgammontour.com', experienceLevel: 'intermediate',
                 avatarUrl: STANDARD_USER_AVATARS[0].url, registeredAt: new Date().toISOString(), supabaseSynced: false,
             });
             setDisplayName(guestPassport.pseudo);

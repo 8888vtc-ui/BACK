@@ -5,11 +5,12 @@
  * @description HUD Portrait (Haut/Bas), Rail d'Actions Droit et résolution de métadonnées Joueur/Adversaire (< 270 lignes, 0 `any`).
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { PlayerEloProfile } from '../../features/multiplayer/types';
 import { getBotPersona } from '../../features/personas/botPersonas';
 import { resolveNaturalChallengerAvatarUrl } from '../../features/personas/humanPersonaSeeds';
+import { useBoardTheme, type ThemeName } from '../../hooks/useBoardTheme';
 import { toggleOrientation, getSavedOrientation, saveOrientation } from './boardOrientation';
 import {
     BotPortraitMedallion,
@@ -46,7 +47,20 @@ export interface BoardLeftPlayerRailProps {
     readonly onUndo?: () => void;
     readonly autoConfirmEnabled?: boolean;
     readonly onToggleAutoConfirm?: () => void;
+    readonly autoRollEnabled?: boolean;
+    readonly onToggleAutoRoll?: () => void;
 }
+
+export const BOARD_SWATCH_OPTIONS: ReadonlyArray<{
+    readonly id: ThemeName;
+    readonly label: string;
+    readonly bgHex: string;
+    readonly ringClass: string;
+}> = [
+    { id: 'snowie_classic', label: 'Émeraude', bgHex: '#0d462d', ringClass: 'border-[#d4af37]' },
+    { id: 'midnight', label: 'Bleu Nuit', bgHex: '#102b52', ringClass: 'border-sky-400' },
+    { id: 'tournament', label: 'Havane', bgHex: '#4a1521', ringClass: 'border-amber-500' },
+];
 
 const LEGACY_JARGON_NAME_MAP: Readonly<Record<string, string>> = {
     SvenBG: 'Sven L.',
@@ -84,6 +98,19 @@ function sanitizeChallengerName(raw: string): string {
     return stripped.replace(/BG$/i, ' L.');
 }
 
+export function resolvePrBadgeClasses(pr: number | null): string {
+    if (pr === null || !Number.isFinite(pr)) {
+        return 'border-white/10 bg-white/[0.03] text-zinc-400 font-normal';
+    }
+    if (pr <= 4.5) {
+        return 'border-emerald-400/50 bg-emerald-950/70 text-emerald-300';
+    }
+    if (pr <= 8.5) {
+        return 'border-[#d4af37]/50 bg-[#d4af37]/15 text-[#f3d27a]';
+    }
+    return 'border-amber-500/40 bg-amber-950/60 text-amber-300';
+}
+
 export function resolvePersonaMeta(
     difficulty: AIDifficulty,
     locale: string,
@@ -93,15 +120,16 @@ export function resolvePersonaMeta(
 ) {
     const activePersona = getBotPersona(difficulty, locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja');
     const botElo = challengerProfile ? String(challengerProfile.rating) : '—';
-    const playerPrValue = typeof prX === 'number' && Number.isFinite(prX) ? prX : 0;
-    const opponentPrValue = typeof prO === 'number' && Number.isFinite(prO) ? prO.toFixed(1) : '—';
+    const playerPrNum = typeof prX === 'number' && Number.isFinite(prX) ? Math.max(0, prX) : null;
+    const playerPrValue = playerPrNum ?? 0;
+    const playerPrLabel = playerPrNum !== null ? playerPrNum.toFixed(1) : '—';
+    const opponentPrNum = typeof prO === 'number' && Number.isFinite(prO) ? Math.max(0, prO) : null;
+    const opponentPrValue = opponentPrNum !== null ? opponentPrNum.toFixed(1) : '—';
     const opponentDisplayName = challengerProfile
         ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName)
         : activePersona.shortName;
     const opponentBadge = challengerProfile
-        ? challengerProfile.countryName
-            ? `${challengerProfile.countryName} · En ligne`
-            : 'En ligne'
+        ? 'En Ligne · Classé'
         : activePersona.styleBadge;
     const opponentPhotoUrl = challengerProfile
         ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating)
@@ -109,7 +137,10 @@ export function resolvePersonaMeta(
     return {
         activePersona,
         botElo,
+        playerPrNum,
         playerPrValue,
+        playerPrLabel,
+        opponentPrNum,
         opponentPrValue,
         opponentDisplayName,
         opponentBadge,
@@ -120,7 +151,7 @@ export function resolvePersonaMeta(
 export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.memo(({
     difficulty = 'expert', locale = 'fr', isXTurn, scoreO, cubeValue, matchLength, turn, opponentClock = '02:36', delaySeconds = 12, prX, prO, challengerProfile,
 }) => {
-    const { activePersona, botElo, playerPrValue, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl } = resolvePersonaMeta(
+    const { activePersona, botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl } = resolvePersonaMeta(
         difficulty, locale, prX, prO, challengerProfile,
     );
     return (
@@ -130,10 +161,10 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                     <BotPortraitMedallion character="player" size="md" isActive={isXTurn} />
                     <div className="min-w-0 flex flex-col">
                         <span className="truncate font-display text-sm italic font-bold text-[#f7f3e8] leading-tight">Vous</span>
-                        <span className="truncate text-[10px] font-semibold text-emerald-300/90">Membre Monte-Carlo</span>
-                        <div className="mt-0.5 flex items-center gap-1 text-[10px] font-mono tabular-nums">
+                        <span className="truncate text-[10px] font-semibold text-emerald-300/90">Grand Cercle</span>
+                        <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
                             <span className="text-stone-300">1500</span>
-                            <span className="rounded border border-emerald-400/50 bg-emerald-950/80 px-1 py-0.2 font-bold text-emerald-300">PR {playerPrValue.toFixed(2)}</span>
+                            <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(playerPrNum)}`}>PR {playerPrLabel}</span>
                         </div>
                     </div>
                 </div>
@@ -150,11 +181,9 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                             {challengerProfile?.countryName && <CountryFlagSvg countryName={challengerProfile.countryName} className="h-2.5 w-3.5" />}
                             <span className="truncate">{opponentBadge}</span>
                         </span>
-                        <div className="mt-0.5 flex items-center gap-1 text-[10px] font-mono tabular-nums">
+                        <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
                             <span className="text-stone-300">{botElo}</span>
-                            {opponentPrValue !== '—' && (
-                                <span className="rounded border border-[#d4af37]/45 bg-[#d4af37]/15 px-1 py-0.2 font-bold text-[#f3d27a]">PR {opponentPrValue}</span>
-                            )}
+                            <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(opponentPrNum)}`}>PR {opponentPrValue}</span>
                         </div>
                     </div>
                     <BotPortraitMedallion character={difficulty} size="md" isActive={!isXTurn} customPhotoUrl={challengerProfile ? opponentPhotoUrl : null} />
@@ -201,13 +230,33 @@ export interface BoardRightActionRailProps {
     readonly onUndo?: () => void;
     readonly autoConfirmEnabled?: boolean;
     readonly onToggleAutoConfirm?: () => void;
+    readonly autoRollEnabled?: boolean;
+    readonly onToggleAutoRoll?: () => void;
 }
 
 export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.memo(({
-    isBrowserFullscreen, isFocusFullBoard, onToggleFullscreen, onToggleCoach, onToggleTheme, onBackToLobby,
+    isBrowserFullscreen, isFocusFullBoard, onToggleFullscreen, onToggleCoach, onBackToLobby,
     canUndo = false, onUndo, autoConfirmEnabled = false, onToggleAutoConfirm,
+    autoRollEnabled = false, onToggleAutoRoll,
 }) => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const settingsRef = useRef<HTMLDivElement | null>(null);
+    const { theme: activeTheme, setTheme } = useBoardTheme();
+
+    useEffect(() => {
+        if (!isSettingsOpen) return;
+        const onPointerDown = (e: MouseEvent) => {
+            if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) setIsSettingsOpen(false);
+        };
+        const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsSettingsOpen(false); };
+        document.addEventListener('mousedown', onPointerDown);
+        document.addEventListener('keydown', onKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', onPointerDown);
+            document.removeEventListener('keydown', onKeyDown);
+        };
+    }, [isSettingsOpen]);
+
     const handleFlipDirection = () => {
         const next = toggleOrientation(getSavedOrientation());
         saveOrientation(next);
@@ -225,29 +274,44 @@ export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.m
             <button type="button" data-testid="board-focus-toggle-btn" onClick={onToggleCoach} title="Ouvrir ou masquer le Maître-Coach IA" aria-label="Ouvrir ou masquer le Coach IA" className={`flex h-11 w-11 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border transition active:scale-95 shadow-lg ${!isFocusFullBoard ? 'border-[#f5dfa0] bg-gradient-to-br from-[#d4af37] to-[#9a6f18] text-[#090806]' : 'border-[#d4af37]/35 bg-[#120e0a] text-[#f3d27a] hover:border-[#d4af37]'}`}>
                 <IconAstrolabeCoach className={!isFocusFullBoard ? 'text-[#090806]' : 'text-[#f3d27a]'} size={18} />
             </button>
-            <div className="relative">
+            <div ref={settingsRef} className="relative">
                 <button type="button" data-testid="right-rail-settings-btn" onClick={() => setIsSettingsOpen((v) => !v)} title="Paramètres de table" aria-label="Paramètres de table" aria-expanded={isSettingsOpen} className={btnBase}>
                     <IconHorologyGear className="text-[#f3d27a]" size={17} />
                 </button>
                 {isSettingsOpen && (
-                    <div data-testid="right-rail-settings-popover" className="absolute right-full mr-2 top-1/2 -translate-y-1/2 z-50 w-56 rounded-2xl border border-[#d4af37]/45 bg-[#120e0a]/98 p-2.5 text-xs text-[#f7f3e8] shadow-[0_16px_40px_rgba(0,0,0,0.9)] backdrop-blur-md flex flex-col gap-1.5">
+                    <div data-testid="right-rail-settings-popover" className="absolute right-full mr-2 top-1/2 -translate-y-1/2 z-50 w-64 rounded-2xl border border-[#d4af37]/50 bg-[#0d0a08]/95 p-3 text-xs text-[#f7f3e8] shadow-[0_20px_50px_rgba(0,0,0,0.92)] backdrop-blur-md flex flex-col gap-2">
                         <div className="flex items-center justify-between pb-1 border-b border-white/10">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-[#f3c65f]">⚙️ Paramètres</span>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-[#f3c65f]">⚙️ Paramètres de Table</span>
                             <button type="button" onClick={() => setIsSettingsOpen(false)} className="text-[11px] text-stone-400 hover:text-white px-1">✕</button>
                         </div>
                         {onToggleAutoConfirm && (
                             <button type="button" data-testid="right-rail-auto-confirm-toggle" onClick={onToggleAutoConfirm} className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                                <span>Validation automatique des coups</span>
+                                <span>Validation auto des coups</span>
                                 <span className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-black ${autoConfirmEnabled ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50' : 'bg-white/10 text-stone-300'}`}>{autoConfirmEnabled ? 'ON' : 'OFF'}</span>
                             </button>
                         )}
-                        {onToggleTheme && (
-                            <button type="button" onClick={() => { onToggleTheme(); setIsSettingsOpen(false); }} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                                <span>🎨 Changer le tapis</span><span className="text-[10px] text-[#f3d27a]">Suivant</span>
+                        {onToggleAutoRoll && (
+                            <button type="button" data-testid="right-rail-auto-roll-toggle" onClick={onToggleAutoRoll} className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
+                                <span>🎲 Lancer auto des dés</span>
+                                <span className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-black ${autoRollEnabled ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50' : 'bg-white/10 text-stone-300'}`}>{autoRollEnabled ? 'ON' : 'OFF'}</span>
                             </button>
                         )}
+                        <div className="flex flex-col gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] p-2">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-stone-300">🎨 Tapis de Jeu (3 Couleurs)</span>
+                            <div className="grid grid-cols-3 gap-1.5">
+                                {BOARD_SWATCH_OPTIONS.map((sw) => {
+                                    const isSelected = activeTheme === sw.id;
+                                    return (
+                                        <button key={sw.id} type="button" data-testid={`board-theme-swatch-${sw.id}`} onClick={() => setTheme(sw.id)} className={`flex flex-col items-center gap-1 rounded-lg border px-1.5 py-1.5 text-[10px] font-bold transition ${isSelected ? 'border-[#f3c65f] bg-[#d4af37]/20 text-white shadow' : 'border-white/10 bg-black/40 text-stone-300 hover:border-white/30'}`}>
+                                            <span className={`h-4 w-7 rounded border ${sw.ringClass} shadow-inner`} style={{ backgroundColor: sw.bgHex }} />
+                                            <span className="truncate max-w-full">{sw.label}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
                         <button type="button" onClick={() => { handleFlipDirection(); setIsSettingsOpen(false); }} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                            <span>⇄ Sens du plateau</span><span className="text-[10px] text-[#f3d27a]">Inverser</span>
+                            <span>⇄ Sens du plateau (1..24)</span><span className="text-[10px] text-[#f3d27a]">Inverser</span>
                         </button>
                     </div>
                 )}

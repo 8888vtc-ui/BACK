@@ -1,4 +1,4 @@
-import { useEffect, type MutableRefObject } from 'react';
+import { useEffect, useRef, type MutableRefObject } from 'react';
 import type { BoardState } from '../../engine/backgammonEngine';
 import { formatCoachMoveSequence, movesFromBoardDiff } from '../../features/coach/coachMoveNotation';
 import { soundEngine } from '../../lib/sound/soundEngine';
@@ -59,6 +59,9 @@ export function useCoachLogAnalyzer({
     speakCoachVoice,
     onCoachTriggered,
 }: UseCoachLogAnalyzerParams): void {
+    const matchLogRef = useRef(matchLog);
+    matchLogRef.current = matchLog;
+
     useEffect(() => {
         const log = matchLog ?? [];
         if (log.length === 0) return;
@@ -87,6 +90,10 @@ export function useCoachLogAnalyzer({
 
         const { requestId, controller } = cancelActiveOperation();
         const isStale = () => controller.signal.aborted || analysisRequestIdRef.current !== requestId;
+        const isTurnStillInLog = () =>
+            (matchLogRef.current ?? []).some(
+                (entry) => entry.player === 'X' && entry.turnIndex === lastEntry.turnIndex,
+            );
 
         void (async () => {
             try {
@@ -100,9 +107,8 @@ export function useCoachLogAnalyzer({
                     scoreX: gameState.scoreX,
                     scoreO: gameState.scoreO,
                     ply: 3,
-                    signal: controller.signal,
                 });
-                if (isStale() || !result) return;
+                if (!result || !isTurnStillInLog()) return;
 
                 const { verdict, equityLoss, isUnforced, candidateMoves } = result;
                 const loggedMoves = [...lastEntry.movePlayed];
@@ -117,7 +123,7 @@ export function useCoachLogAnalyzer({
                     playedNotation,
                     gameState,
                 });
-                if (isStale()) return;
+                if (!isTurnStillInLog()) return;
 
                 if (isUnforced) {
                     recordDecisionStats(verdict, equityLoss, playedNotation, result.optimalNotation);
@@ -134,7 +140,7 @@ export function useCoachLogAnalyzer({
                         secondBestGapEmg: uniquenessDelta,
                         slottedKeyPointNaked: uniquenessDelta > 0.045 || playedNotation.includes('*'),
                     });
-                    setBrilliantMove(isBrilliant);
+                    if (!isStale()) setBrilliantMove(isBrilliant);
                     if (verdict === 'blunder' || Math.abs(equityLoss) >= 0.06) {
                         try {
                             const catMeta = classifyLivePositionCategory(lastEntry.boardBefore, lastEntry.turnIndex, false);
@@ -172,6 +178,25 @@ export function useCoachLogAnalyzer({
                     }
                 }
 
+                setCoachHistory((prev) => {
+                    const filtered = prev.filter((h) => h.turnIndex !== lastEntry.turnIndex);
+                    return [
+                        ...filtered,
+                        {
+                            turnIndex: lastEntry.turnIndex,
+                            dice: [lastEntry.dice[0], lastEntry.dice[1]],
+                            coachState,
+                            highlight,
+                            boardBefore: [...lastEntry.boardBefore],
+                            boardAfter: [...lastEntry.boardAfter],
+                            timestamp: Date.now(),
+                            isUnforced,
+                        },
+                    ];
+                });
+
+                if (isStale()) return;
+
                 const nextFeedback: LastMoveFeedback = {
                     verdict,
                     equityLoss,
@@ -197,22 +222,6 @@ export function useCoachLogAnalyzer({
                     return prevIsOpenError ? prev : nextFeedback;
                 });
 
-                setCoachHistory((prev) => {
-                    const filtered = prev.filter((h) => h.turnIndex !== lastEntry.turnIndex);
-                    return [
-                        ...filtered,
-                        {
-                            turnIndex: lastEntry.turnIndex,
-                            dice: [lastEntry.dice[0], lastEntry.dice[1]],
-                            coachState,
-                            highlight,
-                            boardBefore: [...lastEntry.boardBefore],
-                            boardAfter: [...lastEntry.boardAfter],
-                            timestamp: Date.now(),
-                            isUnforced,
-                        },
-                    ];
-                });
                 setSelectedCoachHistoryIndex(null);
 
                 if (shouldNotify(verdict, notificationLevel)) {

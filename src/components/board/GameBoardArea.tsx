@@ -14,6 +14,8 @@ import type { CoachAnalysisHistoryEntry } from '../../hooks/useCoach';
 import type { LastMoveFeedback } from '../../hooks/coach/coachTypes';
 import type { PlayerEloProfile } from '../../features/multiplayer/types';
 import { useInteractiveReplay } from '../../hooks/useInteractiveReplay';
+import { useFischerClock } from '../../hooks/useFischerClock';
+import { getRecommendedClockConfig } from '../../features/multiplayer/clockManager';
 import Board from './Board';
 import BoardHorologyBar from './BoardHorologyBar';
 import BoardLivePersonaBubble from './BoardLivePersonaBubble';
@@ -88,6 +90,28 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     const [previewBoardMode, setPreviewBoardMode] = useState<'live' | 'before'>('live');
     const [isFocusFullBoard, setIsFocusFullBoard] = useState<boolean>(true);
     const [isBrowserFullscreen, setIsBrowserFullscreen] = useState<boolean>(false);
+    const [autoRollEnabled, setAutoRollEnabled] = useState<boolean>(() => {
+        if (typeof localStorage === 'undefined') return false;
+        try { return localStorage.getItem('bg_auto_roll_enabled') === 'true'; } catch { return false; }
+    });
+    const handleToggleAutoRoll = useCallback(() => {
+        setAutoRollEnabled((prev) => {
+            const next = !prev;
+            try { localStorage.setItem('bg_auto_roll_enabled', String(next)); } catch {}
+            return next;
+        });
+    }, []);
+
+    const clockConfig = useMemo(() => {
+        return getRecommendedClockConfig(game.state.matchLength || 7, 'bronstein', 'normal');
+    }, [game.state.matchLength]);
+
+    const clock = useFischerClock({
+        config: clockConfig,
+        activePlayer: game.state.turn,
+        isPaused: !isMatchStarted || game.phase === 'GAME_OVER',
+    });
+    const activeDelaySeconds = clock.delayRemainingMs > 0 ? Math.ceil(clock.delayRemainingMs / 1000) : 0;
 
     useEffect(() => {
         if (typeof document === 'undefined') return;
@@ -122,6 +146,15 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     }, [turnsHistory, game.matchLog]);
 
     const replay = useInteractiveReplay({ turnsHistory: effectiveTurns, liveBoard: game.state.board });
+
+    useEffect(() => {
+        if (!autoRollEnabled || !replay.isLive || !isMatchStarted) return;
+        const isWaiting = game.gamePhase === 'HUMAN_WAITING_ROLL' || game.phase === 'WAITING_FOR_ROLL';
+        if (isWaiting && game.state.turn === 'X' && !game.state.dice && game.doublingOfferedBy === null) {
+            const timer = setTimeout(() => { game.rollDice(); }, 220);
+            return () => clearTimeout(timer);
+        }
+    }, [autoRollEnabled, replay.isLive, isMatchStarted, game]);
 
     const replayCoachEntry = useMemo<CoachAnalysisHistoryEntry | null>(() => {
         if (replay.isLive || !replay.selectedTurn || replay.selectedTurn.player !== 'X') return null;
@@ -221,6 +254,9 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     cubeValue={game.state.cubeValue}
                     matchLength={game.state.matchLength}
                     turn={game.state.turn}
+                    playerClock={clock.formattedX}
+                    opponentClock={clock.formattedO}
+                    delaySeconds={activeDelaySeconds}
                     prX={prX}
                     prO={prO}
                     challengerProfile={challengerProfile}
@@ -251,6 +287,9 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         cubeValue={game.state.cubeValue}
                         matchLength={game.state.matchLength}
                         turn={game.state.turn}
+                        playerClock={clock.formattedX}
+                        opponentClock={clock.formattedO}
+                        delaySeconds={activeDelaySeconds}
                         prX={prX}
                         prO={prO}
                         challengerProfile={challengerProfile}
@@ -266,6 +305,8 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         onUndo={replay.isLive ? game.undoMove : NOOP}
                         autoConfirmEnabled={game.autoConfirmTurn}
                         onToggleAutoConfirm={game.toggleAutoConfirmTurn}
+                        autoRollEnabled={autoRollEnabled}
+                        onToggleAutoRoll={handleToggleAutoRoll}
                     />
 
                     {/* COLONNE CENTRALE : Plateau 100 % Hauteur */}
@@ -307,12 +348,16 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         onUndo={replay.isLive ? game.undoMove : NOOP}
                         autoConfirmEnabled={game.autoConfirmTurn}
                         onToggleAutoConfirm={game.toggleAutoConfirmTurn}
+                        autoRollEnabled={autoRollEnabled}
+                        onToggleAutoRoll={handleToggleAutoRoll}
                     />
                 </div>
 
                 <BoardPortraitBottomHud
                     scoreX={game.state.scoreX}
                     turn={game.state.turn}
+                    playerClock={clock.formattedX}
+                    delaySeconds={activeDelaySeconds}
                 />
 
                 {isMatchStarted && (

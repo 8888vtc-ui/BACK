@@ -43,7 +43,7 @@ export function resetBotRealPr(): void {
 
 export function getBotRealPr(): BotRealPrSnapshot {
     return {
-        pr: decisions > 0 ? Number(((totalEquityLoss / decisions) * 500).toFixed(1)) : null,
+        pr: decisions > 0 ? Math.min(30.0, Number(((totalEquityLoss / decisions) * 500).toFixed(1))) : null,
         decisions,
         totalEquityLoss: Number(totalEquityLoss.toFixed(4)),
     };

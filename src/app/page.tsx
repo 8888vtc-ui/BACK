@@ -30,7 +30,6 @@ import { useCheckerSoundFeedback } from '../hooks/useCheckerSoundFeedback';
 import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
 import { readStoredPlayerColor } from '../components/hud/ColorSelector';
-import { MAX_BOT_DISPLAY_PR } from '../features/personas/botPersonas';
 import { getBotRealPr, resetBotRealPr } from '../features/personas/botRealPr';
 import type { Player } from '../engine/backgammonEngine';
 
@@ -45,17 +44,14 @@ export default function Home() {
     const [playerColor, setPlayerColor] = useState<Player>('X');
     const modals = useGameModals();
 
-    // État maître : aucune modale superposée au plateau au démarrage.
     const [appScreen, setAppScreen] = useState<AppScreen>('LOBBY');
     const userInitiatedMultiplayerRef = useRef<boolean>(false);
     const livePrRef = useRef<{ prX: number; prO: number | null }>({ prX: 0, prO: null });
 
-    // Anti-hydratation : lecture des préférences post-montage client
     useEffect(() => {
         setPlayerColor(readStoredPlayerColor());
     }, []);
 
-    // Initialisation du moteur de jeu (autoConfirmTurn à false par défaut, persisté dans localStorage).
     const game = useBackgammonGame({
         matchLength: 7,
         playerColor: 'X',
@@ -87,20 +83,16 @@ export default function Home() {
         },
     });
 
-    // Routage des actions distantes multijoueur.
     const { handleRemoteAction } = useMatchBootstrap(game);
-
     const multiplayer = useMultiplayerGame(handleRemoteAction);
     const isMultiplayerActive = multiplayer.status === 'connected' || multiplayer.status === 'opponent_disconnected';
     const isLiveMatch = isMultiplayerActive || Boolean(multiplayer.matchInfo?.isClubChallenger);
 
-    // Persistance locale et analyse de fin de partie
     const {
         gameIdRef, turnsHistory, turnsHistoryRef, currentTurnMovesRef, turnBoardBeforeRef,
         currentTurnDiceRef, latestGameAnalysis, handleGameOverAnalysis, resetGameHistory,
     } = useGamePersistence({ game, isMultiplayerActive, t });
 
-    // Coach IA en temps réel (désactivé en direct pendant un Match Live pour 0 blocage de jouabilité ; bilan généré en fin de match)
     const {
         coach, coachHighlight, matchStats, matchStatsX, matchStatsO, lastMoveFeedback,
         coachHistory, selectedCoachHistoryIndex, selectCoachHistoryIndex,
@@ -110,6 +102,7 @@ export default function Home() {
         game: isLiveMatch ? { ...game, matchLog: [], moveHistory: [] } : game,
         currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
     });
+
     const handleTriggerCoach = useCallback(() => {
         if (isLiveMatch) {
             toast.info(
@@ -121,42 +114,41 @@ export default function Home() {
         void rawTriggerCoach();
     }, [isLiveMatch, rawTriggerCoach]);
 
-    const prX = matchStatsX.decisionsCount > 0 ? (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500 : 0.0;
-    // PR réel du bot : pertes d'équité mesurées par Open Sage sur ses propres coups (null tant que rien n'est mesuré).
+    // Calcul en temps réel du PR de la partie en cours dès 2 décisions analysées (sans plafond artificiel figé à 30)
+    const MIN_DECISIONS_FOR_PR = 2;
+    const prX = matchStatsX.decisionsCount >= MIN_DECISIONS_FOR_PR
+        ? Number(Math.max(0, (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500).toFixed(1))
+        : null;
     const botMatchLogLength = game.matchLog.length;
     useEffect(() => {
         if (botMatchLogLength === 0) resetBotRealPr();
     }, [botMatchLogLength]);
-    const measuredBotPr = getBotRealPr().pr;
-    const prO = matchStatsO.decisionsCount > 0
-        ? Math.min(MAX_BOT_DISPLAY_PR, (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500)
+    const botRealSnapshot = getBotRealPr();
+    const measuredBotPr = botRealSnapshot.decisions >= MIN_DECISIONS_FOR_PR ? botRealSnapshot.pr : null;
+    const rawBotPr = matchStatsO.decisionsCount >= MIN_DECISIONS_FOR_PR
+        ? (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500
         : measuredBotPr;
-    livePrRef.current = { prX, prO };
+    const prO = typeof rawBotPr === 'number' && Number.isFinite(rawBotPr)
+        ? Number(Math.max(0, rawBotPr).toFixed(1))
+        : null;
+    livePrRef.current = { prX: prX ?? 0, prO };
 
-    // Interaction pions et dés
     const {
         activeDie, preferredDie, handlePlayMove, handleSelectDie,
         handleCheckerClick, handleCheckerRightClick,
         handleDestinationClick, handleDeselect, handleSwapDice,
     } = useCheckerInteractions({ game, isMultiplayerActive, multiplayer, currentTurnMovesRef });
 
-    // Feedback sonore des coups
     const handlePlayMoveWithSound = useCheckerSoundFeedback({
         board: game.state.board,
         turn: game.state.turn,
         onPlayMove: handlePlayMove,
     });
 
-    // Contrôles spécifiques à la plateforme (tactile vs souris)
     const { routedCheckerClick, routedCheckerRightClick, routedDiceClick } = usePlatformControlsRouter({
-        game,
-        onPlayMoveWithSound: handlePlayMoveWithSound,
-        handleSwapDice,
-        preferredDie,
-        activeDie,
+        game, onPlayMoveWithSound: handlePlayMoveWithSound, handleSwapDice, preferredDie, activeDie,
     });
 
-    // Assistant de coup d'ouverture certifié
     const {
         openingEntry, isOpeningHighlightActive, handleApplyOpeningMove,
         isLiveAdviceEnabled, toggleLiveAdvice,
@@ -166,7 +158,6 @@ export default function Home() {
         isLiveAdviceEnabled: isLiveMatch ? false : undefined,
     });
 
-    // Synchronisation match multijoueur ou Challenger International de Club
     useEffect(() => {
         if (userInitiatedMultiplayerRef.current && multiplayer.status === 'matched' && multiplayer.matchInfo) {
             userInitiatedMultiplayerRef.current = false;
@@ -179,13 +170,8 @@ export default function Home() {
                     modals.closeMatchmaking();
                     modals.closePrivateRoomModal();
                     setAppScreen('GAME');
-                    window.setTimeout(() => {
-                        game.rollDice();
-                    }, 180);
-                    toast.success(
-                        `Match contre ${opp.displayName} (${opp.rating} Elo) en ${matchLen === 0 ? 'Money Game' : `${matchLen} pts`}.`,
-                        'Adversaire Trouvé',
-                    );
+                    window.setTimeout(() => { game.rollDice(); }, 180);
+                    toast.success(`Match contre ${opp.displayName} (${opp.rating} Elo) en ${matchLen === 0 ? 'Money Game' : `${matchLen} pts`}.`, 'Adversaire Trouvé');
                 }, 1350);
                 return;
             }
@@ -197,7 +183,6 @@ export default function Home() {
         }
     }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, modals, game, resetGameHistory]);
 
-    // Détection d'invitation 1-clic Salon Privé (?join=BG-XXXX) ou Entraînement Tournoi (?matchLength=15)
     usePrivateRoomInvite({
         onAutoJoinRoom: useCallback((code: string) => {
             userInitiatedMultiplayerRef.current = true;
@@ -208,100 +193,57 @@ export default function Home() {
             game.startNewMatch(len, 'expert');
             resetGameHistory();
             setAppScreen('GAME');
-            window.setTimeout(() => {
-                game.rollDice();
-            }, 160);
+            window.setTimeout(() => { game.rollDice(); }, 160);
             toast.success(tourneyName ? `${tourneyName} (${len} pts)` : `Match de tournoi en ${len} pts`, 'Entraînement Tournoi');
         }, [game, resetGameHistory]),
     });
 
-    /** Démarre le match depuis le lobby et bascule sur la vue GAME avec lancer d'ouverture immédiat (< 2.5s Time-to-Fun). */
     const handleLobbyStart = useCallback((selection: LobbySelection) => {
         userInitiatedMultiplayerRef.current = false;
-        if (selection.playerColor) {
-            setPlayerColor(selection.playerColor);
-        }
+        if (selection.playerColor) setPlayerColor(selection.playerColor);
         game.startNewMatch(selection.matchLength, selection.difficulty);
         resetGameHistory();
-        if (selection.coachEnabled !== isLiveAdviceEnabled) {
-            toggleLiveAdvice();
-        }
+        if (selection.coachEnabled !== isLiveAdviceEnabled) toggleLiveAdvice();
         setAppScreen('GAME');
-        window.setTimeout(() => {
-            game.rollDice();
-        }, 160);
+        window.setTimeout(() => { game.rollDice(); }, 160);
         const formatLabel = selection.matchLength === 0 ? 'Money Game' : `Match en ${selection.matchLength} pts`;
         toast.success(`${formatLabel} — ${selection.coachEnabled ? 'Mode Formation' : 'Mode Tournoi'}.`, 'Match lancé');
     }, [game, resetGameHistory, isLiveAdviceEnabled, toggleLiveAdvice]);
 
-    /** Retour au lobby. */
     const handleBackToLobby = useCallback(() => {
         userInitiatedMultiplayerRef.current = false;
         setAppScreen('LOBBY');
     }, []);
 
-    /** Routage SPA fluide des modules ouverts depuis le lobby (0 window.location.href). */
     const handleOpenLobbyModule = useCallback((moduleId: LobbyModuleId) => {
         switch (moduleId) {
-            case 'multiplayer':
-                userInitiatedMultiplayerRef.current = true;
-                modals.openMatchmaking();
-                break;
-            case 'openings':
-                modals.openOpeningBook();
-                break;
-            case 'stats':
-                if (latestGameAnalysis) {
-                    modals.openGameReview();
-                } else {
-                    navigateTo('/progression');
-                }
-                break;
-            case 'drills':
-                navigateTo('/drills');
-                break;
-            case 'puzzles':
-                navigateTo('/puzzles');
-                break;
-            case 'import_export':
-                modals.openExportImport();
-                break;
-            case 'tournaments':
-                navigateTo('/tournaments');
-                break;
+            case 'multiplayer': userInitiatedMultiplayerRef.current = true; modals.openMatchmaking(); break;
+            case 'openings': modals.openOpeningBook(); break;
+            case 'stats': if (latestGameAnalysis) modals.openGameReview(); else navigateTo('/progression'); break;
+            case 'drills': navigateTo('/drills'); break;
+            case 'puzzles': navigateTo('/puzzles'); break;
+            case 'import_export': modals.openExportImport(); break;
+            case 'tournaments': navigateTo('/tournaments'); break;
         }
     }, [modals, navigateTo, latestGameAnalysis]);
 
-    // Survol d'une ligne du tableau des candidats
     const [hoveredCandidate, setHoveredCandidate] = useState<string | null>(null);
-
     const activeCoachHighlight = useCandidateHighlight({
-        openingEntry,
-        isOpeningHighlightActive,
-        coach,
-        coachHighlight,
-        hoveredCandidate,
+        openingEntry, isOpeningHighlightActive, coach, coachHighlight, hoveredCandidate,
     });
 
-    // Accessibilité WCAG
     useGameAnnouncements({
-        state: game.state,
-        phase: game.phase,
-        selectedPoint: game.selected?.point ?? null,
-        activeDie,
-        leftTargetsCount: game.leftDieTargets.size,
-        rightTargetsCount: game.rightDieTargets.size,
-        canDouble: game.canDouble,
-        doublingOfferedBy: game.doublingOfferedBy,
-        opponentStatusMessage: game.opponentStatusMessage,
+        state: game.state, phase: game.phase, selectedPoint: game.selected?.point ?? null, activeDie,
+        leftTargetsCount: game.leftDieTargets.size, rightTargetsCount: game.rightDieTargets.size,
+        canDouble: game.canDouble, doublingOfferedBy: game.doublingOfferedBy, opponentStatusMessage: game.opponentStatusMessage,
     });
 
     const mainAmbianceClass =
         theme === 'snowie_classic'
-            ? 'bg-slate-950 bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#1e293b_0%,#0f172a_50%,#020617_100%)] text-slate-100 selection:bg-amber-500'
+            ? 'bg-[#06110b] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#0e2e1d_0%,#081b11_50%,#030805_100%)] text-slate-100 selection:bg-amber-500'
             : theme === 'tournament'
-                ? 'bg-[#0a180f] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#183a24_0%,#0c1f14_50%,#040a06_100%)] text-slate-100 selection:bg-emerald-600'
-                : 'bg-slate-950 text-slate-100 selection:bg-amber-500';
+                ? 'bg-[#16070a] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#38121a_0%,#1f090e_50%,#090304_100%)] text-slate-100 selection:bg-amber-600'
+                : 'bg-slate-950 bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#162a4a_0%,#0b1528_50%,#020617_100%)] text-slate-100 selection:bg-amber-500';
 
     if (appScreen === 'LOBBY') {
         return (
