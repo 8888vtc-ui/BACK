@@ -170,6 +170,7 @@ export function detectLocale(): Locale {
             const urlLang = params.get('lang')?.toLowerCase() as Locale | undefined;
             if (urlLang && VALID_LOCALES.has(urlLang)) {
                 try {
+                    window.localStorage?.setItem('bgtour_locale', urlLang);
                     window.localStorage?.setItem('bg_locale', urlLang);
                 } catch {
                     // localStorage indisponible
@@ -222,7 +223,7 @@ export function detectLocale(): Locale {
 
     // 4. Choix manuel sauvegardé en localStorage si navigateur non résolu
     try {
-        const saved = window.localStorage.getItem('bg_locale') as Locale | null;
+        const saved = (window.localStorage.getItem('bgtour_locale') || window.localStorage.getItem('bg_locale')) as Locale | null;
         if (saved && VALID_LOCALES.has(saved)) {
             return saved;
         }
@@ -239,6 +240,13 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
     useEffect(() => {
         if (initialLocale) return;
         const syncDeviceLocale = () => {
+            try {
+                const manual = (window.localStorage?.getItem('bgtour_locale') || window.localStorage?.getItem('bg_locale')) as Locale | null;
+                if (manual && VALID_LOCALES.has(manual)) {
+                    setLocaleState(manual);
+                    return;
+                }
+            } catch {}
             setLocaleState(detectLocale());
         };
         syncDeviceLocale();
@@ -253,6 +261,7 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
         setLocaleState(newLocale);
         if (typeof window !== 'undefined') {
             try {
+                window.localStorage?.setItem('bgtour_locale', newLocale);
                 window.localStorage?.setItem('bg_locale', newLocale);
                 document.documentElement.lang = newLocale;
                 document.documentElement.dir = isRtlLocale(newLocale) ? 'rtl' : 'ltr';

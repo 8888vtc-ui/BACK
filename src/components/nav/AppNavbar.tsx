@@ -52,7 +52,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
     statusBadge,
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { t, ui } = useTranslation();
+    const { t, ui, locale, setLocale } = useTranslation();
     const { canInstall, isInstalled, showIosModal, setShowIosModal, handleInstallClick } = usePwaInstall();
     const { tierGate, setTierGate } = usePlayerTierGate();
 
@@ -206,6 +206,20 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             <span className="whitespace-nowrap">{ui.pwa.installApp}</span>
                         </button>
                     )}
+                    {/* Bouton Rapide Toggle FR / EN */}
+                    <button
+                        type="button"
+                        onClick={() => setLocale(locale === 'fr' ? 'en' : 'fr')}
+                        data-testid="navbar-locale-toggle-btn"
+                        title={locale === 'fr' ? 'Switch to English' : 'Passer en Français'}
+                        aria-label={locale === 'fr' ? 'Switch to English' : 'Passer en Français'}
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900/90 px-2 py-1 font-mono text-[11px] font-bold tracking-wider text-stone-200 transition hover:border-[#D4AF37]/50 hover:text-[#D4AF37] active:scale-95"
+                    >
+                        <span className={locale === 'fr' ? 'text-[#D4AF37] font-black' : 'text-stone-400'}>FR</span>
+                        <span className="text-stone-600">|</span>
+                        <span className={locale === 'en' ? 'text-[#D4AF37] font-black' : 'text-stone-400'}>EN</span>
+                    </button>
+
                     <UserAccountMenu
                         onNavigateModule={onOpenModule}
                         onOpenSettings={onOpenSettings}

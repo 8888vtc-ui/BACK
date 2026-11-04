@@ -12,7 +12,7 @@ import GameBoardArea from './GameBoardArea';
 import CoachMobileDrawer from '../coach/CoachMobileDrawer';
 import GameModalsContainer from '../modals/GameModalsContainer';
 import CubeBottomSheet from '../modals/CubeBottomSheet';
-import { BeginnerGuidedMatchHUD } from '../hud/BeginnerGuidedMatchHUD';
+import { LiveProfessorCoachOverlay } from '../beginner/LiveProfessorCoachOverlay';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { useCoachQuota } from '../../hooks/useCoachQuota';
 import { useTiltDetector } from '../../hooks/useTiltDetector';
@@ -152,12 +152,17 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 />
             </div>
 
-            {/* 1.5. Bandeau Mode Guidé Débutant (Zéro-Stress) */}
+            {/* 1.5. Professeur Interactif Débutant (Questions, Astuces, Audio bilingue & Réessai) */}
             {tierGate === 'BEGINNER' && !isMultiplayerActive && (
-                <BeginnerGuidedMatchHUD
+                <LiveProfessorCoachOverlay
+                    dice={game.dice}
                     canUndo={game.canUndo}
                     onUndoMove={game.undoMove}
-                    onAskTip={onTriggerCoach}
+                    onAskProfessorHint={() => {
+                        onTriggerCoach();
+                        modals.openMobileDrawer();
+                    }}
+                    lastMoveFeedback={lastMoveFeedback}
                 />
             )}
 
