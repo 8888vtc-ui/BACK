@@ -37,4 +37,18 @@ describe('BeginnerInteractiveGuideModal', () => {
     expect(screen.getByText(/2 \/ 6/)).toBeDefined();
     expect(screen.getByText(/Le Circuit en Fer à Cheval|The Horseshoe Track/i)).toBeDefined();
   });
+
+  it('présente clairement l Error Rate Adaptatif (ERA vs ER/PR) au chapitre 5', () => {
+    render(<BeginnerInteractiveGuideModal isOpen={true} onClose={vi.fn()} />);
+    const tab5 = screen.getByTestId('guide-tab-5');
+    fireEvent.click(tab5);
+
+    expect(screen.getByText(/5 \/ 6/)).toBeDefined();
+    expect(
+      screen.getAllByText(/Error Rate Adaptatif|Adaptive Error Rate/i).length
+    ).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText(/ERA/i).length
+    ).toBeGreaterThanOrEqual(1);
+  });
 });
