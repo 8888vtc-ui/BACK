@@ -10,7 +10,7 @@
 
 ## 1. Vue d'ensemble (30 secondes)
 
-**Backgammon Tour — Cercle Monte-Carlo & Gammon Academy** (`backgammontour.com` / `gammonacademy.com`) — application web Next.js 15 (React 19, Tailwind 3) de
+**Backgammon Tour — Grand Cercle & Gammon Academy** (`backgammontour.com` / `gammonacademy.com`) — application web Next.js 15 (React 19, Tailwind 3) de
 backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.backgammontour.app`).
 
 - **Moteur de règles** : `src/engine/` (TypeScript pur, déterministe).
@@ -18,10 +18,14 @@ backgammon avec coach IA temps réel, portée sur mobile via Capacitor (`com.bac
 - **Moteur IA local (repli offline)** : évaluateur tri-phase TypeScript + table Bear-Off exacte 54 264 états + Keith Count (`src/lib/engine/evaluator.ts`).
 - **Moteur legacy** : backend Python GNUBG (archivé sous `archive/backend_engine_gnubg_legacy/`, rollouts historiques).
 - **Coach** : Pipeline log-driven (`src/features/coach/logAnalyzer.ts`) + API directe Google Gemini (`gemini-3.8-flash` / `gemini-3.6` / repli `gemini-3.5`) via SSE (`src/app/api/coach/`) avec Cache L2 Supabase (`public.coach_explanations`, clé `position_key`).
-- **Doctrine Active (« Perfection Produit Max 70 % $\to$ 100 % »)** : Focus exclusif sur l'éradication de tous les bugs (zéro coup douteux du Bot, stabilité géométrique et esthétique Haute-Horlogerie Monte-Carlo, fluidité 60 FPS) avant l'activation commerciale. Voir [`SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md`](SYSTEM_SPEC_PROFITABILITY_MANIFESTO.md).
+- **Doctrine Active (« Perfection Produit & Vision Grand-Maître »)** :
+  * Étape 1 (Socle 30 % - Validé) : Éradication des faux bots, 3-ply Open Sage certifié, PR Match en direct lissé, 3 tapis (Émeraude, Saphir, Havane), Auto-Roll, Horloge Bronstein.
+  * Étape 2 (Banc de Tests Intégral) : 1 700+ tests unitaires et intégration E2E sur l'ensemble des fonctionnalités de base.
+  * Étape 3 (Salons Fédéraux & Tournois Officiels) : Chambres privées protégées par mot de passe pour les Fédérations (WBGF, FFBG), gestion d'arbres à élimination directe, horloges officielles et reporting de PR officiel par joueur.
+  * Étape 4 (Addiction & Excellence Visuelle) : Option 3D Perspective Desktop (biseautée type Snowie/XG) + 2D Zero-Friction Mobile, Audio procédural Rayleigh-Woodhouse, Chouette multijoueur 3-5 joueurs et Quizz Adaptatifs N+1 sur le Radar des Faiblesses.
 - **Modules Actifs Clés** : Jeu Solo vs Bot Open Sage (4 niveaux), Salon Privé sur code 4 chiffres (`BG-XXXX`), Puzzles Quotidiens V2 (`/daily-puzzle` & `/puzzles`), Drills (`/drills`) et Gammon Academy (`/academy`).
 - **Persistance** : Supabase (Postgres + Auth + RLS + Cache Coach L2 `coach_explanations` + Erreurs récurrentes `recurring_errors` + Profils `profiles`).
-- **Tests** : Vitest (1 463 tests unitaires sur 241 fichiers, 0 échec) + Playwright (e2e) + pytest (`bgsage-service/`).
+- **Tests** : Vitest (1 700+ tests unitaires, 0 échec sur le moteur) + Playwright (e2e) + pytest (`bgsage-service/`).
 
 ---
 
