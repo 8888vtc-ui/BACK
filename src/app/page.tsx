@@ -58,15 +58,9 @@ export default function Home() {
         autoOpponent: true,
         locale,
         onGameOver: (result) => {
-            const title =
-                result.winType === 'backgammon' ? '👑 BACKGAMMON (3x) !'
-                    : result.winType === 'gammon' ? '🎉 GAMMON (2x) !'
-                        : result.winType === 'pass' ? '🏳️ Abandon de videau'
-                            : '⚡ Victoire simple (1x) !';
+            const title = result.winType === 'backgammon' ? '👑 BACKGAMMON (3x) !' : result.winType === 'gammon' ? '🎉 GAMMON (2x) !' : result.winType === 'pass' ? '🏳️ Abandon de videau' : '⚡ Victoire simple (1x) !';
             const ptsLabel = result.pointsWon > 1 ? `+${result.pointsWon} pts` : '+1 pt';
-            const summaryText = result.winner === 'X'
-                ? `Vous remportez la manche (${ptsLabel}) !`
-                : `L'adversaire remporte la manche (${ptsLabel}).`;
+            const summaryText = result.winner === 'X' ? `Vous remportez la manche (${ptsLabel}) !` : `L'adversaire remporte la manche (${ptsLabel}).`;
             toast.success(summaryText, title);
             notificationSuccess();
             soundEngine.playVictory();
@@ -209,6 +203,15 @@ export default function Home() {
         const formatLabel = selection.matchLength === 0 ? 'Money Game' : `Match en ${selection.matchLength} pts`;
         toast.success(`${formatLabel} — ${selection.coachEnabled ? 'Mode Formation' : 'Mode Tournoi'}.`, 'Match lancé');
     }, [game, resetGameHistory, isLiveAdviceEnabled, toggleLiveAdvice]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (window.location.pathname.startsWith('/play') || params.get('start') === 'guided') {
+                handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
+            }
+        }
+    }, [handleLobbyStart]);
 
     const handleBackToLobby = useCallback(() => {
         userInitiatedMultiplayerRef.current = false;

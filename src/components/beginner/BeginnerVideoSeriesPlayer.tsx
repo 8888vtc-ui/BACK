@@ -186,6 +186,7 @@ export function BeginnerVideoSeriesPlayer({
         <div className="flex items-center gap-2">
           <button
             type="button"
+            data-testid="video-play-toggle-btn"
             onClick={handlePlayToggle}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs shadow-lg shadow-amber-400/20 transition-transform active:scale-95"
           >
@@ -206,6 +207,7 @@ export function BeginnerVideoSeriesPlayer({
         {/* Enchaînement vers les 2 quiz d'initiation */}
         <button
           type="button"
+          data-testid="video-launch-quizzes-btn"
           onClick={() => onLaunchQuizzes?.(episode.id)}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-xs transition-all hover:translate-x-0.5"
         >

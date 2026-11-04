@@ -57,6 +57,15 @@ const nextConfig = {
     images: {
         unoptimized: isMobileExport ? true : undefined,
     },
+    async rewrites() {
+        if (isMobileExport) return [];
+        return [
+            {
+                source: '/play',
+                destination: '/',
+            },
+        ];
+    },
     async headers() {
         if (isMobileExport) return [];
         return [

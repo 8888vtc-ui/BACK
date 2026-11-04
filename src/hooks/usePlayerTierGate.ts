@@ -8,7 +8,19 @@ export type PlayerTierGate = 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
 export const PLAYER_TIER_GATE_STORAGE_KEY = 'bgtour_player_gate';
 
 export function getSavedPlayerTierGate(): PlayerTierGate {
-    if (typeof localStorage === 'undefined') return 'BEGINNER';
+    if (typeof window === 'undefined') return 'BEGINNER';
+    try {
+        if (typeof window.location?.search === 'string' && window.location.search.length > 1) {
+            const params = new URLSearchParams(window.location.search);
+            const gateParam = params.get('gate')?.toUpperCase();
+            if (gateParam === 'BEGINNER' || gateParam === 'INTERMEDIATE' || gateParam === 'EXPERT') {
+                try {
+                    localStorage.setItem(PLAYER_TIER_GATE_STORAGE_KEY, gateParam);
+                } catch {}
+                return gateParam;
+            }
+        }
+    } catch {}
     try {
         const saved = localStorage.getItem(PLAYER_TIER_GATE_STORAGE_KEY);
         if (saved === 'BEGINNER' || saved === 'INTERMEDIATE' || saved === 'EXPERT') {

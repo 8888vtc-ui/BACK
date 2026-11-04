@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Award, ArrowRight, Sparkles, BookOpen } from 'lucide-react';
+import { Award, ArrowRight, Sparkles, BookOpen, RotateCcw, CheckCircle, AlertCircle } from 'lucide-react';
 import { BeginnerVideoSeriesPlayer } from './BeginnerVideoSeriesPlayer';
 import { BEGINNER_10_INITIATION_QUIZZES, BeginnerInitiationQuiz } from '../../data/beginner10InitiationQuizzes';
 import { useTranslation } from '../../i18n';
@@ -49,6 +49,8 @@ export function BeginnerAcademyFlow({
   };
 
   const currentQuiz: BeginnerInitiationQuiz = BEGINNER_10_INITIATION_QUIZZES[activeQuizIndex] || BEGINNER_10_INITIATION_QUIZZES[0];
+  const selectedOpt = currentQuiz.options.find(o => o.id === selectedOptionId);
+  const isSelectedCorrect = Boolean(selectedOpt?.isCorrect);
 
   const handleLaunchQuizzesForEpisode = (episodeId: number) => {
     const firstQuizForEp = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => q.linkedEpisodeId === episodeId);
@@ -112,6 +114,7 @@ export function BeginnerAcademyFlow({
         <button
           type="button"
           onClick={handleBackToLobby}
+          data-testid="academy-back-btn"
           className="text-xs text-neutral-400 hover:text-white flex items-center gap-1 transition-colors"
         >
           ← {lang === 'fr' ? 'Retour Accueil' : 'Back to Home'}
@@ -120,7 +123,7 @@ export function BeginnerAcademyFlow({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>{scorePoints.toLocaleString()} PTS</span>
+            <span data-testid="academy-score-badge">{scorePoints.toLocaleString()} PTS</span>
           </div>
 
           <div className="text-xs text-neutral-400">
@@ -143,7 +146,7 @@ export function BeginnerAcademyFlow({
 
       {/* Vue 2 : Quiz d'initiation */}
       {viewState === 'QUIZ' && (
-        <div className="w-full max-w-2xl bg-[#0B1015] border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col gap-4">
+        <div data-testid="academy-quiz-container" className="w-full max-w-2xl bg-[#0B1015] border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
               {lang === 'fr' ? currentQuiz.titleFr : currentQuiz.titleEn}
@@ -174,14 +177,22 @@ export function BeginnerAcademyFlow({
                 <button
                   key={opt.id}
                   type="button"
+                  data-testid={`academy-option-${opt.id}`}
                   onClick={() => handleSelectOption(opt.id)}
                   className={`w-full text-left p-3.5 rounded-xl border font-medium text-xs sm:text-sm transition-all flex items-start gap-3 ${btnStyle}`}
                 >
                   <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold flex-shrink-0">
                     {opt.id}
                   </span>
-                  <div className="flex flex-col">
-                    <span>{lang === 'fr' ? opt.labelFr : opt.labelEn}</span>
+                  <div className="flex flex-col flex-1">
+                    <div className="flex items-center justify-between">
+                      <span>{lang === 'fr' ? opt.labelFr : opt.labelEn}</span>
+                      {selectedOptionId && opt.isCorrect && (
+                        <span className="text-[#D4AF37] font-bold text-xs flex items-center gap-1">
+                          ➔ Flèche Dorée (94% gain)
+                        </span>
+                      )}
+                    </div>
                     {selectedOptionId && (
                       <span className="text-[11px] mt-1 text-neutral-300 opacity-90">
                         {lang === 'fr' ? opt.explanationFr : opt.explanationEn}
@@ -192,6 +203,28 @@ export function BeginnerAcademyFlow({
               );
             })}
           </div>
+
+          {/* Feedback bienveillant du Professeur */}
+          {selectedOptionId && (
+            <div className={`rounded-xl p-3 text-xs flex items-center gap-2 border ${
+              isSelectedCorrect
+                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
+                : 'bg-amber-950/40 border-amber-500/40 text-amber-200'
+            }`}>
+              {isSelectedCorrect ? (
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+              ) : (
+                <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+              )}
+              <span>
+                {isSelectedCorrect
+                  ? (lang === 'fr' ? '✅ Coup optimal ! Vos pions sont en parfaite sécurité.' : '✅ Optimal play! Your checkers are completely safe.')
+                  : (lang === 'fr'
+                      ? '💡 Conseil bienveillant du Professeur : Ce coup est imprudent ou laisse un pion isolé. Cliquez sur « Réessayer » pour trouver le bon coup sans stress !'
+                      : '💡 Professor Caring Tip: This move is risky or leaves an exposed blot. Click "Retry" to find the safe move stress-free!')}
+              </span>
+            </div>
+          )}
 
           {/* Boutons d'action après réponse */}
           {selectedOptionId && (
@@ -205,14 +238,29 @@ export function BeginnerAcademyFlow({
                 {lang === 'fr' ? 'Revoir la vidéo' : 'Rewatch video'}
               </button>
 
-              <button
-                type="button"
-                onClick={handleNextQuiz}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs shadow-lg shadow-amber-400/20 transition-all"
-              >
-                <span>{lang === 'fr' ? 'Quiz suivant' : 'Next quiz'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-2">
+                {!isSelectedCorrect && (
+                  <button
+                    type="button"
+                    data-testid="academy-quiz-retry-btn"
+                    onClick={() => setSelectedOptionId(null)}
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all active:scale-95"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>{lang === 'fr' ? 'Réessayer' : 'Retry'}</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  data-testid="academy-quiz-next-btn"
+                  onClick={handleNextQuiz}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs shadow-lg shadow-amber-400/20 transition-all active:scale-95"
+                >
+                  <span>{lang === 'fr' ? 'Quiz suivant' : 'Next quiz'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -220,7 +268,7 @@ export function BeginnerAcademyFlow({
 
       {/* Vue 3 : Diplôme d'Initié au Cercle */}
       {viewState === 'DIPLOMA' && (
-        <div className="w-full max-w-lg bg-gradient-to-b from-[#141A22] to-[#0A0D12] border-2 border-amber-400/40 rounded-3xl p-6 sm:p-8 text-center shadow-2xl flex flex-col items-center gap-4">
+        <div data-testid="academy-diploma-card" className="w-full max-w-lg bg-gradient-to-b from-[#141A22] to-[#0A0D12] border-2 border-amber-400/40 rounded-3xl p-6 sm:p-8 text-center shadow-2xl flex flex-col items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center shadow-lg shadow-amber-400/20">
             <Award className="w-8 h-8 text-amber-400" />
           </div>
