@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { PlayerEloProfile, MultiplayerMatchInfo } from '../../features/multiplayer/types';
+import { CountryFlagSvg } from '../common/CountryFlagSvg';
 
 export interface LobbyMatchedVersusProps {
     localProfile: PlayerEloProfile;
@@ -49,24 +50,18 @@ export const LobbyMatchedVersus: React.FC<LobbyMatchedVersusProps> = ({
                 <div className="space-y-1.5 text-center border-l border-white/10 pl-4">
                     <div className="relative mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-[#f3c65f]/40 bg-gradient-to-br from-rose-500 to-amber-600 text-xl font-bold text-white shadow-md">
                         {opponentProfile.avatarUrl ? (
-                            <>
-                                <img src={opponentProfile.avatarUrl} alt={opponentProfile.displayName} className="h-full w-full object-cover" />
-                                {opponentProfile.countryFlag && (
-                                    <span className="absolute bottom-0.5 right-0.5 rounded bg-black/75 px-1 text-[11px] leading-tight">
-                                        {opponentProfile.countryFlag}
-                                    </span>
-                                )}
-                            </>
+                            <img src={opponentProfile.avatarUrl} alt={opponentProfile.displayName} className="h-full w-full object-cover" />
                         ) : (
-                            opponentProfile.countryFlag ?? opponentProfile.username.charAt(0).toUpperCase()
+                            opponentProfile.username.charAt(0).toUpperCase()
                         )}
                     </div>
                     <div className="text-xs font-bold text-white truncate">
                         {opponentProfile.displayName}
                     </div>
                     {opponentProfile.countryName && (
-                        <div className="text-[11px] font-medium text-emerald-300/90 truncate">
-                            Club {opponentProfile.countryName}
+                        <div className="inline-flex items-center justify-center gap-1.5 text-[11px] font-medium text-emerald-300/90 truncate">
+                            <CountryFlagSvg countryName={opponentProfile.countryName} />
+                            <span>{opponentProfile.countryName} · En ligne</span>
                         </div>
                     )}
                     <div className="flex items-center justify-center gap-1.5 text-xs font-mono">

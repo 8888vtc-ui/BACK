@@ -7,11 +7,11 @@ import ToastContainer from '../toast/ToastContainer';
 import ErrorBoundary from '../common/ErrorBoundary';
 import { AnnouncerProvider } from '../common/LiveAnnouncer';
 import { BoardThemeProvider } from '../../hooks/useBoardTheme';
-import { runDbCleanMigration } from '../../lib/storage/dbCleanMigration';
+import { runMobileCacheAndSwPurge } from '../../lib/storage/dbCleanMigration';
 
-// Purge db_clean_v3 : exécutée au chargement du module, avant tout rendu des pages quiz/puzzles.
+// Purge mobile cache, SW & db_clean_v3 : exécutée dès le chargement du module côté client.
 if (typeof window !== 'undefined') {
-    runDbCleanMigration(window.localStorage);
+    runMobileCacheAndSwPurge();
 }
 
 export default function AppProviders({ children }: { children: React.ReactNode }) {

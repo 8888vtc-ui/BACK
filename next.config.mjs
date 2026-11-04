@@ -3,6 +3,10 @@ const isMobileExport = process.env.CAPACITOR_BUILD === 'true' || process.env.NEX
 
 const securityHeaders = [
     {
+        key: 'Cache-Control',
+        value: 'no-store, must-revalidate',
+    },
+    {
         key: 'X-DNS-Prefetch-Control',
         value: 'on',
     },

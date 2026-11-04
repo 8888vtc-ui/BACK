@@ -8,8 +8,9 @@
  * S'exécute automatiquement dès que la clé de version diffère de `quiz_and_accounts_v3_clean`.
  */
 
+export const APP_VERSION_STAMP = 'v3.0-3PLY-CLEAN' as const;
 export const DB_CLEAN_VERSION_KEY = 'bg_db_clean_version';
-export const DB_CLEAN_VERSION = 'quiz_and_accounts_v3_clean';
+export const DB_CLEAN_VERSION = APP_VERSION_STAMP;
 
 /** Clés construites sur les anciens quiz/puzzles non vérifiés et anciens comptes/bots locaux. */
 export const LEGACY_QUIZ_STORAGE_KEYS: readonly string[] = [
@@ -54,5 +55,44 @@ export function runDbCleanMigration(storage: StorageLike | null | undefined): nu
     } catch {
         // Stockage indisponible (mode privé, quota) : rien à purger.
         return 0;
+    }
+}
+
+/**
+ * Purge le cache navigateur mobile et désinscrit les Service Workers obsolètes
+ * lorsque l'estampille de version diffère de `APP_VERSION_STAMP`.
+ */
+export function runMobileCacheAndSwPurge(): void {
+    if (typeof window === 'undefined') return;
+    try {
+        if (window.localStorage.getItem('bg_app_version_stamp') !== APP_VERSION_STAMP) {
+            try {
+                window.sessionStorage?.clear();
+            } catch {
+                // Ignore restricted storage contexts
+            }
+            runDbCleanMigration(window.localStorage);
+            window.localStorage.setItem('bg_app_version_stamp', APP_VERSION_STAMP);
+            if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && navigator.serviceWorker?.getRegistrations) {
+                navigator.serviceWorker.getRegistrations().then((regs) => {
+                    regs.forEach((r) => {
+                        void r.unregister();
+                    });
+                }).catch(() => {
+                    // Ignore service worker unregister errors
+                });
+            }
+            if ('caches' in window && window.caches?.keys) {
+                window.caches.keys().then((keys) => {
+                    keys.forEach((k) => {
+                        void window.caches.delete(k);
+                    });
+                }).catch(() => {
+                    // Ignore cache deletion errors
+                });
+            }
+        }
+    } catch {
+        // LocalStorage inaccessible (mode privé, quota)
     }
 }

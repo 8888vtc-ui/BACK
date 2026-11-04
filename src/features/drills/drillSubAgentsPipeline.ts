@@ -1,7 +1,7 @@
 /**
  * @file src/features/drills/drillSubAgentsPipeline.ts
  * @description Pipeline de 5 Sous-Agents IA en tâche de fond (Zéro nom technique visible à l'écran) :
- * 1. `FlashLite-Doc-Auditor` (`gemini-2.5-flash-lite`) : Alignement terminologique (`ER / PR` 0–30, `ERH` 0–30, `Rating` 1500).
+ * 1. `FlashLite-Doc-Auditor` (`gemini-2.5-flash-lite`) : Alignement terminologique (`ER / PR` 0–30, `ER / PR` 0–30, `Rating` 1500).
  * 2. `FlashLite-Board-Validator` (`gemini-2.5-flash-lite`) : < 5 ms, strictement 15 pions par camp et source unique `pipCount(board)`.
  * 3. `FlashLite-Semantic-Bridge` (`gemini-2.5-flash-lite`) : Détecte `isContact(board)` et verrouille l'archétype (`PURE_RACE`, `BEAROFF`, `BLITZ`, `HOLDING_GAME`, `PRIME_VS_PRIME`). Interdiction absolue d'étiqueter "Blitz & Attaque de Jan" si `isContact === false` !
  * 4. `Flash-Pedagogical-Coach` (`gemini-2.5-flash`) : Rédige l'explication "Tesla 3-Secondes" (phrases courtes de 18 à 28 mots, 2 blocs sur Coup Optimal A, 3 blocs sur Erreur B/C/D).
@@ -16,8 +16,8 @@ import { toCanonicalActiveBoard } from '../coach/detectPositionalMotif';
 import { countConstructiveRolls36 } from '../coach/lookahead36';
 import type { PlayerBlunderRecord, DrillValidationResult } from './types';
 
-export const ERH_TOOLTIP_TEXT =
-    'ERH : Error Rate Humain — Mesure votre précision par rapport aux erreurs humaines types de votre palier (échelle 0.0 à 30.0)';
+export const ER_PR_TOOLTIP_TEXT =
+    'ER / PR : Error Rate Humain — Mesure votre précision par rapport aux erreurs humaines types de votre palier (échelle 0.0 à 30.0)';
 
 export const SemanticArchetypeEnum = z.enum([
     'PURE_RACE',
@@ -379,7 +379,7 @@ export function runFlashPedagogicalCoach(
 ): PedagogicalCoachReport {
     const facts = runFlashLiteTacticalExtractor(blunder, validation);
     const { boardValidation } = facts;
-    const metricLabel = isErMode ? 'ER / PR' : 'ERH';
+    const metricLabel = 'ER / PR';
     const absLoss = Math.abs(facts.deltaEmg);
 
     const verdictTier: PedagogicalVerdictTier =

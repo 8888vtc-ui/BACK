@@ -73,6 +73,12 @@ export interface RunAiTurnParams {
     /** Espacement entre chaque sous-coup de l'IA (défaut : 180ms — Audit 19/20). */
     readonly subMoveSpacingMs?: number;
     readonly isGameOver?: boolean;
+    readonly cubeValue?: number;
+    readonly cubeOwner?: Player | null;
+    readonly matchLength?: number;
+    readonly scoreX?: number;
+    readonly scoreO?: number;
+    readonly crawford?: boolean;
     /**
      * Sélecteur de coup. Défaut : Open Sage (`selectBotMoveWithBgsage`). Les tests injectent un stub.
      * Aucun moteur heuristique local n'est autorisé (R-BOT-1).

@@ -35,6 +35,7 @@ Ne pas lire `README.md` en premier : il contient des chiffres marketing non vér
   sont tolérés). `strict: true` est actif dans [`tsconfig.json`](tsconfig.json).
 - **Règle 4 — Atomicité** : UNE tâche à la fois, max 3 fichiers modifiés par tâche. Après
   chaque modification : `npm run typecheck && npm test` doit être 100 % vert.
+- **Règle 5 — Formatage Copiable en 1 Clic (`Copy`)** : Tu dois OBLIGATOIREMENT encapsuler l'intégralité de chacune de tes réponses dans UN SEUL bloc de code Markdown (` ```txt ... ``` `) afin que l'utilisateur puisse copier la réponse en 1 clic sur le bouton "Copy" sans jamais sélectionner de texte à la souris.
 
 ---
 

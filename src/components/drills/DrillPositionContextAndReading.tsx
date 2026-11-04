@@ -3,7 +3,7 @@
 /**
  * @file src/components/drills/DrillPositionContextAndReading.tsx
  * @description Calculateur de télémétrie de position (couplé à `validateBoardState` 15 pions exacts)
- * et tableau de classement mathématique post-validation **Vrai 3-Ply Cubeful** (`BT-Core v4.0` — Zéro donnée factice).
+ * et tableau de classement mathématique post-validation **Vrai 3-Ply Cubeful** (GNU Backgammon 3-ply & Open Sage 3-ply — Zéro donnée factice).
  * Strictement < 190 lignes, 0 `any` (GOVERNANCE.md & SCALABILITY.md).
  */
 
@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import { applyMove, serializeCanonicalXGID } from '../../engine/backgammonEngine';
 import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../../lib/engine/gnubg3PlyCertifiedPositions';
 import { GNUBG_3PLY_QUIZ_BANK } from '../../features/drills/gnubg3PlyQuizBank';
+import { BGSAGE_3PLY_FACTORY_SEED } from '../../features/drills/bgsage3PlyFactorySeed';
 import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
 import type { PlayerBlunderRecord } from '../../features/drills/types';
 import { validateBoardState } from '../../features/drills/drillSubAgentsPipeline';
@@ -67,7 +68,7 @@ export function computePositionTelemetry(blunder: PlayerBlunderRecord): Position
                 ? `Avance : +${pipDiff} pips`
                 : `Retard : ${pipDiff} pips`;
 
-    const singleLineContext = `${compactMatchLabel} • ${compactCubeLabel} • ${compactRaceDiffLabel}`;
+    const singleLineContext = `${compactMatchLabel} • ${compactCubeLabel} • Pips : ${whitePips} vs ${blackPips} (${compactRaceDiffLabel})`;
     const structureLineContext = `Portes faites : Blanc ${whiteMadePoints} | Noir ${blackMadePoints} • Pions arrières : ${backCheckersSummary}`;
 
     return {
@@ -138,7 +139,9 @@ function boardKeyAfter(baseBoard: readonly number[], notation: string, player: '
 
 /** Valeurs GNUBG 3-ply de la position (table certifiée ou banque de quiz), par id puis par XGID + dés. */
 function findGnubgMoves(blunder: PlayerBlunderRecord, baseBoard: number[]): readonly GnubgMoveValues[] {
+    if (blunder.candidateMoves3Ply && blunder.candidateMoves3Ply.length > 0) return blunder.candidateMoves3Ply;
     const byId =
+        BGSAGE_3PLY_FACTORY_SEED.find((q) => q.id === blunder.id)?.candidateMoves3Ply ??
         GNUBG_3PLY_CERTIFIED_POSITIONS.find((p) => p.id === blunder.id)?.moves ??
         GNUBG_3PLY_QUIZ_BANK.find((q) => q.id === blunder.id)?.candidateMoves3Ply;
     if (byId) return byId;
@@ -159,6 +162,7 @@ function findGnubgMoves(blunder: PlayerBlunderRecord, baseBoard: number[]): read
         Math.max(d[0], d[1]) === Math.max(blunder.dice[0], blunder.dice[1]) &&
         Math.min(d[0], d[1]) === Math.min(blunder.dice[0], blunder.dice[1]);
     return (
+        BGSAGE_3PLY_FACTORY_SEED.find((q) => q.xgid.split(':')[0] === canonBody && sameDice(q.dice))?.candidateMoves3Ply ??
         GNUBG_3PLY_CERTIFIED_POSITIONS.find((p) => p.xgid.split(':')[0] === canonBody && sameDice(p.dice))?.moves ??
         GNUBG_3PLY_QUIZ_BANK.find((q) => q.xgid.split(':')[0] === canonBody && sameDice(q.dice))?.candidateMoves3Ply ??
         []
@@ -200,10 +204,10 @@ export function buildCandidateMathTable(
         return {
             notation,
             isEvaluated: Boolean(m),
-            equity: m ? -m.equityLoss : Number.NaN,
-            deltaEmg: m ? -m.equityLoss : Number.NaN,
-            winPct: m ? Math.round(m.win * 100) : Number.NaN,
-            gammonPct: m ? Math.round(m.winGammon * 100) : Number.NaN,
+            equity: m ? -m.equityLoss : 0,
+            deltaEmg: m ? -m.equityLoss : 0,
+            winPct: m ? Math.round(m.win * 100) : 0,
+            gammonPct: m ? Math.round(m.winGammon * 100) : 0,
             isOptimal: m ? m.equityLoss === 0 : normNotation(notation) === optimalNorm,
             isUserChoice: normNotation(notation) === normNotation(playedNotation),
         };
@@ -232,12 +236,13 @@ export const DrillPrMathRankingTable: React.FC<{
                 <span>📊 Détails 3-ply ({rows.length} coups évalués)</span>
                 <span>{open ? '▲ Masquer' : '▼ Afficher ΔEMG & MWC'}</span>
             </button>
-            <div className={open ? 'divide-y divide-white/5 pt-1' : 'sr-only'}>
-                {rows.map((r) => (
-                    <div
-                        key={r.notation}
-                        className={`flex items-center justify-between py-0.5 px-1.5 text-[11px] font-mono ${
-                            r.isOptimal
+            {open && (
+                <div className="divide-y divide-white/5 pt-1">
+                    {rows.map((r) => (
+                        <div
+                            key={r.notation}
+                            className={`flex items-center justify-between py-0.5 px-1.5 text-[11px] font-mono ${
+                                r.isOptimal
                                 ? 'bg-emerald-500/15 text-emerald-200 font-bold rounded'
                                 : r.isUserChoice
                                     ? 'bg-rose-500/15 text-rose-200 font-bold rounded'
@@ -269,6 +274,7 @@ export const DrillPrMathRankingTable: React.FC<{
                     </div>
                 ))}
             </div>
+            )}
         </div>
     );
 };

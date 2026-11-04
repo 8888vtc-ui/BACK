@@ -73,6 +73,20 @@ export interface PlayerBlunderRecord {
         cubeOwner: Player | null;
         crawford: boolean;
     };
+    /** Cible ER / PR calibrée pour ce quiz (ex: 6.0) */
+    quizTargetER?: number;
+    /** Type de décision du quiz */
+    quizType?: 'CHECKER_PLAY' | 'CUBE_DECISION';
+    /** Candidats 3-ply évalués */
+    candidateMoves3Ply?: ReadonlyArray<{
+        readonly rank: number;
+        readonly notation: string;
+        readonly equityLoss: number;
+        readonly win: number;
+        readonly winGammon: number;
+    }>;
+    /** Profondeur d'analyse certifiée (ex: 3 pour 3-ply) */
+    plyCount?: number;
 }
 
 export interface BlunderBankStats {

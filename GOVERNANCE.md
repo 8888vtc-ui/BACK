@@ -52,6 +52,18 @@ Le code est divisé en **3 couches étanches**. Il est formellement interdit de 
 
 ---
 
+## RÈGLE 5 : LES 7 LOIS D'INTÉGRITÉ DES QUIZ 3-PLY (ANTI-HALLUCINATION)
+
+1. **Loi d'Authenticité Cubeful 3-Ply (Zéro Formule Locale & Somme des Probabilités = 1.000)** : Toute équité (`equity`), perte (`loss` / `ΔEMG`) et probabilité (`W`, `WG`, `WBG`, `LW`, `LG`, `LBG`) d'un quiz (`CHECKER_PLAY` ou `CUBE_DECISION`) doit provenir à 100 % de la sortie brute de `gnubg-cli` 3-ply ou Open Sage 3-ply avec `Math.abs(prob.win + prob.loseWin - 1) <= 0.001`. Toute formule locale ou décalage synthétique (ex: `ndEq - 0.022`) est strictement interdit.
+2. **Loi du Contexte de Match Complet** : Toute évaluation `CHECKER_PLAY` ou `CUBE_DECISION` doit transmettre le `XGID` complet incluant la valeur du videau, la possession du videau, le score exact des deux joueurs, le flag Crawford et la longueur du match. Évaluer une position de match en Money Game est une violation critique.
+3. **Loi de Validité du Videau (`:00:`)** : Tout quiz `CUBE_DECISION` doit obligatoirement avoir les dés à `:00:` dans son `XGID` (décision prise avant le lancer de dés) et comparer les 3 vraies équités Cubeful (`No Double`, `Double/Take`, `Double/Pass`).
+4. **Loi de Notation Exacte** : Les mouvements de pions doivent conserver la notation exacte issue du moteur 3-ply, incluant impérativement les astérisques de frappe (`*`).
+5. **Loi d'Unicité Physique des Plateaux (Anti-Recyclage de Score)** : Il est interdit de fabriquer artificiellement des milliers de quiz en réutilisant la même configuration de plateau (`board` 26 cases + dés) sous différents scores de match. Chaque couple `${quizType}:${boardPrefix26}:${dice}` doit être unique (ou plafonné à maximum 2 variantes de score critique comme Normal vs DMP/Gammon Save si et seulement si le meilleur coup change réellement).
+6. **Loi d'Écart Minimum Pédagogique (Zéro Ex Æquo)** : Tout quiz dont le choix #2 a une perte d'équité `loss < 0.003` par rapport au choix #1 (coups ex æquo) doit être rejeté par le validateur afin de ne jamais pénaliser un joueur sur deux coups mathématiquement équivalents.
+7. **Loi de Reprise Atomique (`Resume` & Seed Sync)** : Tout script de génération doit charger les clés existantes au démarrage (`Set`), écrire de façon atomique (`appendFileSync`), et synchroniser périodiquement `src/features/drills/bgsage3PlyFactorySeed.ts`.
+
+---
+
 ## Engagement
 
 En acceptant ce cadre, tout contributeur (humain ou IA) s'engage à **refuser tout code qui violerait l'une de ces 4 règles**.

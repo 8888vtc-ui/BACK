@@ -27,6 +27,14 @@ export interface AdaptiveNPlus1ProfileState {
     readonly consecutiveFailures: number;
 }
 
+/**
+ * Arrondit à 0.5 près dans [0.5, 25.0].
+ */
+export function roundToHalfStep(value: number): number {
+    const rounded = Math.round(value * 2) / 2;
+    return Math.max(0.5, Math.min(25.0, rounded));
+}
+
 const NPLUS1_STREAK_STORAGE_KEY = 'bg_nplus1_regulation_v1';
 
 interface StoredRegulationCounters {
@@ -109,30 +117,36 @@ export function computeBlendedPlayerEr(): { playerEr: number; quizEr: number; ma
 
 /**
  * Applique la Règle du Niveau N+1 :
- *   Cible_Quiz = max(1.0, ER_joueur - Delta_N+1)
- * avec auto-régulation Up (vers 5.0, 3.5, 2.0) et Down (+0.8 à +1.2 en cas d'échecs).
+ *   Cible_Quiz = roundToHalfStep(max(0.5, ER_joueur - 0.5))
+ * avec auto-régulation dynamique :
+ * - Série de réussites au 1er essai (firstTryStreak >= 2) : descente par paliers de 0.5
+ *   (deltaNPlus1 = 0.5 + Math.min(3.5, Math.floor(firstTryStreak / 2) * 0.5))
+ * - 2 échecs de suite (consecutiveFailures >= 2) : remontée de +0.5 (targetQuizEr = roundToHalfStep(playerEr))
  */
 export function computeNPlus1TargetEr(
     playerEr: number,
     firstTryStreak: number = 0,
     consecutiveFailures: number = 0,
 ): AdaptiveNPlus1ProfileState {
-    const BASE_DELTA = 1.3; // Ex: Joueur ER 6.3 -> Cible N+1 = ER 5.0 ; Joueur ER 8.0 -> Cible N+1 = ER 6.7
+    const BASE_DELTA = 0.5;
 
     let deltaNPlus1 = BASE_DELTA;
     let regulationState: 'NORMAL' | 'BOOST_UP' | 'RELIEF_DOWN' = 'NORMAL';
+    let targetQuizEr: number;
 
     if (firstTryStreak >= 2) {
-        const streakBonus = Math.min(4.2, (firstTryStreak - 1) * 0.7);
-        deltaNPlus1 = BASE_DELTA + streakBonus;
+        deltaNPlus1 = 0.5 + Math.min(3.5, Math.floor(firstTryStreak / 2) * 0.5);
         regulationState = 'BOOST_UP';
+        targetQuizEr = roundToHalfStep(Math.max(0.5, playerEr - deltaNPlus1));
     } else if (consecutiveFailures >= 2) {
-        const relief = consecutiveFailures >= 3 ? 1.2 : 0.8;
-        deltaNPlus1 = Math.max(0.2, BASE_DELTA - relief);
+        deltaNPlus1 = 0.0;
         regulationState = 'RELIEF_DOWN';
+        targetQuizEr = roundToHalfStep(playerEr);
+    } else {
+        deltaNPlus1 = BASE_DELTA;
+        regulationState = 'NORMAL';
+        targetQuizEr = roundToHalfStep(Math.max(0.5, playerEr - BASE_DELTA));
     }
-
-    const targetQuizEr = Number(Math.max(1.0, Math.min(28.0, playerEr - deltaNPlus1)).toFixed(1));
 
     return {
         playerEr: Number(playerEr.toFixed(1)),
@@ -151,19 +165,22 @@ export function getActiveNPlus1State(): AdaptiveNPlus1ProfileState {
 }
 
 /**
- * Estime la difficulté ER intrinsèque (`D_quiz` de 1.0 à 25.0) d'une position 3-ply.
+ * Estime la difficulté ER intrinsèque (`D_quiz` de 0.5 à 25.0) d'une position 3-ply en pas de 0.5.
  */
 export function estimatePositionIntrinsicEr(blunder: PlayerBlunderRecord): number {
+    if (typeof blunder.quizTargetER === 'number') {
+        return roundToHalfStep(blunder.quizTargetER);
+    }
     const tier: DrillTier = blunder.tier ?? 2;
     const baseTierEr: Record<DrillTier, number> = {
-        4: 2.2,
+        4: 2.0,
         3: 4.5,
         2: 6.5,
         1: 10.5,
     };
     const base = baseTierEr[tier];
     const subtletyOffset = (Math.min(0.15, blunder.equityLoss) - 0.06) * 18.0;
-    return Number(Math.max(1.0, Math.min(25.0, base + subtletyOffset)).toFixed(1));
+    return roundToHalfStep(base + subtletyOffset);
 }
 
 /**

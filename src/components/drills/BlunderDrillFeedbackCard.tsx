@@ -6,12 +6,11 @@
  * - Compose `DrillContextStrip` (Thème masqué avant réponse, score away, videau, retard).
  * - Compose `DrillChoicesGrid` (dés à jouer, 4 boutons A/B/C/D + bouton `[✓ Valider mon coup sur le plateau]`).
  * - Compose `DrillCoachFeedback` (Indice socratique au 1er essai, nuance à -0.010 EMG, 2 blocs si optimal, 3 blocs si erreur, tiroir 3-ply repliable).
- * - Strictement < 150 lignes, 0 `any` (GOVERNANCE.md & SCALABILITY.md).
+ * - Strictement < 140 lignes, 0 `any` (GOVERNANCE.md & SCALABILITY.md).
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import type { PlayerBlunderRecord, DrillValidationResult } from '../../features/drills/types';
-import { buildErhOpponentScenario } from '../../features/drills/adaptiveQuizEngine';
 import DrillContextStrip from './DrillContextStrip';
 import DrillChoicesGrid from './DrillChoicesGrid';
 import DrillCoachFeedback from './DrillCoachFeedback';
@@ -60,10 +59,6 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
     ratingDelta = 0,
 }) => {
     const isErMode = drillMode === 'pr_math';
-    const erhScenario = useMemo(
-        () => (!isErMode ? buildErhOpponentScenario(currentBlunder) : null),
-        [currentBlunder, isErMode],
-    );
     const isThemeRevealed =
         validationResult !== null && (validationResult.isCorrect || attemptsLeft <= 0);
 
@@ -84,18 +79,6 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                     onToggleHint={onToggleHint}
                     onResetAttempt={onResetAttempt}
                 />
-
-                {/* En mode ERH uniquement (avant réponse) : Profil psychologique adverse concis */}
-                {!isErMode && erhScenario && !validationResult && (
-                    <div
-                        data-testid="erh-opponent-scenario-card"
-                        className="rounded-xl border border-[#D4AF37]/35 bg-[#16110b] px-2.5 py-1 text-[11px] text-amber-100 flex items-center justify-between gap-2 shrink-0"
-                    >
-                        <span className="truncate font-semibold text-[#f3c65f]">
-                            🧠 {erhScenario.badgeLabel} — {erhScenario.psychologicalPrompt}
-                        </span>
-                    </div>
-                )}
 
                 {/* 2. Grille 2x2 des 4 coups A, B, C, D + Bouton [✓ Valider mon coup sur le plateau] */}
                 {currentBlunder.quizChoices && currentBlunder.quizChoices.length > 0 && onSelectQuizChoice && (

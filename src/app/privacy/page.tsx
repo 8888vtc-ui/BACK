@@ -54,7 +54,7 @@ export default function PrivacyGdprPage() {
                     </p>
                     <ul className="list-disc pl-5 text-xs sm:text-sm text-stone-300 space-y-1">
                         <li><strong>Votre Passeport Joueur</strong> : votre Pseudo de table, votre adresse Email et votre niveau choisi (Débutant, Club ou Compétiteur).</li>
-                        <li><strong>Vos Parties &amp; Quizz ERH</strong> : vos positions de Backgammon jouées, votre Performance Rating (PR), votre Indice ERH et vos Sceaux d’Or afin de générer automatiquement le Quizz de vos propres Blunders.</li>
+                        <li><strong>Vos Parties &amp; Quizz ER / PR</strong> : vos positions de Backgammon jouées, votre Performance Rating (PR), votre Indice ER / PR et vos Sceaux d’Or afin de générer automatiquement le Quizz de vos propres Blunders.</li>
                         <li><strong>Zéro revente, zéro profilage publicitaire</strong> : vos données ne sont jamais vendues, louées ou cédées à des courtiers publicitaires.</li>
                     </ul>
                 </section>

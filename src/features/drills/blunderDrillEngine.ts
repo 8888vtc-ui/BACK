@@ -44,14 +44,54 @@ function parseExpandedNotationMoves(notation: string, player: 'X' | 'O'): Move[]
     return parseCoachNotationMoves(expandedTokens.join(' '), player);
 }
 
-function boardSignatureAfterNotation(boardBefore: number[], notation: string, player: 'X' | 'O'): string {
+export function boardSignatureAfterNotation(boardBefore: number[], notation: string, player: 'X' | 'O'): string {
     const moves = parseExpandedNotationMoves(notation, player);
     let b = [...boardBefore];
     for (const m of moves) {
         b = applyMove(b, m, player);
     }
-    return b.slice(1, 25).join(',');
+    return b.slice(0, 26).join(',');
 }
+
+export function areMoveNotationsBoardEquivalent(
+    boardBefore: readonly number[],
+    notationA: string,
+    notationB: string,
+    player: 'X' | 'O',
+): boolean {
+    if (normalizeMoveNotation(notationA) === normalizeMoveNotation(notationB)) {
+        return true;
+    }
+    const movesA = parseExpandedNotationMoves(notationA, player);
+    const movesB = parseExpandedNotationMoves(notationB, player);
+    if (movesA.length === 0 || movesB.length === 0) {
+        return false;
+    }
+    const sigA = boardSignatureAfterNotation([...boardBefore], notationA, player);
+    const sigB = boardSignatureAfterNotation([...boardBefore], notationB, player);
+    return sigA === sigB;
+}
+
+function classifyMoveByDeltaEmg(deltaEmg: number): { readonly verdict: 'optimal' | 'acceptable' | 'blunder'; readonly feedbackMessage: string } {
+    const absLoss = Math.abs(deltaEmg);
+    if (absLoss <= 0.0005) {
+        return {
+            verdict: 'optimal',
+            feedbackMessage: '👑 Coup optimal trouvé ! Vous avez corrigé cette erreur avec une précision chirurgicale.',
+        };
+    }
+    if (absLoss <= 0.020) {
+        return {
+            verdict: 'acceptable',
+            feedbackMessage: `👍 Très bon coup (${deltaEmg.toFixed(3)} EMG) ! Ce n'est pas une erreur, mais voici comment gagner +${absLoss.toFixed(3)} EMG de plus...`,
+        };
+    }
+    return {
+        verdict: 'blunder',
+        feedbackMessage: `❌ Ce coup est une erreur (-${absLoss.toFixed(3)} EMG).`,
+    };
+}
+
 
 /**
  * Analyse géométriquement le plateau après le coup du joueur vs après le coup optimal
@@ -174,15 +214,8 @@ export function validateDrillMove(
     const normalizedOptimal = normalizeMoveNotation(blunder.optimalMove);
     const normalizedAcceptables = (blunder.acceptableMoves || []).map(normalizeMoveNotation);
 
-    // 1. Correspondance exacte avec le coup optimal certifié (par notation ou par état final du plateau)
-    let playedBoard = [...blunder.board];
-    for (const m of playerMoves) {
-        playedBoard = applyMove(playedBoard, m, player);
-    }
-    const playedBoardSig = playedBoard.slice(1, 25).join(',');
-    const optimalBoardSig = boardSignatureAfterNotation(blunder.board, blunder.optimalMove, player);
-
-    if (normalizedPlayed === normalizedOptimal || (playerMoves.length > 0 && playedBoardSig === optimalBoardSig)) {
+    // 1. Correspondance exacte ou équivalente plateau/notation avec le coup optimal
+    if (normalizedPlayed === normalizedOptimal || areMoveNotationsBoardEquivalent(blunder.board, playedNotation, blunder.optimalMove, player)) {
         return {
             isCorrect: true,
             verdict: 'optimal',
@@ -196,16 +229,20 @@ export function validateDrillMove(
         };
     }
 
-    // 2. Correspondance avec une variante acceptable pré-déclarée (Quasi-Optimal <= 0.020 EMG)
-    if (normalizedAcceptables.includes(normalizedPlayed)) {
+    // 2. Correspondance avec les variantes acceptables ou candidats 3-ply ayant equityLoss <= 0.020
+    const matchedCandidate = (blunder.candidateMoves3Ply || []).find(
+        (c) => areMoveNotationsBoardEquivalent(blunder.board, playedNotation, c.notation, player) && c.equityLoss <= 0.020
+    );
+    if (normalizedAcceptables.includes(normalizedPlayed) || matchedCandidate) {
+        const actualLoss = matchedCandidate ? matchedCandidate.equityLoss : 0.010;
+        const classified = classifyMoveByDeltaEmg(-actualLoss);
         return {
             isCorrect: true,
-            verdict: 'acceptable',
-            equityLoss: 0.010,
+            verdict: classified.verdict,
+            equityLoss: actualLoss,
             playedNotation,
             optimalNotation: blunder.optimalMove,
-            feedbackMessage:
-                '👍 Très bon coup ! (-0.010 EMG | 0 pénalité ER / PR)',
+            feedbackMessage: classified.feedbackMessage,
             hint: blunder.hint,
             canRetry: false,
         };
@@ -218,6 +255,10 @@ export function validateDrillMove(
         : Math.max(0.08, Number((blunder.equityLoss * 0.85).toFixed(4)));
     const isBlunder = equityLoss >= 0.08;
     const verdict = isBlunder ? 'blunder' : 'doubtful';
+    let playedBoard = [...blunder.board];
+    for (const m of playerMoves) {
+        playedBoard = applyMove(playedBoard, m, player);
+    }
     const specificMistakeReason = buildSpecificMistakeExplanation(blunder, playedNotation, playedBoard);
 
     return {
@@ -246,7 +287,7 @@ export function validateDrillNotationChoice(
     const normalizedOptimal = normalizeMoveNotation(blunder.optimalMove);
     const normalizedAcceptables = (blunder.acceptableMoves || []).map(normalizeMoveNotation);
 
-    if (normalizedPlayed === normalizedOptimal) {
+    if (areMoveNotationsBoardEquivalent(blunder.board, chosenNotation, blunder.optimalMove, blunder.player)) {
         return {
             isCorrect: true,
             verdict: 'optimal',
@@ -260,15 +301,19 @@ export function validateDrillNotationChoice(
         };
     }
 
-    if (normalizedAcceptables.includes(normalizedPlayed)) {
+    const matchedCandidate = (blunder.candidateMoves3Ply || []).find(
+        (c) => areMoveNotationsBoardEquivalent(blunder.board, chosenNotation, c.notation, blunder.player) && c.equityLoss > 0 && c.equityLoss <= 0.020
+    );
+    if (normalizedAcceptables.includes(normalizedPlayed) || matchedCandidate) {
+        const actualLoss = matchedCandidate ? matchedCandidate.equityLoss : 0.010;
+        const classified = classifyMoveByDeltaEmg(-actualLoss);
         return {
             isCorrect: true,
-            verdict: 'acceptable',
-            equityLoss: 0.010,
+            verdict: classified.verdict,
+            equityLoss: actualLoss,
             playedNotation: chosenNotation,
             optimalNotation: blunder.optimalMove,
-            feedbackMessage:
-                '👍 Très bon coup ! (-0.010 EMG | 0 pénalité ER / PR)',
+            feedbackMessage: classified.feedbackMessage,
             hint: blunder.hint,
             canRetry: false,
         };

@@ -43,15 +43,19 @@ describe('HumanPersonaPool — 300 Profils Humains Naturels, Calibration bgsage 
         expect(ids.size).toBe(300);
         expect(usernames.size).toBe(300);
 
-        // Vérifie la présence des exemples emblématiques des 4 familles de pseudos
+        // Vérifie la présence des exemples emblématiques de pseudos humains réalistes
         const allNames = new Set(HUMAN_PERSONA_POOL.map((s) => s.username));
         for (const sample of [
-            'thomas_69', 'laurent75', 'mehdi_92', 'david_bg64', 'philippe59', 'marc_33',
-            'Kosta_Ath', 'SvenBG', 'Murat_34', 'Giorgio_Mi', 'Hans_HH', 'Taro_Tokyo', 'Alex_Lon',
-            'PipMaster', 'DoubleSix_FR', 'BackgameKing', 'Anchor24', 'CubeHunter', 'PrimeBuilder',
+            'Thomas R.', 'Laurent B.', 'Mehdi S.', 'David L.', 'Philippe M.', 'Marc V.',
+            'Kosta P.', 'Sven L.', 'Murat K.', 'Giorgio M.', 'Hans W.', 'Taro S.', 'Alex C.',
+            'Arthur D.', 'Louis M.', 'William H.', 'Javier R.', 'Matteo B.', 'Lucas F.',
             'Sophie M.', 'Jean-Luc B.', 'Karim T.', 'Claire D.', 'Elena K.',
         ]) {
             expect(allNames.has(sample), `Exemple requis manquant : ${sample}`).toBe(true);
+        }
+        // Aucun pseudo robotique (*BG, jargon technique, code postal _34/_69) ne doit subsister
+        for (const forbidden of ['SvenBG', 'david_bg64', 'Murat_34', 'thomas_69', 'HitAndCover', 'BarPoint7', 'PipMaster']) {
+            expect(allNames.has(forbidden)).toBe(false);
         }
     });
 

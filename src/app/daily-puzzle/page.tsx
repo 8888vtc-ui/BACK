@@ -1,5 +1,5 @@
 /**
- * Route App Router `/daily-puzzle` — Puzzle Backgammon du Jour & Quizz ERH Adaptatif.
+ * Route App Router `/daily-puzzle` — Puzzle Backgammon du Jour & Quizz ER / PR Adaptatif.
  */
 
 import React from 'react';
@@ -8,9 +8,9 @@ import BlunderDrillView from '../../components/drills/BlunderDrillView';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
 
 export const metadata: Metadata = {
-    title: 'Puzzle Backgammon du Jour & Défi Tactique ERH | Backgammon Tour',
+    title: 'Puzzle Backgammon du Jour & Défi Tactique ER / PR | Backgammon Tour',
     description:
-        'Résolvez gratuitement le Puzzle Backgammon du Jour certifié par le moteur neuronal Open Sage 3-Ply et testez votre Indice ERH (Exploitation du Risque Humain).',
+        'Résolvez gratuitement le Puzzle Backgammon du Jour certifié par le moteur neuronal Open Sage 3-Ply et testez votre indice ER / PR.',
     alternates: {
         canonical: '/daily-puzzle',
         languages: {

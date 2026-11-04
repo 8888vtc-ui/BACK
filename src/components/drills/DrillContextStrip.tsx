@@ -2,11 +2,10 @@
 
 /**
  * @file src/components/drills/DrillContextStrip.tsx
- * @description Bandeau d'informations stratégiques épuré du Quiz (`/puzzles` ER/PR et `/drills` ERH) :
- * - Sous-titre unifié `Quiz ER / PR #N` (ou `Quiz ERH #N`).
+ * @description Bandeau d'informations stratégiques épuré du Quiz (`Quiz ER / PR`) :
+ * - Sous-titre unifié `Quiz ER / PR #N`.
  * - Masquage du badge de thème avant que le joueur ait cliqué pour ne pas lui souffler la réponse.
- * - 1 seule ligne de contexte stratégique : `Match 9 pts (4-4 • 5-away / 5-away) • Videau : 1 (Centre) • Retard : -31 pips`
- * - Suppression de la sous-ligne verbeuse "Portes faites : Blanc 3 | Noir 3 • Pions arrières...".
+ * - 1 seule ligne de contexte stratégique : `Match 9 pts (4-4 • 5-away / 5-away) • Videau : 1 (Centre) • Retard : -31 pips`.
  * - Strictement < 120 lignes, 0 `any`.
  */
 
@@ -18,7 +17,7 @@ export interface DrillContextStripProps {
     readonly currentBlunder: PlayerBlunderRecord;
     readonly currentIndex: number;
     readonly totalBlunders: number;
-    readonly isErMode: boolean;
+    readonly isErMode?: boolean;
     readonly showHint: boolean;
     readonly isRevealed?: boolean;
     readonly onToggleHint: () => void;
@@ -36,7 +35,6 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
     currentBlunder,
     currentIndex,
     totalBlunders,
-    isErMode,
     showHint,
     isRevealed = false,
     onToggleHint,
@@ -52,7 +50,7 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
             <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/10 pb-1.5">
                 <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
                     <span className="font-bold text-[#D4AF37]" data-testid="drill-subtitle-index">
-                        {isErMode ? `Quiz ER / PR #${currentIndex + 1}` : `Quiz ERH #${currentIndex + 1}`}
+                        {`Quiz ER / PR #${currentIndex + 1}`}
                     </span>
                     <span className="sr-only">{totalBlunders}</span>
                     <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${tierInfo.color}`}>
@@ -62,17 +60,13 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
                         <span
                             data-testid="drill-theme-badge"
                             title={`Thème stratégique : ${currentBlunder.conceptName}`}
-                            className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${
-                                isErMode
-                                    ? 'border-emerald-500/40 bg-emerald-950/80 text-emerald-200'
-                                    : 'border-[#D4AF37]/40 bg-[#050505] text-[#D4AF37]'
-                            }`}
+                            className="rounded border border-emerald-500/40 bg-emerald-950/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-200"
                         >
                             🔓 {currentBlunder.conceptName}
                         </span>
                     ) : (
                         <span data-testid="drill-theme-badge" className="sr-only">
-                            Thème : Mystère 🔒 {currentBlunder.conceptName}
+                            Thème : Mystère 🔒
                         </span>
                     )}
                 </div>
@@ -108,9 +102,6 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
 
             <span data-testid="drill-structure-summary" className="sr-only">
                 {telemetry.structureLineContext}
-            </span>
-            <span className="sr-only">
-                Jet à jouer : {currentBlunder.dice[0]} {currentBlunder.dice[1]} — Erreur piégeuse à éviter : {currentBlunder.playedMove} (-{currentBlunder.equityLoss.toFixed(3)} ΔEq)
             </span>
         </div>
     );

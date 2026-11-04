@@ -3,7 +3,7 @@
 /**
  * Conciergerie & Support Technique Zéro-Charge (`src/components/support/ConciergeSupportSection.tsx`).
  *
- * - Résout 95 % des demandes en 1 clic (Auto-Dépannage : Audit des dés, Reset Quizz ERH, Effacement RGPD).
+ * - Résout 95 % des demandes en 1 clic (Auto-Dépannage : Audit des dés, Reset Quizz ER / PR, Effacement RGPD).
  * - Pour les 5 % restants : formulaire interne qui envoie à `/api/support` côté serveur,
  *   sans JAMAIS afficher l'adresse email personnelle de l'administrateur au joueur.
  * - Strictement 0 `any`, < 185 lignes.
@@ -27,7 +27,7 @@ export const ConciergeSupportSection: React.FC = () => {
 
     const handleResetErhQuiz = () => {
         resetAdaptivePlayerProfile();
-        setQuickActionDone('✅ Votre profil de Quizz ERH et vos 9 jauges ont été remis à neuf.');
+        setQuickActionDone('✅ Votre profil de Quizz ER / PR et vos 9 jauges ont été remis à neuf.');
     };
 
     const handleGdprErase = async () => {
@@ -84,7 +84,7 @@ export const ConciergeSupportSection: React.FC = () => {
                     className="flex flex-col justify-between rounded-xl border border-white/10 bg-black/50 p-3 text-left hover:border-[#f3c65f]/50 transition"
                 >
                     <span className="text-xs font-extrabold text-[#f3c65f]">🎭 Pourquoi mon coup est une erreur ?</span>
-                    <span className="mt-1 text-[11px] text-stone-400">Ouvrir le Quizz ERH &amp; le Coach Vocal</span>
+                    <span className="mt-1 text-[11px] text-stone-400">Ouvrir le Quizz ER / PR &amp; le Coach Vocal</span>
                 </Link>
 
                 <button
@@ -93,7 +93,7 @@ export const ConciergeSupportSection: React.FC = () => {
                     onClick={handleResetErhQuiz}
                     className="flex flex-col justify-between rounded-xl border border-white/10 bg-black/50 p-3 text-left hover:border-amber-400/50 transition"
                 >
-                    <span className="text-xs font-extrabold text-amber-200">🔄 Réinitialiser mon Quizz ERH</span>
+                    <span className="text-xs font-extrabold text-amber-200">🔄 Réinitialiser mon Quizz ER / PR</span>
                     <span className="mt-1 text-[11px] text-stone-400">Remettre mes 9 jauges à zéro en 1 clic</span>
                 </button>
 

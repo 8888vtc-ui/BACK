@@ -15,7 +15,8 @@ import { DAILY_PUZZLES_CATALOG } from '../lib/puzzle/puzzleService';
 import { PUZZLE_DATABASE } from '../features/puzzles/puzzleDatabase';
 import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../lib/engine/gnubg3PlyCertifiedPositions';
 import { GNUBG_3PLY_QUIZ_BANK } from '../features/drills/gnubg3PlyQuizBank';
-import { DB_CLEAN_VERSION, runDbCleanMigration } from '../lib/storage/dbCleanMigration';
+import { BGSAGE_3PLY_FACTORY_SEED } from '../features/drills/bgsage3PlyFactorySeed';
+import { APP_VERSION_STAMP, DB_CLEAN_VERSION, runDbCleanMigration } from '../lib/storage/dbCleanMigration';
 
 const SRC = path.resolve(__dirname, '..');
 const ROOT = path.resolve(SRC, '..');
@@ -51,6 +52,7 @@ const FAKE_ENGINE_PATTERN =
 const BENCHMARK_XGID_BY_ID = new Set<string>([
     ...GNUBG_3PLY_CERTIFIED_POSITIONS.map((p) => p.id),
     ...GNUBG_3PLY_QUIZ_BANK.map((q) => q.id),
+    ...BGSAGE_3PLY_FACTORY_SEED.map((s) => s.id),
 ]);
 
 describe('Garde-fous quiz_and_accounts_v3_clean — Boucle FlashLite-Loop-Inspector', () => {
@@ -70,8 +72,8 @@ describe('Garde-fous quiz_and_accounts_v3_clean — Boucle FlashLite-Loop-Inspec
         ];
         expect(legacyPuzzles.map((p) => p.id)).toEqual([]);
 
-        // Vérifie la clé de purge navigateur `quiz_and_accounts_v3_clean`
-        expect(DB_CLEAN_VERSION).toBe('quiz_and_accounts_v3_clean');
+        // Vérifie la clé de purge navigateur `APP_VERSION_STAMP`
+        expect(DB_CLEAN_VERSION).toBe(APP_VERSION_STAMP);
         const mem = new Map<string, string>([
             ['bg_blunder_bank', '[{"id":"legacy_1"}]'],
             ['bg_bot_cohort_profiles', '[{"id":"bot_fake"}]'],
@@ -86,7 +88,7 @@ describe('Garde-fous quiz_and_accounts_v3_clean — Boucle FlashLite-Loop-Inspec
             },
         });
         expect(removed).toBe(2);
-        expect(mem.get('bg_db_clean_version')).toBe('quiz_and_accounts_v3_clean');
+        expect(mem.get('bg_db_clean_version')).toBe(APP_VERSION_STAMP);
     });
 
     it('Test strict #2 (Zéro Ancien Compte) : assert(oldBotAccountsCount === 0) en DB et dans le code', () => {

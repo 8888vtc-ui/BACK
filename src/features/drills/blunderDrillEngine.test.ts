@@ -29,7 +29,7 @@ describe('BlunderDrillEngine Module', () => {
     });
 
     it('valide immédiatement un coup direct identique au coup optimal', () => {
-        const blunder = BENCHMARK_BLUNDERS[0]!;
+        const blunder = BENCHMARK_BLUNDERS.find((b) => b.quizType !== 'CUBE_DECISION') ?? BENCHMARK_BLUNDERS[0]!;
         const moves = parseCoachNotationMoves(blunder.optimalMove, 'X');
 
         const result = validateDrillMove(blunder, moves);
@@ -41,7 +41,7 @@ describe('BlunderDrillEngine Module', () => {
     });
 
     it('valide une variante acceptable déclarée avec une perte d’équité minimale', () => {
-        const blunder = BENCHMARK_BLUNDERS[0]!;
+        const blunder = BENCHMARK_BLUNDERS.find((b) => b.quizType !== 'CUBE_DECISION') ?? BENCHMARK_BLUNDERS[0]!;
         const notation = blunder.acceptableMoves?.[0] ?? blunder.optimalMove;
         const moves = parseCoachNotationMoves(notation, 'X');
 
@@ -149,9 +149,9 @@ describe('BlunderDrillEngine Module', () => {
             expect(pos.moves[0]!.win).toBeGreaterThan(0);
         }
 
-        // Niveau N+1 standard : Joueur ER 8.0 -> Cible ER 6.7
+        // Niveau N+1 standard : Joueur ER 8.0 -> Cible ER 7.5 (BASE_DELTA = 0.5)
         const normal = computeNPlus1TargetEr(8.0, 0, 0);
-        expect(normal.targetQuizEr).toBe(6.7);
+        expect(normal.targetQuizEr).toBe(7.5);
         expect(normal.regulationState).toBe('NORMAL');
 
         // Auto-régulation Up (série de réussites au 1er essai) : baisse la cible vers Maître/GM

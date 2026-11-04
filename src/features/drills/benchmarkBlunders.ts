@@ -11,6 +11,7 @@ import { parseXGID, X_BAR, O_BAR, X_OFF, O_OFF } from '../../engine/backgammonEn
 import { validateBoardState, resolveSemanticArchetype } from './drillSubAgentsPipeline';
 import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../../lib/engine/gnubg3PlyCertifiedPositions';
 import { GNUBG_3PLY_QUIZ_BANK } from './gnubg3PlyQuizBank';
+import { BGSAGE_3PLY_FACTORY_SEED } from './bgsage3PlyFactorySeed';
 
 function boardFromXgid(xgid: string): number[] {
     const parsed = parseXGID(xgid);
@@ -54,6 +55,16 @@ export interface HarvestedSeedInput {
     proverb: string;
     hint: string;
     commentaryVariants: string[];
+    quizTargetER?: number;
+    quizType?: 'CHECKER_PLAY' | 'CUBE_DECISION';
+    candidateMoves3Ply?: ReadonlyArray<{
+        readonly rank: number;
+        readonly notation: string;
+        readonly equityLoss: number;
+        readonly win: number;
+        readonly winGammon: number;
+    }>;
+    plyCount?: number;
 }
 
 function extractMatchContextFromXgid(xgid: string): NonNullable<PlayerBlunderRecord['matchContext']> {
@@ -160,8 +171,18 @@ function buildHarvestedBlunder(seed: HarvestedSeedInput, _idx: number): PlayerBl
             cachedSemantic = null;
         },
         hint: seed.hint,
-        commentaryVariants: seed.commentaryVariants,
+        commentaryVariants: seed.commentaryVariants && seed.commentaryVariants.length >= 3
+            ? seed.commentaryVariants
+            : [
+                `GNU Backgammon 3-ply : ${seed.optimalMove} surclasse ${seed.playedMove}.`,
+                `Analyse Open Sage / GNUBG : ${seed.explanation || seed.whyFailed}`,
+                `Classement tactique 3-ply : ${seed.quizChoices.join(' > ')}`,
+              ],
         tier: seed.tier,
+        quizTargetER: seed.quizTargetER,
+        quizType: seed.quizType,
+        candidateMoves3Ply: seed.candidateMoves3Ply,
+        plyCount: seed.plyCount ?? 3,
         timesReviewed: 0,
         timesSolved: 0,
         isMastered: false,
@@ -241,7 +262,7 @@ function seedFromGnubg(
         whyFailed: `${second.notation} perd ${gap.toFixed(3)} EMG face à ${best.notation} (GNU Backgammon 3-ply cubeful).`,
         explanation: `GNU Backgammon 3-ply classe ${best.notation} en n°1 : ${winPct} % de gain, ${gammonPct} % de gammon.`,
         proverb: CONCEPT_PRINCIPLES[conceptId] ?? 'Comparez les coups candidats sur les 36 lancers adverses.',
-        hint: `Le meilleur coup commence par ${best.notation.split(' ')[0]}.`,
+        hint: 'Observez le compte de course et vos 36 lancers constructifs avant de valider votre coup.',
         commentaryVariants: [
             `GNU Backgammon 3-ply : ${best.notation} devance ${second.notation} de ${gap.toFixed(3)} EMG.`,
             `${best.notation} : ${winPct} % de victoires selon GNU Backgammon 3-ply.`,
@@ -258,19 +279,28 @@ function buildGnubgOnlyBank(): PlayerBlunderRecord[] {
         seenXgid.add(s.xgid);
         seeds.push(s);
     };
+    for (const s of BGSAGE_3PLY_FACTORY_SEED) {
+        push(s);
+    }
     for (const p of GNUBG_3PLY_CERTIFIED_POSITIONS) {
         push(seedFromGnubg(p.id, p.xgid, p.dice, p.conceptId, p.moves));
     }
     for (const q of GNUBG_3PLY_QUIZ_BANK) {
         push(seedFromGnubg(q.id, q.xgid, q.dice, q.conceptId, q.candidateMoves3Ply));
     }
-    return seeds.map((s, idx) => buildHarvestedBlunder(s, idx));
+    return seeds
+        .map((s, idx) => buildHarvestedBlunder(s, idx))
+        .filter((b) => {
+            const v = validateBoardState(b.board, b.player);
+            return v.whitePips < 145 && v.blackPips < 145;
+        });
 }
 
 export const BENCHMARK_BLUNDERS: PlayerBlunderRecord[] = buildGnubgOnlyBank();
 
 /** Ensemble des XGID validés par GNUBG (utilisé par le garde-fou « zéro ancien quiz »). */
 export const GNUBG_VERIFIED_XGIDS: ReadonlySet<string> = new Set([
+    ...BGSAGE_3PLY_FACTORY_SEED.map((s) => s.xgid),
     ...GNUBG_3PLY_CERTIFIED_POSITIONS.map((p) => p.xgid),
     ...GNUBG_3PLY_QUIZ_BANK.map((q) => q.xgid),
 ]);

@@ -1,47 +1,57 @@
-# GEMINI.md — Charte Architecturale, Vérité Métier ER/PR vs ERH vs Rating & Protocole d'Épure
+# GEMINI.md — Charte Architecturale, Vérité Métier ER/PR vs Rating & Protocole d'Épure
+
+> **RÈGLE ABSOLUE DE FORMATAGE (COPIE EN 1 CLIC)** : Tu dois OBLIGATOIREMENT encapsuler l'intégralité de ta réponse dans UN SEUL bloc de code Markdown (` ```txt ... ``` `) pour que l'utilisateur puisse cliquer sur le bouton "Copy" en 1 clic sans jamais sélectionner de texte à la souris.
+
+### 📜 CONSTITUTION ANTI-MOCK, BARÈME ΔEMG & VÉRITÉ 3-PLY
+1. **Zéro Mock Moteur (`HARDCODED_MOCK_PROBABILITIES_DETECTED`)** : Il est formellement interdit d'utiliser des probabilités rondes inventées (`0.45`, `0.50`, `0.58`) ou de mocker `bgsage` (même dans les tests). Tout quiz/coup avec des probabilités rondes multiples de `0.01` lève `HARDCODED_MOCK_PROBABILITIES_DETECTED`.
+2. **Double Sécurité Exclusive Open Sage (`OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED`)** : Seul `bgsage` Cloud Run (24 réseaux `stage11`) joue et évalue. Si `bgsage` est injoignable après 3 retries (`0 ms`, `250 ms`, `500 ms`), le code lève `OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED` (zéro fallback de jeu local ou LLM).
+3. **Zéro `BEAVER` en Match Play (`matchLength > 0`, `MATCH_PLAY_BEAVER_FORBIDDEN`)** et **Zéro `ERH`** dans tout le projet (seuls `ER / PR` `0.0–30.0` et `Rating` `1500` existent).
+4. **Barème ΔEMG & `SYSTEM_PROMPT` Interne de Gemini Lite (`src/lib/coachSystemPrompt.ts`)** :
+   - \(0.000 \le |\Delta\text{EMG}| \le 0.020\text{ EMG}\) (`ER / PR <= 10.0`) = **Coup Optimal ou Très Bon Coup (`NOT_A_BLUNDER_GOOD_MOVE`)** : interdiction d'appeler cela une erreur ou de créer un quiz de blunder (`"👍 Très bon coup (-0.012 EMG) ! Ce n'est pas une erreur, mais voici comment gagner +0.012 EMG de plus..."`).
+   - \(0.021 \le |\Delta\text{EMG}| \le 0.079\text{ EMG}\) = **Imprécision / Mieux à faire**.
+   - \(|\Delta\text{EMG}| \ge 0.080\text{ EMG}\) (ou \(\ge 0.045\text{ EMG}\) pour Expert/Master) = **Vrai Blunder (`🔥 Blunder`)** + les 6 Lois Internes injectées dans le `systemInstruction` de Gemini Lite.
+
+---
 
 > **Statut : OBLIGATOIRE.** Ce fichier constitue la source de vérité unique synchronisée avec [`AGENTS.md`](AGENTS.md), [`PROJECT_MAP.md`](PROJECT_MAP.md), [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md).
 
 > 🚨 **AVERTISSEMENT BOTS (2026-11-01) — voir [`BOTS_AUDIT_POSTMORTEM.md`](BOTS_AUDIT_POSTMORTEM.md).**
-> Nos bots locaux (BT-Core « 3-ply », BT-ERH, « BT-Neural Goliath MoE-6 », heuristiques) ne sont **pas exploitables** :
-> mesurés contre GNU Backgammon 3-ply, ils jouent comme une heuristique simple. Seul **Open Sage (Cloud Run)** est conservé pour jouer.
-> Les PR/Elo « officiels certifiés » des bots étaient saisis à la main : supprimés. Ne jamais réécrire « certifié » sans mesure GNUBG versionnée.
+> Nos bots locaux ne sont **pas exploitables** : seul **Open Sage (Cloud Run)** est conservé pour jouer. ERH a été définitivement supprimé de tout le logiciel au profit du double indicateur officiel.
 
 ---
 
-## 1. Vérité Métier Absolue : Focus Exclusif `ER` (`0.0` à `30.0`), Certification 3-Ply GNU Backgammon & Sélection Adaptative `N+1`
+## 1. Vérité Métier Absolue : Focus Exclusif `ER / PR` (`0.0` à `30.0`) & `Rating` (`1500`)
 
-Il est formellement interdit de mélanger le classement Elo/Glicko-2 avec le taux d'erreur `ER` (*Error Rate*) :
-
-1. **Focus Exclusif Phase 1 sur l'`ER` (`0.0` à `30.0`)** :
-   - `ER` (*Error Rate* officiel $\text{ER} = \Delta\text{EMG moyen par décision non forcée} \times 500$) évolue sur l'échelle stricte de **`0.0` (Perfection Grand-Maître)** à **`30.0` (Novice)** — plus le chiffre est bas, meilleur est le joueur (initialisé à `6.3`).
-   - L'`ERH` (*Error Rate Humain*) est mis en pause proprement pour la Phase 2 afin de concentrer 100 % de l'UI et du moteur sur l'**`ER`** et la certification **3-ply**.
-   - **Évolution exclusivement par dixièmes (`-0.1`, `-0.2` ou `+0.2`, `+0.3`, `+0.4`, `+0.5`)** :
-     * ✅ **Coup Optimal (`0.000 EMG`)** : l'`ER` baisse par dixièmes (ex. **`▼ -0.1 (Progression)`** en vert, passant de `6.3` ➔ `6.2`).
-     * ❌ **Erreur ou Blunder (ex. `-0.084 EMG`)** : l'`ER` augmente par dixièmes selon la gravité (ex. **`▲ +0.4 (Erreur)`** en rouge, passant de `6.3` ➔ `6.7`).
-2. **Preuve & Validation Officielle 3-Ply via GNU Backgammon (`gnubg-cli.exe -t -q`)** :
-   - Interdiction absolue des quiz `0-ply` / `1-ply` / `2-ply` et des positions de **Course Pure sans contact** (`isContact(board) === false` / `PURE_RACE`).
-   - Validation croisée via `scripts/verify_3ply_with_gnubg.ts` et rapport officiel [`CERTIFICATION_3PLY_REPORT.md`](CERTIFICATION_3PLY_REPORT.md) comparant le temps d'inférence réel, les 5 probabilités neuronales ($P(\text{win})$, $P(\text{win G})$, $P(\text{win BG})$, $P(\text{lose G})$, $P(\text{lose BG})$) et le $\Delta\text{EMG}$ du Top 5 en `3-ply cubeful`.
-3. **Sélection Adaptative Déterministe « Niveau $N+1$ » (Zéro `Math.random()`)** :
-   - $\text{ER}_{\text{joueur}}$ = moyenne pondérée entre l'`ER` en Quiz et l'`ER` en Analyse de Parties.
-   - **Règle du Niveau $N+1$** : $\text{Cible\_Quiz} = \max\left(1.0,\; \text{ER}_{\text{joueur}} - \Delta_{N+1}\right)$ avec auto-régulation dynamique **Up & Down** (baisse vers `5.0`, `3.5`, `2.0` sur série de réussites au 1er essai ; remontée de `+0.8` à `+1.2` sur 2 échecs consécutifs).
-
----
-
-## 2. Orchestration des 6 Sous-Agents Spécialisés en Coulisses (`Flash-Lite` & `Flash` — Zéro Nom Technique à l'Écran)
-
-1. **`FlashLite-GNUBG-3Ply-Verifier` (`gemini-2.5-flash-lite`)** : Pilote l'interface CLI avec GNU Backgammon (`gnubg-cli.exe -t -q`), vérifie la concordance des probabilités `3-ply cubeful` et génère le rapport de certification [`CERTIFICATION_3PLY_REPORT.md`](CERTIFICATION_3PLY_REPORT.md).
-2. **`FlashLite-NonTrivial-Quiz-Filter` (`gemini-2.5-flash-lite`)** : Rejette 100 % des courses pures (`isContact(board) === false`), des coups forcés et des évidences ($> 0.120\text{ EMG}$ trivial) pour ne retenir que les dilemmes stratégiques à $\ge 4$ coups légaux non triviaux.
-3. **`FlashLite-36Rolls-Geometric-Extractor` (`gemini-2.5-flash-lite`)** : Calcule le Pip Count exact (source unique `pipCount(board)`), vérifie les **15 pions par camp** et simule les 36 lancers du tour suivant (*1-Roll Lookahead*).
-4. **`Flash-Adaptive-NPlus1-Selector` (`gemini-2.5-flash`)** : Calcule en temps réel l'`ER` combiné du joueur (Quiz + Parties) et sélectionne de manière 100 % déterministe le prochain quiz au **Niveau $N+1$** avec régulation dynamique Up/Down.
-5. **`Flash-3Ply-Pedagogical-Coach` (`gemini-2.5-flash`)** : Rédige l'indice socratique au 1er essai raté (`Essais : 1/2 ❤️🖤`), le feedback nuancé (`-0.010 EMG` = *Très bon coup ! 0 pénalité ER*) et la synthèse 3-ply finale en $< 28$ mots.
-6. **`FlashLite-Doc-Coherence-Keeper` (`gemini-2.5-flash-lite`)** : Audite en continu la documentation (`GEMINI.md`, `AGENTS.md`, `CERTIFICATION_3PLY_REPORT.md`) et bloque toute dérive vers le 0-ply ou l'aléatoire.
+1. **Suppression Définitive de l'ERH & Double Indicateur Officiel** :
+   - L'ERH est définitivement supprimé. Le logiciel fonctionne exclusivement avec **`ER / PR` (`0.0–30.0`)** et **`Rating` (`1500` Elo / Glicko-2)**.
+   - `ER / PR` mesure la précision tactique et l'équité perdue (\(\text{PR} = \Delta\text{EMG} \times 500\)), évoluant par dixièmes.
+2. **Ciblage Automatique N+1 & Notation `quizTargetER`** :
+   - Notation numérique exacte `quizTargetER` (`0.5` à `25.0` par pas de `0.5`) pour le ciblage automatique $N+1$ (\(\text{ER}_{\text{joueur}} - 0.5\)).
+   - Badge officiel : `Calibrage Quiz : ER / PR X.X (Objectif N+1)`.
+3. **Sas Coupe-Circuit `validateSingleQuizStrict(quiz)` en 10 Contrôles Unitaires** :
+   1. `plyCount >= 6`
+   2. `pips <= 150`
+   3. 15 pions exacts par camp
+   4. Pip Count unique et cohérent
+   5. Contact obligatoire (`isContact(board) === true`)
+   6. \(\ge 4\) coups légaux avec \(0.004 \le \Delta E_{1,2} \le 0.140\)
+   7. `evaluatedPly === 3` (Certification 3-Ply GNU Backgammon / Open Sage)
+   8. Accord `bgsage 3-ply` vs `gnubg 3-ply` \(\le 0.025 \text{ EMG}\)
+   9. Simulation légale sur les 24 flèches
+   10. Cohérence géométrique du texte coach et formats de match `[0, 3, 5, 7, 9, 11, 21]`.
 
 ---
 
-## 3. Charte Modulaire & Plafonds de Lignes (Règle R1 — `SCALABILITY.md`)
+## 2. Orchestration des 6 Sous-Agents Spécialisés en Coulisses
+- `FlashLite-GNUBG-3Ply-Verifier`, `FlashLite-NonTrivial-Quiz-Filter`, `FlashLite-36Rolls-Geometric-Extractor`, `Flash-Adaptive-NPlus1-Selector`, `Flash-3Ply-Pedagogical-Coach`, `FlashLite-Doc-Coherence-Keeper`.
 
-- **Composant React (`.tsx`)** : $\le 300$ lignes max.
-- **Hook React (`.ts`)** : $\le 200$ lignes max.
-- **Module de logique pure (`.ts`)** : $\le 400$ lignes max.
-- **Typage strict (`GOVERNANCE.md`)** : **ZÉRO `any`** en production, validation **Zod** aux frontières d'entrée/sortie.
+---
+
+## 3. Les 7 Lois d'Intégrité des Quiz 3-Ply (Anti-Hallucination)
+1. **Loi d'Authenticité Cubeful 3-Ply (Zéro Formule Locale & Somme des Probabilités = 1.000)** : Toute équité (`equity`), perte (`loss` / `ΔEMG`) et probabilité (`W`, `WG`, `WBG`, `LW`, `LG`, `LBG`) d'un quiz (`CHECKER_PLAY` ou `CUBE_DECISION`) doit provenir à 100 % de la sortie brute de `gnubg-cli` 3-ply ou Open Sage 3-ply avec `Math.abs(prob.win + prob.loseWin - 1) <= 0.001`. Toute formule locale ou décalage synthétique (ex: `ndEq - 0.022`) est strictement interdit.
+2. **Loi du Contexte de Match Complet** : Toute évaluation `CHECKER_PLAY` ou `CUBE_DECISION` doit transmettre le `XGID` complet incluant la valeur du videau, la possession du videau, le score exact des deux joueurs, le flag Crawford et la longueur du match. Évaluer une position de match en Money Game est une violation critique.
+3. **Loi de Validité du Videau (`:00:`)** : Tout quiz `CUBE_DECISION` doit obligatoirement avoir les dés à `:00:` dans son `XGID` (décision prise avant le lancer de dés) et comparer les 3 vraies équités Cubeful (`No Double`, `Double/Take`, `Double/Pass`).
+4. **Loi de Notation Exacte** : Les mouvements de pions doivent conserver la notation exacte issue du moteur 3-ply, incluant impérativement les astérisques de frappe (`*`).
+5. **Loi d'Unicité Physique des Plateaux (Anti-Recyclage de Score)** : Il est interdit de fabriquer artificiellement des milliers de quiz en réutilisant la même configuration de plateau (`board` 26 cases + dés) sous différents scores de match. Chaque couple `${quizType}:${boardPrefix26}:${dice}` doit être unique (ou plafonné à maximum 2 variantes de score critique comme Normal vs DMP/Gammon Save si et seulement si le meilleur coup change réellement).
+6. **Loi d'Écart Minimum Pédagogique (Zéro Ex Æquo)** : Tout quiz dont le choix #2 a une perte d'équité `loss < 0.003` par rapport au choix #1 (coups ex æquo) doit être rejeté par le validateur afin de ne jamais pénaliser un joueur sur deux coups mathématiquement équivalents.
+7. **Loi de Reprise Atomique (`Resume` & Seed Sync)** : Tout script de génération doit charger les clés existantes au démarrage (`Set`), écrire de façon atomique (`appendFileSync`), et synchroniser périodiquement `src/features/drills/bgsage3PlyFactorySeed.ts`.

@@ -46,23 +46,26 @@ export function useOpeningAssistant({
     // serveur et le client. La préférence persistée est appliquée dans l'effet
     // ci-dessous, une fois le composant monté.
     const [isLiveAdviceEnabled, setIsLiveAdviceEnabled] = useState<boolean>(
-        initialLiveAdvice !== undefined ? initialLiveAdvice : true,
+        initialLiveAdvice !== undefined ? initialLiveAdvice : false,
     );
 
     useEffect(() => {
-        if (initialLiveAdvice !== undefined) return;
+        if (initialLiveAdvice !== undefined || isMultiplayerActive) return;
         if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') return;
         const stored = window.localStorage.getItem('bg_live_advice');
-        if (stored !== null) {
-            setIsLiveAdviceEnabled(stored === 'true');
+        if (stored === 'true') {
+            setIsLiveAdviceEnabled(true);
         }
-    }, [initialLiveAdvice]);
+    }, [initialLiveAdvice, isMultiplayerActive]);
     const [isOpeningDismissed, setIsOpeningDismissed] = useState(false);
-    const [isOpeningHighlightActive, setIsOpeningHighlightActive] = useState(true);
+    const [isOpeningHighlightActive, setIsOpeningHighlightActive] = useState(
+        initialLiveAdvice !== undefined ? initialLiveAdvice : false,
+    );
 
     const toggleLiveAdvice = useCallback(() => {
         setIsLiveAdviceEnabled((prev) => {
             const next = !prev;
+            setIsOpeningHighlightActive(next);
             if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
                 window.localStorage.setItem('bg_live_advice', String(next));
             }
@@ -71,13 +74,13 @@ export function useOpeningAssistant({
     }, []);
 
     const openingEntry = useMemo<OpeningEntry | null>(() => {
-        if (!isLiveAdviceEnabled || isOpeningDismissed || !game.dice || game.state.turn !== 'X' || game.phase !== 'PLAYING_MOVES') return null;
+        if (isMultiplayerActive || !isLiveAdviceEnabled || isOpeningDismissed || !game.dice || game.state.turn !== 'X' || game.phase !== 'PLAYING_MOVES') return null;
         if (game.usedDice[0] || game.usedDice[1]) return null;
         if (isOpeningSituation(game.state.board, game.dice, historyLength)) {
             return getOpening(game.dice[0], game.dice[1]);
         }
         return null;
-    }, [isLiveAdviceEnabled, game.dice, game.state.turn, game.phase, game.usedDice, game.state.board, isOpeningDismissed, historyLength]);
+    }, [isMultiplayerActive, isLiveAdviceEnabled, game.dice, game.state.turn, game.phase, game.usedDice, game.state.board, isOpeningDismissed, historyLength]);
 
     useEffect(() => {
         if (game.phase === 'WAITING_FOR_ROLL' && !game.dice) {

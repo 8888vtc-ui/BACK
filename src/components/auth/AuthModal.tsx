@@ -198,8 +198,8 @@ export default function AuthModal({
                     <p className="mt-1 text-xs text-amber-200/90 font-medium">
                         {requireRegistrationNote ||
                             (isEn
-                                ? 'Required to unlock the board, save your ERH Index & Gold Seals.'
-                                : 'Inscription rapide requise pour débloquer le plateau, votre Indice ERH et vos Sceaux d’Or.')}
+                                ? 'Required to unlock the board, save your ER / PR Index & Gold Seals.'
+                                : 'Inscription rapide requise pour débloquer le plateau, votre Indice ER / PR et vos Sceaux d’Or.')}
                     </p>
                 </div>
 
@@ -363,8 +363,8 @@ export default function AuthModal({
                         <div>
                             <label className="block text-xs font-bold text-amber-100 mb-1">
                                 {isEn
-                                    ? '3. Your Current Level (calibrates Coach & ERH Quiz)'
-                                    : '3. Votre Niveau (calibre le Coach & le Quizz ERH)'}
+                                    ? '3. Your Current Level (calibrates Coach & ER / PR Quiz)'
+                                    : '3. Votre Niveau (calibre le Coach & le Quizz ER / PR)'}
                             </label>
                             <div className="grid grid-cols-3 gap-1.5" role="group" aria-label="Niveau joueur">
                                 {(
@@ -458,8 +458,8 @@ export default function AuthModal({
                     >
                         🔒{' '}
                         {isEn
-                            ? 'GDPR & CNIL: your nickname, email and matches are used solely to save your ERH Index & ELO. Zero ad trackers, zero data resale, 1-click deletion. '
-                            : 'Conformité RGPD & CNIL : vos données (Pseudo, Email et parties) servent uniquement à sauvegarder votre Indice ERH et votre ELO. Zéro publicité, zéro revente, suppression en 1 clic. '}
+                            ? 'GDPR & CNIL: your nickname, email and matches are used solely to save your ER / PR Index & ELO. Zero ad trackers, zero data resale, 1-click deletion. '
+                            : 'Conformité RGPD & CNIL : vos données (Pseudo, Email et parties) servent uniquement à sauvegarder votre Indice ER / PR et votre ELO. Zéro publicité, zéro revente, suppression en 1 clic. '}
                         <Link
                             href="/privacy"
                             onClick={onClose}

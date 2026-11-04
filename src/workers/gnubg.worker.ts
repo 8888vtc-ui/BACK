@@ -16,13 +16,14 @@
  */
 
 import { serializeXGID } from '../engine/backgammonEngine';
-import { resolveBoardState } from '../lib/engine/evaluator';
 import {
-    analyzeBtCoreCube,
-    analyzeBtCoreMoves,
-    evaluateBtCoreBoard,
-    findBestBtCoreMove,
-} from '../lib/engine/btCoreEngine';
+    analyzeBoardCube,
+    analyzeBoardMoves,
+    evaluateBoard,
+    findBestBoardMove,
+    resolveBoardState,
+} from '../lib/engine/evaluator';
+import { OPENSAGE_UNREACHABLE_ERROR_CODE } from '../lib/engine/bgsageClient';
 import {
     AnalyzeCubeParams,
     AnalyzeMovesParams,
@@ -55,6 +56,9 @@ export async function loadWasmAndWeights(_config: EngineInitConfig = {}): Promis
  * Traite une requête individuelle.
  */
 export async function handleRequest(request: WorkerRequest): Promise<unknown> {
+    if (process.env.NODE_ENV !== 'test' && request.type !== 'init') {
+        throw new Error(OPENSAGE_UNREACHABLE_ERROR_CODE);
+    }
     switch (request.type) {
         case 'init': {
             return {
@@ -68,7 +72,7 @@ export async function handleRequest(request: WorkerRequest): Promise<unknown> {
             const params = request.payload as EvaluateParams;
             const state = resolveBoardState(params.position, params.player);
             const xgid = serializeXGID(state);
-            const evalResult = evaluateBtCoreBoard(state, params.ply ?? 2);
+            const evalResult = evaluateBoard(state, params.ply ?? 2);
 
             const result: EvaluateResult = {
                 xgid,
@@ -83,7 +87,7 @@ export async function handleRequest(request: WorkerRequest): Promise<unknown> {
         case 'analyzeMoves': {
             const params = request.payload as AnalyzeMovesParams;
             const state = resolveBoardState(params.position);
-            const result = analyzeBtCoreMoves(state, params.dice, {
+            const result = analyzeBoardMoves(state, params.dice, {
                 candidateMoves: params.candidateMoves,
                 ply: params.ply ?? 2,
                 maxMoves: params.maxMoves ?? 5,
@@ -97,7 +101,7 @@ export async function handleRequest(request: WorkerRequest): Promise<unknown> {
         case 'analyzeCube': {
             const params = request.payload as AnalyzeCubeParams;
             const state = resolveBoardState(params.position);
-            const result: CubeDecisionResult = analyzeBtCoreCube(state, {
+            const result: CubeDecisionResult = analyzeBoardCube(state, {
                 score: params.score,
                 ply: params.ply ?? 2,
             });
@@ -110,7 +114,7 @@ export async function handleRequest(request: WorkerRequest): Promise<unknown> {
         case 'bestMove': {
             const params = request.payload as BestMoveParams;
             const state = resolveBoardState(params.position);
-            const result = findBestBtCoreMove(state, params.dice, params.ply ?? 2);
+            const result = findBestBoardMove(state, params.dice, params.ply ?? 2);
             if (!result) {
                 return null;
             }

@@ -58,7 +58,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
             { id: 'play', label: ui.navbar.play, icon: '🎲', href: '/', testId: 'nav-tab-play' },
             { id: 'tournaments', label: ui.navbar.tournaments, icon: '🌍', href: '/tournaments', testId: 'nav-tab-tournaments' },
             { id: 'puzzles', label: ui.navbar.puzzles, icon: '🧩', href: '/puzzles', moduleId: 'puzzles', testId: 'nav-tab-puzzles' },
-            { id: 'drills', label: ui.navbar.drills, icon: '🎯', href: '/drills', moduleId: 'drills', testId: 'nav-tab-drills' },
+            { id: 'drills', label: ui.navbar.drills, icon: '🎯', href: '/puzzles', moduleId: 'drills', testId: 'nav-tab-drills' },
             { id: 'openings', label: ui.navbar.openings, icon: '📖', href: '/academy', moduleId: 'openings', testId: 'nav-tab-openings' },
             { id: 'progression', label: ui.navbar.progression, icon: '📊', href: '/progression', moduleId: 'stats', testId: 'nav-tab-progression' },
             { id: 'academy', label: ui.navbar.academy, icon: '🏛️', href: '/academy', testId: 'nav-tab-academy' },
@@ -88,7 +88,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
         <nav
             aria-label="Navigation principale"
             data-testid="app-navbar"
-            className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-slate-950/90 backdrop-blur-xl"
+            className="sticky top-0 z-40 w-full border-b border-[#d4af37]/15 bg-gradient-to-b from-[#0b0d12]/95 to-[#050505]/90 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.03),0_8px_24px_-12px_rgba(0,0,0,0.8)]"
         >
             {/* Liens d'évitement accessibles WCAG 2.1 AA (traduits dynamiquement) */}
             <div className="sr-only focus-within:not-sr-only focus-within:fixed focus-within:left-2 focus-within:top-2 focus-within:z-50 focus-within:flex focus-within:gap-2">
@@ -103,7 +103,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                 </a>
             </div>
 
-            <div className="mx-auto flex h-13 max-w-7xl items-center justify-between gap-1.5 sm:gap-2 px-2 sm:px-6 overflow-hidden">
+            <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 sm:gap-3 px-3 sm:px-8 overflow-hidden">
                 {/* Gauche : Burger mobile + Marque épurée 2026 */}
                 <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                     <button
@@ -142,11 +142,14 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             <span className="text-xs sm:text-sm font-black tracking-wider text-white">
                                 BACKGAMMON
                             </span>
-                            <span className="rounded border border-[#f3c65f]/40 bg-[#f3c65f]/15 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#f3c65f]">
+                            <span className="rounded border border-[#f3c65f]/40 bg-[#f3c65f]/15 px-1.5 py-0.5 text-[11px] font-mono font-bold uppercase tracking-wider text-[#f3c65f]">
                                 TOUR
                             </span>
                         </div>
                     </Link>
+                    <span data-testid="app-version-badge" className="rounded-full border border-[#10B981]/35 bg-gradient-to-r from-[#0F2922]/90 via-[#0B0E14] to-[#D4AF37]/15 px-2.5 py-0.5 font-mono text-[11px] font-semibold tracking-tight text-[#34D399] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                        v3.0 • 3-Ply • Mistral Large 4
+                    </span>
                 </div>
 
                 {/* Centre : Liens sr-only (Navigation regroupée dans la Sidebar gauche sans doublon visuel dans la Topbar) */}

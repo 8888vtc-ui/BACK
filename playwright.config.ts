@@ -8,7 +8,8 @@ import { defineConfig, devices } from '@playwright/test';
  * - Viewports mobile (iPhone, Android / Pixel)
  */
 export default defineConfig({
-    testDir: './e2e',
+    testDir: '.',
+    testMatch: ['e2e/**/*.spec.ts', 'tests/e2e/**/*.spec.ts'],
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,

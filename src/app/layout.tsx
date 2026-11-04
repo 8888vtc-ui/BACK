@@ -22,7 +22,7 @@ export const metadata: Metadata = {
         template: '%s | Backgammon Tour',
     },
     description:
-        'Salon officiel Backgammon Tour & Cercle Monte-Carlo : jouez au Backgammon en ligne gratuit (matchs en 7 pts, Money Game, ELO) et progressez avec le Coach Vocal IA 3-Ply, la Méthode ERH (Exploitation du Risque Humain), le Quizz de vos Blunders et les Règles en 5 minutes.',
+        'Salon officiel Backgammon Tour & Cercle Monte-Carlo : jouez au Backgammon en ligne gratuit (matchs en 7 pts, Money Game, ELO) et progressez avec le Coach Vocal IA 3-Ply, l indice ER / PR, le Quizz de vos Blunders et les Règles en 5 minutes.',
     applicationName: 'Backgammon Tour',
     authors: [{ name: 'Backgammon Tour & Gammon Academy', url: SITE_URL }],
     generator: 'Next.js 15',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
         'jouer au backgammon gratuit',
         'apprendre le backgammon',
         'règles du backgammon',
-        'méthode erh backgammon',
+        'indice er pr backgammon',
         'quizz backgammon adaptatif',
         'backgammon online tournament',
         'coach backgammon ia',

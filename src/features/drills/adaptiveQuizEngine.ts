@@ -610,33 +610,33 @@ export function selectNextPersonalBlunderQuiz(
     };
 }
 
-export type ErhOpponentArchetypeId = 'timid_fearful' | 'weaker_error_prone' | 'reckless_brawler' | 'impatient_racer';
+export type ErOpponentArchetypeId = 'timid_fearful' | 'weaker_error_prone' | 'reckless_brawler' | 'impatient_racer';
 
-export interface ErhOpponentScenario {
-    readonly archetypeId: ErhOpponentArchetypeId;
+export interface ErOpponentScenario {
+    readonly archetypeId: ErOpponentArchetypeId;
     readonly badgeLabel: string;
-    readonly opponentErhScore: string;
+    readonly opponentErScore: string;
     readonly psychologicalPrompt: string;
     readonly exploitExplanation: string;
     readonly voiceBriefingText: string;
 }
 
-export const ERH_METHOD_VOICE_INTRO =
+export const ER_PR_METHOD_VOICE_INTRO =
     "Bienvenue dans le Quizz E R H : l'Exploitation du Risque et de l'Erreur Humaine. Contrairement aux moteurs classiques qui supposent que vous affrontez un robot parfait, la méthode E R H vous entraîne à jouer contre un vrai cerveau humain. Avant chaque coup, observez qui est en face de vous : est-ce un joueur peureux qui craint les coups durs, un joueur plus faible qui multiplie les fautes dès que la position se complique, ou un joueur impulsif ? Adaptez votre coup à sa psychologie pour gagner davantage de Sceaux d'Or !";
 
 /**
- * Génère le scénario psychologique ERH (Exploitation du Risque & de l'Erreur Humaine)
+ * Génère le scénario psychologique ER / PR (Exploitation du Risque & de l'Erreur Humaine)
  * adapté à la position du Quizz : comment jouer quand on sait que l'adversaire est
  * peureux, d'un niveau plus faible sujet aux erreurs, ou impulsif.
  */
-export function buildErhOpponentScenario(blunder: PlayerBlunderRecord): ErhOpponentScenario {
+export function buildErOpponentScenario(blunder: PlayerBlunderRecord): ErOpponentScenario {
     const catId = normalizeToQuizCategory(blunder.conceptId);
 
     if (catId === 'cube_decision' || catId === 'blitz_attack') {
         return {
             archetypeId: 'timid_fearful',
             badgeLabel: '😰 Profil Adverse : Joueur Peureux & Craintif',
-            opponentErhScore: 'ERH Adverse 19.5 (Peur du risque)',
+            opponentErScore: 'ER / PR Adverse 19.5 (Peur du risque)',
             psychologicalPrompt:
                 'Tu sais que ce joueur est peureux : il panique dès que tu menaces ses pions ou le videau et préfère fuir plutôt que se battre. Comment joues-tu ce coup pour maximiser sa peur ?',
             exploitExplanation: `Face à un joueur peureux, ${blunder.optimalMove} met une pression psychologique maximale sur ses cases vitales au lieu du coup mou ${blunder.playedMove}.`,
@@ -648,7 +648,7 @@ export function buildErhOpponentScenario(blunder: PlayerBlunderRecord): ErhOppon
         return {
             archetypeId: 'weaker_error_prone',
             badgeLabel: '🌱 Profil Adverse : Joueur Plus Faible (Sujet aux Fautes)',
-            opponentErhScore: 'ERH Adverse 22.8 (Craque sous la complexité)',
+            opponentErScore: 'ER / PR Adverse 22.8 (Craque sous la complexité)',
             psychologicalPrompt:
                 'Tu sais que ce joueur a un niveau plus faible et qu’il fait beaucoup d’erreurs dès qu’il y a des barrages et du contact. Comment joues-tu ce coup pour garder la position complexe et provoquer sa faute ?',
             exploitExplanation: `Contre un adversaire plus faible qui fait des erreurs, ${blunder.optimalMove} maintient une structure tendue où il va se tromper sur les 36 prochains dés, alors que ${blunder.playedMove} lui simplifie la tâche.`,
@@ -660,7 +660,7 @@ export function buildErhOpponentScenario(blunder: PlayerBlunderRecord): ErhOppon
         return {
             archetypeId: 'reckless_brawler',
             badgeLabel: '🔥 Profil Adverse : Joueur Impulsif (Attaque à tout va)',
-            opponentErhScore: 'ERH Adverse 16.4 (Frappe sans compter)',
+            opponentErScore: 'ER / PR Adverse 16.4 (Frappe sans compter)',
             psychologicalPrompt:
                 'Tu sais que ce joueur frappe tout ce qui bouge sans réfléchir à sa propre sécurité. Comment joues-tu ce coup pour ne lui laisser aucune cible gratuite et le laisser s’exposer ?',
             exploitExplanation: `Face à un joueur impulsif, ${blunder.optimalMove} verrouille tes points clés et punit ses attaques hasardeuses, tandis que ${blunder.playedMove} lui offre exactement la cible qu'il espérait.`,
@@ -671,7 +671,7 @@ export function buildErhOpponentScenario(blunder: PlayerBlunderRecord): ErhOppon
     return {
         archetypeId: 'impatient_racer',
         badgeLabel: '⏳ Profil Adverse : Joueur Impatient en Fin de Partie',
-        opponentErhScore: 'ERH Adverse 17.2 (Précipitation)',
+        opponentErScore: 'ER / PR Adverse 17.2 (Précipitation)',
         psychologicalPrompt:
             'Tu sais que ce joueur joue trop vite en course et gaspille ses pions par impatience. Comment joues-tu ce coup avec une rigueur chirurgicale ?',
         exploitExplanation: `Contre un joueur impatient, ${blunder.optimalMove} optimise chaque pip et chaque sortie sans laisser de trou, contrairement à ${blunder.playedMove}.`,

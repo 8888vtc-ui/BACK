@@ -58,9 +58,9 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         flag: '🇫🇷🇲🇨',
         countryName: 'France, Monaco & Francophonie',
         nativeGameName: 'Backgammon (Toutes Tables)',
-        seoTitle: 'Jouer au Backgammon en Ligne (France & Monaco) — Coach IA & Méthode ERH',
+        seoTitle: 'Jouer au Backgammon en Ligne (France & Monaco) — Coach IA & Méthode ER / PR',
         seoDescription:
-            'Plateforme francophone de référence inspirée du Cercle Monte-Carlo : jouez au Backgammon en ligne gratuitement, maîtrisez le Videau et réduisez votre PR avec le Coach Vocal IA et la Méthode ERH.',
+            'Plateforme francophone de référence inspirée du Cercle Monte-Carlo : jouez au Backgammon en ligne gratuitement, maîtrisez le Videau et réduisez votre PR avec le Coach Vocal IA et la Méthode ER / PR.',
         keywords: [
             'jouer au backgammon en ligne',
             'backgammon gratuit france',
@@ -76,11 +76,11 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         culturalHookTitle: 'Du Trictrac historique au Backgammon de Compétition Moderne (FFB & WBGF)',
         culturalHookBody:
             'La France et la Principauté de Monaco bercent l’élite mondiale du Backgammon depuis plus de cinquante ans. Contrairement au Jacquet ou au Trictrac ancien, le Backgammon moderne se joue avec le Videau (cube doubleur) et se mesure au Performance Rating (PR). Notre plateforme vous offre un entraînement de niveau Grand-Maître en français intégral.',
-        erhSectionTitle: 'La Méthode ERH : Exploitez la Psychologie et le Niveau Réel de votre Adversaire',
+        erhSectionTitle: 'La Méthode ER / PR : Exploitez la Psychologie et le Niveau Réel de votre Adversaire',
         erhSectionBody:
-            'Au-delà du coup théorique pur, notre Quizz ERH (Exploitation du Risque et de l’Erreur Humaine) vous apprend à ajuster votre stratégie face à un joueur prudent, impulsif ou sujet aux fautes sous pression.',
+            'Au-delà du coup théorique pur, notre Quizz ER / PR (Exploitation du Risque et de l’Erreur Humaine) vous apprend à ajuster votre stratégie face à un joueur prudent, impulsif ou sujet aux fautes sous pression.',
         ctaPlayLabel: '🎲 Jouer Maintenant en Français',
-        ctaQuizLabel: '🎭 Tester mon Indice ERH (Quizz)',
+        ctaQuizLabel: '🎭 Tester mon Indice ER / PR (Quizz)',
         ctaRulesLabel: '📖 Règles du Backgammon en 5 min',
         localHighlightsTitle: 'Tournois & Clubs Mythiques en France et à Monaco',
         localHighlights: [
@@ -95,8 +95,8 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
                 answer: 'Sur Backgammon Tour (Cercle Monte-Carlo), vous pouvez jouer gratuitement en ligne ou contre 5 Bots personnifiés, avec analyse du Performance Rating (PR) et Coach Vocal en français.',
             },
             {
-                question: 'Quelle est la différence entre le PR et l’Indice ERH au Backgammon ?',
-                answer: 'Le PR (Performance Rating) mesure l’écart mathématique face à un moteur parfait, tandis que notre Indice ERH mesure votre capacité à exploiter les erreurs et la psychologie d’un adversaire humain réel.',
+                question: 'Quelle est la différence entre le PR et l’Indice ER / PR au Backgammon ?',
+                answer: 'Le PR (Performance Rating) mesure l’écart mathématique face à un moteur parfait, tandis que notre Indice ER / PR mesure votre capacité à exploiter les erreurs et la psychologie d’un adversaire humain réel.',
             },
         ],
     },
@@ -108,9 +108,9 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         flag: '🇺🇸🇬🇧',
         countryName: 'United States & United Kingdom',
         nativeGameName: 'Tournament Backgammon',
-        seoTitle: 'Play Backgammon Online Free (USA & UK) — AI Coach, PR Analyzer & ERH Quiz',
+        seoTitle: 'Play Backgammon Online Free (USA & UK) — AI Coach, PR Analyzer & ER / PR Quiz',
         seoDescription:
-            'Play tournament-grade Backgammon online for free. Train with our 3-Ply Neural AI Coach, master the Doubling Cube, review your own match blunders, and test your ERH Index.',
+            'Play tournament-grade Backgammon online for free. Train with our 3-Ply Neural AI Coach, master the Doubling Cube, review your own match blunders, and test your ER / PR Index.',
         keywords: [
             'play backgammon online free',
             'backgammon ai coach',
@@ -126,11 +126,11 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         culturalHookTitle: 'From New York & Las Vegas Chouettes to London Mayfair Clubs',
         culturalHookBody:
             'Whether you compete on the ABT (American Backgammon Tour) in Las Vegas and Chicago or the UKBGF Tour in London, lowering your Performance Rating (PR) requires instant visual feedback. Our Chameleon Coach translates complex equity swings into clear 3-second tactical rules.',
-        erhSectionTitle: 'The ERH Method: Exploiting Human Risk & Opponent Error Rates',
+        erhSectionTitle: 'The ER / PR Method: Exploiting Human Risk & Opponent Error Rates',
         erhSectionBody:
-            'Engines assume a perfect opponent. In real club matches, knowing whether your opponent is cube-timid, overly aggressive, or prone to contact errors changes the optimal play. Train this edge in our ERH Quiz.',
+            'Engines assume a perfect opponent. In real club matches, knowing whether your opponent is cube-timid, overly aggressive, or prone to contact errors changes the optimal play. Train this edge in our ER / PR Quiz.',
         ctaPlayLabel: '🎲 Play Backgammon Now (Free)',
-        ctaQuizLabel: '🎭 Start Adaptive ERH Quiz',
+        ctaQuizLabel: '🎭 Start Adaptive ER / PR Quiz',
         ctaRulesLabel: '📖 Learn the Rules in 5 Min',
         localHighlightsTitle: 'Featured USA & UK Tournaments and Clubs',
         localHighlights: [
@@ -158,7 +158,7 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         flag: '🇩🇪🇦🇹🇨🇭',
         countryName: 'Deutschland, Österreich & Schweiz (DACH)',
         nativeGameName: 'Turnier-Backgammon',
-        seoTitle: 'Backgammon Online Spielen (Deutschland & DACH) — KI-Trainer & ERH-Methode',
+        seoTitle: 'Backgammon Online Spielen (Deutschland & DACH) — KI-Trainer & ER / PR-Methode',
         seoDescription:
             'Spielen Sie kostenlos Turnier-Backgammon online auf Deutsch. Verbessern Sie Ihr PR mit unserem 3-Ply KI-Coach, meistern Sie den Verdopplungswürfel und trainieren Sie Ihre eigenen Blunders.',
         keywords: [
@@ -175,11 +175,11 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         culturalHookTitle: 'Deutsche & Schweizer Backgammon-Tradition auf Weltklasseniveau',
         culturalHookBody:
             'Der deutschsprachige Raum zählt zu den stärksten Backgammon-Nationen Europas. Unser Chamäleon-Coach passt sich mit einem Klick Ihrem Niveau an: vom Einsteiger (Gewinnchancen in Prozent) über den Klubspieler bis zum Turnier-Profi (exakte Equity & PR).',
-        erhSectionTitle: 'Die ERH-Methode: Menschliche Fehlerraten & Psychologie gezielt nutzen',
+        erhSectionTitle: 'Die ER / PR-Methode: Menschliche Fehlerraten & Psychologie gezielt nutzen',
         erhSectionBody:
-            'Lernen Sie im ERH-Quiz, wie Sie gegen zögerliche, ungeduldige oder fehleranfällige Gegner im echten Turnierspiel die maximale Gewinnwahrscheinlichkeit herausholen.',
+            'Lernen Sie im ER / PR-Quiz, wie Sie gegen zögerliche, ungeduldige oder fehleranfällige Gegner im echten Turnierspiel die maximale Gewinnwahrscheinlichkeit herausholen.',
         ctaPlayLabel: '🎲 Jetzt auf Deutsch Spielen',
-        ctaQuizLabel: '🎭 Adaptives ERH-Quiz Starten',
+        ctaQuizLabel: '🎭 Adaptives ER / PR-Quiz Starten',
         ctaRulesLabel: '📖 Backgammon-Regeln in 5 Min.',
         localHighlightsTitle: 'Turniere & Clubs in Deutschland und der Schweiz',
         localHighlights: [
@@ -206,7 +206,7 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         flag: '🇪🇸🇲🇽🇦🇷',
         countryName: 'España y Latinoamérica',
         nativeGameName: 'Backgammon (Tablas Reales)',
-        seoTitle: 'Jugar al Backgammon Online Gratis (España y LatAm) — Entrenador IA y Quiz ERH',
+        seoTitle: 'Jugar al Backgammon Online Gratis (España y LatAm) — Entrenador IA y Quiz ER / PR',
         seoDescription:
             'Juega al Backgammon online gratis en español. Aprende las reglas en 5 minutos, domina el Dado de Doblar (Videau) y corrige tus propios errores con nuestro Entrenador Vocal IA.',
         keywords: [
@@ -217,17 +217,17 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
             'dado de doblar backgammon',
             'tablas reales online',
         ],
-        h1: 'Jugar al Backgammon Online en Español — Entrenador IA y Método ERH',
+        h1: 'Jugar al Backgammon Online en Español — Entrenador IA y Método ER / PR',
         heroSubtitle:
             'Domina las 15 aperturas, el Dado de Doblar y la psicología del rival con nuestro Entrenador IA en español, con voz natural y cuestionarios adaptativos de tus propios errores.',
         culturalHookTitle: 'De las Tablas Reales al Backgammon de Torneo Internacional',
         culturalHookBody:
             'Tanto en España como en México, Argentina, Colombia y Chile, el Backgammon vive un auge competitivo. Nuestra interfaz Camaleón te guía paso a paso desde tus primeras partidas hasta el cálculo avanzado de PR.',
-        erhSectionTitle: 'Método ERH: Cómo Jugar Según el Perfil Psicológico de tu Rival',
+        erhSectionTitle: 'Método ER / PR: Cómo Jugar Según el Perfil Psicológico de tu Rival',
         erhSectionBody:
-            'No se juega igual contra un rival temeroso con el cubo que contra un jugador agresivo. Nuestro Quiz ERH te entrena con escenarios humanos reales.',
+            'No se juega igual contra un rival temeroso con el cubo que contra un jugador agresivo. Nuestro Quiz ER / PR te entrena con escenarios humanos reales.',
         ctaPlayLabel: '🎲 Jugar Ahora en Español',
-        ctaQuizLabel: '🎭 Probar el Quiz Adaptativo ERH',
+        ctaQuizLabel: '🎭 Probar el Quiz Adaptativo ER / PR',
         ctaRulesLabel: '📖 Reglas en 5 Minutos',
         localHighlightsTitle: 'Torneos Internacionales y Clubes Cercanos',
         localHighlights: [
@@ -241,7 +241,7 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
             },
             {
                 question: '¿Cómo aprender las aperturas del Backgammon rápidamente?',
-                answer: 'Nuestra Academia y el Quiz ERH te enseñan las 15 jugadas iniciales (como 3-1 en el punto 5 o 6-1 en el punto de barra) directamente sobre el tablero.',
+                answer: 'Nuestra Academia y el Quiz ER / PR te enseñan las 15 jugadas iniciales (como 3-1 en el punto 5 o 6-1 en el punto de barra) directamente sobre el tablero.',
             },
         ],
     },
@@ -253,7 +253,7 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         flag: '🇧🇷🇵🇹',
         countryName: 'Brasil e Portugal',
         nativeGameName: 'Gamão (Backgammon)',
-        seoTitle: 'Jogar Gamão Online Grátis (Brasil e Portugal) — Treinador IA e Método ERH',
+        seoTitle: 'Jogar Gamão Online Grátis (Brasil e Portugal) — Treinador IA e Método ER / PR',
         seoDescription:
             'Jogue Gamão (Backgammon) online grátis em português. Aprenda as regras em 5 minutos, domine o Dado de Dobrar e reveja os seus próprios erros com o Treinador de Voz IA.',
         keywords: [
@@ -270,11 +270,11 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         culturalHookTitle: 'A Paixão pelo Gamão no Brasil e em Portugal com Precisão de Grande Mestre',
         culturalHookBody:
             'No Brasil e em Portugal, o Gamão é tradição nos clubes e praias. Agora você conta com o motor neural 3-Ply do Cercle Monte-Carlo traduzido em português, sem propagandas e sem venda de moedas virtuais.',
-        erhSectionTitle: 'Método ERH: Explore o Risco e a Taxa de Erro Humana no Gamão',
+        erhSectionTitle: 'Método ER / PR: Explore o Risco e a Taxa de Erro Humana no Gamão',
         erhSectionBody:
             'Descubra como adaptar suas jogadas de peças e do cubo de dobra quando enfrenta um adversário cauteloso, impaciente ou mais fraco tecnicamente.',
         ctaPlayLabel: '🎲 Jogar Gamão Agora (Grátis)',
-        ctaQuizLabel: '🎭 Iniciar Quiz ERH & Meus Erros',
+        ctaQuizLabel: '🎭 Iniciar Quiz ER / PR & Meus Erros',
         ctaRulesLabel: '📖 Regras do Gamão em 5 Min',
         localHighlightsTitle: 'Torneios de Gamão no Brasil e no Mundo',
         localHighlights: [
@@ -300,7 +300,7 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
         flag: '🇸🇦🇦🇪🇪🇬',
         countryName: 'العالم العربي والشرق الأوسط (MENA)',
         nativeGameName: 'طاولة / باكجامون (Tawla & Backgammon)',
-        seoTitle: 'العب الطاولة (باكجامون) أونلاين مجاناً — مدرب الذكاء الاصطناعي ومنهج ERH',
+        seoTitle: 'العب الطاولة (باكجامون) أونلاين مجاناً — مدرب الذكاء الاصطناعي ومنهج ER / PR',
         seoDescription:
             'العب الطاولة العالمية (Backgammon) أونلاين مجاناً باللغة العربية. تعلم القواعد في 5 دقائق، أتقن مكعب المضاعفة، وراجع أخطاءك مع المدرب الصوتي الذكي.',
         keywords: [
@@ -311,17 +311,17 @@ export const COUNTRY_STRATEGIC_CATALOG: ReadonlyArray<CountryStrategicPageEntry>
             'مدرب باكجامون ذكاء اصطناعي',
             'بطولة دبي للباكجامون',
         ],
-        h1: 'العب الطاولة العالمية (باكجامون) أونلاين — المدرب الذكي ومنهج ERH',
+        h1: 'العب الطاولة العالمية (باكجامون) أونلاين — المدرب الذكي ومنهج ER / PR',
         heroSubtitle:
             'من بيروت والقاهرة إلى دبي والرياض: استمتع بلعبة الطاولة الاحترافية بواجهة عربية كاملة (RTL)، مدرب صوتي ذكي، واختبار تكيفي يعالج أخطاءك تلقائياً.',
         culturalHookTitle: 'من الطاولة الشرقية التقليدية إلى بطولات الباكجامون العالمية',
         culturalHookBody:
             'تعتبر لعبة الطاولة جزءاً أصيلاً من التراث العربي. تمنحك منصتنا تجربة احترافية وفق معايير الاتحاد العالمي (WBGF) مع شرح مبسط للمبتدئين وتحليل عميق للمحترفين بدون أي إعلانات.',
-        erhSectionTitle: 'منهج ERH: كيف تستغل نفسية الخصم ومعدل الخطأ البشري',
+        erhSectionTitle: 'منهج ER / PR: كيف تستغل نفسية الخصم ومعدل الخطأ البشري',
         erhSectionBody:
             'تعلم كيف تختار النقلة المثالية عندما تواجه خصماً متردداً في المضاعفة أو خصماً مندفعاً يرتكب أخطاء تحت الضغط.',
         ctaPlayLabel: '🎲 العب الآن مجاناً بالعربية',
-        ctaQuizLabel: '🎭 ابدأ اختبار ERH ومراجعة أخطائي',
+        ctaQuizLabel: '🎭 ابدأ اختبار ER / PR ومراجعة أخطائي',
         ctaRulesLabel: '📖 تعلم القواعد في 5 دقائق',
         localHighlightsTitle: 'أبرز البطولات والأندية في العالم العربي والبحر المتوسط',
         localHighlights: [

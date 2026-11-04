@@ -1,14 +1,5 @@
 /**
  * Micro-programme atomique : Exécution du tour de l'IA avec Cadencement Humanisé (LOI 1, 2, 3 & Audit 19 / 20)
- *
- * Exécute le tour de 'O' en 3 paliers temporels propres et garantit mathématiquement
- * par un bloc try / finally le retour à 'HUMAN_WAITING_ROLL'.
- *
- * Paliers :
- * 1. AI_TURN_ROLLING : affichage des dés sans mouvement de pion
- * 2. AI_TURN_SHOWING_ARROWS : réflexion modulée (150ms forcé, 600–1100ms complexe) + tracé des flèches
- * 3. Exécution séquentielle des sous-coups espacés de 180ms (`onSubMoveStep`) + application de `boardAfter`
- * 4. finally : passage immédiat à HUMAN_WAITING_ROLL
  */
 
 import type { GamePhase, MatchLogEntry, RunAiTurnParams, RunAiTurnCallbacks } from './types';
@@ -18,7 +9,7 @@ import {
     generateLegalMoves,
     MoveSequence,
 } from '../engine/backgammonEngine';
-import { selectBotMoveWithBgsage } from '../lib/engine/bgsageClient';
+import { selectBotMoveWithBgsage, OPENSAGE_UNREACHABLE_ERROR_CODE } from '../lib/engine/bgsageClient';
 import { recordBotMoveEquityLoss } from '../features/personas/botRealPr';
 import { formatMoveSequenceNotationAbsolute } from '../lib/engine/evaluator';
 import {
@@ -52,36 +43,36 @@ export async function runAiTurnAction(
     let createdEntry: MatchLogEntry;
 
     try {
-        // Palier 1 : Affichage des dés lancés
         callbacks.onPhaseChange('AI_TURN_ROLLING');
         await waitMs(rollDurationMs);
 
-        // Calcul du coup légal de l'IA sur boardBefore
         const stateWithDice: BoardState = {
             board: [...boardBefore],
             turn: 'O',
             dice: [dice[0], dice[1]],
-            cubeValue: 1,
-            cubeOwner: null,
-            matchLength: 7,
-            scoreX: 0,
-            scoreO: 0,
-            crawford: false,
+            cubeValue: params.cubeValue ?? 1,
+            cubeOwner: params.cubeOwner ?? null,
+            matchLength: params.matchLength ?? 7,
+            scoreX: params.scoreX ?? 0,
+            scoreO: params.scoreO ?? 0,
+            crawford: params.crawford ?? false,
             doubled: false,
             resigned: 0,
         };
 
         const legalSeqs = generateLegalMoves(stateWithDice, [dice[0], dice[1]]);
-        // R-BOT-1 : coup choisi par Open Sage uniquement (plus d'heuristique locale). Échec = erreur, jamais de coup de remplacement.
         const selectMove =
             params.selectMove ??
             (async (st: BoardState, seqs: MoveSequence[]): Promise<MoveSequence | null> => {
                 const choice = await selectBotMoveWithBgsage(st, seqs, difficulty);
-                if (!choice) throw new Error('Moteur Open Sage indisponible : coup du bot non calculé.');
+                if (!choice) throw new Error(OPENSAGE_UNREACHABLE_ERROR_CODE);
                 recordBotMoveEquityLoss(choice.equityLoss, choice.isForced);
                 return choice.sequence;
             });
         const bestSeq = legalSeqs.length === 1 ? legalSeqs[0]! : await selectMove(stateWithDice, legalSeqs);
+        if (!bestSeq) {
+            throw new Error(OPENSAGE_UNREACHABLE_ERROR_CODE);
+        }
 
         if (bestSeq && bestSeq.moves.length > 0) {
             movesPlayed = bestSeq.moves;
@@ -90,21 +81,17 @@ export async function runAiTurnAction(
             const timingPlan = computeHumanizedAiTiming({
                 legalSequenceCount: legalSeqs.length,
                 subMoveCount: movesPlayed.length,
-                subMoveSpacingMs:
-                    subMoveSpacingMs ?? (previewDurationMs === 0 ? 0 : AI_SUB_MOVE_SPACING_MS),
+                subMoveSpacingMs: subMoveSpacingMs ?? (previewDurationMs === 0 ? 0 : AI_SUB_MOVE_SPACING_MS),
             });
 
-            const effectiveThinkMs =
-                previewDurationMs !== undefined ? previewDurationMs : timingPlan.thinkDurationMs;
+            const effectiveThinkMs = previewDurationMs !== undefined ? previewDurationMs : timingPlan.thinkDurationMs;
 
-            // Palier 2 : Affichage des flèches sur le plateau gelé avec réflexion modulée
             callbacks.onPhaseChange('AI_TURN_SHOWING_ARROWS');
             if (callbacks.onArrowsReady) {
                 callbacks.onArrowsReady(movesPlayed.map((m) => ({ from: m.from, to: m.to })));
             }
             await waitMs(effectiveThinkMs);
 
-            // Palier 2b : Exécution séquentielle pas-à-pas (espacement 180ms entre sous-coups)
             if (callbacks.onSubMoveStep) {
                 let runningBoard = [...boardBefore];
                 for (let idx = 0; idx < movesPlayed.length; idx++) {
@@ -118,7 +105,6 @@ export async function runAiTurnAction(
             }
         }
 
-        // Palier 3 : Application du nouvel état et inscription au log immuable
         if (callbacks.onApplyBoard) {
             callbacks.onApplyBoard(boardAfter);
         }
@@ -139,7 +125,6 @@ export async function runAiTurnAction(
             callbacks.onLogEntryAdded(createdEntry);
         }
     } finally {
-        // LOI 2 : Le bloc finally garantit mathématiquement le déverrouillage pour le joueur
         const nextPhase: GamePhase = isGameOver ? 'GAME_OVER' : 'HUMAN_WAITING_ROLL';
         callbacks.onPhaseChange(nextPhase);
         if (callbacks.onTurnComplete) {

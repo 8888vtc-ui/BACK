@@ -10,6 +10,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { parseXGID, borneOffCount } from '../src/engine/backgammonEngine';
+import { decodeXgidBoard26 } from '../src/features/drills/bgsage3PlyQuizFactoryCore';
 
 const BGSAGE_BASE_URL = 'https://bgsage-service-468274233732.europe-west1.run.app';
 const GNUBG_CLI_PATH = 'C:\\Program Files (x86)\\gnubg\\gnubg-cli.exe';
@@ -75,27 +76,6 @@ const POSITIONS: readonly PositionBenchmarkSpec[] = [
     { id: 4, name: 'Holding Game case 20 Match 5 pts, score 3-0', xgid: 'XGID=-b---bE-C--AbD---c-e----B-:0:0:1:53:0:0:0:3:5', dice: [5, 3] },
     { id: 5, name: 'Contact / Course avec 6-1', xgid: 'XGID=--b-b-E-C---c----c-e-B--A-:0:0:1:61:0:0:0:0:10', dice: [6, 1] },
 ];
-
-function decodeXgidBoard26(xgid: string): number[] {
-    const raw = xgid.replace(/^XGID=/, '').split(':')[0] ?? '';
-    const chars = 'ABCDEFGHIJKLMNOP';
-    const decodeChar = (ch: string): number => {
-        if (ch === '-' || ch === '0') return 0;
-        const idx = chars.indexOf(ch.toUpperCase());
-        if (idx === -1) return 0;
-        const count = idx + 1;
-        return ch === ch.toUpperCase() ? count : -count;
-    };
-    const board = new Array<number>(26).fill(0);
-    const barO = decodeChar(raw[0] ?? '-');
-    board[0] = barO <= 0 ? barO : -barO;
-    for (let p = 1; p <= 24; p++) {
-        board[p] = decodeChar(raw[p] ?? '-');
-    }
-    const barX = decodeChar(raw[25] ?? '-');
-    board[25] = barX >= 0 ? barX : -barX;
-    return board;
-}
 
 function countTotalCheckers15(xgid: string): { whiteCount: number; blackCount: number; onBoardWhite: number; onBoardBlack: number; offWhite: number; offBlack: number } {
     const state = parseXGID(xgid);

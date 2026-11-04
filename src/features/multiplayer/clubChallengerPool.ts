@@ -11,7 +11,11 @@
  */
 
 import type { ClubChallengerDifficulty, PlayerEloProfile } from './types';
-import { HUMAN_PERSONA_POOL, type HumanPersonaSeed } from '../personas/humanPersonaSeeds';
+import {
+    HUMAN_PERSONA_POOL,
+    resolveNaturalChallengerAvatarUrl,
+    type HumanPersonaSeed,
+} from '../personas/humanPersonaSeeds';
 import { computeHumanThinkingDelay } from '../personas/humanPersonaPool';
 
 export type ClubChallengerSeed = HumanPersonaSeed;
@@ -155,12 +159,12 @@ export function selectClubChallengerForRating(
     if (finalRating % 10 === 0) finalRating += 3;
 
     const seedIndex = Math.max(0, CLUB_CHALLENGER_SEEDS.findIndex((s) => s.id === chosen.id));
-    const standardAvatarUrl = `/avatars/user-avatar-${(seedIndex % 5) + 1}.jpg`;
+    const standardAvatarUrl = resolveNaturalChallengerAvatarUrl(chosen.username, seedIndex);
 
     return {
         id: `${chosen.id}_${nowMs}`,
         username: chosen.username,
-        displayName: `${chosen.countryFlag} ${chosen.username}`,
+        displayName: chosen.username,
         rating: finalRating,
         averagePr: chosen.targetErPr,
         avatarUrl: standardAvatarUrl,

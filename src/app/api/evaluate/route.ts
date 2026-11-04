@@ -6,10 +6,8 @@
  * - Rate Limiting strict (60 requêtes / minute par IP)
  * - Validation Zod du payload ({ xgid, ply })
  *
- * Moteur : évaluation déterministe locale via le moteur TypeScript tri-phase
- * (`src/lib/engine/evaluator.ts`). Aucune équité factice, aucun nombre magique :
- * si le backend externe est indisponible, on bascule directement sur le moteur
- * local embarqué, qui produit des équités réelles calculées par l'évaluateur.
+ * Moteur : évaluation 100 % réelle via BGT Local (`gnubg-cli`) ou Open Sage Cloud Run (`bgsage-service`).
+ * En production, tout repli silencieux vers un moteur local heuristique est interdit (`OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED`, HTTP 503).
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -136,6 +134,7 @@ export async function POST(req: NextRequest) {
     if (process.env.NODE_ENV !== 'test') {
         return NextResponse.json(
             {
+                code: 'OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED',
                 error: 'Service neuronal web temporairement indisponible',
                 message: 'Le moteur BGT / Open Sage Cloud Run n\'a pas répondu dans le délai imparti.',
             },

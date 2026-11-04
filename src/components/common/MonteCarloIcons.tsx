@@ -127,21 +127,28 @@ export interface BotPortraitMedallionProps {
     readonly character: PortraitCharacterId;
     readonly size?: 'sm' | 'md' | 'lg' | 'xl';
     readonly isActive?: boolean;
+    readonly customPhotoUrl?: string | null;
 }
 
 /**
  * Médaillon Octogonal Haute-Horlogerie à ouverture panoramique 92 % sertissant les VRAIES photographies
  * de portraits Monte-Carlo (Maxime Le Mauvais Joueur, Sofia La Riviera, Victor L'Homme d'Affaires,
- * Viktor L'Intellectuel, Lord Mittens) + Blason Membre pour le joueur.
+ * Viktor L'Intellectuel, Lord Mittens) + Blason Royal ou Portrait Membre pour le joueur et adversaire en ligne.
  */
 export const BotPortraitMedallion: React.FC<BotPortraitMedallionProps> = React.memo(({
     character,
     size = 'md',
     isActive = false,
+    customPhotoUrl = null,
 }) => {
     const dim = size === 'xl' ? 116 : size === 'lg' ? 92 : size === 'md' ? 68 : 52;
     const clipId = `octagonal-clip-${character}-${size}`;
-    const photoUrl = character !== 'player' ? PERSONA_PHOTO_BY_ID[character] : null;
+    const photoUrl =
+        customPhotoUrl && customPhotoUrl.trim().length > 0
+            ? customPhotoUrl
+            : character !== 'player'
+              ? PERSONA_PHOTO_BY_ID[character]
+              : '/avatars/user-avatar-5.jpg';
 
     return (
         <div
@@ -191,7 +198,7 @@ export const BotPortraitMedallion: React.FC<BotPortraitMedallionProps> = React.m
                     strokeWidth="1"
                 />
 
-                {/* Vraie Photographie de Portrait Haute-Couture Monte-Carlo plein cadre (92 %) */}
+                {/* Photographie de Portrait Haute-Couture Monte-Carlo ou Blason Royal plein cadre (92 %) */}
                 {photoUrl && (
                     <image
                         href={photoUrl}
@@ -202,21 +209,6 @@ export const BotPortraitMedallion: React.FC<BotPortraitMedallionProps> = React.m
                         preserveAspectRatio="xMidYMin slice"
                         clipPath={`url(#${clipId})`}
                     />
-                )}
-
-                {/* Joueur Humain (Membre d'Honneur du Cercle Monte-Carlo) */}
-                {character === 'player' && (
-                    <g clipPath={`url(#${clipId})`}>
-                        <rect x="3" y="3" width="74" height="74" fill="#062c1e" />
-                        <path d="M14,77 C18,54 62,54 66,77 Z" fill="#064e3b" stroke="#f5dfa0" strokeWidth="1.4" />
-                        <path d="M34,55 L40,69 L46,55" fill="#f8fafc" />
-                        <polygon points="36.5,59.5 43.5,59.5 40,63.5" fill="#d4af37" />
-                        <ellipse cx="40" cy="36" rx="13" ry="15" fill="#e6be9a" />
-                        <path d="M27,32 C28,18 52,18 53,32 C48,24 32,24 27,32 Z" fill="#271f1b" />
-                        <circle cx="35" cy="35" r="1.6" fill="#1c1917" />
-                        <circle cx="45" cy="35" r="1.6" fill="#1c1917" />
-                        <path d="M35.5,44 Q40,46.8 44.5,44" fill="none" stroke="#5c3a21" strokeWidth="1.5" strokeLinecap="round" />
-                    </g>
                 )}
 
                 {/* Contour intérieur ciselé or */}

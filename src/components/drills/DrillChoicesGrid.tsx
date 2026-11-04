@@ -12,7 +12,6 @@
 
 import React from 'react';
 import type { DrillValidationResult } from '../../features/drills/types';
-import { ERH_TOOLTIP_TEXT } from '../../features/drills/drillSubAgentsPipeline';
 
 export interface DrillChoicesGridProps {
     readonly choices: ReadonlyArray<string>;
@@ -62,12 +61,10 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
         >
             <div className="flex flex-wrap items-center justify-between gap-1 text-[11px]">
                 <span
-                    title={isErMode ? undefined : ERH_TOOLTIP_TEXT}
-                    className={`font-bold ${isErMode ? 'text-emerald-300' : 'text-[#D4AF37]'}`}
+                    title="ER / PR : Error Rate / Performance Rating officiel (0.0 = Perfection, 30.0 = Novice)"
+                    className="font-bold text-emerald-300"
                 >
-                    {isErMode
-                        ? '📐 Jouez sur le plateau ou cliquez un coup (ER / PR) :'
-                        : '🧠 Jouez sur le plateau ou cliquez un coup (ERH) :'}
+                    📐 Jouez sur le plateau ou cliquez un coup (ER / PR) :
                 </span>
                 <div
                     data-testid="drill-dice-direction-badge"

@@ -86,7 +86,7 @@ const GammonAcademyViewComponent: React.FC = () => {
                     </nav>
                 </header>
 
-                {/* DÉMONSTRATION SCIENTIFIQUE : ER vs ERH (10 200 Parties vs 100 Robots Humains + 5 000 Machine) */}
+                {/* DÉMONSTRATION SCIENTIFIQUE : ER vs ER / PR (10 200 Parties vs 100 Robots Humains + 5 000 Machine) */}
                 <ErVsErhBenchmarkShowcase />
 
                 {/* PALIER 1 : Parcours Débutant Interactif */}

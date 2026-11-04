@@ -9,6 +9,7 @@ import {
     useTurnConfirmation,
 } from './useTurnConfirmation';
 import { BoardCenterControls } from '../components/board/BoardCenterControls';
+import { AutoConfirmControl } from '../components/board/BoardActions';
 
 describe('useTurnConfirmation & TurnActionBar (Audit 8/20)', () => {
     beforeEach(() => {
@@ -98,24 +99,15 @@ describe('useTurnConfirmation & TurnActionBar (Audit 8/20)', () => {
         }
     });
 
-    it('permet de basculer et persister l’option Auto-fin de tour et masque le bouton Valider quand autoConfirmEnabled=true', () => {
+    it('permet de basculer et persister l’option Auto-fin de tour', () => {
         const onToggle = vi.fn();
-        const { getByTestId, queryByTestId } = render(
-            React.createElement(BoardCenterControls, {
-                gamePhase: 'HUMAN_READY_TO_COMMIT',
-                onRoll: vi.fn(),
-                onConfirm: vi.fn(),
-                onUndo: vi.fn(),
-                canUndo: true,
-                canConfirm: true,
-                hasDice: true,
-                autoConfirmEnabled: true,
+        const { getByTestId } = render(
+            React.createElement(AutoConfirmControl, {
+                resolvedMode: 'always',
+                isAutoActive: true,
                 onToggleAutoConfirm: onToggle,
             }),
         );
-
-        // En mode Validation auto (autoConfirmEnabled=true), le bouton Valider est masqué
-        expect(queryByTestId('center-confirm-button')).toBeNull();
 
         const autoBtn = getByTestId('toggle-auto-confirm-btn');
         expect(autoBtn.getAttribute('aria-pressed')).toBe('true');

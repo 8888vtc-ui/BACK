@@ -13,9 +13,9 @@
 import React, { useMemo, useState } from 'react';
 import type { PlayerBlunderRecord, DrillValidationResult } from '../../features/drills/types';
 import {
-    ERH_TOOLTIP_TEXT,
     runFlashPedagogicalCoach,
 } from '../../features/drills/drillSubAgentsPipeline';
+import { evaluateMoveBlunderGate } from '../../lib/coachSystemPrompt';
 import { useCoachVoice } from '../../hooks/useCoachVoice';
 import { buildCandidateMathTable, DrillPrMathRankingTable } from './DrillPositionContextAndReading';
 
@@ -61,7 +61,8 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
     );
 
     const isFirstFailureSocratic = !validationResult.isCorrect && attemptsLeft === 1;
-    const isNearOptimal = coachReport.verdictTier === 'NEAR_OPTIMAL';
+    const gateCheck = evaluateMoveBlunderGate(coachReport.extractorFacts.deltaEmg);
+    const isNearOptimal = gateCheck.category === 'NEAR_OPTIMAL_GOOD_MOVE' || coachReport.verdictTier === 'NEAR_OPTIMAL';
 
     const handleListenExplanation = () => {
         if (isSpeaking) {
@@ -102,12 +103,14 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                 {/* 1. BANNIÈRE CHIFFRÉE */}
                 <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/10 pb-1.5" data-testid="coach-verdict-header">
                     <span
-                        title={ERH_TOOLTIP_TEXT}
+                        title="ER / PR : Error Rate / Performance Rating officiel (0.0 = Perfection, 30.0 = Novice)"
                         className="font-mono text-xs font-black text-white"
                     >
                         {isFirstFailureSocratic
-                            ? `⚠️ 1er Essai Imprécis (${coachReport.extractorFacts.deltaEmg.toFixed(3)} EMG | Impact ${isErMode ? 'ER / PR' : 'ERH'} : +0.2 | Essais : 1/2 ❤️🖤)`
-                            : coachReport.headerSeverityLine}
+                            ? `⚠️ 1er Essai Imprécis (${coachReport.extractorFacts.deltaEmg.toFixed(3)} EMG | Impact ER / PR : +0.2 | Essais : 1/2 ❤️🖤)`
+                            : isNearOptimal
+                                ? gateCheck.feedbackMessage
+                                : coachReport.headerSeverityLine}
                     </span>
                     <div className="flex items-center gap-1.5">
                         <span
@@ -131,9 +134,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                     </div>
                 </div>
 
-                <span data-testid="subagents-pipeline-badge" className="sr-only">
-                    {coachReport.extractorFacts.extractorAgent} (flashlight) {coachReport.coachAgent} (flash) Coach Pédagogique 3.8 Flash Pourquoi l&apos;erreur
-                </span>
+                <span className="sr-only">Coach Pédagogique</span>
 
                 {/* 2. CORPS PÉDAGOGIQUE : SOCRATIQUE (Essai 1/2) OU SOLUTION 3-PLY COMPLÈTE */}
                 {isFirstFailureSocratic ? (

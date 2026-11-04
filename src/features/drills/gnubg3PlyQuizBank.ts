@@ -8967,5 +8967,381 @@ export const GNUBG_3PLY_QUIZ_BANK: ReadonlyArray<Gnubg3PlyQuizEntry> = [
                 "loseBackgammon": 0.005
             }
         ]
+    },
+    {
+        "id": "bgsage3p_v3_m3_normal_0_0_1_52",
+        "xgid": "XGID=-----aEaC---eE---c-e----B-:0:0:1:52:0:0:0:3:10",
+        "dice": [
+            5,
+            2
+        ],
+        "requiredEr": 2.6,
+        "is3PlyTrapVs0Ply": false,
+        "conceptId": "blitz_attack",
+        "optimalMove": "24/22 13/8",
+        "playedMove": "13/8 6/4",
+        "equityLoss": 0.0062,
+        "quizChoices": [
+            "24/22 13/8",
+            "13/8 6/4",
+            "24/22 8/3",
+            "8/4 6/3"
+        ],
+        "candidateMoves3Ply": [
+            {
+                "rank": 1,
+                "notation": "24/22 13/8",
+                "equity": -0.142,
+                "equityLoss": 0,
+                "win": 0.4557,
+                "winGammon": 0.1091,
+                "winBackgammon": 0.0035,
+                "loseWin": 0.5443,
+                "loseGammon": 0.1159,
+                "loseBackgammon": 0.0045
+            },
+            {
+                "rank": 2,
+                "notation": "13/8 6/4",
+                "equity": -0.1482,
+                "equityLoss": 0.0062,
+                "win": 0.4513,
+                "winGammon": 0.1131,
+                "winBackgammon": 0.0037,
+                "loseWin": 0.5487,
+                "loseGammon": 0.1173,
+                "loseBackgammon": 0.0057
+            },
+            {
+                "rank": 3,
+                "notation": "24/22 8/3",
+                "equity": -0.1961,
+                "equityLoss": 0.0541,
+                "win": 0.4417,
+                "winGammon": 0.109,
+                "winBackgammon": 0.0035,
+                "loseWin": 0.5583,
+                "loseGammon": 0.1282,
+                "loseBackgammon": 0.0058
+            },
+            {
+                "rank": 4,
+                "notation": "8/4 6/3",
+                "equity": -0.2053,
+                "equityLoss": 0.0633,
+                "win": 0.4364,
+                "winGammon": 0.1121,
+                "winBackgammon": 0.0036,
+                "loseWin": 0.5636,
+                "loseGammon": 0.1285,
+                "loseBackgammon": 0.007
+            },
+            {
+                "rank": 5,
+                "notation": "13/6",
+                "equity": -0.2225,
+                "equityLoss": 0.0805,
+                "win": 0.4322,
+                "winGammon": 0.1049,
+                "winBackgammon": 0.0035,
+                "loseWin": 0.5678,
+                "loseGammon": 0.1249,
+                "loseBackgammon": 0.0061
+            },
+            {
+                "rank": 6,
+                "notation": "24/22 6/1",
+                "equity": -0.2423,
+                "equityLoss": 0.1003,
+                "win": 0.4296,
+                "winGammon": 0.1046,
+                "winBackgammon": 0.0029,
+                "loseWin": 0.5704,
+                "loseGammon": 0.1341,
+                "loseBackgammon": 0.0057
+            }
+        ]
+    },
+    {
+        "id": "bgsage3p_v3_m3_crawford_2_1_2_42",
+        "xgid": "XGID=-a-a--E-C---eE---bAeA-a---:0:0:1:42:2:1:1:3:10",
+        "dice": [
+            4,
+            2
+        ],
+        "requiredEr": 4.4,
+        "is3PlyTrapVs0Ply": false,
+        "conceptId": "blitz_attack",
+        "optimalMove": "20/16 18/16",
+        "playedMove": "20/18 13/9",
+        "equityLoss": 0.0249,
+        "quizChoices": [
+            "20/16 18/16",
+            "20/18 13/9",
+            "8/4 6/4",
+            "20/18 6/2"
+        ],
+        "candidateMoves3Ply": [
+            {
+                "rank": 1,
+                "notation": "20/16 18/16",
+                "equity": 0.1847,
+                "equityLoss": 0,
+                "win": 0.5633,
+                "winGammon": 0.1011,
+                "winBackgammon": 0.004,
+                "loseWin": 0.4367,
+                "loseGammon": 0.1015,
+                "loseBackgammon": 0.0026
+            },
+            {
+                "rank": 2,
+                "notation": "20/18 13/9",
+                "equity": 0.1598,
+                "equityLoss": 0.0249,
+                "win": 0.5476,
+                "winGammon": 0.1179,
+                "winBackgammon": 0.0048,
+                "loseWin": 0.4524,
+                "loseGammon": 0.0957,
+                "loseBackgammon": 0.0034
+            },
+            {
+                "rank": 3,
+                "notation": "8/4 6/4",
+                "equity": 0.1368,
+                "equityLoss": 0.0479,
+                "win": 0.5438,
+                "winGammon": 0.1411,
+                "winBackgammon": 0.0076,
+                "loseWin": 0.4562,
+                "loseGammon": 0.1288,
+                "loseBackgammon": 0.0048
+            },
+            {
+                "rank": 4,
+                "notation": "20/18 6/2",
+                "equity": 0.0778,
+                "equityLoss": 0.1069,
+                "win": 0.524,
+                "winGammon": 0.1134,
+                "winBackgammon": 0.0042,
+                "loseWin": 0.476,
+                "loseGammon": 0.1051,
+                "loseBackgammon": 0.0037
+            },
+            {
+                "rank": 5,
+                "notation": "20/18 8/4",
+                "equity": 0.0433,
+                "equityLoss": 0.1413,
+                "win": 0.514,
+                "winGammon": 0.1155,
+                "winBackgammon": 0.0048,
+                "loseWin": 0.486,
+                "loseGammon": 0.1125,
+                "loseBackgammon": 0.0042
+            },
+            {
+                "rank": 6,
+                "notation": "18/14 13/11",
+                "equity": 0.0357,
+                "equityLoss": 0.1489,
+                "win": 0.5214,
+                "winGammon": 0.1176,
+                "winBackgammon": 0.0062,
+                "loseWin": 0.4786,
+                "loseGammon": 0.1393,
+                "loseBackgammon": 0.0055
+            }
+        ]
+    },
+    {
+        "id": "bgsage3p_v3_m3_dmp_2_2_3_53",
+        "xgid": "XGID=---A-aEaB---eE---b-d-bA-A-:0:0:1:53:2:2:0:3:10",
+        "dice": [
+            5,
+            3
+        ],
+        "requiredEr": 5.1,
+        "is3PlyTrapVs0Ply": false,
+        "conceptId": "blitz_attack",
+        "optimalMove": "13/8 6/3",
+        "playedMove": "8/5 8/3",
+        "equityLoss": 0.033,
+        "quizChoices": [
+            "13/8 6/3",
+            "8/5 8/3",
+            "6/3 6/1",
+            "13/5"
+        ],
+        "candidateMoves3Ply": [
+            {
+                "rank": 1,
+                "notation": "13/8 6/3",
+                "equity": -0.1919,
+                "equityLoss": 0,
+                "win": 0.4414,
+                "winGammon": 0.1153,
+                "winBackgammon": 0.0037,
+                "loseWin": 0.5586,
+                "loseGammon": 0.1299,
+                "loseBackgammon": 0.0052
+            },
+            {
+                "rank": 2,
+                "notation": "8/5 8/3",
+                "equity": -0.2249,
+                "equityLoss": 0.033,
+                "win": 0.4366,
+                "winGammon": 0.1369,
+                "winBackgammon": 0.0053,
+                "loseWin": 0.5634,
+                "loseGammon": 0.1602,
+                "loseBackgammon": 0.0094
+            },
+            {
+                "rank": 3,
+                "notation": "6/3 6/1",
+                "equity": -0.3652,
+                "equityLoss": 0.1733,
+                "win": 0.3998,
+                "winGammon": 0.106,
+                "winBackgammon": 0.003,
+                "loseWin": 0.6002,
+                "loseGammon": 0.1656,
+                "loseBackgammon": 0.008
+            },
+            {
+                "rank": 4,
+                "notation": "13/5",
+                "equity": -0.3945,
+                "equityLoss": 0.2027,
+                "win": 0.4048,
+                "winGammon": 0.1065,
+                "winBackgammon": 0.0044,
+                "loseWin": 0.5952,
+                "loseGammon": 0.1895,
+                "loseBackgammon": 0.0142
+            },
+            {
+                "rank": 5,
+                "notation": "13/10 13/8",
+                "equity": -0.508,
+                "equityLoss": 0.3161,
+                "win": 0.3677,
+                "winGammon": 0.0883,
+                "winBackgammon": 0.0033,
+                "loseWin": 0.6323,
+                "loseGammon": 0.1858,
+                "loseBackgammon": 0.0127
+            },
+            {
+                "rank": 6,
+                "notation": "8/3 6/3",
+                "equity": -0.5396,
+                "equityLoss": 0.3477,
+                "win": 0.3584,
+                "winGammon": 0.0866,
+                "winBackgammon": 0.003,
+                "loseWin": 0.6416,
+                "loseGammon": 0.1855,
+                "loseBackgammon": 0.01
+            }
+        ]
+    },
+    {
+        "id": "bgsage3p_v3_m3_gammongo_1_2_4_61",
+        "xgid": "XGID=-a-aB-D-B---eE---bAcA-b-a-:1:1:1:61:1:2:0:3:10",
+        "dice": [
+            6,
+            1
+        ],
+        "requiredEr": 12.7,
+        "is3PlyTrapVs0Ply": false,
+        "conceptId": "blitz_attack",
+        "optimalMove": "20/13",
+        "playedMove": "13/6",
+        "equityLoss": 0.1125,
+        "quizChoices": [
+            "20/13",
+            "13/6",
+            "13/7 8/7",
+            "8/1"
+        ],
+        "candidateMoves3Ply": [
+            {
+                "rank": 1,
+                "notation": "20/13",
+                "equity": 0.1709,
+                "equityLoss": 0,
+                "win": 0.5618,
+                "winGammon": 0.1155,
+                "winBackgammon": 0.0054,
+                "loseWin": 0.4382,
+                "loseGammon": 0.1223,
+                "loseBackgammon": 0.0023
+            },
+            {
+                "rank": 2,
+                "notation": "13/6",
+                "equity": 0.0584,
+                "equityLoss": 0.1125,
+                "win": 0.5274,
+                "winGammon": 0.1515,
+                "winBackgammon": 0.0089,
+                "loseWin": 0.4726,
+                "loseGammon": 0.1635,
+                "loseBackgammon": 0.0044
+            },
+            {
+                "rank": 3,
+                "notation": "13/7 8/7",
+                "equity": 0.011,
+                "equityLoss": 0.16,
+                "win": 0.5144,
+                "winGammon": 0.1671,
+                "winBackgammon": 0.0115,
+                "loseWin": 0.4856,
+                "loseGammon": 0.1755,
+                "loseBackgammon": 0.0084
+            },
+            {
+                "rank": 4,
+                "notation": "8/1",
+                "equity": -0.0672,
+                "equityLoss": 0.2381,
+                "win": 0.4924,
+                "winGammon": 0.1548,
+                "winBackgammon": 0.0072,
+                "loseWin": 0.5076,
+                "loseGammon": 0.1787,
+                "loseBackgammon": 0.0101
+            },
+            {
+                "rank": 5,
+                "notation": "20/14 6/5",
+                "equity": -0.1576,
+                "equityLoss": 0.3285,
+                "win": 0.4864,
+                "winGammon": 0.1279,
+                "winBackgammon": 0.0076,
+                "loseWin": 0.5136,
+                "loseGammon": 0.2173,
+                "loseBackgammon": 0.0094
+            },
+            {
+                "rank": 6,
+                "notation": "13/7 6/5",
+                "equity": -0.2071,
+                "equityLoss": 0.3781,
+                "win": 0.4734,
+                "winGammon": 0.1474,
+                "winBackgammon": 0.0101,
+                "loseWin": 0.5266,
+                "loseGammon": 0.238,
+                "loseBackgammon": 0.0186
+            }
+        ]
     }
 ];
