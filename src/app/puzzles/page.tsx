@@ -1,7 +1,9 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import BlunderDrillView from '../../components/drills/BlunderDrillView';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
+import { BeginnerAcademyFlow } from '../../components/beginner/BeginnerAcademyFlow';
 
 export const metadata: Metadata = {
     title: 'Quiz ER Backgammon — 18 613 Problèmes Tactiques 3-Ply Certifiés GNU (Équité Réelle)',
@@ -20,11 +22,22 @@ export const metadata: Metadata = {
     },
 };
 
-export default function PuzzlesPage() {
+export interface PuzzlesPageProps {
+    searchParams?: Promise<{ mode?: string }>;
+}
+
+export default async function PuzzlesPage({ searchParams }: PuzzlesPageProps) {
+    const resolvedParams = searchParams ? await searchParams : undefined;
+    const isBeginnerAcademy = resolvedParams?.mode === 'beginner-academy';
+
     return (
         <main className="flex h-dvh max-h-dvh w-screen overflow-hidden flex-col items-center bg-slate-950 text-slate-100">
             <ErrorBoundary name="Quizz Adaptatifs">
-                <BlunderDrillView initialMode="pr_math" />
+                {isBeginnerAcademy ? (
+                    <BeginnerAcademyFlow />
+                ) : (
+                    <BlunderDrillView initialMode="pr_math" />
+                )}
             </ErrorBoundary>
         </main>
     );

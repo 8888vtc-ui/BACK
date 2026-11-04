@@ -205,7 +205,11 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                         {tierGate === 'BEGINNER' && (
                             <BeginnerHomePortal
                                 onStartGuidedGame={() => onStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor, clockPreset })}
-                                onOpenAcademy={() => { if (onOpenModule) onOpenModule('openings'); }}
+                                onOpenAcademy={() => {
+                                    if (typeof window !== 'undefined') {
+                                        window.location.assign('/puzzles?mode=beginner-academy');
+                                    }
+                                }}
                             />
                         )}
                         {tierGate === 'INTERMEDIATE' && (

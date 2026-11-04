@@ -5,13 +5,22 @@ import { BookOpen, Play } from 'lucide-react';
 
 interface BeginnerHomePortalProps {
     readonly onStartGuidedGame: () => void;
-    readonly onOpenAcademy: () => void;
+    readonly onOpenAcademy?: () => void;
 }
 
 export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(({
     onStartGuidedGame,
     onOpenAcademy,
 }) => {
+    const handleOpenAcademy = () => {
+        if (onOpenAcademy) {
+            onOpenAcademy();
+            return;
+        }
+        if (typeof window !== 'undefined') {
+            window.location.assign('/puzzles?mode=beginner-academy');
+        }
+    };
     return (
         <div data-testid="beginner-home-portal" className="flex flex-col gap-4 w-full max-w-4xl mx-auto py-2">
             <div className="rounded-2xl border border-white/[0.08] bg-[#0b0e14]/90 p-5 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -50,7 +59,7 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                     <button
                         type="button"
                         data-testid="beginner-academy-btn"
-                        onClick={onOpenAcademy}
+                        onClick={handleOpenAcademy}
                         className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow-lg hover:brightness-105 active:scale-95 transition"
                     >
                         <span>DÉCOUVRIR LES RÈGLES EN 3 MIN →</span>
