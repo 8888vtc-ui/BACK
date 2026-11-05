@@ -181,7 +181,13 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     >
                         <span className="flex items-center gap-2.5">
                             <Flame size={16} strokeWidth={1.5} className="text-[#F59E0B]" />
-                            {!collapsed && <span>{isEn ? 'My Blunders' : 'Mes Blunders'}</span>}
+                            {!collapsed && (
+                                <span>
+                                    {isBeginner
+                                        ? (isEn ? 'My Mistakes' : 'Mes Erreurs')
+                                        : (isEn ? 'My Blunders' : 'Mes Blunders')}
+                                </span>
+                            )}
                         </span>
                         {!collapsed && blunderCount > 0 && (
                             <span

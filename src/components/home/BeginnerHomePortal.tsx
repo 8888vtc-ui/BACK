@@ -88,7 +88,7 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                                     <Play size={20} strokeWidth={1.8} />
                                 </span>
                                 <span className="rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-mono font-semibold text-stone-300">
-                                    {isEn ? 'Gentle Bot' : 'Bot Doux'}
+                                    {isEn ? '🎓 The Professor' : '🎓 Le Professeur'}
                                 </span>
                             </div>
                             <h3 className="text-base sm:text-lg font-black text-white">
@@ -96,8 +96,8 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                             </h3>
                             <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
                                 {isEn
-                                    ? 'Play against the Gentle Bot with caring live guidance from the Professor.'
-                                    : 'Affrontez le Bot Doux avec les conseils bienveillants du Professeur en direct.'}
+                                    ? 'Play step by step with caring live guidance from the Professor.'
+                                    : 'Jouez pas à pas avec les conseils bienveillants du Professeur en direct.'}
                             </p>
                         </div>
                         <button
