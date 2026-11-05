@@ -266,6 +266,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     prX={prX}
                     prO={prO}
                     challengerProfile={challengerProfile}
+                    isGuidedMode={Boolean(tierGate === 'BEGINNER' || game.difficulty === 'beginner')}
                 />
 
                 <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 [@media(max-height:500px)]:!gap-1 px-0 sm:px-3 py-0 sm:py-1.5 [@media(max-height:500px)]:!p-0 overflow-hidden">
@@ -287,6 +288,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     <BoardLeftPlayerRail
                         difficulty={game.difficulty}
                         locale={locale}
+                        isGuidedMode={Boolean(tierGate === 'BEGINNER' || game.difficulty === 'beginner')}
                         isXTurn={isXTurn}
                         scoreX={game.state.scoreX}
                         scoreO={game.state.scoreO}

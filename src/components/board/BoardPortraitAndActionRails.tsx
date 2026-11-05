@@ -28,7 +28,7 @@ export interface BoardLeftPlayerRailProps {
     readonly playerClock?: string; readonly delaySeconds?: number; readonly prX?: number | null;
     readonly prO?: number | null; readonly challengerProfile?: PlayerEloProfile | null;
     readonly opponentDice?: [number, number] | null;
-    readonly crawford?: boolean; readonly isDMP?: boolean;
+    readonly crawford?: boolean; readonly isDMP?: boolean; readonly isGuidedMode?: boolean;
     readonly onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
     readonly isBrowserFullscreen?: boolean; readonly isFocusFullBoard?: boolean;
     readonly onToggleFullscreen?: () => void; readonly onToggleCoach?: () => void;
@@ -90,6 +90,7 @@ export function resolvePersonaMeta(
     isBeginner: boolean = false,
 ) {
     const isEn = locale === 'en';
+    const isGuided = Boolean(isBeginner || difficulty === 'beginner');
     const activePersona = getBotPersona(difficulty, locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja');
     const botElo = challengerProfile ? String(challengerProfile.rating) : '—';
     const playerPrNum = typeof prX === 'number' && Number.isFinite(prX) ? Math.max(0, prX) : null;
@@ -97,9 +98,9 @@ export function resolvePersonaMeta(
     const playerPrLabel = playerPrNum !== null ? playerPrNum.toFixed(1) : '—';
     const opponentPrNum = typeof prO === 'number' && Number.isFinite(prO) ? Math.max(0, prO) : null;
     const opponentPrValue = opponentPrNum !== null ? opponentPrNum.toFixed(1) : '—';
-    const opponentDisplayName = isBeginner ? (isEn ? 'The Professor' : 'Le Professeur') : challengerProfile ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName) : activePersona.shortName;
-    const opponentBadge = isBeginner ? (isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE') : challengerProfile ? 'En Ligne · Classé' : activePersona.styleBadge;
-    const opponentPhotoUrl = isBeginner ? '/avatars/persona-femme-maitre.jpg' : challengerProfile ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating) : (PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg');
+    const opponentDisplayName = isGuided ? (isEn ? 'The Professor' : 'Le Professeur') : challengerProfile ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName) : activePersona.shortName;
+    const opponentBadge = isGuided ? (isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE') : challengerProfile ? 'En Ligne · Classé' : activePersona.styleBadge;
+    const opponentPhotoUrl = isGuided ? '/avatars/einstein-quiz-coach.jpg' : challengerProfile ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating) : (PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg');
     return {
         activePersona, botElo, playerPrNum, playerPrValue, playerPrLabel,
         opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl,
@@ -107,12 +108,13 @@ export function resolvePersonaMeta(
 }
 
 export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.memo(({
-    difficulty = 'expert', locale = 'fr', isXTurn, scoreO, cubeValue, matchLength, turn, opponentClock = '02:36', delaySeconds = 12, prX, prO, challengerProfile,
+    difficulty = 'expert', locale = 'fr', isXTurn, scoreO, cubeValue, matchLength, turn, opponentClock = '02:36', delaySeconds = 12, prX, prO, challengerProfile, isGuidedMode = false,
 }) => {
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
+    const isGuided = Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
     const { activePersona, botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl } = resolvePersonaMeta(
-        difficulty, locale, prX, prO, challengerProfile, isBeginner,
+        difficulty, locale, prX, prO, challengerProfile, isGuided,
     );
     return (
         <div data-testid="board-portrait-top-hud" className="md:hidden [@media(max-height:500px)]:hidden w-full shrink-0 flex flex-col gap-1 px-1.5 pt-0.5 pb-1 select-none">
@@ -142,13 +144,13 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                             <span className="truncate">{opponentBadge}</span>
                         </span>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
-                            {!isBeginner && challengerProfile && <span className="text-stone-300">{botElo}</span>}
-                            {!isBeginner && challengerProfile && (
+                            {!isGuided && challengerProfile && <span className="text-stone-300">{botElo}</span>}
+                            {!isGuided && challengerProfile && (
                                 <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(opponentPrNum)}`}>PR {opponentPrValue}</span>
                             )}
                         </div>
                     </div>
-                    <BotPortraitMedallion character={difficulty} size="md" isActive={!isXTurn} customPhotoUrl={challengerProfile ? opponentPhotoUrl : null} />
+                    <BotPortraitMedallion character={isGuided ? 'beginner' : difficulty} size="md" isActive={!isXTurn} customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : (challengerProfile ? opponentPhotoUrl : null)} />
                 </div>
             </div>
 

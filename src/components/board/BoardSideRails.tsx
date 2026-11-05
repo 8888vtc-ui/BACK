@@ -25,18 +25,14 @@ import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 
 export {
-    BoardPortraitTopHud,
-    BoardPortraitBottomHud,
-    BoardRightActionRail,
-    resolvePersonaMeta,
-    type BoardLeftPlayerRailProps,
-    type BoardRightActionRailProps,
+    BoardPortraitTopHud, BoardPortraitBottomHud, BoardRightActionRail,
+    resolvePersonaMeta, type BoardLeftPlayerRailProps, type BoardRightActionRailProps,
 };
 
 export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.memo(({
     difficulty = 'expert', locale = 'fr', isXTurn, scoreX, scoreO, cubeValue, matchLength, turn,
     opponentClock = '02:36', playerClock = '02:14', delaySeconds = 12, prX, prO, challengerProfile,
-    opponentDice = null, onSendQuickChat, crawford = false, isDMP = false,
+    opponentDice = null, onSendQuickChat, crawford = false, isDMP = false, isGuidedMode = false,
     isBrowserFullscreen = false, isFocusFullBoard = true, onToggleFullscreen, onToggleCoach,
     onBackToLobby, canUndo = false, onUndo, autoConfirmEnabled = false, onToggleAutoConfirm,
     autoRollEnabled = false, onToggleAutoRoll,
@@ -46,6 +42,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     const { theme: activeTheme, setTheme } = useBoardTheme();
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
+    const isGuided = Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
     const [playerMeta, setPlayerMeta] = useState<{ pseudo: string; avatarUrl: string; countryName: string; isGuest: boolean; careerPr: number | null }>({
         pseudo: 'Joueur Invité', avatarUrl: STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg', countryName: 'France', isGuest: true, careerPr: null,
     });
@@ -68,7 +65,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     const {
         botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue,
         opponentDisplayName, opponentBadge, opponentPhotoUrl,
-    } = resolvePersonaMeta(difficulty, locale, prX, prO, challengerProfile, isBeginner);
+    } = resolvePersonaMeta(difficulty, locale, prX, prO, challengerProfile, isGuided);
 
     const handleFlipDirection = () => {
         const next = toggleOrientation(getSavedOrientation());
@@ -93,18 +90,18 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             <span>{opponentBadge}</span>
                         </span>
                         <BotPortraitMedallion
-                            character={difficulty}
+                            character={isGuided ? 'beginner' : difficulty}
                             size="lg"
                             isActive={!isXTurn}
-                            customPhotoUrl={challengerProfile ? opponentPhotoUrl : null}
+                            customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : (challengerProfile ? opponentPhotoUrl : null)}
                         />
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
-                            {!isBeginner && (
+                            {!isGuided && (
                                 <span className="font-mono text-stone-200 font-bold">
                                     {challengerProfile ? `${botElo} Elo` : 'Adversaire'}
                                 </span>
                             )}
-                            {!isBeginner && challengerProfile && (
+                            {!isGuided && challengerProfile && (
                                 <span className={`inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap ${resolvePrBadgeClasses(opponentPrNum)}`}>
                                     PR Match : {opponentPrValue}
                                 </span>
@@ -114,7 +111,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                     <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
                         <span data-testid="left-rail-mobile-opp-name" title={opponentDisplayName} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">{opponentDisplayName}</span>
-                        {!isBeginner && (
+                        {!isGuided && (
                             <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">
                                 {challengerProfile ? `${botElo} Elo` : ''}
                             </span>
@@ -148,7 +145,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 ) : (
                     <div data-testid="left-rail-bot-engine-badge" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-[#d4af37]/25 bg-black/45 px-2 py-1 text-[10px] font-semibold text-[#f3d27a]">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
-                        <span>{isBeginner ? '• Partie Guidée' : 'Adversaire du Cercle'}</span>
+                        <span>{isGuided ? '• Partie Guidée' : 'Adversaire du Cercle'}</span>
                     </div>
                 )}
             </div>
@@ -230,7 +227,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
             {/* 3. CARTE BAS (Joueur Humain : Invité vs Inscrit) */}
             <div className="relative flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-0.5 border-t border-[#d4af37]/20 pt-1.5 [@media(max-height:540px)]:!pt-0.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
                 <div className="[@media(max-height:540px)]:hidden flex flex-col items-center gap-0.5 min-w-0 flex-1">
-                    {isBeginner ? (
+                    {isGuided ? (
                         <span data-testid="left-rail-guided-player-badge" className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-950/70 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-emerald-300 whitespace-nowrap">
                             {locale === 'en' ? 'PLAYER • GUIDED PLAY' : 'JOUEUR • PARTIE GUIDÉE'}
                         </span>
@@ -251,15 +248,15 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     )}
                     <BotPortraitMedallion character="player" size="lg" isActive={isXTurn} customPhotoUrl={playerMeta.avatarUrl} />
                     <span className="truncate max-w-full font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight">
-                        {isBeginner ? (locale === 'en' ? 'You (Student)' : 'Vous (Élève)') : playerMeta.pseudo}
+                        {isGuided ? (locale === 'en' ? 'You (Student)' : 'Vous (Élève)') : playerMeta.pseudo}
                     </span>
                 </div>
 
                 <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
                     <span data-testid="left-rail-mobile-player-name" title={playerMeta.pseudo} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">
-                        {isBeginner ? (locale === 'en' ? 'You (Student)' : 'Vous (Élève)') : playerMeta.pseudo}
+                        {isGuided ? (locale === 'en' ? 'You (Student)' : 'Vous (Élève)') : playerMeta.pseudo}
                     </span>
-                    {!isBeginner && (
+                    {!isGuided && (
                         <span data-testid="left-rail-mobile-player-elo" className="font-mono text-[8.5px] font-bold text-emerald-300/90 tabular-nums whitespace-nowrap">
                             {playerMeta.isGuest ? 'Invité' : '1500 Elo'}
                         </span>

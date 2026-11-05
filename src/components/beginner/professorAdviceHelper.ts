@@ -1,9 +1,16 @@
 /**
  * @file src/components/beginner/professorAdviceHelper.ts
- * @description Générateur déterministe d'explications bilingues sans jargon pour le Professeur Débutant (< 140 lignes, 0 any).
+ * @description Générateur déterministe d'explications bilingues sans jargon pour le Professeur Débutant (< 150 lignes, 0 any).
+ * Invariant strict : Vérité physique garantie (Coup forcé, Porte fermée, Frappe, Réduction de blots, Course).
  */
 
-import type { BoardState } from '../../engine/backgammonEngine';
+import {
+    applyMove,
+    generateLegalMoves,
+    O_BAR,
+    type BoardState,
+    type Move,
+} from '../../engine/backgammonEngine';
 import { analyzeBoardMoves } from '../../lib/engine/evaluator';
 import { formatCoachMoveSequence } from '../../features/coach/coachMoveNotation';
 import { getOpeningForScore, isInitialBoardPosition } from '../../features/openings/openingDatabase';
@@ -28,18 +35,50 @@ export function getProactiveAdvice(
         const opening = getOpeningForScore(dice[0], dice[1], 'NORMAL');
         if (opening) {
             const bestNotation = opening.bestMoveNotation;
-            const text = formatAdviceText(bestNotation, dice, lang);
+            const text = lang === 'en'
+                ? `💡 Professor Tip (Dice ${dice[0]}-${dice[1]}): Play ${bestNotation} to secure an advanced anchor and control the tempo.`
+                : `💡 Conseil du Professeur (Dés ${dice[0]}-${dice[1]}) : Joue ${bestNotation} pour ancrer tes pions et prendre l'initiative.`;
             return { bestNotation, text };
         }
     }
 
-    // 2. Évaluation rapide 1-ply des coups légaux
+    // 2. Évaluation rapide 1-ply des coups légaux et détection de vérité physique
     try {
         const analysis = analyzeBoardMoves(state, dice, { ply: 1, maxMoves: 4 });
         const moves = analysis.bestMove?.moves;
         if (moves && moves.length > 0) {
             const bestNotation = formatCoachMoveSequence(moves, 'X', state.board);
-            const text = formatAdviceText(bestNotation, dice, lang);
+            let boardAfterBest = [...state.board];
+            for (const mv of moves) {
+                boardAfterBest = applyMove(boardAfterBest, mv, 'X');
+            }
+
+            const legals = generateLegalMoves(state, dice);
+            const legalMovesCount = legals.length;
+            const dHigh = Math.max(dice[0], dice[1]);
+            const sourcePointsForHighDie = new Set<number>();
+            for (const seq of legals) {
+                for (const mv of seq.moves) {
+                    if (
+                        mv.from - mv.to === dHigh ||
+                        (mv.from === 0 && 25 - mv.to === dHigh) ||
+                        (mv.to === 0 && mv.from <= dHigh)
+                    ) {
+                        sourcePointsForHighDie.add(mv.from);
+                    }
+                }
+            }
+            const isForcedHighDie = sourcePointsForHighDie.size === 1;
+
+            const text = formatAdviceTextWithPhysicalTruth(
+                state.board,
+                boardAfterBest,
+                bestNotation,
+                dice,
+                legalMovesCount,
+                isForcedHighDie,
+                lang,
+            );
             return { bestNotation, text };
         }
     } catch {
@@ -49,26 +88,61 @@ export function getProactiveAdvice(
     return null;
 }
 
-function formatAdviceText(bestNotation: string, dice: [number, number], lang: 'fr' | 'en'): string {
+function formatAdviceTextWithPhysicalTruth(
+    boardBefore: readonly number[],
+    boardAfterBest: readonly number[],
+    bestNotation: string,
+    dice: [number, number],
+    legalMovesCount: number,
+    isForcedHighDie: boolean,
+    lang: 'fr' | 'en',
+): string {
     const isEn = lang === 'en';
     const diceLabel = `${dice[0]}-${dice[1]}`;
+    const dHigh = Math.max(dice[0], dice[1]);
 
-    if (bestNotation.includes('*')) {
+    // Cas A — Coup forcé (1 seul coup légal ou le dé fort n'est jouable que depuis une seule case)
+    if (legalMovesCount <= 1 || isForcedHighDie) {
         return isEn
-            ? `💡 Professor Tip: With ${diceLabel}, play ${bestNotation} to hit the opponent's exposed blot and send it to the bar!`
-            : `💡 Conseil du Professeur : Profite de ce ${diceLabel} pour jouer ${bestNotation} : tu frappes le pion adverse isolé et le renvoies sur la barre !`;
+            ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation}. Moving with the ${dHigh} is forced: advance toward your home board and consolidate your checkers.`
+            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation}. Le déplacement avec le ${dHigh} est forcé : avance au maximum vers ton camp et resserre tes pions dans ta maison.`;
     }
 
-    const makesGate = /\b(?:13\/7|8\/7|6\/2|8\/2|24\/20|13\/9)\b/.test(bestNotation) || /24\/18\s+13\/9/.test(bestNotation);
-    if (makesGate) {
+    // Cas C — Le coup frappe réellement un pion adverse
+    const hitO = Math.abs(boardAfterBest[O_BAR] ?? 0) > Math.abs(boardBefore[O_BAR] ?? 0) || bestNotation.includes('*');
+    if (hitO) {
         return isEn
-            ? `💡 Professor Tip: With ${diceLabel}, the best plan is ${bestNotation} to build a solid gate and shield your position!`
-            : `💡 Conseil du Professeur : Avec ce ${diceLabel}, le meilleur plan est ${bestNotation} pour construire une porte et créer un bouclier solide !`;
+            ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation} to hit the opponent's exposed blot and send it to the center bar!`
+            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation} pour frapper le pion adverse isolé et l'envoyer sur la barre centrale !`;
     }
 
+    // Cas B — Le coup ferme réellement une nouvelle porte (boardBefore[p] < 2 && boardAfterBest[p] >= 2)
+    let closedPoint: number | null = null;
+    for (let p = 1; p <= 24; p++) {
+        if ((boardBefore[p] ?? 0) < 2 && (boardAfterBest[p] ?? 0) >= 2) {
+            closedPoint = p;
+            break;
+        }
+    }
+    if (closedPoint !== null) {
+        return isEn
+            ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation} to secure Point ${closedPoint} with at least 2 checkers and build a solid gate.`
+            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation} pour fermer la Case ${closedPoint} avec au moins 2 pions et créer une porte solide.`;
+    }
+
+    // Cas D — Le coup réduit réellement le nombre de pions isolés
+    const blotsBefore = boardBefore.slice(1, 25).filter((v) => v === 1).length;
+    const blotsAfter = boardAfterBest.slice(1, 25).filter((v) => v === 1).length;
+    if (blotsAfter < blotsBefore) {
+        return isEn
+            ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation} to bring your exposed blot to safety with another checker.`
+            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation} pour mettre ton pion isolé en sécurité avec un autre pion.`;
+    }
+
+    // Cas E — Sinon (Course / Sortie / Regroupement)
     return isEn
-        ? `💡 Professor Tip: Play ${bestNotation} to bring your checkers to safety and advance toward your home board (Point 1).`
-        : `💡 Conseil du Professeur : Joue ${bestNotation} pour mettre tes pions en sécurité et avancer vers ta zone de sortie (Case 1).`;
+        ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation} to advance your checkers and prepare bearing them off at Point 1.`
+        : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation} pour faire avancer tes pions et préparer leur sortie en Case 1.`;
 }
 
 export function getFeedbackAdvice(feedback: LastMoveFeedback, lang: 'fr' | 'en' = 'fr'): string {

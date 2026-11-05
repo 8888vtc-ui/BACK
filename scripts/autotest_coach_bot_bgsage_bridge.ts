@@ -261,3 +261,4 @@ runBridgeVerification().catch((err) => {
     console.error('Erreur fatale dans le banc d\'auto-test :', err);
     process.exit(1);
 });
+

@@ -160,3 +160,4 @@ describe('CoachTruthAuditor - Détecteur de mensonges et 7 Péchés Capitaux', (
         expect(result.sin).toBeUndefined();
     });
 });
+

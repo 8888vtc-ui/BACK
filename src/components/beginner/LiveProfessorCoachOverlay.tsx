@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { RotateCcw, Lightbulb, GraduationCap, Volume2, BookOpen, ShieldAlert, Award, Compass, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { RotateCcw, GraduationCap, Volume2, BookOpen, ShieldAlert, Award, Compass, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
 import { pipCount, type BoardState } from '../../engine/backgammonEngine';
@@ -32,25 +32,51 @@ export function LiveProfessorCoachOverlay({
   onUndoMove,
   onAskProfessorHint,
   lastMoveFeedback,
-  pipDifference = 10, antiFrustrationNotice, isMasterMove = true, optimalMove,
-  lastBotNotation, activeTurn = 'X', boardState, onToggleRecommendArrow, isShowingRecommendArrow = false,
+  antiFrustrationNotice,
+  isMasterMove = false,
+  optimalMove,
+  lastBotNotation,
+  activeTurn = 'X',
+  boardState,
+  onToggleRecommendArrow,
+  isShowingRecommendArrow = false,
 }: LiveProfessorCoachOverlayProps) {
   const { locale } = useTranslation();
   const lang = locale === 'en' ? 'en' : 'fr';
-  const [hintRequested, setHintRequested] = useState<boolean>(false);
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [activeNotice, setActiveNotice] = useState<'BAR_PRIORITY' | 'CLOSED_POINT' | null>(antiFrustrationNotice ?? null);
+  const [showMasterBadge, setShowMasterBadge] = useState<boolean>(false);
 
   // Temps A : Calcul proactif du meilleur coup au jet de dés
-  const proactive = useMemo(() => (boardState && dice && (dice[0] > 0 || dice[1] > 0) && activeTurn === 'X' ? getProactiveAdvice(boardState, dice, lang) : null), [boardState, dice, activeTurn, lang]);
+  const proactive = useMemo(
+    () => (boardState && dice && (dice[0] > 0 || dice[1] > 0) && activeTurn === 'X' ? getProactiveAdvice(boardState, dice, lang) : null),
+    [boardState, dice, activeTurn, lang],
+  );
 
   const activeBestNotation = proactive?.bestNotation ?? optimalMove ?? '';
 
-  const raceDiff = useMemo(() => {
-    if (!boardState?.board) return typeof pipDifference === 'number' ? pipDifference : 0;
-    const pips = pipCount(boardState.board);
-    return pips.O - pips.X;
-  }, [boardState?.board, pipDifference]);
+  // Affichage automatique des flèches dorées (#D4AF37) dès le lancer de dés
+  useEffect(() => {
+    if (activeTurn === 'X' && dice && (dice[0] > 0 || dice[1] > 0) && activeBestNotation) {
+      if (!isShowingRecommendArrow) {
+        onToggleRecommendArrow?.(activeBestNotation);
+      }
+    } else if (!dice || activeTurn !== 'X') {
+      if (isShowingRecommendArrow) {
+        onToggleRecommendArrow?.('');
+      }
+    }
+  }, [activeTurn, dice, activeBestNotation, isShowingRecommendArrow, onToggleRecommendArrow]);
+
+  // Badge Coup de Maître : affiché 3 secondes max, disparaît dès le lancer de dés
+  useEffect(() => {
+    if (isMasterMove && (!dice || (dice[0] === 0 && dice[1] === 0))) {
+      setShowMasterBadge(true);
+      const timer = setTimeout(() => setShowMasterBadge(false), 3000);
+      return () => clearTimeout(timer);
+    }
+    setShowMasterBadge(false);
+  }, [isMasterMove, dice]);
 
   const getProfessorPrompt = (): string => {
     if (activeTurn === 'X' && (!dice || (dice[0] === 0 && dice[1] === 0))) {
@@ -69,11 +95,11 @@ export function LiveProfessorCoachOverlay({
     if (proactive) return proactive.text;
     if (lastBotNotation && activeTurn === 'X' && !dice) return getBotMoveExplanation(lastBotNotation, lang);
     if (activeTurn === 'O') return lang === 'fr' ? "L'adversaire analyse la position..." : 'Opponent is thinking...';
-    if (hintRequested) {
-      if (activeBestNotation) {
-        return lang === 'fr' ? `💡 Conseil du Professeur : Jouez ${activeBestNotation} pour sécuriser vos pions et progresser vers la case 1.` : `💡 Professor Tip: Play ${activeBestNotation} to advance your checkers safely toward Point 1.`;
-      }
-      return lang === 'fr' ? "💡 Conseil du Professeur : Lancez d’abord les dés pour analyser la meilleure option !" : "💡 Professor Tip: Roll the dice first so we can analyze the best option!";
+
+    if (activeBestNotation) {
+      return lang === 'fr'
+        ? `💡 Conseil du Professeur : Joue ${activeBestNotation} pour faire avancer tes pions vers ta maison.`
+        : `💡 Professor Tip: Play ${activeBestNotation} to advance your checkers toward your home board.`;
     }
     return lang === 'fr'
       ? "🎓 Le Professeur : C'est à ton tour ! Clique sur Lancer les dés au centre du plateau."
@@ -81,20 +107,26 @@ export function LiveProfessorCoachOverlay({
   };
 
   const getRaceCompassText = (): string => {
-    if (raceDiff >= 8) {
+    if (!boardState?.board) return '';
+    const pips = pipCount(boardState.board);
+    const playerPips = pips.X;
+    const opponentPips = pips.O;
+
+    if (playerPips > opponentPips) {
+      const retard = playerPips - opponentPips;
       return lang === 'fr'
-        ? `🏃 Course : Tu es en avance de ${raceDiff} cases ! Ramène tes dames en sécurité.`
-        : `🏃 Race: You lead by ${raceDiff} steps! Bring your checkers home safely.`;
+        ? `🛡️ Course : Tu as ${retard} cases de retard (${playerPips} contre ${opponentPips}). Garde une défense solide et guette un pion adverse isolé à frapper !`
+        : `🛡️ Race: You are ${retard} steps behind (${playerPips} vs ${opponentPips}). Stay solid and look for an exposed blot to hit!`;
     }
-    if (raceDiff <= -8) {
-      const trail = Math.abs(raceDiff);
+    if (playerPips < opponentPips) {
+      const avance = opponentPips - playerPips;
       return lang === 'fr'
-        ? `🛡️ En embuscade (${trail} cases de retard) : Garde une porte chez l'adversaire et attends une occasion de frapper !`
-        : `🛡️ Ambush (${trail} steps behind): Keep an anchor in opponent board and wait to strike!`;
+        ? `🏃 Course : Tu es en avance de ${avance} cases (${playerPips} contre ${opponentPips}) ! Ramène tes dames vers la sortie sans prendre de risque.`
+        : `🏃 Race: You lead by ${avance} steps (${playerPips} vs ${opponentPips})! Bring your checkers home safely without taking risks.`;
     }
     return lang === 'fr'
-      ? '⚖️ Course serrée : Construis tes portes et protège tes pions isolés.'
-      : '⚖️ Tight race: Build gates and protect your single blots.';
+      ? `⚖️ Course serrée (${playerPips} cases partout) : Construis tes portes et protège tes pions isolés.`
+      : `⚖️ Tight race (${playerPips} steps each): Build gates and protect your single blots.`;
   };
 
   const handleSpeakPrompt = () => {
@@ -130,7 +162,7 @@ export function LiveProfessorCoachOverlay({
                 <span className="font-black uppercase tracking-wider text-[10px] text-[#D4AF37]">
                   {lang === 'fr' ? 'Professeur Interactif' : 'Interactive Professor'}
                 </span>
-                {isMasterMove && (
+                {showMasterBadge && (
                   <span
                     data-testid="master-move-badge"
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/30 to-amber-600/30 border border-[#D4AF37]/60 text-[#f3d27a] font-bold text-[10px] shadow-sm animate-pulse"
@@ -140,13 +172,13 @@ export function LiveProfessorCoachOverlay({
                   </span>
                 )}
               </div>
-              <p data-testid="professor-dialogue-text" className="text-sm sm:text-base font-medium text-white leading-relaxed line-clamp-2">
+              <p data-testid="professor-dialogue-text" className="text-sm sm:text-base font-medium text-white leading-relaxed break-words">
                 {getProfessorPrompt()}
               </p>
             </div>
           </div>
 
-          {/* Boutons d'interaction */}
+          {/* Boutons d'interaction épurés */}
           <div className="flex flex-wrap items-center gap-1.5 shrink-0 self-end sm:self-center">
             {/* Bouton d'Aide Visuelle : Flèche dorée sur le plateau */}
             {activeBestNotation && dice && (dice[0] > 0 || dice[1] > 0) && (
@@ -192,22 +224,8 @@ export function LiveProfessorCoachOverlay({
 
             <button
               type="button"
-              data-testid="professor-ask-hint-btn"
-              onClick={() => {
-                setHintRequested(true);
-                onAskProfessorHint?.();
-              }}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 text-[#F3E5AB] border border-[#D4AF37]/50 font-bold transition"
-            >
-              <Lightbulb className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>{lang === 'fr' ? 'Idée du Professeur' : 'Professor Hint'}</span>
-            </button>
-
-            <button
-              type="button"
               data-testid="professor-undo-move-btn"
               onClick={() => {
-                setHintRequested(false);
                 onUndoMove?.();
               }}
               disabled={!canUndo}
@@ -219,74 +237,74 @@ export function LiveProfessorCoachOverlay({
           </div>
         </div>
 
-        {/* Guidage Visuel du Sens de Marche (24 -> 1) */}
-        <div
-          data-testid="direction-horseshoe-indicator"
-          className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-amber-200 text-xs sm:text-sm font-mono font-bold"
-        >
-          <span className="flex items-center gap-1.5">
-            <Compass size={14} className="text-amber-400 shrink-0" />
-            <span>{lang === 'fr' ? 'Sens de marche :' : 'Checker Direction:'}</span>
-            <span className="text-[#f3d27a]">{lang === 'fr' ? 'Case 24 (Adverse)' : 'Point 24 (Opponent)'}</span>
-            <span>➔</span>
-            <span className="text-emerald-400">{lang === 'fr' ? 'Case 1 (Votre Maison)' : 'Point 1 (Home Board)'}</span>
-          </span>
-          <span className="text-stone-400 text-xs hidden md:inline">{lang === 'fr' ? 'Sortie des dames en Case 1' : 'Bear off at Point 1'}</span>
-        </div>
-
-        {/* Ligne 2 : Jauge de Course & Détecteur Anti-Frustration */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 pt-1.5 border-t border-white/10">
-          <div
-            data-testid="beginner-race-compass"
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-200 text-[11px] font-semibold"
-          >
-            <span>{getRaceCompassText()}</span>
-          </div>
-
-          <div className="flex items-center gap-2 text-[10px] text-stone-400">
-            <button
-              type="button"
-              onClick={() => setActiveNotice(activeNotice === 'BAR_PRIORITY' ? 'CLOSED_POINT' : 'BAR_PRIORITY')}
-              className="hover:text-amber-300 underline transition"
-            >
-              {lang === 'fr' ? 'Aide déplacements ?' : 'Movement rules?'}
-            </button>
-          </div>
-        </div>
-
-        {/* Bannière Anti-Frustration si pion sur barre ou porte fermée */}
-        {currentNotice && (
-          <div
-            data-testid="anti-frustration-alert"
-            className="w-full px-3 py-1.5 rounded-lg border border-amber-400/50 bg-amber-950/80 text-amber-200 text-xs flex items-center justify-between animate-in fade-in"
-          >
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+        {/* Ligne 2 : Boussole Pédagogique */}
+        <div className="flex flex-col gap-1.5 pt-1.5 border-t border-[#D4AF37]/20">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-400">
+            <span className="flex items-center gap-1">
+              <Compass className="w-3.5 h-3.5 text-[#D4AF37]" />
               <span>
-                {currentNotice === 'BAR_PRIORITY'
-                  ? lang === 'fr'
-                    ? 'Priorité absolue : tu as un pion sur la Barre centrale ! Tu dois d’abord le faire rentrer dans la maison adverse avant de déplacer tes autres dames.'
-                    : 'Absolute priority: you have a checker on the central Bar! You must enter it into the opponent’s home board first before moving any other checkers.'
-                  : lang === 'fr'
-                    ? 'Bouclier adverse : l’adversaire a 2 dames ou plus sur cette flèche, c’est une Porte fermée imprenable !'
-                    : 'Opponent shield: opponent has 2 or more checkers on this point, it is a closed, impassable gate!'}
+                {lang === 'fr'
+                  ? 'Sens de marche : Case 24 (Adverse) ➔ Case 1 (Votre Maison)'
+                  : 'Direction: Point 24 (Opponent) ➔ Point 1 (Your Home Board)'}
               </span>
-            </div>
+            </span>
+            <span className="text-stone-400 font-mono text-[10px]">
+              {lang === 'fr' ? 'Sortie des dames en Case 1' : 'Bear off at Point 1'}
+            </span>
+          </div>
+
+          {/* Indicateur de Course dynamique */}
+          <div className="flex items-center justify-between text-[11px] text-stone-300 bg-black/30 px-2 py-1 rounded-md border border-white/5">
+            <span className="font-medium text-[#f3d27a]">
+              {getRaceCompassText()}
+            </span>
             <button
               type="button"
-              onClick={() => setActiveNotice(null)}
-              className="text-stone-400 hover:text-white text-xs px-1 font-bold"
+              onClick={() => setIsGuideOpen(true)}
+              className="text-[#D4AF37] hover:underline text-[10px] shrink-0 ml-2"
             >
-              ✕
+              {lang === 'fr' ? 'Aide déplacements ?' : 'Movement help?'}
             </button>
           </div>
-        )}
+
+          {currentNotice && (
+            <div
+              data-testid="professor-anti-frustration-alert"
+              className="flex items-center justify-between gap-2 p-2 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-200 text-xs animate-in fade-in"
+            >
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>
+                  {currentNotice === 'BAR_PRIORITY'
+                    ? (lang === 'fr'
+                        ? '🚨 Règle d’or : Vous avez une dame sur la barre ! Elle doit impérativement rentrer (cases 24 à 19) avant de bouger tout autre pion.'
+                        : '🚨 Golden Rule: You have a checker on the bar! It must re-enter (points 24 to 19) before any other move.')
+                    : (lang === 'fr'
+                        ? '🛡️ Case bloquée : Cette flèche est protégée par 2 dames adverses ou plus (porte faite). Vous ne pouvez pas vous y arrêter.'
+                        : '🛡️ Blocked point: This point is secured by 2+ opponent checkers. You cannot land here.')}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveNotice(null)}
+                className="text-stone-400 hover:text-white text-xs px-1"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      <BeginnerInteractiveGuideModal
-        isOpen={isGuideOpen}
-        onClose={() => setIsGuideOpen(false)}
-      />
+      {isGuideOpen && (
+        <BeginnerInteractiveGuideModal
+          isOpen={isGuideOpen}
+          onClose={() => setIsGuideOpen(false)}
+          onStartGuidedMatch={() => setIsGuideOpen(false)}
+        />
+      )}
     </>
   );
 }
+
+export default LiveProfessorCoachOverlay;
