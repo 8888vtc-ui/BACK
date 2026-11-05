@@ -33,21 +33,19 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
     return (
         <>
             <div data-testid="beginner-home-portal" className="flex flex-col gap-5 w-full max-w-5xl mx-auto py-3">
-                {/* En-tête de bienvenue Débutant */}
-                <div className="rounded-2xl border border-white/[0.08] bg-[#0b0e14]/90 p-6 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex flex-col gap-1 text-center sm:text-left">
-                        <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
-                            {isEn ? '🌱 Beginner Mode · The Alliance of Luck & Strategy' : "🌱 Mode Débutant · L'Alliance du Hasard et de la Stratégie"}
-                        </span>
-                        <h2 className="text-xl sm:text-2xl font-black text-white">
-                            {isEn ? 'The thrill of dice, the power of strategy' : 'Le suspense des dés, la puissance de la stratégie'}
-                        </h2>
-                        <p className="text-sm text-stone-200 max-w-2xl leading-relaxed">
-                            {isEn
-                                ? 'On a single roll, anyone can get lucky. But over 36 combinations, mastering the doubling cube and avoiding blunders makes you win consistently.'
-                                : "Sur une manche, n'importe qui peut avoir de la chance. Mais sur les 36 combinaisons, maîtriser le videau et éviter les blunders vous fait triompher sur la durée."}
-                        </p>
-                    </div>
+                {/* En-tête épuré sans boîte lourde */}
+                <div className="flex flex-col gap-1.5 text-center sm:text-left px-1 py-1">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
+                        {isEn ? '🌱 Beginner Mode · The Alliance of Luck & Strategy' : "🌱 Mode Débutant · L'Alliance du Hasard et de la Stratégie"}
+                    </span>
+                    <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                        {isEn ? 'The thrill of dice, the power of strategy' : 'Le suspense des dés, la puissance de la stratégie'}
+                    </h2>
+                    <p className="text-sm text-stone-300 max-w-3xl leading-relaxed">
+                        {isEn
+                            ? 'On a single roll, anyone can get lucky. But over 36 combinations, mastering the doubling cube and avoiding blunders makes you win consistently.'
+                            : "Sur une manche, n'importe qui peut avoir de la chance. Mais sur les 36 combinaisons, maîtriser le videau et éviter les blunders vous fait triompher sur la durée."}
+                    </p>
                 </div>
 
                 {/* Grille 2 Cartes Clés : Académie 10 Quiz & Match Guidé */}
@@ -106,7 +104,7 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                             type="button"
                             data-testid="beginner-play-btn"
                             onClick={onStartGuidedGame}
-                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.06] hover:bg-white/[0.1] px-4 py-3 text-sm font-bold uppercase tracking-wider text-white transition active:scale-95"
+                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 hover:bg-white/15 px-4 py-3 text-sm font-bold uppercase tracking-wider text-white transition active:scale-95"
                         >
                             <span>{isEn ? 'START GUIDED MATCH' : 'LANCER UNE PARTIE GUIDÉE'}</span>
                         </button>
@@ -117,13 +115,13 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-white/[0.08] bg-gradient-to-r from-[#0d131f]/90 via-[#0b0e14]/90 to-[#14120e]/90 p-5 shadow-md">
                     <div className="flex items-center gap-3.5">
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
-                            <Sparkles size={22} />
+                            <BookOpen size={20} strokeWidth={1.5} className="text-[#D4AF37]" />
                         </span>
                         <div className="flex flex-col">
                             <h4 className="text-sm sm:text-base font-bold text-white">
                                 {isEn
-                                    ? '📖 Master Guide: Luck & Strategy, Monte Carlo, Cube & Blunders'
-                                    : '📖 Guide Officiel : Hasard & Stratégie, Monte-Carlo, Videau & Blunders'}
+                                    ? 'Master Guide: Luck & Strategy, Monte Carlo, Cube & Blunders'
+                                    : 'Guide Officiel : Hasard & Stratégie, Monte-Carlo, Videau & Blunders'}
                             </h4>
                             <p className="text-xs sm:text-sm text-stone-300">
                                 {isEn
@@ -137,7 +135,7 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                             type="button"
                             data-testid="beginner-openings-btn"
                             onClick={() => setIsOpeningExplorerOpen(true)}
-                            className="inline-flex items-center gap-2 rounded-xl border border-[#D4AF37]/40 bg-[#D4AF37]/15 px-4 py-2.5 text-xs sm:text-sm font-bold text-[#F3E5AB] hover:bg-[#D4AF37]/25 active:scale-95 transition"
+                            className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-4 py-2.5 text-xs sm:text-sm font-bold text-zinc-100 hover:border-[#D4AF37]/50 hover:bg-white/[0.08] active:scale-95 transition"
                         >
                             <Dices size={16} className="text-[#D4AF37]" />
                             <span>{isEn ? '15 OPENINGS SIMULATOR' : '15 COUPS D’OUVERTURE'}</span>
@@ -146,7 +144,7 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                             type="button"
                             data-testid="beginner-open-guide-btn"
                             onClick={() => setIsGuideOpen(true)}
-                            className="inline-flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-xs sm:text-sm font-bold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition"
+                            className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-4 py-2.5 text-xs sm:text-sm font-bold text-zinc-100 hover:border-[#D4AF37]/50 hover:bg-white/[0.08] active:scale-95 transition"
                         >
                             <span>{isEn ? 'LISTEN TO THE 6 CHAPTERS' : 'LIRE & ÉCOUTER LES 6 CHAPITRES'}</span>
                         </button>

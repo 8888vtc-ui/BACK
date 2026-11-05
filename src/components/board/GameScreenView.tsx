@@ -2,16 +2,16 @@
 
 /**
  * Vue 2 — GAME : HUD Compact + Plateau Zero-Scroll + MobileThumbDock + Tiroir Coach + Modales.
- * Strictement < 280 lignes, 0 `any` (LOI 5).
+ * Strictement <= 260 lignes, 0 `any` (LOI 5).
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import MatchHeader from '../hud/MatchHeader';
-import MobileThumbDock from './MobileThumbDock';
 import GameBoardArea from './GameBoardArea';
 import CoachMobileDrawer from '../coach/CoachMobileDrawer';
 import GameModalsContainer from '../modals/GameModalsContainer';
-import CubeBottomSheet from '../modals/CubeBottomSheet';
+import { GameScreenTopBar } from './GameScreenTopBar';
+import { GameScreenMobileControls } from './GameScreenMobileControls';
+import { GameScreenAntiTiltBanner } from './GameScreenAntiTiltBanner';
 import { LiveProfessorCoachOverlay } from '../beginner/LiveProfessorCoachOverlay';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { useCoachQuota } from '../../hooks/useCoachQuota';
@@ -136,269 +136,77 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
             data-testid="app-game-view"
             className={`mobile-game-viewport-lock landscape-full-bleed h-dvh max-h-dvh w-full max-w-[100vw] flex flex-col overflow-hidden p-0 sm:p-2 [@media(max-height:500px)]:!p-[2px] select-none transition-colors duration-500 ${ambianceClass}`}
         >
-            {/* Barre Raccourci Mode Échiquier Pur (Full Focus) */}
-            <div className="w-full flex items-center justify-between px-2 py-0.5 z-30 shrink-0">
-                <button
-                    type="button"
-                    data-testid="full-focus-board-btn"
-                    onClick={() => setIsFullFocusMode((prev) => !prev)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs sm:text-sm font-bold transition ${
-                        isFullFocusMode
-                            ? 'bg-[#D4AF37] text-slate-950 border-[#F3E5AB] font-black shadow-md'
-                            : 'bg-black/60 text-stone-300 border-white/10 hover:text-white hover:bg-white/10'
-                    }`}
-                >
-                    <span>{isFullFocusMode ? '🖥️ Quitter Plein Écran (Touche F)' : '🖥️ Mode Échiquier Pur (Full Focus · Touche F)'}</span>
-                </button>
-            </div>
+            <GameScreenTopBar
+                isFullFocusMode={isFullFocusMode}
+                onToggleFullFocusMode={() => setIsFullFocusMode((prev) => !prev)}
+                t={t} theme={theme} onToggleTheme={onToggleTheme} game={game}
+                isMultiplayerActive={isMultiplayerActive} multiplayer={multiplayer} modals={modals}
+                onTriggerCoach={onTriggerCoach} turnsCount={turnsCount} prX={prX} prO={prO}
+                onBackToLobby={onBackToLobby} playerColor={playerColor} lastMoveFeedback={lastMoveFeedback}
+                notificationLevel={notificationLevel} onChangeNotificationLevel={onChangeNotificationLevel}
+                quotaBadge={quotaBadge} isVip={quota.isVip}
+            />
 
-            {/* 1. HUD Compact Mobile (< 44px, masqué sur Desktop/Paysage où les colonnes latérales prennent le relais) */}
-            <div className="md:hidden [@media(max-height:540px)]:!hidden shrink-0 w-full max-w-full min-w-0 overflow-hidden">
-                <MatchHeader
-                    t={t}
-                    theme={theme}
-                    onToggleTheme={onToggleTheme}
-                    game={game}
-                    isMultiplayerActive={isMultiplayerActive}
-                    multiplayer={multiplayer}
-                    onOpenExportImport={modals.openExportImport}
-                    onTriggerCoach={() => {
-                        onTriggerCoach();
-                        modals.openMobileDrawer();
-                    }}
-                    turnsCount={turnsCount}
-                    prX={prX}
-                    prO={prO}
-                    onBackToLobby={onBackToLobby}
-                    playerColor={playerColor}
-                    onOpenDiceAudit={modals.openDiceAudit}
-                    lastMoveFeedback={lastMoveFeedback}
-                    notificationLevel={notificationLevel}
-                    onChangeNotificationLevel={onChangeNotificationLevel}
-                    coachQuotaBadge={quotaBadge}
-                    isVip={quota.isVip}
-                />
-            </div>
-
-            {/* 1.5. Professeur Interactif Débutant (Questions, Astuces, Audio bilingue & Réessai) */}
             {tierGate === 'BEGINNER' && !isMultiplayerActive && (
                 <LiveProfessorCoachOverlay
-                    dice={game.dice}
-                    canUndo={game.canUndo}
-                    onUndoMove={game.undoMove}
-                    onAskProfessorHint={() => {
-                        onTriggerCoach();
-                        modals.openMobileDrawer();
-                    }}
+                    dice={game.dice} canUndo={game.canUndo} onUndoMove={game.undoMove}
+                    onAskProfessorHint={() => { onTriggerCoach(); modals.openMobileDrawer(); }}
                     lastMoveFeedback={lastMoveFeedback}
                 />
             )}
 
-            {/* 2. Plateau 100% visible (Zero-Scroll, 3 Colonnes sur Desktop/Paysage) */}
             <GameBoardArea
-                theme={theme}
-                game={game}
-                activeDie={activeDie}
-                isBoardLoading={isBoardLoading}
-                activeCoachHighlight={coachHighlight}
-                onCheckerClick={onCheckerClick}
-                onCheckerRightClick={onCheckerRightClick}
-                onDestinationClick={onDestinationClick}
-                onPlayMove={onPlayMove}
-                onSelectDie={onSelectDie}
-                onDiceClick={onDiceClick}
-                onDeselect={onDeselect}
-                coach={coach}
-                isAnalyzing={isAnalyzing}
-                onDismissCoach={onDismissCoach}
-                onReplayMove={onReplayMove}
-                onOpenKnowledgeConcept={modals.openKnowledgeBase}
-                onBlunderClick={modals.openGameCourse}
-                onCandidateHover={onCandidateHover}
-                turnsHistory={turnsHistory}
-                onTriggerCoach={onTriggerCoach}
-                matchStats={matchStats}
-                matchStatsO={matchStatsO}
-                prX={prX}
-                prO={prO}
-                lastMoveFeedback={lastMoveFeedback}
-                locale={locale}
-                gameId={gameId}
-                matchContext={matchContext}
-                isMatchStarted
-                playerColor={playerColor}
-                coachHistory={coachHistory}
-                selectedCoachHistoryIndex={selectedCoachHistoryIndex}
-                onSelectCoachHistoryIndex={onSelectCoachHistoryIndex}
-                onBackToLobby={onBackToLobby}
+                theme={theme} game={game} activeDie={activeDie} isBoardLoading={isBoardLoading}
+                activeCoachHighlight={coachHighlight} onCheckerClick={onCheckerClick}
+                onCheckerRightClick={onCheckerRightClick} onDestinationClick={onDestinationClick}
+                onPlayMove={onPlayMove} onSelectDie={onSelectDie} onDiceClick={onDiceClick}
+                onDeselect={onDeselect} coach={coach} isAnalyzing={isAnalyzing}
+                onDismissCoach={onDismissCoach} onReplayMove={onReplayMove}
+                onOpenKnowledgeConcept={modals.openKnowledgeBase} onBlunderClick={modals.openGameCourse}
+                onCandidateHover={onCandidateHover} turnsHistory={turnsHistory}
+                onTriggerCoach={onTriggerCoach} matchStats={matchStats} matchStatsO={matchStatsO}
+                prX={prX} prO={prO} lastMoveFeedback={lastMoveFeedback} locale={locale}
+                gameId={gameId} matchContext={matchContext} isMatchStarted playerColor={playerColor}
+                coachHistory={coachHistory} selectedCoachHistoryIndex={selectedCoachHistoryIndex}
+                onSelectCoachHistoryIndex={onSelectCoachHistoryIndex} onBackToLobby={onBackToLobby}
                 onToggleTheme={onToggleTheme}
                 challengerProfile={multiplayer.matchInfo?.isClubChallenger ? multiplayer.opponentProfile : null}
                 onSendQuickChat={
                     isMultiplayerActive || Boolean(multiplayer.matchInfo?.isClubChallenger)
-                        ? multiplayer.sendQuickChat
-                        : undefined
+                        ? multiplayer.sendQuickChat : undefined
                 }
             />
 
-            {/* 3. Thumb-Dock Flottant Inférieur (MobileThumbDock) */}
-            <MobileThumbDock
-                gamePhase={game.gamePhase}
-                isHumanTurn={game.isHumanTurn}
-                hasDice={Boolean(game.dice)}
-                canUndo={game.canUndo}
-                canConfirm={game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
-                isBlockedTurn={isBlockedTurn}
-                canDouble={game.canDouble}
-                cubeValue={game.state.cubeValue}
-                doublingOfferedBy={game.doublingOfferedBy}
-                coachQuotaBadge={quotaBadge}
-                isVip={quota.isVip}
-                isAnalyzingCoach={isAnalyzing}
-                isTilted={tilt.isTilted}
-                onRoll={() => {
-                    tilt.markRollTimestamp();
-                    game.rollDice();
-                }}
-                onConfirm={() => game.commitHumanMove()}
-                onUndo={game.undoMove}
-                onOpenCubeSheet={() => setIsCubeSheetOpen(true)}
-                onTakeDouble={() => {
-                    if (isMultiplayerActive) {
-                        void multiplayer.broadcastDoubleAccepted(game.state.cubeValue * 2);
-                    }
-                    game.takeDouble();
-                }}
-                onPassDouble={() => {
-                    if (isMultiplayerActive) {
-                        const offerer = game.doublingOfferedBy ?? (game.state.turn === 'X' ? 'O' : 'X');
-                        void multiplayer.broadcastDoublePassed(offerer);
-                    }
-                    game.passDouble();
-                }}
-                onOpenCoachDrawer={() => {
-                    onTriggerCoach();
-                    modals.openMobileDrawer();
-                }}
+            <GameScreenMobileControls
+                game={game} isMultiplayerActive={isMultiplayerActive} multiplayer={multiplayer}
+                tilt={tilt} quotaBadge={quotaBadge} isVip={quota.isVip} isAnalyzingCoach={isAnalyzing}
+                isBlockedTurn={isBlockedTurn} isCubeSheetOpen={isCubeSheetOpen}
+                onSetCubeSheetOpen={setIsCubeSheetOpen}
+                onOpenCoachDrawer={() => { onTriggerCoach(); modals.openMobileDrawer(); }}
             />
 
-            <CubeBottomSheet
-                isOpen={isCubeSheetOpen}
-                cubeValue={game.state.cubeValue}
-                canDouble={game.canDouble}
-                doublingOfferedBy={game.doublingOfferedBy}
-                scoreX={game.state.scoreX}
-                scoreO={game.state.scoreO}
-                matchLength={game.state.matchLength}
-                crawford={game.state.crawford}
-                onClose={() => setIsCubeSheetOpen(false)}
-                onOfferDouble={() => {
-                    if (isMultiplayerActive) {
-                        void multiplayer.broadcastDoubleOffered(game.state.cubeValue * 2);
-                    }
-                    game.offerDouble();
-                }}
-                onTakeDouble={() => {
-                    if (isMultiplayerActive) {
-                        void multiplayer.broadcastDoubleAccepted(game.state.cubeValue * 2);
-                    }
-                    game.takeDouble();
-                }}
-                onPassDouble={() => {
-                    if (isMultiplayerActive) {
-                        const offerer = game.doublingOfferedBy ?? (game.state.turn === 'X' ? 'O' : 'X');
-                        void multiplayer.broadcastDoublePassed(offerer);
-                    }
-                    game.passDouble();
-                }}
-            />
-
-            {/* 4. Tiroir mobile du Coach */}
             <CoachMobileDrawer
-                isOpen={modals.isMobileDrawerOpen}
-                onOpen={modals.openMobileDrawer}
-                onClose={modals.closeMobileDrawer}
-                coach={coach}
-                isAnalyzing={isAnalyzing}
-                matchStats={matchStats}
-                matchStatsO={matchStatsO}
-                onReplayMove={onReplayMove}
-                onDismiss={onDismissCoach}
-                onOpenKnowledgeConcept={modals.openKnowledgeBase}
-                onBlunderClick={modals.openGameCourse}
-                onCandidateHover={onCandidateHover}
-                turnsHistory={turnsHistory}
-                pr={prX}
-                locale={locale}
-                matchContext={matchContext}
-                positionKey={game.state.board.join(',')}
-                gameId={gameId}
-                dice={game.dice}
-                board={game.state.board}
-                coachHistory={coachHistory}
+                isOpen={modals.isMobileDrawerOpen} onOpen={modals.openMobileDrawer}
+                onClose={modals.closeMobileDrawer} coach={coach} isAnalyzing={isAnalyzing}
+                matchStats={matchStats} matchStatsO={matchStatsO} onReplayMove={onReplayMove}
+                onDismiss={onDismissCoach} onOpenKnowledgeConcept={modals.openKnowledgeBase}
+                onBlunderClick={modals.openGameCourse} onCandidateHover={onCandidateHover}
+                turnsHistory={turnsHistory} pr={prX} locale={locale} matchContext={matchContext}
+                positionKey={game.state.board.join(',')} gameId={gameId} dice={game.dice}
+                board={game.state.board} coachHistory={coachHistory}
                 selectedCoachHistoryIndex={selectedCoachHistoryIndex}
                 onSelectCoachHistoryIndex={onSelectCoachHistoryIndex}
             />
 
-            {/* 5. Modales secondaires et overlay du jeu */}
             <GameModalsContainer
-                theme={theme}
-                modals={modals}
-                game={game}
-                multiplayer={multiplayer}
-                isMultiplayerActive={isMultiplayerActive}
-                latestGameAnalysis={latestGameAnalysis}
-                turnsHistory={turnsHistory}
-                openingEntry={openingEntry}
-                onApplyOpeningMove={onApplyOpeningMove}
-                onResetGameHistory={onResetGameHistory}
-                onBackToLobby={onBackToLobby}
-                prO={prO}
-                locale={locale}
+                theme={theme} modals={modals} game={game} multiplayer={multiplayer}
+                isMultiplayerActive={isMultiplayerActive} latestGameAnalysis={latestGameAnalysis}
+                turnsHistory={turnsHistory} openingEntry={openingEntry}
+                onApplyOpeningMove={onApplyOpeningMove} onResetGameHistory={onResetGameHistory}
+                onBackToLobby={onBackToLobby} prO={prO} locale={locale}
             />
 
-            {/* 6. Bandeau actif Anti-Tilt de Zare + Bulle message reçu (sans barre d'émojis flottante sur les flèches 1-2-3) */}
-            {(tilt.showTiltAlert || Boolean(multiplayer.quickChatMessage)) && (
-                <div
-                    data-testid="active-antitilt-swapdice-bar"
-                    className="fixed top-2 left-24 z-40 flex flex-wrap items-center gap-2 rounded-xl border border-[#d4af37]/40 bg-[#0d0a08]/95 px-2.5 py-1 text-xs text-[#f7f3e8] shadow-2xl backdrop-blur-md"
-                >
-                    {multiplayer.quickChatMessage && (
-                        <div
-                            data-testid="live-quick-chat-bubble"
-                            className="flex items-center gap-1.5 rounded-xl border border-[#f3c65f]/50 bg-[#1a1208] px-2.5 py-1 text-[11px] font-bold text-[#fde68a] animate-fade-in"
-                        >
-                            <span>
-                                {multiplayer.quickChatMessage.player === (multiplayer.matchInfo?.localRole ?? 'X')
-                                    ? 'Vous :'
-                                    : `${multiplayer.opponentProfile?.displayName ?? 'Adversaire'} :`}
-                            </span>
-                            <span>
-                                {multiplayer.quickChatMessage.messageId === 'gg'
-                                    ? '👋 Bonne partie !'
-                                    : multiplayer.quickChatMessage.messageId === 'nice_move'
-                                      ? '👏 Bien joué !'
-                                      : multiplayer.quickChatMessage.messageId === 'unlucky'
-                                        ? '😅 Pas de chance !'
-                                        : multiplayer.quickChatMessage.messageId === 'thinking'
-                                          ? '🤔 Je réfléchis...'
-                                          : '🙏 Merci !'}
-                            </span>
-                        </div>
-                    )}
-                    {tilt.showTiltAlert && (
-                        <div className="flex items-center gap-1.5 text-amber-300 font-semibold">
-                            <span>🧘 Pause Anti-Tilt : respirez 5s avant de jouer</span>
-                            <button
-                                type="button"
-                                onClick={tilt.dismissTiltAlert}
-                                className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white hover:bg-white/20"
-                            >
-                                OK
-                            </button>
-                        </div>
-                    )}
-                </div>
-            )}
+            <GameScreenAntiTiltBanner tilt={tilt} multiplayer={multiplayer} />
         </main>
     );
 };

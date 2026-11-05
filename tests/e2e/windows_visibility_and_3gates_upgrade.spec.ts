@@ -125,5 +125,40 @@ test.describe('Windows Desktop Visibility & 3 Gates Upgrade Suite', () => {
         await fullFocusBtn.click();
         await expect(fullFocusBtn).toContainText(/Full Focus|Mode Échiquier Pur/i);
     });
+
+    test('Test Playwright #5 : Purge des Doublons Visuels, Sidebar Épurée (Mes Quiz, Mes Blunders) & Badge Open Sage', async ({ page }) => {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.goto('/', { waitUntil: 'networkidle' });
+
+        // 1. Badge Header v3.1 Open Sage (zéro mention de Mistral)
+        const badge = page.getByTestId('app-version-badge');
+        await expect(badge).toBeVisible();
+        await expect(badge).toContainText('v3.1 • 3-Ply • Open Sage');
+        await expect(page.locator('body')).not.toContainText(/Mistral/i);
+
+        // 2. Sélecteur 3 Portes unique (aucun encadré doublon sous le header)
+        await expect(page.locator('body')).not.toContainText(/Choisissez votre expérience en 1 clic/i);
+
+        // 3. Sidebar Gauche : Mes Quiz et Mes Blunders uniquement sous Entraînement
+        const myQuizzesLink = page.getByTestId('sidebar-my-quizzes-link');
+        await expect(myQuizzesLink).toBeVisible();
+        await expect(myQuizzesLink).toHaveAttribute('href', '/puzzles');
+
+        const myBlundersLink = page.getByTestId('sidebar-my-blunders-link');
+        await expect(myBlundersLink).toBeVisible();
+        await expect(myBlundersLink).toHaveAttribute('href', '/puzzles?filter=personal-blunders');
+
+        await expect(page.locator('body')).not.toContainText(/Quiz PR & Blunders/i);
+
+        // 4. Mode Débutant : Un seul bouton plein Or de l'Académie
+        await page.locator('[data-testid="tier-gate-btn-beginner"]:visible').first().click();
+        const academyBtn = page.getByTestId('beginner-academy-btn');
+        await expect(academyBtn).toBeVisible();
+        await expect(academyBtn).toHaveClass(/from-\[#D4AF37\]/);
+
+        const playBtn = page.getByTestId('beginner-play-btn');
+        await expect(playBtn).toBeVisible();
+        await expect(playBtn).toHaveClass(/bg-white\/10/);
+    });
 });
 

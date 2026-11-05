@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { RotateCcw, Lightbulb, GraduationCap, Sparkles, Volume2, BookOpen, ShieldAlert, Award } from 'lucide-react';
+import { RotateCcw, Lightbulb, GraduationCap, Sparkles, Volume2, BookOpen, ShieldAlert, Award, Compass } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
 import { BeginnerInteractiveGuideModal } from './BeginnerInteractiveGuideModal';
@@ -182,7 +182,8 @@ export function LiveProfessorCoachOverlay({
           className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-amber-200 text-xs sm:text-sm font-mono font-bold"
         >
           <span className="flex items-center gap-1.5">
-            <span>🐴 {lang === 'fr' ? 'Sens de marche :' : 'Checker Direction:'}</span>
+            <Compass size={14} className="text-amber-400 shrink-0" />
+            <span>{lang === 'fr' ? 'Sens de marche :' : 'Checker Direction:'}</span>
             <span className="text-[#f3d27a]">{lang === 'fr' ? 'Case 24 (Adverse)' : 'Point 24 (Opponent)'}</span>
             <span>➔</span>
             <span className="text-emerald-400">{lang === 'fr' ? 'Case 1 (Votre Maison)' : 'Point 1 (Home Board)'}</span>

@@ -151,7 +151,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                         </div>
                     </Link>
                     <span data-testid="app-version-badge" className="rounded-full border border-[#10B981]/35 bg-gradient-to-r from-[#0F2922]/90 via-[#0B0E14] to-[#D4AF37]/15 px-2.5 py-0.5 font-mono text-[11px] font-semibold tracking-tight text-[#34D399] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-                        v3.0 • 3-Ply • Mistral Large 4
+                        v3.1 • 3-Ply • Open Sage
                     </span>
                 </div>
 
@@ -228,21 +228,17 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                 </div>
             </div>
 
+            {/* Sur Mobile (< md) : Sélecteur 3 Portes directement accessible dans le Header supérieur */}
+            <div className="flex md:hidden w-full items-center justify-center py-1 px-2 border-t border-white/[0.06] bg-slate-950/90">
+                <PlayerTierGateSwitch currentGate={tierGate} onSelectGate={setTierGate} compact />
+            </div>
+
             {/* Tiroir de navigation Mobile */}
             {isMobileMenuOpen && (
                 <div
                     data-testid="navbar-mobile-drawer"
                     className="border-t border-white/10 bg-slate-950/98 px-4 py-3 shadow-2xl lg:hidden"
                 >
-                    <div className="pb-2.5 mb-2.5 border-b border-white/10 flex justify-center">
-                        <PlayerTierGateSwitch
-                            currentGate={tierGate}
-                            onSelectGate={(g) => {
-                                setTierGate(g);
-                                setIsMobileMenuOpen(false);
-                            }}
-                        />
-                    </div>
                     <div className="grid grid-cols-2 gap-1.5">
                         {navItems.map((item) => {
                             const isActive = activeTab === item.id;

@@ -9,6 +9,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { Sparkles, Flame, BarChart2, GraduationCap } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 import type { LobbyModuleId } from './LobbyScreen';
 import {
     IconLuxuryDice,
@@ -16,10 +18,7 @@ import {
     IconLuxuryCrown,
     IconAstrolabeCoach,
     IconWorldTourLive,
-    IconGeometricCompass,
-    IconGrimoireBook,
     IconHorologyGear,
-    IconCameraScanner,
 } from '../common/MonteCarloIcons';
 
 export interface LobbyLeftSidebarProps {
@@ -48,11 +47,10 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     onOpenModule,
     onOpenSettings,
 }) => {
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
     const [collapsed, setCollapsed] = useState(false);
     const [playGroupExpanded, setPlayGroupExpanded] = useState(true);
-    const [quizzGroupExpanded, setQuizzGroupExpanded] = useState(true);
-    const [studioGroupExpanded, setStudioGroupExpanded] = useState(false);
-    const [academyGroupExpanded, setAcademyGroupExpanded] = useState(false);
 
     const activeRailCls =
         'border-l-2 border-[#D4AF37] bg-gradient-to-r from-[#D4AF37]/12 to-transparent text-[#F3E5AB]';
@@ -144,94 +142,60 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
 
                 {/* BLOC 2 : ENTRAÎNEMENT & ANALYSE */}
                 <div className="flex flex-col gap-1">
-                    {!collapsed && <span className={sectionLabelCls}>Entraînement</span>}
-                    <button
-                        type="button"
-                        data-testid="sidebar-pillar-puzzles"
-                        aria-expanded={quizzGroupExpanded}
-                        onClick={() => setQuizzGroupExpanded((v) => !v)}
+                    {!collapsed && <span className={sectionLabelCls}>{isEn ? 'Training & Analysis' : 'Entraînement'}</span>}
+
+                    {/* 1. Mes Quiz */}
+                    <Link
+                        href="/puzzles"
+                        data-testid="sidebar-my-quizzes-link"
+                        title={isEn ? 'Adaptive Quizzes for your active tier' : 'Quiz adaptatifs selon votre porte active'}
                         className={itemCls}
                     >
                         <span className="flex items-center gap-2.5">
-                            <IconGeometricCompass size={15} className="text-[#10B981]" />
-                            {!collapsed && <span>Puzzles &amp; Quiz</span>}
+                            <Sparkles size={16} strokeWidth={1.5} className="text-[#10B981]" />
+                            {!collapsed && <span>{isEn ? 'My Quizzes' : 'Mes Quiz'}</span>}
                         </span>
-                        {!collapsed && <span aria-hidden="true" className="text-zinc-500">{quizzGroupExpanded ? '▾' : '▸'}</span>}
-                    </button>
-                    {(quizzGroupExpanded || collapsed) && (
-                        <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-2 border-l border-white/[0.06] ml-3'}`}>
-                            <button
-                                type="button"
-                                onClick={() => onOpenModule?.('puzzles')}
-                                title="Performance Rating : mesure la précision mathématique de vos coups"
-                                className={subItemCls}
-                            >
-                                <IconGeometricCompass size={14} className="text-[#10B981]" />
-                                {!collapsed && <span>Quiz PR</span>}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => onOpenModule?.('drills')}
-                                title="Error Rate / Performance Rating : entraînement 3-Ply ciblé N+1"
-                                className={subItemCls}
-                            >
-                                <IconAstrolabeCoach size={14} className="text-[#D4AF37]" />
-                                {!collapsed && <span>Quiz ER / PR &amp; Blunders</span>}
-                            </button>
-                        </div>
-                    )}
+                    </Link>
 
+                    {/* 2. Mes Blunders */}
+                    <Link
+                        href="/puzzles?filter=personal-blunders"
+                        data-testid="sidebar-my-blunders-link"
+                        title={isEn ? 'Review your personal blunders' : 'Revoir vos erreurs et blunders personnels'}
+                        className={itemCls}
+                    >
+                        <span className="flex items-center gap-2.5">
+                            <Flame size={16} strokeWidth={1.5} className="text-[#F59E0B]" />
+                            {!collapsed && <span>{isEn ? 'My Blunders' : 'Mes Blunders'}</span>}
+                        </span>
+                    </Link>
+
+                    {/* 3. Studio d'Analyse */}
                     <button
                         type="button"
                         data-testid="sidebar-pillar-studio"
-                        aria-expanded={studioGroupExpanded}
-                        onClick={() => setStudioGroupExpanded((v) => !v)}
+                        onClick={() => onOpenModule?.('stats')}
+                        title={isEn ? 'Analysis & Performance Rating Studio' : 'Studio d’analyse et Performance Rating'}
                         className={itemCls}
                     >
                         <span className="flex items-center gap-2.5">
-                            <IconCameraScanner size={15} className="text-[#D4AF37]" />
-                            {!collapsed && <span>Studio d’Analyse</span>}
+                            <BarChart2 size={16} strokeWidth={1.5} className="text-[#D4AF37]" />
+                            {!collapsed && <span>{isEn ? 'Analysis Studio' : 'Studio d’Analyse'}</span>}
                         </span>
-                        {!collapsed && <span aria-hidden="true" className="text-zinc-500">{studioGroupExpanded ? '▾' : '▸'}</span>}
                     </button>
-                    {(studioGroupExpanded || collapsed) && (
-                        <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-2 border-l border-white/[0.06] ml-3'}`}>
-                            <button type="button" onClick={() => onOpenModule?.('stats')} className={subItemCls}>
-                                <IconAstrolabeCoach size={14} className="text-[#10B981]" />
-                                {!collapsed && <span>Analyse &amp; PR</span>}
-                            </button>
-                            <button type="button" onClick={() => onOpenModule?.('import_export')} className={subItemCls}>
-                                <IconCameraScanner size={14} className="text-[#D4AF37]" />
-                                {!collapsed && <span>Scanner &amp; Import</span>}
-                            </button>
-                        </div>
-                    )}
 
-                    <button
-                        type="button"
+                    {/* 4. Académie */}
+                    <Link
+                        href="/academy"
                         data-testid="sidebar-pillar-academy"
-                        aria-expanded={academyGroupExpanded}
-                        onClick={() => setAcademyGroupExpanded((v) => !v)}
+                        title={isEn ? 'Academy: Lessons & Theory' : 'Académie : Leçons & Théorie 3-Ply'}
                         className={itemCls}
                     >
                         <span className="flex items-center gap-2.5">
-                            <IconGrimoireBook size={15} className="text-[#D4AF37]" />
-                            {!collapsed && <span>Académie</span>}
+                            <GraduationCap size={16} strokeWidth={1.5} className="text-[#38BDF8]" />
+                            {!collapsed && <span>{isEn ? 'Academy' : 'Académie'}</span>}
                         </span>
-                        {!collapsed && <span aria-hidden="true" className="text-zinc-500">{academyGroupExpanded ? '▾' : '▸'}</span>}
-                    </button>
-                    {(academyGroupExpanded || collapsed) && (
-                        <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-2 border-l border-white/[0.06] ml-3'}`}>
-                            <button type="button" onClick={() => onOpenModule?.('openings')} className={subItemCls}>
-                                <IconGrimoireBook size={14} className="text-[#D4AF37]" />
-                                {!collapsed && <span>Ouvertures &amp; Bibliothèque</span>}
-                            </button>
-                            <Link href="/academy" className={subItemCls}>
-                                <IconLuxuryCrown size={14} className="text-[#10B981]" />
-                                {!collapsed && <span>Leçons &amp; Théorie 3-Ply</span>}
-                            </Link>
-                        </div>
-                    )}
+                    </Link>
                 </div>
 
                 {/* BLOC 3 : CIRCUIT MONDIAL */}
