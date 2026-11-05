@@ -14,9 +14,7 @@ interface BeginnerAcademyFlowProps {
 }
 
 export function BeginnerAcademyFlow({
-  onBackToLobby,
-  onPlayDirect,
-  onRequestSaveAccount,
+  onBackToLobby, onPlayDirect, onRequestSaveAccount,
 }: BeginnerAcademyFlowProps) {
   const { locale } = useTranslation();
   const lang = locale === 'en' ? 'en' : 'fr';
@@ -82,15 +80,8 @@ export function BeginnerAcademyFlow({
     }
   };
 
-  const handleBackToLobby = () => {
-    if (onBackToLobby) return onBackToLobby();
-    if (typeof window !== 'undefined') window.location.assign('/');
-  };
-
-  const handlePlayDirect = () => {
-    if (onPlayDirect) return onPlayDirect();
-    if (typeof window !== 'undefined') window.location.assign('/play?gate=beginner&start=guided');
-  };
+  const handleBackToLobby = () => (onBackToLobby ? onBackToLobby() : typeof window !== 'undefined' ? window.location.assign('/') : undefined);
+  const handlePlayDirect = () => (onPlayDirect ? onPlayDirect() : typeof window !== 'undefined' ? window.location.assign('/play?gate=beginner&start=guided') : undefined);
 
   return (
     <div className="w-full min-h-screen py-6 px-3 sm:px-6 flex flex-col items-center justify-start bg-gradient-to-b from-[#06080B] to-[#0D141C] text-white overflow-y-auto">
