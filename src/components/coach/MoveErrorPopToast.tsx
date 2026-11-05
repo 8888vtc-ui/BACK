@@ -65,7 +65,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
     const errorDetails = useMemo(() => {
         if (!feedback) return null;
         const absLoss = Math.abs(feedback.equityLoss);
-        if (absLoss < 0.020 && feedback.verdict !== 'inaccuracy' && feedback.verdict !== 'blunder') {
+        if (absLoss <= 0.020) {
             return null;
         }
 

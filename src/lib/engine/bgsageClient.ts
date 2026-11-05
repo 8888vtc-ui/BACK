@@ -304,18 +304,18 @@ export async function selectBotMoveWithBgsage(
     if (difficulty === 'grandmaster' || difficulty === 'expert' || matchedCandidates.length === 1) {
         return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply`, equityLoss: 0, isForced: false };
     }
+    const blunderCap = BLUNDER_CAP_EMG_BY_DIFFICULTY[difficulty] ?? 0.035;
+    const subPoolWithinCap = matchedCandidates.slice(1).filter((c) => lossOf(c) <= blunderCap);
     const subOptimalThreshold = difficulty === 'beginner' ? 0.80 : 0.62;
-    if (matchedCandidates.length >= 2 && selectorFn() < subOptimalThreshold) {
-        const subPool = matchedCandidates.slice(1, Math.min(4, matchedCandidates.length));
-        const pickIdx = difficulty === 'beginner' ? subPool.length - 1 : 0;
-        const chosenSub = subPool[pickIdx] ?? matchedCandidates[1];
+    if (subPoolWithinCap.length > 0 && selectorFn() < subOptimalThreshold) {
+        const pickIdx = difficulty === 'beginner' ? subPoolWithinCap.length - 1 : 0;
+        const chosenSub = subPoolWithinCap[pickIdx] ?? subPoolWithinCap[0];
         return { sequence: chosenSub.seq, cubeDecision: resp.cubeDecision, evalLevel: difficulty === 'beginner' ? 'bgsage-3ply-beginner' : `bgsage-${ply}ply`, equityLoss: lossOf(chosenSub), isForced: false };
     }
     if (isVisuallyObviousBestMove(stateWithDice.board, bestCand.seq.board, player)) {
         return { sequence: bestCand.seq, cubeDecision: resp.cubeDecision, evalLevel: `bgsage-${ply}ply`, equityLoss: 0, isForced: false };
     }
     const topEq = bestCand.move.cubelessEquity ?? bestCand.move.equity;
-    const blunderCap = BLUNDER_CAP_EMG_BY_DIFFICULTY[difficulty] ?? 0.035;
     const biasScale = difficulty === 'beginner' ? 0.35 : difficulty === 'intermediate' ? 0.22 : 0.08;
     const plausiblePool = matchedCandidates.filter((c, idx) => {
         if (idx === 0) return true;

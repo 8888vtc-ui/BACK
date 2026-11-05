@@ -19,12 +19,14 @@ import {
 import type { CoachHighlight } from '../../components/board/boardThemes';
 import type { MatchLogEntry } from '../../actions/types';
 import { mapGameCubeAction, type CubeActionType, type CubeAction } from '../../features/coach/cubeCoach';
+import { validateMoveAgainstSnapshot, type HumanTurnSnapshot } from '../../features/coach/turnSnapshot';
 
 export interface UseCoachLogAnalyzerParams {
     matchLog?: ReadonlyArray<MatchLogEntry>;
     gameState: BoardState;
     lastPlayerEvalRef: MutableRefObject<string | null>;
     analysisRequestIdRef: MutableRefObject<number>;
+    humanSnapshotRef?: MutableRefObject<HumanTurnSnapshot | null>;
     cancelActiveOperation: () => { requestId: number; controller: AbortController };
     evaluateCubeAction: (action: CubeActionType | CubeAction, stateOverride?: BoardState) => void;
     recordDecisionStats: (verdict: CoachVerdict, rawEquityLoss: number, playedMove: string, optimalMove: string) => void;
@@ -46,6 +48,7 @@ export function useCoachLogAnalyzer({
     gameState,
     lastPlayerEvalRef,
     analysisRequestIdRef,
+    humanSnapshotRef,
     cancelActiveOperation,
     evaluateCubeAction,
     recordDecisionStats,
@@ -66,9 +69,11 @@ export function useCoachLogAnalyzer({
         const log = matchLog ?? [];
         if (log.length === 0) return;
 
-        // Règle d'or : Ne JAMAIS analyser les coups du bot comme des erreurs du joueur (isoler le tour humain 'X')
+        // Coupe-circuit anti-bot strict : Ne JAMAIS analyser les coups du bot
         const latestEntry = log[log.length - 1];
         if (!latestEntry || latestEntry.player !== 'X') return;
+        const snapshot = humanSnapshotRef?.current;
+        if (snapshot && snapshot.actor !== 'HUMAN') return;
 
         const lastEntry = latestEntry;
         const playedSig = lastEntry.notation ?? lastEntry.movePlayed.map((m) => `${m.from}-${m.to}`).join(',');
@@ -205,14 +210,14 @@ export function useCoachLogAnalyzer({
                     timestamp: Date.now(),
                 };
                 const isNewError =
-                    verdict === 'blunder' || verdict === 'inaccuracy' || Math.abs(equityLoss) >= 0.02;
+                    (verdict === 'blunder' || verdict === 'inaccuracy') && Math.abs(equityLoss) > 0.020;
                 setLastMoveFeedback((prev) => {
                     if (isNewError) return nextFeedback;
                     const prevIsOpenError =
                         prev !== null &&
                         (prev.verdict === 'blunder' ||
                             prev.verdict === 'inaccuracy' ||
-                            Math.abs(prev.equityLoss) >= 0.02);
+                            Math.abs(prev.equityLoss) > 0.020);
                     return prevIsOpenError ? prev : nextFeedback;
                 });
 

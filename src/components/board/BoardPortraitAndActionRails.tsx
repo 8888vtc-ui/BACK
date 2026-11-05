@@ -21,64 +21,32 @@ import {
 import { CountryFlagSvg } from '../common/CountryFlagSvg';
 
 export interface BoardLeftPlayerRailProps {
-    readonly difficulty?: AIDifficulty;
-    readonly locale?: string;
-    readonly isXTurn: boolean;
-    readonly scoreX: number;
-    readonly scoreO: number;
-    readonly cubeValue: number;
-    readonly matchLength: number;
-    readonly turn: 'X' | 'O';
-    readonly opponentClock?: string;
-    readonly playerClock?: string;
-    readonly delaySeconds?: number;
-    readonly prX?: number | null;
-    readonly prO?: number | null;
-    readonly challengerProfile?: PlayerEloProfile | null;
+    readonly difficulty?: AIDifficulty; readonly locale?: string; readonly isXTurn: boolean;
+    readonly scoreX: number; readonly scoreO: number; readonly cubeValue: number;
+    readonly matchLength: number; readonly turn: 'X' | 'O'; readonly opponentClock?: string;
+    readonly playerClock?: string; readonly delaySeconds?: number; readonly prX?: number | null;
+    readonly prO?: number | null; readonly challengerProfile?: PlayerEloProfile | null;
     readonly opponentDice?: [number, number] | null;
     readonly onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
-    readonly isBrowserFullscreen?: boolean;
-    readonly isFocusFullBoard?: boolean;
-    readonly onToggleFullscreen?: () => void;
-    readonly onToggleCoach?: () => void;
-    readonly onToggleTheme?: () => void;
-    readonly onBackToLobby?: () => void;
-    readonly canUndo?: boolean;
-    readonly onUndo?: () => void;
-    readonly autoConfirmEnabled?: boolean;
-    readonly onToggleAutoConfirm?: () => void;
-    readonly autoRollEnabled?: boolean;
-    readonly onToggleAutoRoll?: () => void;
+    readonly isBrowserFullscreen?: boolean; readonly isFocusFullBoard?: boolean;
+    readonly onToggleFullscreen?: () => void; readonly onToggleCoach?: () => void;
+    readonly onToggleTheme?: () => void; readonly onBackToLobby?: () => void;
+    readonly canUndo?: boolean; readonly onUndo?: () => void;
+    readonly autoConfirmEnabled?: boolean; readonly onToggleAutoConfirm?: () => void;
+    readonly autoRollEnabled?: boolean; readonly onToggleAutoRoll?: () => void;
 }
 
-export const BOARD_SWATCH_OPTIONS: ReadonlyArray<{
-    readonly id: ThemeName;
-    readonly label: string;
-    readonly bgHex: string;
-    readonly ringClass: string;
-}> = [
+export const BOARD_SWATCH_OPTIONS: ReadonlyArray<{ readonly id: ThemeName; readonly label: string; readonly bgHex: string; readonly ringClass: string }> = [
     { id: 'snowie_classic', label: 'Émeraude', bgHex: '#0d462d', ringClass: 'border-[#d4af37]' },
     { id: 'midnight', label: 'Bleu Nuit', bgHex: '#102b52', ringClass: 'border-sky-400' },
     { id: 'tournament', label: 'Havane', bgHex: '#4a1521', ringClass: 'border-amber-500' },
 ];
 
 const LEGACY_JARGON_NAME_MAP: Readonly<Record<string, string>> = {
-    SvenBG: 'Sven L.',
-    Murat_34: 'Murat K.',
-    thomas_69: 'Thomas R.',
-    laurent75: 'Laurent B.',
-    mehdi_92: 'Mehdi S.',
-    david_bg64: 'David L.',
-    david_64: 'David L.',
-    Kosta_Ath: 'Kosta P.',
-    Giorgio_Mi: 'Giorgio M.',
-    Hans_HH: 'Hans W.',
-    Taro_Tokyo: 'Taro S.',
-    Alex_Lon: 'Alex C.',
-    Nikos_Tavli: 'Nikos K.',
-    HitAndCover: 'Benjamin C.',
-    BarPoint7: 'Leon W.',
-    PipMaster: 'Arthur D.',
+    SvenBG: 'Sven L.', Murat_34: 'Murat K.', thomas_69: 'Thomas R.', laurent75: 'Laurent B.',
+    mehdi_92: 'Mehdi S.', david_bg64: 'David L.', david_64: 'David L.', Kosta_Ath: 'Kosta P.',
+    Giorgio_Mi: 'Giorgio M.', Hans_HH: 'Hans W.', Taro_Tokyo: 'Taro S.', Alex_Lon: 'Alex C.',
+    Nikos_Tavli: 'Nikos K.', HitAndCover: 'Benjamin C.', BarPoint7: 'Leon W.', PipMaster: 'Arthur D.',
 };
 
 function sanitizeChallengerName(raw: string): string {
@@ -183,7 +151,9 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                         </span>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
                             <span className="text-stone-300">{botElo}</span>
-                            <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(opponentPrNum)}`}>PR {opponentPrValue}</span>
+                            {challengerProfile && (
+                                <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(opponentPrNum)}`}>PR {opponentPrValue}</span>
+                            )}
                         </div>
                     </div>
                     <BotPortraitMedallion character={difficulty} size="md" isActive={!isXTurn} customPhotoUrl={challengerProfile ? opponentPhotoUrl : null} />

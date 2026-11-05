@@ -24,6 +24,7 @@ import { useCoachMatchStats } from './coach/useCoachMatchStats';
 import { useCoachHistoryState } from './coach/useCoachHistoryState';
 import { useCoachRoundWatcher } from './coach/useCoachRoundWatcher';
 import { useCoachReplay } from './coach/useCoachReplay';
+import type { HumanTurnSnapshot } from '../features/coach/turnSnapshot';
 
 export type { CoachState, EvaluatedMove, MatchStats, LastMoveFeedback, CoachAnalysisHistoryEntry, CoachMoveHistoryItem, UseCoachDeps, UseCoachResult };
 
@@ -54,6 +55,7 @@ export function useCoach({
     const prevDoublingOfferedByRef = useRef<Player | null>(null);
     const stateBeforeCubeOfferRef = useRef<BoardState | null>(null);
     const prevHumanRollKeyRef = useRef<string>('');
+    const humanSnapshotRef = useRef<HumanTurnSnapshot | null>(null);
     const analysisRequestIdRef = useRef(0);
     const activeAbortRef = useRef<AbortController | null>(null);
 
@@ -113,6 +115,7 @@ export function useCoach({
         prevHumanRollKeyRef,
         prevDoublingOfferedByRef,
         stateBeforeCubeOfferRef,
+        humanSnapshotRef,
         setCoach,
         setCoachHighlight,
         setLastMoveFeedback,
@@ -126,6 +129,7 @@ export function useCoach({
         gameState: game.state,
         lastPlayerEvalRef,
         analysisRequestIdRef,
+        humanSnapshotRef,
         cancelActiveOperation,
         evaluateCubeAction,
         recordDecisionStats,
@@ -182,23 +186,9 @@ export function useCoach({
     }, [cancelActiveOperation, currentTurnDiceRef, currentTurnMovesRef, game.dice, game.matchLog, game.moveHistory, game.state, onCoachTriggered, setCoach, setCoachHighlight, speakCoachVoice, turnBoardBeforeRef]);
 
     return {
-        coach,
-        coachHighlight,
-        coachHistory,
-        selectedCoachHistoryIndex,
-        selectCoachHistoryIndex,
-        matchStats,
-        matchStatsX: matchStats,
-        matchStatsO,
-        optimalStreak,
-        brilliantMove,
-        isAnalyzing,
-        lastMoveFeedback,
-        notificationLevel,
-        setNotificationLevel,
-        evaluateCubeAction,
-        dismissCoach,
-        replayMove,
-        triggerCoach,
+        coach, coachHighlight, coachHistory, selectedCoachHistoryIndex, selectCoachHistoryIndex,
+        matchStats, matchStatsX: matchStats, matchStatsO, optimalStreak, brilliantMove,
+        isAnalyzing, lastMoveFeedback, notificationLevel, setNotificationLevel,
+        evaluateCubeAction, dismissCoach, replayMove, triggerCoach,
     };
 }

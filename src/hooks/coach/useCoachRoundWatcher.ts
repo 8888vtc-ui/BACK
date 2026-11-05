@@ -6,6 +6,7 @@ import type { GameResult } from '../../engine/aiHeuristics';
 import { detectPlayerCubeDecision } from '../useCoachTrigger';
 import type { CoachAnalysisHistoryEntry, CoachMoveHistoryItem, CoachState, LastMoveFeedback } from '../useCoachHelpers';
 import type { CoachHighlight } from '../../components/board/boardThemes';
+import { createHumanTurnSnapshot, type HumanTurnSnapshot } from '../../features/coach/turnSnapshot';
 
 export interface UseCoachRoundWatcherParams {
     moveHistory?: ReadonlyArray<CoachMoveHistoryItem>;
@@ -22,6 +23,7 @@ export interface UseCoachRoundWatcherParams {
     prevHumanRollKeyRef: MutableRefObject<string>;
     prevDoublingOfferedByRef: MutableRefObject<Player | null>;
     stateBeforeCubeOfferRef: MutableRefObject<BoardState | null>;
+    humanSnapshotRef?: MutableRefObject<HumanTurnSnapshot | null>;
     setCoach: (coach: CoachState | null) => void;
     setCoachHighlight: (highlight: CoachHighlight | null) => void;
     setLastMoveFeedback: (feedback: LastMoveFeedback | null) => void;
@@ -45,6 +47,7 @@ export function useCoachRoundWatcher({
     prevHumanRollKeyRef,
     prevDoublingOfferedByRef,
     stateBeforeCubeOfferRef,
+    humanSnapshotRef,
     setCoach,
     setCoachHighlight,
     setLastMoveFeedback,
@@ -68,6 +71,7 @@ export function useCoachRoundWatcher({
             cancelActiveOperation();
             lastPlayerEvalRef.current = null;
             lastCubeEvalKeyRef.current = null;
+            if (humanSnapshotRef) humanSnapshotRef.current = null;
             setCoach(null);
             setCoachHighlight(null);
             setLastMoveFeedback(null);
@@ -76,8 +80,11 @@ export function useCoachRoundWatcher({
         } else if (isNewHumanRoll) {
             setCoachHighlight(null);
             setSelectedCoachHistoryIndex(null);
+            if (humanSnapshotRef) {
+                humanSnapshotRef.current = createHumanTurnSnapshot(state, dice, matchLog?.length ?? 0);
+            }
         }
-    }, [moveHistory, matchLog, doublingOfferedBy, phase, state.turn, dice, cancelActiveOperation, currentTurnMovesRef, lastCubeEvalKeyRef, lastPlayerEvalRef, prevHumanRollKeyRef, setCoach, setCoachHighlight, setLastMoveFeedback, setCoachHistory, setSelectedCoachHistoryIndex]);
+    }, [moveHistory, matchLog, doublingOfferedBy, phase, state, dice, cancelActiveOperation, currentTurnMovesRef, humanSnapshotRef, lastCubeEvalKeyRef, lastPlayerEvalRef, prevHumanRollKeyRef, setCoach, setCoachHighlight, setLastMoveFeedback, setCoachHistory, setSelectedCoachHistoryIndex]);
 
     // 2. Interception des décisions de videau du joueur
     useEffect(() => {

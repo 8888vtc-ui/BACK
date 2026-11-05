@@ -46,6 +46,7 @@ import {
     isInitialBoardPosition,
 } from '../openings/openingDatabase';
 import { estimateOffListEquityLoss } from './offListEquity';
+import { verifyCheckersPhysicallyExistOnBoard, sanitizeVerdictWithEquityThreshold } from './turnSnapshot';
 
 /**
  * Séquence de sous-mouvements fiable pour l'affichage : celle du log si elle
@@ -865,7 +866,13 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
         return false;
     });
 
-    const optimalNotation = resolvedBest.notation;
+    let optimalNotation = resolvedBest.notation;
+    if (!optimalNotation || !verifyCheckersPhysicallyExistOnBoard(optimalNotation, boardBefore, logEntry.player)) {
+        if (legalSeqs.length > 0) {
+            optimalNotation = formatCoachMoveSequence(legalSeqs[0].moves, logEntry.player, boardBefore);
+            resolvedBest = { moves: legalSeqs[0].moves, board: legalSeqs[0].board, notation: optimalNotation };
+        }
+    }
     const bestEquity = effectiveBestMove.equity;
 
     let playedEquity: number;
@@ -884,7 +891,8 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
     }
 
     const equityLoss = Math.max(0, bestEquity - playedEquity);
-    const verdict = classifyVerdict(equityLoss);
+    const rawVerdict = classifyVerdict(equityLoss);
+    const verdict = sanitizeVerdictWithEquityThreshold(equityLoss, rawVerdict);
 
     const candidateMoves = bgsageResult.chequerPlay.map((m) => {
         const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
