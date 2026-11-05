@@ -78,7 +78,7 @@ export const NavbarPointsAndBadges: React.FC<NavbarPointsAndBadgesProps> = React
             <div
                 data-testid="navbar-points-badge"
                 title="Capital de Points de Cercle Monte-Carlo (10 000 PTS initiaux)"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[#f3c65f]/35 bg-[#f3c65f]/10 px-2.5 py-1 font-mono text-xs font-bold text-[#f3c65f] tabular-nums shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] shrink-0 whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[#f3c65f]/35 bg-[#f3c65f]/10 px-2.5 py-1 font-mono text-xs font-bold text-[#f3c65f] tabular-nums shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] shrink-0 whitespace-nowrap min-w-max"
             >
                 <span aria-hidden="true" className="text-amber-400">🪙</span>
                 <span className="shrink-0 whitespace-nowrap">{points.toLocaleString('fr-FR')} PTS</span>

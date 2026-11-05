@@ -42,6 +42,18 @@ export function getCountryFlagEmoji(countryCode: string): string {
     return String.fromCodePoint(0x1f1e6 + c1 - 65, 0x1f1e6 + c2 - 65);
 }
 
+/** Formate une date ISO YYYY-MM-DD en date française abrégée lisible (ex: 3 nov. 2026). */
+export function formatTournamentDateFr(isoDate: string): string {
+    const parts = isoDate.split('-');
+    if (parts.length !== 3) return isoDate;
+    const year = parts[0];
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+    const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+    const monthStr = MONTHS[month - 1] ?? parts[1];
+    return `${day} ${monthStr} ${year}`;
+}
+
 /** Filtre les tournois selon les critères multidimensionnels fournis. */
 export function filterTournaments(
     tournaments: ReadonlyArray<TournamentRecord>,
