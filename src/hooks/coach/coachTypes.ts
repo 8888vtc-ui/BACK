@@ -43,6 +43,8 @@ export interface CoachState {
     boardBefore?: number[];
     boardAfter?: number[];
     turnIndex?: number;
+    packetId?: string;
+    optimalSubMoves?: ReadonlyArray<{ from: number; to: number }>;
 }
 
 export interface EvaluatedMove {
@@ -78,6 +80,11 @@ export interface LastMoveFeedback {
     decisionType?: 'cube' | 'checker';
     errorCategoryLabel?: string;
     errorAdvice?: string;
+    packetId?: string;
+    optimalSubMoves?: ReadonlyArray<{ from: number; to: number }>;
+    boardBefore?: readonly number[];
+    boardAfter?: readonly number[];
+    dice?: readonly [number, number];
 }
 
 export function isCubeDecisionNotation(moveStr?: string | null): boolean {

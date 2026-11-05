@@ -26,6 +26,125 @@ export interface ValidationSnapshotResult {
     readonly sanitizedOptimalNotation?: string;
 }
 
+export interface CommittedHumanMovePacket {
+    readonly packetId: string;
+    readonly turnNumber: number;
+    readonly actor: 'X';
+    readonly boardBeforeMove: readonly number[];
+    readonly boardAfterMove: readonly number[];
+    readonly offBefore: { readonly X: number; readonly O: number };
+    readonly offAfter: { readonly X: number; readonly O: number };
+    readonly diceRolled: readonly [number, number];
+    readonly playedMoveNotation: string;
+    readonly playedSubMoves: ReadonlyArray<{ readonly from: number; readonly to: number; readonly die: number; readonly isHit: boolean }>;
+    readonly matchContext: {
+        readonly scoreX: number;
+        readonly scoreO: number;
+        readonly matchLength: number;
+        readonly cubeValue: number;
+        readonly cubeOwner: 'X' | 'O' | null;
+        readonly crawford: boolean;
+    };
+    readonly optimalSubMoves?: ReadonlyArray<{ readonly from: number; readonly to: number }>;
+}
+
+export function boardSignature(board: readonly number[]): string {
+    return board.slice(0, 26).join(',');
+}
+
+export function computeOffCheckers(board: readonly number[]): { X: number; O: number } {
+    let sumX = board[0] > 0 ? board[0] : 0;
+    let sumO = board[25] < 0 ? -board[25] : 0;
+    for (let p = 1; p <= 24; p++) {
+        const val = board[p] ?? 0;
+        if (val > 0) sumX += val;
+        else if (val < 0) sumO += -val;
+    }
+    return {
+        X: Math.max(0, 15 - sumX),
+        O: Math.max(0, 15 - sumO),
+    };
+}
+
+export function createCommittedHumanMovePacket(params: {
+    turnNumber: number;
+    boardBeforeMove: readonly number[];
+    boardAfterMove: readonly number[];
+    diceRolled: readonly [number, number];
+    playedMoveNotation: string;
+    playedSubMoves?: ReadonlyArray<{ from: number; to: number; die?: number; isHit?: boolean }>;
+    matchContext: {
+        scoreX: number;
+        scoreO: number;
+        matchLength: number;
+        cubeValue: number;
+        cubeOwner: 'X' | 'O' | null;
+        crawford: boolean;
+    };
+    optimalSubMoves?: ReadonlyArray<{ from: number; to: number }>;
+}): CommittedHumanMovePacket {
+    const packetId = `pkt_${params.turnNumber}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const offBefore = computeOffCheckers(params.boardBeforeMove);
+    const offAfter = computeOffCheckers(params.boardAfterMove);
+    const subMoves = (params.playedSubMoves ?? []).map((m) => ({
+        from: m.from,
+        to: m.to,
+        die: m.die ?? (m.from === 0 ? 25 - m.to : m.to === 0 ? m.from : Math.abs(m.from - m.to)),
+        isHit: Boolean(m.isHit || (m.to >= 1 && m.to <= 24 && params.boardBeforeMove[m.to] === -1)),
+    }));
+
+    return Object.freeze({
+        packetId,
+        turnNumber: params.turnNumber,
+        actor: 'X' as const,
+        boardBeforeMove: Object.freeze([...params.boardBeforeMove]),
+        boardAfterMove: Object.freeze([...params.boardAfterMove]),
+        offBefore: Object.freeze(offBefore),
+        offAfter: Object.freeze(offAfter),
+        diceRolled: Object.freeze([params.diceRolled[0], params.diceRolled[1]]) as readonly [number, number],
+        playedMoveNotation: params.playedMoveNotation,
+        playedSubMoves: Object.freeze(subMoves),
+        matchContext: Object.freeze({ ...params.matchContext }),
+        optimalSubMoves: params.optimalSubMoves ? Object.freeze(params.optimalSubMoves.map((m) => ({ ...m }))) : undefined,
+    });
+}
+
+export interface CoachVerifiedFacts {
+    readonly realBlotsAfterPlayed: number[];
+    readonly realPointsMadeByBest: number[];
+    readonly realPointsMadeByPlayed: number[];
+    readonly missedHit: boolean;
+    readonly realBlotsAfterBest: number[];
+}
+
+export function extractVerifiedCoachFacts(
+    boardBefore: readonly number[],
+    boardPlayedAfter: readonly number[],
+    boardOptimalAfter: readonly number[],
+): CoachVerifiedFacts {
+    const realBlotsAfterPlayed: number[] = [];
+    const realBlotsAfterBest: number[] = [];
+    const realPointsMadeByBest: number[] = [];
+    const realPointsMadeByPlayed: number[] = [];
+
+    for (let p = 1; p <= 24; p++) {
+        if (boardPlayedAfter[p] === 1) realBlotsAfterPlayed.push(p);
+        if (boardOptimalAfter[p] === 1) realBlotsAfterBest.push(p);
+        if ((boardBefore[p] ?? 0) < 2 && (boardOptimalAfter[p] ?? 0) >= 2) realPointsMadeByBest.push(p);
+        if ((boardBefore[p] ?? 0) < 2 && (boardPlayedAfter[p] ?? 0) >= 2) realPointsMadeByPlayed.push(p);
+    }
+
+    const missedHit = (boardOptimalAfter[25] < (boardBefore[25] ?? 0)) && (boardPlayedAfter[25] === (boardBefore[25] ?? 0));
+
+    return {
+        realBlotsAfterPlayed,
+        realPointsMadeByBest,
+        realPointsMadeByPlayed,
+        missedHit,
+        realBlotsAfterBest,
+    };
+}
+
 /**
  * Capture immuable au lancer de dés du joueur humain (Verrou 1).
  * Vérifie 15 pions par camp et clone profondément les 26 cases.

@@ -10,12 +10,14 @@
 import type { GamePhase, MatchLogEntry, CommitHumanMoveParams } from './types';
 import { analyzeHumanLogAction, type HumanLogAnalysisResult } from '../features/coach/analyzeHumanLogAction';
 import { formatMoveSequenceNotationWithHits } from '../lib/engine/evaluator';
+import { createCommittedHumanMovePacket, type CommittedHumanMovePacket } from '../features/coach/turnSnapshot';
 
 export interface CommitHumanMoveResult {
     readonly nextPhase: GamePhase;
     readonly newLogEntry: MatchLogEntry;
     readonly updatedLog: ReadonlyArray<MatchLogEntry>;
     readonly analysis: HumanLogAnalysisResult | null;
+    readonly packet?: CommittedHumanMovePacket;
 }
 
 export function commitHumanMoveAction(
@@ -43,6 +45,23 @@ export function commitHumanMoveAction(
 
     // LOI 3 : Immuabilité absolue de l'entrée de log
     const notation = formatMoveSequenceNotationWithHits([...movesPlayed], player, [...boardBefore]);
+    const packet = player === 'X' ? createCommittedHumanMovePacket({
+        turnNumber: turnIndex,
+        boardBeforeMove: boardBefore,
+        boardAfterMove: boardAfter,
+        diceRolled: [dice[0], dice[1]],
+        playedMoveNotation: notation,
+        playedSubMoves: movesPlayed.map((m) => ({ from: m.from, to: m.to })),
+        matchContext: {
+            scoreX: params.scoreX ?? 0,
+            scoreO: params.scoreO ?? 0,
+            matchLength: params.matchLength ?? 7,
+            cubeValue: params.cubeValue ?? 1,
+            cubeOwner: params.cubeOwner ?? null,
+            crawford: params.crawford ?? false,
+        },
+    }) : undefined;
+
     const newLogEntry: MatchLogEntry = Object.freeze({
         turnIndex,
         player,
@@ -52,6 +71,7 @@ export function commitHumanMoveAction(
         boardAfter: Object.freeze([...boardAfter]),
         notation,
         timestamp: Date.now(),
+        packet,
     });
 
     const updatedLog: ReadonlyArray<MatchLogEntry> = Object.freeze([...matchLog, newLogEntry]);
@@ -70,5 +90,6 @@ export function commitHumanMoveAction(
         newLogEntry,
         updatedLog,
         analysis,
+        packet,
     };
 }

@@ -117,7 +117,7 @@ describe('MoveErrorPopToast — Pop Erreur Tactique & Détection de Type', () =>
         expect(screen.getByText(/Chances de victoire : -/i)).toBeDefined();
         expect(screen.queryByText(/EMG/i)).toBeNull();
         expect(screen.queryByText(/MWC/i)).toBeNull();
-        expect(screen.getByText('Conseil :')).toBeDefined();
+        expect(screen.getByText(/Astuce du Professeur/i)).toBeDefined();
         expect(screen.getByText('Rejouer ce coup')).toBeDefined();
     });
 });

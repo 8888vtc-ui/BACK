@@ -9,6 +9,7 @@ export interface UseCoachReplayParams {
     coachHistory: CoachAnalysisHistoryEntry[];
     coach: CoachState | null;
     lastMoveFeedback?: LastMoveFeedback | null;
+    latestHumanPacketIdRef?: MutableRefObject<string | null>;
     game: {
         rewindToLogTurn?: (turnIndex?: number) => void;
         undoMove: () => void;
@@ -29,6 +30,7 @@ export function useCoachReplay({
     coachHistory,
     coach,
     lastMoveFeedback,
+    latestHumanPacketIdRef,
     game,
     lastPlayerEvalRef,
     setCoachHistory,
@@ -49,6 +51,7 @@ export function useCoachReplay({
 
     const replayMove = useCallback(() => {
         cancelActiveOperation();
+        if (latestHumanPacketIdRef) latestHumanPacketIdRef.current = null;
         const selectedEntry = selectedCoachHistoryIndex !== null ? coachHistory[selectedCoachHistoryIndex] : undefined;
         const latestHistoryTurn = coachHistory.length > 0 ? coachHistory[coachHistory.length - 1]?.turnIndex : undefined;
         const lastLogXTurn = game.matchLog
@@ -61,6 +64,12 @@ export function useCoachReplay({
             latestHistoryTurn ??
             lastLogXTurn;
 
+        const optimalSubMoves =
+            lastMoveFeedback?.optimalSubMoves ??
+            coach?.optimalSubMoves ??
+            selectedEntry?.coachState?.optimalSubMoves ??
+            selectedEntry?.highlight?.optimal;
+
         if (game.rewindToLogTurn) game.rewindToLogTurn(targetTurnIndex);
         else game.undoMove();
 
@@ -72,10 +81,14 @@ export function useCoachReplay({
         }
         setSelectedCoachHistoryIndex(null);
         setCoach(null);
-        setCoachHighlight(null);
+        if (optimalSubMoves && optimalSubMoves.length > 0) {
+            setCoachHighlight({ optimal: [...optimalSubMoves], played: [] });
+        } else {
+            setCoachHighlight(null);
+        }
         setLastMoveFeedback(null);
         setIsAnalyzing(false);
-    }, [cancelActiveOperation, coach?.turnIndex, coachHistory, game, lastMoveFeedback?.turnIndex, selectedCoachHistoryIndex, setCoach, setCoachHighlight, setCoachHistory, setIsAnalyzing, setLastMoveFeedback, setSelectedCoachHistoryIndex, lastPlayerEvalRef]);
+    }, [cancelActiveOperation, coach?.turnIndex, coach?.optimalSubMoves, coachHistory, game, lastMoveFeedback?.turnIndex, lastMoveFeedback?.optimalSubMoves, latestHumanPacketIdRef, selectedCoachHistoryIndex, setCoach, setCoachHighlight, setCoachHistory, setIsAnalyzing, setLastMoveFeedback, setSelectedCoachHistoryIndex, lastPlayerEvalRef]);
 
     return { dismissCoach, replayMove };
 }

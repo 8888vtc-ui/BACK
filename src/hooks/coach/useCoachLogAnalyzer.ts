@@ -3,12 +3,7 @@ import type { BoardState } from '../../engine/backgammonEngine';
 import { formatCoachMoveSequence, movesFromBoardDiff } from '../../features/coach/coachMoveNotation';
 import { soundEngine } from '../../lib/sound/soundEngine';
 import { analyzeHumanMoveFromLogWithBgsage, type CoachVerdict } from '../../features/coach/logAnalyzer';
-import { evaluateBrilliantMoveCriteria } from '../../features/coach/tacticalExplainer';
-import { recordBlunder } from '../../features/drills/blunderBank';
-import {
-    classifyLivePositionCategory,
-    recordLiveMatchDecisionOnAdaptiveProfile,
-} from '../../features/drills/adaptiveQuizEngine';
+import { handleBlunderAndDecisionRecording } from './coachBlunderRecorder';
 import { shouldNotify, type CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
 import {
     buildCoachStateFromLogResult,
@@ -19,27 +14,21 @@ import {
 import type { CoachHighlight } from '../../components/board/boardThemes';
 import type { MatchLogEntry } from '../../actions/types';
 import { mapGameCubeAction, type CubeActionType, type CubeAction } from '../../features/coach/cubeCoach';
-import { validateMoveAgainstSnapshot, type HumanTurnSnapshot } from '../../features/coach/turnSnapshot';
+import type { HumanTurnSnapshot } from '../../features/coach/turnSnapshot';
 
 export interface UseCoachLogAnalyzerParams {
-    matchLog?: ReadonlyArray<MatchLogEntry>;
-    gameState: BoardState;
-    lastPlayerEvalRef: MutableRefObject<string | null>;
-    analysisRequestIdRef: MutableRefObject<number>;
-    humanSnapshotRef?: MutableRefObject<HumanTurnSnapshot | null>;
+    matchLog?: ReadonlyArray<MatchLogEntry>; gameState: BoardState;
+    lastPlayerEvalRef: MutableRefObject<string | null>; analysisRequestIdRef: MutableRefObject<number>;
+    humanSnapshotRef?: MutableRefObject<HumanTurnSnapshot | null>; latestHumanPacketIdRef?: MutableRefObject<string | null>;
     cancelActiveOperation: () => { requestId: number; controller: AbortController };
     evaluateCubeAction: (action: CubeActionType | CubeAction, stateOverride?: BoardState) => void;
     recordDecisionStats: (verdict: CoachVerdict, rawEquityLoss: number, playedMove: string, optimalMove: string) => void;
     setBrilliantMove: (brilliant: boolean) => void;
-    setLastMoveFeedback: (
-        feedback: LastMoveFeedback | null | ((prev: LastMoveFeedback | null) => LastMoveFeedback | null),
-    ) => void;
+    setLastMoveFeedback: (feedback: LastMoveFeedback | null | ((prev: LastMoveFeedback | null) => LastMoveFeedback | null)) => void;
     setCoachHistory: (updater: (prev: CoachAnalysisHistoryEntry[]) => CoachAnalysisHistoryEntry[]) => void;
-    setSelectedCoachHistoryIndex: (index: number | null) => void;
-    notificationLevel: CoachNotificationLevel;
+    setSelectedCoachHistoryIndex: (index: number | null) => void; notificationLevel: CoachNotificationLevel;
     setCoach: (coach: CoachState | null | ((prev: CoachState | null) => CoachState | null)) => void;
-    setCoachHighlight: (highlight: CoachHighlight | null) => void;
-    speakCoachVoice: (text: string) => void;
+    setCoachHighlight: (highlight: CoachHighlight | null) => void; speakCoachVoice: (text: string) => void;
     onCoachTriggered?: () => void;
 }
 
@@ -49,6 +38,7 @@ export function useCoachLogAnalyzer({
     lastPlayerEvalRef,
     analysisRequestIdRef,
     humanSnapshotRef,
+    latestHumanPacketIdRef,
     cancelActiveOperation,
     evaluateCubeAction,
     recordDecisionStats,
@@ -76,6 +66,12 @@ export function useCoachLogAnalyzer({
         if (snapshot && snapshot.actor !== 'HUMAN') return;
 
         const lastEntry = latestEntry;
+        const packet = lastEntry.packet;
+        const packetId = packet?.packetId;
+        if (latestHumanPacketIdRef && packetId) {
+            latestHumanPacketIdRef.current = packetId;
+        }
+
         const playedSig = lastEntry.notation ?? lastEntry.movePlayed.map((m) => `${m.from}-${m.to}`).join(',');
         const entryKey = `${lastEntry.turnIndex}:${lastEntry.dice[0]}-${lastEntry.dice[1]}:${playedSig}:${lastEntry.timestamp ?? (log.length - 1)}`;
         if (lastPlayerEvalRef.current === entryKey) return;
@@ -88,7 +84,10 @@ export function useCoachLogAnalyzer({
         }
 
         const { requestId, controller } = cancelActiveOperation();
-        const isStale = () => controller.signal.aborted || analysisRequestIdRef.current !== requestId;
+        const isStale = () =>
+            controller.signal.aborted ||
+            analysisRequestIdRef.current !== requestId ||
+            Boolean(latestHumanPacketIdRef && packetId && latestHumanPacketIdRef.current !== packetId);
         const isTurnStillInLog = () =>
             (matchLogRef.current ?? []).some(
                 (entry) => entry.player === 'X' && entry.turnIndex === lastEntry.turnIndex,
@@ -98,6 +97,7 @@ export function useCoachLogAnalyzer({
             try {
                 const result = await analyzeHumanMoveFromLogWithBgsage({
                     logEntry: lastEntry,
+                    packet,
                     localPlayer: 'X',
                     cubeValue: gameState.cubeValue,
                     cubeOwner: gameState.cubeOwner,
@@ -107,7 +107,7 @@ export function useCoachLogAnalyzer({
                     scoreO: gameState.scoreO,
                     ply: 3,
                 });
-                if (!result || !isTurnStillInLog()) return;
+                if (!result || !isTurnStillInLog() || isStale()) return;
 
                 const { verdict, equityLoss, isUnforced, candidateMoves } = result;
                 const loggedMoves = [...lastEntry.movePlayed];
@@ -125,101 +125,35 @@ export function useCoachLogAnalyzer({
                 if (!isTurnStillInLog()) return;
 
                 if (isUnforced) {
-                    recordDecisionStats(verdict, equityLoss, playedNotation, result.optimalNotation);
-                    const liveOutcome = recordLiveMatchDecisionOnAdaptiveProfile({
-                        board: lastEntry.boardBefore,
-                        turnIndex: lastEntry.turnIndex,
+                    handleBlunderAndDecisionRecording({
+                        lastEntry,
+                        result,
+                        coachState,
+                        playedNotation,
+                        verdict,
                         equityLoss,
-                        isCube: false,
+                        recordDecisionStats,
+                        setBrilliantMove,
+                        isStale,
                     });
-                    const secondBest = candidateMoves[1];
-                    const uniquenessDelta = secondBest !== undefined ? Math.abs(secondBest.equityLoss) : 0;
-                    const isBrilliant = evaluateBrilliantMoveCriteria({
-                        equityLossEmg: Math.abs(equityLoss),
-                        secondBestGapEmg: uniquenessDelta,
-                        slottedKeyPointNaked: uniquenessDelta > 0.045 || playedNotation.includes('*'),
-                    });
-                    if (!isStale()) setBrilliantMove(isBrilliant);
-                    if (verdict === 'blunder' || Math.abs(equityLoss) >= 0.06) {
-                        try {
-                            const catMeta = classifyLivePositionCategory(lastEntry.boardBefore, lastEntry.turnIndex, false);
-                            const choiceSet = new Set<string>();
-                            if (result.optimalNotation) choiceSet.add(result.optimalNotation);
-                            if (playedNotation) choiceSet.add(playedNotation);
-                            for (const cand of candidateMoves) {
-                                if (cand.notation) choiceSet.add(cand.notation);
-                                if (choiceSet.size >= 4) break;
-                            }
-                            recordBlunder({
-                                id: `user_blunder_${lastEntry.turnIndex}_${Date.now()}`,
-                                board: [...lastEntry.boardBefore],
-                                dice: [lastEntry.dice[0], lastEntry.dice[1]],
-                                player: 'X',
-                                playedMove: playedNotation,
-                                optimalMove: result.optimalNotation,
-                                acceptableMoves: candidateMoves
-                                    .filter((m) => Math.abs(m.equityLoss) < 0.02)
-                                    .map((m) => m.notation),
-                                equityLoss: Math.abs(equityLoss),
-                                verdict: Math.abs(equityLoss) >= 0.20 ? 'howler' : Math.abs(equityLoss) >= 0.08 ? 'blunder' : 'doubtful',
-                                tier: liveOutcome.categoryState.level,
-                                conceptId: catMeta.id,
-                                conceptName: catMeta.fullName,
-                                whyFailed: coachState.whyFailed || `Votre coup ${playedNotation} cède ${Math.abs(equityLoss).toFixed(3)} EMG.`,
-                                explanation:
-                                    coachState.whyOptimal ||
-                                    coachState.explanation ||
-                                    `Le coup optimal était ${result.optimalNotation} (perte de ${Math.abs(equityLoss).toFixed(3)} EMG sur ${playedNotation}).`,
-                                hint: `Catégorie ciblée : ${catMeta.fullName} — cherchez comment ${result.optimalNotation} protège votre structure.`,
-                                quizChoices: Array.from(choiceSet).slice(0, 4),
-                            });
-                        } catch { /* ignore storage errors */ }
-                    }
                 }
 
-                setCoachHistory((prev) => {
-                    const filtered = prev.filter((h) => h.turnIndex !== lastEntry.turnIndex);
-                    return [
-                        ...filtered,
-                        {
-                            turnIndex: lastEntry.turnIndex,
-                            dice: [lastEntry.dice[0], lastEntry.dice[1]],
-                            coachState,
-                            highlight,
-                            boardBefore: [...lastEntry.boardBefore],
-                            boardAfter: [...lastEntry.boardAfter],
-                            timestamp: Date.now(),
-                            isUnforced,
-                        },
-                    ];
-                });
+                setCoachHistory((prev) => [
+                    ...prev.filter((h) => h.turnIndex !== lastEntry.turnIndex),
+                    { turnIndex: lastEntry.turnIndex, dice: [lastEntry.dice[0], lastEntry.dice[1]], coachState, highlight, boardBefore: [...lastEntry.boardBefore], boardAfter: [...lastEntry.boardAfter], timestamp: Date.now(), isUnforced },
+                ]);
 
                 if (isStale()) return;
 
                 const nextFeedback: LastMoveFeedback = {
-                    verdict,
-                    equityLoss,
-                    playedMove: playedNotation,
-                    optimalMove: result.optimalNotation,
-                    turnIndex: lastEntry.turnIndex,
-                    decisionType: 'checker',
-                    errorCategoryLabel: coachState.tacticalSummary && coachState.tacticalSummary.length < 48
-                        ? coachState.tacticalSummary
-                        : undefined,
-                    errorAdvice: coachState.whyFailed || coachState.tacticalSummary || coachState.summary || undefined,
-                    timestamp: Date.now(),
+                    verdict, equityLoss, playedMove: playedNotation, optimalMove: result.optimalNotation, turnIndex: lastEntry.turnIndex, decisionType: 'checker',
+                    errorCategoryLabel: coachState.tacticalSummary && coachState.tacticalSummary.length < 48 ? coachState.tacticalSummary : undefined,
+                    errorAdvice: coachState.whyFailed || coachState.tacticalSummary || coachState.summary || undefined, timestamp: Date.now(),
+                    packetId: packetId ?? result.packetId, optimalSubMoves: result.optimalSubMoves ?? coachState.optimalSubMoves,
+                    boardBefore: lastEntry.boardBefore, boardAfter: lastEntry.boardAfter, dice: [lastEntry.dice[0], lastEntry.dice[1]],
                 };
-                const isNewError =
-                    (verdict === 'blunder' || verdict === 'inaccuracy') && Math.abs(equityLoss) > 0.020;
-                setLastMoveFeedback((prev) => {
-                    if (isNewError) return nextFeedback;
-                    const prevIsOpenError =
-                        prev !== null &&
-                        (prev.verdict === 'blunder' ||
-                            prev.verdict === 'inaccuracy' ||
-                            Math.abs(prev.equityLoss) > 0.020);
-                    return prevIsOpenError ? prev : nextFeedback;
-                });
+                const isNewError = (verdict === 'blunder' || verdict === 'inaccuracy') && Math.abs(equityLoss) > 0.020;
+                setLastMoveFeedback((prev) => isNewError ? nextFeedback : (prev && (prev.verdict === 'blunder' || prev.verdict === 'inaccuracy' || Math.abs(prev.equityLoss) > 0.020) ? prev : nextFeedback));
 
                 setSelectedCoachHistoryIndex(null);
 

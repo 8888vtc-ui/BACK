@@ -189,6 +189,8 @@ export function buildCoachStateFromLogResult(params: {
             boardBefore,
             boardAfter: [...lastEntry.boardAfter],
             turnIndex: lastEntry.turnIndex,
+            packetId: result.packetId ?? lastEntry.packet?.packetId,
+            optimalSubMoves: optimalHighlightMoves.length > 0 ? optimalHighlightMoves : undefined,
         },
         highlight: { played: playedMoves, optimal: optimalHighlightMoves },
     };

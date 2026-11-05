@@ -56,6 +56,7 @@ export function useCoach({
     const stateBeforeCubeOfferRef = useRef<BoardState | null>(null);
     const prevHumanRollKeyRef = useRef<string>('');
     const humanSnapshotRef = useRef<HumanTurnSnapshot | null>(null);
+    const latestHumanPacketIdRef = useRef<string | null>(null);
     const analysisRequestIdRef = useRef(0);
     const activeAbortRef = useRef<AbortController | null>(null);
 
@@ -130,6 +131,7 @@ export function useCoach({
         lastPlayerEvalRef,
         analysisRequestIdRef,
         humanSnapshotRef,
+        latestHumanPacketIdRef,
         cancelActiveOperation,
         evaluateCubeAction,
         recordDecisionStats,
@@ -150,6 +152,7 @@ export function useCoach({
         coachHistory,
         coach,
         lastMoveFeedback,
+        latestHumanPacketIdRef,
         game,
         lastPlayerEvalRef,
         setCoachHistory,

@@ -47,7 +47,14 @@ import {
     isInitialBoardPosition,
 } from '../openings/openingDatabase';
 import { estimateOffListEquityLoss } from './offListEquity';
-import { verifyCheckersPhysicallyExistOnBoard, sanitizeVerdictWithEquityThreshold } from './turnSnapshot';
+import {
+    verifyCheckersPhysicallyExistOnBoard,
+    sanitizeVerdictWithEquityThreshold,
+    boardSignature,
+    extractVerifiedCoachFacts,
+    type CoachVerifiedFacts,
+    type CommittedHumanMovePacket,
+} from './turnSnapshot';
 
 /**
  * Séquence de sous-mouvements fiable pour l'affichage : celle du log si elle
@@ -144,12 +151,19 @@ export interface HumanMoveAnalysis {
     }>;
     /** Séquence légale exacte du meilleur coup (pour les flèches et l'état final). */
     readonly optimalMoves?: ReadonlyArray<Move>;
+    /** Sous-coups physiques vérifiés garantissant légalité absolue sur boardBefore. */
+    readonly optimalSubMoves?: ReadonlyArray<{ readonly from: number; readonly to: number }>;
+    /** Faits physiques vérifiés sur le plateau (0 hallucination de numéro de flèche). */
+    readonly verifiedFacts?: CoachVerifiedFacts;
+    /** Identifiant unique du paquet humain committed (Verrou 1 & 2). */
+    readonly packetId?: string;
     /** Métriques neurales enrichies Open Sage (plans de jeu + probabilités de gain/gammon). */
     readonly bgsageInsights?: BgsageStrategicInsights;
 }
 
 export interface AnalyzeHumanMoveFromLogParams {
     readonly logEntry: MatchLogEntry;
+    readonly packet?: CommittedHumanMovePacket;
     readonly localPlayer?: Player;
     readonly cubeValue?: number;
     readonly cubeOwner?: Player | null;
@@ -720,15 +734,11 @@ export async function analyzeHumanMoveFromLogWithBgsage(
             }
         }
     } catch (err) {
-        console.warn('[Coach] bgsage-service indisponible, bascule sur l\'évaluateur local :', err);
+        console.warn('[Coach] bgsage-service indisponible :', err);
     }
 
-    // 2. Repli sur l'évaluateur local déterministe.
-    const localResult = analyzeHumanMoveFromLog(params);
-    if (!localResult) {
-        return null;
-    }
-    return { ...localResult, source: 'local' };
+    // Constitution Anti-Mock : ZÉRO fallback sur évaluateur local heuristique
+    return null;
 }
 
 function buildHumanMoveAnalysisFromBgsageResult(params: {
@@ -845,57 +855,58 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
         };
     }
 
-    const matched = bgsageResult.chequerPlay.find((m) => {
+    const playedBoardSig = boardSignature(effectiveBoardAfter);
+
+    // Résolution physique stricte de la meilleure séquence parmi les coups légaux
+    let bestLegalSeq = legalSeqs.find((s) => {
+        if (bestMove.board && bestMove.board.length === 26) {
+            return boardSignature(s.board) === boardSignature(bestMove.board);
+        }
+        const simBoard = applyBgsageNotationToBoard(boardBefore, bestMove.notation, evalState.dice ?? [1, 1], logEntry.player);
+        return simBoard && boardSignature(s.board) === boardSignature(simBoard);
+    });
+    if (!bestLegalSeq && legalSeqs.length > 0) {
+        bestLegalSeq = legalSeqs[0];
+    }
+
+    const optimalSubMoves = bestLegalSeq?.moves ?? (resolvedBest.moves.length > 0 ? resolvedBest.moves : []);
+    if (optimalSubMoves.length > 0) {
+        const u = optimalSubMoves[0].from;
+        const sourceCheckers = u === 0 ? boardBefore[0] : boardBefore[u];
+        if (sourceCheckers < 1) {
+            console.warn(`[Assertion #4 Checkers] Case ${u} a ${sourceCheckers} pion(s) sur boardBefore`);
+        }
+    }
+
+    // Verrou 3 : Transposition exacte du meilleur coup = 0.0000 EMG garanti !
+    const isExactTranspositionOfBest = Boolean(bestLegalSeq && boardSignature(bestLegalSeq.board) === playedBoardSig);
+
+    const matched = isExactTranspositionOfBest ? bestMove : bgsageResult.chequerPlay.find((m) => {
         if (m.board && m.board.length === 26) {
-            if (
-                boardsMatchOnPointsAndBar(m.board, effectiveBoardAfter) ||
-                boardsMatchOnPoints(m.board, effectiveBoardAfter)
-            ) {
-                return true;
-            }
+            if (boardSignature(m.board) === playedBoardSig) return true;
             const engineBoard = bgsageMoveBoardToProjectBoard(
                 m.board,
                 logEntry.player,
                 bgsageResult.source,
             );
-            if (
-                boardsMatchOnPointsAndBar(engineBoard, effectiveBoardAfter) ||
-                boardsMatchOnPoints(engineBoard, effectiveBoardAfter)
-            ) {
-                return true;
-            }
+            if (boardSignature(engineBoard) === playedBoardSig) return true;
         }
         const simBoard = applyBgsageNotationToBoard(boardBefore, m.notation, evalState.dice ?? [1, 1], logEntry.player);
-        if (simBoard && (boardsMatchOnPointsAndBar(simBoard, effectiveBoardAfter) || boardsMatchOnPoints(simBoard, effectiveBoardAfter))) {
-            return true;
-        }
+        if (simBoard && boardSignature(simBoard) === playedBoardSig) return true;
         const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
+        if (resolvedCand.board && boardSignature(resolvedCand.board) === playedBoardSig) return true;
         const absMoveNotation = relativeNotationToAbsolute(m.notation, logEntry.player);
-        if (
+        return (
             notationsAreEquivalent(resolvedCand.notation, playedNotation, logEntry.player) ||
             notationsAreEquivalent(resolvedCand.notation, canonicalNotation, logEntry.player) ||
             notationsAreEquivalent(absMoveNotation, playedNotation, logEntry.player) ||
             notationsAreEquivalent(absMoveNotation, canonicalNotation, logEntry.player) ||
             notationsAreEquivalent(m.notation, playedNotation, logEntry.player) ||
             notationsAreEquivalent(m.notation, canonicalNotation, logEntry.player)
-        ) {
-            return true;
-        }
-        const parsed = parseCoachNotationMoves(absMoveNotation, logEntry.player);
-        if (parsed.length > 0) {
-            let sim = [...boardBefore];
-            for (const mv of parsed) sim = applyMove(sim, mv, logEntry.player);
-            if (
-                boardsMatchOnPointsAndBar(sim, effectiveBoardAfter) ||
-                boardsMatchOnPoints(sim, effectiveBoardAfter)
-            ) {
-                return true;
-            }
-        }
-        return false;
+        );
     });
 
-    let optimalNotation = resolvedBest.notation;
+    let optimalNotation = (bestLegalSeq && formatCoachMoveSequence(bestLegalSeq.moves, logEntry.player, boardBefore)) || resolvedBest.notation;
     if (!optimalNotation || !verifyCheckersPhysicallyExistOnBoard(optimalNotation, boardBefore, logEntry.player)) {
         if (legalSeqs.length > 0) {
             optimalNotation = formatCoachMoveSequence(legalSeqs[0].moves, logEntry.player, boardBefore);
@@ -905,8 +916,18 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
     const bestEquity = effectiveBestMove.equity;
 
     let playedEquity: number;
-    if (matched) {
+    let equityLoss: number;
+    let verdict: CoachVerdict;
+
+    if (isExactTranspositionOfBest) {
+        playedEquity = bestEquity;
+        equityLoss = 0.0000;
+        verdict = 'optimal';
+    } else if (matched) {
         playedEquity = matched.equity;
+        equityLoss = Math.max(0, bestEquity - playedEquity);
+        const rawVerdict = classifyVerdict(equityLoss);
+        verdict = sanitizeVerdictWithEquityThreshold(equityLoss, rawVerdict);
     } else {
         const offList = estimateOffListEquityLoss({
             evalState,
@@ -917,11 +938,16 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
             ply: 2,
         });
         playedEquity = bestEquity - offList.equityLoss;
+        equityLoss = Math.max(0, bestEquity - playedEquity);
+        const rawVerdict = classifyVerdict(equityLoss);
+        verdict = sanitizeVerdictWithEquityThreshold(equityLoss, rawVerdict);
     }
 
-    const equityLoss = Math.max(0, bestEquity - playedEquity);
-    const rawVerdict = classifyVerdict(equityLoss);
-    const verdict = sanitizeVerdictWithEquityThreshold(equityLoss, rawVerdict);
+    const verifiedFacts = extractVerifiedCoachFacts(
+        boardBefore,
+        effectiveBoardAfter,
+        bestLegalSeq?.board ?? (resolvedBest.board ?? boardBefore),
+    );
 
     const candidateMoves = bgsageResult.chequerPlay.map((m) => {
         const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
@@ -988,7 +1014,10 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
         bestEquity,
         isUnforced: Math.max(bgsageResult.chequerPlay.length, legalSeqs.length) > 1,
         isBlunder: verdict === 'blunder',
-        optimalMoves: resolvedBest.moves.length > 0 ? resolvedBest.moves : undefined,
+        optimalMoves: optimalSubMoves.length > 0 ? optimalSubMoves : (resolvedBest.moves.length > 0 ? resolvedBest.moves : undefined),
+        optimalSubMoves: optimalSubMoves.length > 0 ? optimalSubMoves : undefined,
+        verifiedFacts,
+        packetId: logEntry.packet?.packetId,
         bgsageInsights,
         candidateMoves,
         source: 'bgsage',

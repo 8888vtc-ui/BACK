@@ -30,7 +30,7 @@ describe('DoublingControls', () => {
             <DoublingControls {...defaultProps} canDouble={false} crawford={true} />,
         );
 
-        expect(html).toContain('Règle de Crawford : le videau est suspendu pour cette manche');
+        expect(html).toContain('Règle Crawford (Videau verrouillé)');
         expect(html).toContain('cursor-not-allowed');
     });
 

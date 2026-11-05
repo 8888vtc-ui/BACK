@@ -244,8 +244,8 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
             >
                 <MoveErrorPopToast
                     feedback={lastMoveFeedback}
-                    boardBefore={displayCoach?.boardBefore}
-                    boardAfter={game.state.board}
+                    boardBefore={lastMoveFeedback?.boardBefore ?? displayCoach?.boardBefore}
+                    boardAfter={lastMoveFeedback?.boardAfter ?? game.state.board}
                     onReplayMove={handleSyncedReplayMove}
                     onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
                     isBeginner={tierGate === 'BEGINNER'}

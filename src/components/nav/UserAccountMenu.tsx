@@ -165,7 +165,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
     const avatarUrl = profile?.avatar_url || (typeof meta?.avatar_url === 'string' ? meta.avatar_url : null) || localPassport?.avatarUrl || fallbackActiveProfile?.avatarUrl;
     const elo = profile?.rating ?? (fallbackActiveProfile?.rating || 1500);
     const rankTitle = getCompetitiveRankTitle(elo);
-    const isRegisteredPlayer = Boolean(user || localPassport || fallbackActiveProfile);
+    const isRegisteredPlayer = Boolean(user || localPassport || (fallbackActiveProfile && !fallbackActiveProfile.isGuest));
 
     return (
         <div className="relative flex items-center gap-2" ref={menuRef}>

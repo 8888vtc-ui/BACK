@@ -5,6 +5,7 @@
 
 import type { Player, Move, BoardState, MoveSequence } from '../engine/backgammonEngine';
 import type { AIDifficulty } from '../engine/aiHeuristics';
+import type { CommittedHumanMovePacket } from '../features/coach/turnSnapshot';
 
 /**
  * Machine à États Finis Unique (LOI 2)
@@ -31,6 +32,7 @@ export interface MatchLogEntry {
     readonly boardAfter: ReadonlyArray<number>;
     readonly notation?: string;
     readonly timestamp?: number;
+    readonly packet?: CommittedHumanMovePacket;
 }
 
 /**
@@ -57,6 +59,12 @@ export interface CommitHumanMoveParams {
     readonly matchLog: ReadonlyArray<MatchLogEntry>;
     readonly localConnectedPlayer?: Player;
     readonly isGameOver?: boolean;
+    readonly scoreX?: number;
+    readonly scoreO?: number;
+    readonly matchLength?: number;
+    readonly cubeValue?: number;
+    readonly cubeOwner?: Player | null;
+    readonly crawford?: boolean;
 }
 
 /**

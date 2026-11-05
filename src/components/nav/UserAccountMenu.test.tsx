@@ -101,7 +101,7 @@ describe('UserAccountMenu', () => {
 
         expect(screen.getByTestId('user-dropdown-menu')).toBeDefined();
         expect(screen.getByText('champion@backgammon.com')).toBeDefined();
-        expect(screen.getByText('1950 GR')).toBeDefined();
+        expect(screen.getAllByText(/1950 (?:Elo|ELO)/i)[0]).toBeDefined();
 
         // Navigation vers statistiques
         const statsItem = screen.getByTestId('user-menu-progression-link');

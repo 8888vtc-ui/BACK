@@ -30,32 +30,33 @@ export interface MoveErrorPopToastProps {
 }
 
 const PATTERN_LABELS: Record<ClassicalBlunderPattern, { name: string; advice: string }> = {
-    PREMATURE_PRIME_BREAKUP: {
-        name: 'Rupture prématurée de prime',
-        advice: 'Maintenez la prime de 5 ou 6 portes pour asphyxier les dames arrières adverses.',
-    },
-    BAR_REENTRY_MISCALCULATION: {
-        name: 'Calcul de rentrée de barre adverse',
-        advice: 'Attention aux tirs directs depuis la barre adverse sur vos pions isolés.',
-    },
-    RECKLESS_HIT_EXPOSURE: {
-        name: 'Frappe inconsidérée (Blot exposé)',
-        advice: 'Frapper laisse un blot vulnérable sans couverture immédiate.',
-    },
-    RACE_VS_CONTACT_CONFUSION: {
-        name: 'Confusion Course vs Contact',
-        advice: 'Préservez la flexibilité de vos constructeurs avant de libérer les ancres.',
-    },
-    GENERAL_POSITIONAL_LOSS: {
-        name: 'Erreur positionnelle & Perte d’ancrage',
-        advice: 'Ce coup affaiblit la cohésion de vos blocs sans compenser la course.',
-    },
+    PREMATURE_PRIME_BREAKUP: { name: 'Rupture prématurée de prime', advice: 'Maintenez la prime de 5 ou 6 portes pour asphyxier les dames arrières adverses.' },
+    BAR_REENTRY_MISCALCULATION: { name: 'Calcul de rentrée de barre adverse', advice: 'Attention aux tirs directs depuis la barre adverse sur vos pions isolés.' },
+    RECKLESS_HIT_EXPOSURE: { name: 'Frappe inconsidérée (Blot exposé)', advice: 'Frapper laisse un blot vulnérable sans couverture immédiate.' },
+    RACE_VS_CONTACT_CONFUSION: { name: 'Confusion Course vs Contact', advice: 'Préservez la flexibilité de vos constructeurs avant de libérer les ancres.' },
+    GENERAL_POSITIONAL_LOSS: { name: 'Erreur positionnelle & Perte d’ancrage', advice: 'Ce coup affaiblit la cohésion de vos blocs sans compenser la course.' },
 };
+
+function sanitizeErrorAdviceWithRealBoardFacts(advice: string, boardAfter?: readonly number[]): string {
+    if (!boardAfter) return advice;
+    const realBlots: number[] = [];
+    for (let p = 1; p <= 24; p++) {
+        if (boardAfter[p] === 1) realBlots.push(p);
+    }
+    return advice.replace(/\((?:flèches?|cases?|points?)\s*[\d,\s et]+\)/gi, (match) => {
+        const nums = match.match(/\d+/g)?.map(Number) ?? [];
+        const validNums = nums.filter((n) => realBlots.includes(n));
+        if (validNums.length === 0) {
+            return realBlots.length > 0 ? `(flèche${realBlots.length > 1 ? 's' : ''} ${realBlots.slice(0, 3).join(', ')})` : '';
+        }
+        return `(flèche${validNums.length > 1 ? 's' : ''} ${validNums.slice(0, 3).join(', ')})`;
+    });
+}
 
 export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
     feedback,
-    boardBefore,
-    boardAfter,
+    boardBefore: propBoardBefore,
+    boardAfter: propBoardAfter,
     onReplayMove,
     onOpenCoach,
     isBeginner = false,
@@ -68,6 +69,9 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
         if (absLoss <= 0.020) {
             return null;
         }
+
+        const effectiveBoardBefore = feedback.boardBefore ?? propBoardBefore;
+        const effectiveBoardAfter = feedback.boardAfter ?? propBoardAfter;
 
         const isBlunder = feedback.verdict === 'blunder' || absLoss >= 0.080;
         const isError = !isBlunder && absLoss >= 0.040;
@@ -110,8 +114,8 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
             patternAdvice = feedback.errorAdvice ?? variedCube.whyFailed;
         } else {
             const pattern: ClassicalBlunderPattern =
-                boardBefore && boardAfter
-                    ? detectClassicalBlunderPattern({ boardBefore, boardAfter })
+                effectiveBoardBefore && effectiveBoardAfter
+                    ? detectClassicalBlunderPattern({ boardBefore: effectiveBoardBefore, boardAfter: effectiveBoardAfter })
                     : 'GENERAL_POSITIONAL_LOSS';
             const patternInfo = PATTERN_LABELS[pattern] ?? PATTERN_LABELS.GENERAL_POSITIONAL_LOSS;
             const catMap: Record<ClassicalBlunderPattern, VariedCheckerCategory> = {
@@ -124,7 +128,8 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                 seedExtra: feedback.turnIndex ?? '',
             });
             patternName = feedback.errorCategoryLabel ?? patternInfo.name;
-            patternAdvice = feedback.errorAdvice ?? variedChecker.whyFailed;
+            const rawAdvice = feedback.errorAdvice ?? variedChecker.whyFailed;
+            patternAdvice = sanitizeErrorAdviceWithRealBoardFacts(rawAdvice, effectiveBoardAfter);
         }
 
         const mwcLossPct = Math.max(1, Math.round(absLoss * 50));
@@ -152,7 +157,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                   : 'border-yellow-400/80 bg-yellow-950/95 text-yellow-100 shadow-[0_0_24px_rgba(234,179,8,0.25)]',
             icon: isBlunder ? '🔴' : isError ? '🟠' : '🟡',
         };
-    }, [feedback, boardBefore, boardAfter, isBeginner]);
+    }, [feedback, propBoardBefore, propBoardAfter, isBeginner]);
 
     if (!errorDetails || dismissedFeedback === feedback) {
         return null;

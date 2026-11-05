@@ -55,6 +55,12 @@ export function useGameActionBridge({
             boardAfter: boardState.board,
             matchLog: state.matchLog ?? [],
             isGameOver: !!gameResult,
+            scoreX: boardState.scoreX,
+            scoreO: boardState.scoreO,
+            matchLength: boardState.matchLength,
+            cubeValue: boardState.cubeValue,
+            cubeOwner: boardState.cubeOwner,
+            crawford: boardState.crawford,
         });
         if (currentGPhase === 'HUMAN_READY_TO_COMMIT') {
             clearHumanTimers();
