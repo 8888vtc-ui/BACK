@@ -23,4 +23,5 @@ target/
 **/target/
 .agents/
 android/app/src/main/assets/public/
+data/quizzes/*.jsonl
 ios/App/App/public/
