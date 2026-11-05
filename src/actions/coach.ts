@@ -271,7 +271,6 @@ export async function generateProtectedCoachSynthesisAction(
                 { role: 'system', content: getGameReviewSystemPrompt(lang) },
                 { role: 'user', content: buildPostMatchSummaryUserPrompt(input.summary, lang) },
             ],
-            temperature: 0.3,
             stream: false,
             response_format: { type: 'json_object' },
         };

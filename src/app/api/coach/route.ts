@@ -135,7 +135,6 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                 { role: 'system', content: getCoachSystemPrompt(params.language) },
                 { role: 'user', content: userPrompt },
             ],
-            temperature: 0.25,
             stream: true,
             response_format: { type: 'json_object' },
         };

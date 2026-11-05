@@ -60,10 +60,10 @@ export function resolveLlmEndpointConfig(marginContext?: {
         process.env.OPENAI_MODEL ||
         process.env.GEMINI_MODEL ||
         process.env.LLM_MODEL ||
-        'gemini-3.5-flash-lite';
+        'gemini-flash-lite-latest';
     const deepModel =
         process.env.COACH_DEEP_MODEL ||
-        'gemini-3.8-flash';
+        'gemini-flash-latest';
     let model = marginContext?.useDeepModel ? deepModel : fastModel;
 
     let marginGuardrailBreached = false;

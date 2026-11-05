@@ -123,7 +123,6 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                 { role: 'system', content: getGameReviewSystemPrompt(params.language) },
                 { role: 'user', content: userPrompt },
             ],
-            temperature: 0.3,
             stream: true,
             response_format: { type: 'json_object' },
         };

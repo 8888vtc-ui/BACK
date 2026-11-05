@@ -127,7 +127,6 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             },
             body: JSON.stringify({
                 model,
-                temperature: 0,
                 messages: [
                     { role: 'system', content: VISION_SYSTEM_PROMPT },
                     {
