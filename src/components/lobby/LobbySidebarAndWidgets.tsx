@@ -205,17 +205,16 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                 {/* BLOC 3 : CIRCUIT MONDIAL */}
                 <div className="flex flex-col gap-1">
                     {!collapsed && <span className={sectionLabelCls}>Circuit</span>}
-                    <button
-                        type="button"
-                        data-testid="sidebar-tournaments-live-btn"
-                        onClick={() => onOpenModule?.('tournaments')}
+                    <Link
+                        href="/tournaments"
+                        data-testid="sidebar-pillar-tournaments"
                         className={itemCls}
                     >
                         <span className="flex items-center gap-2.5">
                             <IconWorldTourLive size={15} className="text-[#D4AF37]" />
                             {!collapsed && <span>Carte : Tournois &amp; Clubs</span>}
                         </span>
-                    </button>
+                    </Link>
                 </div>
             </div>
 
