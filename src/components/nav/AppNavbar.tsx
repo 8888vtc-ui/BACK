@@ -22,6 +22,7 @@ import usePwaInstall from '../../hooks/usePwaInstall';
 import IosInstallModal from '../pwa/IosInstallModal';
 import { PlayerTierGateSwitch } from '../navigation/PlayerTierGateSwitch';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { NavbarPointsAndBadges } from './NavbarPointsAndBadges';
 
 export type NavTabId = 'play' | 'tournaments' | 'puzzles' | 'drills' | 'openings' | 'progression' | 'academy';
 
@@ -190,6 +191,9 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                         </Link>
                     )}
                     {statusBadge}
+                    {/* Capital 10 000 PTS & Badges adaptatifs de niveau */}
+                    <NavbarPointsAndBadges tierGate={tierGate} />
+
                     {!isInstalled && canInstall && (
                         <button
                             type="button"
@@ -213,7 +217,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                         data-testid="navbar-locale-toggle-btn"
                         title={locale === 'fr' ? 'Switch to English' : 'Passer en Français'}
                         aria-label={locale === 'fr' ? 'Switch to English' : 'Passer en Français'}
-                        className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900/90 px-2 py-1 font-mono text-[11px] font-bold tracking-wider text-stone-200 transition hover:border-[#D4AF37]/50 hover:text-[#D4AF37] active:scale-95"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900/90 px-2.5 py-1 font-mono text-xs sm:text-sm font-bold tracking-wider text-stone-200 transition hover:border-[#D4AF37]/50 hover:text-[#D4AF37] active:scale-95"
                     >
                         <span className={locale === 'fr' ? 'text-[#D4AF37] font-black' : 'text-stone-400'}>FR</span>
                         <span className="text-stone-600">|</span>
@@ -221,6 +225,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     </button>
 
                     <UserAccountMenu
+                        tierGate={tierGate}
                         onNavigateModule={onOpenModule}
                         onOpenSettings={onOpenSettings}
                         onUserResolved={onUserResolved}

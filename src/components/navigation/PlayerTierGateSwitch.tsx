@@ -38,11 +38,7 @@ export const PlayerTierGateSwitch: React.FC<PlayerTierGateSwitchProps> = React.m
                         data-testid={`tier-gate-btn-${g.id.toLowerCase()}`}
                         onClick={() => onSelectGate(g.id)}
                         aria-pressed={isActive}
-                        className={`relative rounded-lg font-sans font-bold transition-all duration-150 touch-manipulation select-none whitespace-nowrap ${
-                            compact
-                                ? 'px-3 py-1.5 text-xs sm:text-sm'
-                                : 'px-4 py-2 text-sm sm:text-base'
-                        } ${
+                        className={`relative rounded-lg font-sans font-bold transition-all duration-150 touch-manipulation select-none whitespace-nowrap px-3 sm:px-3.5 py-1.5 text-sm sm:text-base ${
                             isActive
                                 ? 'bg-gradient-to-r from-[#D4AF37] to-[#b88924] text-slate-950 font-black shadow-[0_2px_10px_rgba(212,175,55,0.35)]'
                                 : 'text-stone-300 hover:text-white hover:bg-white/[0.04]'
