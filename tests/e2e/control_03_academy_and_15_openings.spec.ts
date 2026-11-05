@@ -46,10 +46,10 @@ test.describe('MISSION 3/10 — Audit Académie Débutant & 15 Coups d’Ouvertu
             const text = await explanation.innerText();
             expect(text.length).toBeGreaterThan(10);
 
-            // Vérifier la présence du tracé de plateau
-            const boardDisplay = page.getByTestId('opening-board-display');
-            await expect(boardDisplay).toBeVisible();
-            await expect(boardDisplay).toContainText(/Case \d+/i);
+            // Vérifier la présence du tracé de plateau visuel sans chiffre de case
+            const visualBoard = page.getByTestId('opening-visual-board');
+            await expect(visualBoard).toBeVisible();
+            await expect(visualBoard).not.toContainText(/Case \d+/i);
         }
 
         // Test de la synthèse vocale

@@ -83,3 +83,4 @@ Résultats de la simulation (5 000 tours) :
   1. `Vérification du verrou atomique et du pipeline Coach en Mode Intermédiaire` (PASS)
   2. `Vérification de l’absence d’hallucination géométrique et du mode Expert` (PASS)
 - **Résultat** : 2 / 2 passed (13.3s). Zéro exception critique.
+
