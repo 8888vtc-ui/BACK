@@ -7,12 +7,14 @@
  * Strictement < 280 lignes, 0 `any`, zéro micro-texte < 11px.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkles, Flame, BarChart2, GraduationCap } from 'lucide-react';
+import { Sparkles, Flame, BarChart2, GraduationCap, ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import type { LobbyModuleId } from './LobbyScreen';
+import { getAllBlunders } from '../../features/drills/blunderBank';
+import { isPersonalMatchBlunder } from '../../features/drills/adaptiveQuizEngine';
 import {
     IconLuxuryDice,
     IconCasinoToken,
@@ -54,6 +56,16 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     const isBeginner = tierGate === 'BEGINNER';
     const [collapsed, setCollapsed] = useState(false);
     const [playGroupExpanded, setPlayGroupExpanded] = useState(true);
+    const [blunderCount, setBlunderCount] = useState<number>(0);
+
+    useEffect(() => {
+        try {
+            const count = getAllBlunders().filter((b) => isPersonalMatchBlunder(b) && !b.isMastered).length;
+            setBlunderCount(count);
+        } catch {
+            // safe fallback
+        }
+    }, []);
 
     const activeRailCls =
         'border-l-2 border-[#D4AF37] bg-gradient-to-r from-[#D4AF37]/12 to-transparent text-[#F3E5AB]';
@@ -75,13 +87,13 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
             <div className="flex flex-col gap-4 w-full">
                 {/* BLOC 1 : TABLES DE JEU */}
                 <div className="flex flex-col gap-1">
-                    {!collapsed && <span className={sectionLabelCls}>Tables</span>}
+                    {!collapsed && <span className={sectionLabelCls}>{isEn ? 'Tables' : 'Tables'}</span>}
                     <div className="flex items-center gap-1">
                         <button
                             type="button"
                             data-testid="sidebar-quick-play-btn"
                             onClick={onQuickPlay}
-                            title="Salon de Jeu (Actif)"
+                            title={isEn ? 'Game Room (Active)' : 'Salon de Jeu (Actif)'}
                             className={`flex flex-1 items-center gap-2.5 rounded-r-lg px-3 py-2 text-xs font-bold transition-all duration-150 ${
                                 selectedMode === 'ai' || selectedMode === 'multiplayer'
                                     ? activeRailCls
@@ -89,7 +101,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             }`}
                         >
                             <IconLuxuryDice className="text-[#D4AF37]" size={15} />
-                            {!collapsed && <span>Salon de Jeu</span>}
+                            {!collapsed && <span>{isEn ? 'Game Room' : 'Salon de Jeu'}</span>}
                         </button>
                         {!collapsed && !isBeginner && (
                             <button
@@ -98,9 +110,9 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 aria-expanded={playGroupExpanded}
                                 aria-label="Déplier les options du Salon de Jeu"
                                 onClick={() => setPlayGroupExpanded((v) => !v)}
-                                className="rounded-lg px-2 py-1.5 text-xs text-zinc-500 hover:bg-white/[0.04] hover:text-white transition"
+                                className="rounded-lg p-1.5 text-xs text-zinc-500 hover:bg-white/[0.04] hover:text-white transition"
                             >
-                                <span aria-hidden="true">{playGroupExpanded ? '▾' : '▸'}</span>
+                                {playGroupExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                             </button>
                         )}
                     </div>
@@ -124,7 +136,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 }`}
                             >
                                 <IconWorldTourLive size={14} className="text-[#10B981]" />
-                                {!collapsed && <span>Jouer en Ligne</span>}
+                                {!collapsed && <span>{isEn ? 'Play Online' : 'Jouer en Ligne'}</span>}
                             </button>
                             <button
                                 type="button"
@@ -137,7 +149,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 }`}
                             >
                                 <IconAstrolabeCoach size={14} className="text-[#D4AF37]" />
-                                {!collapsed && <span>Contre l’IA</span>}
+                                {!collapsed && <span>{isEn ? 'vs AI' : 'Contre l’IA'}</span>}
                             </button>
                         </div>
                     )}
@@ -171,6 +183,14 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             <Flame size={16} strokeWidth={1.5} className="text-[#F59E0B]" />
                             {!collapsed && <span>{isEn ? 'My Blunders' : 'Mes Blunders'}</span>}
                         </span>
+                        {!collapsed && blunderCount > 0 && (
+                            <span
+                                data-testid="sidebar-blunder-count-badge"
+                                className="inline-flex items-center justify-center rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30 font-mono"
+                            >
+                                {blunderCount}
+                            </span>
+                        )}
                     </Link>
 
                     {/* 3. Studio d'Analyse (Uniquement pour Intermédiaire et Expert) */}
@@ -204,7 +224,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
 
                 {/* BLOC 3 : CIRCUIT MONDIAL */}
                 <div className="flex flex-col gap-1">
-                    {!collapsed && <span className={sectionLabelCls}>Circuit</span>}
+                    {!collapsed && <span className={sectionLabelCls}>{isEn ? 'Tour' : 'Circuit'}</span>}
                     <Link
                         href="/tournaments"
                         data-testid="sidebar-pillar-tournaments"
@@ -212,7 +232,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     >
                         <span className="flex items-center gap-2.5">
                             <IconWorldTourLive size={15} className="text-[#D4AF37]" />
-                            {!collapsed && <span>Carte : Tournois &amp; Clubs</span>}
+                            {!collapsed && <span>{isEn ? 'Map: Tournaments & Clubs' : 'Carte : Tournois & Clubs'}</span>}
                         </span>
                     </Link>
                 </div>
@@ -223,27 +243,27 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                 <button type="button" data-testid="sidebar-submenu-friends" onClick={onSelectMultiplayerMode} className={itemCls}>
                     <span className="flex items-center gap-2.5">
                         <IconCasinoToken size={15} className="text-[#D4AF37]" />
-                        {!collapsed && <span>Inviter des amis</span>}
+                        {!collapsed && <span>{isEn ? 'Invite Friends' : 'Inviter des amis'}</span>}
                     </span>
                 </button>
                 {onOpenPassport && (
                     <button type="button" data-testid="sidebar-passport-btn" onClick={onOpenPassport} className={itemCls}>
                         <span className="flex items-center gap-2.5">
                             <IconLuxuryCrown size={15} className="text-[#D4AF37]" />
-                            {!collapsed && <span>Mon Profil</span>}
+                            {!collapsed && <span>{isEn ? 'My Profile' : 'Mon Profil'}</span>}
                         </span>
                     </button>
                 )}
                 <button type="button" onClick={onOpenSettings} className={itemCls}>
                     <span className="flex items-center gap-2.5">
                         <IconHorologyGear size={15} className="text-zinc-400" />
-                        {!collapsed && <span>Réglages</span>}
+                        {!collapsed && <span>{isEn ? 'Settings' : 'Réglages'}</span>}
                     </span>
                 </button>
                 <button type="button" data-testid="sidebar-collapse-toggle" onClick={() => setCollapsed((v) => !v)} className={itemCls}>
                     <span className="flex items-center gap-2.5">
-                        <span aria-hidden="true" className="text-[#D4AF37] font-mono">{collapsed ? '⇥' : '⇤'}</span>
-                        {!collapsed && <span>Réduire</span>}
+                        {collapsed ? <ChevronRight size={14} className="text-[#D4AF37]" /> : <ChevronLeft size={14} className="text-[#D4AF37]" />}
+                        {!collapsed && <span>{isEn ? 'Collapse' : 'Réduire'}</span>}
                     </span>
                 </button>
             </div>
