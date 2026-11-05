@@ -26,7 +26,7 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
   };
 
   return (
-    <div data-testid="expert-home-portal" className="flex flex-col gap-4 w-full max-w-4xl mx-auto py-2">
+    <div data-testid="expert-home-portal" className="flex flex-col gap-5 w-full max-w-5xl mx-auto py-3">
       {/* En-tête Cockpit Pro avec Télémétrie */}
       <div className="rounded-2xl border border-[#d4af37]/40 bg-gradient-to-r from-[#140e08] via-[#1a120a] to-[#110d07] p-5 backdrop-blur-xl shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1 max-w-xl">
@@ -160,6 +160,57 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
               : `LANCER LE MATCH ${matchLength === 0 ? 'MONEY GAME' : `${matchLength} PTS`} (OPEN SAGE 3-PLY) →`}
           </span>
         </button>
+      </div>
+
+      {/* BILAN DE PERFORMANCE DÉCOMPOSÉ STYLE XG (CHECKER PR VS CUBE PR + ERA) */}
+      <div
+        data-testid="decomposed-pr-panel"
+        className="rounded-2xl border border-[#D4AF37]/35 bg-[#0a0c10]/95 p-4 sm:p-5 shadow-xl text-white flex flex-col gap-3"
+      >
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
+              <Activity className="w-4 h-4 text-[#D4AF37]" />
+            </span>
+            <div>
+              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb]">
+                {isEn ? 'Decomposed PR Performance Review (XG Standard)' : 'Bilan de Performance Décomposé Style XG (Pions vs Videau)'}
+              </h3>
+              <p className="text-xs text-stone-300">
+                {isEn ? 'Isolate Checker PR from Cube PR to focus your study time on actual leak areas.' : 'Isolez le PR Pions du PR Videau pour cibler précisément votre axe de travail.'}
+              </p>
+            </div>
+          </div>
+          <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">
+            PR CIBLE &lt; 6.0
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-center flex flex-col items-center">
+            <span className="text-xs font-mono text-stone-400">PR GLOBAL</span>
+            <span data-testid="pr-global-val" className="text-lg sm:text-xl font-mono font-black text-[#f3d27a]">6.3</span>
+            <span className="text-xs text-stone-300">Club Avancé</span>
+          </div>
+
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3 text-center flex flex-col items-center">
+            <span className="text-xs font-mono text-stone-400">CHECKER PR (PIONS)</span>
+            <span data-testid="pr-checker-val" className="text-lg sm:text-xl font-mono font-black text-emerald-400">4.2</span>
+            <span className="text-xs text-emerald-300 font-bold">Niveau Master (&lt; 5.0)</span>
+          </div>
+
+          <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-3 text-center flex flex-col items-center">
+            <span className="text-xs font-mono text-stone-400">CUBE PR (VIDEAU)</span>
+            <span data-testid="pr-cube-val" className="text-lg sm:text-xl font-mono font-black text-amber-300">8.1</span>
+            <span className="text-xs text-amber-400 font-bold">Axe de travail n°1 !</span>
+          </div>
+
+          <div className="rounded-xl border border-sky-500/30 bg-sky-950/20 p-3 text-center flex flex-col items-center">
+            <span className="text-xs font-mono text-stone-400">ERA (ADAPTATIF)</span>
+            <span data-testid="pr-era-val" className="text-lg sm:text-xl font-mono font-black text-sky-400">5.8</span>
+            <span className="text-xs text-sky-300 font-bold">Exploite le profil adverse</span>
+          </div>
+        </div>
       </div>
 
       {/* ENCART HISTORIQUE : LA FRONTIÈRE MYTHIQUE DU 6.0 ER (SNOWIE / XG) & ERA */}

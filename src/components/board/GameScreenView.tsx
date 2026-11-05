@@ -87,10 +87,22 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     openingEntry, onApplyOpeningMove, onResetGameHistory, gameId, playerColor,
 }) => {
     const [isCubeSheetOpen, setIsCubeSheetOpen] = useState(false);
+    const [isFullFocusMode, setIsFullFocusMode] = useState(false);
     const { tierGate } = usePlayerTierGate();
     const quota = useCoachQuota({ locale });
     const tilt = useTiltDetector({ windowSize: 6 });
     const lastRecordedFeedbackRef = useRef<LastMoveFeedback | null>(null);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (e.key === 'f' || e.key === 'F') {
+                setIsFullFocusMode((prev) => !prev);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     useEffect(() => {
         if (!lastMoveFeedback || lastMoveFeedback === lastRecordedFeedbackRef.current) return;
@@ -124,6 +136,22 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
             data-testid="app-game-view"
             className={`mobile-game-viewport-lock landscape-full-bleed h-dvh max-h-dvh w-full max-w-[100vw] flex flex-col overflow-hidden p-0 sm:p-2 [@media(max-height:500px)]:!p-[2px] select-none transition-colors duration-500 ${ambianceClass}`}
         >
+            {/* Barre Raccourci Mode Échiquier Pur (Full Focus) */}
+            <div className="w-full flex items-center justify-between px-2 py-0.5 z-30 shrink-0">
+                <button
+                    type="button"
+                    data-testid="full-focus-board-btn"
+                    onClick={() => setIsFullFocusMode((prev) => !prev)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs sm:text-sm font-bold transition ${
+                        isFullFocusMode
+                            ? 'bg-[#D4AF37] text-slate-950 border-[#F3E5AB] font-black shadow-md'
+                            : 'bg-black/60 text-stone-300 border-white/10 hover:text-white hover:bg-white/10'
+                    }`}
+                >
+                    <span>{isFullFocusMode ? '🖥️ Quitter Plein Écran (Touche F)' : '🖥️ Mode Échiquier Pur (Full Focus · Touche F)'}</span>
+                </button>
+            </div>
+
             {/* 1. HUD Compact Mobile (< 44px, masqué sur Desktop/Paysage où les colonnes latérales prennent le relais) */}
             <div className="md:hidden [@media(max-height:540px)]:!hidden shrink-0 w-full max-w-full min-w-0 overflow-hidden">
                 <MatchHeader

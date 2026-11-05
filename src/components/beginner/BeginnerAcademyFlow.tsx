@@ -103,7 +103,7 @@ export function BeginnerAcademyFlow({
       return;
     }
     if (typeof window !== 'undefined') {
-      window.location.assign('/');
+      window.location.assign('/play?gate=beginner&start=guided');
     }
   };
 
@@ -164,14 +164,13 @@ export function BeginnerAcademyFlow({
           <div className="flex flex-col gap-2.5 my-2">
             {currentQuiz.options.map((opt) => {
               const isSelected = selectedOptionId === opt.id;
-              let btnStyle = 'bg-white/5 border-white/10 text-neutral-200 hover:bg-white/10';
-              if (selectedOptionId) {
-                if (opt.isCorrect) {
-                  btnStyle = 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md shadow-emerald-500/10';
-                } else if (isSelected) {
-                  btnStyle = 'bg-rose-500/20 border-rose-500 text-rose-300';
-                }
-              }
+              const btnStyle = !selectedOptionId
+                ? 'bg-white/5 border-white/10 text-neutral-200 hover:bg-white/10'
+                : opt.isCorrect
+                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md shadow-emerald-500/10'
+                : isSelected
+                ? 'bg-rose-500/20 border-rose-500 text-rose-300'
+                : 'bg-white/5 border-white/10 text-neutral-200';
 
               return (
                 <button
@@ -179,22 +178,20 @@ export function BeginnerAcademyFlow({
                   type="button"
                   data-testid={`academy-option-${opt.id}`}
                   onClick={() => handleSelectOption(opt.id)}
-                  className={`w-full text-left p-3.5 rounded-xl border font-medium text-xs sm:text-sm transition-all flex items-start gap-3 ${btnStyle}`}
+                  className={`w-full text-left p-3.5 rounded-xl border font-medium text-sm transition-all flex items-start gap-3 ${btnStyle}`}
                 >
-                  <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                  <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold shrink-0">
                     {opt.id}
                   </span>
                   <div className="flex flex-col flex-1">
                     <div className="flex items-center justify-between">
-                      <span>{lang === 'fr' ? opt.labelFr : opt.labelEn}</span>
+                      <span className="font-semibold text-white">{lang === 'fr' ? opt.labelFr : opt.labelEn}</span>
                       {selectedOptionId && opt.isCorrect && (
-                        <span className="text-[#D4AF37] font-bold text-xs flex items-center gap-1">
-                          ➔ Flèche Dorée (94% gain)
-                        </span>
+                        <span className="text-[#D4AF37] font-bold text-xs">➔ Flèche Dorée (94% gain)</span>
                       )}
                     </div>
                     {selectedOptionId && (
-                      <span className="text-[11px] mt-1 text-neutral-300 opacity-90">
+                      <span className="text-xs mt-1 text-neutral-200">
                         {lang === 'fr' ? opt.explanationFr : opt.explanationEn}
                       </span>
                     )}
@@ -206,16 +203,10 @@ export function BeginnerAcademyFlow({
 
           {/* Feedback bienveillant du Professeur */}
           {selectedOptionId && (
-            <div className={`rounded-xl p-3 text-xs flex items-center gap-2 border ${
-              isSelectedCorrect
-                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
-                : 'bg-amber-950/40 border-amber-500/40 text-amber-200'
+            <div className={`rounded-xl p-3 text-xs sm:text-sm flex items-center gap-2 border ${
+              isSelectedCorrect ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' : 'bg-amber-950/40 border-amber-500/40 text-amber-200'
             }`}>
-              {isSelectedCorrect ? (
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-              )}
+              {isSelectedCorrect ? <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> : <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />}
               <span>
                 {isSelectedCorrect
                   ? (lang === 'fr' ? '✅ Coup optimal ! Vos pions sont en parfaite sécurité.' : '✅ Optimal play! Your checkers are completely safe.')
@@ -268,38 +259,42 @@ export function BeginnerAcademyFlow({
 
       {/* Vue 3 : Diplôme d'Initié au Cercle */}
       {viewState === 'DIPLOMA' && (
-        <div data-testid="academy-diploma-card" className="w-full max-w-lg bg-gradient-to-b from-[#141A22] to-[#0A0D12] border-2 border-amber-400/40 rounded-3xl p-6 sm:p-8 text-center shadow-2xl flex flex-col items-center gap-4">
+        <div data-testid="academy-diploma-card" className="w-full max-w-xl bg-gradient-to-b from-[#141A22] to-[#0A0D12] border-2 border-amber-400/50 rounded-3xl p-6 sm:p-8 text-center shadow-2xl flex flex-col items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center shadow-lg shadow-amber-400/20">
             <Award className="w-8 h-8 text-amber-400" />
           </div>
 
           <div>
-            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest">
+            <span className="text-amber-400 text-sm font-bold uppercase tracking-widest">
               {lang === 'fr' ? 'Félicitations' : 'Congratulations'}
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
               {lang === 'fr' ? "Diplôme d'Initié au Cercle Backgammon" : 'Backgammon Circle Initiate Diploma'}
             </h2>
-            <p className="text-xs text-neutral-400 mt-1 max-w-sm">
+            <p className="text-sm text-neutral-300 mt-1 max-w-md">
               {lang === 'fr'
                 ? 'Vous maîtrisez le but du jeu, la sécurité, la barre, le bear-off et le videau. Vous êtes fin prêt à jouer !'
                 : 'You have mastered the game rules, points, bar safety, bear-off, and the doubling cube. You are ready!'}
             </p>
           </div>
 
-          <div className="px-4 py-2 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-300 font-bold text-sm">
+          <div className="px-5 py-2 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-bold text-base">
             +{2000} PTS {lang === 'fr' ? 'Bonus Débloqués !' : 'Bonus Awarded!'}
           </div>
 
-          <div className="w-full flex flex-col sm:flex-row gap-2 mt-2">
-            <button
-              type="button"
-              onClick={handlePlayDirect}
-              className="flex-1 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-400/20 transition-all"
-            >
-              {lang === 'fr' ? 'Jouer ma 1ère partie' : 'Play first game'}
-            </button>
+          {/* Bouton 1-clic direct vers partie guidée */}
+          <button
+            type="button"
+            data-testid="diploma-launch-guided-match-btn"
+            onClick={handlePlayDirect}
+            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition"
+          >
+            {lang === 'fr'
+              ? '🎮 Mettre en pratique maintenant contre le Bot Doux (Partie Guidée) →'
+              : '🎮 Practice Now Against Gentle Bot (Guided Match) →'}
+          </button>
 
+          <div className="w-full flex flex-col sm:flex-row gap-2 mt-1">
             <button
               type="button"
               onClick={() => {
@@ -309,9 +304,16 @@ export function BeginnerAcademyFlow({
                   setIsAccountModalOpen(true);
                 }
               }}
-              className="flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 transition-all"
+              className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm border border-white/10 transition"
             >
               {lang === 'fr' ? 'Créer mon compte (Sauvegarder)' : 'Save account'}
+            </button>
+            <button
+              type="button"
+              onClick={handleBackToLobby}
+              className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs sm:text-sm border border-white/10 transition"
+            >
+              {lang === 'fr' ? 'Retour Accueil' : 'Back to Home'}
             </button>
           </div>
         </div>

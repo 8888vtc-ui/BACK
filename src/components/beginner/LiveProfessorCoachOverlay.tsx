@@ -121,7 +121,7 @@ export function LiveProfessorCoachOverlay({
                   </span>
                 )}
               </div>
-              <p data-testid="professor-dialogue-text" className="text-xs font-medium text-white leading-snug line-clamp-2">
+              <p data-testid="professor-dialogue-text" className="text-sm sm:text-base font-medium text-white leading-relaxed line-clamp-2">
                 {getProfessorPrompt()}
               </p>
             </div>
@@ -174,6 +174,20 @@ export function LiveProfessorCoachOverlay({
               <span>{lang === 'fr' ? '↺ Rejouer mon dernier coup' : '↺ Undo / Retry move'}</span>
             </button>
           </div>
+        </div>
+
+        {/* Guidage Visuel du Sens de Marche (24 -> 1) */}
+        <div
+          data-testid="direction-horseshoe-indicator"
+          className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-amber-200 text-xs sm:text-sm font-mono font-bold"
+        >
+          <span className="flex items-center gap-1.5">
+            <span>🐴 {lang === 'fr' ? 'Sens de marche :' : 'Checker Direction:'}</span>
+            <span className="text-[#f3d27a]">{lang === 'fr' ? 'Case 24 (Adverse)' : 'Point 24 (Opponent)'}</span>
+            <span>➔</span>
+            <span className="text-emerald-400">{lang === 'fr' ? 'Case 1 (Votre Maison)' : 'Point 1 (Home Board)'}</span>
+          </span>
+          <span className="text-stone-400 text-xs hidden md:inline">{lang === 'fr' ? 'Sortie des dames en Case 1' : 'Bear off at Point 1'}</span>
         </div>
 
         {/* Ligne 2 : Jauge de Course & Détecteur Anti-Frustration */}

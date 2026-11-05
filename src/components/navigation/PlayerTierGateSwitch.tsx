@@ -40,8 +40,8 @@ export const PlayerTierGateSwitch: React.FC<PlayerTierGateSwitchProps> = React.m
                         aria-pressed={isActive}
                         className={`relative rounded-lg font-sans font-bold transition-all duration-150 touch-manipulation select-none whitespace-nowrap ${
                             compact
-                                ? 'px-2 py-1 text-[10px] sm:text-[11px]'
-                                : 'px-3 py-1.5 text-xs'
+                                ? 'px-3 py-1.5 text-xs sm:text-sm'
+                                : 'px-4 py-2 text-sm sm:text-base'
                         } ${
                             isActive
                                 ? 'bg-gradient-to-r from-[#D4AF37] to-[#b88924] text-slate-950 font-black shadow-[0_2px_10px_rgba(212,175,55,0.35)]'

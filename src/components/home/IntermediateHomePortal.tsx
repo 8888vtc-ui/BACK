@@ -5,6 +5,7 @@ import { Swords, Share2, Sparkles, Trophy, Users } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { IntermediateClubSecretsCard } from '../intermediate/IntermediateClubSecretsCard';
 import { IntermediateQuickDrills } from '../intermediate/IntermediateQuickDrills';
+import { IntermediateClubTrainingHub } from '../intermediate/IntermediateClubTrainingHub';
 
 interface IntermediateHomePortalProps {
   readonly onFindOpponent: (matchLength?: number) => void;
@@ -29,17 +30,17 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
   };
 
   return (
-    <div data-testid="intermediate-home-portal" className="flex flex-col gap-4 w-full max-w-4xl mx-auto py-2">
+    <div data-testid="intermediate-home-portal" className="flex flex-col gap-5 w-full max-w-5xl mx-auto py-3">
       {/* En-tête Club */}
-      <div className="rounded-2xl border border-white/[0.08] bg-[#0b0e14]/90 p-5 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="rounded-2xl border border-white/[0.08] bg-[#0b0e14]/90 p-6 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex flex-col gap-1 text-center sm:text-left">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#f3c65f]">
             {isEn ? '♟️ Club Mode · Playing First, Cube Mastery & Pips' : '♟️ Mode Intermédiaire / Club · Priorité au Jeu & Videau'}
           </span>
-          <h2 className="text-lg sm:text-xl font-black text-white">
+          <h2 className="text-xl sm:text-2xl font-black text-white">
             {isEn ? 'Sharpen your club reflexes and crush blunders' : 'Affûtez vos réflexes de club et étouffez les erreurs'}
           </h2>
-          <p className="text-xs sm:text-sm text-stone-300 max-w-2xl">
+          <p className="text-sm text-stone-200 max-w-2xl leading-relaxed">
             {isEn
               ? 'Play immediately against calibrated club opponents, master the doubling cube, and count race mentally without pips.'
               : 'Jouez immédiatement contre des joueurs de club calibrés, maîtrisez le videau et comptez la course sans compteur de pips.'}
@@ -48,18 +49,18 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
       </div>
 
       {/* BLOC 1 — LANCEMENT DE PARTIE IMMÉDIAT (PRIORITÉ N°1 DU JOUEUR DE CLUB) */}
-      <div className="rounded-2xl border-2 border-[#D4AF37]/50 bg-gradient-to-b from-[#18130b] via-[#100d07] to-[#0a0d13] p-5 shadow-[0_8px_32px_rgba(212,175,55,0.14)] flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+      <div className="rounded-2xl border-2 border-[#D4AF37]/50 bg-gradient-to-b from-[#18130b] via-[#100d07] to-[#0a0d13] p-6 shadow-[0_8px_32px_rgba(212,175,55,0.14)] flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
-                <Swords size={18} />
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
+                <Swords size={20} />
               </span>
-              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb]">
+              <h3 className="text-base sm:text-lg font-black text-[#fdf8eb]">
                 {isEn ? '⚡ Immediate Club Game (Priority #1)' : '⚡ Lancement de Partie Immédiat (Priorité N°1)'}
               </h3>
             </div>
-            <p className="text-xs text-stone-300 mt-1">
+            <p className="text-sm text-stone-200 mt-1">
               {isEn
                 ? 'Select match format and launch instantly against a club adversary with realistic thinking delays.'
                 : 'Choisissez votre format et lancez en 1 clic contre un joueur de club (délais humains calibrés).'}
@@ -67,7 +68,7 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
           </div>
 
           {/* Sélecteur direct 1-clic : 3, 5, 7 pts, Money Game */}
-          <div className="flex items-center gap-1.5 self-end sm:self-center">
+          <div className="flex items-center gap-2 self-end sm:self-center">
             {[
               { id: 3, label: '3 pts', testId: 'match-format-3' },
               { id: 5, label: '5 pts', testId: 'match-format-5' },
@@ -81,10 +82,10 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
                   type="button"
                   data-testid={fmt.testId}
                   onClick={() => setSelectedFormat(fmt.id)}
-                  className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition active:scale-95 ${
+                  className={`px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-bold transition active:scale-95 ${
                     active
                       ? 'bg-[#D4AF37] border-[#F3E5AB] text-slate-950 font-black shadow-md'
-                      : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10 hover:text-white'
+                      : 'bg-white/[0.04] border-white/10 text-stone-200 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {fmt.label}
@@ -129,6 +130,9 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
         onOpenNPlus1Bank={onOpenQuizzes}
         onOpenBlunders={onOpenQuizzes}
       />
+
+      {/* BLOC 4 — ENTRAÎNEMENT COURSE 5S & JOURNAL DES FAUTES DE VIDEAU */}
+      <IntermediateClubTrainingHub />
     </div>
   );
 });
