@@ -52,6 +52,11 @@ export function executeBoardPointClick(params: ExecuteBoardPointClickParams): vo
     const ownBarPoint = isX ? xBarPoint : oBarPoint;
     const higherDieFirst = dice ? dice[preferredDie] >= dice[1 - preferredDie] : true;
 
+    if (!onPlayMove) {
+        onCheckerClick(pointNumber);
+        return;
+    }
+
     if (ownBarCount > 0) {
         if (leftDieTargets && rightDieTargets && onPlayMove) {
             const barEntry = findDirectMoveToDestination(pointNumber, player, leftDieTargets, rightDieTargets, preferredDie);
