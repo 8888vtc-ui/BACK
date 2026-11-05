@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Volume2, Sparkles, Shield, Dices, EyeOff, Eye, Compass, Trophy } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { Cap6ErrorRateLegendCard } from '../common/Cap6ErrorRateLegendCard';
 
 export interface IntermediateClubSecretsCardProps {
   onToggleHidePips?: () => void;
@@ -218,6 +219,11 @@ export function IntermediateClubSecretsCard({
             </li>
           ))}
         </ul>
+      </div>
+
+      {/* Cap 6.0 ER & ERA Card */}
+      <div className="mt-3">
+        <Cap6ErrorRateLegendCard />
       </div>
     </div>
   );
