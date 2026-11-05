@@ -107,6 +107,7 @@ export function normalizeNotationForCompare(n: string): string {
 
 export function queryGnubgTopMovesAtPly(xgid: string, ply: number): ReadonlyArray<Gnubg3PlyMoveResult> {
     if (!fs.existsSync(GNUBG_CLI_PATH)) return [];
+    const cleanXgid = xgid.replace(/^XGID=/, '');
     const cmdLines = [
         'set output mwc off',
         `set evaluation chequerplay evaluation plies ${ply}`,
@@ -114,15 +115,11 @@ export function queryGnubgTopMovesAtPly(xgid: string, ply: number): ReadonlyArra
         'set evaluation movefilter 3 0 0 8 0.16',
         'set evaluation movefilter 3 1 0 8 0.16',
         'set evaluation movefilter 3 2 0 8 0.16',
-        `set xgid ${xgid}`,
+        `set xgid ${cleanXgid}`,
         'hint 6',
         'quit',
     ];
-    const tmpDir = path.join(process.cwd(), 'node_modules', '.cache');
-    fs.mkdirSync(tmpDir, { recursive: true });
-    const cmdFile = path.join(tmpDir, `factory_gnubg_probe_${ply}ply_${process.pid}.cmd`);
-    fs.writeFileSync(cmdFile, cmdLines.join('\n'), 'ascii');
-    const proc = spawnSync(GNUBG_CLI_PATH, ['-t', '-q', '-c', cmdFile], { encoding: 'utf8', timeout: 30000 });
+    const proc = spawnSync(GNUBG_CLI_PATH, ['-t', '-q'], { input: cmdLines.join('\n'), encoding: 'utf8', timeout: 30000 });
     if (proc.error) return [];
     const lines = (proc.stdout ?? '').replace(/,/g, '.').split(/\r?\n/);
     const results: Gnubg3PlyMoveResult[] = [];
@@ -161,7 +158,7 @@ export function queryGnubgTopMovesAtPly(xgid: string, ply: number): ReadonlyArra
 
 export function queryGnubgCube3Ply(xgid: string): Gnubg3PlyCubeResult | null {
     if (!fs.existsSync(GNUBG_CLI_PATH)) return null;
-    const cubeXgid = xgid.replace(/:([0-6][0-6]):/, ':00:');
+    const cubeXgid = xgid.replace(/^XGID=/, '').replace(/:([0-6][0-6]):/, ':00:');
     const cmdLines = [
         'set output mwc off',
         'set evaluation cubedecision evaluation plies 3',
@@ -170,11 +167,7 @@ export function queryGnubgCube3Ply(xgid: string): Gnubg3PlyCubeResult | null {
         'hint',
         'quit',
     ];
-    const tmpDir = path.join(process.cwd(), 'node_modules', '.cache');
-    fs.mkdirSync(tmpDir, { recursive: true });
-    const cmdFile = path.join(tmpDir, `factory_gnubg_cube_3ply_${process.pid}.cmd`);
-    fs.writeFileSync(cmdFile, cmdLines.join('\n'), 'ascii');
-    const proc = spawnSync(GNUBG_CLI_PATH, ['-t', '-q', '-c', cmdFile], { encoding: 'utf8', timeout: 30000 });
+    const proc = spawnSync(GNUBG_CLI_PATH, ['-t', '-q'], { input: cmdLines.join('\n'), encoding: 'utf8', timeout: 30000 });
     if (proc.error) return null;
     const out = (proc.stdout ?? '').replace(/,/g, '.');
     const probMatch = out.match(
