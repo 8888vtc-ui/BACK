@@ -127,7 +127,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         )}
                     </div>
 
-                    <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
+                    <div className="relative z-10 flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
                         <div className="hidden [@media(max-height:540px)]:relative [@media(max-height:540px)]:inline-flex shrink-0">
                             <img src={opponentPhotoUrl} alt={opponentDisplayName} className="h-5 w-5 rounded-full object-cover border border-[#18130f] ring-1 ring-[#d4af37] shadow" />
                             <span title="Pions Noirs (O)" className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#1A1D24] border border-[#d4af37]" />
@@ -266,7 +266,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     )}
                 </div>
 
-                <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
+                <div className="relative z-10 flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
                     <div className="hidden [@media(max-height:540px)]:relative [@media(max-height:540px)]:inline-flex shrink-0">
                         <img src={playerMeta.avatarUrl} alt={playerMeta.pseudo} className="h-5 w-5 rounded-full object-cover border border-[#f7f3e8] ring-1 ring-[#d4af37] shadow" />
                         <span title="Pions Blancs (X)" className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#f7f3e8] border border-[#3b2307]" />

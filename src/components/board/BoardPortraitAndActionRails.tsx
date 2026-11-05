@@ -248,7 +248,7 @@ export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.m
                     <div data-testid="right-rail-settings-popover" className="absolute right-full mr-2 top-1/2 -translate-y-1/2 z-50 w-64 rounded-2xl border border-[#d4af37]/50 bg-[#0d0a08]/95 p-3 text-xs text-[#f7f3e8] shadow-[0_20px_50px_rgba(0,0,0,0.92)] backdrop-blur-md flex flex-col gap-2">
                         <div className="flex items-center justify-between pb-1 border-b border-white/10">
                             <span className="text-[10px] font-black uppercase tracking-wider text-[#f3c65f]">⚙️ Paramètres de Table</span>
-                            <button type="button" onClick={() => setIsSettingsOpen(false)} className="text-[11px] text-stone-400 hover:text-white px-1">✕</button>
+                            <button type="button" data-testid="right-rail-settings-close-btn" onClick={() => setIsSettingsOpen(false)} className="text-[11px] text-stone-400 hover:text-white px-1">✕</button>
                         </div>
                         {onToggleAutoConfirm && (
                             <button type="button" data-testid="right-rail-auto-confirm-toggle" onClick={onToggleAutoConfirm} className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
