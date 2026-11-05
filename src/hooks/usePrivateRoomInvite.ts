@@ -34,9 +34,9 @@ export function extractRoomCodeFromUrl(searchOrUrl: string): string | null {
             queryString = searchOrUrl.slice(searchOrUrl.indexOf('?') + 1);
         }
         const params = new URLSearchParams(queryString);
-        const rawCode = params.get('join') ?? params.get('room') ?? params.get('code');
+        const rawCode = params.get('inviteRoom') ?? params.get('join') ?? params.get('room') ?? params.get('code');
         if (!rawCode) return null;
-        let normalized = rawCode.trim().toUpperCase();
+        let normalized = rawCode.trim().toUpperCase().replace(/^BG_/, 'BG-');
         if (!normalized.startsWith('BG-') && /^[2-9A-HJ-NP-Z]{4}$/i.test(normalized)) {
             normalized = `BG-${normalized}`;
         }
@@ -74,7 +74,7 @@ export function cleanUrlRoomParams(): void {
     try {
         const url = new URL(window.location.href);
         let changed = false;
-        for (const key of ['join', 'room', 'code', 'matchLength', 'tournament']) {
+        for (const key of ['inviteRoom', 'join', 'room', 'code', 'matchLength', 'tournament', 'userCode']) {
             if (url.searchParams.has(key)) {
                 url.searchParams.delete(key);
                 changed = true;

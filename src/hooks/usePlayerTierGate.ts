@@ -12,6 +12,10 @@ export function getSavedPlayerTierGate(): PlayerTierGate {
     try {
         if (typeof window.location?.search === 'string' && window.location.search.length > 1) {
             const params = new URLSearchParams(window.location.search);
+            if (params.get('start') === 'guided') {
+                try { localStorage.setItem(PLAYER_TIER_GATE_STORAGE_KEY, 'BEGINNER'); } catch {}
+                return 'BEGINNER';
+            }
             const gateParam = params.get('gate')?.toUpperCase();
             if (gateParam === 'BEGINNER' || gateParam === 'INTERMEDIATE' || gateParam === 'EXPERT') {
                 try {
@@ -22,7 +26,7 @@ export function getSavedPlayerTierGate(): PlayerTierGate {
         }
     } catch {}
     try {
-        const saved = localStorage.getItem(PLAYER_TIER_GATE_STORAGE_KEY);
+        const saved = localStorage.getItem(PLAYER_TIER_GATE_STORAGE_KEY) ?? localStorage.getItem('bgt_player_tier_gate');
         if (saved === 'BEGINNER' || saved === 'INTERMEDIATE' || saved === 'EXPERT') {
             return saved;
         }

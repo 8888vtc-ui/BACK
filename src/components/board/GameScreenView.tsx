@@ -78,7 +78,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     ambianceClass, t, locale, theme, onToggleTheme, game,
     isMultiplayerActive, multiplayer, modals, coach, coachHighlight,
     isAnalyzing, matchStats, matchStatsO, prX, prO,
-    onCandidateHover, onDismissCoach, onReplayMove, onTriggerCoach,
+    hoveredCandidate, onCandidateHover, onDismissCoach, onReplayMove, onTriggerCoach,
     coachHistory, selectedCoachHistoryIndex, onSelectCoachHistoryIndex,
     lastMoveFeedback, notificationLevel, onChangeNotificationLevel,
     activeDie, isBoardLoading, onCheckerClick, onCheckerRightClick,
@@ -163,6 +163,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                     dice={game.dice} canUndo={game.canUndo} onUndoMove={game.undoMove}
                     onAskProfessorHint={() => { onTriggerCoach(); modals.openMobileDrawer(); }}
                     lastMoveFeedback={lastMoveFeedback}
+                    boardState={game.state}
                     optimalMove={coach?.optimalMove}
                     whyOptimal={coach?.whyOptimal}
                     activeTurn={game.state.turn}
@@ -171,6 +172,10 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                             ? game.matchLog[game.matchLog.length - 1].notation
                             : null
                     }
+                    onToggleRecommendArrow={(notation) => {
+                        onCandidateHover(hoveredCandidate === notation ? null : notation);
+                    }}
+                    isShowingRecommendArrow={Boolean(hoveredCandidate)}
                 />
             )}
 

@@ -214,10 +214,10 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                 <div className="space-y-1.5">
                     <div className="flex items-start gap-1.5">
                         <span className="text-xs font-extrabold text-[#f3c65f] uppercase tracking-wide">
-                            {isBeginner ? 'Conseil :' : 'Type :'}
+                            {isBeginner ? '💡 Astuce du Professeur :' : 'Type :'}
                         </span>
                         <span className="text-xs font-black text-white">
-                            {errorDetails.patternName}
+                            {isBeginner ? `Attention (tu perds ~${errorDetails.mwcLossPct}% de chances)` : errorDetails.patternName}
                         </span>
                     </div>
 
@@ -231,16 +231,16 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                         <div className="mt-2 flex items-center justify-between rounded-xl bg-black/50 p-2 text-xs font-mono border border-white/10">
                             {feedback.playedMove && (
                                 <div className="text-rose-300">
-                                    <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-sans">
-                                        Joué
+                                    <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-sans font-bold">
+                                        {isBeginner ? 'Ton coup' : 'Joué'}
                                     </span>
                                     {feedback.playedMove}
                                 </div>
                             )}
                             {feedback.optimalMove && (
                                 <div className="text-right text-emerald-300">
-                                    <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-sans">
-                                        Recommandé
+                                    <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-sans font-bold">
+                                        {isBeginner ? 'Coup conseillé' : 'Recommandé'}
                                     </span>
                                     {feedback.optimalMove}
                                 </div>

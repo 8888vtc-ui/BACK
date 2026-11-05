@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
-import { RotateCcw, Lightbulb, GraduationCap, Sparkles, Volume2, BookOpen, ShieldAlert, Award, Compass } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { RotateCcw, Lightbulb, GraduationCap, Volume2, BookOpen, ShieldAlert, Award, Compass, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
+import type { BoardState } from '../../engine/backgammonEngine';
 import { BeginnerInteractiveGuideModal } from './BeginnerInteractiveGuideModal';
+import { getProactiveAdvice, getFeedbackAdvice, getBotMoveExplanation } from './professorAdviceHelper';
 
 export interface LiveProfessorCoachOverlayProps {
   dice?: [number, number] | null;
@@ -19,6 +21,9 @@ export interface LiveProfessorCoachOverlayProps {
   whyOptimal?: string | null;
   lastBotNotation?: string | null;
   activeTurn?: 'X' | 'O';
+  boardState?: BoardState;
+  onToggleRecommendArrow?: (bestNotation: string) => void;
+  isShowingRecommendArrow?: boolean;
 }
 
 export function LiveProfessorCoachOverlay({
@@ -27,59 +32,32 @@ export function LiveProfessorCoachOverlay({
   onUndoMove,
   onAskProfessorHint,
   lastMoveFeedback,
-  pipDifference = 10,
-  antiFrustrationNotice,
-  isMasterMove = true,
-  optimalMove,
-  whyOptimal,
-  lastBotNotation,
-  activeTurn,
+  pipDifference = 10, antiFrustrationNotice, isMasterMove = true, optimalMove,
+  lastBotNotation, activeTurn = 'X', boardState, onToggleRecommendArrow, isShowingRecommendArrow = false,
 }: LiveProfessorCoachOverlayProps) {
   const { locale } = useTranslation();
   const lang = locale === 'en' ? 'en' : 'fr';
   const [hintRequested, setHintRequested] = useState<boolean>(false);
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
-  const [activeNotice, setActiveNotice] = useState<'BAR_PRIORITY' | 'CLOSED_POINT' | null>(
-    antiFrustrationNotice ?? null
-  );
+  const [activeNotice, setActiveNotice] = useState<'BAR_PRIORITY' | 'CLOSED_POINT' | null>(antiFrustrationNotice ?? null);
 
-  const isBlunderFeedback = Boolean(lastMoveFeedback && Math.abs(lastMoveFeedback.equityLoss) >= 0.045);
-  const cleanWhyOptimal = whyOptimal ? whyOptimal.replace(/EMG|MWC|\d+\.\d+\s*EMG/gi, '').replace(/\s+/g, ' ').trim() : '';
+  // Temps A : Calcul proactif du meilleur coup au jet de dés
+  const proactive = useMemo(() => (boardState && dice && activeTurn === 'X' ? getProactiveAdvice(boardState, dice, lang) : null), [boardState, dice, activeTurn, lang]);
+
+  const activeBestNotation = proactive?.bestNotation ?? optimalMove ?? '';
 
   const getProfessorPrompt = (): string => {
-    if (isBlunderFeedback) {
-      return lang === 'fr'
-        ? "Attention : ce coup réduit vos chances de victoire. Cliquez sur « ↺ Rejouer mon dernier coup » pour tester le coup optimal !"
-        : "Careful: this move reduces your winning chances. Click '↺ Undo / Retry move' to try the optimal play!";
-    }
-    if (activeTurn === 'O' && lastBotNotation) {
-      return lang === 'fr'
-        ? `L'adversaire a joué ${lastBotNotation}. C'est votre tour de lancer les dés !`
-        : `Opponent played ${lastBotNotation}. Your turn to roll!`;
-    }
-    if (hintRequested || (dice && optimalMove)) {
-      if (optimalMove) {
-        return lang === 'fr'
-          ? `🎲 Conseil du Professeur : Jouez ${optimalMove}. ${cleanWhyOptimal || 'Ce coup renforce votre position et protège vos pions.'}`
-          : `🎲 Professor Tip: Play ${optimalMove}. ${cleanWhyOptimal || 'This move secures your checkers and strengthens your board.'}`;
+    if (lastMoveFeedback && activeTurn === 'X' && !dice) return getFeedbackAdvice(lastMoveFeedback, lang);
+    if (proactive) return proactive.text;
+    if (lastBotNotation && activeTurn === 'X' && !dice) return getBotMoveExplanation(lastBotNotation, lang);
+    if (activeTurn === 'O') return lang === 'fr' ? "L'adversaire analyse la position..." : 'Opponent is thinking...';
+    if (hintRequested) {
+      if (activeBestNotation) {
+        return lang === 'fr' ? `💡 Conseil du Professeur : Jouez ${activeBestNotation} pour sécuriser vos pions et progresser vers la case 1.` : `💡 Professor Tip: Play ${activeBestNotation} to advance your checkers safely toward Point 1.`;
       }
-      return lang === 'fr'
-        ? 'Astuce du Professeur : Cherchez à faire une porte (idéalement sur la flèche 5) pour maîtriser les 36 combinaisons de dés et protéger vos pions !'
-        : 'Professor Tip: Aim to build a gate (ideally on the 5-point) to command the 36 dice combinations and protect your checkers!';
+      return lang === 'fr' ? "💡 Conseil du Professeur : Lancez d’abord les dés pour analyser la meilleure option !" : "💡 Professor Tip: Roll the dice first so we can analyze the best option!";
     }
-    if (dice) {
-      return lang === 'fr'
-        ? `🎲 Vous avez lancé ${dice[0]}-${dice[1]} : suivez la flèche dorée sur le plateau pour placer vos pions au mieux.`
-        : `🎲 You rolled ${dice[0]}-${dice[1]}: follow the golden arrow on the board to guide your checkers.`;
-    }
-    if (lastBotNotation) {
-      return lang === 'fr'
-        ? `L'adversaire a joué ${lastBotNotation}. Cliquez sur Lancer les dés pour avancer vos dames !`
-        : `Opponent played ${lastBotNotation}. Click Roll Dice to advance your checkers!`;
-    }
-    return lang === 'fr'
-      ? "Le Professeur vous accompagne : le hasard lance les dés, mais c'est votre stratégie qui fait la différence. Demandez un conseil à tout moment !"
-      : "The Professor guides you: dice bring luck, but strategy makes the difference. Ask for advice anytime!";
+    return lang === 'fr' ? "Le Professeur vous accompagne : le hasard lance les dés, mais c'est votre stratégie qui fait la différence. Cliquez sur Lancer les dés !" : "The Professor guides you: luck rolls the dice, but strategy wins the game. Click Roll Dice!";
   };
 
   const getRaceCompassText = (): string => {
@@ -102,14 +80,15 @@ export function LiveProfessorCoachOverlay({
   const handleSpeakPrompt = () => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(getProfessorPrompt());
+    const utt = new SpeechSynthesisUtterance(getProfessorPrompt().replace(/^[^\w\s]+/u, '').trim());
     utt.lang = lang === 'fr' ? 'fr-FR' : 'en-US';
     window.speechSynthesis.speak(utt);
   };
 
-  const handleAskHint = () => {
-    setHintRequested(true);
-    onAskProfessorHint?.();
+  const handleToggleArrow = () => {
+    if (activeBestNotation) {
+      onToggleRecommendArrow?.(activeBestNotation);
+    }
   };
 
   const currentNotice = activeNotice ?? antiFrustrationNotice;
@@ -118,11 +97,7 @@ export function LiveProfessorCoachOverlay({
     <>
       <div
         data-testid="live-professor-coach-overlay"
-        className={`w-full max-w-5xl mx-auto px-3.5 py-2.5 flex flex-col gap-2 rounded-xl border backdrop-blur-md text-xs mb-1.5 shrink-0 transition-colors ${
-          isBlunderFeedback
-            ? 'bg-amber-950/60 border-amber-400/50 text-amber-100'
-            : 'bg-[#0c141d]/90 border-[#D4AF37]/35 text-stone-100'
-        }`}
+        className="w-full max-w-5xl mx-auto px-3.5 py-2.5 flex flex-col gap-2 rounded-xl border backdrop-blur-md text-xs mb-1.5 shrink-0 transition-colors bg-[#0c141d]/90 border-[#D4AF37]/35 text-stone-100"
       >
         {/* Ligne 1 : Question bienveillante & Boutons */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
@@ -153,6 +128,28 @@ export function LiveProfessorCoachOverlay({
 
           {/* Boutons d'interaction */}
           <div className="flex flex-wrap items-center gap-1.5 shrink-0 self-end sm:self-center">
+            {/* Bouton d'Aide Visuelle : Flèche dorée sur le plateau */}
+            {activeBestNotation && (
+              <button
+                type="button"
+                data-testid="professor-show-arrow-btn"
+                onClick={handleToggleArrow}
+                title={lang === 'fr' ? 'Voir le tracé du coup sur le plateau' : 'Show move arrow on board'}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition border ${
+                  isShowingRecommendArrow
+                    ? 'bg-[#D4AF37] text-slate-950 border-[#D4AF37] shadow-lg'
+                    : 'bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 text-[#f3d27a] border-[#D4AF37]/50'
+                }`}
+              >
+                {isShowingRecommendArrow ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                <span>
+                  {isShowingRecommendArrow
+                    ? (lang === 'fr' ? 'Masquer le coup' : 'Hide move')
+                    : (lang === 'fr' ? 'Voir le coup conseillé' : 'Show recommended move')}
+                </span>
+              </button>
+            )}
+
             <button
               type="button"
               data-testid="professor-voice-btn"
@@ -176,14 +173,16 @@ export function LiveProfessorCoachOverlay({
             <button
               type="button"
               data-testid="professor-ask-hint-btn"
-              onClick={handleAskHint}
+              onClick={() => {
+                setHintRequested(true);
+                onAskProfessorHint?.();
+              }}
               className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 text-[#F3E5AB] border border-[#D4AF37]/50 font-bold transition"
             >
               <Lightbulb className="w-3.5 h-3.5 text-[#D4AF37]" />
               <span>{lang === 'fr' ? 'Idée du Professeur' : 'Professor Hint'}</span>
             </button>
 
-            {/* Bouton permanent : Rejouer mon dernier coup */}
             <button
               type="button"
               data-testid="professor-undo-move-btn"

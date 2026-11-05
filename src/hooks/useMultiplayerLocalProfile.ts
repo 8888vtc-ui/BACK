@@ -19,6 +19,7 @@ import {
 import { clearActiveSession, type ActiveGameSession } from '../features/multiplayer/sessionRecovery';
 import { supabase, isSupabaseConfigured } from '../lib/supabase/client';
 import { getCurrentUser, getUserProfile, readPlayerPassport, STANDARD_USER_AVATARS } from '../lib/supabase/auth';
+import { getActiveUserProfile, loginWithUserCode } from '../features/multiplayer/userCodeSessionService';
 
 export interface UseMultiplayerLocalProfileParams {
     matchInfo: MultiplayerMatchInfo | null;
@@ -33,6 +34,17 @@ export function useMultiplayerLocalProfile({
 }: UseMultiplayerLocalProfileParams) {
     const [eloResult, setEloResult] = useState<EloCalculationResult | null>(null);
     const [localProfile, setLocalProfile] = useState<PlayerEloProfile>(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const userCodeQuery = params.get('userCode');
+                if (userCodeQuery) {
+                    return loginWithUserCode(userCodeQuery);
+                }
+                const active = getActiveUserProfile();
+                if (!active.isGuest) return active;
+            } catch {}
+        }
         const guestId =
             typeof window !== 'undefined'
                 ? localStorage.getItem('bg_guest_id') || `guest_${Math.random().toString(36).slice(2, 8)}`
