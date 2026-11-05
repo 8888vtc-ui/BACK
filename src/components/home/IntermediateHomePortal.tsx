@@ -1,135 +1,136 @@
 'use client';
 
-import React from 'react';
-import { Swords, Target, Share2, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Swords, Share2, Sparkles, Trophy, Users } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { IntermediateClubSecretsCard } from '../intermediate/IntermediateClubSecretsCard';
+import { IntermediateQuickDrills } from '../intermediate/IntermediateQuickDrills';
 
 interface IntermediateHomePortalProps {
-    readonly onFindOpponent: () => void;
-    readonly onInviteFriend: () => void;
-    readonly onOpenQuizzes: () => void;
+  readonly onFindOpponent: (matchLength?: number) => void;
+  readonly onInviteFriend: () => void;
+  readonly onOpenQuizzes: () => void;
 }
 
 export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = React.memo(({
-    onFindOpponent,
-    onInviteFriend,
-    onOpenQuizzes,
+  onFindOpponent,
+  onInviteFriend,
+  onOpenQuizzes,
 }) => {
-    const { locale } = useTranslation();
-    const isEn = locale === 'en';
+  const { locale } = useTranslation();
+  const lang = locale === 'en' ? 'en' : 'fr';
+  const isEn = lang === 'en';
 
-    return (
-        <div data-testid="intermediate-home-portal" className="flex flex-col gap-4 w-full max-w-4xl mx-auto py-2">
-            {/* En-tête Club */}
-            <div className="rounded-2xl border border-white/[0.08] bg-[#0b0e14]/90 p-5 backdrop-blur-xl shadow-xl flex flex-col gap-1.5">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
-                    {isEn ? '♟️ Club Mode · Precision & Training' : '♟️ Mode Club · Précision & Entraînement'}
-                </span>
-                <h2 className="text-lg sm:text-xl font-black text-white">
-                    {isEn ? 'Improve with world-class neural engine analytics' : "Progressez avec l'analyse d'un moteur de niveau mondial"}
-                </h2>
-                <p className="text-xs sm:text-sm text-stone-300">
-                    {isEn
-                        ? 'Every decision is evaluated in real time to calculate your Error Rate (ER / PR) and eliminate recurring blunders.'
-                        : 'Chaque décision est analysée en direct pour mesurer votre indice de précision (ER / PR) et éliminer vos erreurs récurrentes.'}
-                </p>
-            </div>
+  const [selectedFormat, setSelectedFormat] = useState<number>(5);
+  const [isPipsHidden, setIsPipsHidden] = useState<boolean>(false);
 
-            {/* Infobulle Stratégique ERA (Error Rate Adaptatif) */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-[#D4AF37]/30 bg-gradient-to-r from-[#17130b]/90 via-[#0d0a06]/90 to-[#120e09]/90 p-4 shadow-md">
-                <div className="flex items-start sm:items-center gap-2.5">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#D4AF37]/20 text-[#f3d27a] mt-0.5 sm:mt-0">
-                        <Sparkles size={16} />
-                    </span>
-                    <div className="flex flex-col">
-                        <span className="text-xs font-black text-[#f7f3e8] flex items-center gap-1.5">
-                            {isEn ? '💡 Adaptive Error Rate (ERA)' : '💡 Error Rate Adaptatif (ERA)'}
-                            <span className="rounded bg-[#D4AF37]/20 text-[#f3d27a] px-1.5 py-0.2 text-[10px] font-mono">
-                                {isEn ? 'CUBE & BACKGAME' : 'VIDEAU & BACKGAME'}
-                            </span>
-                        </span>
-                        <p className="text-[11px] text-stone-300 mt-0.5">
-                            {isEn
-                                ? 'Against weaker players, adapt your doubling cube timing and steer into complex Backgames to eliminate race luck.'
-                                : "Face à un joueur plus faible, adaptez le timing du videau et choisissez un Backgame complexe pour éliminer le hasard de la course."}
-                        </p>
-                    </div>
-                </div>
-            </div>
+  const handlePlayNow = () => {
+    onFindOpponent(selectedFormat);
+  };
 
-            {/* Grille 3 Cartes */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* 1. TROUVER UN ADVERSAIRE (Bouton Or) */}
-                <div className="flex flex-col justify-between gap-3 rounded-2xl border-2 border-[#D4AF37]/50 bg-gradient-to-b from-[#18130b] to-[#0d0a06] p-4 shadow-[0_6px_24px_rgba(212,175,55,0.12)]">
-                    <div className="flex flex-col gap-1.5">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D4AF37]/20 text-[#f3d27a]">
-                            <Swords size={18} />
-                        </span>
-                        <h3 className="text-sm font-black text-[#f7f3e8]">
-                            {isEn ? 'Competitive Club Match' : 'Match Compétitif Club'}
-                        </h3>
-                        <p className="text-[11px] text-stone-300">
-                            {isEn ? 'Matches in 3, 5, or 7 points with Bronstein clock and post-match review.' : 'Parties en 3, 5 ou 7 points avec pendule et analyse de fin de match.'}
-                        </p>
-                    </div>
-                    <button
-                        type="button"
-                        data-testid="intermediate-play-btn"
-                        onClick={onFindOpponent}
-                        className="w-full rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#b88924] px-3 py-2 text-xs font-black uppercase tracking-wider text-slate-950 shadow hover:brightness-105 active:scale-95 transition"
-                    >
-                        {isEn ? 'FIND AN OPPONENT →' : 'TROUVER UN ADVERSAIRE →'}
-                    </button>
-                </div>
-
-                {/* 2. INVITER UN AMI */}
-                <div className="flex flex-col justify-between gap-3 rounded-2xl border border-white/10 bg-[#0e121a]/80 p-4 hover:border-white/20 transition">
-                    <div className="flex flex-col gap-1.5">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.05] text-stone-200">
-                            <Share2 size={18} />
-                        </span>
-                        <h3 className="text-sm font-black text-white">
-                            {isEn ? 'Invite a Friend' : 'Inviter un Ami'}
-                        </h3>
-                        <p className="text-[11px] text-stone-300">
-                            {isEn ? 'Direct 1-click link to play together in under 3 seconds without registration.' : 'Lien direct 1-clic pour jouer ensemble en moins de 3 secondes sans inscription.'}
-                        </p>
-                    </div>
-                    <button
-                        type="button"
-                        data-testid="intermediate-invite-btn"
-                        onClick={onInviteFriend}
-                        className="w-full rounded-xl border border-white/20 bg-white/[0.06] hover:bg-white/[0.1] px-3 py-2 text-xs font-bold uppercase tracking-wider text-white transition active:scale-95"
-                    >
-                        {isEn ? 'CREATE PRIVATE ROOM' : 'CRÉER UN SALON PRIVÉ'}
-                    </button>
-                </div>
-
-                {/* 3. QUIZ ADAPTÉS N+1 */}
-                <div className="flex flex-col justify-between gap-3 rounded-2xl border border-white/10 bg-[#0e121a]/80 p-4 hover:border-white/20 transition">
-                    <div className="flex flex-col gap-1.5">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.05] text-stone-200">
-                            <Target size={18} />
-                        </span>
-                        <h3 className="text-sm font-black text-white">
-                            {isEn ? 'Adaptive Quizzes (N+1)' : 'Quiz Adaptés (N+1)'}
-                        </h3>
-                        <p className="text-[11px] text-stone-300">
-                            {isEn ? 'Tactical positions tailored just above your rating to accelerate progress.' : 'Problèmes tactiques ciblés pile au-dessus de votre niveau pour accélérer votre progression.'}
-                        </p>
-                    </div>
-                    <button
-                        type="button"
-                        data-testid="intermediate-quizzes-btn"
-                        onClick={onOpenQuizzes}
-                        className="w-full rounded-xl border border-white/20 bg-white/[0.06] hover:bg-white/[0.1] px-3 py-2 text-xs font-bold uppercase tracking-wider text-white transition active:scale-95"
-                    >
-                        {isEn ? 'TRAIN NOW' : "S'ENTRAÎNER MAINTENANT"}
-                    </button>
-                </div>
-            </div>
+  return (
+    <div data-testid="intermediate-home-portal" className="flex flex-col gap-4 w-full max-w-4xl mx-auto py-2">
+      {/* En-tête Club */}
+      <div className="rounded-2xl border border-white/[0.08] bg-[#0b0e14]/90 p-5 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col gap-1 text-center sm:text-left">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
+            {isEn ? '♟️ Club Mode · Playing First, Cube Mastery & Pips' : '♟️ Mode Intermédiaire / Club · Priorité au Jeu & Videau'}
+          </span>
+          <h2 className="text-lg sm:text-xl font-black text-white">
+            {isEn ? 'Sharpen your club reflexes and crush blunders' : 'Affûtez vos réflexes de club et étouffez les erreurs'}
+          </h2>
+          <p className="text-xs sm:text-sm text-stone-300 max-w-2xl">
+            {isEn
+              ? 'Play immediately against calibrated club opponents, master the doubling cube, and count race mentally without pips.'
+              : 'Jouez immédiatement contre des joueurs de club calibrés, maîtrisez le videau et comptez la course sans compteur de pips.'}
+          </p>
         </div>
-    );
+      </div>
+
+      {/* BLOC 1 — LANCEMENT DE PARTIE IMMÉDIAT (PRIORITÉ N°1 DU JOUEUR DE CLUB) */}
+      <div className="rounded-2xl border-2 border-[#D4AF37]/50 bg-gradient-to-b from-[#18130b] via-[#100d07] to-[#0a0d13] p-5 shadow-[0_8px_32px_rgba(212,175,55,0.14)] flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
+                <Swords size={18} />
+              </span>
+              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb]">
+                {isEn ? '⚡ Immediate Club Game (Priority #1)' : '⚡ Lancement de Partie Immédiat (Priorité N°1)'}
+              </h3>
+            </div>
+            <p className="text-xs text-stone-300 mt-1">
+              {isEn
+                ? 'Select match format and launch instantly against a club adversary with realistic thinking delays.'
+                : 'Choisissez votre format et lancez en 1 clic contre un joueur de club (délais humains calibrés).'}
+            </p>
+          </div>
+
+          {/* Sélecteur direct 1-clic : 3, 5, 7 pts, Money Game */}
+          <div className="flex items-center gap-1.5 self-end sm:self-center">
+            {[
+              { id: 3, label: '3 pts', testId: 'match-format-3' },
+              { id: 5, label: '5 pts', testId: 'match-format-5' },
+              { id: 7, label: '7 pts', testId: 'match-format-7' },
+              { id: 0, label: isEn ? 'Money Game' : 'Partie Libre', testId: 'match-format-money' },
+            ].map((fmt) => {
+              const active = selectedFormat === fmt.id;
+              return (
+                <button
+                  key={fmt.id}
+                  type="button"
+                  data-testid={fmt.testId}
+                  onClick={() => setSelectedFormat(fmt.id)}
+                  className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition active:scale-95 ${
+                    active
+                      ? 'bg-[#D4AF37] border-[#F3E5AB] text-slate-950 font-black shadow-md'
+                      : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  {fmt.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Boutons d'action : JOUER MAINTENANT (Or) & INVITER UN AMI */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <button
+            type="button"
+            data-testid="intermediate-play-btn"
+            onClick={handlePlayNow}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] px-4 py-3 text-xs sm:text-sm font-black uppercase tracking-wider text-slate-950 shadow-lg hover:brightness-105 active:scale-95 transition"
+          >
+            <Swords size={18} className="text-slate-950" />
+            <span>{isEn ? 'PLAY NOW (CLUB OPPONENT) →' : 'JOUER MAINTENANT (ADVERSAIRE DE CLUB) →'}</span>
+          </button>
+
+          <button
+            type="button"
+            data-testid="intermediate-invite-btn"
+            onClick={onInviteFriend}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.06] hover:bg-white/[0.1] px-4 py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-white transition active:scale-95"
+          >
+            <Share2 size={16} />
+            <span>{isEn ? 'INVITE A FRIEND — 1-CLICK LINK (< 3S)' : 'INVITER UN AMI — LIEN 1-CLIC (< 3S)'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* BLOC 2 — MINI-GUIDE COMPACT : LES 4 CLÉS POUR GAGNER EN CLUB & TOURNOI */}
+      <IntermediateClubSecretsCard
+        isPipsHidden={isPipsHidden}
+        onToggleHidePips={() => setIsPipsHidden((prev) => !prev)}
+      />
+
+      {/* BLOC 3 — LES 3 PETITS QUIZ FLASH INTERMÉDIAIRES */}
+      <IntermediateQuickDrills
+        onOpenNPlus1Bank={onOpenQuizzes}
+        onOpenBlunders={onOpenQuizzes}
+      />
+    </div>
+  );
 });
 
 IntermediateHomePortal.displayName = 'IntermediateHomePortal';

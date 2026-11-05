@@ -232,16 +232,13 @@ export function BeginnerInteractiveGuideModal({
             </p>
           </div>
 
-          {/* Explication ERA Adaptatif */}
-          <div data-testid="guide-era-explanation" className="rounded-xl border border-sky-500/30 bg-sky-950/20 p-2.5 text-xs text-sky-200">
-            <div className="font-bold text-sky-300 mb-0.5">
-              ⚡ {lang === 'fr' ? 'Error Rate Adaptatif (ERA) :' : 'Adaptive Error Rate (ERA):'}
-            </div>
-            <p>
+          {/* Note simple pour Débutant */}
+          <div data-testid="guide-era-explanation" className="rounded-xl border border-white/10 bg-white/[0.02] p-2 text-[11px] text-stone-400">
+            <span>
               {lang === 'fr'
-                ? "Contrairement à l'ER théorique qui suppose un robot parfait, l'ERA adapte les décisions de videau et le plan de jeu au niveau réel adverse pour étouffer le hasard."
-                : "Unlike theoretical ER assuming a perfect bot, ERA adapts cube decisions and game plan to the opponent's true level to overcome variance."}
-            </p>
+                ? "💡 Note Débutant : Concentrez-vous sur les 6 règles de base. L'analyse avancée et l'ERA (Error Rate Adaptatif) sont explorés dans la Porte Intermédiaire !"
+                : "💡 Beginner Note: Focus on the 6 basic rules. Advanced analytics and ERA (Adaptive Error Rate) are explored in Intermediate Mode!"}
+            </span>
           </div>
 
           {/* Règle d'Or à retenir */}
