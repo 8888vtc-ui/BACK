@@ -1,9 +1,6 @@
 'use client';
 
-/**
- * Menu Popover ⚙️ des paramètres en partie — Coffret d'Horlogerie & Ébénisterie (Noyer, Obsidienne & Laiton Brossé).
- * Structuré en 4 sections claires (LOI 5 — ≤ 300 lignes, 0 any).
- */
+// Menu Popover ⚙️ des paramètres en partie — Coffret d'Horlogerie (≤ 300 lignes, 0 any).
 
 import React, { useEffect, useState } from 'react';
 import type { ThemeName } from '../board/boardThemes';
@@ -109,14 +106,12 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
         const next = Number(e.target.value);
         setVolumePct(next);
         if (typeof soundEngine.setVolume === 'function') soundEngine.setVolume(next / 100);
-        if (next === 0 && !isSoundMuted) onToggleSound();
-        if (next > 0 && isSoundMuted) onToggleSound();
+        if ((next === 0 && !isSoundMuted) || (next > 0 && isSoundMuted)) onToggleSound();
     };
 
     const handleResignClick = (multiplier: 1 | 2 | 3) => {
         onClose();
-        if (onResign) onResign(multiplier);
-        else onResetGame?.();
+        if (onResign) onResign(multiplier); else onResetGame?.();
     };
 
     return (
@@ -126,10 +121,10 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
             className={`absolute right-0 top-full mt-2 z-50 w-72 sm:w-80 max-h-[calc(100dvh-64px)] overflow-y-auto overscroll-y-contain rounded-2xl border border-white/15 bg-slate-950/65 p-4 text-slate-100 shadow-2xl backdrop-blur-md space-y-3.5 transition-all ${isOpen ? 'block' : 'hidden'}`}
         >
             {/* En-tête épuré */}
-            <div className="flex items-center justify-between pb-2.5 border-b border-white/10">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
                 <div className="flex items-center gap-2">
                     <span className="text-sm" aria-hidden="true">⚙️</span>
-                    <span className="text-xs font-bold uppercase tracking-wider text-white">Réglages de Table</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-white">Réglages</span>
                 </div>
                 <button type="button" onClick={onClose} aria-label="Fermer les paramètres" className="h-7 w-7 rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:border-white/25 flex items-center justify-center text-xs transition">✕</button>
             </div>
@@ -175,18 +170,15 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                 </div>
 
                 <button
-                    type="button"
-                    data-testid="hud-auto-validate-toggle"
+                    type="button" data-testid="hud-auto-validate-toggle"
                     onClick={() => {
-                        const isCurrentlyAuto = effectiveAutoMode === 'always' || effectiveAutoMode === 'always_except_cube';
-                        const next: AutoConfirmMode = isCurrentlyAuto ? 'never' : 'always';
-                        setLocalAutoMode(next);
-                        saveAutoConfirmMode(next);
-                        onSelectAutoConfirmMode?.(next);
+                        const isAuto = effectiveAutoMode === 'always' || effectiveAutoMode === 'always_except_cube';
+                        const next: AutoConfirmMode = isAuto ? 'never' : 'always';
+                        setLocalAutoMode(next); saveAutoConfirmMode(next); onSelectAutoConfirmMode?.(next);
                     }}
                     className="flex items-center justify-between w-full rounded-xl border border-[#f3c65f]/40 bg-[#f3c65f]/10 px-3 py-2 text-xs font-bold text-white hover:border-[#f3c65f] transition"
                 >
-                    <span>⚡ Validation automatique des coups</span>
+                    <span>⚡ Validation automatique</span>
                     <span className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-black ${
                         effectiveAutoMode === 'always' || effectiveAutoMode === 'always_except_cube'
                             ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50'
@@ -286,15 +278,15 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
 
             {/* SECTION 4 : ARBITRAGE DE MANCHE */}
             {(onResetGame || onResign) && (
-                <div className="flex flex-col gap-1.5 pt-2.5 border-t border-white/10">
+                <div className="flex flex-col gap-1.5 pt-2 border-t border-white/10">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Concéder la manche</span>
                         {onResetGame && <button type="button" onClick={() => { onClose(); onResetGame(); }} className="text-[11px] font-semibold text-slate-400 hover:text-amber-200 transition" title="Réinitialiser le match">↺ Reset</button>}
                     </div>
                     <div className="grid grid-cols-3 gap-1.5">
-                        <button type="button" data-testid="resign-simple-btn" onClick={() => handleResignClick(1)} className="whitespace-nowrap rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 text-[11px] font-bold text-slate-200 hover:border-[#f3c65f] transition" title="Concéder la manche (Simple — 1x)">1× Simple</button>
-                        <button type="button" data-testid="resign-gammon-btn" onClick={() => handleResignClick(2)} className="whitespace-nowrap rounded-lg border border-amber-500/40 bg-amber-950/30 px-2 py-1.5 text-[11px] font-bold text-amber-200 hover:border-amber-400 transition" title="Concéder la manche (Gammon — 2x)">2× Gammon</button>
-                        <button type="button" data-testid="resign-bg-btn" onClick={() => handleResignClick(3)} className="whitespace-nowrap rounded-lg border border-rose-500/45 bg-rose-950/35 px-2 py-1.5 text-[11px] font-bold text-rose-200 hover:border-rose-400 transition" title="Concéder la manche (Backgammon — 3x)">3× BG</button>
+                        <button type="button" data-testid="resign-simple-btn" onClick={() => handleResignClick(1)} className="whitespace-nowrap rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-bold text-slate-200 hover:border-[#f3c65f] transition" title="Concéder (1x)">1× Simple</button>
+                        <button type="button" data-testid="resign-gammon-btn" onClick={() => handleResignClick(2)} className="whitespace-nowrap rounded-lg border border-amber-500/40 bg-amber-950/30 px-2 py-1 text-[11px] font-bold text-amber-200 hover:border-amber-400 transition" title="Concéder (2x)">2× Gammon</button>
+                        <button type="button" data-testid="resign-bg-btn" onClick={() => handleResignClick(3)} className="whitespace-nowrap rounded-lg border border-rose-500/45 bg-rose-950/35 px-2 py-1 text-[11px] font-bold text-rose-200 hover:border-rose-400 transition" title="Concéder (3x)">3× BG</button>
                     </div>
                 </div>
             )}
