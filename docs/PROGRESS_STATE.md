@@ -44,10 +44,20 @@
 - **Tests Unitaires (`npx vitest run src/components/lobby`)** : `100 % PASS` (19/19 tests).
 - **Plein Écran Desktop** : `h-[100dvh] lg:overflow-hidden` préservé sans scroll parasite.
 
-## 3. Harmonisation du Plateau & Éradication des Trahisons "Bot" en Matchmaking (`BoardSideRails.tsx`)
+## 4. Certification Multijoueur Paires Synchronisées, 300 Profils & Coach Débutant (2026-11-05)
 
-1. **Purge des Pseudos Techniques / `*BG` (`src/features/personas/humanPersonaSeeds.ts`)** :
-   - Suppression de 100 % des pseudos avec suffixe `BG` (`SvenBG` $\rightarrow$ `Sven L.`, `david_bg64` $\rightarrow$ `david_64`) et de tous les pseudos de jargon (`HitAndCover`, `BarPoint7`, `PipMaster`, etc.) au profit de prénoms et noms humains internationaux naturels.
+1. **Synchronisation Multijoueur en 1 Clic (`< 3s`) & Paires Isolées** :
+   - Invitation directe sans mur d'inscription (`/play?inviteRoom=...`), symétrie canonique `25 - i`, vérification stricte des 15 pions par camp et du Pip Count.
+   - Partage équitable au prorata (Cash-Out) à somme nulle stricte ($\sum \Delta S_i = 0$ et $\sum \Delta \text{Elo}_i = 0$).
+2. **Authenticité des 300 Joueurs Humains (`HUMAN_PERSONA_POOL`)** :
+   - 300 profils vérifiés (0 bot/ai/guest, 100 Débutants, 100 Intermédiaires, 100 Experts), Elo non ronds.
+   - Respect strict des plafonds $\Delta_{\max}$ sur `bgsage` (0.035 / 0.075 / 0.115 EMG), différenciation Blitz/Agressif vs Prudent/Portes.
+   - Délais cognitifs humains naturels (`HumanThinkingDelay`) : forcé 0.8–1.4s, course 1.4–2.6s, contact complexe 3.2–6.8s, videau 3.5–7.5s.
+3. **Professeur Interactif en Mode Débutant & Isolation Absolue du Coach** :
+   - Zéro jargon expert (`EMG`, `MWC`, `IA 3-Ply`, `Open Sage`, `PR Match`) en mode Débutant.
+   - Coupe-circuit anti-bot strict : 0 analyse d'erreur sur le tour de l'adversaire (`localPlayer !== 'X' -> null`).
+   - Suite Playwright E2E complète (`tests/e2e/full_multiplayer_and_coach_certification.spec.ts`) : **6/6 PASS** sur Desktop et Mobile.
+
    - Suppression du préfixe drapeau emoji brut dans `displayName` (`clubChallengerPool.ts`) qui affichait des codes ISO (`SE`) sous Windows.
 2. **Dissociation Stricte Joueur En Ligne vs Bot IA (`BoardSideRails.tsx` & `BoardPortraitAndActionRails.tsx`)** :
    - En mode En Ligne (`challengerProfile` présent) :
