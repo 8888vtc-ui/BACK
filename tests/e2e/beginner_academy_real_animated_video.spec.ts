@@ -68,9 +68,11 @@ test.describe('Académie Débutant — Vrai Lecteur Vidéo Animé & Zéro Fake T
     await expect(quizBtn).toBeVisible();
     await quizBtn.click();
 
-    // Vérifier l'arrivée sur l'écran des quiz d'initiation
+    // Vérifier l'arrivée sur l'écran des quiz d'initiation avec VRAI plateau visuel
     const quizContainer = page.getByTestId('academy-quiz-container');
     await expect(quizContainer).toBeVisible({ timeout: 10000 });
+    const visualLessonBoard = page.getByTestId('academy-visual-board-lesson');
+    await expect(visualLessonBoard).toBeVisible();
     const optionA = page.getByTestId('academy-option-A');
     await expect(optionA).toBeVisible();
   });

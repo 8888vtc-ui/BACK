@@ -4,7 +4,7 @@ export interface VideoChapterCue {
   durationSec: number;
   frText: string;
   enText: string;
-  highlightPoints?: number[];      // Ex: [1, 2, 3, 4, 5, 6] pour le Jan intérieur
+  highlightPoints?: number[];      // Pointes ciblées de la Maison d'arrivée
   highlightBar?: boolean;          // Illumination barre centrale
   highlightCube?: boolean;         // Illumination videau
   boardAction?: 'BEAR_OFF' | 'PRIME' | 'HIT' | 'ANCHOR' | 'INTRO';

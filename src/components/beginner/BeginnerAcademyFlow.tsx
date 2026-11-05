@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { Award, ArrowRight, Sparkles, BookOpen, RotateCcw, CheckCircle, AlertCircle } from 'lucide-react';
 import { BeginnerVideoSeriesPlayer } from './BeginnerVideoSeriesPlayer';
+import { AcademyVisualBoardLesson } from './AcademyVisualBoardLesson';
 import { BEGINNER_10_INITIATION_QUIZZES, BeginnerInitiationQuiz } from '../../data/beginner10InitiationQuizzes';
 import { useTranslation } from '../../i18n';
 import { QuickAccountModal } from '../auth/QuickAccountModal';
-
 interface BeginnerAcademyFlowProps {
   onBackToLobby?: () => void;
   onPlayDirect?: () => void;
@@ -132,6 +132,12 @@ export function BeginnerAcademyFlow({
             </span>
           </div>
 
+          {/* VRAI PLATEAU VISUEL ÉDUCATIF (10/10 Quiz avec plateau !) */}
+          <AcademyVisualBoardLesson
+            quizId={currentQuiz.id}
+            isEn={lang === 'en'}
+          />
+
           <h3 className="text-base sm:text-lg font-bold text-white">
             {lang === 'fr' ? currentQuiz.questionFr : currentQuiz.questionEn}
           </h3>
@@ -183,13 +189,9 @@ export function BeginnerAcademyFlow({
               isSelectedCorrect ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' : 'bg-amber-950/40 border-amber-500/40 text-amber-200'
             }`}>
               {isSelectedCorrect ? <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> : <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />}
-              <span>
-                {isSelectedCorrect
-                  ? (lang === 'fr' ? '✅ Coup optimal ! Vos pions sont en parfaite sécurité.' : '✅ Optimal play! Your checkers are completely safe.')
-                  : (lang === 'fr'
-                      ? '💡 Conseil bienveillant du Professeur : Ce coup est imprudent ou laisse un pion isolé. Cliquez sur « Réessayer » pour trouver le bon coup sans stress !'
-                      : '💡 Professor Caring Tip: This move is risky or leaves an exposed blot. Click "Retry" to find the safe move stress-free!')}
-              </span>
+              <span>{isSelectedCorrect
+                ? (lang === 'fr' ? '✅ Coup optimal ! Vos pions sont en parfaite sécurité.' : '✅ Optimal play! Checkers safe.')
+                : (lang === 'fr' ? '💡 Conseil du Professeur : Coup imprudent. Cliquez sur « Réessayer » sans stress !' : '💡 Tip: Risky move. Click "Retry"!')}</span>
             </div>
           )}
 
@@ -265,9 +267,7 @@ export function BeginnerAcademyFlow({
             onClick={handlePlayDirect}
             className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition"
           >
-            {lang === 'fr'
-              ? '🎮 Mettre en pratique maintenant contre le Bot Doux (Partie Guidée) →'
-              : '🎮 Practice Now Against Gentle Bot (Guided Match) →'}
+            {lang === 'fr' ? '🎮 Mettre en pratique contre le Bot Doux (Partie Guidée) →' : '🎮 Practice Against Gentle Bot (Guided Match) →'}
           </button>
 
           <div className="w-full flex flex-col sm:flex-row gap-2 mt-1">

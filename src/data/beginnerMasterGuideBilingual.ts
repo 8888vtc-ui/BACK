@@ -46,7 +46,7 @@ export const BEGINNER_MASTER_GUIDE_CHAPTERS: GuideChapterSection[] = [
     summaryFr: 'Traverser le plateau de la case 24 à la case 1 pour ramener tous ses pions à la maison.',
     summaryEn: 'Travel the board from point 24 to point 1 to bring all checkers safely home.',
     paragraphsFr: [
-      'Le plateau compte 24 flèches triangulaires. Vos 15 pions démarrent répartis sur le plateau et cheminent en fer à cheval vers votre Jan intérieur (flèches 1 à 6).',
+      'Le plateau compte 24 flèches triangulaires. Vos 15 pions démarrent répartis sur le plateau et cheminent en fer à cheval vers Votre Maison (zone d\'arrivée).',
       'Un pion seul sur une flèche est un "blot" : s\'il est frappé par un pion adverse, il est banni sur la barre centrale et perd un temps précieux.',
       'Deux pions ou plus sur la même case forment une "porte" : un bastion imprenable où l\'adversaire ne peut ni vous frapper, ni poser le moindre pion. En fermant plusieurs portes successives, vous créez un Prime : une muraille totale.',
     ],
