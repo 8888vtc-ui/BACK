@@ -34,6 +34,11 @@ import {
     resolveLlmEndpointConfig,
     verifyAccumulatedLlmAudit,
 } from '../../../lib/coach/coachRouteHelpers';
+import {
+    normalizeCoachPlayerTier,
+    getTierSystemPrompt,
+    enforceTierVocabularyGuard,
+} from '../../../lib/coach/coachAdaptiveKnowledgeDb';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,10 +85,12 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
 
     try {
         const body = validation.data;
+        const rawTier = (body as { playerTier?: string; gate?: string }).playerTier ?? (body as { gate?: string }).gate ?? body.playerLevel;
+        const playerTier = normalizeCoachPlayerTier(rawTier);
 
         const params = buildCoachPromptParams(body, req.headers.get('accept-language'));
 
-        const isDeepGrandmaster = body.playerLevel === 'grandmaster';
+        const isDeepGrandmaster = body.playerLevel === 'grandmaster' || playerTier === 'EXPERT';
         const { apiKey, baseUrl, model: initialModel } = resolveLlmEndpointConfig({
             useDeepModel: isDeepGrandmaster,
         });
@@ -103,6 +110,8 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             cubeValue: body.matchContext?.cubeValue,
             cubeOwner: (body.matchContext as { cubeOwner?: 'X' | 'O' | null })?.cubeOwner,
             crawford: body.matchContext?.crawford,
+            tier: playerTier,
+            locale: params.language,
         });
 
         // 1. Vérification du cache partagé L2 Supabase (0 ms)
@@ -123,16 +132,34 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             dice: body.dice,
         });
 
+        const rawVariant = harvested.selectedVariant;
+        const sanitizedVariant = {
+            ...rawVariant,
+            explanation: enforceTierVocabularyGuard(
+                rawVariant.explanation,
+                playerTier,
+                params.language === 'en' ? 'en' : 'fr',
+                { deltaEmg: body.equityLoss, optimalMove: body.optimalMove, playedMove: body.playedMove }
+            ).sanitizedText,
+            summary: enforceTierVocabularyGuard(
+                rawVariant.summary,
+                playerTier,
+                params.language === 'en' ? 'en' : 'fr'
+            ).sanitizedText,
+        };
+
         if (!apiKey) {
-            return createJsonFallbackStream(harvested.selectedVariant, encoder);
+            return createJsonFallbackStream(sanitizedVariant, encoder);
         }
 
         const groundTruthAudit = buildGroundTruthNeuroSymbolicAudit(params);
         const userPrompt = buildCoachUserPrompt(params);
+        const tierDirective = getTierSystemPrompt(playerTier, params.language === 'en' ? 'en' : 'fr');
+        const systemPrompt = `${getCoachSystemPrompt(params.language)}\n\n${tierDirective}`;
         const requestPayload: Record<string, unknown> = {
             model,
             messages: [
-                { role: 'system', content: getCoachSystemPrompt(params.language) },
+                { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt },
             ],
             stream: true,
@@ -181,14 +208,14 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
         } catch (fetchErr: unknown) {
             clearTimeout(timeoutId);
             console.warn('[Coach API] Timeout ou erreur réseau LLM, repli heuristique :', fetchErr);
-            return createJsonFallbackStream(harvested.selectedVariant, encoder);
+            return createJsonFallbackStream(sanitizedVariant, encoder);
         } finally {
             clearTimeout(timeoutId);
         }
 
         if (!llmResponse.ok || !llmResponse.body) {
             console.warn(`[Coach API] Statut HTTP ${llmResponse.status}, bascule repli heuristique`);
-            return createJsonFallbackStream(harvested.selectedVariant, encoder);
+            return createJsonFallbackStream(sanitizedVariant, encoder);
         }
 
         const upstreamReader = llmResponse.body.getReader();
@@ -241,6 +268,26 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                     console.error('[Coach API] Erreur pendant la lecture du flux LLM :', streamErr);
                 } finally {
                     const verifiedAudit = verifyAccumulatedLlmAudit(accumulatedJson, groundTruthAudit);
+                    if (verifiedAudit?.pedagogical_explanation) {
+                        const guardResult = enforceTierVocabularyGuard(
+                            verifiedAudit.pedagogical_explanation.tactical_rationale,
+                            playerTier,
+                            params.language === 'en' ? 'en' : 'fr',
+                            {
+                                deltaEmg: body.equityLoss,
+                                directShots: verifiedAudit.symbolic_audit.direct_shots_conceded,
+                                pipsDiff: verifiedAudit.symbolic_audit.player_pip - verifiedAudit.symbolic_audit.opponent_pip,
+                                optimalMove: body.optimalMove,
+                                playedMove: body.playedMove,
+                            }
+                        );
+                        verifiedAudit.pedagogical_explanation.tactical_rationale = guardResult.sanitizedText;
+                        verifiedAudit.pedagogical_explanation.headline = enforceTierVocabularyGuard(
+                            verifiedAudit.pedagogical_explanation.headline,
+                            playerTier,
+                            params.language === 'en' ? 'en' : 'fr'
+                        ).sanitizedText;
+                    }
                     controller.enqueue(
                         encoder.encode(formatSseEvent({ done: true, verifiedAudit })),
                     );

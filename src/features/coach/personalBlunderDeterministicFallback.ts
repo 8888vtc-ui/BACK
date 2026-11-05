@@ -6,6 +6,7 @@
  */
 
 import { GEMINI_LITE_INTERNAL_SYSTEM_PROMPT, evaluateMoveBlunderGate } from '../../lib/coachSystemPrompt';
+import { enforceTierVocabularyGuard, type CoachPlayerTier } from '../../lib/coach/coachAdaptiveKnowledgeDb';
 
 export interface PersonalBlunderCoachRequestPayload {
     readonly xgid: string;
@@ -25,6 +26,7 @@ export interface PersonalBlunderCoachRequestPayload {
     readonly optimalEquity: number;
     readonly secondBestMove: string;
     readonly secondBestDeltaEmg: number;
+    readonly playerTier?: CoachPlayerTier;
 }
 
 export interface PersonalBlunderCoachTexts {
@@ -100,7 +102,7 @@ export function buildDeterministicPersonalBlunderTexts(
     const revengeSuccessCoach = `Revanche réussie ! Le coup maître ${optimalMove} atteint 0.000 EMG, récupère +${absDelta} EMG et améliore ton ER / PR de -0.2. Excellente maîtrise.`;
     const relapseErrorCoach = `Rechute tactique : ${playerBlunderMove} perd ${absDelta} EMG (ER / PR ${erPrStr}) face aux ${constructiveRollsOn36}/36 constructeurs de ${optimalMove}. Restes rigoureux !`;
 
-    return {
+    const raw = {
         contextHook,
         socraticHint,
         revengeSuccessCoach,
@@ -109,6 +111,18 @@ export function buildDeterministicPersonalBlunderTexts(
         usedDeterministicFallback: true,
         cacheHit: false,
     };
+
+    if (payload.playerTier === 'BEGINNER') {
+        return {
+            ...raw,
+            contextHook: enforceTierVocabularyGuard(contextHook, 'BEGINNER', 'fr').sanitizedText,
+            socraticHint: enforceTierVocabularyGuard(socraticHint, 'BEGINNER', 'fr').sanitizedText,
+            revengeSuccessCoach: enforceTierVocabularyGuard(revengeSuccessCoach, 'BEGINNER', 'fr').sanitizedText,
+            relapseErrorCoach: enforceTierVocabularyGuard(relapseErrorCoach, 'BEGINNER', 'fr').sanitizedText,
+        };
+    }
+
+    return raw;
 }
 
 export const GEMINI_FLASH_LITE_MODEL_CASCADE = [

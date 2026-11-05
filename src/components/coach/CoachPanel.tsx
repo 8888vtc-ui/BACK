@@ -34,6 +34,7 @@ import { useI18n } from '../../lib/i18n';
 import { soundEngine } from '../../lib/sound/soundEngine';
 import { useCoachVoice } from '../../hooks/useCoachVoice';
 import { useTiltDetector } from '../../hooks/useTiltDetector';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 
 // Ré-exports pour compatibilité ascendante (tests et consommateurs existants).
 export {
@@ -98,6 +99,7 @@ export default function CoachPanel({
     matchStatsO,
 }: CoachPanelProps) {
     const { t, locale } = useI18n();
+    const { tierGate } = usePlayerTierGate();
     const { isVoiceEnabled, isSpeaking, speak, stop, toggleVoice } = useCoachVoice();
     const { evaluation: tiltEvaluation, showTiltAlert, recordDecision, dismissTiltAlert } = useTiltDetector();
 
@@ -145,6 +147,7 @@ export default function CoachPanel({
         features,
         matchCtx,
         playerLevel,
+        playerTier: tierGate,
         apiUrl,
         locale,
         isOffline,

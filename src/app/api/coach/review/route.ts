@@ -13,6 +13,10 @@ import {
 } from '../../../../features/coach/gameReviewPrompts';
 import { checkRateLimit, RATE_LIMIT_PROFILES } from '../../../../lib/security/rateLimit';
 import { GameReviewRequestSchema, validateJsonBody } from '../../../../lib/security/schemas';
+import {
+    normalizeCoachPlayerTier,
+    getTierSystemPrompt,
+} from '../../../../lib/coach/coachAdaptiveKnowledgeDb';
 
 export const dynamic = 'force-dynamic';
 
@@ -116,11 +120,15 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             return createRuleBasedReviewStreamResponse(params, encoder);
         }
 
+        const rawTier = (body as { playerTier?: string; gate?: string }).playerTier ?? (body as { gate?: string }).gate;
+        const playerTier = normalizeCoachPlayerTier(rawTier);
+
         const userPrompt = buildGameReviewUserPrompt(params);
+        const tierDirective = getTierSystemPrompt(playerTier, params.language === 'en' ? 'en' : 'fr');
         const requestPayload: Record<string, unknown> = {
             model,
             messages: [
-                { role: 'system', content: getGameReviewSystemPrompt(params.language) },
+                { role: 'system', content: `${getGameReviewSystemPrompt(params.language)}\n\n${tierDirective}` },
                 { role: 'user', content: userPrompt },
             ],
             stream: true,

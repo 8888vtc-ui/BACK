@@ -47,3 +47,4 @@ test.describe('MISSION 10/10 — Monkey Stress-Test & Certification Globale', ()
     expect(pageErrors.length).toBe(0);
   });
 });
+

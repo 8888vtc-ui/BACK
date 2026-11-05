@@ -47,3 +47,4 @@ test.describe('MISSION 8/10 — Carte : Tournois & Clubs & Crawl Zéro-404', () 
     await expect(page).toHaveURL(/.*tournaments/);
   });
 });
+

@@ -157,6 +157,8 @@ export const CoachRequestSchema = z.object({
     features: PositionFeaturesSchema.optional(),
     matchContext: MatchContextSchema.optional(),
     playerLevel: z.enum(['beginner', 'intermediate', 'expert', 'grandmaster']).default('intermediate'),
+    playerTier: z.enum(['BEGINNER', 'INTERMEDIATE', 'EXPERT']).optional(),
+    gate: z.string().optional(),
     language: z.enum(['fr', 'en', 'es', 'pt', 'de', 'ar', 'ja']).default('fr'),
 }).passthrough();
 

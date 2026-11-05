@@ -48,3 +48,4 @@ test.describe('MISSION 7/10 — Studio d\'Analyse & Scanner XGID 3-Ply', () => {
     await expect(page.locator('[data-testid="analysis-studio-root"]')).toBeVisible();
   });
 });
+

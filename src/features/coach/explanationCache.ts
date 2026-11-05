@@ -32,6 +32,8 @@ export interface CacheKeyParams {
     matchLength?: number;
     scoreX?: number;
     scoreO?: number;
+    tier?: string | null;
+    locale?: string | null;
 }
 
 import {
@@ -65,8 +67,10 @@ export function computeExplanationCacheKey(params: CacheKeyParams): string {
     const score = `${regime}_${params.matchLength ?? 0}_${params.scoreX ?? 0}_${params.scoreO ?? 0}`;
     const diceStr = params.dice ? `${params.dice[0]}-${params.dice[1]}` : 'no_dice';
     const cubeStr = `${params.cubeValue ?? 1}_${params.cubeOwner ?? 'center'}_${params.crawford ? '1' : '0'}`;
+    const tierStr = (params.tier || 'intermediate').trim().toLowerCase();
+    const locStr = (params.locale || 'fr').trim().toLowerCase();
 
-    return `coach::pos[${pos}]::dice[${diceStr}]::cube[${cubeStr}]::mv[${played}]::opt[${opt}]::v[${verdict}]::score[${score}]`;
+    return `coach::pos[${pos}]::dice[${diceStr}]::cube[${cubeStr}]::mv[${played}]::opt[${opt}]::v[${verdict}]::score[${score}]::tier[${tierStr}]::loc[${locStr}]`;
 }
 
 export class ExplanationCache {

@@ -24,6 +24,7 @@ export interface UseCoachExplanationParams {
     features?: StrategicFeatures;
     matchCtx: MatchContext | null;
     playerLevel: 'beginner' | 'intermediate' | 'expert';
+    playerTier?: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
     apiUrl: string;
     locale: string;
     isOffline: boolean;
@@ -53,6 +54,7 @@ export function useCoachExplanation({
     features,
     matchCtx,
     playerLevel,
+    playerTier,
     apiUrl,
     locale,
     isOffline,
@@ -74,6 +76,8 @@ export function useCoachExplanation({
     const isBlunder = verdict === 'blunder';
     const absLoss = Math.abs(equityLoss ?? 0.05);
 
+    const effectiveTier = playerTier ?? (playerLevel === 'beginner' ? 'BEGINNER' : playerLevel === 'expert' ? 'EXPERT' : 'INTERMEDIATE');
+
     const cacheKey = (() => {
         if (!playedMove) return '';
         return computeExplanationCacheKey({
@@ -90,6 +94,8 @@ export function useCoachExplanation({
             matchLength: matchCtx?.matchLength,
             scoreX: matchCtx?.scoreX,
             scoreO: matchCtx?.scoreO,
+            tier: effectiveTier,
+            locale,
         });
     })();
 
@@ -267,6 +273,7 @@ export function useCoachExplanation({
                     features,
                     matchContext: matchCtx,
                     playerLevel: forceDeepAnalysis ? 'grandmaster' : playerLevel,
+                    playerTier: effectiveTier,
                     language: locale,
                 };
 
