@@ -27,7 +27,6 @@ export function BeginnerAcademyFlow({
   const [completedQuizIds, setCompletedQuizIds] = useState<number[]>([]);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState<boolean>(false);
 
-  // Chargement / Sauvegarde locale
   useEffect(() => {
     try {
       const saved = localStorage.getItem('bgtour_beginner_academy_progress');
@@ -41,10 +40,7 @@ export function BeginnerAcademyFlow({
 
   const saveProgress = (points: number, quizIds: number[]) => {
     try {
-      localStorage.setItem(
-        'bgtour_beginner_academy_progress',
-        JSON.stringify({ scorePoints: points, completedQuizIds: quizIds })
-      );
+      localStorage.setItem('bgtour_beginner_academy_progress', JSON.stringify({ scorePoints: points, completedQuizIds: quizIds }));
     } catch {}
   };
 
@@ -62,7 +58,7 @@ export function BeginnerAcademyFlow({
   };
 
   const handleSelectOption = (optionId: string) => {
-    if (selectedOptionId) return; // Verrouillage après réponse
+    if (selectedOptionId) return;
     setSelectedOptionId(optionId);
     const opt = currentQuiz.options.find(o => o.id === optionId);
     if (opt?.isCorrect && !completedQuizIds.includes(currentQuiz.id)) {
@@ -79,7 +75,6 @@ export function BeginnerAcademyFlow({
     if (activeQuizIndex < BEGINNER_10_INITIATION_QUIZZES.length - 1) {
       setActiveQuizIndex(prev => prev + 1);
     } else {
-      // Déblocage du diplôme avec bonus +2 000 PTS
       const finalPoints = scorePoints + 2000;
       setScorePoints(finalPoints);
       saveProgress(finalPoints, completedQuizIds);
@@ -88,23 +83,13 @@ export function BeginnerAcademyFlow({
   };
 
   const handleBackToLobby = () => {
-    if (onBackToLobby) {
-      onBackToLobby();
-      return;
-    }
-    if (typeof window !== 'undefined') {
-      window.location.assign('/');
-    }
+    if (onBackToLobby) return onBackToLobby();
+    if (typeof window !== 'undefined') window.location.assign('/');
   };
 
   const handlePlayDirect = () => {
-    if (onPlayDirect) {
-      onPlayDirect();
-      return;
-    }
-    if (typeof window !== 'undefined') {
-      window.location.assign('/play?gate=beginner&start=guided');
-    }
+    if (onPlayDirect) return onPlayDirect();
+    if (typeof window !== 'undefined') window.location.assign('/play?gate=beginner&start=guided');
   };
 
   return (
@@ -297,13 +282,7 @@ export function BeginnerAcademyFlow({
           <div className="w-full flex flex-col sm:flex-row gap-2 mt-1">
             <button
               type="button"
-              onClick={() => {
-                if (onRequestSaveAccount) {
-                  onRequestSaveAccount();
-                } else {
-                  setIsAccountModalOpen(true);
-                }
-              }}
+              onClick={() => onRequestSaveAccount ? onRequestSaveAccount() : setIsAccountModalOpen(true)}
               className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm border border-white/10 transition"
             >
               {lang === 'fr' ? 'Créer mon compte (Sauvegarder)' : 'Save account'}
@@ -319,10 +298,7 @@ export function BeginnerAcademyFlow({
         </div>
       )}
 
-      <QuickAccountModal
-        isOpen={isAccountModalOpen}
-        onClose={() => setIsAccountModalOpen(false)}
-      />
+      <QuickAccountModal isOpen={isAccountModalOpen} onClose={() => setIsAccountModalOpen(false)} />
     </div>
   );
 }

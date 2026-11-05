@@ -23,12 +23,16 @@ export const metadata: Metadata = {
 };
 
 export interface PuzzlesPageProps {
-    searchParams?: Promise<{ mode?: string }>;
+    searchParams?: Promise<{ mode?: string; filter?: string }>;
 }
 
 export default async function PuzzlesPage({ searchParams }: PuzzlesPageProps) {
     const resolvedParams = searchParams ? await searchParams : undefined;
     const isBeginnerAcademy = resolvedParams?.mode === 'beginner-academy';
+    const initialMode =
+        resolvedParams?.filter === 'personal-blunders' || resolvedParams?.mode === 'personal_blunders'
+            ? 'personal_blunders'
+            : 'pr_math';
 
     return (
         <main className="flex h-dvh max-h-dvh w-screen overflow-hidden flex-col items-center bg-slate-950 text-slate-100">
@@ -36,7 +40,7 @@ export default async function PuzzlesPage({ searchParams }: PuzzlesPageProps) {
                 {isBeginnerAcademy ? (
                     <BeginnerAcademyFlow />
                 ) : (
-                    <BlunderDrillView initialMode="pr_math" />
+                    <BlunderDrillView initialMode={initialMode} />
                 )}
             </ErrorBoundary>
         </main>

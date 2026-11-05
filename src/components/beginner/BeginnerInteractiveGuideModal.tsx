@@ -14,24 +14,9 @@ export interface BeginnerInteractiveGuideModalProps {
 }
 
 const VICTORY_TYPES = {
-  SIMPLE: {
-    labelFr: 'Simple (1 pt)',
-    labelEn: 'Single (1 pt)',
-    descFr: 'L’adversaire a déjà sorti au moins 1 dame de son plateau.',
-    descEn: 'The opponent has already borne off at least 1 checker.',
-  },
-  GAMMON: {
-    labelFr: 'Gammon (×2)',
-    labelEn: 'Gammon (×2)',
-    descFr: 'Tu as sorti tes 15 dames alors que l’adversaire n’en a sorti aucune !',
-    descEn: 'You bore off all 15 checkers while opponent bore off none!',
-  },
-  BACKGAMMON: {
-    labelFr: 'Backgammon (×3)',
-    labelEn: 'Backgammon (×3)',
-    descFr: 'L’adversaire n’a sorti aucune dame ET il lui reste encore un pion sur la barre ou dans ta maison !',
-    descEn: 'Opponent bore off none AND still has a checker on the bar or in your home!',
-  },
+  SIMPLE: { labelFr: 'Simple (1 pt)', labelEn: 'Single (1 pt)', descFr: 'L’adversaire a déjà sorti au moins 1 dame de son plateau.', descEn: 'The opponent has already borne off at least 1 checker.' },
+  GAMMON: { labelFr: 'Gammon (×2)', labelEn: 'Gammon (×2)', descFr: 'Tu as sorti tes 15 dames alors que l’adversaire n’en a sorti aucune !', descEn: 'You bore off all 15 checkers while opponent bore off none!' },
+  BACKGAMMON: { labelFr: 'Backgammon (×3)', labelEn: 'Backgammon (×3)', descFr: 'L’adversaire n’a sorti aucune dame ET il lui reste encore un pion sur la barre ou dans ta maison !', descEn: 'Opponent bore off none AND still has a checker on the bar or in your home!' },
 } as const;
 
 export function BeginnerInteractiveGuideModal({

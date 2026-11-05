@@ -169,6 +169,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     const nameO = opponentLabel || 'IA';
     const colorLabelX = humanIsWhite ? 'Blanc' : 'Noir';
     const colorLabelO = humanIsWhite ? 'Noir' : 'Blanc';
+    const isDMP = matchLength > 0 && scoreX === matchLength - 1 && scoreO === matchLength - 1;
     const effectiveCube = Math.max(1, cubeValue);
     const cubeStakeLabel = effectiveCube > 1
         ? `Enjeu : ${effectiveCube} pt${effectiveCube > 1 ? 's' : ''} (Gammon: ${effectiveCube * 2})`
@@ -205,7 +206,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
 
     return (
         <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 shrink overflow-hidden">
-            <div className="hidden lg:flex flex-col shrink-0 rounded-lg border border-white/10 bg-slate-900/90 px-2 py-0.5 text-[11px] leading-tight text-slate-300 shadow-inner">
+            <div className="flex flex-col shrink-0 rounded-lg border border-white/10 bg-slate-900/90 px-2 py-0.5 text-[11px] leading-tight text-slate-300 shadow-inner">
                 <div className="flex items-center gap-1 whitespace-nowrap">
                     <span
                         data-testid="hud-match-format"
@@ -231,22 +232,29 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                             Cube {effectiveCube}×{cubeOwner === 'X' ? ' (Vous)' : cubeOwner === 'O' ? ' (IA)' : ''}
                         </span>
                     )}
+                    {crawford && (
+                        <span
+                            data-testid="hud-crawford-badge"
+                            className="rounded bg-amber-500/20 border border-amber-500/40 px-1 text-[11px] font-bold uppercase tracking-wider text-amber-300 tabular-nums"
+                        >
+                            Crawford
+                        </span>
+                    )}
+                    {isDMP && (
+                        <span
+                            data-testid="hud-dmp-badge"
+                            className="rounded bg-amber-500/20 border border-amber-500/40 px-1 text-[11px] font-bold uppercase tracking-wider text-amber-300 tabular-nums"
+                        >
+                            DMP
+                        </span>
+                    )}
                 </div>
-                {crawford ? (
-                    <span
-                        data-testid="hud-crawford-badge"
-                        className="mt-0.5 w-max rounded bg-amber-500/20 px-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-300 ring-1 ring-amber-500/40 tabular-nums"
-                    >
-                        Crawford
-                    </span>
-                ) : (
-                    <span
-                        className="text-[11px] text-slate-400 whitespace-nowrap font-medium tabular-nums cursor-help"
-                        title={cubeOwnershipTitle}
-                    >
-                        {cubeStakeLabel}
-                    </span>
-                )}
+                <span
+                    className="text-[11px] text-slate-400 whitespace-nowrap font-medium tabular-nums cursor-help"
+                    title={cubeOwnershipTitle}
+                >
+                    {crawford ? 'Règle Crawford' : isDMP ? 'Double Match Point' : cubeStakeLabel}
+                </span>
             </div>
 
             <PlayerCard

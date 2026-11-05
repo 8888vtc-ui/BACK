@@ -9,6 +9,7 @@
 import React from 'react';
 import type { DecisionCountersSummary } from './postMatchReportHelpers';
 import { BotPortraitMedallion } from '../common/MonteCarloIcons';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 
 export interface PostMatchHeaderProps {
     winner: 'X' | 'O' | null;
@@ -42,6 +43,8 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
     accuracyPercent, checkerPr, cubePr, locale = 'fr',
 }) => {
     const isEn = Boolean(locale && locale !== 'fr');
+    const { tierGate } = usePlayerTierGate();
+    const isBeginner = tierGate === 'BEGINNER';
     const [showPrSplit, setShowPrSplit] = React.useState(false);
     const isPlayerWinner = winner === 'X';
     const winInfo = winType ? WIN_TYPE_LABELS[winType] : null;
@@ -112,7 +115,9 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                         <h2 className="truncate font-display text-base italic font-bold text-[#f7f3e8]">
                             {!isPlayerWinner ? (isEn ? 'Winner' : 'Victoire') : (isEn ? 'Defeat' : 'Défaite')}
                         </h2>
-                        <p className="text-[11px] text-stone-400">{isEn ? 'Master IA' : 'Maître IA'}</p>
+                        <p className="text-[11px] text-stone-400">
+                            {isBeginner ? (isEn ? 'Opponent' : 'Adversaire') : (isEn ? 'Master IA' : 'Maître IA')}
+                        </p>
                     </div>
                     <div className="relative shrink-0">
                         <BotPortraitMedallion character="grandmaster" size="md" isActive={!isPlayerWinner} />
@@ -125,21 +130,25 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                 </div>
             </div>
 
-            {/* Bloc 1 — Taux d'erreur */}
+            {/* Bloc 1 — Taux d'erreur ou Précision Débutant */}
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 rounded-2xl border border-[#d4af37]/20 bg-[#18130e] p-3 shadow-md">
                 <div
                     data-testid="post-match-pr-player"
                     role="button"
                     tabIndex={0}
-                    onClick={() => setShowPrSplit((v) => !v)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowPrSplit((v) => !v); } }}
-                    title="Toucher pour ventiler PR-Positional vs PR-Cube"
+                    onClick={() => !isBeginner && setShowPrSplit((v) => !v)}
+                    onKeyDown={(e) => { if (!isBeginner && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setShowPrSplit((v) => !v); } }}
+                    title={isBeginner ? undefined : "Toucher pour ventiler PR-Positional vs PR-Cube"}
                     className="flex flex-col items-center justify-center rounded-xl border border-[#d4af37]/15 bg-[#120e0a]/90 p-2 cursor-pointer transition hover:border-[#d4af37]/40 text-center"
                 >
-                    <span className="sr-only">Votre PR</span>
-                    <span className="text-xl font-mono font-black text-emerald-400">{playerPr.toFixed(2)}</span>
-                    <span className="truncate text-xs font-semibold text-stone-300">{playerCategory}</span>
-                    {showPrSplit && (
+                    <span className="sr-only">Votre Précision</span>
+                    <span className="text-xl font-mono font-black text-emerald-400">
+                        {isBeginner ? `${(accuracyPercent ?? 85).toFixed(0)}%` : playerPr.toFixed(2)}
+                    </span>
+                    <span className="truncate text-xs font-semibold text-stone-300">
+                        {isBeginner ? (isEn ? 'Good moves' : 'Bons coups') : playerCategory}
+                    </span>
+                    {!isBeginner && showPrSplit && (
                         <div data-testid="post-match-pr-split" className="mt-1.5 flex flex-wrap items-center justify-center gap-1.5 border-t border-[#d4af37]/15 pt-1 font-mono text-[10px] text-amber-200">
                             <span>Dames : <strong>{(checkerPr ?? playerPr).toFixed(2)}</strong></span>
                             <span>·</span>
@@ -153,17 +162,17 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                         <circle cx="12" cy="12" r="9.5" /><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" /><circle cx="12" cy="12" r="2.5" />
                     </svg>
                     <span className="mt-1 text-[11px] font-bold uppercase tracking-wider text-stone-300">
-                        {isEn ? 'Performance PR' : 'Indice PR (XG)'}
+                        {isBeginner ? (isEn ? 'Match Accuracy' : 'Précision du Match') : (isEn ? 'Performance PR' : 'Indice PR (XG)')}
                     </span>
                 </div>
 
                 <div data-testid="post-match-pr-bot" className="flex flex-col items-center justify-center rounded-xl border border-[#d4af37]/15 bg-[#120e0a]/90 p-2 text-center">
-                    <span className="sr-only">PR du Bot</span>
+                    <span className="sr-only">Niveau Adversaire</span>
                     <span className="text-xl font-mono font-black text-[#f3d27a]">
-                        {botPr !== null && Number.isFinite(botPr) ? botPr.toFixed(2) : '--'}
+                        {isBeginner ? '100%' : (botPr !== null && Number.isFinite(botPr) ? botPr.toFixed(2) : '--')}
                     </span>
                     <span className="truncate text-xs font-semibold text-stone-300">
-                        {botCategory ?? (isEn ? 'Master' : 'Maître')}
+                        {isBeginner ? (isEn ? 'Guided Match' : 'Partie Guidée') : (botCategory ?? (isEn ? 'Master' : 'Maître'))}
                     </span>
                 </div>
             </div>
@@ -188,19 +197,21 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                 </div>
             </div>
 
-            {/* Bloc 3 — Performance */}
-            <div className="rounded-2xl border border-[#d4af37]/20 bg-[#18130e] p-3 space-y-2 shadow-md">
-                <div className="grid grid-cols-3 items-center text-center">
-                    <span className="font-mono text-sm font-black text-emerald-400">{playerPr.toFixed(2)}</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">{isEn ? 'Error rate' : "Taux d'erreur"}</span>
-                    <span className="font-mono text-sm font-black text-[#f3d27a]">{botPr !== null && Number.isFinite(botPr) ? botPr.toFixed(2) : '--'}</span>
+            {/* Bloc 3 — Performance (Masqué en mode Débutant pour zéro intimidation) */}
+            {!isBeginner && (
+                <div className="rounded-2xl border border-[#d4af37]/20 bg-[#18130e] p-3 space-y-2 shadow-md">
+                    <div className="grid grid-cols-3 items-center text-center">
+                        <span className="font-mono text-sm font-black text-emerald-400">{playerPr.toFixed(2)}</span>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">{isEn ? 'Error rate' : "Taux d'erreur"}</span>
+                        <span className="font-mono text-sm font-black text-[#f3d27a]">{botPr !== null && Number.isFinite(botPr) ? botPr.toFixed(2) : '--'}</span>
+                    </div>
+                    <div className="grid grid-cols-3 items-center text-center border-t border-[#d4af37]/10 pt-1.5">
+                        <span className="truncate text-xs font-semibold text-[#f7f3e8]">{playerCategory}</span>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">{isEn ? 'Skill level' : 'Rang Cercle'}</span>
+                        <span className="truncate text-xs font-semibold text-[#f7f3e8]">{botCategory ?? (isEn ? 'Master' : 'Maître')}</span>
+                    </div>
                 </div>
-                <div className="grid grid-cols-3 items-center text-center border-t border-[#d4af37]/10 pt-1.5">
-                    <span className="truncate text-xs font-semibold text-[#f7f3e8]">{playerCategory}</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">{isEn ? 'Skill level' : 'Rang Cercle'}</span>
-                    <span className="truncate text-xs font-semibold text-[#f7f3e8]">{botCategory ?? (isEn ? 'Master' : 'Maître')}</span>
-                </div>
-            </div>
+            )}
 
             {/* Bilan chiffré des 4 paliers */}
             <div className="grid grid-cols-4 gap-1.5">

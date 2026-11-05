@@ -6,6 +6,9 @@ import {
     formatCubeTransition,
     getCubePositionZone,
     canPlayerOfferDouble,
+    isBeaverAllowed,
+    validateBeaverLegality,
+    computeJacobyMultiplier,
 } from './cubeRules';
 
 describe('cubeRules (Audit 9/20 — Manipulation du Videau & Cube Safety)', () => {
@@ -52,5 +55,29 @@ describe('cubeRules (Audit 9/20 — Manipulation du Videau & Cube Safety)', () =
         expect(canPlayerOfferDouble({ ...base, scoreX: 5, cubeValue: 2 })).toBe(false);
         // Règle WBF 5.1 : interdit de doubler sur la position initiale avant le premier coup joué
         expect(canPlayerOfferDouble({ ...base, isOpeningPosition: true })).toBe(false);
+    });
+
+    it('interdit strictement le BEAVER en Match Play (matchLength > 0)', () => {
+        expect(isBeaverAllowed(0)).toBe(true);
+        expect(isBeaverAllowed(3)).toBe(false);
+        expect(isBeaverAllowed(7)).toBe(false);
+
+        expect(() => validateBeaverLegality(0)).not.toThrow();
+        expect(() => validateBeaverLegality(5)).toThrowError('MATCH_PLAY_BEAVER_FORBIDDEN');
+    });
+
+    it('applique la règle Jacoby en Money Game (matchLength === 0)', () => {
+        // En Money Game (matchLength 0) sans videau doublé (cubeValue <= 1) : Gammon (2) et BG (3) ramenés à 1
+        expect(computeJacobyMultiplier({ matchLength: 0, cubeValue: 1, rawMultiplier: 2 })).toBe(1);
+        expect(computeJacobyMultiplier({ matchLength: 0, cubeValue: 1, rawMultiplier: 3 })).toBe(1);
+        expect(computeJacobyMultiplier({ matchLength: 0, cubeValue: 1, rawMultiplier: 1 })).toBe(1);
+
+        // Dès que le videau est tourné (cubeValue >= 2), les gammon et backgammon comptent pleinement
+        expect(computeJacobyMultiplier({ matchLength: 0, cubeValue: 2, rawMultiplier: 2 })).toBe(2);
+        expect(computeJacobyMultiplier({ matchLength: 0, cubeValue: 2, rawMultiplier: 3 })).toBe(3);
+
+        // En Match Play (matchLength > 0), la règle Jacoby ne s'applique jamais : les gammon comptent toujours
+        expect(computeJacobyMultiplier({ matchLength: 7, cubeValue: 1, rawMultiplier: 2 })).toBe(2);
+        expect(computeJacobyMultiplier({ matchLength: 7, cubeValue: 1, rawMultiplier: 3 })).toBe(3);
     });
 });

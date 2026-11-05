@@ -66,8 +66,9 @@ export function useBackgammonGame(options: UseBackgammonGameOptions = {}) {
         return computeLegalTargets(boardState, boardState.dice, usedDice);
     }, [boardState, usedDice, phase]);
 
+    const effectiveMatchLength = state.matchLength ?? matchLength;
     const progression = useMatchProgressionState({
-        matchLength,
+        matchLength: effectiveMatchLength,
         boardState,
         phase,
         crawfordAlreadyPlayed: state.crawfordAlreadyPlayed,

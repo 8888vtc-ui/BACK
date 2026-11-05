@@ -102,3 +102,38 @@ export function canPlayerOfferDouble(params: CubeEligibilityParams): boolean {
 
     return true;
 }
+
+/**
+ * Règle officielle WBF : Le BEAVER est strictement interdit en Match Play (matchLength > 0).
+ * Il n'est toléré qu'en Money Game informel si convenu entre les joueurs.
+ */
+export function isBeaverAllowed(matchLength: number): boolean {
+    return matchLength === 0;
+}
+
+/**
+ * Valide l'interdiction stricte du Beaver en match play selon les règles WBGF.
+ */
+export function validateBeaverLegality(matchLength: number): void {
+    if (matchLength > 0) {
+        throw new Error('MATCH_PLAY_BEAVER_FORBIDDEN: BEAVER is strictly forbidden in Match Play (matchLength > 0)');
+    }
+}
+
+/**
+ * Règle Jacoby en Money Game (matchLength === 0) :
+ * Les Gammons (2x) et Backgammons (3x) ne comptent que comme une victoire simple (1x)
+ * si le videau n'a pas été proposé et accepté au préalable (cubeValue === 1).
+ */
+export function computeJacobyMultiplier(params: {
+    matchLength: number;
+    cubeValue: number;
+    rawMultiplier: number;
+}): number {
+    const { matchLength, cubeValue, rawMultiplier } = params;
+    if (matchLength === 0 && cubeValue <= 1) {
+        // En Money Game sans videau tourné, la règle Jacoby ramène le multiplicateur à 1
+        return 1;
+    }
+    return rawMultiplier;
+}

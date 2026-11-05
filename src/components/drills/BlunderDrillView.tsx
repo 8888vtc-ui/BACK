@@ -58,12 +58,16 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     const initialSelection = useMemo(() => {
         const all = getAllBlunders();
+        if (initialMode === 'personal_blunders') {
+            const pick = selectNextPersonalBlunderQuiz(all);
+            if (pick.quiz) return { quiz: pick.quiz, targetCategory: { id: normalizeToQuizCategory(pick.quiz.conceptId), shortLabel: pick.quiz.conceptName, fullName: pick.quiz.conceptName, icon: '🎯' }, reasonLabel: pick.reasonLabel };
+        }
         if (initialConceptId && initialConceptId !== 'all') {
             const m = all.find((b) => b.conceptId === initialConceptId);
             if (m) return { quiz: m, targetCategory: { id: normalizeToQuizCategory(m.conceptId), shortLabel: m.conceptName, fullName: m.conceptName, icon: '🎯' }, reasonLabel: `Focus ciblé · ${m.conceptName}` };
         }
         return selectNextAdaptiveQuiz(all);
-    }, [initialConceptId]);
+    }, [initialConceptId, initialMode]);
 
     const [currentBlunder, setCurrentBlunder] = useState<PlayerBlunderRecord | null>(() => initialSelection.quiz);
     const [reasonLabel, setReasonLabel] = useState<string>(() => initialSelection.reasonLabel);

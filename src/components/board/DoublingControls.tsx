@@ -100,7 +100,7 @@ export default function DoublingControls({
             {/* Barre de contrôle du videau (Bouton DOUBLER) quand ce n'est pas en attente de réponse */}
             {!isDoublePending && phase === 'WAITING_FOR_ROLL' && currentTurn === 'X' && (
                 <div className="flex items-center justify-between rounded-xl border border-slate-700/60 bg-slate-800/50 px-4 py-2.5 text-xs text-slate-300">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5 flex-wrap">
                         <span className="font-bold text-slate-200">Videau actuel :</span>
                         <span className="rounded bg-amber-500/20 px-2 py-0.5 font-bold text-amber-300 ring-1 ring-amber-500/40">
                             {cubeValue === 1 ? '64 (neutre)' : cubeValue}
@@ -108,6 +108,22 @@ export default function DoublingControls({
                         <span className="text-slate-400">
                             {cubeOwner === null ? '· Centré' : `· Détenu par ${cubeOwner}`}
                         </span>
+                        {crawford && (
+                            <span
+                                data-testid="doubling-crawford-badge"
+                                className="rounded bg-rose-500/20 px-2 py-0.5 font-bold text-rose-300 border border-rose-500/40 flex items-center gap-1"
+                            >
+                                🛡️ Règle Crawford (Videau verrouillé)
+                            </span>
+                        )}
+                        {isDMP && (
+                            <span
+                                data-testid="doubling-dmp-badge"
+                                className="rounded bg-amber-500/20 px-2 py-0.5 font-bold text-amber-300 border border-amber-500/40 flex items-center gap-1"
+                            >
+                                ⚔️ Double Match Point (Videau désactivé)
+                            </span>
+                        )}
                     </div>
 
                     <button
@@ -117,7 +133,7 @@ export default function DoublingControls({
                         data-testid="offer-double-btn"
                         title={
                             crawford
-                                ? 'Règle de Crawford : le videau est suspendu pour cette manche'
+                                ? 'Règle Crawford (Videau verrouillé)'
                                 : isDMP
                                 ? 'Double Match Point (DMP) : le videau est désactivé'
                                 : !canDouble
@@ -131,7 +147,7 @@ export default function DoublingControls({
                         }`}
                     >
                         <span>🎲</span>
-                        <span>Doubler ({nextCubeValue})</span>
+                        <span>{crawford ? 'Règle Crawford (Videau verrouillé)' : isDMP ? 'DMP (Videau verrouillé)' : `Doubler (${nextCubeValue})`}</span>
                     </button>
                 </div>
             )}

@@ -36,7 +36,7 @@ export {
 export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.memo(({
     difficulty = 'expert', locale = 'fr', isXTurn, scoreX, scoreO, cubeValue, matchLength, turn,
     opponentClock = '02:36', playerClock = '02:14', delaySeconds = 12, prX, prO, challengerProfile,
-    opponentDice = null, onSendQuickChat,
+    opponentDice = null, onSendQuickChat, crawford = false, isDMP = false,
     isBrowserFullscreen = false, isFocusFullBoard = true, onToggleFullscreen, onToggleCoach,
     onBackToLobby, canUndo = false, onUndo, autoConfirmEnabled = false, onToggleAutoConfirm,
     autoRollEnabled = false, onToggleAutoRoll,
@@ -168,6 +168,16 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     <div className="mt-0.5 font-display text-xs italic font-bold text-[#f7f3e8] leading-tight truncate">
                         Match <span className="font-mono not-italic font-extrabold text-[#d4af37]">{matchLength > 0 ? `${matchLength} pts` : 'Libre'}</span>
                     </div>
+                    {crawford && (
+                        <div data-testid="left-rail-crawford-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">
+                            🛡️ Crawford
+                        </div>
+                    )}
+                    {isDMP && (
+                        <div data-testid="left-rail-dmp-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">
+                            ⚔️ DMP
+                        </div>
+                    )}
                 </div>
 
                 <div data-testid="left-rail-clock-block" className="flex flex-col items-center justify-between rounded-xl border border-[#d4af37]/40 bg-[#080605] p-1 shadow-inner gap-0.5 shrink-0 w-13">

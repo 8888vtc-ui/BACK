@@ -28,6 +28,7 @@ export interface BoardLeftPlayerRailProps {
     readonly playerClock?: string; readonly delaySeconds?: number; readonly prX?: number | null;
     readonly prO?: number | null; readonly challengerProfile?: PlayerEloProfile | null;
     readonly opponentDice?: [number, number] | null;
+    readonly crawford?: boolean; readonly isDMP?: boolean;
     readonly onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
     readonly isBrowserFullscreen?: boolean; readonly isFocusFullBoard?: boolean;
     readonly onToggleFullscreen?: () => void; readonly onToggleCoach?: () => void;

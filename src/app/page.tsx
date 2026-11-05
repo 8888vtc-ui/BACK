@@ -46,6 +46,7 @@ export default function Home() {
 
     const [appScreen, setAppScreen] = useState<AppScreen>('LOBBY');
     const userInitiatedMultiplayerRef = useRef<boolean>(false);
+    const hasAutoStartedRef = useRef<boolean>(false);
     const livePrRef = useRef<{ prX: number; prO: number | null }>({ prX: 0, prO: null });
 
     useEffect(() => {
@@ -205,9 +206,10 @@ export default function Home() {
     }, [game, resetGameHistory, isLiveAdviceEnabled, toggleLiveAdvice]);
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && !hasAutoStartedRef.current) {
             const params = new URLSearchParams(window.location.search);
             if (window.location.pathname.startsWith('/play') || params.get('start') === 'guided') {
+                hasAutoStartedRef.current = true;
                 handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
             }
         }
