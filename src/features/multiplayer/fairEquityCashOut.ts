@@ -174,3 +174,4 @@ export function calculateFairEquityCashOut(params: {
     winProbabilityB: Number(winProbB.toFixed(4)),
   };
 }
+

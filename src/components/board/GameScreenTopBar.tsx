@@ -2,6 +2,7 @@
 
 import React from 'react';
 import MatchHeader from '../hud/MatchHeader';
+import { InstantFriendInviteButton } from '../play/InstantFriendInviteButton';
 import type { ThemeName } from './boardThemes';
 import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
 import type { useMultiplayerGame } from '../../hooks/useMultiplayerGame';
@@ -57,8 +58,8 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
 }) => {
     return (
         <>
-            {/* Barre Raccourci Mode Échiquier Pur (Full Focus) */}
-            <div className="w-full flex items-center justify-between px-2 py-0.5 z-30 shrink-0">
+            {/* Barre Raccourci Mode Échiquier Pur & Invitation 1-Clic */}
+            <div className="w-full flex items-center justify-between px-2 py-0.5 z-30 shrink-0 gap-2">
                 <button
                     type="button"
                     data-testid="full-focus-board-btn"
@@ -71,6 +72,9 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                 >
                     <span>{isFullFocusMode ? '🖥️ Quitter Plein Écran (Touche F)' : '🖥️ Mode Échiquier Pur (Full Focus · Touche F)'}</span>
                 </button>
+                <InstantFriendInviteButton
+                    matchLength={game.state.matchLength}
+                />
             </div>
 
             {/* 1. HUD Compact Mobile */}
