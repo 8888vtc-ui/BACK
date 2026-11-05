@@ -38,30 +38,17 @@ export interface EngineOriginProof {
 }
 
 export interface BgsageProbabilities {
-    win: number;
-    winGammon: number;
-    winBackgammon: number;
-    loseWin: number;
-    loseGammon: number;
-    loseBackgammon: number;
-    winGammonExclusive?: number;
-    loseGammonExclusive?: number;
-    winSingle?: number;
-    loseSingle?: number;
-    winGammonCumulative?: number;
-    loseGammonCumulative?: number;
+    win: number; winGammon: number; winBackgammon: number; loseWin: number; loseGammon: number; loseBackgammon: number;
+    winGammonExclusive?: number; loseGammonExclusive?: number; winSingle?: number; loseSingle?: number;
+    winGammonCumulative?: number; loseGammonCumulative?: number;
 }
 
 export function calculateCubelessEquity(probs: BgsageProbabilities): number {
-    const w = probs.win;
-    const l = probs.loseWin ?? 1.0 - w;
-    const wBg = probs.winBackgammon;
-    const lBg = probs.loseBackgammon;
+    const w = probs.win, l = probs.loseWin ?? 1.0 - w, wBg = probs.winBackgammon, lBg = probs.loseBackgammon;
     if (typeof probs.winGammonExclusive === 'number' && typeof probs.loseGammonExclusive === 'number') {
         return Number(((w - l) + (probs.winGammonExclusive - probs.loseGammonExclusive) + 2 * (wBg - lBg)).toFixed(4));
     }
-    const wGCum = probs.winGammonCumulative ?? probs.winGammon;
-    const lGCum = probs.loseGammonCumulative ?? probs.loseGammon;
+    const wGCum = probs.winGammonCumulative ?? probs.winGammon, lGCum = probs.loseGammonCumulative ?? probs.loseGammon;
     return Number(((w - l) + (wGCum - lGCum) + (wBg - lBg)).toFixed(4));
 }
 
@@ -80,18 +67,12 @@ export interface BgsageMove {
 }
 
 export interface BgsageCubeDecision {
-    noDouble?: number | null;
-    doubleTake?: number | null;
-    doublePass?: number | null;
-    optimalAction?: string | null;
+    noDouble?: number | null; doubleTake?: number | null; doublePass?: number | null; optimalAction?: string | null;
 }
 
 export interface BgsageEvaluateResponse {
-    chequerPlay: BgsageMove[];
-    cubeDecision: BgsageCubeDecision;
-    gamePlans?: { player: string; opponent: string } | null;
-    isRace?: boolean | null;
-    source?: string | null;
+    chequerPlay: BgsageMove[]; cubeDecision: BgsageCubeDecision;
+    gamePlans?: { player: string; opponent: string } | null; isRace?: boolean | null; source?: string | null;
 }
 
 const DEFAULT_CLOUD_RUN_URL = 'https://bgsage-service-468274233732.europe-west1.run.app';
@@ -170,6 +151,25 @@ function matchCandidateMoveByNotation(m: BgsageMove, legalSeqs: ReadonlyArray<Mo
         if (rawMatch) return rawMatch;
     }
     return undefined;
+}
+
+export function normalizeBoardStateForBgsage(state: BoardState): BoardState {
+    if (state.turn === 'X') return state;
+    const inv = new Array<number>(26).fill(0);
+    inv[0] = Math.abs(state.board[25] ?? 0);
+    inv[25] = -Math.abs(state.board[0] ?? 0);
+    for (let p = 1; p <= 24; p++) {
+        const v = state.board[p] ?? 0;
+        inv[25 - p] = v === 0 ? 0 : -v;
+    }
+    return {
+        ...state,
+        board: inv,
+        turn: 'X',
+        scoreX: state.scoreO,
+        scoreO: state.scoreX,
+        cubeOwner: state.cubeOwner === 'O' ? 'X' : state.cubeOwner === 'X' ? 'O' : null,
+    };
 }
 
 export function ensureBgsageSafeXgid(xgid: string): string {
@@ -279,7 +279,8 @@ export async function selectBotMoveWithBgsage(
     if (legalSeqs.length === 0) return null;
     if (legalSeqs.length === 1) return { sequence: legalSeqs[0], evalLevel: 'forced', equityLoss: 0, isForced: true };
     const ply = 3;
-    const xgid = serializeCanonicalXGID(stateWithDice);
+    const normalized = normalizeBoardStateForBgsage(stateWithDice);
+    const xgid = serializeCanonicalXGID(normalized);
     const resp = precomputedResponse ?? (await evaluateWithBgsage(xgid, ply, timeoutMs));
     if (!resp || !resp.chequerPlay || resp.chequerPlay.length === 0) return null;
     const player = stateWithDice.turn;
@@ -341,12 +342,14 @@ export async function selectBotMoveWithBgsageStrict(
 ): Promise<{ sequence: MoveSequence; cubeDecision?: BgsageCubeDecision; evalLevel: string; equityLoss: number; isForced: boolean; engineProof: EngineOriginProof }> {
     if (legalSeqs.length === 0) throw new Error(OPENSAGE_UNREACHABLE_ERROR_CODE);
     if (legalSeqs.length === 1) {
-        const xgid = serializeCanonicalXGID(stateWithDice);
+        const normalized = normalizeBoardStateForBgsage(stateWithDice);
+        const xgid = serializeCanonicalXGID(normalized);
         const { engineProof } = await evaluateWithBgsageStrictRetry(xgid, 3, options);
         return { sequence: legalSeqs[0], evalLevel: 'forced', equityLoss: 0, isForced: true, engineProof };
     }
     const ply = 3 as const;
-    const xgid = serializeCanonicalXGID(stateWithDice);
+    const normalized = normalizeBoardStateForBgsage(stateWithDice);
+    const xgid = serializeCanonicalXGID(normalized);
     const { response, engineProof } = await evaluateWithBgsageStrictRetry(xgid, ply, options);
     const res = await selectBotMoveWithBgsage(stateWithDice, legalSeqs, difficulty, options?.timeoutMs ?? 3500, () => 0.5, response);
     if (!res) throw new Error(OPENSAGE_UNREACHABLE_ERROR_CODE);
@@ -360,7 +363,8 @@ export async function evaluateBotCubeWithBgsage(
 ): Promise<{ shouldDouble: boolean; shouldTake: boolean; noDouble: number; doubleTake: number; doublePass: number; optimalAction: string } | null> {
     if (state.crawford) return { shouldDouble: false, shouldTake: true, noDouble: 0, doubleTake: 0, doublePass: 1, optimalAction: 'No Double (Crawford)' };
     const ply = 3;
-    const xgid = serializeCanonicalXGID({ ...state, dice: null });
+    const normalized = normalizeBoardStateForBgsage({ ...state, dice: null });
+    const xgid = serializeCanonicalXGID(normalized);
     const resp = await evaluateWithBgsage(xgid, ply, timeoutMs);
     if (!resp || !resp.cubeDecision) return null;
     const nd = resp.cubeDecision.noDouble;

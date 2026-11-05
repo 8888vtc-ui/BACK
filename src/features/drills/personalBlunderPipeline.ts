@@ -275,7 +275,18 @@ export async function certifyPersonalBlunder3PlyLive(
     if (input.formatSpec.matchLength > 0 && input.playerMoveNotation.toUpperCase().includes('BEAVER')) {
         throw new Error('MATCH_PLAY_BEAVER_FORBIDDEN: BEAVER is strictly forbidden in Match Play (matchLength > 0)');
     }
-    const { response, engineProof } = await evaluateWithBgsageStrictRetry(input.xgid, 3, options);
+    let sanitizedXgid = input.xgid;
+    let sanitizedDice = input.dice;
+    if (input.quizType === 'CUBE_DECISION') {
+        const parts = sanitizedXgid.split(':');
+        if (parts.length >= 5) {
+            parts[4] = '00';
+            sanitizedXgid = parts.join(':');
+        }
+        sanitizedDice = [0, 0];
+    }
+    const effectiveInput = input.quizType === 'CUBE_DECISION' ? { ...input, xgid: sanitizedXgid, dice: sanitizedDice } : input;
+    const { response, engineProof } = await evaluateWithBgsageStrictRetry(effectiveInput.xgid, 3, options);
     const all3PlyMoves: Certified3PlyLegalMoveEntry[] = response.chequerPlay.map((m, idx) => {
         if (!m.probabilities || !validateNonRoundNeuralProbabilities(m.probabilities)) {
             throw new Error(`${OPENSAGE_UNREACHABLE_ERROR_CODE}: probabilities missing or round mock detected`);
@@ -325,7 +336,7 @@ export async function certifyPersonalBlunder3PlyLive(
     };
 
     return certifyPersonalBlunder3Ply({
-        input,
+        input: effectiveInput,
         all3PlyMoves,
         gnubgCrossCheck: defaultGnubgCrossCheck,
         archetype: options?.archetype ?? 'HOLDING_GAME',

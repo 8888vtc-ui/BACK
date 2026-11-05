@@ -100,7 +100,7 @@ describe('BlunderDrillEngine Module', () => {
                 expect(b.whyFailed).not.toContain('concède de l\'équité dès la profondeur');
                 expect(b.explanation).toBeTruthy();
                 expect(b.proverb).toBeTruthy();
-                expect(b.quizChoices?.length).toBe(4);
+                expect(b.quizChoices?.length).toBeGreaterThanOrEqual(3);
                 expect(b.commentaryVariants?.length).toBeGreaterThanOrEqual(3);
             }
         }

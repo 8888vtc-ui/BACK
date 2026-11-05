@@ -803,7 +803,21 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
     const canonicalNotation = formatCoachMoveSequence(canonicalMoves, logEntry.player, boardBefore);
 
     const bestMove = bgsageResult.chequerPlay[0];
-    const resolvedBest = resolveBgsageCandidateSeq(bestMove, bgsageResult.source);
+    let resolvedBest = resolveBgsageCandidateSeq(bestMove, bgsageResult.source);
+    let effectiveBestMove = bestMove;
+    if (resolvedBest.moves.length === 0) {
+        for (const m of bgsageResult.chequerPlay) {
+            const cand = resolveBgsageCandidateSeq(m, bgsageResult.source);
+            if (cand.moves.length > 0) {
+                resolvedBest = cand;
+                effectiveBestMove = m;
+                break;
+            }
+        }
+    }
+    if (resolvedBest.moves.length === 0 && legalSeqs.length > 0) {
+        return null;
+    }
 
     const matched = bgsageResult.chequerPlay.find((m) => {
         if (m.board && m.board.length === 26) {
@@ -852,7 +866,7 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
     });
 
     const optimalNotation = resolvedBest.notation;
-    const bestEquity = bestMove.equity;
+    const bestEquity = effectiveBestMove.equity;
 
     let playedEquity: number;
     if (matched) {

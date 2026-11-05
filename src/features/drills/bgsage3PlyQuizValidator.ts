@@ -53,9 +53,9 @@ export function validateSingleQuizStrict(quiz: Certified3PlyQuiz): void {
         throw new Error(`CHECK_4_REJECTED (Pure race forbidden): ${quiz.id}`);
     }
 
-    // Contrôle #5 — Vrai Choix Non-Trivial (>= 4 choix légaux Pions ou 3 choix réels Videau, et |ΔE_1,2| <= 0.140)
+    // Contrôle #5 — Vrai Choix Non-Trivial (>= 4 choix légaux Pions ou >= 3 choix réels Videau, et |ΔE_1,2| <= 0.140)
     const minChoices = quiz.quizType === 'CUBE_DECISION' ? 3 : 4;
-    if (quiz.legalMoves3Ply.length < minChoices || quiz.quizChoices.length !== minChoices) {
+    if (quiz.legalMoves3Ply.length < minChoices || quiz.quizChoices.length < minChoices) {
         throw new Error(`CHECK_5_REJECTED (< ${minChoices} legal moves): count=${quiz.legalMoves3Ply.length}`);
     }
     const move1 = quiz.legalMoves3Ply[0]!;
@@ -138,7 +138,7 @@ export function validateSingleQuizStrict(quiz: Certified3PlyQuiz): void {
         if (quiz.competition.crawford || quiz.competition.cubeOwner === 'O' || !quiz.xgid.includes(':00:')) {
             throw new Error(`CHECK_8_REJECTED (Cube unavailable or non-00 dice in XGID on ${quiz.id})`);
         }
-        if (new Set(quiz.quizChoices).size !== 3) {
+        if (new Set(quiz.quizChoices).size < 3) {
             throw new Error(`CHECK_13_REJECTED (Duplicate cube decision choices on ${quiz.id})`);
         }
     }

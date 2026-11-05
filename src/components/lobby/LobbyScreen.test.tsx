@@ -4,10 +4,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup, act } from '@testing-library/react';
 import LobbyScreen from './LobbyScreen';
 import { PLAYER_COLOR_KEY } from '../hud/ColorSelector';
+import { PLAYER_TIER_GATE_STORAGE_KEY } from '../../hooks/usePlayerTierGate';
 
 describe('LobbyScreen', () => {
     beforeEach(() => {
         localStorage.clear();
+        localStorage.setItem(PLAYER_TIER_GATE_STORAGE_KEY, 'INTERMEDIATE');
         vi.clearAllMocks();
     });
 
