@@ -92,7 +92,7 @@ export function verifyCheckersPhysicallyExistOnBoard(
 
     const boardSim = [...boardBefore];
     for (const m of moves) {
-        if (m.from === 0) {
+        if (m.from === 0 || (player === 'O' && m.from === 25)) {
             const barCount = player === 'X' ? boardSim[0] : -boardSim[25];
             if (barCount <= 0) return false;
             if (player === 'X') boardSim[0] -= 1; else boardSim[25] += 1;
@@ -102,6 +102,9 @@ export function verifyCheckersPhysicallyExistOnBoard(
             if (player === 'X') boardSim[m.from] -= 1; else boardSim[m.from] += 1;
         } else {
             return false;
+        }
+        if (m.to >= 1 && m.to <= 24) {
+            if (player === 'X') boardSim[m.to] += 1; else boardSim[m.to] -= 1;
         }
     }
     return true;

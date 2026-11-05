@@ -1,29 +1,12 @@
 /**
  * Client d'évaluation Open Sage (bgsage-service sur Google Cloud Run).
  */
-import {
-    applyMove,
-    borneOffCount,
-    serializeCanonicalXGID,
-    type BoardState,
-    type Move,
-    type MoveSequence,
-    type Player,
-} from '../../engine/backgammonEngine';
+import { applyMove, borneOffCount, serializeCanonicalXGID, type BoardState, type Move, type MoveSequence, type Player } from '../../engine/backgammonEngine';
 export { serializeCanonicalXGID };
 import type { AIDifficulty } from '../../engine/aiHeuristics';
-import {
-    BLUNDER_CAP_EMG_BY_DIFFICULTY,
-    computePersonaBiasDelta,
-    isVisuallyObviousBestMove,
-} from '../../features/personas/botPersonas';
+import { BLUNDER_CAP_EMG_BY_DIFFICULTY, computePersonaBiasDelta, isVisuallyObviousBestMove } from '../../features/personas/botPersonas';
 import { formatMoveSequenceNotationAbsolute } from './evaluator';
-import {
-    movesFromBoardDiff,
-    normalizeCoachNotation,
-    parseCoachNotationMoves,
-    relativeNotationToAbsolute,
-} from '../../features/coach/coachMoveNotation';
+import { applyBgsageNotationToBoard, movesFromBoardDiff, normalizeCoachNotation, parseCoachNotationMoves, relativeNotationToAbsolute } from '../../features/coach/coachMoveNotation';
 import { bgsageCacheKey, getCachedBgsageEvaluation, setCachedBgsageEvaluation } from './bgsageCache';
 export { clearBgsageEvaluationCache, bgsageEvaluationCacheSize, BGSAGE_CACHE_MAX_ENTRIES } from './bgsageCache';
 
@@ -119,7 +102,7 @@ export function boardsMatchOnPointsAndBar(a: ReadonlyArray<number>, b: ReadonlyA
     return borneOffCount(a as number[], 'X') === borneOffCount(b as number[], 'X') && borneOffCount(a as number[], 'O') === borneOffCount(b as number[], 'O');
 }
 
-function matchCandidateMoveByNotation(m: BgsageMove, legalSeqs: ReadonlyArray<MoveSequence>, boardBefore: ReadonlyArray<number>, player: Player): MoveSequence | undefined {
+function matchCandidateMoveByNotation(m: BgsageMove, legalSeqs: ReadonlyArray<MoveSequence>, boardBefore: ReadonlyArray<number>, player: Player, dice?: readonly [number, number]): MoveSequence | undefined {
     if (m.moves && m.moves.length > 0) {
         const targetAbs = normalizeCoachNotation(formatMoveSequenceNotationAbsolute(m.moves, player));
         const byMoves = legalSeqs.find((seq) => normalizeCoachNotation(formatMoveSequenceNotationAbsolute(seq.moves, player)) === targetAbs);
@@ -130,6 +113,13 @@ function matchCandidateMoveByNotation(m: BgsageMove, legalSeqs: ReadonlyArray<Mo
         if (byBoard) return byBoard;
     }
     if (!m.notation || !m.notation.trim()) return undefined;
+    if (dice) {
+        const simBoard = applyBgsageNotationToBoard(boardBefore, m.notation, dice, player);
+        if (simBoard) {
+            const bySim = legalSeqs.find((seq) => boardsMatchOnPointsAndBar(seq.board, simBoard)) ?? legalSeqs.find((seq) => boardsMatchOnPoints(seq.board, simBoard));
+            if (bySim) return bySim;
+        }
+    }
     const absTarget = relativeNotationToAbsolute(m.notation, player);
     const normAbs = normalizeCoachNotation(absTarget);
     const normRaw = normalizeCoachNotation(m.notation);
@@ -294,7 +284,7 @@ export async function selectBotMoveWithBgsage(
     }
     if (matchedCandidates.length === 0) {
         for (const m of resp.chequerPlay) {
-            const found = matchCandidateMoveByNotation(m, legalSeqs, stateWithDice.board, player);
+            const found = matchCandidateMoveByNotation(m, legalSeqs, stateWithDice.board, player, stateWithDice.dice ?? [1, 1]);
             if (found && !matchedCandidates.some((c) => c.seq === found)) matchedCandidates.push({ move: m, seq: found });
         }
     }

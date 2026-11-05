@@ -1,35 +1,12 @@
 /**
  * Notation des coups du Coach — numérotation ABSOLUE du plateau (1..24).
- *
- * PROBLÈME RÉSOLU (bug d'affichage « 13/9 » au lieu de « 13/11 ») :
- *
- * Le plateau visuel (`Board.tsx`) affiche les flèches en numérotation ABSOLUE
- * (1..24, identique pour les deux joueurs). En revanche, `formatSingleMove`
- * (evaluator.ts) produit une notation RELATIVE au joueur au trait : pour O, la
- * flèche absolue `p` est rendue `25 - p`. Résultat : un coup réellement joué
- * `13 → 11` par X pouvait être affiché `13/9` si la notation était produite
- * depuis une perspective miroir (ou depuis un board bgsage ré-indexé 0..23).
- *
- * Ce module fournit une source de vérité UNIQUE pour la notation affichée dans
- * le panneau Coach :
- *   - `formatCoachMoveSequence` : notation absolue, avec astérisque de frappe.
- *   - `formatCoachMoveSequenceFromBoard` : idem, mais reconstruit la séquence
- *     de sous-mouvements depuis `boardBefore` / `boardAfter` (utile quand le
- *     moteur ne renvoie que le plateau final, ex. bgsage).
- *   - `movesFromBoardDiff` : appariement déterministe source → destination.
- *
  * Module 100 % pur : aucune dépendance React, DOM ou réseau.
  */
-
 import type { Move, Player } from '../../engine/backgammonEngine';
 import { X_BAR, O_BAR, X_OFF, O_OFF, applyMove } from '../../engine/backgammonEngine';
 
 /**
  * Libellé d'une flèche en numérotation absolue (1..24, barre, sortie).
- *
- * ATTENTION : dans le moteur, `X_BAR === X_OFF === 0` et
- * `O_BAR === O_OFF === 25`. Le même index désigne donc la barre en `from` et
- * la sortie en `to`. On distingue les deux par le rôle (`isDestination`).
  */
 export function formatCoachPoint(point: number, isDestination = false): string {
     if (point === X_BAR || point === O_BAR) {
@@ -39,8 +16,7 @@ export function formatCoachPoint(point: number, isDestination = false): string {
 }
 
 /**
- * Formate un sous-mouvement en numérotation ABSOLUE (identique au plateau).
- * Exemple : `{ from: 13, to: 11 }` → `"13/11"`, quel que soit le joueur.
+ * Formate un sous-mouvement en numérotation ABSOLUE (ex: {from: 13, to: 11} -> "13/11").
  */
 export function formatCoachSingleMove(move: Move): string {
     return `${formatCoachPoint(move.from, false)}/${formatCoachPoint(move.to, true)}`;
@@ -326,4 +302,87 @@ export function parseCoachNotationMoves(notation: string, player: Player = 'X'):
             const count = m[4] ? Number(m[4]) : 1;
             return Array.from({ length: count }, () => ({ from, to }));
         });
+}
+
+/**
+ * Applique une notation bgsage ou standard (ex: "24/13", "8/4* 4/2", "bar/21", "13/7(2)")
+ * sur boardBefore en tenant compte des dés et des étapes intermédiaires.
+ */
+export function applyBgsageNotationToBoard(
+    boardBefore: readonly number[],
+    notation: string,
+    diceRolled: readonly [number, number],
+    player: Player = 'X',
+): number[] | null {
+    if (!notation || notation === 'Pass' || notation === 'Double' || notation === 'Take' || notation === 'Drop') {
+        return null;
+    }
+    const isDouble = diceRolled[0] === diceRolled[1];
+    const availableDice = isDouble
+        ? [diceRolled[0], diceRolled[0], diceRolled[0], diceRolled[0]]
+        : [diceRolled[0], diceRolled[1]];
+
+    const absNotation = player === 'O' ? relativeNotationToAbsolute(notation, 'O') : notation;
+    const rawTokens = absNotation.replace(/\*/g, '').trim().split(/\s+/).filter(Boolean);
+    const tokens: string[] = [];
+    for (const tok of rawTokens) {
+        const m = tok.match(/^(.+)\((\d+)\)$/);
+        if (m) {
+            const count = Number(m[2]);
+            for (let i = 0; i < count; i++) tokens.push(m[1]);
+        } else {
+            tokens.push(tok);
+        }
+    }
+
+    let board = [...boardBefore];
+    const bar = player === 'X' ? X_BAR : O_BAR;
+    const off = player === 'X' ? X_OFF : O_OFF;
+
+    for (const tok of tokens) {
+        const parts = tok.split('/');
+        if (parts.length < 2) continue;
+        const fromStr = parts[0].toLowerCase();
+        const toStr = parts[1].toLowerCase();
+        const from = fromStr === 'bar' ? bar : Number(fromStr);
+        const to = toStr === 'off' ? off : Number(toStr);
+
+        const dist = player === 'X'
+            ? (from === X_BAR ? 25 - to : to === X_OFF ? from : from - to)
+            : (from === O_BAR ? to : to === O_OFF ? 25 - from : to - from);
+
+        const exactDieIdx = availableDice.indexOf(dist);
+        if (exactDieIdx !== -1) {
+            availableDice.splice(exactDieIdx, 1);
+            board = applyMove(board, { from, to }, player);
+            continue;
+        }
+
+        let stepResolved = false;
+        for (let i = 0; i < availableDice.length; i++) {
+            const d1 = availableDice[i];
+            const remainingDice = [...availableDice];
+            remainingDice.splice(i, 1);
+            const d2 = remainingDice.find((d) => d1 + d === dist);
+            if (d2 !== undefined) {
+                const mid = player === 'X'
+                    ? (from === X_BAR ? 25 - d1 : from - d1)
+                    : (from === O_BAR ? d1 : from + d1);
+                const isBlocked = player === 'X' ? board[mid] <= -2 : board[mid] >= 2;
+                if (!isBlocked && mid >= 1 && mid <= 24) {
+                    board = applyMove(board, { from, to: mid }, player);
+                    board = applyMove(board, { from: mid, to }, player);
+                    availableDice.splice(i, 1);
+                    const j = availableDice.indexOf(d2);
+                    if (j !== -1) availableDice.splice(j, 1);
+                    stepResolved = true;
+                    break;
+                }
+            }
+        }
+        if (!stepResolved) {
+            board = applyMove(board, { from, to }, player);
+        }
+    }
+    return board;
 }

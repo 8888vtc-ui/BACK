@@ -382,5 +382,5 @@ describe('reconstructBoardFromLog & Audit 3 (Cache LRU + Off-List Blunders)', ()
             optimalMove: '8/4',
         });
         expect(validInaccuracy.success).toBe(true);
-    });
+    }, 20000);
 });

@@ -1,0 +1,28 @@
+{
+  "totalGames": 50000,
+  "totalMoves": 2851224,
+  "completedGames": 50000,
+  "winsByPlayer": {
+    "X": 18600,
+    "O": 31400
+  },
+  "movesByTier": {
+    "beginner": 1020426,
+    "intermediate": 962169,
+    "expert": 937831
+  },
+  "sinCounts": {
+    "ILLEGAL_RECOMMENDED_MOVE": 0,
+    "MISMATCHED_PLAYED_MOVE": 0,
+    "WRONG_TURN_OR_POST_MOVE_BOARD": 0,
+    "LLM_TEXT_HALLUCINATION": 0,
+    "FALSE_BLUNDER_ON_OPTIMAL": 0,
+    "TIER_JARGON_VIOLATION": 0,
+    "BOT_ABSURD_MOVE": 0
+  },
+  "auditedMoves": 615602,
+  "zeroSinSuccessRate": 100,
+  "averageMovesPerGame": 57.02,
+  "durationMs": 73204,
+  "status": "COMPLETED_CERTIFIED_0_ERROR"
+}

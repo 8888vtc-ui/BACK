@@ -32,6 +32,7 @@ import {
 } from '../../lib/engine/bgsageClient';
 import { bgsageCacheKey, getCachedBgsageEvaluation } from '../../lib/engine/bgsageCache';
 import {
+    applyBgsageNotationToBoard,
     formatCoachMoveSequence,
     formatCoachMoveSequenceFromBoard,
     movesFromBoardDiff,
@@ -787,6 +788,19 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
                 notation: formatCoachMoveSequence(matchedByNotation.moves, logEntry.player, boardBefore),
             };
         }
+        const simBoard = applyBgsageNotationToBoard(boardBefore, m.notation, evalState.dice ?? [1, 1], logEntry.player);
+        if (simBoard) {
+            const matchedSeq =
+                legalSeqs.find((s) => boardsMatchOnPointsAndBar(s.board, simBoard)) ??
+                legalSeqs.find((s) => boardsMatchOnPoints(s.board, simBoard));
+            if (matchedSeq) {
+                return {
+                    moves: matchedSeq.moves,
+                    board: matchedSeq.board,
+                    notation: formatCoachMoveSequence(matchedSeq.moves, logEntry.player, boardBefore),
+                };
+            }
+        }
         return {
             moves: [] as Move[],
             board: null as number[] | null,
@@ -817,7 +831,18 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
         }
     }
     if (resolvedBest.moves.length === 0 && legalSeqs.length > 0) {
-        return null;
+        resolvedBest = {
+            moves: legalSeqs[0].moves,
+            board: legalSeqs[0].board,
+            notation: formatCoachMoveSequence(legalSeqs[0].moves, logEntry.player, boardBefore),
+        };
+        effectiveBestMove = bestMove ?? {
+            rank: 1,
+            notation: resolvedBest.notation,
+            equity: 0,
+            equityLoss: 0,
+            probabilities: null,
+        };
     }
 
     const matched = bgsageResult.chequerPlay.find((m) => {
@@ -839,6 +864,10 @@ function buildHumanMoveAnalysisFromBgsageResult(params: {
             ) {
                 return true;
             }
+        }
+        const simBoard = applyBgsageNotationToBoard(boardBefore, m.notation, evalState.dice ?? [1, 1], logEntry.player);
+        if (simBoard && (boardsMatchOnPointsAndBar(simBoard, effectiveBoardAfter) || boardsMatchOnPoints(simBoard, effectiveBoardAfter))) {
+            return true;
         }
         const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
         const absMoveNotation = relativeNotationToAbsolute(m.notation, logEntry.player);

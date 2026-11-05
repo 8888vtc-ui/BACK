@@ -89,3 +89,4 @@ export const NavbarPointsAndBadges: React.FC<NavbarPointsAndBadgesProps> = React
 
 NavbarPointsAndBadges.displayName = 'NavbarPointsAndBadges';
 export default NavbarPointsAndBadges;
+
