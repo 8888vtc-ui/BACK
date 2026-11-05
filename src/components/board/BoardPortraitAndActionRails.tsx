@@ -126,7 +126,7 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <span className="truncate font-display text-sm italic font-bold text-[#f7f3e8] leading-tight">Vous</span>
                         <span className="truncate text-[10px] font-semibold text-emerald-300/90">Grand Cercle</span>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
-                            <span className="text-stone-300">1500</span>
+                            {!isBeginner && <span className="text-stone-300">1500</span>}
                             {!isBeginner && <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(playerPrNum)}`}>PR {playerPrLabel}</span>}
                         </div>
                     </div>
@@ -145,7 +145,7 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                             <span className="truncate">{opponentBadge}</span>
                         </span>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
-                            <span className="text-stone-300">{botElo}</span>
+                            {!isBeginner && challengerProfile && <span className="text-stone-300">{botElo}</span>}
                             {!isBeginner && challengerProfile && (
                                 <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(opponentPrNum)}`}>PR {opponentPrValue}</span>
                             )}

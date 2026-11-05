@@ -105,9 +105,11 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             customPhotoUrl={challengerProfile ? opponentPhotoUrl : null}
                         />
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
-                            <span className="font-mono text-stone-200 font-bold">
-                                {challengerProfile ? `${botElo} Elo` : 'Bot IA'}
-                            </span>
+                            {!isBeginner && (
+                                <span className="font-mono text-stone-200 font-bold">
+                                    {challengerProfile ? `${botElo} Elo` : 'Adversaire'}
+                                </span>
+                            )}
                             {!isBeginner && challengerProfile && (
                                 <span className={`inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap ${resolvePrBadgeClasses(opponentPrNum)}`}>
                                     PR Match : {opponentPrValue}
@@ -118,7 +120,11 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                     <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
                         <span data-testid="left-rail-mobile-opp-name" title={opponentDisplayName} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">{opponentDisplayName}</span>
-                        <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">{challengerProfile ? `${botElo} Elo` : 'Bot IA'}</span>
+                        {!isBeginner && (
+                            <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">
+                                {challengerProfile ? `${botElo} Elo` : ''}
+                            </span>
+                        )}
                     </div>
 
                     <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
@@ -148,7 +154,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 ) : (
                     <div data-testid="left-rail-bot-engine-badge" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-[#d4af37]/25 bg-black/45 px-2 py-1 text-[10px] font-semibold text-[#f3d27a]">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
-                        <span>{isBeginner ? 'Partie Guidée' : 'Adversaire IA'}</span>
+                        <span>{isBeginner ? 'Partie Guidée' : 'Adversaire du Cercle'}</span>
                     </div>
                 )}
             </div>
@@ -227,7 +233,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     ) : (
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
                             <CountryFlagSvg countryName={playerMeta.countryName} />
-                            <span className="font-mono text-stone-200 font-bold">1500 Elo</span>
+                            {!isBeginner && <span className="font-mono text-stone-200 font-bold">1500 Elo</span>}
                             {playerMeta.careerPr !== null && !isBeginner && (
                                 <span data-testid="left-rail-career-pr" className="font-mono text-[10px] font-bold text-[#f3d27a]">
                                     · PR Moy. {playerMeta.careerPr.toFixed(1)}
@@ -243,9 +249,11 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                 <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
                     <span data-testid="left-rail-mobile-player-name" title={playerMeta.pseudo} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">{playerMeta.pseudo}</span>
-                    <span data-testid="left-rail-mobile-player-elo" className="font-mono text-[8.5px] font-bold text-emerald-300/90 tabular-nums whitespace-nowrap">
-                        {playerMeta.isGuest ? 'Invité' : '1500 Elo'}
-                    </span>
+                    {!isBeginner && (
+                        <span data-testid="left-rail-mobile-player-elo" className="font-mono text-[8.5px] font-bold text-emerald-300/90 tabular-nums whitespace-nowrap">
+                            {playerMeta.isGuest ? 'Invité' : '1500 Elo'}
+                        </span>
+                    )}
                 </div>
 
                 <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">

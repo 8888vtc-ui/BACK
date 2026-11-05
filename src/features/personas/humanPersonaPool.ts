@@ -113,6 +113,9 @@ export interface EvaluatedMoveOption<T> {
     readonly move: T;
     readonly equity: number;
     readonly equityLoss: number;
+    readonly isHit?: boolean;
+    readonly makesPoint?: boolean;
+    readonly leavesBlot?: boolean;
     readonly boardBefore?: ReadonlyArray<number>;
     readonly boardAfter?: ReadonlyArray<number>;
 }
@@ -122,7 +125,8 @@ export interface EvaluatedMoveOption<T> {
  * 1. Élimine strictement tout coup dont `equityLoss > seed.maxDeltaEmg` (`0.035` / `0.075` / `0.115`).
  * 2. Applique les biais psychologiques humains (peur des blots isolés, frappe réflexe, chandeliers, points profonds)
  *    et le budget d'erreur cible `Δ_voulu = seed.targetErPr / 500`.
- * 3. Sélectionne de manière variée parmi le Top 3 humain pour éviter tout jeu robotique.
+ * 3. Favorise les frappes pour le profil Agressif/Blitz, et les ancrages/portes pour le profil Prudent.
+ * 4. Sélectionne de manière variée parmi le Top 3 humain pour éviter tout jeu robotique.
  */
 export function selectNaturalHumanMoveFromBgsage<T>(
     evaluatedMoves: ReadonlyArray<EvaluatedMoveOption<T>>,
@@ -146,13 +150,40 @@ export function selectNaturalHumanMoveFromBgsage<T>(
     const scored = pool.map((cand) => {
         const loss = Math.abs(cand.equityLoss);
         const budgetProximity = -Math.abs(loss - desiredLoss) * 0.5;
+
+        let temperamentBonus = 0;
+        const isHit = Boolean(
+            cand.isHit ||
+            (cand.boardBefore && cand.boardAfter && (cand.boardAfter[0] ?? 0) > (cand.boardBefore[0] ?? 0)),
+        );
+        let pointsMade = 0;
+        let blotsCount = 0;
+        if (cand.boardBefore && cand.boardAfter) {
+            for (let pt = 1; pt <= 24; pt++) {
+                const val = cand.boardAfter[pt] ?? 0;
+                const prev = cand.boardBefore[pt] ?? 0;
+                if (val === -1) blotsCount++;
+                if (val <= -2 && prev > -2) pointsMade++;
+            }
+        }
+        if (cand.makesPoint) pointsMade = Math.max(pointsMade, 1);
+        if (cand.leavesBlot) blotsCount = Math.max(blotsCount, 1);
+
+        if (seed.cubeTemperament === 'aggressive') {
+            temperamentBonus = (isHit ? 0.08 : 0) - blotsCount * 0.01;
+        } else if (seed.cubeTemperament === 'cautious') {
+            temperamentBonus = pointsMade * 0.06 - blotsCount * 0.05 - (isHit ? 0.01 : 0);
+        } else {
+            temperamentBonus = pointsMade * 0.02 + (isHit ? 0.02 : 0) - blotsCount * 0.02;
+        }
+
         const psychBias =
             cand.boardBefore && cand.boardAfter
                 ? computePersonaBiasDelta(cand.boardBefore, cand.boardAfter, seed.difficulty) * 0.25
                 : 0;
         return {
             cand,
-            humanScore: cand.equity + budgetProximity + psychBias,
+            humanScore: cand.equity + budgetProximity + psychBias + temperamentBonus,
         };
     });
 
@@ -199,7 +230,7 @@ export function evaluateHumanPersonaCubeHeuristic(
     return 'take';
 }
 
-export const DISCREET_HUMAN_GREETINGS = ['hi gl', 'Salut, bonne partie', 'gg'] as const;
+export const DISCREET_HUMAN_GREETINGS = ['Salut, bonne partie !', 'hi gl', 'gg', 'Belle partie !'] as const;
 export const MAX_MICRO_CHAT_PROBABILITY = 0.30;
 
 /**
