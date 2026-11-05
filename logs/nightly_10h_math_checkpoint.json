@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-11-05T18:50:05.996Z",
+  "totalMoves": 50000,
+  "totalGames": 741,
+  "movesPerSec": 31328,
+  "equationPassRates": {
+    "EQ1_MASS_CONSERVATION": 50000,
+    "EQ2_LEGAL_GEOMETRY_BAR_WBGF": 50000,
+    "EQ3_TRANSPOSITION_EQUIVALENCE": 50000,
+    "EQ4_SYMMETRY_INVERSION": 50000,
+    "EQ5_MONOTONICITY_DELTA_EMG": 50000,
+    "EQ6_PROBABILITY_BOUNDS_ANTI_MOCK": 50000,
+    "EQ7_REAL_BOARD_FACTS_TRUTH": 50000,
+    "EQ8_36_ROLL_COMBINATORICS": 50000,
+    "EQ9_COACH_ISOLATION_GATE": 50000,
+    "EQ10_PERSONA_POOL_CALIBRATION": 50000,
+    "EQ11_CUBE_LEGALITY_ZERO_SUM": 50000,
+    "EQ12_QUIZ_BANK_STRICT_AUDIT": 50000
+  },
+  "avgDeltaEmgByTier": {
+    "expert": 0,
+    "intermediate": 0.0188,
+    "beginner": 0.0652
+  },
+  "anomaliesDetected": 0,
+  "anomaliesFixed": 0,
+  "status": "COMPLETED"
+}
