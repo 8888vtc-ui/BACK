@@ -11,6 +11,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { Move } from '../../engine/backgammonEngine';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { pointLayout, VB_W, VB_H, TOP_APEX, BOT_APEX, POINT_W } from './boardGeometry';
 import type { BoardOrientation } from './boardOrientation';
 
@@ -109,6 +110,8 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
     opponent = [],
     orientation = 'normal',
 }) => {
+    const { tierGate } = usePlayerTierGate();
+    const isBeginner = tierGate === 'BEGINNER';
     const svgRef = useRef<SVGSVGElement | null>(null);
     const [domCenters, setDomCenters] = useState<Record<string, number> | null>(null);
 
@@ -177,6 +180,9 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
                 <filter id="glow-green" x="-30%" y="-30%" width="160%" height="160%">
                     <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#22c55e" floodOpacity="0.6" />
                 </filter>
+                <filter id="glow-gold" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#D4AF37" floodOpacity="0.8" />
+                </filter>
                 <filter id="glow-red" x="-30%" y="-30%" width="160%" height="160%">
                     <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#ef4444" floodOpacity="0.6" />
                 </filter>
@@ -185,6 +191,9 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
                 </marker>
                 <marker id="arrowhead-green" markerWidth="11" markerHeight="8" refX="9.5" refY="4" orient="auto">
                     <polygon points="0 0, 11 4, 0 8, 3 4" fill="#22c55e" />
+                </marker>
+                <marker id="arrowhead-gold" markerWidth="11" markerHeight="8" refX="9.5" refY="4" orient="auto">
+                    <polygon points="0 0, 11 4, 0 8, 3 4" fill="#D4AF37" />
                 </marker>
                 <marker id="arrowhead-opponent" markerWidth="10" markerHeight="8" refX="8.5" refY="4" orient="auto">
                     <polygon points="0 0, 10 4, 0 8, 2.5 4" fill={OPPONENT_ARROW_STROKE} />
@@ -254,26 +263,26 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
             ))}
 
             {optimalArrows.map((a, i) => (
-                <g key={`optimal-${i}`} data-testid={`coach-optimal-arrow-${i}`} filter="url(#glow-green)">
+                <g key={`optimal-${i}`} data-testid={`coach-optimal-arrow-${i}`} filter={isBeginner ? "url(#glow-gold)" : "url(#glow-green)"}>
                     <circle
                         data-testid={`coach-ghost-checker-optimal-${i}`}
                         cx={a.x2}
                         cy={a.y2}
                         r="15"
-                        fill="rgba(34, 197, 94, 0.24)"
-                        stroke="#22c55e"
+                        fill={isBeginner ? "rgba(212, 175, 55, 0.28)" : "rgba(34, 197, 94, 0.24)"}
+                        stroke={isBeginner ? "#D4AF37" : "#22c55e"}
                         strokeWidth="2"
                     />
                     <path
                         d={a.path}
                         fill="none"
-                        stroke="#22c55e"
+                        stroke={isBeginner ? "#D4AF37" : "#22c55e"}
                         strokeWidth="3.25"
                         strokeLinecap="round"
-                        markerEnd="url(#arrowhead-green)"
+                        markerEnd={isBeginner ? "url(#arrowhead-gold)" : "url(#arrowhead-green)"}
                         opacity="0.98"
                     />
-                    <circle cx={a.x1} cy={a.y1} r="4.5" fill="#22c55e" opacity="0.98" />
+                    <circle cx={a.x1} cy={a.y1} r="4.5" fill={isBeginner ? "#D4AF37" : "#22c55e"} opacity="0.98" />
                 </g>
             ))}
         </svg>

@@ -92,6 +92,17 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     const quota = useCoachQuota({ locale });
     const tilt = useTiltDetector({ windowSize: 6 });
     const lastRecordedFeedbackRef = useRef<LastMoveFeedback | null>(null);
+    const lastAutoCoachRollKey = useRef<string>('');
+
+    useEffect(() => {
+        if (tierGate !== 'BEGINNER' || isMultiplayerActive || !game.dice || game.state.turn !== 'X') return;
+        const rollKey = `${game.state.turn}:${game.dice[0]}-${game.dice[1]}:${game.matchLog.length}`;
+        if (lastAutoCoachRollKey.current === rollKey) return;
+        lastAutoCoachRollKey.current = rollKey;
+        if (!coachHighlight && !isAnalyzing) {
+            onTriggerCoach();
+        }
+    }, [tierGate, isMultiplayerActive, game.dice, game.state.turn, game.matchLog.length, coachHighlight, isAnalyzing, onTriggerCoach]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -152,6 +163,14 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                     dice={game.dice} canUndo={game.canUndo} onUndoMove={game.undoMove}
                     onAskProfessorHint={() => { onTriggerCoach(); modals.openMobileDrawer(); }}
                     lastMoveFeedback={lastMoveFeedback}
+                    optimalMove={coach?.optimalMove}
+                    whyOptimal={coach?.whyOptimal}
+                    activeTurn={game.state.turn}
+                    lastBotNotation={
+                        game.matchLog.length > 0 && game.matchLog[game.matchLog.length - 1].player === 'O'
+                            ? game.matchLog[game.matchLog.length - 1].notation
+                            : null
+                    }
                 />
             )}
 

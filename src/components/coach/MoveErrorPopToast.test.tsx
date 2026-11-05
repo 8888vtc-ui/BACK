@@ -97,4 +97,27 @@ describe('MoveErrorPopToast — Pop Erreur Tactique & Détection de Type', () =>
         expect(screen.getByText('Erreur de Videau — Double prématuré')).toBeDefined();
         expect(screen.queryByText(/Erreur positionnelle/i)).toBeNull();
     });
+
+    it('en mode Débutant (isBeginner=true), masque tout jargon EMG/MWC et affiche un conseil bienveillant', () => {
+        const feedback: LastMoveFeedback = {
+            verdict: 'blunder',
+            equityLoss: -0.145,
+            playedMove: '8/2* 6/2',
+            optimalMove: '11/7 13/7',
+        };
+        render(
+            React.createElement(MoveErrorPopToast, {
+                feedback,
+                isBeginner: true,
+                onReplayMove: vi.fn(),
+            }),
+        );
+
+        expect(screen.getByText('COUP SOUS-OPTIMAL')).toBeDefined();
+        expect(screen.getByText(/Chances de victoire : -/i)).toBeDefined();
+        expect(screen.queryByText(/EMG/i)).toBeNull();
+        expect(screen.queryByText(/MWC/i)).toBeNull();
+        expect(screen.getByText('Conseil :')).toBeDefined();
+        expect(screen.getByText('Rejouer ce coup')).toBeDefined();
+    });
 });

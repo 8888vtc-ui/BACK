@@ -75,7 +75,7 @@ describe('PlayerTierGate (3 Portes : Débutant | Intermédiaire | Expert)', () =
             />,
         );
         expect(clubHtml).toContain('intermediate-home-portal');
-        expect(clubHtml).toContain('TROUVER UN ADVERSAIRE');
+        expect(clubHtml).toContain('JOUER MAINTENANT');
 
         const expertHtml = renderToStaticMarkup(
             <ExpertHomePortal onStartExpertMatch={() => {}} onOpen3PlyQuizzes={() => {}} />,

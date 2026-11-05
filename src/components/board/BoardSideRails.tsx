@@ -22,6 +22,7 @@ import {
     type BoardRightActionRailProps,
 } from './BoardPortraitAndActionRails';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 
 export {
     BoardPortraitTopHud,
@@ -43,49 +44,26 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isQuickChatOpen, setIsQuickChatOpen] = useState(false);
     const { theme: activeTheme, setTheme } = useBoardTheme();
-    const [playerMeta, setPlayerMeta] = useState<{
-        pseudo: string;
-        avatarUrl: string;
-        countryName: string;
-        isGuest: boolean;
-        careerPr: number | null;
-    }>({
-        pseudo: 'Joueur Invité',
-        avatarUrl: STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg',
-        countryName: 'France',
-        isGuest: true,
-        careerPr: null,
+    const { tierGate } = usePlayerTierGate();
+    const isBeginner = tierGate === 'BEGINNER';
+    const [playerMeta, setPlayerMeta] = useState<{ pseudo: string; avatarUrl: string; countryName: string; isGuest: boolean; careerPr: number | null }>({
+        pseudo: 'Joueur Invité', avatarUrl: STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg', countryName: 'France', isGuest: true, careerPr: null,
     });
     useEffect(() => {
         const passport = readPlayerPassport();
         const rawPseudo = (passport?.pseudo ?? '').trim();
-        const isGuest =
-            !passport ||
-            passport.email === 'invite@backgammontour.com' ||
-            /^invit[eé]|^joueur invit[eé]/i.test(rawPseudo);
+        const isGuest = !passport || passport.email === 'invite@backgammontour.com' || /^invit[eé]|^joueur invit[eé]/i.test(rawPseudo);
         let careerPr: number | null = null;
         if (!isGuest) {
             const analyses = getAllGameAnalyses();
-            let totalLoss = 0;
-            let totalDec = 0;
+            let totalLoss = 0, totalDec = 0;
             for (const a of analyses) {
                 const dec = a.unforcedDecisionsCount || a.decisionsCount || 0;
-                if (dec > 0) {
-                    totalLoss += a.totalEquityLoss;
-                    totalDec += dec;
-                }
+                if (dec > 0) { totalLoss += a.totalEquityLoss; totalDec += dec; }
             }
-            if (totalDec >= 3) {
-                careerPr = Number(Math.max(0, (totalLoss / totalDec) * 500).toFixed(1));
-            }
+            if (totalDec >= 3) careerPr = Number(Math.max(0, (totalLoss / totalDec) * 500).toFixed(1));
         }
-        setPlayerMeta({
-            pseudo: isGuest ? 'Joueur Invité' : (rawPseudo || 'Vous'),
-            avatarUrl: passport?.avatarUrl || (STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg'),
-            countryName: passport?.countryName || 'France',
-            isGuest,
-            careerPr,
-        });
+        setPlayerMeta({ pseudo: isGuest ? 'Joueur Invité' : (rawPseudo || 'Vous'), avatarUrl: passport?.avatarUrl || (STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg'), countryName: passport?.countryName || 'France', isGuest, careerPr });
     }, []);
     const {
         botElo,
@@ -128,17 +106,19 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         />
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
                             <span className="font-mono text-stone-200 font-bold">
-                                {challengerProfile ? `${botElo} Elo` : 'IA 3-Ply'}
+                                {challengerProfile ? `${botElo} Elo` : 'Bot IA'}
                             </span>
-                            <span className={`inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap ${resolvePrBadgeClasses(opponentPrNum)}`}>
-                                PR Match : {opponentPrValue}
-                            </span>
+                            {!isBeginner && (
+                                <span className={`inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap ${resolvePrBadgeClasses(opponentPrNum)}`}>
+                                    PR Match : {opponentPrValue}
+                                </span>
+                            )}
                         </div>
                     </div>
 
                     <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
                         <span data-testid="left-rail-mobile-opp-name" title={opponentDisplayName} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">{opponentDisplayName}</span>
-                        <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">{challengerProfile ? `${botElo} Elo` : 'IA 3-Ply'}</span>
+                        <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">{challengerProfile ? `${botElo} Elo` : 'Bot IA'}</span>
                     </div>
 
                     <div className="flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
@@ -156,7 +136,9 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                     <div className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${turn === 'O' ? 'bg-[#b45309] text-[#fef3c7] ring-1 ring-[#f5dfa0]' : 'bg-[#080605] text-stone-300 border border-white/10'}`}>{opponentClock}</div>
 
-                    <span title={`Performance Rating : ${opponentPrValue}`} className="hidden [@media(max-height:540px)]:inline-block w-full text-center rounded border border-[#d4af37]/50 bg-[#d4af37]/15 px-1 py-0.5 font-mono text-[9px] font-black text-[#f3d27a] whitespace-nowrap leading-none">PR {opponentPrValue}</span>
+                    {!isBeginner && (
+                        <span title={`Performance Rating : ${opponentPrValue}`} className="hidden [@media(max-height:540px)]:inline-block w-full text-center rounded border border-[#d4af37]/50 bg-[#d4af37]/15 px-1 py-0.5 font-mono text-[9px] font-black text-[#f3d27a] whitespace-nowrap leading-none">PR {opponentPrValue}</span>
+                    )}
                 </div>
                 {challengerProfile ? (
                     <div data-testid="left-rail-online-status" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/25 bg-emerald-950/30 px-2 py-1 text-[10px] font-medium text-emerald-300/90">
@@ -166,7 +148,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 ) : (
                     <div data-testid="left-rail-bot-engine-badge" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-[#d4af37]/25 bg-black/45 px-2 py-1 text-[10px] font-semibold text-[#f3d27a]">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
-                        <span>IA Open Sage 3-Ply</span>
+                        <span>{isBeginner ? 'Partie Guidée' : 'Adversaire IA'}</span>
                     </div>
                 )}
             </div>
@@ -246,7 +228,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
                             <CountryFlagSvg countryName={playerMeta.countryName} />
                             <span className="font-mono text-stone-200 font-bold">1500 Elo</span>
-                            {playerMeta.careerPr !== null && (
+                            {playerMeta.careerPr !== null && !isBeginner && (
                                 <span data-testid="left-rail-career-pr" className="font-mono text-[10px] font-bold text-[#f3d27a]">
                                     · PR Moy. {playerMeta.careerPr.toFixed(1)}
                                 </span>
@@ -285,12 +267,14 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                 <div className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${turn === 'X' ? 'bg-[#065f46] text-emerald-50 ring-1 ring-emerald-400/70' : 'bg-[#080605] text-stone-300 border border-white/10'}`}>{playerClock}</div>
 
-                <span
-                    data-testid="left-rail-player-pr"
-                    className={`w-full [@media(min-height:541px)]:w-auto inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap leading-none ${resolvePrBadgeClasses(playerPrNum)}`}
-                >
-                    PR Match : {playerPrLabel}
-                </span>
+                {!isBeginner && (
+                    <span
+                        data-testid="left-rail-player-pr"
+                        className={`w-full [@media(min-height:541px)]:w-auto inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap leading-none ${resolvePrBadgeClasses(playerPrNum)}`}
+                    >
+                        PR Match : {playerPrLabel}
+                    </span>
+                )}
             </div>
         </aside>
     );

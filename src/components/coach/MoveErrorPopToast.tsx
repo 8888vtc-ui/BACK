@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { isCubeDecisionNotation, type LastMoveFeedback } from '../../hooks/coach/coachTypes';
 import {
     detectClassicalBlunderPattern,
@@ -25,6 +26,7 @@ export interface MoveErrorPopToastProps {
     readonly boardAfter?: readonly number[];
     readonly onReplayMove?: () => void;
     readonly onOpenCoach?: () => void;
+    readonly isBeginner?: boolean;
 }
 
 const PATTERN_LABELS: Record<ClassicalBlunderPattern, { name: string; advice: string }> = {
@@ -56,6 +58,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
     boardAfter,
     onReplayMove,
     onOpenCoach,
+    isBeginner = false,
 }) => {
     const [dismissedFeedback, setDismissedFeedback] = useState<LastMoveFeedback | null>(null);
 
@@ -112,11 +115,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                     : 'GENERAL_POSITIONAL_LOSS';
             const patternInfo = PATTERN_LABELS[pattern] ?? PATTERN_LABELS.GENERAL_POSITIONAL_LOSS;
             const catMap: Record<ClassicalBlunderPattern, VariedCheckerCategory> = {
-                PREMATURE_PRIME_BREAKUP: 'PRIME_EXTEND',
-                BAR_REENTRY_MISCALCULATION: 'REAR_ESCAPE',
-                RECKLESS_HIT_EXPOSURE: 'SHOT_EXPOSURE',
-                RACE_VS_CONTACT_CONFUSION: 'PURE_RACE',
-                GENERAL_POSITIONAL_LOSS: 'POSITIONAL_FLEXIBILITY',
+                PREMATURE_PRIME_BREAKUP: 'PRIME_EXTEND', BAR_REENTRY_MISCALCULATION: 'REAR_ESCAPE', RECKLESS_HIT_EXPOSURE: 'SHOT_EXPOSURE', RACE_VS_CONTACT_CONFUSION: 'PURE_RACE', GENERAL_POSITIONAL_LOSS: 'POSITIONAL_FLEXIBILITY',
             };
             const variedChecker = pickVariedCheckerErrorCopy(catMap[pattern], {
                 playedMove: feedback.playedMove ?? 'Coup joué',
@@ -130,6 +129,13 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
 
         const mwcLossPct = Math.max(1, Math.round(absLoss * 50));
 
+        let computedTitle = isCubeError
+            ? isBlunder ? 'BLUNDER DE VIDEAU (CUBE)' : 'IMPRÉCISION DE VIDEAU'
+            : isBlunder ? 'GAFFE / BLUNDER MAJEUR' : isError ? 'ERREUR TACTIQUE' : 'IMPRÉCISION';
+        if (isBeginner) {
+            computedTitle = isBlunder ? 'COUP SOUS-OPTIMAL' : 'PETITE IMPRÉCISION';
+        }
+
         return {
             isBlunder,
             isError,
@@ -138,9 +144,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
             mwcLossPct,
             patternName,
             patternAdvice,
-            title: isCubeError
-                ? isBlunder ? 'BLUNDER DE VIDEAU (CUBE)' : 'IMPRÉCISION DE VIDEAU'
-                : isBlunder ? 'GAFFE / BLUNDER MAJEUR' : isError ? 'ERREUR TACTIQUE' : 'IMPRÉCISION',
+            title: computedTitle,
             badgeBg: isBlunder
                 ? 'border-rose-500/80 bg-rose-950/95 text-rose-100 shadow-[0_0_24px_rgba(244,63,94,0.35)]'
                 : isError
@@ -148,7 +152,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                   : 'border-yellow-400/80 bg-yellow-950/95 text-yellow-100 shadow-[0_0_24px_rgba(234,179,8,0.25)]',
             icon: isBlunder ? '🔴' : isError ? '🟠' : '🟡',
         };
-    }, [feedback, boardBefore, boardAfter]);
+    }, [feedback, boardBefore, boardAfter, isBeginner]);
 
     if (!errorDetails || dismissedFeedback === feedback) {
         return null;
@@ -176,9 +180,15 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
-                            -{errorDetails.mwcLossPct}% chances · -{errorDetails.absLoss.toFixed(3)} EMG · -{errorDetails.mwcLossPct}% MWC
-                        </span>
+                        {isBeginner ? (
+                            <span data-testid="error-toast-loss-badge" className="font-mono text-xs font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
+                                Chances de victoire : -{errorDetails.mwcLossPct}%
+                            </span>
+                        ) : (
+                            <span data-testid="error-toast-loss-badge" className="font-mono text-xs font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
+                                -{errorDetails.mwcLossPct}% chances · -{errorDetails.absLoss.toFixed(3)} EMG · -{errorDetails.mwcLossPct}% MWC
+                            </span>
+                        )}
                         <button
                             type="button"
                             onClick={() => feedback && setDismissedFeedback(feedback)}
@@ -191,7 +201,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                     </div>
                 </div>
 
-                {errorDetails.isBlunder && (
+                {errorDetails.isBlunder && !isBeginner && (
                     <div
                         data-testid="error-toast-adaptive-quiz-badge"
                         className="mb-2 inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/40 bg-emerald-950/70 px-2.5 py-1 text-[11px] font-bold text-emerald-200"
@@ -204,7 +214,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                 <div className="space-y-1.5">
                     <div className="flex items-start gap-1.5">
                         <span className="text-xs font-extrabold text-[#f3c65f] uppercase tracking-wide">
-                            Type :
+                            {isBeginner ? 'Conseil :' : 'Type :'}
                         </span>
                         <span className="text-xs font-black text-white">
                             {errorDetails.patternName}
@@ -212,7 +222,9 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                     </div>
 
                     <p className="text-[11px] text-slate-200 leading-snug">
-                        {errorDetails.patternAdvice}
+                        {isBeginner
+                            ? (errorDetails.patternAdvice ? errorDetails.patternAdvice.replace(/\(.*?\)/g, '').trim() : 'Ce coup affaiblit votre position. Rejouez pour tester le meilleur coup !')
+                            : errorDetails.patternAdvice}
                     </p>
 
                     {(feedback?.playedMove || feedback?.optimalMove) && (
@@ -254,7 +266,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                         </button>
                     )}
 
-                    {onOpenCoach && (
+                    {onOpenCoach && !isBeginner && (
                         <button
                             type="button"
                             data-testid="error-toast-coach-btn"

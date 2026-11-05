@@ -30,10 +30,7 @@ describe('AppScreenViews — rendu SSR déterministe (anti-hydratation)', () => 
         );
 
         expect(html).toContain('BACKGAMMON');
-        expect(html).toContain('lobby-card-ai');
-        expect(html).toContain('lobby-card-multiplayer');
-        expect(html).toContain('lobby-card-training');
-        expect(html).toContain('lobby-start-btn');
+        expect(html).toContain('beginner-home-portal');
         expect(html).not.toContain('h-dvh max-h-dvh w-full grid');
         expect(html).not.toContain('data-testid="app-game-view"');
     });

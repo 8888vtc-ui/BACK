@@ -15,6 +15,10 @@ export interface LiveProfessorCoachOverlayProps {
   pipDifference?: number;
   antiFrustrationNotice?: 'BAR_PRIORITY' | 'CLOSED_POINT' | null;
   isMasterMove?: boolean;
+  optimalMove?: string | null;
+  whyOptimal?: string | null;
+  lastBotNotation?: string | null;
+  activeTurn?: 'X' | 'O';
 }
 
 export function LiveProfessorCoachOverlay({
@@ -26,6 +30,10 @@ export function LiveProfessorCoachOverlay({
   pipDifference = 10,
   antiFrustrationNotice,
   isMasterMove = true,
+  optimalMove,
+  whyOptimal,
+  lastBotNotation,
+  activeTurn,
 }: LiveProfessorCoachOverlayProps) {
   const { locale } = useTranslation();
   const lang = locale === 'en' ? 'en' : 'fr';
@@ -36,22 +44,38 @@ export function LiveProfessorCoachOverlay({
   );
 
   const isBlunderFeedback = Boolean(lastMoveFeedback && Math.abs(lastMoveFeedback.equityLoss) >= 0.045);
+  const cleanWhyOptimal = whyOptimal ? whyOptimal.replace(/EMG|MWC|\d+\.\d+\s*EMG/gi, '').replace(/\s+/g, ' ').trim() : '';
 
   const getProfessorPrompt = (): string => {
     if (isBlunderFeedback) {
       return lang === 'fr'
-        ? "Attention : ce coup est un 'Blunder' (une gaffe qui gâche vos chances de victoire). Cliquez sur « Réessayer mon coup » pour trouver le meilleur coup statistique !"
-        : "Careful: this move is a 'Blunder' (a mistake hurting winning chances). Click 'Retry move' to find the best play!";
+        ? "Attention : ce coup réduit vos chances de victoire. Cliquez sur « ↺ Rejouer mon dernier coup » pour tester le coup optimal !"
+        : "Careful: this move reduces your winning chances. Click '↺ Undo / Retry move' to try the optimal play!";
     }
-    if (hintRequested) {
+    if (activeTurn === 'O' && lastBotNotation) {
+      return lang === 'fr'
+        ? `L'adversaire a joué ${lastBotNotation}. C'est votre tour de lancer les dés !`
+        : `Opponent played ${lastBotNotation}. Your turn to roll!`;
+    }
+    if (hintRequested || (dice && optimalMove)) {
+      if (optimalMove) {
+        return lang === 'fr'
+          ? `🎲 Conseil du Professeur : Jouez ${optimalMove}. ${cleanWhyOptimal || 'Ce coup renforce votre position et protège vos pions.'}`
+          : `🎲 Professor Tip: Play ${optimalMove}. ${cleanWhyOptimal || 'This move secures your checkers and strengthens your board.'}`;
+      }
       return lang === 'fr'
         ? 'Astuce du Professeur : Cherchez à faire une porte (idéalement sur la flèche 5) pour maîtriser les 36 combinaisons de dés et protéger vos pions !'
         : 'Professor Tip: Aim to build a gate (ideally on the 5-point) to command the 36 dice combinations and protect your checkers!';
     }
     if (dice) {
       return lang === 'fr'
-        ? `🎲 Vous avez lancé ${dice[0]}-${dice[1]} : où déplacer vos pions pour mettre les statistiques de votre côté ?`
-        : `🎲 You rolled ${dice[0]}-${dice[1]}: where should you move checkers to put odds on your side?`;
+        ? `🎲 Vous avez lancé ${dice[0]}-${dice[1]} : suivez la flèche dorée sur le plateau pour placer vos pions au mieux.`
+        : `🎲 You rolled ${dice[0]}-${dice[1]}: follow the golden arrow on the board to guide your checkers.`;
+    }
+    if (lastBotNotation) {
+      return lang === 'fr'
+        ? `L'adversaire a joué ${lastBotNotation}. Cliquez sur Lancer les dés pour avancer vos dames !`
+        : `Opponent played ${lastBotNotation}. Click Roll Dice to advance your checkers!`;
     }
     return lang === 'fr'
       ? "Le Professeur vous accompagne : le hasard lance les dés, mais c'est votre stratégie qui fait la différence. Demandez un conseil à tout moment !"

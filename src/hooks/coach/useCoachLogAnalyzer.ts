@@ -66,19 +66,13 @@ export function useCoachLogAnalyzer({
         const log = matchLog ?? [];
         if (log.length === 0) return;
 
-        // Trouve le dernier coup joué par le joueur humain 'X' dans le journal actuel
-        let lastXIndex = -1;
-        for (let i = log.length - 1; i >= 0; i--) {
-            if (log[i].player === 'X') {
-                lastXIndex = i;
-                break;
-            }
-        }
-        if (lastXIndex < 0) return;
+        // Règle d'or : Ne JAMAIS analyser les coups du bot comme des erreurs du joueur (isoler le tour humain 'X')
+        const latestEntry = log[log.length - 1];
+        if (!latestEntry || latestEntry.player !== 'X') return;
 
-        const lastEntry = log[lastXIndex];
+        const lastEntry = latestEntry;
         const playedSig = lastEntry.notation ?? lastEntry.movePlayed.map((m) => `${m.from}-${m.to}`).join(',');
-        const entryKey = `${lastEntry.turnIndex}:${lastEntry.dice[0]}-${lastEntry.dice[1]}:${playedSig}:${lastEntry.timestamp ?? lastXIndex}`;
+        const entryKey = `${lastEntry.turnIndex}:${lastEntry.dice[0]}-${lastEntry.dice[1]}:${playedSig}:${lastEntry.timestamp ?? (log.length - 1)}`;
         if (lastPlayerEvalRef.current === entryKey) return;
         lastPlayerEvalRef.current = entryKey;
 

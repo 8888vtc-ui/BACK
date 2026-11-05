@@ -28,6 +28,7 @@ import {
 import CoachSidebar, { type CoachSidebarProps } from '../coach/CoachSidebar';
 import MobilePortraitCoachBanner from '../coach/MobilePortraitCoachBanner';
 import MoveErrorPopToast from '../coach/MoveErrorPopToast';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import ErrorBoundary from '../common/ErrorBoundary';
 import type { GameSpeed } from '../../lib/gameFeel/speedPresets';
 
@@ -85,6 +86,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     gameId, matchContext, isMatchStarted = true, playerColor = 'X', onBackToLobby, onToggleTheme,
     challengerProfile = null, onSendQuickChat,
 }) => {
+    const { tierGate } = usePlayerTierGate();
     const isXTurn = game.state.turn === 'X';
     const [replayViewPhase, setReplayViewPhase] = useState<'before' | 'after'>('before');
     const [previewBoardMode, setPreviewBoardMode] = useState<'live' | 'before'>('live');
@@ -243,6 +245,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     boardAfter={game.state.board}
                     onReplayMove={handleSyncedReplayMove}
                     onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
+                    isBeginner={tierGate === 'BEGINNER'}
                 />
 
                 <BoardPortraitTopHud
