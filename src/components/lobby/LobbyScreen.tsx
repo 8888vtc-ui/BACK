@@ -179,23 +179,31 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                     <div className={`flex flex-1 min-w-0 ${showOptions ? 'max-w-5xl' : 'max-w-4xl'} flex-col gap-3.5`}>
                         <h1 className="sr-only">BACKGAMMON</h1>
 
-
-                        {tierGate === 'BEGINNER' && (
-                            <BeginnerHomePortal
-                                onStartGuidedGame={() => onStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor, clockPreset })}
-                                onOpenAcademy={() => {
-                                    if (typeof window !== 'undefined') {
-                                        window.location.assign('/puzzles?mode=beginner-academy');
-                                    }
-                                }}
-                            />
-                        )}
-
-                        {tierGate !== 'BEGINNER' && (
+                        {showOptions ? (
+                            <section className="w-full">
+                                <LobbyOptionsPanel
+                                    matchLength={matchLength} setMatchLength={setMatchLength} difficulty={difficulty} setDifficulty={setDifficulty}
+                                    coachEnabled={coachEnabled} setCoachEnabled={setCoachEnabled}
+                                    playerColor={playerColor} onSelectPlayerColor={(c) => { setPlayerColor(c); storePlayerColor(c); }}
+                                    matchFormats={matchFormats} opponents={opponents} clockPreset={clockPreset} setClockPreset={setClockPreset}
+                                    onClose={() => setShowOptions(false)} onStartGame={handlePlay}
+                                />
+                            </section>
+                        ) : (
                             <>
+                                {tierGate === 'BEGINNER' && (
+                                    <BeginnerHomePortal
+                                        onStartGuidedGame={() => onStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor, clockPreset })}
+                                        onOpenAcademy={() => {
+                                            if (typeof window !== 'undefined') {
+                                                window.location.assign('/puzzles?mode=beginner-academy');
+                                            }
+                                        }}
+                                    />
+                                )}
                                 {tierGate === 'INTERMEDIATE' && (
                                     <IntermediateHomePortal
-                                        onFindOpponent={() => onStart({ matchLength: 5, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset })}
+                                        onFindOpponent={(len) => onStart({ matchLength: len ?? 5, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset })}
                                         onInviteFriend={() => onOpenModule?.('multiplayer')}
                                         onOpenQuizzes={() => onOpenModule?.('puzzles')}
                                     />
@@ -203,102 +211,9 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 {tierGate === 'EXPERT' && (
                                     <ExpertHomePortal
                                         onStartExpertMatch={(len) => onStart({ matchLength: len, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset })}
-                                        onOpen3PlyQuizzes={() => onOpenModule?.('drills')}
+                                        onOpen3PlyQuizzes={() => onOpenModule?.('puzzles')}
                                     />
                                 )}
-
-                                {selectedMode === 'ai' && showOptions && (
-                                    <section className="w-full">
-                                        <LobbyOptionsPanel
-                                            matchLength={matchLength} setMatchLength={setMatchLength} difficulty={difficulty} setDifficulty={setDifficulty}
-                                            coachEnabled={coachEnabled} setCoachEnabled={setCoachEnabled}
-                                            playerColor={playerColor} onSelectPlayerColor={(c) => { setPlayerColor(c); storePlayerColor(c); }}
-                                            matchFormats={matchFormats} opponents={opponents} clockPreset={clockPreset} setClockPreset={setClockPreset}
-                                            onClose={() => setShowOptions(false)} onStartGame={handlePlay}
-                                        />
-                                    </section>
-                                )}
-
-                                <div className={showOptions ? 'sr-only' : 'flex flex-col gap-3.5 w-full'}>
-                                    <section aria-label="Modes de jeu" className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
-                                        {mainCards.map((card) => {
-                                            const active = selectedMode === card.id;
-                                            return (
-                                                <button
-                                                    key={card.id} type="button" data-testid={`lobby-card-${card.id}`} aria-pressed={active}
-                                                    onClick={() => setSelectedMode(card.id)}
-                                                    className={`group relative flex flex-col items-start justify-between gap-1.5 rounded-2xl border p-3.5 text-left transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1px] ${
-                                                        active
-                                                            ? 'border-[#D4AF37]/60 border-[#f3c65f] bg-[#D4AF37]/10 text-[#F3E5AB] shadow-[0_0_20px_rgba(212,175,55,0.12)]'
-                                                            : 'border-white/10 border-white/[0.06] bg-[#0B0E14]/90 backdrop-blur-md hover:border-white/15 hover:bg-white/[0.04]'
-                                                    }`}
-                                                >
-                                                    <div className="flex w-full items-center justify-between gap-1.5 min-w-0">
-                                                        <span className="inline-flex items-center gap-2 text-sm font-bold text-white whitespace-nowrap">
-                                                            <card.Icon size={17} strokeWidth={1.5} aria-hidden="true" className={card.iconColor} />
-                                                            <span>{card.title}</span>
-                                                        </span>
-                                                        <span className={`shrink-0 whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-semibold ${active ? 'bg-[#D4AF37]/20 text-[#F3E5AB]' : 'bg-white/[0.04] text-zinc-400'}`}>
-                                                            {card.badge}
-                                                        </span>
-                                                    </div>
-                                                    <span className="text-xs text-zinc-400">{card.subtitle}</span>
-                                                </button>
-                                            );
-                                        })}
-                                    </section>
-
-                                    <div className="flex w-full flex-col gap-3.5 rounded-2xl border border-white/[0.06] bg-[#0B0E14]/90 p-4 backdrop-blur-md shadow-xl">
-                                        {selectedMode === 'multiplayer' && (
-                                            <OpenMatchesTable
-                                                eloRating={snapshot.eloRating} averagePR={snapshot.averagePR} gamesPlayed={snapshot.gamesPlayed}
-                                                matchLength={matchLength} onSelectMatchLength={setMatchLength}
-                                                clockPreset={clockPreset} onSelectClockPreset={setClockPreset}
-                                                onJoinChallenge={handleJoinOpenChallenge}
-                                                onStartCalibrationMatch={() => onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset })}
-                                                onSwitchToAiMasters={() => setSelectedMode('ai')}
-                                                onCreateChallenge={() => onOpenModule?.('multiplayer')}
-                                            />
-                                        )}
-
-                                        <LobbyAiConfigQuickbar
-                                            selectedMode={selectedMode}
-                                            locale={locale}
-                                            difficulty={difficulty}
-                                            setDifficulty={setDifficulty}
-                                            isMittensActive={isMittensActive}
-                                            setIsMittensActive={setIsMittensActive}
-                                            matchLength={matchLength}
-                                            setMatchLength={setMatchLength}
-                                            showOptions={showOptions}
-                                            setShowOptions={setShowOptions}
-                                            selectedPersona={selectedPersona}
-                                            onPlay={handlePlay}
-                                            collapseLabel={ui.lobby.collapse}
-                                            configureLabel={ui.lobby.configure}
-                                        />
-                                    </div>
-                                </div>
-
-                                {selectedMode === 'training' && (
-                                    <LobbyTrainingSubmenu onOpenModule={onOpenModule} />
-                                )}
-
-                                {!isInstalled && canInstall && (
-                                    <button type="button" onClick={() => void handleInstallClick()} data-testid="lobby-pwa-install-btn" aria-label={ui.pwa.installAppAria} className="flex sm:hidden items-center gap-2 rounded-xl border border-white/10 bg-[#0B0E14] px-3.5 py-1.5 text-xs font-semibold text-zinc-200">
-                                        <span>{ui.pwa.installApp}</span>
-                                        <span className="rounded bg-[#D4AF37]/15 px-1.5 py-0.5 text-[11px] font-mono font-bold text-[#F3E5AB]">PWA</span>
-                                    </button>
-                                )}
-
-                                <LobbyPlayerHubSection
-                                    showOptions={showOptions}
-                                    displayName={displayName}
-                                    snapshot={snapshot}
-                                    recentMatches={recentMatches}
-                                    onOpenModule={onOpenModule}
-                                    onStartQuickMatch={handlePlay}
-                                />
                             </>
                         )}
                     </div>
