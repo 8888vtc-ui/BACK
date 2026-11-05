@@ -175,10 +175,9 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
 
                     {/* 3. Studio d'Analyse (Uniquement pour Intermédiaire et Expert) */}
                     {!isBeginner && (
-                        <button
-                            type="button"
+                        <Link
+                            href="/analysis"
                             data-testid="sidebar-pillar-studio"
-                            onClick={() => onOpenModule?.('stats')}
                             title={isEn ? 'Analysis & Performance Rating Studio' : 'Studio d’analyse et Performance Rating'}
                             className={itemCls}
                         >
@@ -186,7 +185,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 <BarChart2 size={16} strokeWidth={1.5} className="text-[#D4AF37]" />
                                 {!collapsed && <span>{isEn ? 'Analysis Studio' : 'Studio d’Analyse'}</span>}
                             </span>
-                        </button>
+                        </Link>
                     )}
 
                     {/* 4. Académie */}
