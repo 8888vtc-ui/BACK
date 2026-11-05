@@ -2,13 +2,14 @@
 
 /**
  * @file src/components/auth/AuthModal.tsx
- * @description Modale Bi-Volet de la Carte de Joueur Grand Cercle & Authentification (< 285 lignes, 0 `any`).
+ * @description Modale Bi-Volet de la Carte de Joueur Grand Cercle & Authentification (< 300 lignes, 0 `any`).
+ * Accès rapide 1-clic sans blocage HTML5, 6e bouton photo personnalisée et synchronisation des portes.
  */
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
-import { Crown, Dices, ShieldCheck, Sparkles, Sprout, Swords, X, Zap } from 'lucide-react';
+import { Camera, Crown, Dices, ShieldCheck, Sparkles, Sprout, Swords, X, Zap } from 'lucide-react';
 import {
     signInWithEmail, signUpWithEmail, signInWithGoogle, registerPlayerPassportLead,
     resetPasswordForEmail, readPlayerPassport, savePlayerPassport,
@@ -17,6 +18,7 @@ import {
 import { useTranslation } from '../../i18n';
 import { CountryFlagSvg } from '../common/CountryFlagSvg';
 import { PassportCardPreview } from './PassportCardPreview';
+import { PLAYER_TIER_GATE_STORAGE_KEY, type PlayerTierGate } from '../../hooks/usePlayerTierGate';
 
 export interface AuthModalProps {
     isOpen: boolean;
@@ -28,27 +30,24 @@ export interface AuthModalProps {
 export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrationNote = null }: AuthModalProps) {
     const [mounted, setMounted] = useState(false);
     const [mode, setMode] = useState<'passport' | 'signin' | 'signup' | 'forgot'>('passport');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [displayName, setDisplayName] = useState('');
-    const [countryCode, setCountryCode] = useState<string>('FR');
-    const [experienceLevel, setExperienceLevel] = useState<PlayerExperienceTier>('intermediate');
-    const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(STANDARD_USER_AVATARS[0].url);
+    const [email, setEmail] = useState(''), [password, setPassword] = useState('');
+    const [displayName, setDisplayName] = useState('Alexandre D.'), [countryCode, setCountryCode] = useState('FR');
+    const [experienceLevel, setExperienceLevel] = useState<PlayerExperienceTier>('beginner');
+    const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>(STANDARD_USER_AVATARS[0].url), [customPhotoUrl, setCustomPhotoUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [infoMsg, setInfoMsg] = useState<string | null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null), [infoMsg, setInfoMsg] = useState<string | null>(null);
     const { locale } = useTranslation();
     const isEn = locale === 'en';
 
     useEffect(() => {
         setMounted(true);
-        const existing = readPlayerPassport();
-        if (existing) {
-            setDisplayName(existing.pseudo);
-            setEmail(existing.email);
-            setExperienceLevel(existing.experienceLevel);
-            if (existing.avatarUrl) setSelectedAvatarUrl(existing.avatarUrl);
-            if (existing.countryCode) setCountryCode(existing.countryCode);
+        const ex = readPlayerPassport();
+        if (ex) {
+            setDisplayName(ex.pseudo || 'Alexandre D.');
+            setEmail(ex.email);
+            setExperienceLevel(ex.experienceLevel);
+            if (ex.avatarUrl) setSelectedAvatarUrl(ex.avatarUrl);
+            if (ex.countryCode) setCountryCode(ex.countryCode);
         }
     }, []);
 
@@ -57,6 +56,26 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
     const selectedCountryObj = PASSPORT_COUNTRY_OPTIONS.find((c) => c.code === countryCode) ?? PASSPORT_COUNTRY_OPTIONS[0];
     const selectedCountryName = selectedCountryObj.nameFr;
 
+    const handleLevelSelect = (level: PlayerExperienceTier) => {
+        setExperienceLevel(level);
+        const gate: PlayerTierGate = level === 'beginner' ? 'BEGINNER' : level === 'intermediate' ? 'INTERMEDIATE' : 'EXPERT';
+        try {
+            localStorage.setItem(PLAYER_TIER_GATE_STORAGE_KEY, gate);
+            if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent<PlayerTierGate>('bgtour-player-gate-change', { detail: gate }));
+        } catch {}
+    };
+
+    const handleCustomPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const dataUrl = event.target?.result;
+            if (typeof dataUrl === 'string') { setSelectedAvatarUrl(dataUrl); setCustomPhotoUrl(dataUrl); }
+        };
+        reader.readAsDataURL(file);
+    };
+
     async function handleEmailSubmit(e: React.FormEvent) {
         e.preventDefault();
         setErrorMsg(null);
@@ -64,11 +83,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
         setLoading(true);
         try {
             if (mode === 'passport') {
-                const { error } = await registerPlayerPassportLead({
-                    pseudo: displayName, email, experienceLevel, avatarUrl: selectedAvatarUrl,
-                    countryName: selectedCountryName, countryCode: selectedCountryObj.code,
-                });
+                const effectivePseudo = displayName.trim() || 'Alexandre D.';
+                const { error } = await registerPlayerPassportLead({ pseudo: effectivePseudo, email, experienceLevel, avatarUrl: selectedAvatarUrl, countryName: selectedCountryName, countryCode: selectedCountryObj.code });
                 if (error) throw error;
+                handleLevelSelect(experienceLevel);
                 onSuccess?.();
                 onClose();
                 return;
@@ -83,23 +101,15 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
                 const { error, data } = await signInWithEmail({ email, password });
                 if (error) throw error;
                 const existingPassport = readPlayerPassport();
-                const userPseudo = (typeof data.user?.user_metadata?.full_name === 'string' && data.user.user_metadata.full_name) || existingPassport?.pseudo || email.split('@')[0] || 'Joueur';
+                const userPseudo = (typeof data.user?.user_metadata?.full_name === 'string' && data.user.user_metadata.full_name) || existingPassport?.pseudo || email.split('@')[0] || 'Alexandre D.';
                 const userAvatar = (typeof data.user?.user_metadata?.avatar_url === 'string' && data.user.user_metadata.avatar_url) || existingPassport?.avatarUrl || selectedAvatarUrl;
-                savePlayerPassport({
-                    pseudo: userPseudo, email, experienceLevel: existingPassport?.experienceLevel || experienceLevel,
-                    avatarUrl: userAvatar, countryName: existingPassport?.countryName || selectedCountryName,
-                    countryCode: existingPassport?.countryCode || selectedCountryObj.code,
-                    registeredAt: existingPassport?.registeredAt || new Date().toISOString(), supabaseSynced: true,
-                });
+                savePlayerPassport({ pseudo: userPseudo, email, experienceLevel: existingPassport?.experienceLevel || experienceLevel, avatarUrl: userAvatar, countryName: existingPassport?.countryName || selectedCountryName, countryCode: existingPassport?.countryCode || selectedCountryObj.code, registeredAt: existingPassport?.registeredAt || new Date().toISOString(), supabaseSynced: true });
                 onSuccess?.();
                 onClose();
             } else {
-                const { error } = await signUpWithEmail({ email, password, displayName: displayName || email.split('@')[0] });
+                const { error } = await signUpWithEmail({ email, password, displayName: displayName || email.split('@')[0] || 'Alexandre D.' });
                 if (error) throw error;
-                savePlayerPassport({
-                    pseudo: displayName || email.split('@')[0] || 'Joueur', email, experienceLevel, avatarUrl: selectedAvatarUrl,
-                    countryName: selectedCountryName, countryCode: selectedCountryObj.code, registeredAt: new Date().toISOString(), supabaseSynced: true,
-                });
+                savePlayerPassport({ pseudo: displayName || email.split('@')[0] || 'Alexandre D.', email, experienceLevel, avatarUrl: selectedAvatarUrl, countryName: selectedCountryName, countryCode: selectedCountryObj.code, registeredAt: new Date().toISOString(), supabaseSynced: true });
                 onSuccess?.();
                 onClose();
             }
@@ -111,8 +121,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
     }
 
     async function handleGoogleLogin() {
-        setErrorMsg(null);
-        setLoading(true);
+        setErrorMsg(null); setLoading(true);
         try {
             const { error } = await signInWithGoogle();
             if (error) throw error;
@@ -123,21 +132,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
     }
 
     const modalContent = (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-[#05070B]/88 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
-            role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" data-testid="player-passport-auth-modal"
-        >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-[#05070B]/88 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" data-testid="player-passport-auth-modal">
             <div className="relative w-full max-w-md md:max-w-3xl lg:max-w-4xl rounded-2xl border border-[#D4AF37]/40 bg-[#0B0E14]/95 p-5 sm:p-6 md:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.92)] text-slate-100">
-                <button
-                    type="button" onClick={onClose} data-testid="auth-modal-close-btn"
-                    className="absolute top-4 right-4 z-20 rounded-lg border border-white/10 bg-white/[0.03] p-1.5 text-zinc-400 hover:border-[#D4AF37]/50 hover:text-white transition cursor-pointer"
-                    aria-label={isEn ? 'Close dialog' : 'Fermer la boîte de dialogue'}
-                >
+                <button type="button" onClick={onClose} data-testid="auth-modal-close-btn" className="absolute top-4 right-4 z-20 rounded-lg border border-white/10 bg-white/[0.03] p-1.5 text-zinc-400 hover:border-[#D4AF37]/50 hover:text-white transition cursor-pointer" aria-label={isEn ? 'Close dialog' : 'Fermer la boîte de dialogue'}>
                     <X size={16} strokeWidth={1.75} />
                 </button>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-                    {/* COLONNE GAUCHE : FORMULAIRE (7 COLONNES SUR DESKTOP) */}
                     <div className="md:col-span-7 flex flex-col justify-between">
                         <div className="mb-3.5">
                             <div className="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#F3E5AB] mb-2">
@@ -184,24 +185,33 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
                             {(mode === 'passport' || mode === 'signup') && (
                                 <>
                                     <div>
-                                        <label className="block text-xs font-bold text-amber-100 mb-1.5">{isEn ? 'Choose Your Club Avatar (5 Standard Profiles)' : 'Choisissez votre Photo de Profil (5 Avatars Club)'}</label>
-                                        <div className="grid grid-cols-5 gap-2" role="radiogroup" aria-label="Avatar du joueur">
+                                        <label className="block text-xs font-bold text-amber-100 mb-1.5">{isEn ? 'Choose Your Profile Picture (5 Club Avatars + Custom Photo)' : 'Choisissez votre Photo de Profil (5 Avatars Club + Ma Photo)'}</label>
+                                        <div className="grid grid-cols-6 gap-1.5 sm:gap-2" role="radiogroup" aria-label="Avatar du joueur">
                                             {STANDARD_USER_AVATARS.map((av) => {
                                                 const active = selectedAvatarUrl === av.url;
                                                 return (
                                                     <button key={av.id} type="button" data-testid={`passport-avatar-${av.id}`} aria-checked={active} role="radio" onClick={() => setSelectedAvatarUrl(av.url)} className={`group flex flex-col items-center gap-1.5 rounded-xl p-1.5 transition cursor-pointer ${active ? 'border border-[#D4AF37] ring-1 ring-[#D4AF37]/50 shadow-[0_0_16px_rgba(212,175,55,0.25)] bg-[#D4AF37]/15' : 'border border-white/10 bg-black/40 hover:border-white/25 hover:bg-white/5'}`}>
-                                                        <img src={av.url} alt={isEn ? av.labelEn : av.labelFr} className="h-12 w-12 rounded-xl object-cover object-center border border-[#D4AF37]/45 shadow transition-transform duration-150 group-hover:scale-105" />
-                                                        <span className="text-[10.5px] font-bold text-zinc-300 group-hover:text-white truncate max-w-full">{isEn ? av.labelEn : av.labelFr}</span>
+                                                        <img src={av.url} alt={isEn ? av.labelEn : av.labelFr} className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl object-cover object-center border border-[#D4AF37]/45 shadow transition-transform duration-150 group-hover:scale-105" />
+                                                        <span className="text-[10px] font-bold text-zinc-300 group-hover:text-white truncate max-w-full">{isEn ? av.labelEn : av.labelFr}</span>
                                                     </button>
                                                 );
                                             })}
+                                            <label data-testid="passport-avatar-custom" aria-label="Importer ma photo de profil" className={`group flex flex-col items-center justify-center gap-1.5 rounded-xl p-1.5 transition cursor-pointer relative overflow-hidden ${selectedAvatarUrl === customPhotoUrl && customPhotoUrl ? 'border border-[#D4AF37] ring-1 ring-[#D4AF37]/50 shadow-[0_0_16px_rgba(212,175,55,0.25)] bg-[#D4AF37]/15' : 'border border-dashed border-white/25 bg-black/40 hover:border-[#D4AF37]/60 hover:bg-white/5'}`}>
+                                                <input type="file" accept="image/*" data-testid="passport-custom-photo-input" className="sr-only" onChange={handleCustomPhotoUpload} />
+                                                {customPhotoUrl ? (
+                                                    <img src={customPhotoUrl} alt="Ma Photo" className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl object-cover object-center border border-[#D4AF37]/60 shadow" />
+                                                ) : (
+                                                    <div className="flex h-11 w-11 sm:h-12 sm:w-12 flex-col items-center justify-center rounded-xl border border-white/15 bg-white/5 text-[#D4AF37] group-hover:scale-105 transition-transform"><Camera size={18} strokeWidth={1.75} /></div>
+                                                )}
+                                                <span className="text-[10px] font-bold text-zinc-300 group-hover:text-white truncate max-w-full">{isEn ? 'My Photo' : 'Ma Photo'}</span>
+                                            </label>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                         <div>
-                                            <label className="block text-xs font-bold text-amber-100 mb-1">{isEn ? '1. Player Nickname *' : '1. Votre Pseudo de Joueur *'}</label>
-                                            <input type="text" required minLength={2} data-testid="passport-pseudo-input" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder={isEn ? 'e.g. Alexandre D.' : 'ex: Alexandre D.'} className="w-full rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#D4AF37]" />
+                                            <label className="block text-xs font-bold text-amber-100 mb-1">{isEn ? '1. Player Nickname' : '1. Votre Pseudo de Joueur'}</label>
+                                            <input type="text" data-testid="passport-pseudo-input" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder={isEn ? 'e.g. Alexandre D.' : 'ex: Alexandre D.'} className="w-full rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#D4AF37]" />
                                         </div>
                                         <div>
                                             <label className="block text-xs font-bold text-amber-100 mb-1">{isEn ? '2. Country & Flag *' : '2. Pays & Drapeau *'}</label>
@@ -217,8 +227,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
                             )}
 
                             <div>
-                                <label className="block text-xs font-bold text-amber-100 mb-1">{mode === 'passport' || mode === 'signup' ? (isEn ? '3. Your Email Address *' : '3. Votre Adresse Email *') : (isEn ? 'Email Address' : 'Adresse email')}</label>
-                                <input type="email" required data-testid="passport-email-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="joueur@email.com" className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#D4AF37]" />
+                                <label className="block text-xs font-bold text-amber-100 mb-1">
+                                    {mode === 'passport'
+                                        ? (isEn ? '3. Your Email Address (Optional — to save across devices)' : '3. Votre Adresse Email (Facultatif — pour sauvegarder votre progression sur plusieurs appareils)')
+                                        : mode === 'signup'
+                                          ? (isEn ? '3. Your Email Address *' : '3. Votre Adresse Email *')
+                                          : (isEn ? 'Email Address' : 'Adresse email')}
+                                </label>
+                                <input type="email" required={mode !== 'passport'} data-testid="passport-email-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="joueur@email.com" className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#D4AF37]" />
                             </div>
 
                             {mode === 'passport' && (
@@ -226,9 +242,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
                                     <label className="block text-xs font-bold text-amber-100 mb-1">{isEn ? '4. Your Division (calibrates Coach & ER / PR Quizzes)' : '4. Votre Division (calibre le Coach & les Quiz ER / PR)'}</label>
                                     <div className="grid grid-cols-3 gap-2" role="group" aria-label="Division joueur">
                                         {([{ id: 'beginner' as const, label: isEn ? 'Beginner' : 'Débutant', Icon: Sprout }, { id: 'intermediate' as const, label: 'Club', Icon: Swords }, { id: 'expert' as const, label: isEn ? 'Pro' : 'Compétiteur', Icon: Crown }]).map(({ id, label, Icon }) => (
-                                            <button key={id} type="button" data-testid={`passport-level-${id}`} aria-pressed={experienceLevel === id} onClick={() => setExperienceLevel(id)} className={`inline-flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-extrabold transition ${experienceLevel === id ? 'border-[#D4AF37]/70 bg-[#D4AF37]/15 text-[#F3E5AB] shadow-[0_0_16px_rgba(212,175,55,0.15)]' : 'border-white/[0.08] bg-black/40 text-zinc-400 hover:text-white'}`}>
-                                                <Icon size={14} strokeWidth={1.5} className="text-[#D4AF37]" />
-                                                <span>{label}</span>
+                                            <button key={id} type="button" data-testid={`passport-level-${id}`} aria-pressed={experienceLevel === id} onClick={() => handleLevelSelect(id)} className={`inline-flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-extrabold transition ${experienceLevel === id ? 'border-[#D4AF37]/70 bg-[#D4AF37]/15 text-[#F3E5AB] shadow-[0_0_16px_rgba(212,175,55,0.15)]' : 'border-white/[0.08] bg-black/40 text-zinc-400 hover:text-white'}`}>
+                                                <Icon size={14} strokeWidth={1.5} className="text-[#D4AF37]" /><span>{label}</span>
                                             </button>
                                         ))}
                                     </div>
@@ -262,7 +277,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
                         </form>
                     </div>
 
-                    {/* COLONNE DROITE : APERÇU EN DIRECT DE LA CARTE DE MEMBRE (5 COLONNES SUR DESKTOP) */}
                     <div className="md:col-span-5 flex items-stretch">
                         <PassportCardPreview displayName={displayName} countryName={selectedCountryName} countryCode={selectedCountryObj.code} avatarUrl={selectedAvatarUrl} experienceLevel={experienceLevel} isEn={isEn} />
                     </div>
@@ -271,6 +285,5 @@ export default function AuthModal({ isOpen, onClose, onSuccess, requireRegistrat
         </div>
     );
 
-    if (mounted && typeof document !== 'undefined') return createPortal(modalContent, document.body);
-    return modalContent;
+    return mounted && typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
 }

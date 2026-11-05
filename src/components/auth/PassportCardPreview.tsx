@@ -22,16 +22,16 @@ export interface PassportCardPreviewProps {
 
 const LEVEL_BADGE_MAP: Readonly<Record<PlayerExperienceTier, { readonly fr: string; readonly en: string }>> = {
     beginner: {
-        fr: 'Division Débutant · Progression Tactique',
-        en: 'Beginner Division · Tactical Progress',
+        fr: 'Niveau : Débutant (Accompagnement Pas-à-Pas)',
+        en: 'Level: Beginner (Step-by-Step Guided Play)',
     },
     intermediate: {
-        fr: 'Division Club · Compétition Amicale',
-        en: 'Club Division · Friendly Competition',
+        fr: 'Division Club • Objectif Videau & Tactique',
+        en: 'Club Division • Doubling Cube & Tactics',
     },
     expert: {
-        fr: 'Division Maître · Compétition Haute Précision',
-        en: 'Master Division · High-Precision Play',
+        fr: 'Division Expert / Pro • Analyse 3-Ply & ERA',
+        en: 'Expert / Pro Division • 3-Ply Analysis & ERA',
     },
 };
 
@@ -119,16 +119,20 @@ export const PassportCardPreview: React.FC<PassportCardPreviewProps> = React.mem
                     </div>
                     <div className="flex flex-col items-center pl-2">
                         <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
-                            {isEn ? 'ER / PR Index' : 'Indice ER / PR'}
+                            {experienceLevel === 'beginner'
+                                ? (isEn ? 'Progression' : 'Progression')
+                                : (isEn ? 'ER / PR Index' : 'Indice ER / PR')}
                         </span>
                         <span className="mt-0.5 font-mono text-xs font-bold text-[#34D399]">
-                            {isEn ? 'Calibrating' : 'En calibrage'}
+                            {experienceLevel === 'beginner'
+                                ? (isEn ? 'Step-by-Step' : 'Pas-à-Pas')
+                                : (isEn ? 'Calibrating' : 'En calibrage')}
                         </span>
                     </div>
                 </div>
             </div>
 
-            {/* Pied de carte : Matricule Grand Cercle & Moteur IA 3-Ply */}
+            {/* Pied de carte : Matricule Grand Cercle & Statut Moteur */}
             <div className="relative z-10 flex items-center justify-between border-t border-[#D4AF37]/20 pt-3 text-[10px] text-zinc-400">
                 <span className="inline-flex items-center gap-1 font-mono text-[10px] text-[#D4AF37]/90">
                     <Award size={12} strokeWidth={1.5} className="text-[#D4AF37]" />
@@ -136,7 +140,9 @@ export const PassportCardPreview: React.FC<PassportCardPreviewProps> = React.mem
                 </span>
                 <span className="inline-flex items-center gap-1 text-zinc-300">
                     <ShieldCheck size={12} strokeWidth={1.5} className="text-[#10B981]" />
-                    {isEn ? '3-Ply AI Engine' : 'Moteur IA 3-Ply'}
+                    {experienceLevel === 'beginner'
+                        ? (isEn ? 'Guided Play' : 'Mode Guidé')
+                        : (isEn ? '3-Ply AI Engine' : 'Moteur IA 3-Ply')}
                 </span>
             </div>
         </aside>

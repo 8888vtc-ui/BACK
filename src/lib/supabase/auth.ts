@@ -247,42 +247,34 @@ export async function registerPlayerPassportLead(params: {
     countryCode?: string;
     password?: string;
 }): Promise<{ passport: PlayerPassport; error: Error | null }> {
-    const cleanPseudo = params.pseudo.trim();
-    const cleanEmail = params.email.trim().toLowerCase();
+    const cleanPseudo = (params.pseudo || '').trim() || 'Alexandre D.';
+    const rawEmail = (params.email || '').trim().toLowerCase();
     const chosenAvatar = params.avatarUrl?.trim() || STANDARD_USER_AVATARS[0].url;
     const chosenCountryName = params.countryName?.trim() || 'France';
     const chosenCountryCode = (params.countryCode?.trim() || 'FR').toUpperCase();
-    if (cleanPseudo.length < 2) {
+    const isEmailProvided = rawEmail.length > 0;
+
+    if (isEmailProvided && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
         return {
             passport: {
                 pseudo: cleanPseudo,
-                email: cleanEmail,
+                email: rawEmail,
                 experienceLevel: params.experienceLevel,
                 avatarUrl: chosenAvatar,
                 countryName: chosenCountryName,
                 countryCode: chosenCountryCode,
                 registeredAt: new Date().toISOString(),
             },
-            error: new Error('Veuillez indiquer un pseudo (2 caractères minimum).'),
-        };
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-        return {
-            passport: {
-                pseudo: cleanPseudo,
-                email: cleanEmail,
-                experienceLevel: params.experienceLevel,
-                avatarUrl: chosenAvatar,
-                countryName: chosenCountryName,
-                countryCode: chosenCountryCode,
-                registeredAt: new Date().toISOString(),
-            },
-            error: new Error('Veuillez indiquer une adresse email valide.'),
+            error: new Error('Veuillez indiquer une adresse email valide ou laisser le champ vide.'),
         };
     }
 
+    const cleanEmail = isEmailProvided
+        ? rawEmail
+        : `guest_${cleanPseudo.toLowerCase().replace(/[^a-z0-9]/g, '') || 'joueur'}_${Date.now().toString(36)}@backgammontour.com`;
+
     let supabaseSynced = false;
-    if (isSupabaseConfigured()) {
+    if (isSupabaseConfigured() && isEmailProvided) {
         try {
             const effectivePassword =
                 params.password && params.password.length >= 6
@@ -315,7 +307,7 @@ export async function registerPlayerPassportLead(params: {
 
     const saved = savePlayerPassport({
         pseudo: cleanPseudo,
-        email: cleanEmail,
+        email: rawEmail,
         experienceLevel: params.experienceLevel,
         avatarUrl: chosenAvatar,
         countryName: chosenCountryName,

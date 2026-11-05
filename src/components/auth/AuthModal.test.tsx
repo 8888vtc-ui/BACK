@@ -26,7 +26,7 @@ describe('AuthModal Component (Bi-Pane Grand Cercle)', () => {
         expect(html).toContain('passport-card-live-preview');
         expect(html).toContain('GRAND CERCLE BACKGAMMON');
         expect(html).toContain('CARTE MEMBRE');
-        expect(html).toContain('Division Club · Compétition Amicale');
+        expect(html).toContain('Niveau : Débutant (Accompagnement Pas-à-Pas)');
         expect(html).toContain('Quiz ER / PR');
         expect(html).not.toContain('Officiel');
         expect(html).not.toContain('Monte-Carlo');
