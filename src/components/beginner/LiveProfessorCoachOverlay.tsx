@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { RotateCcw, Lightbulb, GraduationCap, Volume2, BookOpen, ShieldAlert, Award, Compass, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
-import type { BoardState } from '../../engine/backgammonEngine';
+import { pipCount, type BoardState } from '../../engine/backgammonEngine';
 import { BeginnerInteractiveGuideModal } from './BeginnerInteractiveGuideModal';
 import { getProactiveAdvice, getFeedbackAdvice, getBotMoveExplanation } from './professorAdviceHelper';
 
@@ -42,11 +42,29 @@ export function LiveProfessorCoachOverlay({
   const [activeNotice, setActiveNotice] = useState<'BAR_PRIORITY' | 'CLOSED_POINT' | null>(antiFrustrationNotice ?? null);
 
   // Temps A : Calcul proactif du meilleur coup au jet de dés
-  const proactive = useMemo(() => (boardState && dice && activeTurn === 'X' ? getProactiveAdvice(boardState, dice, lang) : null), [boardState, dice, activeTurn, lang]);
+  const proactive = useMemo(() => (boardState && dice && (dice[0] > 0 || dice[1] > 0) && activeTurn === 'X' ? getProactiveAdvice(boardState, dice, lang) : null), [boardState, dice, activeTurn, lang]);
 
   const activeBestNotation = proactive?.bestNotation ?? optimalMove ?? '';
 
+  const raceDiff = useMemo(() => {
+    if (!boardState?.board) return typeof pipDifference === 'number' ? pipDifference : 0;
+    const pips = pipCount(boardState.board);
+    return pips.O - pips.X;
+  }, [boardState?.board, pipDifference]);
+
   const getProfessorPrompt = (): string => {
+    if (activeTurn === 'X' && (!dice || (dice[0] === 0 && dice[1] === 0))) {
+      const hasCheckerOnBar = Boolean(boardState && boardState.board[0] > 0);
+      if (hasCheckerOnBar) {
+        return lang === 'fr'
+          ? "🎓 Le Professeur : Tu as un pion sur la barre centrale ! Clique sur Lancer les dés : ta priorité absolue sera de le faire rentrer dans le camp adverse (Cases 24 à 19)."
+          : "🎓 The Professor: You have a checker on the central bar! Click Roll Dice: your absolute priority will be to enter it into the opponent's home board (Points 24 to 19).";
+      }
+      return lang === 'fr'
+        ? "🎓 Le Professeur : C'est à ton tour ! Clique sur Lancer les dés au centre du plateau pour découvrir tes options de déplacement."
+        : "🎓 The Professor: It's your turn! Click Roll Dice in the center of the board to see your movement options.";
+    }
+
     if (lastMoveFeedback && activeTurn === 'X' && !dice) return getFeedbackAdvice(lastMoveFeedback, lang);
     if (proactive) return proactive.text;
     if (lastBotNotation && activeTurn === 'X' && !dice) return getBotMoveExplanation(lastBotNotation, lang);
@@ -57,17 +75,19 @@ export function LiveProfessorCoachOverlay({
       }
       return lang === 'fr' ? "💡 Conseil du Professeur : Lancez d’abord les dés pour analyser la meilleure option !" : "💡 Professor Tip: Roll the dice first so we can analyze the best option!";
     }
-    return lang === 'fr' ? "Le Professeur vous accompagne : le hasard lance les dés, mais c'est votre stratégie qui fait la différence. Cliquez sur Lancer les dés !" : "The Professor guides you: luck rolls the dice, but strategy wins the game. Click Roll Dice!";
+    return lang === 'fr'
+      ? "🎓 Le Professeur : C'est à ton tour ! Clique sur Lancer les dés au centre du plateau."
+      : "🎓 The Professor: It's your turn! Click Roll Dice in the center of the board.";
   };
 
   const getRaceCompassText = (): string => {
-    if (pipDifference >= 8) {
+    if (raceDiff >= 8) {
       return lang === 'fr'
-        ? `🏃 Course : Tu es en avance de ${pipDifference} cases ! Ramène tes dames en sécurité.`
-        : `🏃 Race: You lead by ${pipDifference} steps! Bring your checkers home safely.`;
+        ? `🏃 Course : Tu es en avance de ${raceDiff} cases ! Ramène tes dames en sécurité.`
+        : `🏃 Race: You lead by ${raceDiff} steps! Bring your checkers home safely.`;
     }
-    if (pipDifference <= -8) {
-      const trail = Math.abs(pipDifference);
+    if (raceDiff <= -8) {
+      const trail = Math.abs(raceDiff);
       return lang === 'fr'
         ? `🛡️ En embuscade (${trail} cases de retard) : Garde une porte chez l'adversaire et attends une occasion de frapper !`
         : `🛡️ Ambush (${trail} steps behind): Keep an anchor in opponent board and wait to strike!`;
@@ -129,7 +149,7 @@ export function LiveProfessorCoachOverlay({
           {/* Boutons d'interaction */}
           <div className="flex flex-wrap items-center gap-1.5 shrink-0 self-end sm:self-center">
             {/* Bouton d'Aide Visuelle : Flèche dorée sur le plateau */}
-            {activeBestNotation && (
+            {activeBestNotation && dice && (dice[0] > 0 || dice[1] > 0) && (
               <button
                 type="button"
                 data-testid="professor-show-arrow-btn"

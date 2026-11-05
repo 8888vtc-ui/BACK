@@ -87,7 +87,9 @@ export function resolvePersonaMeta(
     prX?: number | null,
     prO?: number | null,
     challengerProfile?: PlayerEloProfile | null,
+    isBeginner: boolean = false,
 ) {
+    const isEn = locale === 'en';
     const activePersona = getBotPersona(difficulty, locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja');
     const botElo = challengerProfile ? String(challengerProfile.rating) : '—';
     const playerPrNum = typeof prX === 'number' && Number.isFinite(prX) ? Math.max(0, prX) : null;
@@ -95,15 +97,9 @@ export function resolvePersonaMeta(
     const playerPrLabel = playerPrNum !== null ? playerPrNum.toFixed(1) : '—';
     const opponentPrNum = typeof prO === 'number' && Number.isFinite(prO) ? Math.max(0, prO) : null;
     const opponentPrValue = opponentPrNum !== null ? opponentPrNum.toFixed(1) : '—';
-    const opponentDisplayName = challengerProfile
-        ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName)
-        : activePersona.shortName;
-    const opponentBadge = challengerProfile
-        ? 'En Ligne · Classé'
-        : activePersona.styleBadge;
-    const opponentPhotoUrl = challengerProfile
-        ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating)
-        : (PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg');
+    const opponentDisplayName = isBeginner ? (isEn ? 'The Professor' : 'Le Professeur') : challengerProfile ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName) : activePersona.shortName;
+    const opponentBadge = isBeginner ? (isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE') : challengerProfile ? 'En Ligne · Classé' : activePersona.styleBadge;
+    const opponentPhotoUrl = isBeginner ? '/avatars/persona-femme-maitre.jpg' : challengerProfile ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating) : (PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg');
     return {
         activePersona, botElo, playerPrNum, playerPrValue, playerPrLabel,
         opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl,
@@ -116,7 +112,7 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
     const { activePersona, botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl } = resolvePersonaMeta(
-        difficulty, locale, prX, prO, challengerProfile,
+        difficulty, locale, prX, prO, challengerProfile, isBeginner,
     );
     return (
         <div data-testid="board-portrait-top-hud" className="md:hidden [@media(max-height:500px)]:hidden w-full shrink-0 flex flex-col gap-1 px-1.5 pt-0.5 pb-1 select-none">

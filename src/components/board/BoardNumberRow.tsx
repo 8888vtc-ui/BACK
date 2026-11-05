@@ -46,23 +46,7 @@ export const BoardNumberRow: React.FC<BoardNumberRowProps> = ({
                 </span>
             ))}
         </div>
-        <div className="w-7 sm:w-12 md:w-14 [@media(max-height:600px)]:!w-10 pl-0.5 ml-0.5 sm:pl-1 sm:ml-1 shrink-0 flex items-center justify-center">
-            {onToggleOrientation && (
-                <button
-                    type="button"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleOrientation();
-                    }}
-                    aria-label="Inverser l'orientation du plateau"
-                    title="Inverser l'orientation (sortie à gauche ou à droite)"
-                    data-testid="orientation-toggle"
-                    className="[@media(max-height:500px)]:hidden px-1.5 py-0.5 rounded-md bg-[#1c0e06]/90 border border-[#d4af37]/45 text-[#f3c65f] hover:border-[#f3c65f] hover:text-white text-[10px] sm:text-xs font-serif font-bold shadow-inner transition-colors shrink-0"
-                >
-                    ⇄
-                </button>
-            )}
-        </div>
+        <div className="w-7 sm:w-12 md:w-14 [@media(max-height:600px)]:!w-10 pl-0.5 ml-0.5 sm:pl-1 sm:ml-1 shrink-0 flex items-center justify-center" />
     </div>
 );
 

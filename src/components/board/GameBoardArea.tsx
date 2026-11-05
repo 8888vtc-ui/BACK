@@ -193,6 +193,9 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
 
     const displayCoachHighlight = useMemo<CoachHighlight | null>(() => {
         if (replay.isLive) {
+            if (!game.dice || (game.dice[0] === 0 && game.dice[1] === 0) || game.gamePhase !== 'HUMAN_MOVING' || game.state.turn !== 'X') {
+                return null;
+            }
             if (previewBoardMode === 'before' || selectedCoachHistoryIndex !== null) {
                 return activeCoachHighlight;
             }

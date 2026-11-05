@@ -136,8 +136,8 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                     data-testid="post-match-pr-player"
                     role="button"
                     tabIndex={0}
-                    onClick={() => !isBeginner && setShowPrSplit((v) => !v)}
-                    onKeyDown={(e) => { if (!isBeginner && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setShowPrSplit((v) => !v); } }}
+                    onClick={() => setShowPrSplit((v) => !v)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowPrSplit((v) => !v); } }}
                     title={isBeginner ? undefined : "Toucher pour ventiler PR-Positional vs PR-Cube"}
                     className="flex flex-col items-center justify-center rounded-xl border border-[#d4af37]/15 bg-[#120e0a]/90 p-2 cursor-pointer transition hover:border-[#d4af37]/40 text-center"
                 >
@@ -148,7 +148,7 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                     <span className="truncate text-xs font-semibold text-stone-300">
                         {isBeginner ? (isEn ? 'Good moves' : 'Bons coups') : playerCategory}
                     </span>
-                    {!isBeginner && showPrSplit && (
+                    {showPrSplit && (
                         <div data-testid="post-match-pr-split" className="mt-1.5 flex flex-wrap items-center justify-center gap-1.5 border-t border-[#d4af37]/15 pt-1 font-mono text-[10px] text-amber-200">
                             <span>Dames : <strong>{(checkerPr ?? playerPr).toFixed(2)}</strong></span>
                             <span>·</span>
@@ -169,10 +169,10 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                 <div data-testid="post-match-pr-bot" className="flex flex-col items-center justify-center rounded-xl border border-[#d4af37]/15 bg-[#120e0a]/90 p-2 text-center">
                     <span className="sr-only">Niveau Adversaire</span>
                     <span className="text-xl font-mono font-black text-[#f3d27a]">
-                        {isBeginner ? '100%' : (botPr !== null && Number.isFinite(botPr) ? botPr.toFixed(2) : '--')}
+                        {botPr !== null && Number.isFinite(botPr) ? botPr.toFixed(2) : '--'}
                     </span>
                     <span className="truncate text-xs font-semibold text-stone-300">
-                        {isBeginner ? (isEn ? 'Guided Match' : 'Partie Guidée') : (botCategory ?? (isEn ? 'Master' : 'Maître'))}
+                        {botCategory ?? (isEn ? 'Master' : 'Maître')}
                     </span>
                 </div>
             </div>

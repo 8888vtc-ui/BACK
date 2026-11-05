@@ -156,17 +156,21 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
     }, [orientation, played.length, optimal.length, opponent.length]);
 
     const playedArrows = useMemo(
-        () => played.map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
+        () => played.filter((m) => (m.from === 0 ? m.to >= 19 && m.to <= 24 : m.to < m.from || m.to === 0)).map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
         [played, orientation, domCenters],
     );
     const optimalArrows = useMemo(
-        () => optimal.map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
+        () => optimal.filter((m) => (m.from === 0 ? m.to >= 19 && m.to <= 24 : m.to < m.from || m.to === 0)).map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
         [optimal, orientation, domCenters],
     );
     const opponentArrows = useMemo(
         () => opponent.map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters, m.isHit)),
         [opponent, orientation, domCenters],
     );
+
+    if (playedArrows.length === 0 && optimalArrows.length === 0 && opponentArrows.length === 0) {
+        return null;
+    }
 
     return (
         <svg
