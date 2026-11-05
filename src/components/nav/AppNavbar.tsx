@@ -62,7 +62,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
             { id: 'play', label: ui.navbar.play, icon: '🎲', href: '/', testId: 'nav-tab-play' },
             { id: 'tournaments', label: ui.navbar.tournaments, icon: '🌍', href: '/tournaments', testId: 'nav-tab-tournaments' },
             { id: 'puzzles', label: ui.navbar.puzzles, icon: '🧩', href: '/puzzles', moduleId: 'puzzles', testId: 'nav-tab-puzzles' },
-            { id: 'drills', label: ui.navbar.drills, icon: '🎯', href: '/puzzles', moduleId: 'drills', testId: 'nav-tab-drills' },
+            { id: 'drills', label: ui.navbar.drills, icon: '🎯', href: '/puzzles?filter=personal-blunders', moduleId: 'drills', testId: 'nav-tab-drills' },
             { id: 'openings', label: ui.navbar.openings, icon: '📖', href: '/academy', moduleId: 'openings', testId: 'nav-tab-openings' },
             { id: 'progression', label: ui.navbar.progression, icon: '📊', href: '/progression', moduleId: 'stats', testId: 'nav-tab-progression' },
             { id: 'academy', label: ui.navbar.academy, icon: '🏛️', href: '/academy', testId: 'nav-tab-academy' },

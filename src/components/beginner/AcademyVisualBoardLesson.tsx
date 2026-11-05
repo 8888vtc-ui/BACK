@@ -213,3 +213,4 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
 });
 
 AcademyVisualBoardLesson.displayName = 'AcademyVisualBoardLesson';
+

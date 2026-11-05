@@ -9,7 +9,7 @@ import { generateStaticParams as generateOpeningStaticParams } from '../../app/a
 import { generateStaticParams as generateConceptStaticParams } from '../../app/academy/concepts/[slug]/page';
 
 describe('Gammon Academy SEO Hub, Programmatic Routes, Calculators & Structured Data Graph', () => {
-    it('contient exactement les 15 rouleaux d ouverture sans doublon avec équité 3-Ply et notes en 6 langues', () => {
+    it('contient exactement les 15 coups d ouverture sans doublon avec équité 3-Ply et notes en 6 langues', () => {
         expect(OPENING_ROLLS_15).toHaveLength(15);
         const rolls = OPENING_ROLLS_15.map((r) => r.roll);
         expect(new Set(rolls).size).toBe(15);

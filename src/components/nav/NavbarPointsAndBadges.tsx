@@ -54,7 +54,7 @@ export const NavbarPointsAndBadges: React.FC<NavbarPointsAndBadgesProps> = React
     const prDisplay = typeof averagePr === 'number' ? `PR ${averagePr.toFixed(1)}` : 'PR 6.3';
 
     return (
-        <div data-testid="navbar-stats-container" className="flex items-center gap-1.5 sm:gap-2">
+        <div data-testid="navbar-stats-container" className="flex items-center gap-1.5 sm:gap-2 shrink-0 whitespace-nowrap">
             {!isBeginner && (
                 <div className="hidden lg:flex items-center gap-1.5 font-mono text-xs">
                     <span
@@ -78,10 +78,10 @@ export const NavbarPointsAndBadges: React.FC<NavbarPointsAndBadgesProps> = React
             <div
                 data-testid="navbar-points-badge"
                 title="Capital de Points de Cercle Monte-Carlo (10 000 PTS initiaux)"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[#f3c65f]/35 bg-[#f3c65f]/10 px-2.5 py-1 font-mono text-xs font-bold text-[#f3c65f] tabular-nums shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[#f3c65f]/35 bg-[#f3c65f]/10 px-2.5 py-1 font-mono text-xs font-bold text-[#f3c65f] tabular-nums shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] shrink-0 whitespace-nowrap"
             >
                 <span aria-hidden="true" className="text-amber-400">🪙</span>
-                <span>{points.toLocaleString('fr-FR')} PTS</span>
+                <span className="shrink-0 whitespace-nowrap">{points.toLocaleString('fr-FR')} PTS</span>
             </div>
         </div>
     );

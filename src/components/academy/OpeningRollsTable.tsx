@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Tableau interactif des 15 Rouleaux d'Ouverture au Backgammon (Équité Monte-Carlo 3-Ply).
+ * Tableau interactif des 15 coups d'ouverture au Backgammon (Équité Monte-Carlo 3-Ply).
  * Loi de Scalabilité : strictement 0 any, < 300 lignes.
  */
 
@@ -80,7 +80,7 @@ const OpeningRollsTableComponent: React.FC<OpeningRollsTableProps> = ({ content,
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div
                     role="group"
-                    aria-label="Filtrer les 15 rouleaux d'ouverture"
+                    aria-label="Filtrer les 15 coups d'ouverture"
                     data-testid="academy-openings-filters"
                     className="flex flex-wrap gap-2"
                 >

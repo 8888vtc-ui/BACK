@@ -7,7 +7,7 @@
  * - `Course` (Gammon Academy — Les 15 Ouvertures, Videau & Stratégie 3-Ply)
  * - `FAQPage` (Questions/Réponses stratégiques à fort volume de recherche)
  * - `BreadcrumbList` (Arborescence canonique du site)
- * - `ItemList` (Classement ordonné des 15 Rouleaux d'Ouverture par équité 3-Ply)
+ * - `ItemList` (Classement ordonné des 15 coups d'ouverture par équité 3-Ply)
  * - `DefinedTermSet` (Glossaire officiel des termes techniques XG / WBGF)
  * - `HowTo` (Guide pas-à-pas du calcul du Keith Count et de la décision de Videau)
  * Strictement 0 any.
