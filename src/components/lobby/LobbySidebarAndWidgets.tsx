@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Sparkles, Flame, BarChart2, GraduationCap } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import type { LobbyModuleId } from './LobbyScreen';
 import {
     IconLuxuryDice,
@@ -49,6 +50,8 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
 }) => {
     const { locale } = useTranslation();
     const isEn = locale === 'en';
+    const { tierGate } = usePlayerTierGate();
+    const isBeginner = tierGate === 'BEGINNER';
     const [collapsed, setCollapsed] = useState(false);
     const [playGroupExpanded, setPlayGroupExpanded] = useState(true);
 
@@ -88,7 +91,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             <IconLuxuryDice className="text-[#D4AF37]" size={15} />
                             {!collapsed && <span>Salon de Jeu</span>}
                         </button>
-                        {!collapsed && (
+                        {!collapsed && !isBeginner && (
                             <button
                                 type="button"
                                 data-testid="sidebar-play-group-toggle"
@@ -102,7 +105,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         )}
                     </div>
 
-                    {(playGroupExpanded || collapsed) && (
+                    {!isBeginner && (playGroupExpanded || collapsed) && (
                         <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-2 border-l border-white/[0.06] ml-3 mt-0.5'}`}>
                             <button
                                 type="button"
@@ -170,19 +173,21 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         </span>
                     </Link>
 
-                    {/* 3. Studio d'Analyse */}
-                    <button
-                        type="button"
-                        data-testid="sidebar-pillar-studio"
-                        onClick={() => onOpenModule?.('stats')}
-                        title={isEn ? 'Analysis & Performance Rating Studio' : 'Studio d’analyse et Performance Rating'}
-                        className={itemCls}
-                    >
-                        <span className="flex items-center gap-2.5">
-                            <BarChart2 size={16} strokeWidth={1.5} className="text-[#D4AF37]" />
-                            {!collapsed && <span>{isEn ? 'Analysis Studio' : 'Studio d’Analyse'}</span>}
-                        </span>
-                    </button>
+                    {/* 3. Studio d'Analyse (Uniquement pour Intermédiaire et Expert) */}
+                    {!isBeginner && (
+                        <button
+                            type="button"
+                            data-testid="sidebar-pillar-studio"
+                            onClick={() => onOpenModule?.('stats')}
+                            title={isEn ? 'Analysis & Performance Rating Studio' : 'Studio d’analyse et Performance Rating'}
+                            className={itemCls}
+                        >
+                            <span className="flex items-center gap-2.5">
+                                <BarChart2 size={16} strokeWidth={1.5} className="text-[#D4AF37]" />
+                                {!collapsed && <span>{isEn ? 'Analysis Studio' : 'Studio d’Analyse'}</span>}
+                            </span>
+                        </button>
+                    )}
 
                     {/* 4. Académie */}
                     <Link

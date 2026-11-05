@@ -150,7 +150,7 @@ test.describe('Windows Desktop Visibility & 3 Gates Upgrade Suite', () => {
 
         await expect(page.locator('body')).not.toContainText(/Quiz PR & Blunders/i);
 
-        // 4. Mode Débutant : Un seul bouton plein Or de l'Académie
+        // 4. Mode Débutant : Épuration Elon Musk (Zéro vieux lobby, zéro scroll, un seul bouton Or)
         await page.locator('[data-testid="tier-gate-btn-beginner"]:visible').first().click();
         const academyBtn = page.getByTestId('beginner-academy-btn');
         await expect(academyBtn).toBeVisible();
@@ -159,6 +159,26 @@ test.describe('Windows Desktop Visibility & 3 Gates Upgrade Suite', () => {
         const playBtn = page.getByTestId('beginner-play-btn');
         await expect(playBtn).toBeVisible();
         await expect(playBtn).toHaveClass(/bg-white\/10/);
+
+        // Barre fine des 2 boutons-capsules
+        await expect(page.getByTestId('beginner-open-guide-btn')).toBeVisible();
+        await expect(page.getByTestId('beginner-openings-btn')).toBeVisible();
+
+        // Vérification de la disparition totale des résidus de l'ancien lobby
+        await expect(page.locator('body')).not.toContainText(/PR & ER \/ PR/i);
+        await expect(page.locator('body')).not.toContainText(/5 Maîtres/i);
+        await expect(page.locator('body')).not.toContainText(/11 pts/i);
+        await expect(page.locator('body')).not.toContainText(/Money Game/i);
+
+        // Vérification Sidebar Débutant : Studio d'Analyse et flèche dépliable masqués
+        await expect(page.getByTestId('sidebar-pillar-studio')).not.toBeVisible();
+        await expect(page.getByTestId('sidebar-play-group-toggle')).not.toBeVisible();
+
+        // Contrôle Zero Scroll sur Desktop (1440x900)
+        const isZeroScroll = await page.evaluate(() => {
+            return document.documentElement.scrollHeight <= window.innerHeight + 15;
+        });
+        expect(isZeroScroll).toBe(true);
     });
 });
 
