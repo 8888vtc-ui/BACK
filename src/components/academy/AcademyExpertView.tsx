@@ -239,3 +239,4 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
 
 AcademyExpertView.displayName = 'AcademyExpertView';
 export default AcademyExpertView;
+

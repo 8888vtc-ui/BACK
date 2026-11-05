@@ -80,3 +80,4 @@ test.describe('Académie — Différenciation Totale des 3 Niveaux & Zéro Doubl
     await expect(ptsBadge).toContainText(/10\s*000\s*PTS/i);
   });
 });
+

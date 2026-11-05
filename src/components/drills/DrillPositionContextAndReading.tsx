@@ -33,7 +33,7 @@ export interface PositionTelemetry {
     readonly structureLineContext: string;
 }
 
-export function computePositionTelemetry(blunder: PlayerBlunderRecord): PositionTelemetry {
+export function computePositionTelemetry(blunder: PlayerBlunderRecord, isBeginner = false): PositionTelemetry {
     const validated = validateBoardState(blunder.board, blunder.player);
     const board = validated.normalizedBoard;
 
@@ -52,8 +52,10 @@ export function computePositionTelemetry(blunder: PlayerBlunderRecord): Position
 
     const compactMatchLabel =
         matchLength === 0
-            ? 'Money Game (Cube Libre)'
-            : `Match ${matchLength} pts (${scoreX}-${scoreO}${ctx?.crawford ? ' Cr' : ''} • ${awayLabel})`;
+            ? (isBeginner ? 'Partie Libre' : 'Money Game (Cube Libre)')
+            : isBeginner
+                ? `Match ${matchLength} pts (${scoreX}-${scoreO})`
+                : `Match ${matchLength} pts (${scoreX}-${scoreO}${ctx?.crawford ? ' Cr' : ''} • ${awayLabel})`;
 
     const cubeValue = ctx?.cubeValue ?? 1;
     const cubeOwner = ctx?.cubeOwner ?? null;
@@ -63,10 +65,10 @@ export function computePositionTelemetry(blunder: PlayerBlunderRecord): Position
     const { pipDiff, whitePips, blackPips, whiteMadePoints, blackMadePoints, backCheckersSummary } = validated;
     const compactRaceDiffLabel =
         pipDiff === 0
-            ? 'Égalité : 0 pip'
+            ? (isBeginner ? 'Égalité' : 'Égalité : 0 pip')
             : pipDiff > 0
-                ? `Avance : +${pipDiff} pips`
-                : `Retard : ${pipDiff} pips`;
+                ? (isBeginner ? `+${pipDiff} pips d'avance` : `Avance : +${pipDiff} pips`)
+                : (isBeginner ? `${pipDiff} pips de retard` : `Retard : ${pipDiff} pips`);
 
     const singleLineContext = `${compactMatchLabel} • ${compactCubeLabel} • Pips : ${whitePips} vs ${blackPips} (${compactRaceDiffLabel})`;
     const structureLineContext = `Portes faites : Blanc ${whiteMadePoints} | Noir ${blackMadePoints} • Pions arrières : ${backCheckersSummary}`;

@@ -12,6 +12,7 @@
 import React, { useMemo } from 'react';
 import type { PlayerBlunderRecord } from '../../features/drills/types';
 import { computePositionTelemetry } from './DrillPositionContextAndReading';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 
 export interface DrillContextStripProps {
     readonly currentBlunder: PlayerBlunderRecord;
@@ -20,15 +21,23 @@ export interface DrillContextStripProps {
     readonly isErMode?: boolean;
     readonly showHint: boolean;
     readonly isRevealed?: boolean;
+    readonly targetQuizEr?: number;
     readonly onToggleHint: () => void;
     readonly onResetAttempt: () => void;
 }
 
-const TIER_LABELS: Record<number, { badge: string; color: string }> = {
+export function computeTierFromTargetER(targetER: number): 1 | 2 | 3 | 4 {
+    if (targetER <= 5.0) return 4;
+    if (targetER <= 8.0) return 3;
+    if (targetER <= 12.0) return 2;
+    return 1;
+}
+
+export const TIER_LABELS: Record<number, { badge: string; color: string }> = {
     1: { badge: '🌱 Palier 1 · Débutant', color: 'border-emerald-500/40 bg-emerald-950/70 text-emerald-200' },
-    2: { badge: '⚔️ Palier 2 · Intermédiaire', color: 'border-amber-500/40 bg-amber-950/70 text-amber-200' },
-    3: { badge: '🏆 Palier 3 · Club', color: 'border-sky-500/40 bg-sky-950/70 text-sky-200' },
-    4: { badge: '👑 Palier 4 · Grand-Maître', color: 'border-purple-500/40 bg-purple-950/70 text-purple-200' },
+    2: { badge: '🎲 Palier 2 · Joueur de Club', color: 'border-amber-500/40 bg-amber-950/70 text-amber-200' },
+    3: { badge: '♟️ Palier 3 · Intermédiaire / Compétition', color: 'border-sky-500/40 bg-sky-950/70 text-sky-200' },
+    4: { badge: '🏆 Palier 4 · Expert / Grand-Maître', color: 'border-purple-500/40 bg-purple-950/70 text-purple-200' },
 };
 
 export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
@@ -37,11 +46,21 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
     totalBlunders,
     showHint,
     isRevealed = false,
+    targetQuizEr,
     onToggleHint,
     onResetAttempt,
 }) => {
-    const telemetry = useMemo(() => computePositionTelemetry(currentBlunder), [currentBlunder]);
-    const tierInfo = TIER_LABELS[currentBlunder.tier ?? 1] ?? TIER_LABELS[1];
+    const { tierGate } = usePlayerTierGate();
+    const isBeginner = tierGate === 'BEGINNER';
+    const telemetry = useMemo(() => computePositionTelemetry(currentBlunder, isBeginner), [currentBlunder, isBeginner]);
+
+    const erForTier = typeof targetQuizEr === 'number'
+        ? targetQuizEr
+        : typeof currentBlunder.quizTargetER === 'number'
+            ? currentBlunder.quizTargetER
+            : currentBlunder.tier === 1 ? 14 : currentBlunder.tier === 2 ? 10 : currentBlunder.tier === 3 ? 6.5 : 3.5;
+    const tierNum = computeTierFromTargetER(erForTier);
+    const tierInfo = isBeginner ? TIER_LABELS[1] : TIER_LABELS[tierNum];
     const isThemeUnlocked = showHint || isRevealed;
 
     return (

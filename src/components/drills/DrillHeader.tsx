@@ -94,20 +94,20 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                             Précision Débutant : Simple &amp; Efficace
                         </span>
                     ) : (
-                        <span data-testid="app-version-badge" className="rounded border border-emerald-400/40 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">v3.0 • 3-Ply</span>
+                        <span data-testid="app-version-badge" className="rounded border border-emerald-400/40 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">v3.1 • 3-Ply</span>
                     )}
                     <span data-testid="quiz-attempts-counter" title="2 essais maximum par position (Active Recall / 2e Chance)" className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 font-mono text-[10px] font-black ${attemptsLeft === 2 ? 'border-emerald-400/40 bg-emerald-950/50 text-emerald-200' : attemptsLeft === 1 ? 'border-amber-400/50 bg-amber-950/60 text-amber-200' : 'border-rose-400/50 bg-rose-950/60 text-rose-200'}`}>
                         <span>Essais : {attemptsLeft}/{maxAttempts}</span><span>{heartsDisplay}</span>
                     </span>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-1.5 shrink-0" data-testid="quiz-live-rating-badge">
+                <div className="flex flex-wrap items-center gap-1.5 min-w-0" data-testid="quiz-live-rating-badge">
                     <span className="sr-only">Niveau ER : {liveRatingValue}</span>
-                    <span data-testid="quiz-target-metric-badge" title="ER / PR : Error Rate / Performance Rating officiel (échelle 0.0 à 30.0 — plus bas est meilleur)" className="inline-flex items-center rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-2 py-0.5 font-mono text-[11px] font-black text-emerald-200">
+                    <span data-testid="quiz-target-metric-badge" title="ER / PR : Error Rate / Performance Rating officiel (échelle 0.0 à 30.0 — plus bas est meilleur)" className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-2 py-0.5 font-mono text-[11px] font-black text-emerald-200">
                         {isBeginner ? `Précision : ${Math.max(50, Math.round(100 - erPrScore * 1.5))} %` : `ER / PR : ${erPrScore.toFixed(1)}`}
                         <span className="sr-only">ER / PR : {erPrScore.toFixed(1)} Cible ER / PR : ~6.5 (Intermédiaire)</span>
                     </span>
-                    <span data-testid="quiz-nplus1-target-badge" title={targetBadgeText} className="inline-flex items-center rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#D4AF37]">
+                    <span data-testid="quiz-nplus1-target-badge" title={targetBadgeText} className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#D4AF37]">
                         {isBeginner ? '🎯 Objectif Progression Guidée' : targetBadgeText}
                         <span className="sr-only">
                             {isPersonal
@@ -115,11 +115,11 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                                 : `Calibrage Quiz : ER / PR ${effectiveQuizTargetEr.toFixed(1)} (Objectif N+1)`}
                         </span>
                     </span>
-                    <span data-testid="quiz-elo-rating-badge" className="inline-flex items-center rounded-lg border border-white/15 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#fdf8eb]">
+                    <span data-testid="quiz-elo-rating-badge" className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-white/15 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#fdf8eb]">
                         Rating : {liveRatingValue}<span className="sr-only">Rating : {liveRatingValue} Elo</span>
                     </span>
                     {activeTenthsDelta !== 0 && (
-                        <span data-testid="quiz-live-rating-delta" className={`inline-flex items-center rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black transition-all ${isImprovedTenths ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-300' : 'border-rose-400/60 bg-rose-500/20 text-rose-300'}`}>
+                        <span data-testid="quiz-live-rating-delta" className={`inline-flex items-center shrink-0 whitespace-nowrap rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black transition-all ${isImprovedTenths ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-300' : 'border-rose-400/60 bg-rose-500/20 text-rose-300'}`}>
                             {isImprovedTenths ? `▼ ${activeTenthsDelta.toFixed(1)} (Progression)` : `▲ +${activeTenthsDelta.toFixed(1)} (Erreur)`}
                             <span className="sr-only">{liveRatingDelta > 0 ? `+${liveRatingDelta}` : `${liveRatingDelta}`}</span>
                         </span>

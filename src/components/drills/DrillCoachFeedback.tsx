@@ -111,8 +111,8 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                     >
                         {isBeginner
                             ? validationResult.isCorrect
-                                ? '✅ Bravo ! Coup parfait qui protège vos pions et maximise vos chances de victoire.'
-                                : '⚠️ Attention : ce coup laisse un pion vulnérable. Essayez plutôt de sécuriser une porte.'
+                                ? '✅ Coup Optimal ! (+100% de chances de victoire préservées)'
+                                : `❌ Erreur (-${coachReport.extractorFacts.winChanceLossPct.toFixed(1)}% de chances de victoire)`
                             : isFirstFailureSocratic
                                 ? `⚠️ 1er Essai Imprécis (${coachReport.extractorFacts.deltaEmg.toFixed(3)} EMG | Impact ER / PR : +0.2 | Essais : 1/2 ❤️🖤)`
                                 : isNearOptimal
@@ -120,16 +120,14 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                                     : coachReport.headerSeverityLine}
                     </span>
                     <div className="flex items-center gap-1.5">
-                        <span
-                            data-testid="coach-win-drop-badge"
-                            className={`rounded-md border px-2 py-0.5 font-mono text-[10px] font-extrabold ${
-                                validationResult.isCorrect
-                                    ? 'border-emerald-400/50 bg-emerald-500/20 text-emerald-200'
-                                    : 'border-rose-400/60 bg-rose-500/25 text-rose-200'
-                            }`}
-                        >
-                            {coachReport.winChanceDropBadge}
-                        </span>
+                        {!validationResult.isCorrect && (
+                            <span
+                                data-testid="coach-win-drop-badge"
+                                className="rounded-md border border-rose-400/60 bg-rose-500/25 px-2 py-0.5 font-mono text-[10px] font-extrabold text-rose-200"
+                            >
+                                {coachReport.winChanceDropBadge}
+                            </span>
+                        )}
                         <button
                             type="button"
                             data-testid="drill-voice-listen-btn"
