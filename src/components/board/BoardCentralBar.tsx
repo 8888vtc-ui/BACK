@@ -14,12 +14,13 @@
  *   Mémoïsé via React.memo.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Player } from '../../engine/backgammonEngine';
 import { MAX_VISIBLE } from './boardGeometry';
 import { Checker, type CheckerColor } from './Checker';
 import { DoublingCube } from './DoublingCube';
 import { getBoardThemeTokens } from './boardThemes';
+import { getSavedPipCountVisibility, PIP_VISIBILITY_CHANGE_EVENT, toggleSavedPipCountVisibility } from './PipCountBadge';
 
 export interface BoardCentralBarProps {
     /** Nombre de pions blancs (X) sur la barre. */
@@ -125,6 +126,23 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
     const bar = getBoardThemeTokens(theme).bar;
     const colorO: CheckerColor = swapColors ? 'white' : 'black';
     const colorX: CheckerColor = swapColors ? 'black' : 'white';
+    const [pipVisible, setPipVisible] = useState<boolean>(() => getSavedPipCountVisibility(true));
+
+    useEffect(() => {
+        setPipVisible(getSavedPipCountVisibility(true));
+        const onPipSync = (e: Event) => {
+            const detail = (e as CustomEvent<boolean>).detail;
+            if (typeof detail === 'boolean') setPipVisible(detail);
+        };
+        window.addEventListener(PIP_VISIBILITY_CHANGE_EVENT, onPipSync);
+        return () => window.removeEventListener(PIP_VISIBILITY_CHANGE_EVENT, onPipSync);
+    }, []);
+
+    const handleTogglePip = () => {
+        const next = toggleSavedPipCountVisibility(pipVisible);
+        setPipVisible(next);
+    };
+
     return (
     <div
         className="relative row-span-2 w-8 sm:w-12 md:w-14 [@media(max-height:600px)]:!w-9 flex flex-col justify-between items-center py-2 sm:py-4 select-none"
@@ -154,10 +172,11 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
             {typeof pipO === 'number' && (
                 <span
                     data-testid="central-bar-pip-o"
-                    className="font-sans text-[11px] sm:text-sm md:text-base font-bold tabular-nums text-white tracking-tight select-none"
-                    title={`Course adversaire : ${pipO} pips`}
+                    onClick={handleTogglePip}
+                    className="font-sans text-[11px] sm:text-sm md:text-base font-bold tabular-nums text-white tracking-tight select-none cursor-pointer hover:text-amber-300 transition-colors"
+                    title={pipVisible ? `Course adversaire : ${pipO} pips (cliquer pour masquer)` : 'Conditions Tournoi : Pips masqués (cliquer pour afficher)'}
                 >
-                    {pipO}
+                    {pipVisible ? pipO : '•••'}
                 </span>
             )}
             <BarStack
@@ -198,10 +217,11 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
             {typeof pipX === 'number' && (
                 <span
                     data-testid="central-bar-pip-x"
-                    className="font-sans text-[11px] sm:text-sm md:text-base font-bold tabular-nums text-white tracking-tight select-none"
-                    title={`Votre course : ${pipX} pips`}
+                    onClick={handleTogglePip}
+                    className="font-sans text-[11px] sm:text-sm md:text-base font-bold tabular-nums text-white tracking-tight select-none cursor-pointer hover:text-amber-300 transition-colors"
+                    title={pipVisible ? `Votre course : ${pipX} pips (cliquer pour masquer)` : 'Conditions Tournoi : Pips masqués (cliquer pour afficher)'}
                 >
-                    {pipX}
+                    {pipVisible ? pipX : '•••'}
                 </span>
             )}
         </div>

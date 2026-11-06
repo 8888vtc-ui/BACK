@@ -43,6 +43,7 @@ export interface GameBoardAreaProps {
     onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
     onOfferDouble?: () => void; onTakeDouble?: () => void; onPassDouble?: () => void; isPrematureDouble?: boolean;
     isOnlinePvpMatch?: boolean;
+    isFullFocusMode?: boolean;
 }
 
 const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
@@ -55,12 +56,15 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     gameId, matchContext, isMatchStarted = true, playerColor = 'X', onBackToLobby, onToggleTheme,
     challengerProfile = null, onSendQuickChat, onOfferDouble, onTakeDouble, onPassDouble, isPrematureDouble = false,
     isOnlinePvpMatch: propIsOnlineMatch = false,
+    isFullFocusMode,
 }) => {
     const { tierGate } = usePlayerTierGate();
     const isXTurn = game.state.turn === 'X';
     const [replayViewPhase, setReplayViewPhase] = useState<'before' | 'after'>('before');
     const [previewBoardMode, setPreviewBoardMode] = useState<'live' | 'before'>('live');
-    const [isFocusFullBoard, setIsFocusFullBoard] = useState<boolean>(true);
+    const [internalFocusFullBoard, setInternalFocusFullBoard] = useState<boolean>(true);
+    const isFocusFullBoard = typeof isFullFocusMode === 'boolean' ? isFullFocusMode : internalFocusFullBoard;
+    const setIsFocusFullBoard = setInternalFocusFullBoard;
     const [isBrowserFullscreen, setIsBrowserFullscreen] = useState<boolean>(false);
     const [autoRollEnabled, setAutoRollEnabled] = useState<boolean>(() => {
         if (typeof localStorage === 'undefined') return false;

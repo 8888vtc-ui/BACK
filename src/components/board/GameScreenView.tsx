@@ -100,21 +100,11 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     const lastRecordedFeedbackRef = useRef<LastMoveFeedback | null>(null);
     const lastAutoCoachRollKey = useRef<string>('');
 
-    useEffect(() => {
-        setShowGuidedArrows(true);
-    }, [game.dice?.[0], game.dice?.[1], game.state.turn]);
+    useEffect(() => { setShowGuidedArrows(true); }, [game.dice?.[0], game.dice?.[1], game.state.turn]);
 
     const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     const isUrlOnline = urlParams?.get('mode') === 'matchmaking' || urlParams?.get('mode') === 'online' || Boolean(urlParams?.get('room')) || Boolean(urlParams?.get('inviteRoom'));
-    const isOnlinePvpMatch =
-        Boolean(propIsOnlineMatch) ||
-        isUrlOnline ||
-        isMultiplayerActive ||
-        multiplayer.status === 'searching' ||
-        multiplayer.status === 'matched' ||
-        Boolean(multiplayer.matchInfo) ||
-        Boolean(multiplayer.opponentProfile) ||
-        Boolean(multiplayer.privateRoomCode);
+    const isOnlinePvpMatch = Boolean(propIsOnlineMatch) || isUrlOnline || isMultiplayerActive || multiplayer.status === 'searching' || multiplayer.status === 'matched' || Boolean(multiplayer.matchInfo) || Boolean(multiplayer.opponentProfile) || Boolean(multiplayer.privateRoomCode);
     const isGuidedProfessorMode = !isOnlinePvpMatch && (tierGate === 'BEGINNER' || game.difficulty === 'beginner');
 
     const pips = useMemo(() => pipCount(game.state.board), [game.state.board]);
@@ -148,17 +138,15 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
         const rollKey = `${game.state.turn}:${game.dice[0]}-${game.dice[1]}:${game.matchLog.length}`;
         if (lastAutoCoachRollKey.current === rollKey) return;
         lastAutoCoachRollKey.current = rollKey;
-        if (!coachHighlight && !isAnalyzing) {
-            onTriggerCoach();
-        }
+        if (!coachHighlight && !isAnalyzing) onTriggerCoach();
     }, [isGuidedProfessorMode, isOnlinePvpMatch, game.dice, game.state.turn, game.matchLog.length, coachHighlight, isAnalyzing, onTriggerCoach]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-            if (e.key === 'f' || e.key === 'F') {
-                setIsFullFocusMode((prev) => !prev);
-            }
+            const target = e.target as HTMLElement | null;
+            if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable || (typeof target.closest === 'function' && target.closest('input, textarea, select, [contenteditable="true"]')))) return;
+            if (e.key === 'f' || e.key === 'F') setIsFullFocusMode((prev) => !prev);
+            else if (e.key === 'Escape') setIsFullFocusMode(false);
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
@@ -167,10 +155,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     useEffect(() => {
         if (!lastMoveFeedback || lastMoveFeedback === lastRecordedFeedbackRef.current) return;
         lastRecordedFeedbackRef.current = lastMoveFeedback;
-        tilt.recordDecision({
-            equityLoss: Math.abs(lastMoveFeedback.equityLoss),
-            turnIndex: turnsCount,
-        });
+        tilt.recordDecision({ equityLoss: Math.abs(lastMoveFeedback.equityLoss), turnIndex: turnsCount });
     }, [lastMoveFeedback, turnsCount, tilt]);
 
     const quotaBadge = quota.isVip ? 'VIP ∞' : `${quota.remainingToday}/${quota.maxDaily}`;
@@ -258,6 +243,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 challengerProfile={isOnlinePvpMatch ? multiplayer.opponentProfile : null}
                 onSendQuickChat={isOnlinePvpMatch ? multiplayer.sendQuickChat : undefined}
                 isOnlinePvpMatch={isOnlinePvpMatch}
+                isFullFocusMode={isFullFocusMode}
             />
 
             <GameScreenMobileControls

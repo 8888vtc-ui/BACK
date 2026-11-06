@@ -137,6 +137,7 @@ export function useCheckerInteractions({
         dice: gameDice,
         canDouble: gameCanDouble,
         canConfirm: canConfirmManualTurn,
+        canUndo: Boolean(gameCanUndo),
         onRollDice: () => {
             sensoryFeedbackController.triggerMechanicalClick();
             rollDice();
@@ -152,6 +153,7 @@ export function useCheckerInteractions({
                   commitHumanMove();
               }
             : undefined,
+        onUndo: undoMove,
     });
 
     const handlePlayMove = useCallback((from: number, to: number, die?: 0 | 1) => {

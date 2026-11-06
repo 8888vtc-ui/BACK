@@ -1,15 +1,6 @@
 /**
- * Hook de raccourcis clavier de compétition (Speed-Play : Espace, Tab, D).
- *
- * Rôle :
- *   Écoute les raccourcis clavier globaux pour lancer les dés (Espace),
- *   inverser l'ordre des dés (Tab) ou proposer le videau (D).
- *
- * Dépendances :
- *   `react`, `haptics`, `soundEngine`.
- *
- * Retrait :
- *   Supprimer ce fichier et son appel dans `useCheckerInteractions`.
+ * Hook de raccourcis clavier de compétition (Speed-Play : Espace, Tab, S, D, Undo Z/U/Backspace).
+ * Strictement 0 `any`, ≤ 100 lignes.
  */
 
 import { useEffect } from 'react';
@@ -23,10 +14,12 @@ export interface UseKeyboardShortcutsOptions {
     dice: [number, number] | null;
     canDouble: boolean;
     canConfirm?: boolean;
+    canUndo?: boolean;
     onRollDice: () => void;
     onSwapDice: () => void;
     onOfferDouble: () => void;
     onConfirmTurn?: () => void;
+    onUndo?: () => void;
 }
 
 export function useKeyboardShortcuts({
@@ -36,20 +29,29 @@ export function useKeyboardShortcuts({
     dice,
     canDouble,
     canConfirm = false,
+    canUndo = false,
     onRollDice,
     onSwapDice,
     onOfferDouble,
     onConfirmTurn,
+    onUndo,
 }: UseKeyboardShortcutsOptions) {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
         const handleKeyDown = (e: KeyboardEvent) => {
             const target = e.target as HTMLElement | null;
-            if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+            if (
+                target &&
+                (target.tagName === 'INPUT' ||
+                    target.tagName === 'TEXTAREA' ||
+                    target.isContentEditable ||
+                    (typeof target.closest === 'function' && target.closest('input, textarea, select, [contenteditable="true"]')))
+            ) {
                 return;
             }
 
+            const isCtrlOrCmd = e.ctrlKey || e.metaKey;
             const isReadyToCommit = gamePhase === 'HUMAN_READY_TO_COMMIT' || canConfirm;
 
             if ((e.key === ' ' || e.key === 'Enter') && isReadyToCommit && canConfirm && turn === 'X' && onConfirmTurn) {
@@ -62,11 +64,20 @@ export function useKeyboardShortcuts({
                 impactMedium();
                 soundEngine.playDiceRoll();
                 onRollDice();
-            } else if (e.key === 'Tab' && dice && turn === 'X') {
+            } else if ((e.key === 'Tab' || ((e.key === 's' || e.key === 'S') && !isCtrlOrCmd)) && dice && turn === 'X') {
                 e.preventDefault();
                 impactLight();
                 onSwapDice();
-            } else if ((e.key === 'd' || e.key === 'D') && canDouble) {
+            } else if (
+                ((isCtrlOrCmd && (e.key === 'z' || e.key === 'Z')) || (!isCtrlOrCmd && (e.key === 'u' || e.key === 'U' || e.key === 'Backspace'))) &&
+                canUndo &&
+                onUndo &&
+                turn === 'X'
+            ) {
+                e.preventDefault();
+                impactLight();
+                onUndo();
+            } else if ((e.key === 'd' || e.key === 'D') && !isCtrlOrCmd && canDouble) {
                 e.preventDefault();
                 impactHeavy();
                 soundEngine.playCubeOffer();
@@ -76,5 +87,5 @@ export function useKeyboardShortcuts({
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [phase, gamePhase, turn, dice, canDouble, canConfirm, onRollDice, onSwapDice, onOfferDouble, onConfirmTurn]);
+    }, [phase, gamePhase, turn, dice, canDouble, canConfirm, canUndo, onRollDice, onSwapDice, onOfferDouble, onConfirmTurn, onUndo]);
 }

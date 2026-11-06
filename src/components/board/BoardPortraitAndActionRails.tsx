@@ -14,6 +14,7 @@ import { useBoardTheme, type ThemeName } from '../../hooks/useBoardTheme';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import { toggleOrientation, getSavedOrientation, saveOrientation } from './boardOrientation';
+import { toggleSavedPipCountVisibility } from './PipCountBadge';
 import { BotPortraitMedallion, IconAstrolabeCoach, IconHorologyGear, PERSONA_PHOTO_BY_ID } from '../common/MonteCarloIcons';
 import { CountryFlagSvg } from '../common/CountryFlagSvg';
 
@@ -283,6 +284,9 @@ export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.m
                         </div>
                         <button type="button" onClick={() => { handleFlipDirection(); setIsSettingsOpen(false); }} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
                             <span>{isEn ? '⇄ Board Direction (1..24)' : '⇄ Sens du plateau (1..24)'}</span><span className="text-[10px] text-[#f3d27a]">{isEn ? 'Flip' : 'Inverser'}</span>
+                        </button>
+                        <button type="button" data-testid="right-rail-pip-visibility-toggle" onClick={() => { toggleSavedPipCountVisibility(); setIsSettingsOpen(false); }} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
+                            <span>{isEn ? 'Tournament Pips (Hide 167)' : 'Pips (Conditions Tournoi)'}</span><span className="text-[10px] text-[#f3d27a]">{isEn ? 'Toggle' : 'Bascule'}</span>
                         </button>
                     </div>
                 )}
