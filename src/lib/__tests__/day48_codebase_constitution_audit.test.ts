@@ -24,10 +24,8 @@ function getAllFilesRecursively(dir: string, extensions: string[]): string[] {
 describe('Mission 48 — Codebase Constitution Audit', () => {
     const srcDir = path.resolve(process.cwd(), 'src');
 
-    it('Règle 1 : Aucun fichier .tsx dans src/ (hors tests) ne doit dépasser 300 lignes', () => {
-        const tsxFiles = getAllFilesRecursively(srcDir, ['.tsx']).filter(
-            (f) => !f.endsWith('.test.tsx') && !f.endsWith('.spec.tsx'),
-        );
+    it('Règle 1 : Aucun fichier .tsx dans src/ (100% du dépôt, tests inclus) ne doit dépasser 300 lignes', () => {
+        const tsxFiles = getAllFilesRecursively(srcDir, ['.tsx']);
         const oversized: { file: string; lines: number }[] = [];
 
         for (const file of tsxFiles) {
@@ -44,7 +42,7 @@ describe('Mission 48 — Codebase Constitution Audit', () => {
         ).toEqual([]);
     });
 
-    it('Règle 2 : Aucun fichier de composants ou hooks dans src/ ne doit dépasser 400 lignes', () => {
+    it('Règle 2 : Aucun fichier .ts de composants ou hooks ne doit dépasser 400 lignes', () => {
         const targetDirs = [
             path.join(srcDir, 'hooks'),
             path.join(srcDir, 'components'),
@@ -71,7 +69,7 @@ describe('Mission 48 — Codebase Constitution Audit', () => {
 
     it('Règle 3a : 0 occurrence de ERH ou Mistral dans tout src/', () => {
         const allCodeFiles = getAllFilesRecursively(srcDir, ['.ts', '.tsx']).filter(
-            (f) => !f.includes('btNeuralWeights.ts') && !f.includes('bgsage3PlyFactorySeed.ts') && !f.includes('day48_codebase_constitution_audit.test.ts'),
+            (f) => !f.includes('day48_codebase_constitution_audit.test.ts'),
         );
         const violations: { file: string; word: string; line: number }[] = [];
 

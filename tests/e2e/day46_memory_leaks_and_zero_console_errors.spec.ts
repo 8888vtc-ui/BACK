@@ -67,3 +67,4 @@ test.describe('Day 46 — Chasse aux Fuites Mémoire & Zéro Console Error', () 
         expect(consoleErrors).toHaveLength(0);
     });
 });
+

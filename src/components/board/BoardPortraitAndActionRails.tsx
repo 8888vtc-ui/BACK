@@ -1,10 +1,6 @@
 'use client';
 
-/**
- * @file src/components/board/BoardPortraitAndActionRails.tsx
- * @description HUD Portrait (Haut/Bas), Rail d'Actions Droit et résolution de métadonnées Joueur/Adversaire (< 270 lignes, 0 `any`).
- */
-
+// HUD Portrait (Haut/Bas), Rail d'Actions Droit et métadonnées (< 300 lignes, 0 `any`).
 import React, { useEffect, useRef, useState } from 'react';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { PlayerEloProfile } from '../../features/multiplayer/types';
