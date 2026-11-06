@@ -144,12 +144,15 @@ export function AnalysisStudioView() {
         setErrorMessage(null);
         try {
             const data = await evaluateWithBgsage(xgidString, 3, 10000);
-            setBgsageData(data);
             const bgsageBest = data?.chequerPlay?.[0]?.notation;
-            if (bgsageBest) setSelectedMoveNotation(bgsageBest);
-            else if (candidates[0]) setSelectedMoveNotation(candidates[0].notation);
+            if (data && bgsageBest) {
+                setBgsageData(data);
+                setSelectedMoveNotation(bgsageBest);
+            } else {
+                setErrorMessage(isEn ? 'Open Sage 3-ply service unreachable (OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED).' : 'Service Open Sage 3-ply injoignable (OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED).');
+            }
         } catch {
-            if (candidates[0]) setSelectedMoveNotation(candidates[0].notation);
+            setErrorMessage(isEn ? 'Open Sage 3-ply service unreachable (OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED).' : 'Service Open Sage 3-ply injoignable (OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED).');
         } finally {
             setLoading(false);
         }

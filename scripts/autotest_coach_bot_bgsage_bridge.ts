@@ -17,7 +17,7 @@ import {
 } from '../src/features/coach/logAnalyzer';
 import {
     auditCoachTruth,
-} from '../src/features/coach/coachTruthAuditor';
+} from '../src/features/coach/turnSnapshot';
 import type { MatchLogEntry } from '../src/actions/types';
 import {
     formatCoachMoveSequence,

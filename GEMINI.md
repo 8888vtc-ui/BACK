@@ -3,6 +3,8 @@
 > **RÈGLE ABSOLUE DE FORMATAGE (COPIE EN 1 CLIC)** : Tu dois OBLIGATOIREMENT encapsuler l'intégralité de ta réponse dans UN SEUL bloc de code Markdown (` ```txt ... ``` `) pour que l'utilisateur puisse cliquer sur le bouton "Copy" en 1 clic sans jamais sélectionner de texte à la souris.
 
 ### 📜 CONSTITUTION ANTI-MOCK, BARÈME ΔEMG & VÉRITÉ 3-PLY
+- **Loi `R-AGENT-LOCK-1 (ZERO_NEW_FILES_LOCK)`** : Interdiction formelle de créer de nouveaux fichiers `.ts`, `.tsx` ou `.md` sans ordre explicite de l'utilisateur. Toute correction s'effectue sur place dans les fichiers existants (`.tsx <= 300`, `.ts <= 400`, `0 any`).
+- **Loi `R-COACH-3PLY-1/2 (Passe-Plat Déterministe 3-Ply)`** : Le Coach n'invente jamais de texte libre et n'utilise aucun évaluateur local ; il affiche uniquement les probabilités et le coup `#1` de `bgsage 3-ply` + les faits physiques vérifiés (`boardAfter[p] === 1` pour un blot, `boardBefore[p] < 2 && boardAfter[p] >= 2` pour une porte).
 1. **Zéro Mock Moteur (`HARDCODED_MOCK_PROBABILITIES_DETECTED`)** : Il est formellement interdit d'utiliser des probabilités rondes inventées (`0.45`, `0.50`, `0.58`) ou de mocker `bgsage` (même dans les tests). Tout quiz/coup avec des probabilités rondes multiples de `0.01` lève `HARDCODED_MOCK_PROBABILITIES_DETECTED`.
 2. **Double Sécurité Exclusive Open Sage (`OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED`)** : Seul `bgsage` Cloud Run (24 réseaux `stage11`) joue et évalue. Si `bgsage` est injoignable après 3 retries (`0 ms`, `250 ms`, `500 ms`), le code lève `OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED` (zéro fallback de jeu local ou LLM).
 3. **Zéro `BEAVER` en Match Play (`matchLength > 0`, `MATCH_PLAY_BEAVER_FORBIDDEN`)** et **Zéro `ERH`** dans tout le projet (seuls `ER / PR` `0.0–30.0` et `Rating` `1500` existent).
@@ -15,8 +17,7 @@
 
 > **Statut : OBLIGATOIRE.** Ce fichier constitue la source de vérité unique synchronisée avec [`AGENTS.md`](AGENTS.md), [`PROJECT_MAP.md`](PROJECT_MAP.md), [`SCALABILITY.md`](SCALABILITY.md) et [`GOVERNANCE.md`](GOVERNANCE.md).
 
-> 🚨 **AVERTISSEMENT BOTS (2026-11-01) — voir [`BOTS_AUDIT_POSTMORTEM.md`](BOTS_AUDIT_POSTMORTEM.md).**
-> Nos bots locaux ne sont **pas exploitables** : seul **Open Sage (Cloud Run)** est conservé pour jouer. ERH a été définitivement supprimé de tout le logiciel au profit du double indicateur officiel.
+> 🚨 **AVERTISSEMENT BOTS (2026-11-01) :** Nos bots locaux ne sont **pas exploitables** : seul **Open Sage (Cloud Run)** est conservé pour jouer. ERH a été définitivement supprimé de tout le logiciel au profit du double indicateur officiel.
 
 ---
 

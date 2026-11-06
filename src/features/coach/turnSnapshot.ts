@@ -362,3 +362,36 @@ export function verifyAndSanitizeCoachTextAgainstBoard(
         correctedPoints,
     };
 }
+
+export type CoachSinType =
+    | 'ILLEGAL_RECOMMENDED_MOVE'
+    | 'MISMATCHED_PLAYED_MOVE'
+    | 'WRONG_TURN_OR_POST_MOVE_BOARD'
+    | 'LLM_TEXT_HALLUCINATION'
+    | 'FALSE_BLUNDER_ON_OPTIMAL'
+    | 'TIER_JARGON_VIOLATION'
+    | 'BOT_ABSURD_MOVE';
+
+export function auditCoachTruth(params: {
+    player: 'X' | 'O';
+    boardBeforeMove: readonly number[];
+    boardAfterMove: readonly number[];
+    diceRolled: readonly [number, number];
+    playedMoveNotation: string;
+    recommendedMoveNotation: string;
+    equityLossEmg: number;
+    playerTier?: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
+    botDifficulty?: string;
+    coachExplanationText?: string;
+}): { isValid: boolean; sin?: CoachSinType; errorMessage?: string } {
+    if (!verifyCheckersPhysicallyExistOnBoard(params.recommendedMoveNotation, params.boardBeforeMove, params.player, params.diceRolled)) {
+        return { isValid: false, sin: 'ILLEGAL_RECOMMENDED_MOVE', errorMessage: `Coup recommandé illégal : ${params.recommendedMoveNotation}` };
+    }
+    if (params.coachExplanationText) {
+        const check = verifyAndSanitizeCoachTextAgainstBoard(params.coachExplanationText, params.boardAfterMove, 'fr', params.player);
+        if (check.hasHallucination) {
+            return { isValid: false, sin: 'LLM_TEXT_HALLUCINATION', errorMessage: `Hallucination détectée sur case(s) : ${check.correctedPoints.join(',')}` };
+        }
+    }
+    return { isValid: true };
+}

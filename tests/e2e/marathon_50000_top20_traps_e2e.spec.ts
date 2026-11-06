@@ -7,7 +7,7 @@
 
 import { test, expect } from '@playwright/test';
 import { createInitialState, generateLegalMoves, borneOffCount, type BoardState } from '../../src/engine/backgammonEngine';
-import { auditCoachTruth } from '../../src/features/coach/coachTruthAuditor';
+import { auditCoachTruth } from '../../src/features/coach/turnSnapshot';
 import { applyBgsageNotationToBoard } from '../../src/features/coach/coachMoveNotation';
 
 interface TrapPosition {

@@ -255,14 +255,14 @@ describe('Autopsie & Réparation : Double 4 (4-4) — 13/9* 13/9 9/5 9/5 vs 6/2(
         expect(shots.total).not.toBe(11);
     });
 
-    it('6. Vérifie que pas un seul des 36 fichiers de src/features/coach/ ne dépasse 400 lignes et qu’aucun 37e fichier n’existe', () => {
+    it('6. Vérifie que pas un seul des 34 fichiers de src/features/coach/ ne dépasse 400 lignes et qu’aucun nouveau fichier n’existe', () => {
         const coachDir = path.resolve(process.cwd(), 'src/features/coach');
         const files = fs.readdirSync(coachDir).filter((f) => {
             const full = path.join(coachDir, f);
             return fs.statSync(full).isFile() && !f.endsWith('.test.ts') && !f.endsWith('.test.tsx');
         });
 
-        expect(files.length).toBe(36);
+        expect(files.length).toBe(34);
 
         const oversized: { file: string; lines: number }[] = [];
         for (const file of files) {

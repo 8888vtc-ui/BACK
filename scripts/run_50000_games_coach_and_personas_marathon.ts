@@ -25,7 +25,7 @@ import {
 import {
     auditCoachTruth,
     type CoachSinType,
-} from '../src/features/coach/coachTruthAuditor';
+} from '../src/features/coach/turnSnapshot';
 import {
     formatCoachMoveSequence,
 } from '../src/features/coach/coachMoveNotation';
