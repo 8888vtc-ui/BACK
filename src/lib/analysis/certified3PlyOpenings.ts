@@ -144,3 +144,4 @@ export function getCertifiedOpeningMoves3Ply(d1: number, d2: number): CandidateM
         isOptimal: idx === 0,
     }));
 }
+

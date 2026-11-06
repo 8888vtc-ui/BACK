@@ -127,9 +127,11 @@ export function BeginnerAcademyFlow({
             <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
               {lang === 'fr' ? currentQuiz.titleFr : currentQuiz.titleEn}
             </span>
-            <span className="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-              +{currentQuiz.pointsReward} PTS
-            </span>
+            {selectedOptionId && (
+              <span className="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                +{currentQuiz.pointsReward} PTS
+              </span>
+            )}
           </div>
 
           {/* VRAI PLATEAU VISUEL ÉDUCATIF (10/10 Quiz avec plateau !) */}

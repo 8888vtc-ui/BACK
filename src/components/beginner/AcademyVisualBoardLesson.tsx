@@ -15,10 +15,10 @@ export interface AcademyVisualBoardLessonProps {
 }
 
 function getPointX(pt: number): number {
-  if (pt >= 13 && pt <= 18) return 30 + (pt - 13) * 38 + 19;
-  if (pt >= 19 && pt <= 24) return 308 + (pt - 19) * 38 + 19;
-  if (pt >= 7 && pt <= 12) return 30 + (12 - pt) * 38 + 19;
-  return 308 + (6 - pt) * 38 + 19;
+  if (pt >= 13 && pt <= 18) return 24 + (pt - 13) * 40 + 20;
+  if (pt >= 19 && pt <= 24) return 296 + (pt - 19) * 40 + 20;
+  if (pt >= 7 && pt <= 12) return 24 + (12 - pt) * 40 + 20;
+  return 296 + (6 - pt) * 40 + 20;
 }
 
 export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> = React.memo(({
@@ -44,38 +44,46 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
           </filter>
         </defs>
 
-        {/* Tapis de feutre émeraude & boiserie */}
+        {/* Tapis de feutre émeraude & boiserie symétrique */}
         <rect x="0" y="0" width="600" height="280" fill="#091813" />
-        <rect x="272" y="0" width="28" height="280" fill="#040b08" stroke="#D4AF37" strokeOpacity="0.3" />
-        <rect x="552" y="0" width="48" height="280" fill="#050e0a" stroke="#D4AF37" strokeOpacity="0.4" />
+        <rect x="264" y="0" width="32" height="280" fill="#040b08" stroke="#D4AF37" strokeOpacity="0.3" />
+        <rect x="536" y="0" width="64" height="280" fill="#050e0a" stroke="#D4AF37" strokeOpacity="0.4" />
 
-        {/* 24 Flèches triangulaires */}
+        {/* 24 Flèches triangulaires strictement identiques (6 à gauche, barre 32px, 6 à droite) */}
         {Array.from({ length: 24 }, (_, i) => i + 1).map((pt) => {
           const x = getPointX(pt);
           const isTop = pt >= 13;
           return (
             <polygon
               key={pt}
-              points={`${x - 17},${isTop ? 0 : 280} ${x + 17},${isTop ? 0 : 280} ${x},${isTop ? 105 : 175}`}
+              points={`${x - 19},${isTop ? 0 : 280} ${x + 19},${isTop ? 0 : 280} ${x},${isTop ? 110 : 170}`}
               fill={pt % 2 === 1 ? '#42200f' : '#b28647'}
-              opacity={pt <= 6 ? '0.85' : '0.55'}
+              opacity={pt <= 6 ? '0.9' : '0.6'}
             />
           );
         })}
 
-        {/* Zone Votre Maison (Sortie) toujours visible en bas à droite */}
-        <rect x="300" y="145" width="248" height="130" fill="rgba(16, 185, 129, 0.12)" stroke="#10B981" strokeDasharray="4 4" rx="6" />
-        <text x="424" y="165" fill="#34D399" fontSize="11" fontWeight="bold" textAnchor="middle">
-          🏠 {isEn ? 'Your Home Board (Exit)' : 'Votre Maison (Sortie)'}
+        {/* Zone Votre Maison (Sortie) toujours visible en bas à droite (cases 1 à 6) */}
+        <rect x="296" y="145" width="240" height="130" fill="rgba(16, 185, 129, 0.08)" stroke="#10B981" strokeDasharray="4 4" rx="6" />
+        <text x="416" y="165" fill="#34D399" fontSize="11" fontWeight="bold" textAnchor="middle">
+          🏠 {isEn ? 'Your Home Board (Cases 1 to 6)' : 'Votre Maison (Cases 1 à 6)'}
         </text>
 
         {/* ================= SCÉNARIOS VISUELS 1 À 10 ================= */}
 
-        {/* 1. SENS DE MARCHE */}
+        {/* 1. SENS DE CIRCULATION EN FER À CHEVAL */}
         {quizId === 1 && (
           <g>
+            {/* 2 Pions blancs au départ sur la case 24 (en haut à droite) */}
+            <circle cx="516" cy="22" r="14" fill="#ffffff" stroke="#D4AF37" strokeWidth="2" filter="url(#lesson-gold-glow)" />
+            <circle cx="516" cy="48" r="14" fill="#ffffff" stroke="#D4AF37" strokeWidth="2" filter="url(#lesson-gold-glow)" />
+            <text x="516" y="76" fill="#F3E5AB" fontSize="9" fontWeight="bold" textAnchor="middle">
+              {isEn ? 'Start: Pt 24' : 'Départ : Case 24'}
+            </text>
+
+            {/* Belle courbe dorée fluide en fer à cheval sans superposition */}
             <path
-              d="M 515 35 L 45 35 C 10 35 10 245 45 245 L 480 245"
+              d="M 498 48 L 44 48 C 10 48 10 220 44 220 L 460 220"
               fill="none"
               stroke="#D4AF37"
               strokeWidth="5"
@@ -83,11 +91,9 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
               markerEnd="url(#lesson-arrow-gold)"
               filter="url(#lesson-gold-glow)"
             />
-            <text x="260" y="25" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">
-              ✨ {isEn ? 'Chemin A : Sens en Fer à Cheval vers Votre Maison' : 'Chemin A : Sens en Fer à Cheval vers Votre Maison'}
+            <text x="280" y="32" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">
+              ✨ {isEn ? 'Chemin en Fer à Cheval (Case 24 ➔ Case 1)' : 'Chemin en Fer à Cheval (Case 24 ➔ Case 1)'}
             </text>
-            <path d="M 460 220 L 320 220" fill="none" stroke="#ef4444" strokeWidth="2.5" markerEnd="url(#lesson-arrow-red)" />
-            <text x="390" y="210" fill="#f87171" fontSize="9" fontWeight="bold" textAnchor="middle">❌ Mauvais sens</text>
           </g>
         )}
 
