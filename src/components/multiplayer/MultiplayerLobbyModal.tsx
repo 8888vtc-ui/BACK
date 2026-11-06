@@ -126,8 +126,8 @@ export default function MultiplayerLobbyModal({
                                             <Lock className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
                                             <span>
                                                 {isEn
-                                                    ? 'Guest Mode • PR & Elo Rating disabled (Account required)'
-                                                    : 'Mode Invité • PR & Classement Elo désactivés (Compte requis)'}
+                                                    ? 'Guest Mode • Friendly Online Match (Account required to activate PR & Elo Rating)'
+                                                    : 'Mode Invité • Match Amical en Ligne (Compte requis pour activer PR & Classement Elo)'}
                                             </span>
                                         </span>
                                         <button
@@ -247,13 +247,10 @@ export default function MultiplayerLobbyModal({
                                         type="button"
                                         onClick={() => onStartSearch?.(selectedLength)}
                                         data-testid="start-matchmaking-button"
-                                        className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black shadow-sm hover:brightness-105 transition-all"
+                                        className="shrink-0 inline-flex items-center justify-center rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-black shadow-sm hover:brightness-105 transition-all"
                                     >
-                                        <Zap className="w-3.5 h-3.5 text-black" strokeWidth={1.75} />
                                         <span>
-                                            {isEn
-                                                ? `START SEARCH (${selectedLength === 0 ? 'Money' : `${selectedLength} pts`})`
-                                                : `LANCER LA RECHERCHE (${selectedLength === 0 ? 'Money' : `${selectedLength} pts`})`}
+                                            {isEn ? 'START SEARCH' : 'LANCER LA RECHERCHE'}
                                         </span>
                                     </button>
                                 </section>

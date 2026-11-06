@@ -28,10 +28,10 @@ export interface ClockPresetOption {
 }
 
 export const DEFAULT_CLOCK_PRESETS: ReadonlyArray<ClockPresetOption> = [
-    { value: 'blitz', label: 'Blitz Monte-Carlo', hint: '30s/pt + 5s', icon: '⚡' },
-    { value: 'speed', label: 'Speedgammon', hint: '1m/pt + 8s', icon: '🔥' },
-    { value: 'normal', label: 'Cadence WBF Tournoi', hint: '2m/pt + 12s', icon: '⏱️' },
-    { value: 'unlimited', label: 'Partie Libre', hint: 'Sans pendule', icon: '∞' },
+    { value: 'blitz', label: 'Blitz Monte-Carlo', hint: '30s/pt + 5s', icon: '' },
+    { value: 'speed', label: 'Speedgammon', hint: '1m/pt + 8s', icon: '' },
+    { value: 'normal', label: 'Cadence WBF Tournoi', hint: '2m/pt + 12s', icon: '' },
+    { value: 'unlimited', label: 'Partie Libre', hint: 'Sans pendule', icon: '' },
 ];
 
 const CLOCK_MONTE_CARLO_ROWS: ReadonlyArray<{
@@ -43,28 +43,28 @@ const CLOCK_MONTE_CARLO_ROWS: ReadonlyArray<{
 }> = [
     {
         value: 'unlimited',
-        icon: '☕',
+        icon: '',
         label: 'Partie Libre (Détente)',
         cadence: 'Sans pendule',
         note: 'Temps illimité, idéal pour analyser chaque coup avec le Coach IA.',
     },
     {
         value: 'normal',
-        icon: '⏱️',
+        icon: '',
         label: 'Cadence WBF Officielle',
         cadence: '2m/pt + 12s Bronstein',
         note: 'Règlementation WBGF Art. 4.1b : réserve principale + délai Bronstein sans cumul.',
     },
     {
         value: 'speed',
-        icon: '⚡',
+        icon: '',
         label: 'Speedgammon de Club',
         cadence: '1m/pt + 8s Bronstein',
         note: 'Cadence dynamique des championnats de club pour travailler son jeu d’instinct.',
     },
     {
         value: 'blitz',
-        icon: '🔥',
+        icon: '',
         label: 'Blitz Cup Monte-Carlo',
         cadence: '30s/pt + 5s Bronstein',
         note: 'Haute intensité : décisions en moins de 5 secondes, sorties accélérées.',
@@ -72,10 +72,10 @@ const CLOCK_MONTE_CARLO_ROWS: ReadonlyArray<{
 ];
 
 const ELO_MAP: Record<AIDifficulty, { elo: number; title: string }> = {
-    beginner: { elo: 1200, title: '🎓 Le Professeur · Initiation Guidée' },
-    intermediate: { elo: 1550, title: '🎲 Joueur de Club · Niveau Intermédiaire' },
-    expert: { elo: 1850, title: '♟️ Compétiteur · Niveau Tournoi' },
-    grandmaster: { elo: 2200, title: '👑 Grand-Maître 3-Ply · Open Sage Pur' },
+    beginner: { elo: 1200, title: 'Le Professeur · Initiation Guidée' },
+    intermediate: { elo: 1550, title: 'Joueur de Club · Niveau Intermédiaire' },
+    expert: { elo: 1850, title: 'Compétiteur · Niveau Tournoi' },
+    grandmaster: { elo: 2200, title: 'Grand-Maître 3-Ply · Open Sage Pur' },
 };
 
 export interface LobbyOptionsPanelProps {

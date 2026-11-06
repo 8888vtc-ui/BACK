@@ -118,7 +118,7 @@ const BOTTOM_POINTS: ReadonlyArray<PointData> = [
 const BOT_TITLES: Record<AIDifficulty, { name: string; elo: number; style: string }> = {
     beginner: { name: '🎓 Le Professeur', elo: 1200, style: 'Initiation Guidée (PR 18–25)' },
     intermediate: { name: '🎲 Joueur de Club', elo: 1550, style: 'Niveau Intermédiaire (PR 8–12)' },
-    expert: { name: '♟️ Compétiteur', elo: 1850, style: 'Niveau Tournoi (PR 4.5–7)' },
+    expert: { name: 'Compétiteur', elo: 1850, style: 'Niveau Tournoi (PR 4.5–7)' },
     grandmaster: { name: '👑 Grand-Maître 3-Ply', elo: 2200, style: 'Open Sage Pur (PR < 2.5)' },
 };
 

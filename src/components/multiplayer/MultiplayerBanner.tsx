@@ -27,19 +27,19 @@ export interface MultiplayerBannerProps {
 }
 
 const QUICK_MESSAGES_FR: Record<string, string> = {
-    gg: '👏 Bonne partie !',
-    nice_move: '🎯 Joli coup !',
-    unlucky: '🎲 Pas de chance...',
-    thinking: '🤔 Je réfléchis...',
-    thanks: '🙏 Merci pour la partie !',
+    gg: 'Bonne partie !',
+    nice_move: 'Joli coup !',
+    unlucky: 'Pas de chance...',
+    thinking: 'Je réfléchis...',
+    thanks: 'Merci pour la partie !',
 };
 
 const QUICK_MESSAGES_EN: Record<string, string> = {
-    gg: '👏 Good game!',
-    nice_move: '🎯 Nice move!',
-    unlucky: '🎲 Tough luck...',
-    thinking: '🤔 Thinking...',
-    thanks: '🙏 Thanks for the game!',
+    gg: 'Good game!',
+    nice_move: 'Nice move!',
+    unlucky: 'Tough luck...',
+    thinking: 'Thinking...',
+    thanks: 'Thanks for the game!',
 };
 
 export default function MultiplayerBanner({

@@ -106,7 +106,7 @@ describe('MultiplayerBanner', () => {
             />,
         );
 
-        expect(html).toContain('Bob : 🎯 Joli coup !');
+        expect(html).toContain('Bob : Joli coup !');
     });
 
     it('affiche les pendules doubles de tournoi pour les deux joueurs quand clockState est fourni', () => {

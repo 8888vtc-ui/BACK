@@ -45,6 +45,34 @@ describe('MultiplayerLobbyModal', () => {
         expect(html).toBe('');
     });
 
+    it('en Mode Invité, supprime tout PR, tout Elo, et affiche le badge amical sans emojis', () => {
+        const guestProfile = {
+            id: 'guest_local',
+            username: 'Joueur Invité',
+            displayName: 'Joueur Invité',
+            rating: 1500,
+            isGuest: true,
+        };
+
+        const html = renderToStaticMarkup(
+            <MultiplayerLobbyModal
+                {...defaultProps}
+                localProfile={guestProfile}
+            />,
+        );
+
+        expect(html).toContain('Mode Invité • Match Amical en Ligne (Compte requis pour activer PR &amp; Classement Elo)');
+        expect(html).toContain('Match Amical en Ligne');
+        expect(html).toContain('LANCER LA RECHERCHE');
+        expect(html).not.toContain('1500 Elo');
+        expect(html).not.toContain('1680 Elo');
+        expect(html).not.toContain('PR 7.25');
+        expect(html).not.toContain('PR 6.3');
+        expect(html).not.toContain('Compétiteur');
+        expect(html).not.toContain('Classé Elo');
+        expect(html).not.toMatch(/[🎯♟️⚡🔑]/u);
+    });
+
     it('clarifie les 2 actions principales ("Matchmaking Rapide" vs "Salon Privé par Code"), sans onglet Classement ni texte < 10px', () => {
         const html = renderToStaticMarkup(
             <MultiplayerLobbyModal

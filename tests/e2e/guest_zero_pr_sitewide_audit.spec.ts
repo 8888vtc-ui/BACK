@@ -32,7 +32,7 @@ test.describe('Sitewide Audit: Zero PR/Elo for Guests & Official Terms Clause 4'
 
     // Must display official Guest lock message & friendly match notice
     await expect(page.getByTestId('lobby-guest-pr-locked-badge')).toContainText(
-      'Mode Invité • PR & Classement Elo désactivés (Compte requis)'
+      'Mode Invité • Match Amical en Ligne (Compte requis pour activer PR & Classement Elo)'
     );
     await expect(lobbyModal).toContainText('Match Amical en Ligne');
     await expect(page.getByTestId('lobby-guest-sign-in-cta')).toContainText(

@@ -78,10 +78,10 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     ], [ui.lobby]);
 
     const opponents = useMemo<Array<{ value: AIDifficulty; label: string; hint: string }>>(() => [
-        { value: 'beginner', label: '🎓 Le Professeur', hint: 'PR 18–25 • 1200 Elo' },
-        { value: 'intermediate', label: '🎲 Joueur de Club', hint: 'PR 8–12 • 1550 Elo' },
-        { value: 'expert', label: '♟️ Compétiteur', hint: 'PR 4.5–7 • 1850 Elo' },
-        { value: 'grandmaster', label: '👑 Grand-Maître 3-Ply', hint: 'PR < 2.5 • 2200 Elo' },
+        { value: 'beginner', label: 'Le Professeur', hint: 'PR 18–25 • 1200 Elo' },
+        { value: 'intermediate', label: 'Joueur de Club', hint: 'PR 8–12 • 1550 Elo' },
+        { value: 'expert', label: 'Compétiteur', hint: 'PR 4.5–7 • 1850 Elo' },
+        { value: 'grandmaster', label: 'Grand-Maître 3-Ply', hint: 'PR < 2.5 • 2200 Elo' },
     ], []);
 
     const mainCards = useMemo<ReadonlyArray<{ id: LobbyMode; Icon: LucideIcon; iconColor: string; badge: string; title: string; subtitle: string }>>(() => [
