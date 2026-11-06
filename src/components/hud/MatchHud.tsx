@@ -15,6 +15,7 @@ import type { AutoConfirmMode } from '../../lib/settings/gameplaySettings';
 import type { GameSpeed } from '../../lib/gameFeel/speedPresets';
 import HudSettingsMenu from './HudSettingsMenu';
 import HudScoreboard from './HudScoreboard';
+import HudCenterFeedback from './HudCenterFeedback';
 import HudMuteButton from './HudMuteButton';
 import InGameMenuModal from './InGameMenuModal';
 import { useSoundManager } from '../../hooks/useSoundManager';
@@ -42,19 +43,6 @@ export interface MatchHudProps {
 }
 
 const FR_BOT_DISPLAY_NAMES: Record<AIDifficulty, string> = { beginner: 'Maxime', intermediate: 'Sofia', expert: 'Victor', grandmaster: 'Viktor' };
-
-function getHudVerdictConfig(fb: LastMoveFeedback, layer: ChameleonLayer = 1, isEn = false): { dotClass: string; label: string; badgeClass: string } {
-    const absLoss = Math.abs(fb.equityLoss);
-    const mwcPct = Math.max(1, Math.round(absLoss * 50));
-    const lossStr = layer === 0 ? `(-${mwcPct}% chances)` : `(-${absLoss.toFixed(3)}) · -${mwcPct}%`;
-    if (absLoss <= 0.020 || fb.verdict === 'optimal' || fb.verdict === 'good') {
-        return { dotClass: 'bg-emerald-400', label: isEn ? 'OPTIMAL MOVE' : 'COUP OPTIMAL', badgeClass: 'border-emerald-400/70 bg-emerald-950/90 text-emerald-100' };
-    }
-    if (absLoss < 0.080 || fb.verdict === 'inaccuracy') {
-        return { dotClass: 'bg-amber-400', label: `${isEn ? 'INACCURACY' : 'IMPRÉCISION'} ${lossStr}`, badgeClass: 'border-amber-400/75 bg-amber-950/90 text-amber-100' };
-    }
-    return { dotClass: 'bg-rose-400', label: `${isEn ? 'BLUNDER' : 'BLUNDER MAJEUR'} ${lossStr}`, badgeClass: 'border-rose-400/80 bg-rose-950/90 text-rose-100' };
-}
 
 const MatchHudComponent: React.FC<MatchHudProps> = ({
     matchLength, scoreX, scoreO, turn, crawford = false, dice, usedDice,
@@ -160,38 +148,17 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                     </div>
                 </div>
 
-                <div className="hidden lg:flex flex-1 min-w-0 items-center justify-center gap-1.5 overflow-hidden px-1">
-                    {hasBarChecker && isHumanTurn && (
-                        <span
-                            data-testid="hud-bar-checker-alert"
-                            className="flex items-center gap-1.5 shrink-0 rounded-lg border border-rose-500/60 bg-rose-950/80 px-2.5 py-0.5 text-[11px] font-bold text-rose-100 animate-pulse"
-                        >
-                            <span className="h-2 w-2 rounded-full bg-rose-400" aria-hidden="true" />
-                            <span>{barCount} {isEn ? `on the bar: mandatory entry (${entryTargetText})` : `sur la barre : rentrée obligatoire (${entryTargetText})`}</span>
-                        </span>
-                    )}
-                    {lastMoveFeedback && (() => {
-                        const v = getHudVerdictConfig(lastMoveFeedback, chameleonLayer, isEn);
-                        return (
-                            <button
-                                type="button" onClick={onTriggerCoach} data-testid="hud-verdict-badge"
-                                className={`${hasBarChecker && isHumanTurn ? 'hidden 2xl:flex' : 'flex'} items-center gap-1.5 shrink-0 whitespace-nowrap rounded-lg border px-2 py-0.5 font-mono text-[11px] font-extrabold tracking-wide tabular-nums transition hover:brightness-110 ${v.badgeClass}`}
-                            >
-                                <span aria-hidden="true" className={`h-2 w-2 rounded-full ${v.dotClass}`} />
-                                <span>{v.label}</span>
-                            </button>
-                        );
-                    })()}
-                    {lastMoveNotation && (
-                        <span
-                            data-testid="hud-last-move"
-                            className="whitespace-nowrap truncate rounded-lg border border-white/10 bg-slate-900 px-2.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-amber-200"
-                        >
-                            <span className="hidden xl:inline font-sans font-normal text-slate-400 mr-1">{isEn ? 'Last move:' : 'Dernier coup :'}</span>
-                            {lastMoveNotation}
-                        </span>
-                    )}
-                </div>
+                <HudCenterFeedback
+                    hasBarChecker={hasBarChecker}
+                    isHumanTurn={isHumanTurn}
+                    barCount={barCount}
+                    entryTargetText={entryTargetText}
+                    lastMoveFeedback={lastMoveFeedback}
+                    chameleonLayer={chameleonLayer}
+                    isEn={isEn}
+                    onTriggerCoach={onTriggerCoach}
+                    lastMoveNotation={lastMoveNotation}
+                />
 
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                     <button

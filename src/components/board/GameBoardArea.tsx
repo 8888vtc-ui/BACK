@@ -16,18 +16,12 @@ import type { PlayerEloProfile } from '../../features/multiplayer/types';
 import { useInteractiveReplay } from '../../hooks/useInteractiveReplay';
 import { useFischerClock } from '../../hooks/useFischerClock';
 import { getRecommendedClockConfig } from '../../features/multiplayer/clockManager';
-import Board from './Board';
-import BoardHorologyBar from './BoardHorologyBar';
-import BoardLivePersonaBubble from './BoardLivePersonaBubble';
-import { BoardLeftPlayerRail, BoardRightActionRail, BoardPortraitTopHud, BoardPortraitBottomHud } from './BoardSideRails';
+import { BoardPortraitTopHud, BoardPortraitBottomHud } from './BoardSideRails';
 import CoachSidebar, { type CoachSidebarProps } from '../coach/CoachSidebar';
-import MobilePortraitCoachBanner from '../coach/MobilePortraitCoachBanner';
+import GameBoardReplayControls from './GameBoardReplayControls';
+import GameBoardCenterStage from './GameBoardCenterStage';
 import MoveErrorPopToast from '../coach/MoveErrorPopToast';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
-import ErrorBoundary from '../common/ErrorBoundary';
-import type { GameSpeed } from '../../lib/gameFeel/speedPresets';
-
-const NEXT_SPEED: Record<GameSpeed, GameSpeed> = { coach: 'tournament', tournament: 'blitz', blitz: 'coach' };
 const NOOP = () => {};
 
 export interface GameBoardAreaProps {
@@ -190,83 +184,45 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     prX={prX} prO={prO} challengerProfile={challengerProfile} isGuidedMode={isGuided} isOnlinePvpMatch={isOnlinePvpMatch}
                 />
 
-                <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 [@media(max-height:500px)]:!gap-1 px-0 sm:px-3 py-0 sm:py-1.5 [@media(max-height:500px)]:!p-0 overflow-hidden">
-                    {!isOnlinePvpMatch && (
-                        <BoardLivePersonaBubble
-                            difficulty={game.difficulty} isPlayerThinking={Boolean(game.state.turn === 'X' && game.state.dice)}
-                            turnsCount={effectiveTurns.length} verdict={displayCoach?.verdict ?? null} equityLoss={displayCoach?.equityLoss ?? null}
-                            boardBefore={displayCoach?.boardBefore} boardAfter={game.state.board}
-                            opponentDice={!displayState.dice ? game.lastOpponentDice : null}
-                            onReplayMove={handleSyncedReplayMove} onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
-                        />
-                    )}
-
-                    <BoardLeftPlayerRail
-                        difficulty={game.difficulty} locale={locale} isGuidedMode={isGuided} isXTurn={isXTurn}
-                        scoreX={game.state.scoreX} scoreO={game.state.scoreO} cubeValue={game.state.cubeValue}
-                        matchLength={game.state.matchLength} crawford={game.state.crawford} isDMP={game.isDMP} turn={game.state.turn}
-                        playerClock={clock.formattedX} opponentClock={clock.formattedO} delaySeconds={activeDelaySeconds}
-                        prX={prX} prO={prO} challengerProfile={challengerProfile} opponentDice={!displayState.dice ? game.lastOpponentDice : null}
-                        onSendQuickChat={onSendQuickChat} isBrowserFullscreen={isBrowserFullscreen} isFocusFullBoard={isFocusFullBoard}
-                        onToggleFullscreen={handleToggleBrowserFullscreen} onToggleCoach={() => { setIsFocusFullBoard((v) => !v); onTriggerCoach(); }}
-                        onToggleTheme={onToggleTheme} onBackToLobby={onBackToLobby} canUndo={replay.isLive && game.canUndo}
-                        onUndo={replay.isLive ? game.undoMove : NOOP} autoConfirmEnabled={game.autoConfirmTurn}
-                        onToggleAutoConfirm={game.toggleAutoConfirmTurn} autoRollEnabled={autoRollEnabled} onToggleAutoRoll={handleToggleAutoRoll}
-                        isOnlinePvpMatch={isOnlinePvpMatch}
-                    />
-
-                    <div className="flex-1 min-w-0 min-h-0 h-full flex items-center justify-center">
-                        <ErrorBoundary name="Plateau de jeu">
-                            <Board
-                                state={displayState} leftDieTargets={replay.isLive ? game.leftDieTargets : new Map()} rightDieTargets={replay.isLive ? game.rightDieTargets : new Map()}
-                                selectedPoint={replay.isLive ? (game.selected?.point ?? null) : null} selectedDie={game.selected ? game.selected.die : activeDie}
-                                usedDice={replay.isLive ? game.usedDice : [false, false]} opponentDice={!displayState.dice ? game.lastOpponentDice : null}
-                                onCheckerClick={replay.isLive ? (pt) => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); onCheckerClick(pt); } : NOOP}
-                                onCheckerRightClick={replay.isLive ? onCheckerRightClick : NOOP} onDestinationClick={replay.isLive ? onDestinationClick : NOOP}
-                                onPlayMove={replay.isLive ? onPlayMove : NOOP} onSelectDie={replay.isLive ? onSelectDie : NOOP}
-                                onDiceClick={replay.isLive ? onDiceClick : NOOP} onDeselect={replay.isLive ? onDeselect : NOOP} onUndo={replay.isLive ? game.undoMove : NOOP}
-                                coachHighlight={displayCoachHighlight} opponentHighlight={!replay.isLive && replay.selectedTurn?.player === 'O' && replayViewPhase === 'before' ? [...replay.selectedTurn.moves] : game.opponentHighlight}
-                                canDouble={replay.isLive && game.canDouble} doublingOfferedBy={game.doublingOfferedBy}
-                                onOfferDouble={replay.isLive ? (onOfferDouble ?? game.offerDouble) : NOOP} onTakeDouble={replay.isLive ? (onTakeDouble ?? game.takeDouble) : NOOP} onPassDouble={replay.isLive ? (onPassDouble ?? game.passDouble) : NOOP}
-                                isPrematureDouble={isPrematureDouble} theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? (game.gamePhase ?? 'AI_TURN_SHOWING_ARROWS') : 'REPLAY_VIEW'}
-                                onRoll={replay.isLive ? () => { if (propIsOnlineMatch && game.state.turn !== playerColor) return; if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); game.rollDice(); } : replay.returnToLive}
-                                onConfirm={replay.isLive ? () => game.commitHumanMove() : replay.returnToLive}
-                                canUndo={replay.isLive && game.canUndo} canConfirm={replay.isLive && game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
-                                autoConfirmEnabled={game.autoConfirmTurn} onToggleAutoConfirm={game.toggleAutoConfirmTurn}
-                                autoConfirmMode={game.autoConfirmMode} onSelectAutoConfirmMode={game.setAutoConfirmMode} onCycleAutoConfirmMode={game.cycleAutoConfirmMode}
-                                gameSpeed={game.gameSpeed} onCycleGameSpeed={game.setGameSpeed ? () => game.setGameSpeed(NEXT_SPEED[game.gameSpeed ?? 'tournament']) : undefined}
-                                isMatchStarted={isMatchStarted} swapColors={playerColor === 'O'} showPipCount={false}
-                            />
-                        </ErrorBoundary>
-                    </div>
-
-                    <BoardRightActionRail
-                        isBrowserFullscreen={isBrowserFullscreen} isFocusFullBoard={isFocusFullBoard}
-                        onToggleFullscreen={handleToggleBrowserFullscreen} onToggleCoach={() => { setIsFocusFullBoard((v) => !v); onTriggerCoach(); }}
-                        onToggleTheme={onToggleTheme} onBackToLobby={onBackToLobby} canUndo={replay.isLive && game.canUndo}
-                        onUndo={replay.isLive ? game.undoMove : NOOP} autoConfirmEnabled={game.autoConfirmTurn}
-                        onToggleAutoConfirm={game.toggleAutoConfirmTurn} autoRollEnabled={autoRollEnabled} onToggleAutoRoll={handleToggleAutoRoll}
-                        locale={locale}
-                    />
-                </div>
+                <GameBoardCenterStage
+                    isOnlinePvpMatch={isOnlinePvpMatch} game={game} effectiveTurnsCount={effectiveTurns.length}
+                    displayCoach={displayCoach} displayState={displayState} onSyncedReplayMove={handleSyncedReplayMove}
+                    onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }} locale={locale}
+                    isGuided={isGuided} isXTurn={isXTurn} clock={clock} activeDelaySeconds={activeDelaySeconds}
+                    prX={prX} prO={prO} challengerProfile={challengerProfile} onSendQuickChat={onSendQuickChat}
+                    isBrowserFullscreen={isBrowserFullscreen} isFocusFullBoard={isFocusFullBoard}
+                    onToggleFullscreen={handleToggleBrowserFullscreen} onToggleTheme={onToggleTheme}
+                    onBackToLobby={onBackToLobby} replayIsLive={replay.isLive} autoRollEnabled={autoRollEnabled}
+                    onToggleAutoRoll={handleToggleAutoRoll} activeDie={activeDie} previewBoardMode={previewBoardMode}
+                    setPreviewBoardMode={setPreviewBoardMode} selectedCoachHistoryIndex={selectedCoachHistoryIndex}
+                    onSelectCoachHistoryIndex={onSelectCoachHistoryIndex} onCheckerClick={onCheckerClick}
+                    onCheckerRightClick={onCheckerRightClick} onDestinationClick={onDestinationClick}
+                    onPlayMove={onPlayMove} onSelectDie={onSelectDie} onDiceClick={onDiceClick} onDeselect={onDeselect}
+                    displayCoachHighlight={displayCoachHighlight} replaySelectedTurnPlayer={replay.selectedTurn?.player}
+                    replayViewPhase={replayViewPhase} replayMoves={replay.selectedTurn?.moves}
+                    onOfferDouble={onOfferDouble} onTakeDouble={onTakeDouble} onPassDouble={onPassDouble}
+                    isPrematureDouble={isPrematureDouble} theme={theme} isBoardLoading={isBoardLoading}
+                    propIsOnlineMatch={propIsOnlineMatch} playerColor={playerColor} isMatchStarted={isMatchStarted}
+                    returnToLive={replay.returnToLive}
+                />
 
                 <BoardPortraitBottomHud scoreX={game.state.scoreX} turn={game.state.turn} playerClock={clock.formattedX} delaySeconds={activeDelaySeconds} isGuidedMode={isGuided} locale={locale} />
 
-                {isMatchStarted && (
-                    <>
-                        {!isOnlinePvpMatch && (
-                            <MobilePortraitCoachBanner coach={displayCoach} isAnalyzing={isAnalyzing} difficulty={game.difficulty} isShowingBestMoveArrows={previewBoardMode === 'before'} onToggleBestMoveArrows={() => setPreviewBoardMode((m) => (m === 'before' ? 'live' : 'before'))} onReplayMove={handleSyncedReplayMove} onOpenDrawer={onTriggerCoach} />
-                        )}
-                        <div className={`${replay.isLive ? 'hidden' : 'hidden md:block [@media(max-height:540px)]:!hidden'} shrink-0 h-8 w-full`}>
-                            <BoardHorologyBar
-                                totalTurns={effectiveTurns.length} replayIndex={replay.replayIndex} isLive={replay.isLive} selectedTurn={replay.selectedTurn} officialNotation={replay.officialNotation} viewPhase={replayViewPhase} canStepPrev={replay.canStepPrev} canStepNext={replay.canStepNext} swapColors={playerColor === 'O'}
-                                onStepFirst={() => { setReplayViewPhase('before'); replay.stepFirst(); }} onStepPrev={() => { setReplayViewPhase('before'); replay.stepPrev(); }} onStepNext={() => { setReplayViewPhase('before'); replay.stepNext(); }} onReturnToLive={() => { setPreviewBoardMode('live'); replay.returnToLive(); }}
-                                onToggleViewPhase={() => setReplayViewPhase((prev) => (prev === 'before' ? 'after' : 'before'))} onRewindHere={handleSyncedReplayMove} difficulty={game.difficulty} coachHistory={coachHistory} cubeValue={game.state.cubeValue} doublingOfferedBy={game.doublingOfferedBy}
-                                onTriggerGhostChallenge={(turnIdx) => { game.rewindToLogTurn?.(turnIdx); replay.returnToLive(); setPreviewBoardMode('live'); onSelectCoachHistoryIndex?.(null); onDismissCoach(); }} locale={locale}
-                            />
-                        </div>
-                    </>
-                )}
+                <GameBoardReplayControls
+                    isMatchStarted={isMatchStarted} isOnlinePvpMatch={isOnlinePvpMatch}
+                    displayCoach={displayCoach} isAnalyzing={isAnalyzing} difficulty={game.difficulty}
+                    isShowingBestMoveArrows={previewBoardMode === 'before'}
+                    onToggleBestMoveArrows={() => setPreviewBoardMode((m) => (m === 'before' ? 'live' : 'before'))}
+                    onReplayMove={handleSyncedReplayMove} onTriggerCoach={onTriggerCoach}
+                    replay={replay} totalTurns={effectiveTurns.length} replayViewPhase={replayViewPhase}
+                    onSetReplayViewPhase={setReplayViewPhase}
+                    onToggleViewPhase={() => setReplayViewPhase((prev) => (prev === 'before' ? 'after' : 'before'))}
+                    playerColor={playerColor} coachHistory={coachHistory} cubeValue={game.state.cubeValue}
+                    doublingOfferedBy={game.doublingOfferedBy} onRewindHere={handleSyncedReplayMove}
+                    onTriggerGhostChallenge={(turnIdx) => { game.rewindToLogTurn?.(turnIdx); replay.returnToLive(); setPreviewBoardMode('live'); onSelectCoachHistoryIndex?.(null); onDismissCoach(); }}
+                    onReturnToLive={() => { setPreviewBoardMode('live'); replay.returnToLive(); }}
+                    locale={locale}
+                />
             </div>
 
             <div data-testid="board-coach-column" className={`${isFocusFullBoard ? 'hidden' : 'hidden lg:flex lg:col-span-4'} h-full min-h-0 min-w-0 overflow-hidden relative z-10`}>
