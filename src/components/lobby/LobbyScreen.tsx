@@ -164,7 +164,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                     onOpenSettings={() => { setSelectedMode('ai'); setShowOptions(true); }}
                 />
 
-                <div className="mx-auto flex flex-1 min-h-0 w-full max-w-6xl items-start justify-center gap-6 px-4 py-3 sm:px-8 sm:py-4 overflow-y-auto">
+                <div className="mx-auto flex flex-1 min-h-0 w-full max-w-6xl items-start justify-center gap-6 px-4 py-3 sm:px-8 sm:py-4 overflow-y-auto lg:overflow-hidden">
                     <div className={`flex flex-1 min-w-0 ${showOptions ? 'max-w-5xl' : 'max-w-4xl'} flex-col gap-3.5`}>
                         <h1 className="sr-only">BACKGAMMON</h1>
 
