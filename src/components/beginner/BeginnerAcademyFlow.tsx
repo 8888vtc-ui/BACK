@@ -47,13 +47,7 @@ export function BeginnerAcademyFlow({
       if (loaded.length >= BEGINNER_10_INITIATION_QUIZZES.length) { setViewState('DIPLOMA'); return; }
 
       const firstUncompleted = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => !loaded.includes(q.id));
-      const savedIdx = localStorage.getItem('bgtour_beginner_academy_quiz_idx');
-      if (savedIdx !== null) {
-        const parsedIdx = parseInt(savedIdx, 10);
-        const targetQuiz = BEGINNER_10_INITIATION_QUIZZES[parsedIdx];
-        if (targetQuiz && !loaded.includes(targetQuiz.id)) setActiveQuizIndex(parsedIdx);
-        else if (firstUncompleted >= 0) setActiveQuizIndex(firstUncompleted);
-      } else if (firstUncompleted >= 0) {
+      if (firstUncompleted >= 0) {
         setActiveQuizIndex(firstUncompleted);
       }
     } catch {}
@@ -278,7 +272,7 @@ export function BeginnerAcademyFlow({
               {lang === 'fr' ? 'Vous maîtrisez le but du jeu, la sécurité, la barre, le bear-off et le videau. Vous êtes fin prêt à jouer !' : 'You have mastered rules, points, bar safety, bear-off, and the cube. Ready to play!'}
             </p>
           </div>
-          <div className="px-4 py-1.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-bold text-sm">+{2000} PTS {lang === 'fr' ? 'Bonus Débloqués !' : 'Bonus Awarded!'}</div>
+          <div className="px-4 py-1.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-bold text-sm">+2 000 PTS {lang === 'fr' ? 'Bonus Débloqués !' : 'Bonus Awarded!'}</div>
           <button type="button" data-testid="diploma-launch-guided-match-btn" onClick={handlePlayDirect} className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition">
             {lang === 'fr' ? 'Mettre en pratique contre le Bot Doux (Partie Guidée) →' : 'Practice Against Gentle Bot (Guided Match) →'}
           </button>
