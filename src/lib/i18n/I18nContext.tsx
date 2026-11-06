@@ -162,6 +162,16 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
         if (initialLocale) return;
         const syncDeviceLocale = () => {
             try {
+                if (typeof window !== 'undefined' && window.location?.search) {
+                    const params = new URLSearchParams(window.location.search);
+                    const urlLang = params.get('lang')?.toLowerCase() as Locale | undefined;
+                    if (urlLang && VALID_LOCALES.has(urlLang)) {
+                        setLocaleState(urlLang);
+                        window.localStorage?.setItem('bgtour_locale', urlLang);
+                        window.localStorage?.setItem('bg_locale', urlLang);
+                        return;
+                    }
+                }
                 const explicit = (
                     window.localStorage?.getItem('bgtour_user_explicit_locale') ||
                     window.sessionStorage?.getItem('bgtour_manual_locale') ||

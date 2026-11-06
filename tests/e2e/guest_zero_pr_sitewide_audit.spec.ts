@@ -148,4 +148,46 @@ test.describe('Sitewide Audit: Zero PR/Elo for Guests & Official Terms Clause 4'
     await expect(page.getByTestId('lobby-authenticated-stats-row')).toBeVisible();
     await expect(lobbyModal).toContainText('Classé Elo');
   });
+
+  test('3. Guest Mode on /play: Zero PR Match on table, no "Jou..." truncation, clean "Joueur Invité"', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/?lang=fr');
+    await page.evaluate(() => {
+      window.localStorage.clear();
+      window.localStorage.setItem('bgtour_locale', 'fr');
+      window.localStorage.setItem('bg_locale', 'fr');
+    });
+    await page.goto('/play?lang=fr', { waitUntil: 'domcontentloaded' });
+
+    // Wait for the board & side rail to be visible
+    const leftRail = page.getByTestId('board-left-player-rail');
+    await expect(leftRail).toBeVisible({ timeout: 15000 });
+
+    // 1. Verify Player Name: Clean "Joueur Invité" (no "Jou..." truncation)
+    const playerName = page.getByTestId('left-rail-player-name');
+    await expect(playerName).toBeVisible();
+    await expect(playerName).toHaveText('Joueur Invité');
+    const nameText = await playerName.innerText();
+    expect(nameText).not.toBe('Jou...');
+
+    // 2. Verify Zero "PR Match" badge for Guest in left rail
+    const playerPrBadge = page.getByTestId('left-rail-player-pr');
+    await expect(playerPrBadge).toBeHidden();
+
+    // 3. Verify Zero "hud-player-x-pr" for Guest in HUD
+    const hudPlayerXPr = page.getByTestId('hud-player-x-pr');
+    await expect(hudPlayerXPr).toBeHidden();
+
+    // 4. Verify no "PR Match" or "Match PR" anywhere on the board
+    const railText = await leftRail.innerText();
+    expect(railText).not.toContain('PR Match :');
+    expect(railText).not.toContain('Match PR:');
+    expect(railText).not.toContain('PR Moy.');
+
+    // 5. Test EN translation: "Guest Player"
+    await page.goto('/play?lang=en', { waitUntil: 'domcontentloaded' });
+    await expect(leftRail).toBeVisible({ timeout: 15000 });
+    await expect(playerName).toHaveText('Guest Player');
+    await expect(playerPrBadge).toBeHidden();
+  });
 });

@@ -22,6 +22,7 @@ import { getHudThemeClasses, useBoardTheme } from '../../hooks/useBoardTheme';
 import { getBotPersona } from '../../features/personas/botPersonas';
 import { useTranslation } from '../../i18n';
 import { readStoredChameleonLayer, writeStoredChameleonLayer, CHAMELEON_LAYER_CHANGE_EVENT, type ChameleonLayer } from '../../features/chameleon/chameleonProfile';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 
 export interface MatchHudProps {
     matchLength: number; scoreX: number; scoreO: number; turn: Player; crawford?: boolean;
@@ -71,6 +72,9 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
     const isEn = locale === 'en';
     const { isMuted, toggleMute } = useSoundManager();
     const { setTheme } = useBoardTheme(theme);
+    const authenticStats = useAuthenticPlayerStats();
+    const effectivePrX = authenticStats.canHavePR ? prX : null;
+    const effectivePrO = authenticStats.canHavePR ? prO : null;
     const settingsMenuRef = useRef<HTMLDivElement>(null);
     const settingsToggleBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -135,13 +139,13 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                     <div id="match-hud" className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 overflow-hidden">
                         <HudScoreboard
                             matchLength={matchLength} scoreX={scoreX} scoreO={scoreO} turn={turn}
-                            crawford={crawford} dice={dice} usedDice={usedDice} prX={prX} prO={prO}
+                            crawford={crawford} dice={dice} usedDice={usedDice} prX={effectivePrX} prO={effectivePrO}
                             isAiThinking={isAiThinking ?? turn === 'O'} pipX={pipX} pipO={pipO}
                             borneOffX={boardState ? borneOffCount(boardState.board, 'X') : 0}
                             borneOffO={boardState ? borneOffCount(boardState.board, 'O') : 0}
                             opponentLabel={opponentDisplayLabel} playerColor={playerColor}
                             cubeValue={cubeValue} cubeOwner={cubeOwner}
-                            chameleonLayer={chameleonLayer}
+                            chameleonLayer={chameleonLayer} isGuest={!authenticStats.canHavePR}
                         />
                         <span
                             data-testid="hud-bot-persona-badge"

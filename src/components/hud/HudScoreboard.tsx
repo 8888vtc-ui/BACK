@@ -17,7 +17,7 @@ export interface HudScoreboardProps {
     borneOffX?: number; borneOffO?: number; epcX?: number | null; epcO?: number | null; isPureRace?: boolean;
     opponentLabel?: string; playerColor?: Player; cubeValue?: number; cubeOwner?: Player | null;
     /** Strate Caméléon optionnelle (0: Débutant sans pips, 1: Différentiel Course ±, 2: Pro exact + n-away). */
-    chameleonLayer?: ChameleonLayer;
+    chameleonLayer?: ChameleonLayer; isGuest?: boolean;
 }
 
 /** Libellé pédagogique du palier de PR (selon standard international XG/Snowie). */
@@ -140,9 +140,9 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
             >
                 {awayScoreLabel ?? score}
             </span>
-            {chameleonLayer !== 0 && !isGuestLocked && (
-                <span data-testid={`${testId}-pr`} title={`Performance Rating (PR) : ${pr !== null && pr !== undefined ? pr.toFixed(2) : '--'} — Niveau : ${prCategory} (plus bas = meilleur)`} className={`hidden sm:inline-flex ml-1 shrink-0 whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[11px] font-black tabular-nums transition-shadow duration-300 ${prBadgeClass(pr)}`}>
-                    PR {pr !== null && pr !== undefined ? pr.toFixed(2) : '0.00'}
+            {chameleonLayer !== 0 && !isGuestLocked && pr !== null && pr !== undefined && (
+                <span data-testid={`${testId}-pr`} title={`Performance Rating (PR) : ${pr.toFixed(2)} — Niveau : ${prCategory} (plus bas = meilleur)`} className={`hidden sm:inline-flex ml-1 shrink-0 whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[11px] font-black tabular-nums transition-shadow duration-300 ${prBadgeClass(pr)}`}>
+                    PR {pr.toFixed(2)}
                 </span>
             )}
         </div>
@@ -152,10 +152,10 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
 const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     matchLength, scoreX, scoreO, turn, crawford = false, prX, prO, isAiThinking = false,
     pipX, pipO, borneOffX = 0, borneOffO = 0, epcX, epcO, isPureRace = false, opponentLabel = 'IA',
-    playerColor = 'X', cubeValue = 1, cubeOwner = null, chameleonLayer,
+    playerColor = 'X', cubeValue = 1, cubeOwner = null, chameleonLayer, isGuest: propIsGuest,
 }) => {
     const stats = useAuthenticPlayerStats();
-    const isGuest = !stats.canHavePR;
+    const isGuest = propIsGuest ?? (!stats.canHavePR && prX === null);
     const isXTurn = turn === 'X';
     const isOTurn = turn === 'O' || isAiThinking;
     const humanIsWhite = playerColor === 'X';
@@ -253,11 +253,11 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
 
             <PlayerCard
                 isWhite={humanIsWhite} name={nameX} colorLabel={colorLabelX} score={scoreX}
-                isTurn={isXTurn} pr={prX} pip={pipX} borneOff={borneOffX} opponentPip={pipO} epc={epcX}
+                isTurn={isXTurn} pr={isGuest ? null : prX} pip={pipX} borneOff={borneOffX} opponentPip={pipO} epc={epcX}
                 isPureRace={isPureRace} pipVisible={pipVisible} onTogglePipVisible={handleTogglePipVisible}
                 awayScoreLabel={awayMode && matchLength > 0 ? `${Math.max(0, matchLength - scoreX)}a` : null}
                 onToggleAwayMode={matchLength > 0 ? handleToggleAwayMode : undefined}
-                chameleonLayer={chameleonLayer} testId="hud-player-x" isGuestLocked={isGuest && prX === null}
+                chameleonLayer={chameleonLayer} testId="hud-player-x" isGuestLocked={isGuest}
             />
 
             <span className="font-mono text-[11px] font-black tracking-widest text-slate-400">
@@ -266,11 +266,11 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
 
             <PlayerCard
                 isWhite={!humanIsWhite} name={nameO} mobileName="IA" colorLabel={colorLabelO} score={scoreO}
-                isTurn={isOTurn} pr={prO} pip={pipO} borneOff={borneOffO} opponentPip={pipX} epc={epcO}
+                isTurn={isOTurn} pr={isGuest ? null : prO} pip={pipO} borneOff={borneOffO} opponentPip={pipX} epc={epcO}
                 isPureRace={isPureRace} pipVisible={pipVisible} onTogglePipVisible={handleTogglePipVisible}
                 awayScoreLabel={awayMode && matchLength > 0 ? `${Math.max(0, matchLength - scoreO)}a` : null}
                 onToggleAwayMode={matchLength > 0 ? handleToggleAwayMode : undefined}
-                chameleonLayer={chameleonLayer} testId="hud-player-o" isGuestLocked={isGuest && prO === null}
+                chameleonLayer={chameleonLayer} testId="hud-player-o" isGuestLocked={isGuest}
             />
         </div>
     );

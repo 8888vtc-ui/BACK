@@ -24,6 +24,7 @@ import {
     summarizeDecisionCounters,
 } from './postMatchReportHelpers';
 import { persistPostMatchReport, resolveCurrentUserId } from './postMatchPersistence';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
 
 export interface PostMatchTrainingReportProps {
@@ -84,18 +85,20 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
     locale = 'fr',
 }) => {
     const isEn = Boolean(locale && locale !== 'fr');
+    const stats = useAuthenticPlayerStats();
+    const isGuest = !stats.canHavePR;
     const [persistStatus, setPersistStatus] = useState<'idle' | 'saved' | 'error'>('idle');
     const [isDetailedReviewOpen, setIsDetailedReviewOpen] = useState<boolean>(false);
     const persistedKeyRef = useRef<string | null>(null);
 
     // Erreurs majeures extraites des coups évalués.
     const blunders = useMemo(
-        () => extractMajorBlunders(analysis?.evaluatedMoves, 'X'),
-        [analysis],
+        () => (isGuest ? [] : extractMajorBlunders(analysis?.evaluatedMoves, 'X')),
+        [analysis, isGuest],
     );
 
     // Compteurs des 4 paliers.
-    const counters = useMemo(() => summarizeDecisionCounters(analysis), [analysis]);
+    const counters = useMemo(() => summarizeDecisionCounters(isGuest ? null : analysis), [analysis, isGuest]);
 
     // Résumé structuré transmis à l'IA.
     const summaryPayload = useMemo(
@@ -105,6 +108,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
 
     // Persistance IndexedDB + Supabase (se relance si `analysis` arrive après le premier rendu).
     useEffect(() => {
+        if (isGuest) return;
         const persistKey = `${gameId}:${analysis?.id ?? 'no_analysis'}`;
         if (persistedKeyRef.current === persistKey) return;
         persistedKeyRef.current = persistKey;
@@ -125,7 +129,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                 setPersistStatus('error');
             }
         })();
-    }, [analysis, summaryPayload, blunders, gameId]);
+    }, [analysis, summaryPayload, blunders, gameId, isGuest]);
 
     const playerPr = analysis?.performanceRating ?? 0;
     const playerCategory = analysis?.prCategory ?? 'Intermédiaire';
@@ -134,13 +138,8 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
     useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement) return;
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                onBackToLobby();
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                onNextGame();
-            }
+            if (e.key === 'Escape') { e.preventDefault(); onBackToLobby(); }
+            else if (e.key === 'Enter') { e.preventDefault(); onNextGame(); }
         };
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
@@ -210,8 +209,8 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                     locale={locale}
                 />
 
-                {/* Section 2 — Barre des 3 actions principales sur 1 seule ligne (Partager | Revue | Revanche) */}
-                <div className="grid grid-cols-3 gap-2.5 pt-0.5">
+                {/* Section 2 — Barre d'actions (Partager | Revue | Revanche) */}
+                <div className={`grid ${isGuest ? 'grid-cols-2' : 'grid-cols-3'} gap-2.5 pt-0.5`}>
                     <button
                         type="button"
                         onClick={onOpenExportImport ?? onOpenDiceAudit ?? onBackToLobby}
@@ -222,18 +221,20 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                         <span>{isEn ? 'Share' : 'Partager'}</span>
                     </button>
 
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setIsDetailedReviewOpen((prev) => !prev);
-                            onOpenReview?.();
-                        }}
-                        data-testid="open-game-review-btn"
-                        className="inline-flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-[#1c223a] px-3 py-2.5 text-xs font-extrabold text-slate-100 transition hover:bg-[#252d4d] active:scale-95"
-                    >
-                        <span aria-hidden="true">🔍</span>
-                        <span>{isEn ? 'Review' : 'Revue'}</span>
-                    </button>
+                    {!isGuest && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsDetailedReviewOpen((prev) => !prev);
+                                onOpenReview?.();
+                            }}
+                            data-testid="open-game-review-btn"
+                            className="inline-flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-[#1c223a] px-3 py-2.5 text-xs font-extrabold text-slate-100 transition hover:bg-[#252d4d] active:scale-95"
+                        >
+                            <span aria-hidden="true">🔍</span>
+                            <span>{isEn ? 'Review' : 'Revue'}</span>
+                        </button>
+                    )}
 
                     <button
                         type="button"
@@ -246,8 +247,8 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                     </button>
                 </div>
 
-                {/* Actions secondaires (Drills / Audit Dés) accessibles si blunders ou en 1 clic discret */}
-                {(onTrainBlunders || onOpenDiceAudit) && (
+                {/* Actions secondaires accessibles si inscrit */}
+                {!isGuest && (onTrainBlunders || onOpenDiceAudit) && (
                     <div className="flex items-center justify-between gap-2 pt-0.5">
                         {onTrainBlunders && (!analysis || blunders.length > 0) && (
                             <button
@@ -270,19 +271,21 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                     </div>
                 )}
 
-                {/* Section 3 — Détail Coup par Coup (masqué visuellement par défaut pour garder la carte 100% lisible d'une traite, déplié au clic sur Revue) */}
-                <div className={isDetailedReviewOpen ? 'space-y-3 pt-2 border-t border-white/10' : 'sr-only'}>
-                    <ChameleonPostMatchCard analysis={analysis} locale={locale} />
-                    <MatchBlunderReport
-                        analysis={analysis}
-                        opponentPr={botPr}
-                        isOffline={isOffline}
-                        apiUrl={apiUrl}
-                        locale={locale}
-                        onTrainBlunders={onTrainBlunders}
-                        hideSummaryBanner={true}
-                    />
-                </div>
+                {/* Section 3 — Détail Coup par Coup (réservé aux inscrits) */}
+                {!isGuest && (
+                    <div className={isDetailedReviewOpen ? 'space-y-3 pt-2 border-t border-white/10' : 'sr-only'}>
+                        <ChameleonPostMatchCard analysis={analysis} locale={locale} />
+                        <MatchBlunderReport
+                            analysis={analysis}
+                            opponentPr={botPr}
+                            isOffline={isOffline}
+                            apiUrl={apiUrl}
+                            locale={locale}
+                            onTrainBlunders={onTrainBlunders}
+                            hideSummaryBanner={true}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -18,6 +18,7 @@ import {
 } from './BoardPortraitAndActionRails';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 
 export {
     BoardPortraitTopHud, BoardPortraitBottomHud, BoardRightActionRail,
@@ -36,6 +37,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     const [isQuickChatOpen, setIsQuickChatOpen] = useState(false);
     const { theme: activeTheme, setTheme } = useBoardTheme();
     const { tierGate } = usePlayerTierGate();
+    const authenticStats = useAuthenticPlayerStats();
     const isBeginner = tierGate === 'BEGINNER';
     const isEn = locale === 'en';
     const isOnlinePvpMatch = Boolean(challengerProfile);
@@ -46,23 +48,25 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     useEffect(() => {
         const passport = readPlayerPassport();
         const rawPseudo = (passport?.pseudo ?? '').trim();
-        const isGuest = !passport || passport.email === 'invite@backgammontour.com' || /^invit[eé]|^joueur invit[eé]/i.test(rawPseudo);
+        const isGuestLocal = !authenticStats.canHavePR || !passport || passport.email === 'invite@backgammontour.com' || /^invit[eé]|^joueur invit[eé]/i.test(rawPseudo);
         let careerPr: number | null = null;
-        if (!isGuest) {
-            const analyses = getAllGameAnalyses();
+        if (!isGuestLocal) {
             let totalLoss = 0, totalDec = 0;
-            for (const a of analyses) {
+            for (const a of getAllGameAnalyses()) {
                 const dec = a.unforcedDecisionsCount || a.decisionsCount || 0;
                 if (dec > 0) { totalLoss += a.totalEquityLoss; totalDec += dec; }
             }
             if (totalDec >= 3) careerPr = Number(Math.max(0, (totalLoss / totalDec) * 500).toFixed(1));
         }
-        setPlayerMeta({ pseudo: isGuest ? (isEn ? 'Guest Player' : 'Joueur Invité') : (rawPseudo || (isEn ? 'You' : 'Vous')), avatarUrl: passport?.avatarUrl || (STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg'), countryName: passport?.countryName || 'France', isGuest, careerPr });
-    }, [isEn]);
+        setPlayerMeta({ pseudo: isGuestLocal ? (isEn ? 'Guest Player' : 'Joueur Invité') : (rawPseudo || (isEn ? 'You' : 'Vous')), avatarUrl: passport?.avatarUrl || (STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg'), countryName: passport?.countryName || 'France', isGuest: isGuestLocal, careerPr });
+    }, [isEn, authenticStats.canHavePR]);
+    const isGuest = !authenticStats.canHavePR || playerMeta.isGuest;
+    const effectivePrX = isGuest ? null : prX;
+    const effectivePrO = isGuest ? null : prO;
     const {
         botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue,
         opponentDisplayName, opponentBadge, opponentPhotoUrl,
-    } = resolvePersonaMeta(difficulty, locale, prX, prO, challengerProfile, isGuided);
+    } = resolvePersonaMeta(difficulty, locale, effectivePrX, effectivePrO, challengerProfile, isGuided);
 
     const handleFlipDirection = () => {
         const next = toggleOrientation(getSavedOrientation());
@@ -79,19 +83,12 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
             <div className="flex w-full flex-col gap-1 [@media(max-height:540px)]:!gap-0.5 border-b border-[#d4af37]/20 pb-1.5 [@media(max-height:540px)]:!pb-0.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
                 <div className="flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-0.5">
                     <div className="[@media(max-height:540px)]:hidden flex flex-col items-center gap-0.5 min-w-0 flex-1">
-                        <span className="truncate max-w-full font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight">
-                            {opponentDisplayName}
-                        </span>
+                        <span className="truncate max-w-full font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight">{opponentDisplayName}</span>
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-[#f3c65f]">
                             {challengerProfile?.countryName && <CountryFlagSvg countryName={challengerProfile.countryName} />}
                             <span>{opponentBadge}</span>
                         </span>
-                        <BotPortraitMedallion
-                            character={isGuided ? 'beginner' : difficulty}
-                            size="lg"
-                            isActive={!isXTurn}
-                            customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : (challengerProfile ? opponentPhotoUrl : null)}
-                        />
+                        <BotPortraitMedallion character={isGuided ? 'beginner' : difficulty} size="lg" isActive={!isXTurn} customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : (challengerProfile ? opponentPhotoUrl : null)} />
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
                             {!isGuided && (
                                 <span className="font-mono text-stone-200 font-bold">
@@ -154,16 +151,13 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
             {/* 2. CENTRE : Plaque de Match + Horloge */}
             <div className="[@media(max-height:540px)]:hidden flex w-full items-center justify-between gap-1 my-auto py-0.5 shrink-0">
                 <div className="flex-1 rounded-xl border border-[#d4af37]/20 bg-[#14100c] px-1.5 py-1.5 text-center shadow-inner min-w-0">
-                    <div className="text-[9px] uppercase tracking-wider text-stone-400">
-                        {isEn ? 'Cube' : 'Videau'} <span className="font-mono font-bold text-[#f3d27a]">×{cubeValue}</span>
-                    </div>
+                    <div className="text-[9px] uppercase tracking-wider text-stone-400">{isEn ? 'Cube' : 'Videau'} <span className="font-mono font-bold text-[#f3d27a]">×{cubeValue}</span></div>
                     <div className="mt-0.5 font-display text-xs italic font-bold text-[#f7f3e8] leading-tight whitespace-nowrap">
                         Match <span className="font-mono not-italic font-extrabold text-[#d4af37]">{matchLength > 0 ? `${matchLength} pts` : (isEn ? 'Money' : 'Libre')}</span>
                     </div>
                     {crawford && <div data-testid="left-rail-crawford-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">Crawford</div>}
                     {isDMP && <div data-testid="left-rail-dmp-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">DMP</div>}
                 </div>
-
                 {isGuided ? (
                     <div data-testid="left-rail-guided-pace-badge" className="flex flex-col items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-950/40 p-1.5 shadow-inner gap-0.5 shrink-0 w-14 text-center select-none">
                         <span className="text-sm font-black text-emerald-300 leading-none">∞</span>
@@ -253,18 +247,18 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             <button type="button" data-testid="left-rail-quick-chat-toggle" onClick={() => setIsQuickChatOpen((v) => !v)} title={isEn ? 'Quick reactions' : 'Réactions rapides'} aria-label={isEn ? 'Open quick reactions' : 'Ouvrir les réactions rapides'} aria-expanded={isQuickChatOpen} className="flex h-6 w-10 items-center justify-center rounded-md border border-[#d4af37]/40 bg-[#1a140e] text-[10px] font-bold text-[#f3d27a] hover:border-[#d4af37] active:scale-95 transition shrink-0">Chat</button>
                         </div>
                     </div>
-                    <span data-testid="left-rail-player-name" className="w-full text-center font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight whitespace-nowrap">
+                    <span data-testid="left-rail-player-name" className="w-full text-center font-display text-xs sm:text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight break-words px-1">
                         {playerMeta.pseudo}
                     </span>
                 </div>
 
                 <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none gap-0.5">
-                    <span data-testid="left-rail-mobile-player-name" title={playerMeta.pseudo} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">
+                    <span data-testid="left-rail-mobile-player-name" title={playerMeta.pseudo} className="w-full text-center text-[9px] font-bold text-[#f7f3e8] leading-tight break-words px-0.5">
                         {isGuided ? (isEn ? 'You (Student)' : 'Vous (Élève)') : playerMeta.pseudo}
                     </span>
                     {!isGuided && (
                         <span data-testid="left-rail-mobile-player-elo" className="font-mono text-[8.5px] font-bold text-emerald-300/90 tabular-nums whitespace-nowrap">
-                            {playerMeta.isGuest ? (isEn ? 'Guest' : 'Invité') : '1500 Elo'}
+                            {isGuest ? (isEn ? 'Guest' : 'Invité') : '1500 Elo'}
                         </span>
                     )}
                     <div className="flex w-full items-center justify-between gap-1">
@@ -278,15 +272,15 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                 {isQuickChatOpen && (
                     <div data-testid="left-rail-quick-chat-popover" role="group" aria-label={isEn ? 'Quick messages' : 'Messages rapides'} className="absolute left-full ml-1.5 bottom-1 z-50 flex items-center gap-1 rounded-xl border border-[#d4af37]/55 bg-[#120e0a]/98 px-2 py-1 shadow-[0_12px_28px_rgba(0,0,0,0.95)] backdrop-blur-md">
-                        {([{ id: 'gg' as const, label: 'GG' }, { id: 'nice_move' as const, label: isEn ? 'Well played' : 'Bien joué' }, { id: 'unlucky' as const, label: isEn ? 'Tough luck' : 'Pas de chance' }, { id: 'thanks' as const, label: isEn ? 'Thanks' : 'Merci' }]).map((chat) => (
-                            <button key={chat.id} type="button" data-testid={`quick-chat-btn-${chat.id}`} onClick={() => { onSendQuickChat?.(chat.id); setIsQuickChatOpen(false); }} className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-[#f7f3e8] hover:border-[#f3c65f]/50 hover:bg-white/10 transition active:scale-95 whitespace-nowrap">{chat.label}</button>
+                        {([{ id: 'gg' as const, label: 'GG' }, { id: 'nice_move' as const, label: isEn ? 'Well played' : 'Bien joué' }, { id: 'unlucky' as const, label: isEn ? 'Tough luck' : 'Pas de chance' }, { id: 'thanks' as const, label: isEn ? 'Thanks' : 'Merci' }]).map((c) => (
+                            <button key={c.id} type="button" data-testid={`quick-chat-btn-${c.id}`} onClick={() => { onSendQuickChat?.(c.id); setIsQuickChatOpen(false); }} className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-[#f7f3e8] hover:border-[#f3c65f]/50 transition active:scale-95 whitespace-nowrap">{c.label}</button>
                         ))}
                     </div>
                 )}
 
                 <div className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${turn === 'X' ? 'bg-[#065f46] text-emerald-50 ring-1 ring-emerald-400/70' : 'bg-[#080605] text-stone-300 border border-white/10'}`}>{playerClock}</div>
 
-                {!isBeginner && !playerMeta.isGuest && (
+                {!isBeginner && !isGuest && (
                     <span data-testid="left-rail-player-pr" className={`w-full inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap leading-none ${resolvePrBadgeClasses(playerPrNum)}`}>
                         {isEn ? 'Match PR:' : 'PR Match :'} {playerPrLabel}
                     </span>

@@ -141,8 +141,8 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                     <div data-testid="post-match-pr-player" className="rounded-xl border border-[#d4af37]/15 bg-[#120e0a]/90 p-3">
                         <p className="font-mono text-xs sm:text-sm font-black text-amber-300">
                             {isEn
-                                ? 'Match History, PR Analysis & Blunders Locked in Guest Mode (Account Required — ToS §4)'
-                                : 'Historique, Analyse PR & Blunders verrouillés en Mode Invité (Compte requis — Clause CGU §4)'}
+                                ? 'PR Analysis & Blunder Book reserved for registered accounts (Terms of Service §4)'
+                                : 'Analyse PR & Carnet de Blunders réservés aux comptes connectés (Clause CGU §4)'}
                         </p>
                         <p className="mt-1 text-xs text-stone-300">
                             {isEn

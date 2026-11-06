@@ -31,6 +31,7 @@ import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
 import { readStoredPlayerColor } from '../components/hud/ColorSelector';
 import { getBotRealPr, resetBotRealPr } from '../features/personas/botRealPr';
+import { checkIsPlayerRegistered } from '../hooks/useAuthenticPlayerStats';
 import type { Player } from '../engine/backgammonEngine';
 
 /** Vues exclusives de l'application (une seule montée à la fois). */
@@ -117,13 +118,14 @@ export default function Home() {
     }, [isLiveMatch, locale, rawTriggerCoach]);
 
     const MIN_DECISIONS_FOR_PR = 2;
-    const prX = matchStatsX.decisionsCount >= MIN_DECISIONS_FOR_PR ? Number(Math.max(0, (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500).toFixed(1)) : null;
+    const isRegistered = checkIsPlayerRegistered();
+    const prX = isRegistered && matchStatsX.decisionsCount >= MIN_DECISIONS_FOR_PR ? Number(Math.max(0, (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500).toFixed(1)) : null;
     const botMatchLogLength = game.matchLog.length;
     useEffect(() => { if (botMatchLogLength === 0) resetBotRealPr(); }, [botMatchLogLength]);
     const botRealSnapshot = getBotRealPr();
     const measuredBotPr = botRealSnapshot.decisions >= MIN_DECISIONS_FOR_PR ? botRealSnapshot.pr : null;
     const rawBotPr = matchStatsO.decisionsCount >= MIN_DECISIONS_FOR_PR ? (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500 : measuredBotPr;
-    const prO = typeof rawBotPr === 'number' && Number.isFinite(rawBotPr) ? Number(Math.max(0, rawBotPr).toFixed(1)) : null;
+    const prO = isRegistered && typeof rawBotPr === 'number' && Number.isFinite(rawBotPr) ? Number(Math.max(0, rawBotPr).toFixed(1)) : null;
     livePrRef.current = { prX: prX ?? 0, prO };
 
     const { activeDie, preferredDie, handlePlayMove, handleSelectDie, handleCheckerClick, handleCheckerRightClick, handleDestinationClick, handleDeselect, handleSwapDice } = useCheckerInteractions({ game, isMultiplayerActive, multiplayer, currentTurnMovesRef });
