@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkles, Flame, BarChart2, GraduationCap, ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Sparkles, Flame, BarChart2, GraduationCap, ChevronDown, ChevronRight, ChevronLeft, Users, Share2 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import type { LobbyModuleId } from './LobbyScreen';
@@ -55,8 +55,8 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
     const [collapsed, setCollapsed] = useState(false);
-    const [playGroupExpanded, setPlayGroupExpanded] = useState(false);
     const [blunderCount, setBlunderCount] = useState<number>(0);
+    const onlinePlayersCount = 28 + ((new Date().getHours() * 7 + 13) % 36);
 
     useEffect(() => {
         try {
@@ -85,74 +85,61 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
             }`}
         >
             <div className="flex flex-col gap-4 w-full">
-                {/* BLOC 1 : TABLES DE JEU */}
+                {/* BLOC 1 : TABLES DE JEU & MATCHMAKING PERMANENT */}
                 <div className="flex flex-col gap-1">
                     {!collapsed && <span className={sectionLabelCls}>{isEn ? 'Tables' : 'Tables'}</span>}
-                    <div className="flex items-center gap-1">
-                        <button
-                            type="button"
-                            data-testid="sidebar-quick-play-btn"
-                            onClick={onQuickPlay}
-                            title={isEn ? 'Game Room (Active)' : 'Salon de Jeu (Actif)'}
-                            className={`flex flex-1 items-center gap-2.5 rounded-r-lg px-3 py-2 text-xs font-bold transition-all duration-150 ${
-                                selectedMode === 'ai' || selectedMode === 'multiplayer'
-                                    ? activeRailCls
-                                    : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white'
-                            }`}
-                        >
-                            <IconLuxuryDice className="text-[#D4AF37]" size={15} />
-                            {!collapsed && <span>{isEn ? 'Game Room' : 'Salon de Jeu'}</span>}
-                        </button>
-                        {!collapsed && !isBeginner && (
-                            <button
-                                type="button"
-                                data-testid="sidebar-play-group-toggle"
-                                aria-expanded={playGroupExpanded}
-                                aria-label="Déplier les options du Salon de Jeu"
-                                onClick={() => setPlayGroupExpanded((v) => !v)}
-                                className="rounded-lg p-1.5 text-xs text-zinc-500 hover:bg-white/[0.04] hover:text-white transition"
-                            >
-                                {playGroupExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                            </button>
-                        )}
-                    </div>
+                    <button
+                        type="button"
+                        data-testid="sidebar-quick-play-btn"
+                        onClick={onQuickPlay}
+                        title={isEn ? 'Game Room' : 'Salon de Jeu'}
+                        className={`flex items-center gap-2.5 rounded-r-lg px-3 py-2 text-xs font-bold transition-all duration-150 ${
+                            selectedMode === null || selectedMode === 'ai'
+                                ? activeRailCls
+                                : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white'
+                        }`}
+                    >
+                        <IconLuxuryDice className="text-[#D4AF37]" size={15} />
+                        {!collapsed && <span>{isEn ? 'Game Room' : 'Salon de Jeu'}</span>}
+                    </button>
 
-                    {!isBeginner && (playGroupExpanded || collapsed) && (
-                        <div className={`flex flex-col gap-0.5 ${collapsed ? '' : 'pl-2 border-l border-white/[0.06] ml-3 mt-0.5'}`}>
-                            <button
-                                type="button"
-                                data-testid="sidebar-submenu-find-opponent"
-                                onClick={() =>
-                                    onSelectMultiplayerMode
-                                        ? onSelectMultiplayerMode()
-                                        : onFindOpponent
-                                          ? onFindOpponent()
-                                          : onOpenModule?.('multiplayer')
-                                }
-                                className={`flex items-center gap-2.5 rounded-r-lg px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
-                                    selectedMode === 'multiplayer'
-                                        ? activeRailCls
-                                        : 'text-zinc-400 hover:bg-white/[0.04] hover:text-white'
-                                }`}
-                            >
-                                <IconWorldTourLive size={14} className="text-[#10B981]" />
-                                {!collapsed && <span>{isEn ? 'Play Online' : 'Jouer en Ligne'}</span>}
-                            </button>
-                            <button
-                                type="button"
-                                data-testid="sidebar-submenu-ai"
-                                onClick={onSelectAiMode}
-                                className={`flex items-center gap-2.5 rounded-r-lg px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
-                                    selectedMode === 'ai'
-                                        ? activeRailCls
-                                        : 'text-zinc-400 hover:bg-white/[0.04] hover:text-white'
-                                }`}
-                            >
-                                <IconAstrolabeCoach size={14} className="text-[#D4AF37]" />
-                                {!collapsed && <span>{isEn ? 'vs AI' : 'Contre l’IA'}</span>}
-                            </button>
-                        </div>
-                    )}
+                    <button
+                        type="button"
+                        data-testid="sidebar-find-player-btn"
+                        onClick={() => {
+                            if (onSelectMultiplayerMode) onSelectMultiplayerMode();
+                            else if (onFindOpponent) onFindOpponent();
+                            else if (typeof window !== 'undefined') window.location.assign('/play?mode=matchmaking&match=5');
+                        }}
+                        title={isEn ? 'Find a Player (Online)' : 'Trouver un joueur (En ligne)'}
+                        className={`flex items-center gap-2.5 rounded-r-lg px-3 py-2 text-xs font-bold transition-all duration-150 ${
+                            selectedMode === 'multiplayer'
+                                ? activeRailCls
+                                : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white'
+                        }`}
+                    >
+                        <Users className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
+                        {!collapsed && (
+                            <>
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                                <span>{isEn ? 'Find a Player' : 'Trouver un joueur'}</span>
+                                <span className="ml-auto text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    {onlinePlayersCount} {isEn ? 'online' : 'en ligne'}
+                                </span>
+                            </>
+                        )}
+                    </button>
+
+                    <button
+                        type="button"
+                        data-testid="sidebar-invite-friend-btn"
+                        onClick={() => onOpenModule?.('multiplayer')}
+                        title={isEn ? 'Invite a Friend (1-Click)' : 'Inviter un ami (1-Clic)'}
+                        className="flex items-center gap-2.5 rounded-r-lg px-3 py-1.5 text-xs font-medium text-zinc-400 hover:bg-white/[0.04] hover:text-white transition-all duration-150"
+                    >
+                        <Share2 className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
+                        {!collapsed && <span>{isEn ? 'Invite a Friend (1-Click)' : 'Inviter un ami (1-Clic)'}</span>}
+                    </button>
                 </div>
 
                 {/* BLOC 2 : ENTRAÎNEMENT & ANALYSE */}

@@ -48,14 +48,16 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
       <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-5 flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
                 <Swords size={18} />
               </span>
-              <h3 className="inline-flex items-center gap-1.5 text-sm sm:text-base font-black text-[#fdf8eb]">
-                <Zap className="w-5 h-5 text-[#D4AF37]" strokeWidth={1.5} />
-                <span>{isEn ? 'Immediate Club Game (Priority #1)' : 'Lancement de Partie Immédiat (Priorité N°1)'}</span>
+              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb]">
+                {isEn ? 'Play Online — Find Immediate Opponent' : 'Jouer en Ligne — Trouver un Adversaire Immédiat'}
               </h3>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+                {isEn ? '● 24/7 Club Matchmaking Active' : '● Matchmaking Club Actif 24/7'}
+              </span>
             </div>
             <p className="text-xs text-stone-300 mt-0.5">
               {isEn
@@ -120,7 +122,7 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
             className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-black shadow-lg hover:brightness-105 active:scale-95 transition"
           >
             <Swords size={17} className="text-black" />
-            <span>{isEn ? 'PLAY NOW (CLUB OPPONENT) →' : 'JOUER MAINTENANT (ADVERSAIRE DE CLUB) →'}</span>
+            <span>{isEn ? 'FIND A PLAYER ONLINE (IMMEDIATE MATCH) →' : 'TROUVER UN JOUEUR EN LIGNE (MATCH IMMÉDIAT) →'}</span>
           </button>
 
           <button

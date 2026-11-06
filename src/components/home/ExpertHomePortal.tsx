@@ -92,13 +92,16 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
       <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-4 sm:p-5 flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#D4AF37]/20 text-[#f3d27a]">
                 <Trophy size={16} />
               </span>
               <h3 className="text-sm sm:text-base font-black text-[#fdf8eb]">
                 {isEn ? 'Official Tournament Match Cockpit' : 'Cockpit de Match de Tournoi Officiel'}
               </h3>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+                ● {isEn ? 'Tournament Matchmaking Active' : 'Matchmaking Tournoi Actif'}
+              </span>
             </div>
             <p className="text-xs text-stone-300 mt-0.5">
               {isEn
@@ -172,8 +175,8 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             <Swords className="w-4 h-4 text-black" strokeWidth={1.75} />
             <span>
               {isEn
-                ? 'LAUNCH MATCH (OPEN SAGE 3-PLY) →'
-                : 'LANCER LE MATCH (OPEN SAGE 3-PLY) →'}
+                ? 'FIND AN OPPONENT (OFFICIAL MATCH) →'
+                : 'TROUVER UN ADVERSAIRE (MATCH OFFICIEL) →'}
             </span>
           </button>
           <button
