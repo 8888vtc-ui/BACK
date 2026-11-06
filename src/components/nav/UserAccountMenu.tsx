@@ -19,6 +19,7 @@ import {
 import type { Profile } from '../../lib/supabase/types';
 import { useTranslation } from '../../i18n';
 import type { PlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import { loginWithUserCode, getActiveUserProfile } from '../../features/multiplayer/userCodeSessionService';
 
 export type AuthStatus = 'loading' | 'offline' | 'anonymous' | 'authenticated';
@@ -49,6 +50,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
     user: propUser, profile: propProfile, isLoading: propLoading, isOfflineMode: propOffline,
     tierGate, onOpenAuthModal, onSignOut, onNavigate, onNavigateModule, onOpenSettings, onUserResolved,
 }) => {
+    const authenticStats = useAuthenticPlayerStats();
     let router: ReturnType<typeof useRouter> | null = null;
     try { router = useRouter(); } catch { router = null; }
 
@@ -156,16 +158,14 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
 
     const fallbackActiveProfile = !user && !localPassport ? getActiveUserProfile() : null;
     const meta = user?.user_metadata as Record<string, unknown> | undefined;
-    const displayName =
-        profile?.display_name || profile?.username ||
-        (typeof meta?.full_name === 'string' ? meta.full_name : null) ||
-        (typeof meta?.name === 'string' ? meta.name : null) ||
-        user?.email?.split('@')[0] || localPassport?.pseudo || fallbackActiveProfile?.username || 'Joueur Invité';
+    const isRegisteredPlayer = Boolean(user || (localPassport && !/^invit[eé]|^joueur invit[eé]/i.test(localPassport.pseudo)) || (fallbackActiveProfile && !fallbackActiveProfile.isGuest));
+    const displayName = !isRegisteredPlayer
+        ? (isEn ? 'Joueur Invité' : 'Joueur Invité')
+        : (profile?.display_name || profile?.username || authenticStats.pseudo || (typeof meta?.full_name === 'string' ? meta.full_name : null) || localPassport?.pseudo || 'Joueur');
     const displayEmail = user?.email || localPassport?.email || (fallbackActiveProfile?.isGuest ? null : `${fallbackActiveProfile?.userCode}@backgammontour.com`);
-    const avatarUrl = profile?.avatar_url || (typeof meta?.avatar_url === 'string' ? meta.avatar_url : null) || localPassport?.avatarUrl || fallbackActiveProfile?.avatarUrl;
-    const elo = profile?.rating ?? (fallbackActiveProfile?.rating || 1500);
+    const avatarUrl = profile?.avatar_url || (typeof meta?.avatar_url === 'string' ? meta.avatar_url : null) || (localPassport?.avatarUrl && localPassport.avatarUrl !== '/avatars/user-avatar-5.jpg' ? localPassport.avatarUrl : null) || fallbackActiveProfile?.avatarUrl;
+    const elo = profile?.rating ?? authenticStats.eloRating ?? (fallbackActiveProfile?.rating || 1500);
     const rankTitle = getCompetitiveRankTitle(elo);
-    const isRegisteredPlayer = Boolean(user || localPassport || (fallbackActiveProfile && !fallbackActiveProfile.isGuest));
 
     return (
         <div className="relative flex items-center gap-2" ref={menuRef}>
@@ -177,7 +177,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                         aria-expanded={isDropdownOpen}
                         aria-haspopup="menu"
                         data-testid="user-profile-btn"
-                        className="group flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900 px-2.5 py-1 transition hover:border-white/25 hover:bg-slate-800 focus:outline-none"
+                        className="group flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900 px-2.5 py-1 transition hover:border-white/25 hover:bg-slate-800 focus:outline-none shrink-0"
                     >
                         {avatarUrl ? (
                             /* eslint-disable-next-line @next/next/no-img-element */
@@ -187,7 +187,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                                 {displayName.slice(0, 2).toUpperCase()}
                             </div>
                         )}
-                        <span className="hidden sm:inline text-xs font-semibold text-slate-100 group-hover:text-white">
+                        <span data-testid="lobby-auth-status" className="hidden sm:inline text-xs font-semibold text-slate-100 group-hover:text-white">
                             {displayName}
                         </span>
                         {tierGate !== 'BEGINNER' && (
@@ -275,11 +275,19 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                 </>
             ) : (
                 <button
-                    type="button" onClick={handleOpenAuth} data-testid="auth-login-trigger"
-                    className="group flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-white/25 hover:bg-slate-800 hover:text-white"
+                    type="button"
+                    onClick={handleOpenAuth}
+                    data-testid="auth-login-trigger"
+                    className="group flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900 px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:border-[#D4AF37]/50 hover:bg-slate-800 hover:text-white shrink-0"
                 >
-                    <span className="text-xs text-amber-300">👤</span>
-                    <span>{isOffline ? (isEn ? 'Local Member' : 'Membre Local') : (isEn ? 'Sign In' : 'Connexion')}</span>
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 border border-white/10 text-[10px] font-bold text-amber-300">
+                        👤
+                    </div>
+                    <span data-testid="lobby-auth-status" className="hidden sm:inline text-xs font-semibold text-slate-200">
+                        {isEn ? 'Joueur Invité' : 'Joueur Invité'}
+                    </span>
+                    <span className="text-[11px] text-amber-400 font-semibold">{isEn ? 'Sign In' : 'Connexion'}</span>
+                    <span aria-hidden="true" className="text-[11px] text-slate-400">▾</span>
                 </button>
             )}
             {!onOpenAuthModal && (

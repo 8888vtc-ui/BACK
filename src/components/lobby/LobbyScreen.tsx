@@ -147,32 +147,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                 onSelectPlayTab={() => setSelectedMode('ai')}
                 onOpenSettings={() => { setSelectedMode('ai'); setShowOptions(true); }}
                 onUserResolved={handleUserResolved}
-                statusBadge={
-                    <button
-                        type="button" data-testid="lobby-auth-status" onClick={() => setIsPassportGateOpen(true)}
-                        title={!authenticStats.isRegistered ? "Créer ma Carte de Joueur (5s)" : "Profil de Joueur"}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#0B0E14]/90 px-2.5 py-1 text-xs font-semibold text-zinc-200 hover:border-[#D4AF37]/60 hover:text-white transition shrink-0"
-                    >
-                        <span className="h-2 w-2 rounded-full bg-[#10B981]" />
-                        {!authenticStats.isRegistered ? (
-                            <span>● Mode Invité</span>
-                        ) : (
-                            <>
-                                <span className="max-w-[100px] truncate">👤 {authenticStats.pseudo}</span>
-                                {tierGate !== 'BEGINNER' && (
-                                    <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-bold">
-                                        <span className="text-zinc-500">•</span>
-                                        <span data-testid="navbar-rating-badge" className="text-[#F3E5AB]">{authenticStats.eloRating ?? 1500} Elo</span>
-                                        <span className="text-zinc-500">•</span>
-                                        <span data-testid="navbar-erpr-badge" className={authenticStats.hasRealPR ? 'text-emerald-400' : 'text-amber-300'}>
-                                            {authenticStats.hasRealPR ? `PR ${authenticStats.globalPR?.toFixed(1)}` : 'PR : En calibrage'}
-                                        </span>
-                                    </span>
-                                )}
-                            </>
-                        )}
-                    </button>
-                }
             />
 
             <div className="relative z-10 flex flex-1 min-h-0 w-full">
