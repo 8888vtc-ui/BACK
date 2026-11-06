@@ -75,11 +75,11 @@ export const InstantFriendInviteButton: React.FC<InstantFriendInviteButtonProps>
         type="button"
         data-testid="instant-friend-invite-btn"
         onClick={handleOpenModal}
-        title={isEn ? 'Invite a Friend / Share Game (1-Click)' : 'Inviter un ami / Partager la partie (1 Clic)'}
+        title={isEn ? 'Invite a Friend (1-Click)' : 'Inviter un ami (1 Clic)'}
         className={`inline-flex items-center justify-center gap-2 rounded-xl border border-[#d4af37]/60 bg-gradient-to-r from-[#1c140c] via-[#281c10] to-[#1c140c] px-3.5 py-2 text-xs sm:text-sm font-bold text-[#f3d27a] shadow-lg transition-all duration-200 hover:border-[#f3d27a] hover:brightness-110 active:scale-95 ${className}`}
       >
         <Share2 className="w-4 h-4 text-[#d4af37]" />
-        <span>{isEn ? 'Invite a Friend' : 'Partager la partie'}</span>
+        <span>{isEn ? 'Invite a Friend' : 'Inviter un ami'}</span>
       </button>
 
       {isOpen && (
@@ -95,7 +95,7 @@ export const InstantFriendInviteButton: React.FC<InstantFriendInviteButtonProps>
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-[#d4af37]" />
                 <h3 className="font-display text-base font-bold text-[#f7f3e8]">
-                  {isEn ? 'Invite a Friend in 1 Click' : 'Partager la table avec un ami'}
+                  {isEn ? 'Invite a Friend in 1 Click' : 'Inviter un ami en 1 Clic'}
                 </h3>
               </div>
               <button

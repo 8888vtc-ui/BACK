@@ -220,6 +220,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
 
             {isGuidedProfessorMode && !isOnlinePvpMatch && (
                 <LiveProfessorCoachOverlay
+                    locale={locale}
                     dice={game.dice} canUndo={game.canUndo} onUndoMove={game.undoMove}
                     onAskProfessorHint={() => { onTriggerCoach(); modals.openMobileDrawer(); }}
                     lastMoveFeedback={lastMoveFeedback}

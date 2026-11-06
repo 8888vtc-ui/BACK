@@ -9,6 +9,7 @@ import { BeginnerInteractiveGuideModal } from './BeginnerInteractiveGuideModal';
 import { getProactiveAdvice, getFeedbackAdvice, getBotMoveExplanation } from './professorAdviceHelper';
 
 export interface LiveProfessorCoachOverlayProps {
+  locale?: string;
   dice?: [number, number] | null;
   canUndo?: boolean;
   onUndoMove?: () => void;
@@ -29,6 +30,7 @@ export interface LiveProfessorCoachOverlayProps {
 }
 
 export function LiveProfessorCoachOverlay({
+  locale: propLocale,
   dice,
   canUndo = true,
   onUndoMove,
@@ -45,8 +47,9 @@ export function LiveProfessorCoachOverlay({
   isShowingRecommendArrow = true,
   prematureDoubleWarning = false,
 }: LiveProfessorCoachOverlayProps) {
-  const { locale } = useTranslation();
-  const lang = locale === 'en' ? 'en' : 'fr';
+  const { locale: contextLocale } = useTranslation();
+  const activeLocale = propLocale || contextLocale || 'fr';
+  const lang = activeLocale === 'en' ? 'en' : 'fr';
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [activeNotice, setActiveNotice] = useState<'BAR_PRIORITY' | 'CLOSED_POINT' | null>(antiFrustrationNotice ?? null);
   const [showMasterBadge, setShowMasterBadge] = useState<boolean>(false);
@@ -160,7 +163,7 @@ export function LiveProfessorCoachOverlay({
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-black uppercase tracking-wider text-[10px] text-[#D4AF37]">
-                  {lang === 'fr' ? 'Professeur Interactif' : 'Interactive Professor'}
+                  {lang === 'fr' ? 'PROFESSEUR INTERACTIF' : 'INTERACTIVE PROFESSOR'}
                 </span>
                 {showMasterBadge && (
                   <span
@@ -186,7 +189,7 @@ export function LiveProfessorCoachOverlay({
                 type="button"
                 data-testid="professor-show-arrow-btn"
                 onClick={onToggleRecommendArrow}
-                aria-label={isShowingRecommendArrow ? 'Masquer les flèches' : 'Afficher les flèches'}
+                aria-label={isShowingRecommendArrow ? (lang === 'fr' ? 'Masquer les flèches' : 'Hide arrows') : (lang === 'fr' ? 'Afficher les flèches' : 'Show arrows')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition border ${
                   isShowingRecommendArrow
                     ? 'bg-[#D4AF37] text-slate-950 border-[#D4AF37] shadow-lg'
@@ -196,8 +199,8 @@ export function LiveProfessorCoachOverlay({
                 {isShowingRecommendArrow ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 <span>
                   {isShowingRecommendArrow
-                    ? (lang === 'fr' ? '👁️ Masquer les flèches' : '👁️ Hide arrows')
-                    : (lang === 'fr' ? '👁️ Afficher les flèches' : '👁️ Show arrows')}
+                    ? (lang === 'fr' ? 'Masquer les flèches' : 'Hide arrows')
+                    : (lang === 'fr' ? 'Afficher les flèches' : 'Show arrows')}
                 </span>
               </button>
             )}
@@ -232,7 +235,7 @@ export function LiveProfessorCoachOverlay({
               className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition disabled:opacity-40"
             >
               <RotateCcw className="w-3.5 h-3.5 text-amber-300" />
-              <span>{lang === 'fr' ? '↺ Rejouer mon dernier coup' : '↺ Undo / Retry move'}</span>
+              <span>↺ {lang === 'fr' ? 'Rejouer le coup' : 'Undo / Retry move'}</span>
             </button>
           </div>
         </div>

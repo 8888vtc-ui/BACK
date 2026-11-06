@@ -75,7 +75,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
     return (
         <aside
-            aria-label="Joueurs et score du match"
+            aria-label={isEn ? 'Players and match score' : 'Joueurs et score du match'}
             data-testid="board-left-player-rail"
             className="hidden md:flex [@media(max-height:500px)]:!flex relative flex-col items-center justify-between w-44 md:w-52 xl:w-60 [@media(max-height:540px)]:!w-[86px] [@media(max-height:540px)]:!max-w-[88px] shrink-0 h-full min-h-0 overflow-visible py-2 [@media(max-height:540px)]:!py-0.5 px-2 [@media(max-height:540px)]:!px-0.5 select-none rounded-2xl [@media(max-height:540px)]:!rounded-xl border border-[#d4af37]/25 bg-gradient-to-b from-[#130e09]/95 via-[#0d0a08]/95 to-[#130e09]/95 shadow-[0_16px_40px_rgba(0,0,0,0.85)] z-30"
         >
@@ -175,9 +175,9 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
             {/* Barre Centrale Mobile Paysage */}
             <div className="hidden [@media(max-height:540px)]:flex w-full items-center justify-center gap-1 my-auto py-0.5 relative">
                 {canUndo && onUndo && (
-                    <button type="button" data-testid="left-rail-mobile-undo-btn" onClick={onUndo} title="Annuler le dé joué" aria-label="Annuler le coup" className="flex h-7 w-8 items-center justify-center rounded-lg border border-amber-400/60 bg-amber-500/20 text-amber-200 font-bold text-xs shadow transition active:scale-95">↶</button>
+                    <button type="button" data-testid="left-rail-mobile-undo-btn" onClick={onUndo} title={isEn ? 'Undo played die' : 'Annuler le dé joué'} aria-label={isEn ? 'Undo move' : 'Annuler le coup'} className="flex h-7 w-8 items-center justify-center rounded-lg border border-amber-400/60 bg-amber-500/20 text-amber-200 font-bold text-xs shadow transition active:scale-95">↶</button>
                 )}
-                <button type="button" data-testid="left-rail-menu-btn" onClick={() => setIsMobileMenuOpen((v) => !v)} title="Menu & Paramètres de table" aria-label="Ouvrir le menu de table" aria-expanded={isMobileMenuOpen} className="flex flex-1 h-7 items-center justify-center gap-1 rounded-lg border border-[#d4af37]/45 bg-[#16110c] px-2 text-[10px] font-black uppercase tracking-wider text-[#f3d27a] shadow transition hover:border-[#d4af37] active:scale-95 whitespace-nowrap">
+                <button type="button" data-testid="left-rail-menu-btn" onClick={() => setIsMobileMenuOpen((v) => !v)} title={isEn ? 'Table Menu & Settings' : 'Menu & Paramètres de table'} aria-label={isEn ? 'Open table menu' : 'Ouvrir le menu de table'} aria-expanded={isMobileMenuOpen} className="flex flex-1 h-7 items-center justify-center gap-1 rounded-lg border border-[#d4af37]/45 bg-[#16110c] px-2 text-[10px] font-black uppercase tracking-wider text-[#f3d27a] shadow transition hover:border-[#d4af37] active:scale-95 whitespace-nowrap">
                     <IconHorologyGear className="text-[#f3d27a]" size={13} />
                     <span>Menu</span>
                 </button>
@@ -185,18 +185,18 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 {isMobileMenuOpen && (
                     <div data-testid="left-rail-menu-popover" className="absolute left-full ml-1.5 top-1/2 -translate-y-1/2 z-50 w-56 rounded-2xl border border-[#d4af37]/50 bg-[#120e0a]/98 p-2 text-xs text-[#f7f3e8] shadow-[0_16px_40px_rgba(0,0,0,0.95)] backdrop-blur-md flex flex-col gap-1">
                         <div className="flex items-center justify-between pb-1 border-b border-white/10">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-[#f3c65f]">⚙️ Menu de Table</span>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-[#f3c65f]">{isEn ? '⚙️ Table Menu' : '⚙️ Menu de Table'}</span>
                             <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] text-stone-400 hover:text-white px-1">✕</button>
                         </div>
                         {onToggleAutoConfirm && (
                             <button type="button" data-testid="left-rail-auto-confirm-toggle" onClick={onToggleAutoConfirm} className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                                <span>Validation auto des coups</span>
+                                <span>{isEn ? 'Auto-confirm moves' : 'Validation auto des coups'}</span>
                                 <span className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-black ${autoConfirmEnabled ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50' : 'bg-white/10 text-stone-300'}`}>{autoConfirmEnabled ? 'ON' : 'OFF'}</span>
                             </button>
                         )}
                         {onToggleAutoRoll && (
                             <button type="button" data-testid="left-rail-auto-roll-toggle" onClick={onToggleAutoRoll} className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                                <span>🎲 Lancer auto des dés</span>
+                                <span>{isEn ? '🎲 Auto-roll dice' : '🎲 Lancer auto des dés'}</span>
                                 <span className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-black ${autoRollEnabled ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50' : 'bg-white/10 text-stone-300'}`}>{autoRollEnabled ? 'ON' : 'OFF'}</span>
                             </button>
                         )}
@@ -204,14 +204,14 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             {BOARD_SWATCH_OPTIONS.map((sw) => (
                                 <button key={sw.id} type="button" onClick={() => setTheme(sw.id)} className={`flex flex-col items-center gap-0.5 rounded-lg border py-1 text-[9.5px] font-bold ${activeTheme === sw.id ? 'border-[#f3c65f] bg-[#d4af37]/20 text-white' : 'border-white/10 bg-black/40 text-stone-300'}`}>
                                     <span className={`h-3 w-5 rounded border ${sw.ringClass}`} style={{ backgroundColor: sw.bgHex }} />
-                                    <span>{sw.label}</span>
+                                    <span>{sw.id === 'snowie_classic' ? (isEn ? 'Emerald' : 'Émeraude') : sw.id === 'midnight' ? (isEn ? 'Midnight' : 'Bleu Nuit') : (isEn ? 'Tournament' : 'Havane')}</span>
                                 </button>
                             ))}
                         </div>
-                        <button type="button" onClick={() => { handleFlipDirection(); setIsMobileMenuOpen(false); }} className="rounded-xl border border-white/10 bg-white/[0.04] px-2 py-1.5 text-[10px] font-semibold text-center hover:border-[#d4af37]/50 transition">⇄ Sens 1..24</button>
+                        <button type="button" onClick={() => { handleFlipDirection(); setIsMobileMenuOpen(false); }} className="rounded-xl border border-white/10 bg-white/[0.04] px-2 py-1.5 text-[10px] font-semibold text-center hover:border-[#d4af37]/50 transition">{isEn ? '⇄ Flip 1..24' : '⇄ Sens 1..24'}</button>
                         {onBackToLobby && (
                             <button type="button" onClick={() => { setIsMobileMenuOpen(false); onBackToLobby(); }} className="flex items-center justify-between rounded-xl border border-rose-500/35 bg-rose-950/40 px-2.5 py-1.5 text-[11px] font-bold text-rose-200 hover:bg-rose-950/70 transition">
-                                <span>🚪 Quitter la table</span><span className="text-[10px]">Salon →</span>
+                                <span>{isEn ? '🚪 Leave table' : '🚪 Quitter la table'}</span><span className="text-[10px]">{isEn ? 'Lobby →' : 'Salon →'}</span>
                             </button>
                         )}
                     </div>

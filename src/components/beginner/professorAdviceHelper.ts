@@ -130,7 +130,7 @@ export function getFeedbackAdvice(feedback: LastMoveFeedback, lang: 'fr' | 'en' 
     const lossPct = Math.max(1, Math.round(absLoss * 50));
     return isEn
         ? `💡 Professor Tip: Your move costs ~${lossPct}% winning chances compared to ${feedback.optimalMove}. Click '↺ Undo / Retry move' to test the best play!`
-        : `💡 Astuce du Professeur : Ton coup perd ~${lossPct} % de chances de gagner par rapport à ${feedback.optimalMove}. Clique sur « ↺ Rejouer mon dernier coup » pour tester le meilleur coup !`;
+        : `💡 Conseil du Professeur : Ton coup perd ~${lossPct} % de chances de gagner par rapport à ${feedback.optimalMove}. Clique sur « ↺ Rejouer le coup » pour tester le meilleur coup !`;
 }
 
 export function getBotMoveExplanation(lastBotNotation: string, lang: 'fr' | 'en' = 'fr'): string {

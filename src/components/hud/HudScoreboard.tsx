@@ -9,6 +9,7 @@ import type { Player } from '../../engine/backgammonEngine';
 import { getSavedPipCountVisibility, PIP_VISIBILITY_CHANGE_EVENT, setSavedPipCountVisibility } from '../board/PipCountBadge';
 import { formatChameleonPipDisplay, formatNAwayScore, type ChameleonLayer } from '../../features/chameleon/chameleonProfile';
 import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
+import { useTranslation } from '../../i18n';
 
 export interface HudScoreboardProps {
     matchLength: number; scoreX: number; scoreO: number; turn: Player; crawford?: boolean;
@@ -21,14 +22,14 @@ export interface HudScoreboardProps {
 }
 
 /** Libellé pédagogique du palier de PR (selon standard international XG/Snowie). */
-export function getPRCategoryLabel(pr: number | null | undefined): string {
-    if (pr === null || pr === undefined) return 'Non classé';
-    if (pr <= 3.5) return 'Superhuman / Grand-Maître';
-    if (pr <= 6.0) return 'Maître / Expert';
-    if (pr <= 9.0) return 'Avancé';
-    if (pr <= 13.0) return 'Intermédiaire';
-    if (pr <= 18.0) return 'Amateur';
-    return 'Débutant (En apprentissage)';
+export function getPRCategoryLabel(pr: number | null | undefined, isEn: boolean = false): string {
+    if (pr === null || pr === undefined) return isEn ? 'Unranked' : 'Non classé';
+    if (pr <= 3.5) return isEn ? 'Superhuman / Grandmaster' : 'Superhuman / Grand-Maître';
+    if (pr <= 6.0) return isEn ? 'Master / Expert' : 'Maître / Expert';
+    if (pr <= 9.0) return isEn ? 'Advanced' : 'Avancé';
+    if (pr <= 13.0) return isEn ? 'Intermediate' : 'Intermédiaire';
+    if (pr <= 18.0) return isEn ? 'Casual' : 'Amateur';
+    return isEn ? 'Beginner (Learning)' : 'Débutant (En apprentissage)';
 }
 
 function prBadgeClass(pr: number | null | undefined): string {
@@ -43,19 +44,19 @@ interface PlayerCardProps {
     pr?: number | null; pip?: number | null; borneOff?: number; opponentPip?: number | null; epc?: number | null;
     isPureRace?: boolean; pipVisible?: boolean; onTogglePipVisible?: () => void;
     awayScoreLabel?: string | null; onToggleAwayMode?: () => void; chameleonLayer?: ChameleonLayer; testId: string;
-    isGuestLocked?: boolean;
+    isGuestLocked?: boolean; isEn?: boolean;
 }
 
 const PlayerCard: React.FC<PlayerCardProps> = ({
     isWhite, name, mobileName, colorLabel, score, isTurn,
-    pr, pip, borneOff = 0, opponentPip, epc, isPureRace, pipVisible = true, onTogglePipVisible, awayScoreLabel = null, onToggleAwayMode, chameleonLayer, testId, isGuestLocked = false,
+    pr, pip, borneOff = 0, opponentPip, epc, isPureRace, pipVisible = true, onTogglePipVisible, awayScoreLabel = null, onToggleAwayMode, chameleonLayer, testId, isGuestLocked = false, isEn = false,
 }) => {
     const [forceRevealPip, setForceRevealPip] = useState(false);
     const rawPipTitle = isPureRace && typeof epc === 'number'
         ? `Pip count : ${pip} pips | EPC: ${epc}`
         : `${pip} pips`;
-    const pipTitle = pipVisible ? rawPipTitle : 'Mode Tournoi Live : Pip count masqué (cliquer pour afficher)';
-    const prCategory = getPRCategoryLabel(pr);
+    const pipTitle = pipVisible ? rawPipTitle : (isEn ? 'Live Tournament Mode: Pip count hidden (click to show)' : 'Mode Tournoi Live : Pip count masqué (cliquer pour afficher)');
+    const prCategory = getPRCategoryLabel(pr, isEn);
     const chameleonPipText =
         chameleonLayer !== undefined
             ? formatChameleonPipDisplay(pip, opponentPip, chameleonLayer, forceRevealPip)
@@ -155,24 +156,26 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     playerColor = 'X', cubeValue = 1, cubeOwner = null, chameleonLayer, isGuest: propIsGuest,
 }) => {
     const stats = useAuthenticPlayerStats();
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
     const isGuest = propIsGuest ?? (!stats.canHavePR && prX === null);
     const isXTurn = turn === 'X';
     const isOTurn = turn === 'O' || isAiThinking;
     const humanIsWhite = playerColor === 'X';
-    const nameX = 'Vous';
-    const nameO = opponentLabel || 'IA';
-    const colorLabelX = humanIsWhite ? 'Blanc' : 'Noir';
-    const colorLabelO = humanIsWhite ? 'Noir' : 'Blanc';
+    const nameX = isEn ? 'You' : 'Vous';
+    const nameO = opponentLabel || (isEn ? 'AI' : 'IA');
+    const colorLabelX = humanIsWhite ? (isEn ? 'White' : 'Blanc') : (isEn ? 'Black' : 'Noir');
+    const colorLabelO = humanIsWhite ? (isEn ? 'Black' : 'Noir') : (isEn ? 'White' : 'Blanc');
     const isDMP = matchLength > 0 && scoreX === matchLength - 1 && scoreO === matchLength - 1;
     const effectiveCube = Math.max(1, cubeValue);
     const cubeStakeLabel = effectiveCube > 1
-        ? `Enjeu : ${effectiveCube} pt${effectiveCube > 1 ? 's' : ''} (Gammon: ${effectiveCube * 2})`
-        : 'Partie simple (1 pt)';
+        ? (isEn ? `Stake: ${effectiveCube} pt${effectiveCube > 1 ? 's' : ''} (Gammon: ${effectiveCube * 2})` : `Enjeu : ${effectiveCube} pt${effectiveCube > 1 ? 's' : ''} (Gammon: ${effectiveCube * 2})`)
+        : (isEn ? 'Single game (1 pt)' : 'Partie simple (1 pt)');
     const cubeOwnershipTitle = cubeOwner === 'X'
-        ? 'Videau possédé par Vous (Double possible)'
+        ? (isEn ? 'Cube owned by You (Double allowed)' : 'Videau possédé par Vous (Double possible)')
         : cubeOwner === 'O'
-            ? 'Videau possédé par l’IA (Double interdit)'
-            : 'Videau centré (Accessible aux deux joueurs)';
+            ? (isEn ? 'Cube owned by AI (Double forbidden)' : 'Videau possédé par l’IA (Double interdit)')
+            : (isEn ? 'Centered cube (Available to both)' : 'Videau centré (Accessible aux deux joueurs)');
 
     const [pipVisible, setPipVisible] = useState<boolean>(true);
     const [awayMode, setAwayMode] = useState<boolean>(false);
@@ -206,7 +209,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                         data-testid="hud-match-format"
                         role={matchLength > 0 ? 'button' : undefined}
                         tabIndex={matchLength > 0 ? 0 : undefined}
-                        title={matchLength > 0 ? 'Cliquer ou clic droit pour basculer le format Away Score (XG2)' : undefined}
+                        title={matchLength > 0 ? (isEn ? 'Click or right-click to toggle Away Score (XG2)' : 'Cliquer ou clic droit pour basculer le format Away Score (XG2)') : undefined}
                         onClick={handleToggleAwayMode}
                         onContextMenu={(e) => { if (matchLength > 0) { e.preventDefault(); handleToggleAwayMode(); } }}
                         className="font-sans font-bold text-amber-300 tabular-nums cursor-pointer hover:text-amber-200 transition"
@@ -223,7 +226,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                             className="rounded bg-amber-500/20 border border-white/10 px-1 text-[11px] font-black text-amber-300 tabular-nums"
                             title={cubeOwnershipTitle}
                         >
-                            Cube {effectiveCube}×{cubeOwner === 'X' ? ' (Vous)' : cubeOwner === 'O' ? ' (IA)' : ''}
+                            Cube {effectiveCube}×{cubeOwner === 'X' ? (isEn ? ' (You)' : ' (Vous)') : cubeOwner === 'O' ? (isEn ? ' (AI)' : ' (IA)') : ''}
                         </span>
                     )}
                     {crawford && (
@@ -247,7 +250,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                     className="text-[11px] text-slate-400 whitespace-nowrap font-medium tabular-nums cursor-help"
                     title={cubeOwnershipTitle}
                 >
-                    {crawford ? 'Règle Crawford' : isDMP ? 'Double Match Point' : cubeStakeLabel}
+                    {crawford ? (isEn ? 'Crawford Rule' : 'Règle Crawford') : isDMP ? 'Double Match Point' : cubeStakeLabel}
                 </span>
             </div>
 
@@ -257,7 +260,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                 isPureRace={isPureRace} pipVisible={pipVisible} onTogglePipVisible={handleTogglePipVisible}
                 awayScoreLabel={awayMode && matchLength > 0 ? `${Math.max(0, matchLength - scoreX)}a` : null}
                 onToggleAwayMode={matchLength > 0 ? handleToggleAwayMode : undefined}
-                chameleonLayer={chameleonLayer} testId="hud-player-x" isGuestLocked={isGuest}
+                chameleonLayer={chameleonLayer} testId="hud-player-x" isGuestLocked={isGuest} isEn={isEn}
             />
 
             <span className="font-mono text-[11px] font-black tracking-widest text-slate-400">
@@ -265,12 +268,12 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
             </span>
 
             <PlayerCard
-                isWhite={!humanIsWhite} name={nameO} mobileName="IA" colorLabel={colorLabelO} score={scoreO}
+                isWhite={!humanIsWhite} name={nameO} mobileName={isEn ? 'AI' : 'IA'} colorLabel={colorLabelO} score={scoreO}
                 isTurn={isOTurn} pr={isGuest ? null : prO} pip={pipO} borneOff={borneOffO} opponentPip={pipX} epc={epcO}
                 isPureRace={isPureRace} pipVisible={pipVisible} onTogglePipVisible={handleTogglePipVisible}
                 awayScoreLabel={awayMode && matchLength > 0 ? `${Math.max(0, matchLength - scoreO)}a` : null}
                 onToggleAwayMode={matchLength > 0 ? handleToggleAwayMode : undefined}
-                chameleonLayer={chameleonLayer} testId="hud-player-o" isGuestLocked={isGuest}
+                chameleonLayer={chameleonLayer} testId="hud-player-o" isGuestLocked={isGuest} isEn={isEn}
             />
         </div>
     );

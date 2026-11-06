@@ -137,7 +137,7 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                 <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1 overflow-hidden">
                     <button type="button" onClick={handleLobbyClick} data-testid="hud-back-to-lobby-btn" title={isEn ? 'Session Menu / Back to Lobby' : 'Menu de Session / Retour au Salon'} className="flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-1.5 sm:px-2.5 py-1 text-[11px] font-bold text-slate-200 transition hover:border-white/25 hover:bg-slate-800 hover:text-white active:scale-95 shrink-0 touch-manipulation">
                         <span aria-hidden="true" className="text-amber-300">←</span>
-                        <span className="hidden sm:inline">Lobby</span>
+                        <span className="hidden sm:inline">{isEn ? 'Lobby' : 'Salon'}</span>
                     </button>
                     <div id="match-hud" className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 overflow-hidden">
                         <HudScoreboard

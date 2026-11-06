@@ -93,7 +93,7 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                                 : 'bg-black/60 text-stone-300 border-white/10 hover:text-white hover:bg-white/10'
                         }`}
                     >
-                        <span className="shrink-0 whitespace-nowrap">{isFullFocusMode ? (isEn ? 'Exit Fullscreen (Key F)' : 'Quitter Plein Écran (Touche F)') : (isEn ? 'Pure Board Mode (Full Focus · Key F)' : 'Mode Échiquier Pur (Full Focus · Touche F)')}</span>
+                        <span className="shrink-0 whitespace-nowrap">{isFullFocusMode ? (isEn ? 'Exit Pure Board' : 'Quitter Mode Échiquier') : (isEn ? 'Pure Board Mode' : 'Mode Échiquier Pur')}</span>
                     </button>
                 </div>
                 <div className="shrink-0 whitespace-nowrap">

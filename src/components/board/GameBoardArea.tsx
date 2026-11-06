@@ -246,6 +246,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         onToggleTheme={onToggleTheme} onBackToLobby={onBackToLobby} canUndo={replay.isLive && game.canUndo}
                         onUndo={replay.isLive ? game.undoMove : NOOP} autoConfirmEnabled={game.autoConfirmTurn}
                         onToggleAutoConfirm={game.toggleAutoConfirmTurn} autoRollEnabled={autoRollEnabled} onToggleAutoRoll={handleToggleAutoRoll}
+                        locale={locale}
                     />
                 </div>
 

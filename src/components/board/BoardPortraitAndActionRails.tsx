@@ -204,14 +204,15 @@ export interface BoardRightActionRailProps {
     readonly canUndo?: boolean; readonly onUndo?: () => void;
     readonly autoConfirmEnabled?: boolean; readonly onToggleAutoConfirm?: () => void;
     readonly autoRollEnabled?: boolean; readonly onToggleAutoRoll?: () => void;
-    readonly isOnlinePvpMatch?: boolean;
+    readonly isOnlinePvpMatch?: boolean; readonly locale?: string;
 }
 
 export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.memo(({
     isBrowserFullscreen, isFocusFullBoard, onToggleFullscreen, onToggleCoach, onBackToLobby,
     canUndo = false, onUndo, autoConfirmEnabled = false, onToggleAutoConfirm,
-    autoRollEnabled = false, onToggleAutoRoll,
+    autoRollEnabled = false, onToggleAutoRoll, locale = 'fr',
 }) => {
+    const isEn = locale === 'en';
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const settingsRef = useRef<HTMLDivElement | null>(null);
     const { theme: activeTheme, setTheme } = useBoardTheme();
@@ -237,57 +238,57 @@ export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.m
     const btnBase = 'flex h-11 w-11 items-center justify-center rounded-xl border border-[#d4af37]/35 bg-[#120e0a] text-[#f3d27a] shadow-lg transition hover:border-[#d4af37] hover:bg-[#1c1610] active:scale-95';
 
     return (
-        <aside aria-label="Actions rapides de table" data-testid="board-right-action-rail" className="relative hidden md:flex [@media(max-height:540px)]:!hidden flex-col items-center justify-center gap-2.5 w-12 shrink-0 py-2 select-none">
+        <aside aria-label={isEn ? 'Quick table actions' : 'Actions rapides de table'} data-testid="board-right-action-rail" className="relative hidden md:flex [@media(max-height:540px)]:!hidden flex-col items-center justify-center gap-2.5 w-12 shrink-0 py-2 select-none">
             {canUndo && onUndo && (
-                <button type="button" data-testid="right-rail-undo-btn" onClick={onUndo} title="Annuler le dé joué (Ctrl+Z)" aria-label="Annuler le coup" className="flex h-11 w-11 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border border-amber-400/60 bg-amber-500/20 text-amber-200 font-bold text-sm shadow-lg transition hover:border-amber-300 hover:bg-amber-500/30 active:scale-95">↶</button>
+                <button type="button" data-testid="right-rail-undo-btn" onClick={onUndo} title={isEn ? 'Undo played die (Ctrl+Z)' : 'Annuler le dé joué (Ctrl+Z)'} aria-label={isEn ? 'Undo move' : 'Annuler le coup'} className="flex h-11 w-11 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border border-amber-400/60 bg-amber-500/20 text-amber-200 font-bold text-sm shadow-lg transition hover:border-amber-300 hover:bg-amber-500/30 active:scale-95">↶</button>
             )}
-            <button type="button" data-testid="board-fullscreen-toggle-btn" onClick={onToggleFullscreen} title={isBrowserFullscreen ? 'Quitter le plein écran' : 'Plein écran intégral'} aria-label="Basculer le plein écran" className={btnBase}>
+            <button type="button" data-testid="board-fullscreen-toggle-btn" onClick={onToggleFullscreen} title={isBrowserFullscreen ? (isEn ? 'Exit fullscreen' : 'Quitter le plein écran') : (isEn ? 'Fullscreen' : 'Plein écran intégral')} aria-label={isEn ? 'Toggle fullscreen' : 'Basculer le plein écran'} className={btnBase}>
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
             </button>
-            <button type="button" data-testid="board-focus-toggle-btn" onClick={onToggleCoach} title="Ouvrir ou masquer le Maître-Coach IA" aria-label="Ouvrir ou masquer le Coach IA" className={`flex h-11 w-11 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border transition active:scale-95 shadow-lg ${!isFocusFullBoard ? 'border-[#f5dfa0] bg-gradient-to-br from-[#d4af37] to-[#9a6f18] text-[#090806]' : 'border-[#d4af37]/35 bg-[#120e0a] text-[#f3d27a] hover:border-[#d4af37]'}`}>
+            <button type="button" data-testid="board-focus-toggle-btn" onClick={onToggleCoach} title={isEn ? 'Open or hide AI Coach' : 'Ouvrir ou masquer le Maître-Coach IA'} aria-label={isEn ? 'Toggle AI Coach' : 'Ouvrir ou masquer le Coach IA'} className={`flex h-11 w-11 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border transition active:scale-95 shadow-lg ${!isFocusFullBoard ? 'border-[#f5dfa0] bg-gradient-to-br from-[#d4af37] to-[#9a6f18] text-[#090806]' : 'border-[#d4af37]/35 bg-[#120e0a] text-[#f3d27a] hover:border-[#d4af37]'}`}>
                 <IconAstrolabeCoach className={!isFocusFullBoard ? 'text-[#090806]' : 'text-[#f3d27a]'} size={18} />
             </button>
             <div ref={settingsRef} className="relative">
-                <button type="button" data-testid="right-rail-settings-btn" onClick={() => setIsSettingsOpen((v) => !v)} title="Paramètres de table" aria-label="Paramètres de table" aria-expanded={isSettingsOpen} className={btnBase}>
+                <button type="button" data-testid="right-rail-settings-btn" onClick={() => setIsSettingsOpen((v) => !v)} title={isEn ? 'Table settings' : 'Paramètres de table'} aria-label={isEn ? 'Table settings' : 'Paramètres de table'} aria-expanded={isSettingsOpen} className={btnBase}>
                     <IconHorologyGear className="text-[#f3d27a]" size={17} />
                 </button>
                 {isSettingsOpen && (
                     <div data-testid="right-rail-settings-popover" className="absolute right-full mr-2 top-1/2 -translate-y-1/2 z-50 w-64 rounded-2xl border border-[#d4af37]/50 bg-[#0d0a08]/95 p-3 text-xs text-[#f7f3e8] shadow-[0_20px_50px_rgba(0,0,0,0.92)] backdrop-blur-md flex flex-col gap-2">
                         <div className="flex items-center justify-between pb-1 border-b border-white/10">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-[#f3c65f]">⚙️ Paramètres de Table</span>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-[#f3c65f]">{isEn ? '⚙️ Table Settings' : '⚙️ Paramètres de Table'}</span>
                             <button type="button" data-testid="right-rail-settings-close-btn" onClick={() => setIsSettingsOpen(false)} className="text-[11px] text-stone-400 hover:text-white px-1">✕</button>
                         </div>
                         {onToggleAutoConfirm && (
                             <button type="button" data-testid="right-rail-auto-confirm-toggle" onClick={onToggleAutoConfirm} className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                                <span>Validation auto des coups</span>
+                                <span>{isEn ? 'Auto-confirm moves' : 'Validation auto des coups'}</span>
                                 <span className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-black ${autoConfirmEnabled ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50' : 'bg-white/10 text-stone-300'}`}>{autoConfirmEnabled ? 'ON' : 'OFF'}</span>
                             </button>
                         )}
                         {onToggleAutoRoll && (
                             <button type="button" data-testid="right-rail-auto-roll-toggle" onClick={onToggleAutoRoll} className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                                <span>🎲 Lancer auto des dés</span>
+                                <span>{isEn ? '🎲 Auto-roll dice' : '🎲 Lancer auto des dés'}</span>
                                 <span className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[10px] font-black ${autoRollEnabled ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50' : 'bg-white/10 text-stone-300'}`}>{autoRollEnabled ? 'ON' : 'OFF'}</span>
                             </button>
                         )}
                         <div className="flex flex-col gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] p-2">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-stone-300">🎨 Tapis de Jeu (3 Couleurs)</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-stone-300">{isEn ? '🎨 Board Theme (3 Colors)' : '🎨 Tapis de Jeu (3 Couleurs)'}</span>
                             <div className="grid grid-cols-3 gap-1.5">
                                 {BOARD_SWATCH_OPTIONS.map((sw) => (
                                     <button key={sw.id} type="button" data-testid={`board-theme-swatch-${sw.id}`} onClick={() => setTheme(sw.id)} className={`flex flex-col items-center gap-1 rounded-lg border px-1.5 py-1.5 text-[10px] font-bold transition ${activeTheme === sw.id ? 'border-[#f3c65f] bg-[#d4af37]/20 text-white shadow' : 'border-white/10 bg-black/40 text-stone-300 hover:border-white/30'}`}>
                                         <span className={`h-4 w-7 rounded border ${sw.ringClass} shadow-inner`} style={{ backgroundColor: sw.bgHex }} />
-                                        <span className="truncate max-w-full">{sw.label}</span>
+                                        <span className="truncate max-w-full">{sw.id === 'snowie_classic' ? (isEn ? 'Emerald' : 'Émeraude') : sw.id === 'midnight' ? (isEn ? 'Midnight' : 'Bleu Nuit') : (isEn ? 'Tournament' : 'Havane')}</span>
                                     </button>
                                 ))}
                             </div>
                         </div>
                         <button type="button" onClick={() => { handleFlipDirection(); setIsSettingsOpen(false); }} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-semibold hover:border-[#d4af37]/50 transition">
-                            <span>⇄ Sens du plateau (1..24)</span><span className="text-[10px] text-[#f3d27a]">Inverser</span>
+                            <span>{isEn ? '⇄ Board Direction (1..24)' : '⇄ Sens du plateau (1..24)'}</span><span className="text-[10px] text-[#f3d27a]">{isEn ? 'Flip' : 'Inverser'}</span>
                         </button>
                     </div>
                 )}
             </div>
             {onBackToLobby && (
-                <button type="button" data-testid="right-rail-leave-btn" onClick={onBackToLobby} title="Quitter la table / Retour au Salon" aria-label="Retour au Salon" className="flex h-11 w-11 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border border-rose-500/35 bg-[#160b0b] text-rose-300 shadow-lg transition hover:border-rose-400 hover:bg-rose-950/60 active:scale-95">
+                <button type="button" data-testid="right-rail-leave-btn" onClick={onBackToLobby} title={isEn ? 'Leave table / Back to Lobby' : 'Quitter la table / Retour au Salon'} aria-label={isEn ? 'Back to Lobby' : 'Retour au Salon'} className="flex h-11 w-11 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border border-rose-500/35 bg-[#160b0b] text-rose-300 shadow-lg transition hover:border-rose-400 hover:bg-rose-950/60 active:scale-95">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
                 </button>
             )}
