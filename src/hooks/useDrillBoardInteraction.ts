@@ -120,3 +120,4 @@ export function useDrillBoardInteraction({
         handleResetCurrentAttempt, handlePlayMove, handleConfirmBoardMove, handleCheckerClick,
     };
 }
+

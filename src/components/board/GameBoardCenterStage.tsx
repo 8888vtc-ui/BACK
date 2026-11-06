@@ -255,3 +255,4 @@ export const GameBoardCenterStage: React.FC<GameBoardCenterStageProps> = React.m
 
 GameBoardCenterStage.displayName = 'GameBoardCenterStage';
 export default GameBoardCenterStage;
+

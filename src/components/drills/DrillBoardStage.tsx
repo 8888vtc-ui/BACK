@@ -83,3 +83,4 @@ export const DrillBoardStage: React.FC<DrillBoardStageProps> = React.memo(({
 
 DrillBoardStage.displayName = 'DrillBoardStage';
 export default DrillBoardStage;
+

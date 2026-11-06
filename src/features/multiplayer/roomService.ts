@@ -7,7 +7,7 @@
  * - Enregistrement atomique des coups avec trigger de séquençage
  * - Souscription Realtime hybride (Postgres Changes CDC + Presence + Broadcast)
  * - Fallback in-memory & BroadcastChannel résilient pour tests, hors-ligne et multi-onglets
- * Conforme à SCALABILITY.md (< 400 lignes, 0 any).
+ * Conforme à SCALABILITY.md (< 400 lignes, cible <= 330 lignes, 0 any).
  */
 
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/client';
@@ -25,8 +25,17 @@ import {
     fetchRoomActions as fetchRoomActionsInternal,
     type PushActionParams,
 } from './roomActionService';
+import {
+    mockRoomsRegistry,
+    mockSubscribers,
+    crossTabChannel,
+    notifyMockSubscribers,
+    normalizeRoomCode,
+    type MockSubscriber,
+    type RoomSubscriptionCallbacks,
+} from './roomServiceMemory';
 
-export type { ConcludeGameRoomParams, ConcludedRoomResult, PushActionParams };
+export type { ConcludeGameRoomParams, ConcludedRoomResult, PushActionParams, RoomSubscriptionCallbacks };
 
 export interface CreateRoomParams {
     host: PlayerEloProfile;
@@ -38,54 +47,6 @@ export interface CreateRoomParams {
 export interface JoinRoomParams {
     code: string;
     guest: PlayerEloProfile;
-}
-
-export interface RoomSubscriptionCallbacks {
-    onRoomStateChange: (room: GameRoomRecord) => void;
-    onActionReceived: (action: RoomActionRecord) => void;
-    onPresenceChange: (isOpponentOnline: boolean) => void;
-}
-
-// Registre Mock en mémoire pour tests & mode hors-ligne
-const mockRoomsRegistry = new Map<string, GameRoomRecord>();
-
-interface MockSubscriber {
-    roomId: string;
-    localUserId: string;
-    callbacks: RoomSubscriptionCallbacks;
-}
-
-const mockSubscribers = new Set<MockSubscriber>();
-
-function getBroadcastChannel(name: string): BroadcastChannel | null {
-    if (typeof globalThis !== 'undefined' && typeof globalThis.BroadcastChannel !== 'undefined') {
-        try {
-            return new globalThis.BroadcastChannel(name);
-        } catch {
-            return null;
-        }
-    }
-    return null;
-}
-
-const crossTabChannel = getBroadcastChannel('bg_rooms_sync');
-if (crossTabChannel) {
-    crossTabChannel.onmessage = (event: MessageEvent<GameRoomRecord>) => {
-        const room = event.data;
-        if (!room || !room.id) return;
-        mockRoomsRegistry.set(room.id, room);
-        if (room.code) mockRoomsRegistry.set(room.code.toUpperCase(), room);
-        notifyMockSubscribers(room);
-    };
-}
-
-function notifyMockSubscribers(room: GameRoomRecord): void {
-    for (const sub of mockSubscribers) {
-        if (sub.roomId === room.id) {
-            sub.callbacks.onRoomStateChange(room);
-            if (room.status === 'in_progress') sub.callbacks.onPresenceChange(true);
-        }
-    }
 }
 
 let roomCounter = 0;
@@ -105,19 +66,12 @@ export async function createGameRoom(params: CreateRoomParams): Promise<GameRoom
         room_type: roomType,
         status: 'waiting',
         match_length: matchLength,
-        host_id: host.isGuest ? null : host.id,
-        guest_id: null,
-        host_guest_token: host.isGuest ? host.id : null,
-        guest_guest_token: null,
-        player_x_id: host.isGuest ? null : host.id,
-        player_o_id: null,
-        player_x_name: host.displayName,
-        player_o_name: 'En attente...',
-        player_x_rating: host.rating,
-        player_o_rating: 1500,
-        board: initialBoard,
-        score_x: 0,
-        score_o: 0,
+        host_id: host.isGuest ? null : host.id, guest_id: null,
+        host_guest_token: host.isGuest ? host.id : null, guest_guest_token: null,
+        player_x_id: host.isGuest ? null : host.id, player_o_id: null,
+        player_x_name: host.displayName, player_o_name: 'En attente...',
+        player_x_rating: host.rating, player_o_rating: 1500,
+        board: initialBoard, score_x: 0, score_o: 0,
         turn: 'X', dice: null, used_dice: [false, false], cube_value: 1, cube_owner: null,
         doubling_offered_by: null, is_crawford: false, time_control_type: 'per_turn',
         time_limit_seconds: timeLimitSeconds, clock_x_ms: timeLimitSeconds * 1000, clock_o_ms: timeLimitSeconds * 1000,
@@ -136,25 +90,12 @@ export async function createGameRoom(params: CreateRoomParams): Promise<GameRoom
         const { data, error } = await supabase
             .from('game_rooms')
             .insert({
-                code: newRoom.code,
-                room_type: newRoom.room_type,
-                status: newRoom.status,
-                match_length: newRoom.match_length,
-                host_id: newRoom.host_id,
-                host_guest_token: newRoom.host_guest_token,
-                player_x_id: newRoom.player_x_id,
-                player_x_name: newRoom.player_x_name,
-                player_x_rating: newRoom.player_x_rating,
-                board: newRoom.board,
-                score_x: newRoom.score_x,
-                score_o: newRoom.score_o,
-                turn: newRoom.turn,
-                used_dice: newRoom.used_dice,
-                cube_value: newRoom.cube_value,
-                time_control_type: newRoom.time_control_type,
-                time_limit_seconds: newRoom.time_limit_seconds,
-                clock_x_ms: newRoom.clock_x_ms,
-                clock_o_ms: newRoom.clock_o_ms,
+                code: newRoom.code, room_type: newRoom.room_type, status: newRoom.status,
+                match_length: newRoom.match_length, host_id: newRoom.host_id, host_guest_token: newRoom.host_guest_token,
+                player_x_id: newRoom.player_x_id, player_x_name: newRoom.player_x_name, player_x_rating: newRoom.player_x_rating,
+                board: newRoom.board, score_x: newRoom.score_x, score_o: newRoom.score_o, turn: newRoom.turn,
+                used_dice: newRoom.used_dice, cube_value: newRoom.cube_value, time_control_type: newRoom.time_control_type,
+                time_limit_seconds: newRoom.time_limit_seconds, clock_x_ms: newRoom.clock_x_ms, clock_o_ms: newRoom.clock_o_ms,
             })
             .select('*')
             .single();
@@ -174,8 +115,7 @@ export async function createGameRoom(params: CreateRoomParams): Promise<GameRoom
  */
 export async function joinGameRoomByCode(params: JoinRoomParams): Promise<GameRoomRecord> {
     const { code, guest } = params;
-    let cleanCode = code.trim().toUpperCase().replace(/^BG_/, 'BG-');
-    if (!cleanCode.startsWith('BG-') && /^[2-9A-HJ-NP-Z]{4}$/i.test(cleanCode)) cleanCode = `BG-${cleanCode}`;
+    const cleanCode = normalizeRoomCode(code);
 
     if (!isSupabaseConfigured()) {
         const room = mockRoomsRegistry.get(cleanCode);
