@@ -1,52 +1,56 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Permanent Find a Player Matchmaking & Gate CTA Sublimation', () => {
-  test('Sidebar displays Find a Player with online counter and pulsing green dot', async ({ page }) => {
+test.describe('Beginner Left Sidebar Tailor & Single-Line Find a Player', () => {
+  test('Beginner sidebar shows single-line Find a Player, no bottom duplicate Invite, and tailored Beginner items', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
 
-    // Verify left sidebar exists
+    // Ensure we are in Beginner mode
+    const begTab = page.locator('[data-testid="tier-gate-btn-beginner"]').first();
+    await begTab.click();
+
     const sidebar = page.locator('[data-testid="lobby-left-sidebar"]');
     await expect(sidebar).toBeVisible();
 
-    // Verify Salon de Jeu
-    const quickPlayBtn = page.locator('[data-testid="sidebar-quick-play-btn"]');
-    await expect(quickPlayBtn).toBeVisible();
-
-    // Verify Trouver un joueur button directly in sidebar
+    // 1. Verify Trouver un joueur is on a single line (height <= 40px)
     const findPlayerBtn = page.locator('[data-testid="sidebar-find-player-btn"]');
     await expect(findPlayerBtn).toBeVisible();
     await expect(findPlayerBtn).toContainText(/Trouver un joueur|Find a Player/);
-    await expect(findPlayerBtn).toContainText(/en ligne|online/);
+    const box = await findPlayerBtn.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.height).toBeLessThanOrEqual(40);
 
-    // Verify Inviter un ami button
-    const inviteBtn = page.locator('[data-testid="sidebar-invite-friend-btn"]');
-    await expect(inviteBtn).toBeVisible();
-    await expect(inviteBtn).toContainText(/Inviter un ami|Invite a Friend/);
+    // 2. Verify bottom duplicate "Inviter des amis" is gone
+    await expect(page.locator('[data-testid="sidebar-submenu-friends"]')).toHaveCount(0);
 
-    // Switch to Intermediate Gate
+    // 3. Verify Beginner tailored entries under TABLES & ENTRAÎNEMENT
+    const guidedPlayBtn = page.locator('[data-testid="sidebar-guided-play-btn"]');
+    await expect(guidedPlayBtn).toBeVisible();
+    await expect(guidedPlayBtn).toContainText(/Partie Guidée|Guided Match/);
+
+    const initiationLink = page.locator('[data-testid="sidebar-my-quizzes-link"]');
+    await expect(initiationLink).toBeVisible();
+    await expect(initiationLink).toContainText(/Initiation \(10 Leçons\)|10-Lesson Initiation/);
+
+    const openingsBtn = page.locator('[data-testid="sidebar-beginner-openings-btn"]');
+    await expect(openingsBtn).toBeVisible();
+    await expect(openingsBtn).toContainText(/Les 15 Ouvertures|15 Opening Moves/);
+
+    const audioGuideBtn = page.locator('[data-testid="sidebar-beginner-audio-guide-btn"]');
+    await expect(audioGuideBtn).toBeVisible();
+    await expect(audioGuideBtn).toContainText(/Guide Audio|Audio Guide/);
+
+    const mistakesLink = page.locator('[data-testid="sidebar-my-blunders-link"]');
+    await expect(mistakesLink).toBeVisible();
+    await expect(mistakesLink).toContainText(/Mes Erreurs|My Mistakes/);
+
+    // Take screenshot of Beginner mode with clean single-line sidebar
+    await page.screenshot({ path: 'test-results/beginner-sidebar-clean-proof.png' });
+
+    // 4. Switch to Intermediate Gate and verify full training menu
     const interTab = page.locator('[data-testid="tier-gate-btn-intermediate"]').first();
     await interTab.click();
-
-    // Verify Gate 2 header & CTA
-    const interPortal = page.locator('[data-testid="intermediate-home-portal"]');
-    await expect(interPortal).toBeVisible();
-    await expect(interPortal).toContainText(/Matchmaking Club Actif 24\/7|24\/7 Club Matchmaking Active/);
-    const interPlayBtn = page.locator('[data-testid="intermediate-play-btn"]');
-    await expect(interPlayBtn).toContainText(/TROUVER UN JOUEUR EN LIGNE|FIND A PLAYER ONLINE/);
-
-    // Switch to Expert Gate
-    const expertTab = page.locator('[data-testid="tier-gate-btn-expert"]').first();
-    await expertTab.click();
-
-    // Verify Gate 3 header & CTA
-    const expertPortal = page.locator('[data-testid="expert-home-portal"]');
-    await expect(expertPortal).toBeVisible();
-    await expect(expertPortal).toContainText(/Matchmaking Tournoi Actif|Tournament Matchmaking Active/);
-    const expertPlayBtn = page.locator('[data-testid="expert-play-btn"]');
-    await expect(expertPlayBtn).toContainText(/TROUVER UN ADVERSAIRE|FIND AN OPPONENT/);
-
-    // Take screenshot for visual proof
-    await page.screenshot({ path: 'test-results/matchmaking-prominence-proof.png' });
+    await expect(page.locator('[data-testid="sidebar-pillar-studio"]')).toBeVisible();
+    await expect(page.locator('[data-testid="sidebar-pillar-academy"]')).toBeVisible();
   });
 });
