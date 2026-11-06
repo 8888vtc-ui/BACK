@@ -17,7 +17,7 @@ import { useInteractiveReplay } from '../../hooks/useInteractiveReplay';
 import { useFischerClock } from '../../hooks/useFischerClock';
 import { getRecommendedClockConfig } from '../../features/multiplayer/clockManager';
 import { BoardPortraitTopHud, BoardPortraitBottomHud } from './BoardSideRails';
-import CoachSidebar, { type CoachSidebarProps } from '../coach/CoachSidebar';
+import type { CoachState, MatchStats } from '../../hooks/useCoach';
 import GameBoardReplayControls from './GameBoardReplayControls';
 import GameBoardCenterStage from './GameBoardCenterStage';
 import MoveErrorPopToast from '../coach/MoveErrorPopToast';
@@ -29,13 +29,13 @@ export interface GameBoardAreaProps {
     activeCoachHighlight: CoachHighlight | null; onCheckerClick: (point: number) => void;
     onCheckerRightClick: (point: number) => void; onDestinationClick: (destination: number) => void;
     onPlayMove: (from: number, to: number, die?: 0 | 1) => void; onSelectDie: (die: 0 | 1) => void;
-    onDiceClick?: () => void; onDeselect: () => void; coach: CoachSidebarProps['coach'];
+    onDiceClick?: () => void; onDeselect: () => void; coach: CoachState | null;
     isAnalyzing: boolean; onDismissCoach: () => void; onReplayMove?: () => void;
     onOpenKnowledgeConcept?: (conceptId: string) => void; onBlunderClick?: () => void;
     onCandidateHover?: (notation: string | null) => void; turnsHistory?: unknown[];
     coachHistory?: ReadonlyArray<CoachAnalysisHistoryEntry>; selectedCoachHistoryIndex?: number | null;
     onSelectCoachHistoryIndex?: (index: number | null) => void; onTriggerCoach: () => void;
-    matchStats?: CoachSidebarProps['matchStats']; matchStatsO?: CoachSidebarProps['matchStatsO'];
+    matchStats?: MatchStats | null; matchStatsO?: MatchStats | null;
     prX?: number | null; prO?: number | null; lastMoveFeedback?: LastMoveFeedback | null;
     locale?: string; gameId: string; matchContext?: Partial<BuildMatchContextParams>;
     isMatchStarted?: boolean; playerColor?: 'X' | 'O'; onBackToLobby?: () => void;
@@ -169,15 +169,15 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     const isGuided = !isOnlinePvpMatch && Boolean(tierGate === 'BEGINNER' || game.difficulty === 'beginner');
 
     return (
-        <div className="w-full max-w-full h-full min-h-0 min-w-0 flex-1 overflow-hidden relative grid grid-cols-[minmax(0,1fr)] lg:grid-cols-12 gap-1 sm:gap-3 [@media(max-height:500px)]:!gap-0 max-w-[1920px] mx-auto px-0 sm:px-2 pb-0.5 sm:pb-1 [@media(max-height:500px)]:!p-0">
+        <div className="w-full max-w-full h-full min-h-0 min-w-0 flex-1 overflow-hidden relative flex flex-col items-center justify-center max-w-[1920px] mx-auto px-0 sm:px-2 pb-0.5 sm:pb-1 [@media(max-height:500px)]:!p-0">
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-0" style={{ background: 'radial-gradient(ellipse 72% 60% at 50% 45%, rgba(245, 196, 81, 0.10) 0%, rgba(16, 185, 129, 0.04) 42%, rgba(0, 0, 0, 0.55) 100%)' }} />
 
-            <div data-testid="board-main-column" className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 max-w-full flex flex-col items-center justify-center gap-0 overflow-hidden w-full relative z-10 transition-all duration-200`}>
+            <div data-testid="board-main-column" className="w-full h-full min-h-0 min-w-0 max-w-full flex flex-col items-center justify-center gap-0 overflow-hidden relative z-10 transition-all duration-200">
                 {!isOnlinePvpMatch && (
                     <MoveErrorPopToast
                         feedback={lastMoveFeedback} boardBefore={lastMoveFeedback?.boardBefore ?? displayCoach?.boardBefore}
                         boardAfter={lastMoveFeedback?.boardAfter ?? game.state.board} onReplayMove={handleSyncedReplayMove}
-                        onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }} isBeginner={isGuided}
+                        onOpenCoach={() => { onTriggerCoach(); }} isBeginner={isGuided}
                     />
                 )}
 
@@ -191,10 +191,10 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                 <GameBoardCenterStage
                     isOnlinePvpMatch={isOnlinePvpMatch} game={game} effectiveTurnsCount={effectiveTurns.length}
                     displayCoach={displayCoach} displayState={displayState} onSyncedReplayMove={handleSyncedReplayMove}
-                    onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }} locale={locale}
+                    onOpenCoach={() => { onTriggerCoach(); }} locale={locale}
                     isGuided={isGuided} isXTurn={isXTurn} clock={clock} activeDelaySeconds={activeDelaySeconds}
                     prX={prX} prO={prO} challengerProfile={challengerProfile} onSendQuickChat={onSendQuickChat}
-                    isBrowserFullscreen={isBrowserFullscreen} isFocusFullBoard={isFocusFullBoard}
+                    isBrowserFullscreen={isBrowserFullscreen} isFocusFullBoard={true}
                     onToggleFullscreen={handleToggleBrowserFullscreen} onToggleTheme={onToggleTheme}
                     onBackToLobby={onBackToLobby} replayIsLive={replay.isLive} autoRollEnabled={autoRollEnabled}
                     onToggleAutoRoll={handleToggleAutoRoll} activeDie={activeDie} previewBoardMode={previewBoardMode}
@@ -226,27 +226,6 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     onTriggerGhostChallenge={(turnIdx) => { game.rewindToLogTurn?.(turnIdx); replay.returnToLive(); setPreviewBoardMode('live'); onSelectCoachHistoryIndex?.(null); onDismissCoach(); }}
                     onReturnToLive={() => { setPreviewBoardMode('live'); replay.returnToLive(); }}
                     locale={locale}
-                />
-            </div>
-
-            <div data-testid="board-coach-column" className={`${isFocusFullBoard ? 'hidden' : 'hidden lg:flex lg:col-span-4'} h-full min-h-0 min-w-0 overflow-hidden relative z-10`}>
-                <CoachSidebar
-                    coach={displayCoach} isAnalyzing={isAnalyzing}
-                    onDismiss={() => { onDismissCoach(); setIsFocusFullBoard(true); }}
-                    onReplayMove={handleSyncedReplayMove} onOpenKnowledgeConcept={onOpenKnowledgeConcept} onBlunderClick={onBlunderClick}
-                    onCandidateHover={(notation) => {
-                        if (notation) setPreviewBoardMode('before');
-                        else if (selectedCoachHistoryIndex === null) setPreviewBoardMode('live');
-                        onCandidateHover?.(notation);
-                    }}
-                    turnsHistory={turnsHistory} onTriggerCoach={onTriggerCoach} theme={theme}
-                    matchStats={matchStats} matchStatsO={matchStatsO} locale={locale}
-                    coachHistory={coachHistory} selectedCoachHistoryIndex={selectedCoachHistoryIndex} onSelectCoachHistoryIndex={onSelectCoachHistoryIndex}
-                    matchContext={matchContext} positionKey={displayState.board.join(',')} gameId={gameId}
-                    dice={displayState.dice} board={displayState.board} difficulty={game.difficulty}
-                    isOnlinePvpMatch={isOnlinePvpMatch} challengerProfile={challengerProfile}
-                    onSendQuickChat={onSendQuickChat} scoreX={game.state.scoreX} scoreO={game.state.scoreO}
-                    matchLength={game.state.matchLength} prX={prX} prO={prO}
                 />
             </div>
         </div>

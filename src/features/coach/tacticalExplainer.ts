@@ -222,8 +222,8 @@ export function buildBiLevelCoachMicroCopy(params: {
     const headerBadge = isBrilliantMove
         ? isEn ? 'Brilliant Move (+11% win)' : 'Coup Brillant (+11 % de victoire)'
         : absLoss <= 0.020 ? (isEn ? 'Best Move (+1% win)' : 'Coup Optimal')
-        : absLoss < 0.080 ? (isEn ? `Inaccuracy (-${winPctDelta}% win)` : `Imprécision (-${winPctDelta} % de victoire)`)
-        : isEn ? `Blunder (-${winPctDelta}% win)` : `Gaffe (-${winPctDelta} % de victoire)`;
+            : absLoss < 0.080 ? (isEn ? `Inaccuracy (-${winPctDelta}% win)` : `Imprécision (-${winPctDelta} % de victoire)`)
+                : isEn ? `Blunder (-${winPctDelta}% win)` : `Gaffe (-${winPctDelta} % de victoire)`;
 
     const conceptLower = (keyConcept ?? '').toLowerCase();
     const pld = playedMoveNotation ?? (isEn ? 'this move' : 'ce coup');

@@ -53,7 +53,7 @@ describe('GameBoardArea Component', () => {
         return renderToStaticMarkup(<GameBoardArea {...defaultProps} {...overrides} />);
     }
 
-    it('renders board boundary and coach sidebar', () => {
+    it('renders board boundary and frees right space (zero coach-panel on board)', () => {
         const html = renderArea({
             coach: {
                 verdict: 'blunder',
@@ -64,7 +64,7 @@ describe('GameBoardArea Component', () => {
             },
         });
         expect(html).toContain('id="backgammon-board"');
-        expect(html).toContain('id="coach-panel"');
+        expect(html).not.toContain('id="coach-panel"');
     });
 
     it('positionne le videau au centre quand cubeOwner est null', () => {
@@ -113,18 +113,14 @@ describe('GameBoardArea Component', () => {
         expect(html).not.toContain('data-testid="board-move-timeline"');
     });
 
-    it('Chantier 2 : réserve toujours la colonne latérale lg:col-span-4 et affiche l état d accueil Cercle Monte-Carlo même quand coach est null', () => {
+    it('Prompt 21 : le plateau occupe 100% de la largeur sans colonne Coach latérale', () => {
         const html = renderArea();
-        expect(html).toContain('lg:col-span-12');
+        expect(html).toContain('data-testid="board-main-column"');
         expect(html).toContain('data-testid="board-focus-toggle-btn"');
         expect(html).toContain('data-testid="board-fullscreen-toggle-btn"');
         expect(html).toContain('data-testid="board-bot-speech-bubble"');
-        expect(html).toContain('id="coach-panel"');
-        expect(html).toContain('data-testid="coach-idle-welcome-card"');
-        expect(html).toContain('Cercle Monte-Carlo');
-        expect(html).toContain('Pip count');
-        expect(html).toContain('Plan de jeu');
-        expect(html).toContain('Historique');
+        expect(html).not.toContain('id="coach-panel"');
+        expect(html).not.toContain('data-testid="board-coach-column"');
     });
 
     it('Chantier 2 : éradique le PipCountBadge redondant au bas du plateau pour maximiser la hauteur du tapis', () => {
@@ -132,7 +128,7 @@ describe('GameBoardArea Component', () => {
         expect(html).not.toContain('data-testid="pip-count-bar"');
     });
 
-    it('Pilier B : garantit la stabilité géométrique 100 % (lg:col-span-8, wrapper shrink-0 h-8) sans saut de layout au 1er coup joué ni quand le Coach s ouvre', () => {
+    it('Pilier B : garantit la stabilité géométrique 100 % plein écran sans colonne parasite au 1er coup joué', () => {
         const htmlTurn0 = renderArea({ turnsHistory: [] });
         const htmlTurn1 = renderArea({
             game: {
@@ -157,10 +153,10 @@ describe('GameBoardArea Component', () => {
             },
         });
 
-        expect(htmlTurn0).toContain('lg:col-span-12');
-        expect(htmlTurn1).toContain('lg:col-span-12');
-        expect(htmlTurn0).toContain('shrink-0 h-8');
-        expect(htmlTurn1).toContain('shrink-0 h-8');
+        expect(htmlTurn0).toContain('data-testid="board-main-column"');
+        expect(htmlTurn1).toContain('data-testid="board-main-column"');
+        expect(htmlTurn0).not.toContain('data-testid="board-coach-column"');
+        expect(htmlTurn1).not.toContain('data-testid="board-coach-column"');
         expect(htmlTurn0).not.toContain('data-testid="pip-count-bar"');
         expect(htmlTurn1).not.toContain('data-testid="pip-count-bar"');
     });

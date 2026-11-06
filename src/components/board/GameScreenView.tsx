@@ -29,52 +29,24 @@ import type { CoachAnalysisHistoryEntry, LastMoveFeedback } from '../../hooks/us
 import type { CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
 
 export interface GameScreenViewProps {
-    ambianceClass: string;
-    t: (key: string) => string;
-    locale: string;
-    theme: ThemeName;
-    onToggleTheme: () => void;
-    game: UseBackgammonGameReturn;
-    isMultiplayerActive: boolean;
-    multiplayer: ReturnType<typeof useMultiplayerGame>;
-    modals: ReturnType<typeof useGameModals>;
-    coach: CoachSidebarProps['coach'];
-    coachHighlight: CoachHighlight | null;
-    isAnalyzing: boolean;
-    matchStats: CoachSidebarProps['matchStats'];
-    matchStatsO: CoachSidebarProps['matchStatsO'];
-    prX: number | null;
-    prO: number | null;
-    hoveredCandidate: string | null;
-    onCandidateHover: (notation: string | null) => void;
-    onDismissCoach: () => void;
-    onReplayMove: () => void;
-    onTriggerCoach: () => void;
+    ambianceClass: string; t: (key: string) => string; locale: string; theme: ThemeName;
+    onToggleTheme: () => void; game: UseBackgammonGameReturn; isMultiplayerActive: boolean;
+    multiplayer: ReturnType<typeof useMultiplayerGame>; modals: ReturnType<typeof useGameModals>;
+    coach: CoachSidebarProps['coach']; coachHighlight: CoachHighlight | null; isAnalyzing: boolean;
+    matchStats: CoachSidebarProps['matchStats']; matchStatsO: CoachSidebarProps['matchStatsO'];
+    prX: number | null; prO: number | null; hoveredCandidate: string | null;
+    onCandidateHover: (notation: string | null) => void; onDismissCoach: () => void;
+    onReplayMove: () => void; onTriggerCoach: () => void;
     coachHistory?: ReadonlyArray<CoachAnalysisHistoryEntry>;
-    selectedCoachHistoryIndex?: number | null;
-    onSelectCoachHistoryIndex?: (index: number | null) => void;
-    lastMoveFeedback?: LastMoveFeedback | null;
-    notificationLevel?: CoachNotificationLevel;
-    onChangeNotificationLevel?: (level: CoachNotificationLevel) => void;
-    activeDie: 0 | 1;
-    isBoardLoading: boolean;
-    onCheckerClick: (point: number) => void;
-    onCheckerRightClick: (point: number) => void;
-    onDestinationClick: (point: number) => void;
-    onPlayMove: (from: number, to: number, die?: 0 | 1) => void;
-    onSelectDie: (die: 0 | 1) => void;
-    onDiceClick: () => void;
-    onDeselect: () => void;
-    turnsCount: number;
-    onBackToLobby: () => void;
-    latestGameAnalysis: CompleteGameAnalysis | null;
-    turnsHistory: RawGameTurn[];
-    openingEntry: OpeningEntry | null;
-    onApplyOpeningMove: () => void;
-    onResetGameHistory: () => void;
-    gameId: string;
-    playerColor?: 'X' | 'O';
-    isOnlineMatch?: boolean;
+    selectedCoachHistoryIndex?: number | null; onSelectCoachHistoryIndex?: (index: number | null) => void;
+    lastMoveFeedback?: LastMoveFeedback | null; notificationLevel?: CoachNotificationLevel;
+    onChangeNotificationLevel?: (level: CoachNotificationLevel) => void; activeDie: 0 | 1;
+    isBoardLoading: boolean; onCheckerClick: (point: number) => void; onCheckerRightClick: (point: number) => void;
+    onDestinationClick: (point: number) => void; onPlayMove: (from: number, to: number, die?: 0 | 1) => void;
+    onSelectDie: (die: 0 | 1) => void; onDiceClick: () => void; onDeselect: () => void;
+    turnsCount: number; onBackToLobby: () => void; latestGameAnalysis: CompleteGameAnalysis | null;
+    turnsHistory: RawGameTurn[]; openingEntry: OpeningEntry | null; onApplyOpeningMove: () => void;
+    onResetGameHistory: () => void; gameId: string; playerColor?: 'X' | 'O'; isOnlineMatch?: boolean;
 }
 
 const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
@@ -99,6 +71,27 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     const tilt = useTiltDetector({ windowSize: 6 });
     const lastRecordedFeedbackRef = useRef<LastMoveFeedback | null>(null);
     const lastAutoCoachRollKey = useRef<string>('');
+
+    const handleToggleFullFocusMode = useCallback(() => {
+        setIsFullFocusMode((prev) => {
+            const next = !prev;
+            if (typeof document !== 'undefined') {
+                if (next && !document.fullscreenElement) {
+                    document.documentElement.requestFullscreen?.().catch(() => {});
+                } else if (!next && document.fullscreenElement) {
+                    document.exitFullscreen?.().catch(() => {});
+                }
+            }
+            return next;
+        });
+    }, []);
+
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+        const onFsChange = () => setIsFullFocusMode(Boolean(document.fullscreenElement));
+        document.addEventListener('fullscreenchange', onFsChange);
+        return () => document.removeEventListener('fullscreenchange', onFsChange);
+    }, []);
 
     useEffect(() => { setShowGuidedArrows(true); }, [game.dice?.[0], game.dice?.[1], game.state.turn]);
 
@@ -181,17 +174,30 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
             data-testid="app-game-view"
             className={`mobile-game-viewport-lock landscape-full-bleed h-dvh max-h-dvh w-full max-w-[100vw] flex flex-col overflow-hidden p-0 sm:p-2 [@media(max-height:500px)]:!p-[2px] select-none transition-colors duration-500 ${ambianceClass}`}
         >
-            <GameScreenTopBar
-                isFullFocusMode={isFullFocusMode}
-                onToggleFullFocusMode={() => setIsFullFocusMode((prev) => !prev)}
-                t={t} theme={theme} onToggleTheme={onToggleTheme} game={game}
-                isMultiplayerActive={isMultiplayerActive} isOnlinePvpMatch={isOnlinePvpMatch}
-                multiplayer={multiplayer} modals={modals}
-                onTriggerCoach={onTriggerCoach} turnsCount={turnsCount} prX={prX} prO={prO}
-                onBackToLobby={onBackToLobby} playerColor={playerColor} lastMoveFeedback={isOnlinePvpMatch ? null : lastMoveFeedback}
-                notificationLevel={notificationLevel} onChangeNotificationLevel={onChangeNotificationLevel}
-                quotaBadge={quotaBadge} isVip={quota.isVip}
-            />
+            {!isFullFocusMode && (
+                <GameScreenTopBar
+                    isFullFocusMode={isFullFocusMode}
+                    onToggleFullFocusMode={handleToggleFullFocusMode}
+                    t={t} theme={theme} onToggleTheme={onToggleTheme} game={game}
+                    isMultiplayerActive={isMultiplayerActive} isOnlinePvpMatch={isOnlinePvpMatch}
+                    multiplayer={multiplayer} modals={modals}
+                    onTriggerCoach={onTriggerCoach} turnsCount={turnsCount} prX={prX} prO={prO}
+                    onBackToLobby={onBackToLobby} playerColor={playerColor} lastMoveFeedback={isOnlinePvpMatch ? null : lastMoveFeedback}
+                    notificationLevel={notificationLevel} onChangeNotificationLevel={onChangeNotificationLevel}
+                    quotaBadge={quotaBadge} isVip={quota.isVip}
+                />
+            )}
+
+            {isFullFocusMode && (
+                <button
+                    type="button"
+                    data-testid="exit-pure-board-floating-btn"
+                    onClick={handleToggleFullFocusMode}
+                    className="fixed top-2 left-2 z-50 rounded-lg border border-[#D4AF37]/50 bg-black/85 px-3 py-1.5 text-xs font-bold text-[#F3E5AB] backdrop-blur-md shadow-2xl hover:bg-black active:scale-95 transition"
+                >
+                    ✕ Quitter Plein Écran
+                </button>
+            )}
 
             {Boolean(multiplayer.privateRoomCode && !multiplayer.opponentProfile && multiplayer.status === 'searching') && (
                 <div className="w-full px-2 pt-1">
