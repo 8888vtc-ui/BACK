@@ -191,7 +191,7 @@ export function evaluateSwapDiceCounterfactual(
     const mwcAfter = Math.round(decisiveTurn?.mwcAfter ?? 41);
 
     const ahaHeadlineFr = botStillWins
-        ? `Même en inversant les dés (Swap Dice), le Bot aurait gagné dans ${rawProb} % des cas en raison d’un coup critique au Tour ${turnNum} où vous avez abandonné -${turnLoss} d’équité (chute de ${mwcBefore} % à ${mwcAfter} % de chances de gain).`
+        ? `Même en inversant les dés (Swap Dice), l'adversaire aurait gagné dans ${rawProb} % des cas en raison d’un coup critique au Tour ${turnNum} où vous avez abandonné -${turnLoss} d’équité (chute de ${mwcBefore} % à ${mwcAfter} % de chances de gain).`
         : `En inversant les dés (Swap Dice), vous auriez renversé la manche dans ${100 - rawProb} % des cas, malgré l’imprécision du Tour ${turnNum} (-${turnLoss} d’équité).`;
 
     const karmaClipActs: readonly [KarmaClipAct, KarmaClipAct, KarmaClipAct] = [
@@ -199,21 +199,21 @@ export function evaluateSwapDiceCounterfactual(
             actNumber: 1,
             timeRange: '0–5s',
             titleFr: 'Acte 1 · La Rage',
-            descriptionFr: 'Le jet décisif adverse tombe et la réplique du Bot s’affiche sur le tablier.',
+            descriptionFr: 'Le jet décisif adverse tombe et la réplique de l\'adversaire s’affiche sur le tablier.',
         },
         {
             actNumber: 2,
             timeRange: '5–10s',
             titleFr: 'Acte 2 · Le Swap Dice',
-            descriptionFr: 'Inversion rétroactive des dés entre le joueur et le Bot avec recalcul local.',
+            descriptionFr: 'Inversion rétroactive des dés entre le joueur et l\'adversaire avec recalcul local.',
         },
         {
             actNumber: 3,
             timeRange: '10–15s',
             titleFr: 'Acte 3 · Le Verdict Karma',
             descriptionFr: botStillWins
-                ? `Le Bot l’emporte quand même (${rawProb} %) : le Tour ${turnNum} (-${turnLoss} Eq) avait scellé la position.`
-                : `Retournement complet : avec les dés du Bot, votre structure l’emporte !`,
+                ? `L'adversaire l’emporte quand même (${rawProb} %) : le Tour ${turnNum} (-${turnLoss} Eq) avait scellé la position.`
+                : `Retournement complet : avec les dés de l'adversaire, votre structure l’emporte !`,
         },
     ];
 

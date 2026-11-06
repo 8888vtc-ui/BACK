@@ -304,7 +304,7 @@ export interface MuskBotOrchestrationDecision {
     readonly showKarmaSwapCta: boolean;
     readonly shouldPrewarmKarmaClip: boolean;
     readonly showOneTapReplayCta: boolean;
-    readonly quickReplyPills: readonly ('⚡ Karma Swap !' | '🎲 Dés truqués ?' | '🤫 Regarde ce coup')[];
+    readonly quickReplyPills: readonly ('⚡ Karma Swap !' | '🎲 Quelle chance !' | '🤫 Regarde ce coup')[];
     readonly parsedMessage: ParsedBotResponse | null;
 }
 
@@ -354,7 +354,7 @@ export function resolveMuskBotOrchestration(params: {
             showKarmaSwapCta: true,
             shouldPrewarmKarmaClip: true,
             showOneTapReplayCta: false,
-            quickReplyPills: ['⚡ Karma Swap !', '🎲 Dés truqués ?', '🤫 Regarde ce coup'],
+            quickReplyPills: ['⚡ Karma Swap !', '🎲 Quelle chance !', '🤫 Regarde ce coup'],
             parsedMessage: parseBotTaggedResponse(raw),
         };
     }
@@ -374,7 +374,7 @@ export function resolveMuskBotOrchestration(params: {
                 showKarmaSwapCta: false,
                 shouldPrewarmKarmaClip: false,
                 showOneTapReplayCta: true,
-                quickReplyPills: ['🤫 Regarde ce coup', '🎲 Dés truqués ?'],
+                quickReplyPills: ['🤫 Regarde ce coup', '🎲 Quelle chance !'],
                 parsedMessage: tutor.parsed,
             };
         }

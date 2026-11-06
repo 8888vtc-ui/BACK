@@ -270,12 +270,14 @@ export function buildSilentTutorBotLuckExplanation(params: {
     readonly boardAfterBotMove: ReadonlyArray<number>;
     readonly botPlayer?: Player;
     readonly locale?: string;
+    readonly opponentName?: string;
 }): string | null {
-    const { boardBeforeBotRoll, boardAfterBotMove, botPlayer = 'O', locale = 'fr' } = params;
+    const { boardBeforeBotRoll, boardAfterBotMove, botPlayer = 'O', locale = 'fr', opponentName } = params;
     if (countHomePoints(boardAfterBotMove, botPlayer) <= countHomePoints(boardBeforeBotRoll, botPlayer)) return null;
     const preparedCoverRolls = countConstructiveCoverRolls36(boardBeforeBotRoll, botPlayer);
     if (preparedCoverRolls < 10) return null;
+    const opp = opponentName || (locale === 'en' ? 'the opponent' : "l'adversaire");
     return locale === 'en'
-        ? `Well prepared: thanks to its reserve checkers, the bot had ${preparedCoverRolls} rolls out of 36 to cover this point!`
-        : `Bien préparé : grâce à la position de ses pions de réserve, le bot avait ${preparedCoverRolls} lancers sur 36 pour couvrir cette case !`;
+        ? `Well prepared: thanks to reserve checkers, ${opp} had ${preparedCoverRolls} rolls out of 36 to cover this point!`
+        : `Bien préparé : grâce à la position de ses pions de réserve, ${opp} avait ${preparedCoverRolls} lancers sur 36 pour couvrir cette case !`;
 }

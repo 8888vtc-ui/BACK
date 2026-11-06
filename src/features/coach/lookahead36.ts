@@ -383,8 +383,8 @@ export function explainBotApparentLuck36(
     return {
         constructiveRolls36: rolls36,
         shouldDisplayTutorBubble,
-        messageFR: `Bien préparé : grâce à la position de ses pions de réserve, le bot avait ${rolls36} lancers sur 36 pour couvrir la case ${ptLabel} !`,
-        messageEN: `Well prepared: thanks to its spare builders, the bot had ${rolls36} rolls out of 36 to cover point ${ptLabel}!`,
+        messageFR: `Bien préparé : grâce à la position de ses pions de réserve, l'adversaire avait ${rolls36} lancers sur 36 pour couvrir la case ${ptLabel} !`,
+        messageEN: `Well prepared: thanks to its spare builders, the opponent had ${rolls36} rolls out of 36 to cover point ${ptLabel}!`,
     };
 }
 

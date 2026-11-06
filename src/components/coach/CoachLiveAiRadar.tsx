@@ -121,7 +121,7 @@ const CoachLiveAiRadarComponent: React.FC<CoachLiveAiRadarProps> = ({
                 <div className="flex items-center gap-1.5">
                     <span aria-hidden="true">📡</span>
                     <span className="font-bold uppercase tracking-wider text-xs text-[#f3c65f]">
-                        {isEn ? 'Live AI Radar (Trice / Magriel / GTO)' : 'Radar Temps Réel vs IA'}
+                        {isEn ? 'Tactical Radar (Trice / Magriel / GTO)' : 'Radar Tactique (Trice / Magriel / GTO)'}
                     </span>
                 </div>
                 {onReplayMove && (
