@@ -118,7 +118,7 @@ describe('Human Persona 300 Authenticity & Coach Isolation Audit', () => {
 
     // 3. Cadencement humain HumanThinkingDelay par complexité
     it('HumanThinkingDelay respecte les bornes temporelles selon la complexité de la position (forcé vs course vs contact complexe)', () => {
-        const contexts = ['forced_move', 'simple_race', 'complex_contact', 'cube_decision', 'dice_roll', 'matchmaking'] as const;
+        const contexts = ['forced_move', 'opening_move', 'simple_race', 'complex_contact', 'cube_decision', 'dice_roll', 'matchmaking'] as const;
 
         for (const ctx of contexts) {
             const minDelay = computeHumanThinkingDelay(ctx, () => 0.0);
@@ -131,18 +131,23 @@ describe('Human Persona 300 Authenticity & Coach Isolation Audit', () => {
             expect(midDelay.selectedMs).toBeLessThanOrEqual(maxDelay.maxMs);
 
             // Vérification des bornes métier précises
-            if (ctx === 'forced_move') {
-                expect(minDelay.minMs).toBeGreaterThanOrEqual(800);
-                expect(maxDelay.maxMs).toBeLessThanOrEqual(1400);
+            if (ctx === 'forced_move' || ctx === 'opening_move') {
+                expect(minDelay.minMs).toBe(400);
+                expect(maxDelay.maxMs).toBe(800);
             } else if (ctx === 'simple_race') {
-                expect(minDelay.minMs).toBeGreaterThanOrEqual(1400);
-                expect(maxDelay.maxMs).toBeLessThanOrEqual(2600);
+                expect(minDelay.minMs).toBe(1000);
+                expect(maxDelay.maxMs).toBe(2200);
             } else if (ctx === 'complex_contact') {
-                expect(minDelay.minMs).toBeGreaterThanOrEqual(3200);
-                expect(maxDelay.maxMs).toBeLessThanOrEqual(6800);
+                expect(minDelay.minMs).toBe(1500);
+                expect(maxDelay.maxMs).toBe(3500);
             } else if (ctx === 'cube_decision') {
-                expect(minDelay.minMs).toBeGreaterThanOrEqual(3500);
-                expect(maxDelay.maxMs).toBeLessThanOrEqual(7500);
+                expect(minDelay.minMs).toBe(1500);
+                expect(maxDelay.maxMs).toBe(3500);
+            }
+
+            // Aucun délai de jeu en cours ne dépasse 4s (4000ms)
+            if (ctx !== 'matchmaking') {
+                expect(maxDelay.maxMs).toBeLessThanOrEqual(4000);
             }
         }
 
@@ -150,6 +155,7 @@ describe('Human Persona 300 Authenticity & Coach Isolation Audit', () => {
         expect(resolveMoveThinkingContext({ legalMoveCount: 1, isContact: true, closeDecisionsCount: 0 })).toBe('forced_move');
         expect(resolveMoveThinkingContext({ legalMoveCount: 14, isContact: true, closeDecisionsCount: 3 })).toBe('complex_contact');
         expect(resolveMoveThinkingContext({ legalMoveCount: 6, isContact: false, closeDecisionsCount: 1 })).toBe('simple_race');
+        expect(resolveMoveThinkingContext({ legalMoveCount: 15, isContact: true, closeDecisionsCount: 2, isOpening: true })).toBe('opening_move');
     });
 
     // 4. Isolation stricte du Coach : 0 analyse d'erreur sur le tour de l'adversaire

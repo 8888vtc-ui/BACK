@@ -136,11 +136,12 @@ describe('HumanPersonaPool — 300 Profils Humains Naturels, Calibration bgsage 
     it('respecte toutes les bornes temporelles de HumanThinkingDelay et le plafond de 30 % du Micro-Chat', () => {
         const bounds: Array<[Parameters<typeof computeHumanThinkingDelay>[0], number, number]> = [
             ['matchmaking', 3500, 8500],
-            ['dice_roll', 600, 1500],
-            ['forced_move', 800, 1400],
-            ['simple_race', 1400, 2600],
-            ['complex_contact', 3200, 6800],
-            ['cube_decision', 3500, 7500],
+            ['dice_roll', 400, 1000],
+            ['forced_move', 400, 800],
+            ['opening_move', 400, 800],
+            ['simple_race', 1000, 2200],
+            ['complex_contact', 1500, 3500],
+            ['cube_decision', 1500, 3500],
         ];
 
         for (const [ctx, minMs, maxMs] of bounds) {
@@ -150,11 +151,15 @@ describe('HumanPersonaPool — 300 Profils Humains Naturels, Calibration bgsage 
             expect(low.maxMs).toBe(maxMs);
             expect(low.selectedMs).toBe(minMs);
             expect(high.selectedMs).toBe(maxMs);
+            if (ctx !== 'matchmaking') {
+                expect(high.maxMs).toBeLessThanOrEqual(4000);
+            }
         }
 
         expect(resolveMoveThinkingContext({ legalMoveCount: 1, isContact: true, closeDecisionsCount: 0 })).toBe('forced_move');
         expect(resolveMoveThinkingContext({ legalMoveCount: 12, isContact: true, closeDecisionsCount: 3 })).toBe('complex_contact');
         expect(resolveMoveThinkingContext({ legalMoveCount: 5, isContact: false, closeDecisionsCount: 1 })).toBe('simple_race');
+        expect(resolveMoveThinkingContext({ legalMoveCount: 15, isContact: true, closeDecisionsCount: 2, isOpening: true })).toBe('opening_move');
 
         // Micro-Chat : déclenché uniquement si roll < 0.30 (≤ 30 % des parties)
         expect(maybePickHumanMicroChatGreeting(() => 0.30)).toBeNull();

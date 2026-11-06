@@ -3,6 +3,37 @@ import type { AIDifficulty } from '../../engine/aiHeuristics';
 import { selectBotMoveWithBgsage } from '../../lib/engine/bgsageClient';
 import { findOpeningBookSequenceForOpponent, isInitialBoardPosition } from '../../features/openings';
 import { recordBotMoveEquityLoss } from '../../features/personas/botRealPr';
+import {
+    computeHumanThinkingDelay,
+    resolveMoveThinkingContext,
+    HUMAN_BLUNDER_CAP_EMG,
+    type HumanThinkingDelay,
+} from '../../features/personas/humanPersonaPool';
+
+/**
+ * Calcule le délai de réflexion humain pour l'adversaire selon la complexité du coup :
+ * - Coup forcé ou ouverture évidente (ex: 24/13 sur 6-5) : 400–800 ms.
+ * - Course simple : 1000–2200 ms.
+ * - Position de contact complexe : 1500–3500 ms (sans jamais dépasser 4000 ms).
+ */
+export function computeOpponentThinkingDelay(params: {
+    readonly legalMoveCount: number;
+    readonly isContact: boolean;
+    readonly closeDecisionsCount: number;
+    readonly isOpening?: boolean;
+    readonly uniformFn?: () => number;
+}): HumanThinkingDelay {
+    const context = resolveMoveThinkingContext(params);
+    return computeHumanThinkingDelay(context, params.uniformFn);
+}
+
+/**
+ * Retourne le plafond strict DeltaMax (EMG) pour la sélection de coup bgsage de l'adversaire.
+ * Garantit qu'aucun adversaire de club ne joue jamais un coup absurde (Règle Métier).
+ */
+export function getOpponentBlunderCap(difficulty: AIDifficulty): number {
+    return HUMAN_BLUNDER_CAP_EMG[difficulty] ?? 0.035;
+}
 
 /**
  * Sélection du coup du bot — OPEN SAGE UNIQUEMENT (décision du 2026-11-01).

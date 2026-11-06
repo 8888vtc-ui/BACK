@@ -18,12 +18,13 @@ export const HUMAN_BLUNDER_CAP_EMG = {
     grandmaster: 0.0,
 } as const;
 
-export const FORBIDDEN_PERSONA_USERNAME_REGEX = /\b(bot|ai|player\d*|guest)\b/i;
+export const FORBIDDEN_PERSONA_USERNAME_REGEX = /\b(bot|ai|robot|open\s*sage|player\d*|guest)\b/i;
 
 export type HumanContextType =
     | 'matchmaking'
     | 'dice_roll'
     | 'forced_move'
+    | 'opening_move'
     | 'simple_race'
     | 'complex_contact'
     | 'cube_decision';
@@ -45,18 +46,18 @@ export function cryptoUniform01(): number {
 /**
  * Simulateur de Temps de Réflexion Humain (`HumanThinkingDelay`) :
  * - Attente matchmaking : 3,5s à 8,5s (3500..8500 ms)
- * - Lancer de dés : 0,6s à 1,5s (600..1500 ms)
- * - Coup forcé : 0,8s à 1,4s (800..1400 ms)
- * - Course simple : 1,4s à 2,6s (1400..2600 ms)
- * - Contact complexe (>8 coups avec ΔE < 0.030) : 3,2s à 6,8s (3200..6800 ms)
- * - Décision de Videau : 3,5s à 7,5s (3500..7500 ms)
+ * - Lancer de dés : 0,4s à 1,0s (400..1000 ms)
+ * - Coup forcé ou ouverture évidente (24/13) : 0,4s à 0,8s (400..800 ms)
+ * - Course simple : 1,0s à 2,2s (1000..2200 ms)
+ * - Contact complexe (>8 coups avec ΔE < 0.030) : 1,5s à 3,5s (1500..3500 ms, ≤ 4s max)
+ * - Décision de Videau : 1,5s à 3,5s (1500..3500 ms, ≤ 4s max)
  */
 export function computeHumanThinkingDelay(
     context: HumanContextType,
     uniformFn: () => number = cryptoUniform01,
 ): HumanThinkingDelay {
-    let minMs = 1400;
-    let maxMs = 2600;
+    let minMs = 1000;
+    let maxMs = 2200;
 
     switch (context) {
         case 'matchmaking':
@@ -64,24 +65,25 @@ export function computeHumanThinkingDelay(
             maxMs = 8500;
             break;
         case 'dice_roll':
-            minMs = 600;
-            maxMs = 1500;
+            minMs = 400;
+            maxMs = 1000;
             break;
         case 'forced_move':
-            minMs = 800;
-            maxMs = 1400;
+        case 'opening_move':
+            minMs = 400;
+            maxMs = 800;
             break;
         case 'simple_race':
-            minMs = 1400;
-            maxMs = 2600;
+            minMs = 1000;
+            maxMs = 2200;
             break;
         case 'complex_contact':
-            minMs = 3200;
-            maxMs = 6800;
+            minMs = 1500;
+            maxMs = 3500;
             break;
         case 'cube_decision':
-            minMs = 3500;
-            maxMs = 7500;
+            minMs = 1500;
+            maxMs = 3500;
             break;
     }
 
@@ -101,7 +103,9 @@ export function resolveMoveThinkingContext(params: {
     readonly legalMoveCount: number;
     readonly isContact: boolean;
     readonly closeDecisionsCount: number;
+    readonly isOpening?: boolean;
 }): HumanContextType {
+    if (params.isOpening) return 'opening_move';
     if (params.legalMoveCount <= 1) return 'forced_move';
     if (params.isContact && params.legalMoveCount > 8 && params.closeDecisionsCount >= 2) {
         return 'complex_contact';
