@@ -25,6 +25,7 @@ import type { PlayerBlunderRecord, DrillValidationResult, BlunderBankStats } fro
 import { getPendingPersonalBlundersCount, PERSONAL_BLUNDERS_UPDATED_EVENT } from '../../lib/blunders/personalBlunderStore';
 import { impactLight, notificationSuccess, notificationError } from '../../lib/capacitor/haptics';
 import { rewardFirstTryQuizOnPublicPr, breakFirstTryQuizStreak } from '../../features/multiplayer/elo';
+import { recordBlunderSolvedForCoachGrant } from '../../features/points/circlePointsEconomy';
 import { toast } from '../toast/ToastContext';
 import DrillHeader, { type QuizDrillMode } from './DrillHeader';
 import BlunderDrillFeedbackCard from './BlunderDrillFeedbackCard';
@@ -116,6 +117,10 @@ export function BlunderDrillActiveSession({ initialConceptId, initialMode = 'ada
             setStats(getBlunderBankStats()); notificationSuccess();
             if (!failedOnCurrentQuizRef.current) rewardFirstTryQuizOnPublicPr();
             setStreak((prev) => { const next = prev + 1; setXp((c) => c + 25 * Math.min(next, 4)); return next; });
+            const grantRes = recordBlunderSolvedForCoachGrant();
+            if (grantRes.grantAwarded) {
+                toast.success('🎓 Bourse du Coach décernée : +2 500 PTS crédités !');
+            }
         } else {
             const nextAttempts = Math.max(0, attemptsLeft - 1);
             setAttemptsLeft(nextAttempts); failedOnCurrentQuizRef.current = true;

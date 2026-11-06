@@ -105,6 +105,9 @@ export function saveCirclePointsState(state: CirclePointsState): void {
       // Ignorer quota errors
     }
   }
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+    window.dispatchEvent(new CustomEvent('bgtour-points-updated', { detail: state }));
+  }
 }
 
 /**
@@ -114,6 +117,9 @@ export function resetCirclePointsForTests(): void {
   inMemoryState = null;
   if (typeof window !== 'undefined' && window.localStorage) {
     window.localStorage.removeItem(CIRCLE_POINTS_STORAGE_KEY);
+  }
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+    window.dispatchEvent(new CustomEvent('bgtour-points-updated', { detail: null }));
   }
 }
 
@@ -130,8 +136,9 @@ export function applyPointsTransaction(
   let safetyFloorTriggered = false;
 
   const historyEntries = [...current.history];
+  const txSuffix = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().slice(0, 6) : Date.now().toString(36);
   historyEntries.unshift({
-    id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    id: `tx_${Date.now()}_${txSuffix}`,
     timestamp: getNowIso(),
     delta,
     newBalance: candidateBalance,
