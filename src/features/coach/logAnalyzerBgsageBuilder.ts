@@ -22,7 +22,6 @@ import {
     parseCoachNotationMoves,
 } from './coachMoveNotation';
 import type { BgsageMoveMetrics, BgsageStrategicInsights } from './featureExtractor';
-import { estimateOffListEquityLoss } from './offListEquity';
 import {
     verifyCheckersPhysicallyExistOnBoard,
     sanitizeVerdictWithEquityThreshold,
@@ -210,19 +209,32 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
     } else if (matched) {
         playedEquity = matched.equity;
         equityLoss = Math.max(0, bestEquity - playedEquity);
-        verdict = sanitizeVerdictWithEquityThreshold(equityLoss, classifyVerdict(equityLoss));
+        if (equityLoss <= 0.020) {
+            equityLoss = 0.0000;
+            playedEquity = bestEquity;
+            verdict = 'optimal';
+        } else {
+            verdict = sanitizeVerdictWithEquityThreshold(equityLoss, classifyVerdict(equityLoss));
+        }
     } else {
-        const offList = estimateOffListEquityLoss({
-            evalState,
-            playedBoard: effectiveBoardAfter,
-            legalSeqs,
-            candidates: bgsageResult.chequerPlay,
-            bestEquity,
-            ply: 2,
-        });
-        playedEquity = bestEquity - offList.equityLoss;
-        equityLoss = Math.max(0, bestEquity - playedEquity);
-        verdict = sanitizeVerdictWithEquityThreshold(equityLoss, classifyVerdict(equityLoss));
+        const isEquivalentToBest = Boolean(
+            bestBoardResolved &&
+            (boardsMatchOnPointsAndBar(bestBoardResolved, effectiveBoardAfter) ||
+             boardSignature(bestBoardResolved) === playedBoardSig)
+        );
+        if (isEquivalentToBest) {
+            playedEquity = bestEquity;
+            equityLoss = 0.0000;
+            verdict = 'optimal';
+        } else {
+            const worstListed = bgsageResult.chequerPlay.length > 0
+                ? Math.min(...bgsageResult.chequerPlay.map((c) => c.equity))
+                : bestEquity - 0.120;
+            const worstEquityLoss = Math.max(0.040, bestEquity - worstListed);
+            equityLoss = Number(Math.max(worstEquityLoss, 0.080).toFixed(4));
+            playedEquity = Number((bestEquity - equityLoss).toFixed(4));
+            verdict = sanitizeVerdictWithEquityThreshold(equityLoss, classifyVerdict(equityLoss));
+        }
     }
 
     const verifiedFacts = extractVerifiedCoachFacts(boardBefore, effectiveBoardAfter, bestBoardResolved ?? effectiveBoardAfter);

@@ -70,6 +70,8 @@ export interface MatchStats {
     };
 }
 
+import type { CoachVerifiedFacts } from '../../features/coach/turnSnapshot';
+
 export interface LastMoveFeedback {
     verdict: CoachVerdict;
     equityLoss: number;
@@ -85,6 +87,11 @@ export interface LastMoveFeedback {
     boardBefore?: readonly number[];
     boardAfter?: readonly number[];
     dice?: readonly [number, number];
+    verifiedFacts?: CoachVerifiedFacts;
+    winProbability?: number;
+    gammonProbability?: number;
+    optimalWinProbability?: number;
+    optimalGammonProbability?: number;
 }
 
 export function isCubeDecisionNotation(moveStr?: string | null): boolean {

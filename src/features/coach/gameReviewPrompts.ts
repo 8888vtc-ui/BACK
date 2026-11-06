@@ -1,13 +1,5 @@
 /**
- * Prompts et contrats pour le « Cours explicatif & Rapport Grandmaster » de fin de partie (Gemini).
- *
- * Rôle :
- *   Génère un cours pédagogique et un rapport de match structuré en 3 volets :
- *     - 🎯 Le Diagnostic (`diagnostic`) : pourquoi les erreurs clés ont coûté cher
- *     - 💡 Le Concept Clé (`keyConcept`) : la règle stratégique à retenir
- *     - 🚀 Plan d'entraînement personnalisé (`trainingPlan`) : 1 ou 2 axes prioritaires
- *   à partir du score final, de la durée du match, du PR joueur/adversaire,
- *   des 2 ou 3 pires Blunders (XGID, dés, coup joué, meilleur coup, ΔEq) et des thèmes récurrents.
+ * Prompts et contrats pour le « Cours explicatif & Rapport Grandmaster » de fin de partie.
  */
 
 import type { CompleteGameAnalysis, EvaluatedTurn } from '../rating/types';
@@ -367,33 +359,19 @@ export function generateRuleBasedGameReview(params: GameReviewCourseParams): Gam
     }
 
     if (analysis.performanceRating < 5) {
-        strengths.push(
-            isEn
-                ? `Excellent PR of ${analysis.performanceRating.toFixed(2)} (${analysis.prCategory}).`
-                : `Excellent PR de ${analysis.performanceRating.toFixed(2)} (${analysis.prCategory}).`,
-        );
+        strengths.push(`Excellent PR : ${analysis.performanceRating.toFixed(2)} (${analysis.prCategory}).`);
     } else if (analysis.performanceRating > 15) {
-        weaknesses.push(
-            isEn
-                ? `PR of ${analysis.performanceRating.toFixed(2)} leaves room for improvement.`
-                : `Un PR de ${analysis.performanceRating.toFixed(2)} laisse une marge de progression.`,
-        );
+        weaknesses.push(isEn ? `PR of ${analysis.performanceRating.toFixed(2)} leaves room for improvement.` : `Un PR de ${analysis.performanceRating.toFixed(2)} laisse une marge de progression.`);
     }
 
     if (strengths.length === 0) {
-        strengths.push(
-            isEn
-                ? 'You completed the game and gathered valuable data to improve.'
-                : 'Tu as terminé la partie et récolté des données précieuses pour progresser.',
-        );
+        strengths.push(isEn ? 'You completed the game and gathered valuable data to improve.' : 'Tu as terminé la partie et récolté des données précieuses pour progresser.');
     }
 
     if (lessons.length === 0) {
         lessons.push({
             concept: isEn ? 'Consistency' : 'Régularité',
-            advice: isEn
-                ? 'Keep playing optimal moves and review your doubtful decisions.'
-                : 'Continue à jouer les coups optimaux et révise tes décisions douteuses.',
+            advice: isEn ? 'Keep playing optimal moves and review your doubtful decisions.' : 'Continue à jouer les coups optimaux et révise tes décisions douteuses.',
         });
     }
 
@@ -411,10 +389,9 @@ export function generateRuleBasedGameReview(params: GameReviewCourseParams): Gam
         strengths,
         weaknesses,
         lessons,
-        nextSteps: [
-            isEn ? 'Review your blunders in the step-by-step tab.' : "Revois tes blunders dans l'onglet pas-à-pas.",
-            isEn ? 'Practice the dominant concepts in Drills.' : 'Entraîne les concepts dominants dans les Drills.',
-        ],
+        nextSteps: isEn
+            ? ['Review your blunders in the step-by-step tab.', 'Practice the dominant concepts in Drills.']
+            : ["Revois tes blunders dans l'onglet pas-à-pas.", 'Entraîne les concepts dominants dans les Drills.'],
         playstyleProfile,
     };
 }

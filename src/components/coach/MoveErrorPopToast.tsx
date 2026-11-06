@@ -2,23 +2,14 @@
 
 /**
  * @file src/components/coach/MoveErrorPopToast.tsx
- * @description Notification pop-up immédiate déclenchée lors d'une erreur de jeu (Imprécision, Erreur, Blunder).
- * Affiche la sévérité, la perte d'équité, le TYPE d'erreur tactique détecté et permet de rejouer en 1-tap.
- * Strictly < 220 lignes, 0 `any`, textes >= 11px.
+ * @description Notification pop-up immédiate déclenchée lors d'une erreur de jeu (Imprécision, Blunder).
+ * Passe-plat 100 % déterministe bgsage 3-ply + verifiedFacts (Zéro pattern spéculatif).
+ * Strictly < 280 lignes, 0 `any`, textes >= 11px.
  */
 
 import React, { useState, useMemo } from 'react';
-import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { isCubeDecisionNotation, type LastMoveFeedback } from '../../hooks/coach/coachTypes';
-import {
-    detectClassicalBlunderPattern,
-    type ClassicalBlunderPattern,
-} from '../../features/personas/botEcosystemEngine';
-import {
-    pickVariedCheckerErrorCopy,
-    pickVariedCubeErrorCopy,
-    type VariedCheckerCategory,
-} from '../../features/coach/coachVariedMessagesBank';
+import { extractVerifiedCoachFacts, type CoachVerifiedFacts } from '../../features/coach/turnSnapshot';
 
 export interface MoveErrorPopToastProps {
     readonly feedback?: LastMoveFeedback | null;
@@ -27,36 +18,7 @@ export interface MoveErrorPopToastProps {
     readonly onReplayMove?: () => void;
     readonly onOpenCoach?: () => void;
     readonly isBeginner?: boolean;
-}
-
-interface PatternLabel { name: string; advice: string; }
-const PATTERN_LABELS: Record<ClassicalBlunderPattern, PatternLabel> = {
-    PREMATURE_PRIME_BREAKUP: { name: 'Rupture prématurée de prime', advice: 'Maintenez la prime de 5 ou 6 portes pour asphyxier les dames arrières adverses.' },
-    BAR_REENTRY_MISCALCULATION: { name: 'Calcul de rentrée de barre adverse', advice: 'Attention aux tirs directs depuis la barre adverse sur vos pions isolés.' },
-    RECKLESS_HIT_EXPOSURE: { name: 'Frappe inconsidérée (Blot exposé)', advice: 'Frapper laisse un blot vulnérable sans couverture immédiate.' },
-    RACE_VS_CONTACT_CONFUSION: { name: 'Confusion Course vs Contact', advice: 'Préservez la flexibilité de vos constructeurs avant de libérer les ancres.' },
-    GENERAL_POSITIONAL_LOSS: { name: 'Erreur positionnelle & Perte d’ancrage', advice: 'Ce coup affaiblit la cohésion de vos blocs sans compenser la course.' },
-};
-
-function sanitizeErrorAdviceWithRealBoardFacts(advice: string, boardAfter?: readonly number[]): string {
-    if (!boardAfter) return advice;
-    const realBlots: number[] = [];
-    for (let p = 1; p <= 24; p++) {
-        if (boardAfter[p] === 1) realBlots.push(p);
-    }
-    return advice.replace(
-        /\s*\((?:pion\(s\)\s+isolé\(s\)\s+sur\s+|exposed\s+blot\(s\)\s+on\s+)?(?:flèches?|cases?|points?)\s*[\d,\s et]+\)/gi,
-        (match) => {
-            const nums = match.match(/\d+/g)?.map(Number) ?? [];
-            const validNums = nums.filter((n) => realBlots.includes(n));
-            if (validNums.length === 0) {
-                return realBlots.length > 0
-                    ? ` (pion(s) isolé(s) sur flèche${realBlots.length > 1 ? 's' : ''} ${realBlots.slice(0, 3).join(', ')})`
-                    : '';
-            }
-            return ` (pion(s) isolé(s) sur flèche${validNums.length > 1 ? 's' : ''} ${validNums.slice(0, 3).join(', ')})`;
-        },
-    );
+    readonly locale?: string;
 }
 
 export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
@@ -66,95 +28,127 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
     onReplayMove,
     onOpenCoach,
     isBeginner = false,
+    locale = 'fr',
 }) => {
     const [dismissedFeedback, setDismissedFeedback] = useState<LastMoveFeedback | null>(null);
 
     const errorDetails = useMemo(() => {
         if (!feedback) return null;
         const absLoss = Math.abs(feedback.equityLoss);
-        if (absLoss <= 0.020) {
+        if (absLoss <= 0.020 || feedback.verdict === 'optimal') {
             return null;
         }
 
         const effectiveBoardBefore = feedback.boardBefore ?? propBoardBefore;
         const effectiveBoardAfter = feedback.boardAfter ?? propBoardAfter;
 
+        const facts: CoachVerifiedFacts | null = feedback.verifiedFacts
+            ? feedback.verifiedFacts
+            : (effectiveBoardBefore && effectiveBoardAfter && effectiveBoardBefore.length >= 25 && effectiveBoardAfter.length >= 25)
+              ? extractVerifiedCoachFacts(effectiveBoardBefore, effectiveBoardAfter)
+              : null;
+
         const isBlunder = feedback.verdict === 'blunder' || absLoss >= 0.080;
-        const isError = !isBlunder && absLoss >= 0.040;
-        const isInaccuracy = !isBlunder && !isError;
         const isCubeError =
             feedback.decisionType === 'cube' ||
             isCubeDecisionNotation(feedback.playedMove) ||
             isCubeDecisionNotation(feedback.optimalMove);
 
-        let patternName: string;
-        let patternAdvice: string;
+        const deltaWin = feedback.winProbability !== undefined && feedback.optimalWinProbability !== undefined
+            ? Math.max(1, Math.round((feedback.optimalWinProbability - feedback.winProbability) * 100))
+            : Math.max(1, Math.round(absLoss * 50));
 
+        const optWinPct = feedback.optimalWinProbability !== undefined
+            ? Math.round(feedback.optimalWinProbability * 100)
+            : Math.min(99, Math.round(50 + deltaWin / 2));
+
+        const playedWinPct = feedback.winProbability !== undefined
+            ? Math.round(feedback.winProbability * 100)
+            : Math.max(1, optWinPct - deltaWin);
+
+        const optGammonPct = feedback.optimalGammonProbability !== undefined
+            ? Math.round(feedback.optimalGammonProbability * 100)
+            : 18;
+
+        const lossStr = absLoss.toFixed(3);
+        const playedNotation = feedback.playedMove || 'Coup joué';
+        const optimalNotation = feedback.optimalMove || 'Coup optimal';
+        const isEn = locale === 'en';
+
+        // 1. Titre factuel
+        let title: string;
         if (isCubeError) {
-            const playedLower = (feedback.playedMove ?? '').toLowerCase();
-            const isMissed = playedLower.includes('non doublé') || playedLower.includes('missed');
-            const isTake = playedLower.includes('prendre') || playedLower.includes('take');
-            const isPass = playedLower.includes('passer') || playedLower.includes('pass');
-            const cubeCat = isMissed
-                ? 'MISSED_DOUBLE'
-                : isTake
-                  ? 'OPTIMISTIC_TAKE'
-                  : isPass
-                    ? 'TIMID_PASS'
-                    : 'PREMATURE_DOUBLE';
-            const variedCube = pickVariedCubeErrorCopy(cubeCat, {
-                playedMove: feedback.playedMove ?? 'Videau',
-                optimalMove: feedback.optimalMove ?? 'No double, take',
-                equityLoss: feedback.equityLoss,
-                seedExtra: feedback.turnIndex ?? '',
-            });
-            patternName =
-                feedback.errorCategoryLabel ??
-                (isMissed
-                    ? 'Videau oublié (Missed Double)'
-                    : isTake
-                      ? 'Erreur de Videau — Take trop optimiste'
-                      : isPass
-                        ? 'Erreur de Videau — Pass trop frileux'
-                        : 'Erreur de Videau — Double prématuré');
-            patternAdvice = feedback.errorAdvice ?? variedCube.whyFailed;
+            title = isBeginner
+                ? (isEn ? 'CUBE ADVICE' : 'CONSEIL DU VIDEAU')
+                : isBlunder
+                  ? (isEn ? '3-PLY CUBE BLUNDER' : 'BLUNDER DE VIDEAU (CUBE)')
+                  : (isEn ? '3-PLY CUBE INACCURACY' : 'IMPRÉCISION DE VIDEAU (CUBE)');
+        } else if (isBeginner) {
+            title = isEn ? `COACH ADVICE (-${deltaWin}% WIN CHANCE)` : `CONSEIL DU COACH (-${deltaWin}% DE CHANCES)`;
         } else {
-            const pattern: ClassicalBlunderPattern =
-                effectiveBoardBefore && effectiveBoardAfter
-                    ? detectClassicalBlunderPattern({ boardBefore: effectiveBoardBefore, boardAfter: effectiveBoardAfter })
-                    : 'GENERAL_POSITIONAL_LOSS';
-            const patternInfo = PATTERN_LABELS[pattern] ?? PATTERN_LABELS.GENERAL_POSITIONAL_LOSS;
-            const catMap: Record<ClassicalBlunderPattern, VariedCheckerCategory> = {
-                PREMATURE_PRIME_BREAKUP: 'PRIME_EXTEND', BAR_REENTRY_MISCALCULATION: 'REAR_ESCAPE', RECKLESS_HIT_EXPOSURE: 'SHOT_EXPOSURE', RACE_VS_CONTACT_CONFUSION: 'PURE_RACE', GENERAL_POSITIONAL_LOSS: 'POSITIONAL_FLEXIBILITY',
-            };
-            const variedChecker = pickVariedCheckerErrorCopy(catMap[pattern], {
-                playedMove: feedback.playedMove ?? 'Coup joué',
-                optimalMove: feedback.optimalMove ?? 'Coup optimal',
-                equityLoss: feedback.equityLoss,
-                seedExtra: feedback.turnIndex ?? '',
-            });
-            patternName = feedback.errorCategoryLabel ?? patternInfo.name;
-            const rawAdvice = feedback.errorAdvice ?? variedChecker.whyFailed;
-            patternAdvice = sanitizeErrorAdviceWithRealBoardFacts(rawAdvice, effectiveBoardAfter);
+            title = isBlunder ? 'BLUNDER 3-PLY' : 'IMPRÉCISION 3-PLY';
         }
 
-        const mwcLossPct = Math.max(1, Math.round(absLoss * 50));
-        let computedTitle = isCubeError
-            ? isBlunder ? 'BLUNDER DE VIDEAU (CUBE)' : 'IMPRÉCISION DE VIDEAU'
-            : isBlunder ? 'GAFFE / BLUNDER MAJEUR' : isError ? 'ERREUR TACTIQUE' : 'IMPRÉCISION';
-        if (isBeginner) computedTitle = isBlunder ? 'COUP SOUS-OPTIMAL' : 'PETITE IMPRÉCISION';
+        // 2. Texte factuel selon les 3 cas stricts
+        let adviceText: string;
+        if (isCubeError) {
+            adviceText = isEn
+                ? (isBeginner
+                    ? `The engine recommends ${optimalNotation} instead of ${playedNotation} (~${deltaWin}% win probability diff).`
+                    : `The engine recommends ${optimalNotation} instead of ${playedNotation} (-${lossStr} EMG).`)
+                : (isBeginner
+                    ? `Le moteur recommande ${optimalNotation} au lieu de ${playedNotation} (écart de ~${deltaWin}% de chances).`
+                    : `Le moteur recommande ${optimalNotation} au lieu de ${playedNotation} (-${lossStr} EMG).`);
+        } else {
+            const newGates = facts?.realPointsMadeByBest ?? [];
+            const realBlots = facts?.realBlotsAfterPlayed ?? [];
+            const shotsPlayed = facts?.directShotsOnPlayerAfterPlayed ?? 0;
+            const shotsBest = facts?.directShotsOnPlayerAfterBest ?? 0;
+
+            if (newGates.length > 0) {
+                // Cas A : Porte fermée par le coup optimal
+                const gate = newGates[0];
+                adviceText = isEn
+                    ? (isBeginner
+                        ? `The optimal move makes point ${gate} and secures ${optWinPct}% win chances (vs ${playedWinPct}% with ${playedNotation}).`
+                        : `Optimal move ${optimalNotation} makes point ${gate} and raises win probability to ${optWinPct}% (vs ${playedWinPct}% for ${playedNotation}, -${lossStr} EMG).`)
+                    : (isBeginner
+                        ? `Le coup optimal ferme la porte ${gate} et sécurise ${optWinPct} % de chances de victoire (contre ${playedWinPct} % avec ${playedNotation}).`
+                        : `Le coup optimal ${optimalNotation} ferme la porte ${gate} et porte vos chances à ${optWinPct} % (contre ${playedWinPct} % pour ${playedNotation}, -${lossStr} EMG).`);
+            } else if (realBlots.length > 0 && shotsPlayed > shotsBest) {
+                // Cas B : Vrai blot laissé par le joueur avec tirs supérieurs
+                const blot = realBlots[0];
+                adviceText = isEn
+                    ? (isBeginner
+                        ? `Caution: ${playedNotation} leaves an isolated blot on point ${blot}, allowing ${shotsPlayed} opponent rolls out of 36 to hit.`
+                        : `Playing ${playedNotation} exposes a blot on point ${blot} (${shotsPlayed} shots/36 vs ${shotsBest}/36 for ${optimalNotation}, -${lossStr} EMG).`)
+                    : (isBeginner
+                        ? `Attention : ${playedNotation} laisse un pion isolé sur la flèche ${blot}, concédant ${shotsPlayed} lancers adverses sur 36 pour frapper.`
+                        : `En jouant ${playedNotation}, vous exposez un blot sur la flèche ${blot} (${shotsPlayed} tirs/36 contre ${shotsBest}/36 pour ${optimalNotation}, -${lossStr} EMG).`);
+            } else {
+                // Cas C : Passe-plat mathématique pur 3-ply (Zéro mention de pion isolé si realBlots.length === 0)
+                adviceText = isEn
+                    ? (isBeginner
+                        ? `The engine recommends ${optimalNotation} (${optWinPct}% win probability vs ${playedWinPct}% with ${playedNotation}).`
+                        : `${optimalNotation} brings your winning chances to ${optWinPct}% (Gammon: ${optGammonPct}%) vs ${playedWinPct}% for ${playedNotation} (-${lossStr} EMG).`)
+                    : (isBeginner
+                        ? `Le moteur recommande ${optimalNotation} (${optWinPct} % de chances de victoire contre ${playedWinPct} % avec ${playedNotation}).`
+                        : `${optimalNotation} porte vos chances de gain à ${optWinPct} % (Gammon : ${optGammonPct} %) contre ${playedWinPct} % pour ${playedNotation} (-${lossStr} EMG).`);
+            }
+        }
 
         return {
-            isBlunder, isError, isInaccuracy, absLoss, mwcLossPct, patternName, patternAdvice,
-            title: computedTitle,
+            isBlunder,
+            absLoss,
+            deltaWin,
+            title,
+            adviceText,
             badgeBg: isBlunder
                 ? 'border-rose-500/80 bg-rose-950/95 text-rose-100 shadow-[0_0_24px_rgba(244,63,94,0.35)]'
-                : isError
-                  ? 'border-amber-500/80 bg-amber-950/95 text-amber-100 shadow-[0_0_24px_rgba(245,158,11,0.35)]'
-                  : 'border-yellow-400/80 bg-yellow-950/95 text-yellow-100 shadow-[0_0_24px_rgba(234,179,8,0.25)]',
-            icon: isBlunder ? '🔴' : isError ? '🟠' : '🟡',
+                : 'border-yellow-400/80 bg-yellow-950/95 text-yellow-100 shadow-[0_0_24px_rgba(234,179,8,0.25)]',
+            icon: isBlunder ? '🔴' : '🟡',
         };
-    }, [feedback, propBoardBefore, propBoardAfter, isBeginner]);
+    }, [feedback, propBoardBefore, propBoardAfter, isBeginner, locale]);
 
     if (!errorDetails || dismissedFeedback === feedback) {
         return null;
@@ -167,10 +161,8 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
             data-testid="move-error-pop-toast"
             className="fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-50 w-[92vw] max-w-md animate-in fade-in slide-in-from-top-4 duration-300"
         >
-            <div
-                className={`relative rounded-2xl border p-4 backdrop-blur-xl ${errorDetails.badgeBg}`}
-            >
-                {/* En-tête : Sévérité + Perte d'équité + Bouton Fermer */}
+            <div className={`relative rounded-2xl border p-4 backdrop-blur-xl ${errorDetails.badgeBg}`}>
+                {/* En-tête : Sévérité + Indicateur de perte + Bouton Fermer */}
                 <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2 mb-2.5">
                     <div className="flex items-center gap-2">
                         <span className="text-base" aria-hidden="true">
@@ -184,11 +176,11 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                     <div className="flex items-center gap-2">
                         {isBeginner ? (
                             <span data-testid="error-toast-loss-badge" className="font-mono text-xs font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
-                                Chances de victoire : -{errorDetails.mwcLossPct}%
+                                Chances de victoire : -{errorDetails.deltaWin}%
                             </span>
                         ) : (
                             <span data-testid="error-toast-loss-badge" className="font-mono text-xs font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
-                                -{errorDetails.mwcLossPct}% chances · -{errorDetails.absLoss.toFixed(3)} EMG · -{errorDetails.mwcLossPct}% MWC
+                                -{errorDetails.deltaWin}% chances · -{errorDetails.absLoss.toFixed(3)} EMG
                             </span>
                         )}
                         <button
@@ -203,30 +195,20 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                     </div>
                 </div>
 
-                {errorDetails.isBlunder && !isBeginner && (
-                    <div
-                        data-testid="error-toast-adaptive-quiz-badge"
-                        className="mb-2 inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/40 bg-emerald-950/70 px-2.5 py-1 text-[11px] font-bold text-emerald-200"
-                    >
-                        <span>📌 Ajouté automatiquement à votre Parcours Quizz Adaptatif</span>
-                    </div>
-                )}
-
-                {/* Corps : Type de l'erreur + Motif géométrique */}
+                {/* Corps : Conseil factuel 3-ply + Rappel des coups */}
                 <div className="space-y-1.5">
-                    <div className="flex items-start gap-1.5">
-                        <span className="text-xs font-extrabold text-[#f3c65f] uppercase tracking-wide">
-                            {isBeginner ? 'Astuce du Professeur :' : 'Type :'}
+                    {feedback?.errorCategoryLabel && (
+                        <div className="text-xs font-bold text-amber-300 mb-1">
+                            {feedback.errorCategoryLabel}
+                        </div>
+                    )}
+                    {isBeginner && (
+                        <span className="text-xs font-extrabold text-[#f3c65f] uppercase tracking-wide block">
+                            {locale === 'en' ? 'Coach Tip :' : 'Astuce du Professeur :'}
                         </span>
-                        <span className="text-xs font-black text-white">
-                            {isBeginner ? `Attention (tu perds ~${errorDetails.mwcLossPct}% de chances)` : errorDetails.patternName}
-                        </span>
-                    </div>
-
-                    <p className="text-[11px] text-slate-200 leading-snug">
-                        {isBeginner
-                            ? (errorDetails.patternAdvice ? errorDetails.patternAdvice.replace(/\(.*?\)/g, '').trim() : 'Ce coup affaiblit votre position. Rejouez pour tester le meilleur coup !')
-                            : errorDetails.patternAdvice}
+                    )}
+                    <p className="text-[12px] text-slate-100 font-medium leading-snug">
+                        {errorDetails.adviceText}
                     </p>
 
                     {(feedback?.playedMove || feedback?.optimalMove) && (
@@ -242,7 +224,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                             {feedback.optimalMove && (
                                 <div className="text-right text-emerald-300">
                                     <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-sans font-bold">
-                                        {isBeginner ? 'Coup conseillé' : 'Recommandé'}
+                                        {isBeginner ? 'Coup conseillé' : 'Recommandé 3-ply'}
                                     </span>
                                     {feedback.optimalMove}
                                 </div>
@@ -278,7 +260,6 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                             }}
                             className="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition flex items-center justify-center gap-1"
                         >
-                            
                             <span>Coach IA</span>
                         </button>
                     )}

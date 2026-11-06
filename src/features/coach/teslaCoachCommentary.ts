@@ -1,10 +1,5 @@
 /**
- * @file src/features/coach/teslaCoachCommentary.ts
- * @description Architecture Cognitive « Tesla 3-Secondes » (3 lignes orthogonales, zéro redondance),
- * Conversion exacte ΔEMG <-> ΔMWC% (Table Kazaross-XG2 + Janowski & Turner), et System Prompt JSON
- * ultra-contraint pour `gemini-3.8-flash` (« Cercle Monte-Carlo »).
- *
- * Strictement 0 `any`, < 400 lignes.
+ * Architecture Cognitive « Tesla 3-Secondes » (3 lignes orthogonales, zéro redondance).
  */
 
 import type { MotifDetectionResult, MotifId } from './detectPositionalMotif';
@@ -14,12 +9,8 @@ export type CoachLanguage = 'fr' | 'en';
 export type CoachPersonaMode = 'BEGINNER' | 'PRO';
 
 export type GrandmasterPillarTag =
-    | 'MICHY_MAKING_POINTS'
-    | 'MICHY_SPLITTING_BACK_CHECKERS'
-    | 'MICHY_HITTING_BLITZ'
-    | 'MAGRIEL_HOLDING_TIMING'
-    | 'MAGRIEL_BACKGAME_TIMING'
-    | 'WOOLSEY_DICE_DUPLICATION'
+    | 'MICHY_MAKING_POINTS' | 'MICHY_SPLITTING_BACK_CHECKERS' | 'MICHY_HITTING_BLITZ'
+    | 'MAGRIEL_HOLDING_TIMING' | 'MAGRIEL_BACKGAME_TIMING' | 'WOOLSEY_DICE_DUPLICATION'
     | 'TRICE_KEITH_RACE_EPC';
 
 export interface Tesla3LineCommentary {
@@ -394,29 +385,12 @@ You MUST return a valid JSON object matching the exact schema:
 export const GEMINI_COACH_RESPONSE_SCHEMA = {
     type: 'OBJECT',
     properties: {
-        line1Verdict: {
-            type: 'STRING',
-            description: 'Line 1 (<=65 chars): Severity badge + ΔMWC% (and ΔEMG in PRO mode) + Optimal vs Played.',
-        },
-        line2CausalError: {
-            type: 'STRING',
-            description: 'Line 2 (<=115 chars): Concrete geometric flaw of the played move without any generic filler.',
-        },
-        line3OptimalWhy36: {
-            type: 'STRING',
-            description: 'Line 3 (<=125 chars): Quantified proof of the optimal move using /36 lookahead rolls, duplicated dice, or EPC/Keith count.',
-        },
+        line1Verdict: { type: 'STRING', description: 'Line 1 (<=65 chars): Severity badge + ΔMWC% (and ΔEMG in PRO mode) + Optimal vs Played.' },
+        line2CausalError: { type: 'STRING', description: 'Line 2 (<=115 chars): Concrete geometric flaw of the played move without any generic filler.' },
+        line3OptimalWhy36: { type: 'STRING', description: 'Line 3 (<=125 chars): Quantified proof of the optimal move using /36 lookahead rolls, duplicated dice, or EPC/Keith count.' },
         grandmasterPillarTag: {
             type: 'STRING',
-            enum: [
-                'MICHY_MAKING_POINTS',
-                'MICHY_SPLITTING_BACK_CHECKERS',
-                'MICHY_HITTING_BLITZ',
-                'MAGRIEL_HOLDING_TIMING',
-                'MAGRIEL_BACKGAME_TIMING',
-                'WOOLSEY_DICE_DUPLICATION',
-                'TRICE_KEITH_RACE_EPC',
-            ],
+            enum: ['MICHY_MAKING_POINTS', 'MICHY_SPLITTING_BACK_CHECKERS', 'MICHY_HITTING_BLITZ', 'MAGRIEL_HOLDING_TIMING', 'MAGRIEL_BACKGAME_TIMING', 'WOOLSEY_DICE_DUPLICATION', 'TRICE_KEITH_RACE_EPC'],
             description: 'Theoretical Grandmaster classification tag for UI badge rendering.',
         },
     },

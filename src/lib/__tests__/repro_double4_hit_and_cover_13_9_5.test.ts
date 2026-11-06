@@ -1,3 +1,8 @@
+// @vitest-environment jsdom
+import fs from 'fs';
+import path from 'path';
+import React from 'react';
+import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { applyMove, generateLegalMoves, type BoardState, type Move } from '../../engine/backgammonEngine';
 import {
@@ -13,6 +18,8 @@ import { buildHumanMoveAnalysisFromBgsageResult } from '../../features/coach/log
 import { generateRuleBasedExplanation, extractStrategicFeatures } from '../../features/coach';
 import { detectClassicalBlunderPattern } from '../../features/personas/botEcosystemEngine';
 import { countShotsExact } from '../engine/shotCounter';
+import { MoveErrorPopToast } from '../../components/coach/MoveErrorPopToast';
+import type { LastMoveFeedback } from '../../hooks/coach/coachTypes';
 import type { MatchLogEntry } from '../../actions/types';
 import type { BgsageEvaluateResponse } from '../engine/bgsageClient';
 
@@ -182,6 +189,7 @@ describe('Autopsie & Réparation : Double 4 (4-4) — 13/9* 13/9 9/5 9/5 vs 6/2(
         expect(analysis).not.toBeNull();
         expect(analysis!.verdict).toBe('optimal');
         expect(analysis!.equityLoss).toBe(0);
+        expect(analysis!.verifiedFacts?.realBlotsAfterPlayed).toEqual([]);
         expect(analysis!.optimalNotation).not.toContain('6/2 6/2 6/2 6/2');
         expect(analysis!.optimalNotation).toBe('13/9* 13/9 9/5 9/5');
     });
@@ -245,5 +253,52 @@ describe('Autopsie & Réparation : Double 4 (4-4) — 13/9* 13/9 9/5 9/5 vs 6/2(
         // obligeant O à utiliser son as pour rentrer en case 1 (Bar/1) ! Le total de tirs est donc 7 (1-1, 1-2, 2-1, 1-3, 3-1, 1-4, 4-1), jamais 11.
         expect(shots.total).toBe(7);
         expect(shots.total).not.toBe(11);
+    });
+
+    it('6. Vérifie que pas un seul des 36 fichiers de src/features/coach/ ne dépasse 400 lignes et qu’aucun 37e fichier n’existe', () => {
+        const coachDir = path.resolve(process.cwd(), 'src/features/coach');
+        const files = fs.readdirSync(coachDir).filter((f) => {
+            const full = path.join(coachDir, f);
+            return fs.statSync(full).isFile() && !f.endsWith('.test.ts') && !f.endsWith('.test.tsx');
+        });
+
+        expect(files.length).toBe(36);
+
+        const oversized: { file: string; lines: number }[] = [];
+        for (const file of files) {
+            const content = fs.readFileSync(path.join(coachDir, file), 'utf-8');
+            const lines = content.split('\n').length;
+            if (lines > 400) {
+                oversized.push({ file, lines });
+            }
+        }
+        expect(oversized).toEqual([]);
+    });
+
+    it('7. MoveErrorPopToast retourne null sur le coup optimal 13/9* 13/9 9/5 9/5 (0 popup d’erreur)', () => {
+        const boardBefore = createBoardBeforeDouble4();
+        let boardAfter = [...boardBefore];
+        for (const m of playedSubMoves) {
+            boardAfter = applyMove(boardAfter, m, 'X');
+        }
+
+        const feedback: LastMoveFeedback = {
+            verdict: 'optimal',
+            equityLoss: 0,
+            playedMove: '13/9* 13/9 9/5 9/5',
+            optimalMove: '13/9* 13/9 9/5 9/5',
+            boardBefore,
+            boardAfter,
+        };
+
+        const { container } = render(
+            React.createElement(MoveErrorPopToast, {
+                feedback,
+                boardBefore,
+                boardAfter,
+            }),
+        );
+
+        expect(container.firstChild).toBeNull();
     });
 });

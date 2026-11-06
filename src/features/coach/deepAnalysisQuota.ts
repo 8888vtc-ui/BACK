@@ -366,40 +366,16 @@ export function buildDeepSocraticQuestions(params: {
 
     if (isEn) {
         return [
-            {
-                id: 'why_equity',
-                label: '❓ Why does my move lose equity?',
-                answer: `${params.whyFailed || `Playing ${played} weakens your structure.`} ${winDeltaStr} ${params.whyOptimal || `By contrast, ${optimal} locks key points and preserves your equity.`}`,
-            },
-            {
-                id: 'next_36_rolls',
-                label: '🎲 What happens on the next 36 dice rolls?',
-                answer: `${next36LeadEn} ${params.pedagogicalExplanation?.idea_problem_solution?.canonical_solution || `Playing ${optimal} maximizes your constructive builders on the next roll.`}`,
-            },
-            {
-                id: 'cube_and_plan',
-                label: '🧭 What is the Grandmaster Game Plan & Cube strategy?',
-                answer: `Plan: ${String(theme).toUpperCase()} (Race ${pipsPlayer} vs ${pipsOpp} pips). ${bgsage?.cubeDecision?.optimalAction ? `Open Sage Cube Verdict: ${bgsage.cubeDecision.optimalAction} (No Double ${bgsage.cubeDecision.noDouble?.toFixed(3) ?? '—'} / Double-Take ${bgsage.cubeDecision.doubleTake?.toFixed(3) ?? '—'}).` : params.pedagogicalExplanation?.michy_proverb || 'Keep your checkers connected (< 6 pips) and avoid impure hybrid plays.'}`,
-            },
+            { id: 'why_equity', label: '❓ Why does my move lose equity?', answer: `${params.whyFailed || `Playing ${played} weakens your structure.`} ${winDeltaStr} ${params.whyOptimal || `By contrast, ${optimal} locks key points and preserves your equity.`}` },
+            { id: 'next_36_rolls', label: '🎲 What happens on the next 36 dice rolls?', answer: `${next36LeadEn} ${params.pedagogicalExplanation?.idea_problem_solution?.canonical_solution || `Playing ${optimal} maximizes your constructive builders on the next roll.`}` },
+            { id: 'cube_and_plan', label: '🧭 What is the Grandmaster Game Plan & Cube strategy?', answer: `Plan: ${String(theme).toUpperCase()} (Race ${pipsPlayer} vs ${pipsOpp} pips). ${bgsage?.cubeDecision?.optimalAction ? `Open Sage Cube Verdict: ${bgsage.cubeDecision.optimalAction} (No Double ${bgsage.cubeDecision.noDouble?.toFixed(3) ?? '—'} / Double-Take ${bgsage.cubeDecision.doubleTake?.toFixed(3) ?? '—'}).` : params.pedagogicalExplanation?.michy_proverb || 'Keep your checkers connected (< 6 pips) and avoid impure hybrid plays.'}` },
         ];
     }
 
     return [
-        {
-            id: 'why_equity',
-            label: "❓ Pourquoi mon coup perd de l'équité ?",
-            answer: `${params.whyFailed || `Jouer ${played} fragilise votre structure.`} ${winDeltaStr} ${params.whyOptimal || `À l'inverse, ${optimal} verrouille les cases clés.`}`,
-        },
-        {
-            id: 'next_36_rolls',
-            label: '🎲 Que se passe-t-il sur les 36 prochains dés ?',
-            answer: `${next36LeadFr} ${params.pedagogicalExplanation?.idea_problem_solution?.canonical_solution || `Jouer ${optimal} maximise vos constructeurs actifs au tour suivant.`}`,
-        },
-        {
-            id: 'cube_and_plan',
-            label: '🧭 Quel est le Plan Grand-Maître & Videau ici ?',
-            answer: `Plan directeur : ${String(theme).toUpperCase()} (Course ${pipsPlayer} contre ${pipsOpp} pips). ${bgsage?.cubeDecision?.optimalAction ? `Verdict Videau Open Sage : ${bgsage.cubeDecision.optimalAction} (Pas de Double ${bgsage.cubeDecision.noDouble?.toFixed(3) ?? '—'} / Double-Pris ${bgsage.cubeDecision.doubleTake?.toFixed(3) ?? '—'}).` : params.pedagogicalExplanation?.michy_proverb || 'Gardez vos pions connectés (< 6 cases) sans mélanger deux plans contradictoires.'}`,
-        },
+        { id: 'why_equity', label: "❓ Pourquoi mon coup perd de l'équité ?", answer: `${params.whyFailed || `Jouer ${played} fragilise votre structure.`} ${winDeltaStr} ${params.whyOptimal || `À l'inverse, ${optimal} verrouille les cases clés.`}` },
+        { id: 'next_36_rolls', label: '🎲 Que se passe-t-il sur les 36 prochains dés ?', answer: `${next36LeadFr} ${params.pedagogicalExplanation?.idea_problem_solution?.canonical_solution || `Jouer ${optimal} maximise vos constructeurs actifs au tour suivant.`}` },
+        { id: 'cube_and_plan', label: '🧭 Quel est le Plan Grand-Maître & Videau ici ?', answer: `Plan directeur : ${String(theme).toUpperCase()} (Course ${pipsPlayer} contre ${pipsOpp} pips). ${bgsage?.cubeDecision?.optimalAction ? `Verdict Videau Open Sage : ${bgsage.cubeDecision.optimalAction} (Pas de Double ${bgsage.cubeDecision.noDouble?.toFixed(3) ?? '—'} / Double-Pris ${bgsage.cubeDecision.doubleTake?.toFixed(3) ?? '—'}).` : params.pedagogicalExplanation?.michy_proverb || 'Gardez vos pions connectés (< 6 cases) sans mélanger deux plans contradictoires.'}` },
     ];
 }
 

@@ -14,24 +14,11 @@
 import type { Player } from '../../engine/backgammonEngine';
 
 export type MotifId =
-    | 'BLITZ_HIT_AND_COVER'
-    | 'EXTEND_PRIME_WALL'
-    | 'MAKE_KEY_POINT_5_4_7'
-    | 'SECURE_ADVANCED_ANCHOR'
-    | 'TEMPO_HIT_OUTFIELD'
-    | 'DIRECT_VS_INDIRECT_SHOT'
-    | 'EXACT_DICE_DUPLICATION'
-    | 'INTENTIONAL_SLOTTING'
-    | 'ESCAPE_LAST_RUNNER'
-    | 'SPLIT_VS_STACK_BACK'
-    | 'UNSTACK_MIDPOINT'
-    | 'BRING_DOWN_BUILDERS'
-    | 'BACKGAME_DOUBLE_ANCHOR'
-    | 'HOLDING_GAME_TIMING'
-    | 'KILL_A_NUMBER_DEFENSE'
-    | 'SAFE_BEAR_IN_CONTACT'
-    | 'BEAROFF_WASTAGE_EPC'
-    | 'FLEXIBILITY_SPARES';
+    | 'BLITZ_HIT_AND_COVER' | 'EXTEND_PRIME_WALL' | 'MAKE_KEY_POINT_5_4_7' | 'SECURE_ADVANCED_ANCHOR'
+    | 'TEMPO_HIT_OUTFIELD' | 'DIRECT_VS_INDIRECT_SHOT' | 'EXACT_DICE_DUPLICATION' | 'INTENTIONAL_SLOTTING'
+    | 'ESCAPE_LAST_RUNNER' | 'SPLIT_VS_STACK_BACK' | 'UNSTACK_MIDPOINT' | 'BRING_DOWN_BUILDERS'
+    | 'BACKGAME_DOUBLE_ANCHOR' | 'HOLDING_GAME_TIMING' | 'KILL_A_NUMBER_DEFENSE' | 'SAFE_BEAR_IN_CONTACT'
+    | 'BEAROFF_WASTAGE_EPC' | 'FLEXIBILITY_SPARES';
 
 export interface RaceTelemetry {
     readonly rawPipCount: number;
@@ -317,9 +304,7 @@ export function detectPositionalMotif(
     }
 
     // 2. EXTEND_PRIME_WALL
-    if (primeLengthOpt > primeLengthPlay && primeLengthOpt >= 4) {
-        return { ...baseResult, motif: 'EXTEND_PRIME_WALL' };
-    }
+    if (primeLengthOpt > primeLengthPlay && primeLengthOpt >= 4) return { ...baseResult, motif: 'EXTEND_PRIME_WALL' };
 
     // 3. MAKE_KEY_POINT_5_4_7
     for (const keyPt of [5, 7, 4]) {
@@ -338,16 +323,12 @@ export function detectPositionalMotif(
     // 5. TEMPO_HIT_OUTFIELD
     if (opp(boardOptimal, 0) > opp(boardPlayed, 0)) {
         for (let i = 7; i <= 18; i++) {
-            if (opp(boardBefore, i) === 1 && opp(boardOptimal, i) === 0) {
-                return { ...baseResult, motif: 'TEMPO_HIT_OUTFIELD', primaryPoint: i };
-            }
+            if (opp(boardBefore, i) === 1 && opp(boardOptimal, i) === 0) return { ...baseResult, motif: 'TEMPO_HIT_OUTFIELD', primaryPoint: i };
         }
     }
 
     // 6. DIRECT_VS_INDIRECT_SHOT
-    if (directShotsOpt < directShotsPlay) {
-        return { ...baseResult, motif: 'DIRECT_VS_INDIRECT_SHOT' };
-    }
+    if (directShotsOpt < directShotsPlay) return { ...baseResult, motif: 'DIRECT_VS_INDIRECT_SHOT' };
 
     // 7. EXACT_DICE_DUPLICATION
     if (dupOpt.overlapScore > dupPlay.overlapScore && totalHitRollsOpt < totalHitRollsPlay) {
@@ -356,12 +337,7 @@ export function detectPositionalMotif(
 
     // 8. INTENTIONAL_SLOTTING
     for (const slotPt of [5, 4, 7]) {
-        if (
-            own(boardBefore, slotPt) === 0 &&
-            own(boardOptimal, slotPt) === 1 &&
-            own(boardPlayed, slotPt) === 0 &&
-            (opp(boardOptimal, 0) >= 1 || totalHitRollsOpt <= 6)
-        ) {
+        if (own(boardBefore, slotPt) === 0 && own(boardOptimal, slotPt) === 1 && own(boardPlayed, slotPt) === 0 && (opp(boardOptimal, 0) >= 1 || totalHitRollsOpt <= 6)) {
             return { ...baseResult, motif: 'INTENTIONAL_SLOTTING', primaryPoint: slotPt };
         }
     }
@@ -380,27 +356,17 @@ export function detectPositionalMotif(
     }
 
     // 11. UNSTACK_MIDPOINT
-    if (
-        own(boardBefore, 13) >= 5 &&
-        own(boardOptimal, 13) < own(boardBefore, 13) &&
-        own(boardPlayed, 13) === own(boardBefore, 13)
-    ) {
+    if (own(boardBefore, 13) >= 5 && own(boardOptimal, 13) < own(boardBefore, 13) && own(boardPlayed, 13) === own(boardBefore, 13)) {
         return { ...baseResult, motif: 'UNSTACK_MIDPOINT', primaryPoint: 13 };
     }
 
     // 12. BRING_DOWN_BUILDERS
-    if (buildersOpt > buildersPlay) {
-        return { ...baseResult, motif: 'BRING_DOWN_BUILDERS' };
-    }
+    if (buildersOpt > buildersPlay) return { ...baseResult, motif: 'BRING_DOWN_BUILDERS' };
 
     // 13. BACKGAME_DOUBLE_ANCHOR
     const deepAnchorsOpt = [19, 20, 21, 22, 23, 24].filter((i) => isPoint(boardOptimal, i)).length;
     const deepAnchorsPlay = [19, 20, 21, 22, 23, 24].filter((i) => isPoint(boardPlayed, i)).length;
-    if (
-        deepAnchorsOpt >= 2 &&
-        racePre.rawPipCount - racePre.oppPipCount >= 25 &&
-        (deepAnchorsOpt > deepAnchorsPlay || raceOpt.rawPipCount >= racePlay.rawPipCount)
-    ) {
+    if (deepAnchorsOpt >= 2 && racePre.rawPipCount - racePre.oppPipCount >= 25 && (deepAnchorsOpt > deepAnchorsPlay || raceOpt.rawPipCount >= racePlay.rawPipCount)) {
         return { ...baseResult, motif: 'BACKGAME_DOUBLE_ANCHOR' };
     }
 
@@ -408,22 +374,13 @@ export function detectPositionalMotif(
     const hasHighAnchor = [18, 20, 21].some((i) => isPoint(boardBefore, i));
     const outfieldTiming = (b: Int8Array | readonly number[]) =>
         [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].reduce((acc, i) => acc + (i - 6) * own(b, i), 0);
-    if (
-        hasHighAnchor &&
-        racePre.rawPipCount - racePre.oppPipCount >= 12 &&
-        outfieldTiming(boardOptimal) > outfieldTiming(boardPlayed)
-    ) {
+    if (hasHighAnchor && racePre.rawPipCount - racePre.oppPipCount >= 12 && outfieldTiming(boardOptimal) > outfieldTiming(boardPlayed)) {
         return { ...baseResult, motif: 'HOLDING_GAME_TIMING' };
     }
 
     // 16. SAFE_BEAR_IN_CONTACT
-    const outerCheckers = (b: Int8Array | readonly number[]) =>
-        [7, 8, 9, 10, 11, 12].reduce((acc, i) => acc + own(b, i), 0);
-    if (
-        outerCheckers(boardOptimal) <= outerCheckers(boardBefore) &&
-        totalHitRollsOpt === 0 &&
-        totalHitRollsPlay > 0
-    ) {
+    const outerCheckers = (b: Int8Array | readonly number[]) => [7, 8, 9, 10, 11, 12].reduce((acc, i) => acc + own(b, i), 0);
+    if (outerCheckers(boardOptimal) <= outerCheckers(boardBefore) && totalHitRollsOpt === 0 && totalHitRollsPlay > 0) {
         return { ...baseResult, motif: 'SAFE_BEAR_IN_CONTACT' };
     }
 

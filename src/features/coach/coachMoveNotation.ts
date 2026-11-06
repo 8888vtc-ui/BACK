@@ -5,9 +5,6 @@
 import type { Move, Player } from '../../engine/backgammonEngine';
 import { X_BAR, O_BAR, X_OFF, O_OFF, applyMove } from '../../engine/backgammonEngine';
 
-/**
- * Libellé d'une flèche en numérotation absolue (1..24, barre, sortie).
- */
 export function formatCoachPoint(point: number, isDestination = false): string {
     if (point === X_BAR || point === O_BAR) {
         return isDestination ? 'off' : 'bar';

@@ -1,17 +1,12 @@
 /**
- * @file src/features/coach/userPromptBuilder.ts
- * @description Sérialiseur des métriques et concepts stratégiques en entrée du prompt Coach IA.
+ * Sérialiseur des métriques et concepts stratégiques en entrée du prompt Coach IA.
  */
-
 import { Player } from '../../engine/backgammonEngine';
 import { computeMarketWindowMetrics } from './featureExtractor';
 import { buildMatchContext } from './matchContext';
 import { getTheoryConceptById } from '../knowledge/knowledgeBaseData';
 import type { CoachPromptParams } from './prompts';
 
-/**
- * Construit le prompt utilisateur structuré contenant toutes les métriques extraites.
- */
 export function buildCoachUserPrompt(params: CoachPromptParams): string {
     const {
         verdict,
@@ -32,12 +27,8 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
         /^(Double|No double|Take|Pass|Redouble|Beaver)\b/i.test(optimalMove.trim());
 
     const raceLeaderStr = isEn
-        ? diff.leader === 'tie'
-            ? 'Race is tied'
-            : `${diff.leader} leads the race with a ${Math.abs(diff.diff)} pip lead (Player: ${diff.player}, Opponent: ${diff.opponent})`
-        : diff.leader === 'tie'
-            ? 'Course à égalité parfaite'
-            : `${diff.leader} mène la course avec un avantage de ${Math.abs(diff.diff)} pips (Joueur: ${diff.player}, Adversaire: ${diff.opponent})`;
+        ? (diff.leader === 'tie' ? 'Race is tied' : `${diff.leader} leads the race with a ${Math.abs(diff.diff)} pip lead (Player: ${diff.player}, Opponent: ${diff.opponent})`)
+        : (diff.leader === 'tie' ? 'Course à égalité parfaite' : `${diff.leader} mène la course avec un avantage de ${Math.abs(diff.diff)} pips (Joueur: ${diff.player}, Adversaire: ${diff.opponent})`);
 
     const userShots = features.blotsAndShots.user;
     const bestShots = features.blotsAndShots.best;
@@ -167,26 +158,17 @@ export function buildCoachUserPrompt(params: CoachPromptParams): string {
         });
 
     const volLabelFr = mw.volatility === 'high' ? 'Élevée' : mw.volatility === 'medium' ? 'Modérée' : 'Faible';
-    const sigmaSuffixEn =
-        mw.equityVolatilitySigma !== undefined
-            ? ` | Sigma_Eq=${mw.equityVolatilitySigma.toFixed(3)}, Overshoot=${(mw.expectedOvershootLoss ?? 0).toFixed(3)}`
-            : '';
-    const sigmaSuffixFr =
-        mw.equityVolatilitySigma !== undefined
-            ? ` | Sigma_Eq=${mw.equityVolatilitySigma.toFixed(3)}, Overshoot=${(mw.expectedOvershootLoss ?? 0).toFixed(3)}`
-            : '';
+    const sigmaSuffix = mw.equityVolatilitySigma !== undefined ? ` | Sigma_Eq=${mw.equityVolatilitySigma.toFixed(3)}, Overshoot=${(mw.expectedOvershootLoss ?? 0).toFixed(3)}` : '';
     const marketSectionEn = [
-        '',
-        '## CUBE & MARKET WINDOW VOLATILITY:',
+        '', '## CUBE & MARKET WINDOW VOLATILITY:',
         `- Market Window: Double Point ${(mw.doublePoint * 100).toFixed(1)}% → Cash Point ${(mw.cashPoint * 100).toFixed(1)}% (In window: ${mw.inMarketWindow ? 'Yes' : 'No'})`,
-        `- Position Volatility: ${mw.volatility.toUpperCase()} (~${mw.estimatedMarketLosers}/36 market-losing sequences${sigmaSuffixEn})`,
+        `- Position Volatility: ${mw.volatility.toUpperCase()} (~${mw.estimatedMarketLosers}/36 market-losing sequences${sigmaSuffix})`,
     ].join('\n');
 
     const marketSectionFr = [
-        '',
-        '## ANALYSE DU VIDEAU & VOLATILITÉ (MARKET WINDOW) :',
+        '', '## ANALYSE DU VIDEAU & VOLATILITÉ (MARKET WINDOW) :',
         `- Fenêtre de marché (Market Window) : Seuil de double ${(mw.doublePoint * 100).toFixed(1)}% → Cash Point ${(mw.cashPoint * 100).toFixed(1)}% (Dans la fenêtre : ${mw.inMarketWindow ? 'Oui' : 'Non'})`,
-        `- Volatilité de la position : ${volLabelFr} (~${mw.estimatedMarketLosers}/36 séquences de perte de marché / Market Loss${sigmaSuffixFr})`,
+        `- Volatilité de la position : ${volLabelFr} (~${mw.estimatedMarketLosers}/36 séquences de perte de marché / Market Loss${sigmaSuffix})`,
     ].join('\n');
 
     const bgsage = features.bgsage;
@@ -383,12 +365,8 @@ ${matchInfo}${marketSectionEn}
   Played blots detail: ${userShots.length > 0 ? userShots.map((b) => `Point ${b.point} (${b.totalShots} shots: ${b.directShots} direct, ${b.indirectShots} indirect)`).join(', ') : 'None'}
 - Blot exposure after optimal move: ${bestShots.length} blot(s), ${totalBestShots} shots/36 distinct rolls (${bestDirectShots} direct, ${bestIndirectShots} indirect only).
   Optimal blots detail: ${bestShots.length > 0 ? bestShots.map((b) => `Point ${b.point} (${b.totalShots} shots: ${b.directShots} direct, ${b.indirectShots} indirect)`).join(', ') : 'None'}${duplicationEn}
-- Home board structure: ${features.boardStructure.innerBoardPoints} closed home board point(s).
-- Key points control:
-  - Golden Point (Point 5): ${features.boardStructure.goldenPoint ? 'Controlled' : 'Not controlled'}
-  - Bar Point (Point 7): ${features.boardStructure.barPoint ? 'Controlled' : 'Not controlled'}
-  - Advanced anchor: ${features.boardStructure.advancedAnchor ? 'Yes' : 'No'}
-  - Longest consecutive prime: ${features.boardStructure.longestPrime} points${tacticalDiffEn}${bgsageSectionEn}${kbSectionEn}
+- Home board structure: ${features.boardStructure.innerBoardPoints} closed point(s).
+- Key points: Golden Point (${features.boardStructure.goldenPoint ? 'Yes' : 'No'}), Bar Point (${features.boardStructure.barPoint ? 'Yes' : 'No'}), Anchor (${features.boardStructure.advancedAnchor ? 'Yes' : 'No'}), Prime ${features.boardStructure.longestPrime} points${tacticalDiffEn}${bgsageSectionEn}${kbSectionEn}
 
 Write your explanation in the requested strict JSON format.`;
     }
@@ -411,12 +389,8 @@ ${matchInfo}${marketSectionFr}
   Détail des blots joués : ${userShots.length > 0 ? userShots.map((b) => `Flèche ${b.point} (${b.totalShots} tirs : ${b.directShots} directs, ${b.indirectShots} indirects)`).join(', ') : 'Aucun'}
 - Exposition des blots après le coup optimal : ${bestShots.length} blot(s), ${totalBestShots} tirs/36 distincts (${bestDirectShots} directs, ${bestIndirectShots} uniquement indirects).
   Détail des blots optimaux : ${bestShots.length > 0 ? bestShots.map((b) => `Flèche ${b.point} (${b.totalShots} tirs : ${b.directShots} directs, ${b.indirectShots} indirects)`).join(', ') : 'Aucun'}${duplicationFr}
-- Structure du jan intérieur : ${features.boardStructure.innerBoardPoints} porte(s) fermée(s) dans le jan intérieur.
-- Contrôle des points clés :
-  - Golden Point (Point 5) : ${features.boardStructure.goldenPoint ? 'Contrôlé' : 'Non contrôlé'}
-  - Bar Point (Point 7) : ${features.boardStructure.barPoint ? 'Contrôlé' : 'Non contrôlé'}
-  - Ancre avancée : ${features.boardStructure.advancedAnchor ? 'Oui' : 'Non'}
-  - Plus longue prime consécutive : ${features.boardStructure.longestPrime} portes consécutives${tacticalDiffFr}${bgsageSectionFr}${kbSectionFr}
+- Structure du jan intérieur : ${features.boardStructure.innerBoardPoints} porte(s) fermée(s).
+- Points clés : Golden Point (${features.boardStructure.goldenPoint ? 'Oui' : 'Non'}), Bar Point (${features.boardStructure.barPoint ? 'Oui' : 'Non'}), Ancre (${features.boardStructure.advancedAnchor ? 'Oui' : 'Non'}), Prime ${features.boardStructure.longestPrime} portes${tacticalDiffFr}${bgsageSectionFr}${kbSectionFr}
 
 Rédige ton explication au format JSON strict demandé.`;
 }

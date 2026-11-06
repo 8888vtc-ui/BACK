@@ -72,7 +72,10 @@ export function estimateOffListEquityLoss(params: OffListLossParams): OffListLos
     const player = evalState.turn;
     const localPly = Math.max(0, (params.ply ?? 2) - 1);
 
-    // 1. Un coup qui termine la partie en gagnant n'est jamais une erreur.
+    // 1. Un coup qui termine la partie en gagnant ou qui correspond au meilleur candidat n'est jamais une erreur.
+    if (candidates.length > 0 && candidates[0].board && boardsMatchOnPointsAndBar(candidates[0].board, playedBoard)) {
+        return { equityLoss: 0, localLoss: 0, neuralFloor: 0, catastrophic: false };
+    }
     const win = evaluateWin([...playedBoard], 1);
     if (win && win.winner === player) {
         return { equityLoss: 0, localLoss: 0, neuralFloor: 0, catastrophic: false };

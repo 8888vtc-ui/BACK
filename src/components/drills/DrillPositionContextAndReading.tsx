@@ -243,39 +243,38 @@ export const DrillPrMathRankingTable: React.FC<{
                     {rows.map((r) => (
                         <div
                             key={r.notation}
-                            className={`flex items-center justify-between py-0.5 px-1.5 text-xs font-mono ${
-                                r.isOptimal
-                                ? 'bg-emerald-500/15 text-emerald-200 font-bold rounded'
-                                : r.isUserChoice
-                                    ? 'bg-rose-500/15 text-rose-200 font-bold rounded'
-                                    : 'text-slate-300'
-                        }`}
-                    >
-                        <div className="flex items-center gap-1.5">
-                            <span className="text-slate-400">#{r.rank}</span>
-                            <span>{r.notation}</span>
-                            {r.isOptimal && <span className="text-xs text-emerald-400">★ Optimal</span>}
-                            {r.isUserChoice && !r.isOptimal && <span className="text-xs text-rose-400">✗ Joué</span>}
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {r.isEvaluated ? (
-                                <>
-                                    <span className={r.deltaEmg === 0 ? 'text-emerald-300' : r.deltaEmg >= -0.02 ? 'text-amber-300' : 'text-rose-300'}>
-                                        {r.deltaEmg === 0 ? '0.000' : r.deltaEmg.toFixed(3)} EMG
+                            className={`flex items-center justify-between py-0.5 px-1.5 text-xs font-mono ${r.isOptimal
+                                    ? 'bg-emerald-500/15 text-emerald-200 font-bold rounded'
+                                    : r.isUserChoice
+                                        ? 'bg-rose-500/15 text-rose-200 font-bold rounded'
+                                        : 'text-slate-300'
+                                }`}
+                        >
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-slate-400">#{r.rank}</span>
+                                <span>{r.notation}</span>
+                                {r.isOptimal && <span className="text-xs text-emerald-400">★ Optimal</span>}
+                                {r.isUserChoice && !r.isOptimal && <span className="text-xs text-rose-400">✗ Joué</span>}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {r.isEvaluated ? (
+                                    <>
+                                        <span className={r.deltaEmg === 0 ? 'text-emerald-300' : r.deltaEmg >= -0.02 ? 'text-amber-300' : 'text-rose-300'}>
+                                            {r.deltaEmg === 0 ? '0.000' : r.deltaEmg.toFixed(3)} EMG
+                                        </span>
+                                        <span className="text-xs text-slate-300">
+                                            W:{r.winPct}% · G:{r.gammonPct}%
+                                        </span>
+                                    </>
+                                ) : (
+                                    <span className="text-xs text-slate-400" title="Coup absent de l'analyse GNU Backgammon 3-ply">
+                                        non évalué
                                     </span>
-                                    <span className="text-xs text-slate-300">
-                                        W:{r.winPct}% · G:{r.gammonPct}%
-                                    </span>
-                                </>
-                            ) : (
-                                <span className="text-xs text-slate-400" title="Coup absent de l'analyse GNU Backgammon 3-ply">
-                                    non évalué
-                                </span>
-                            )}
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
             )}
         </div>
     );

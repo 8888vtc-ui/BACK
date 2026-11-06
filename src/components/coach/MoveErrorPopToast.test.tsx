@@ -39,9 +39,8 @@ describe('MoveErrorPopToast — Pop Erreur Tactique & Détection de Type', () =>
         );
 
         expect(screen.getByTestId('move-error-pop-toast')).toBeDefined();
-        expect(screen.getByText('GAFFE / BLUNDER MAJEUR')).toBeDefined();
-        expect(screen.getByText(/-0.145 EMG/)).toBeDefined();
-        expect(screen.getByText('Type :')).toBeDefined();
+        expect(screen.getByText('BLUNDER 3-PLY')).toBeDefined();
+        expect(screen.getAllByText(/-0.145 EMG/).length).toBeGreaterThan(0);
         expect(screen.getByText('13/9 13/11')).toBeDefined();
         expect(screen.getByText('24/20 13/11')).toBeDefined();
     });
@@ -113,7 +112,7 @@ describe('MoveErrorPopToast — Pop Erreur Tactique & Détection de Type', () =>
             }),
         );
 
-        expect(screen.getByText('COUP SOUS-OPTIMAL')).toBeDefined();
+        expect(screen.getByText(/CONSEIL DU COACH/i)).toBeDefined();
         expect(screen.getByText(/Chances de victoire : -/i)).toBeDefined();
         expect(screen.queryByText(/EMG/i)).toBeNull();
         expect(screen.queryByText(/MWC/i)).toBeNull();

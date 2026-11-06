@@ -1,22 +1,6 @@
 /**
- * Extracteur de concepts stratégiques — le pont entre les mathématiques du
- * moteur et le LLM qui expliquera l'erreur au joueur.
- *
- * Module 100 % pur : ne dépend que de `BoardState` (moteur de règles), aucune
- * dépendance au moteur WASM, au réseau ou à React.
- *
- * Perspective : toutes les features sont exprimées du point de vue du joueur
- * qui vient de jouer (`initialState.turn`). Les numéros de flèches sont donc
- * « miroirés » pour O :
- *   - jan intérieur : 1-6 pour X, 19-24 pour O ;
- *   - ancre avancée : 20-22 pour X, 3-5 pour O ;
- *   - Point 5 (Golden Point) : 5 pour X, 20 pour O ;
- *   - Bar Point (Point 7) : 7 pour X, 18 pour O.
- *
- * Le comptage des tirs (shots) est EXACT : il énumère les 36 combinaisons de
- * dés et compte les tirs directs et indirects, en incluant les pions adverses
- * sur la barre (qui rentrent sur le jan intérieur adverse et peuvent frapper
- * un blot sur leur point d'entrée).
+ * Extracteur de concepts stratégiques — pont entre le moteur et le Coach IA.
+ * Module 100 % pur : ne dépend que de BoardState (règles pures).
  */
 
 import { BoardState, Player, pipCount, X_BAR, O_BAR } from '../../engine/backgammonEngine';
