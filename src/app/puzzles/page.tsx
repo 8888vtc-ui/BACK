@@ -6,6 +6,8 @@ import { BeginnerAcademyFlow } from '../../components/beginner/BeginnerAcademyFl
 import AppNavbar from '../../components/nav/AppNavbar';
 import { LobbyLeftSidebar } from '../../components/lobby/LobbySidebarAndWidgets';
 
+export const dynamic = 'force-dynamic';
+
 export interface PuzzlesPageProps {
     searchParams?: Promise<{ mode?: string; filter?: string; concept?: string; type?: string; gate?: string }>;
 }

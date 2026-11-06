@@ -204,17 +204,19 @@ export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.m
             })}
             {ep4WallGates >= 6 && (
               <g transform="translate(270, 210)">
-                <rect x="-95" y="-10" width="190" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
+                <rect x="-105" y="-11" width="210" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
                 <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">
-                  {isEn ? '🧱 6-Prime Wall (Impassable)' : '🧱 Mur de 6 Portes (Prime)'}
+                  {isEn ? '🧱 6-Prime Wall (Impassable)' : '🧱 Mur de 6 Portes (Infranchissable)'}
                 </text>
               </g>
             )}
             <circle cx="128" cy={280 - ep4JumperBounce} r="12" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
             {progress > 0.55 && (
               <g transform="translate(128, 240)">
-                <rect x="-40" y="-8" width="80" height="16" rx="5" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-                <text x="0" y="3" fill="#fca5a5" fontSize="10" fontWeight="bold" textAnchor="middle">⛔ Bloqué !</text>
+                <rect x="-65" y="-9" width="130" height="18" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="0.8" />
+                <text x="0" y="3.5" fill="#fca5a5" fontSize="10" fontWeight="bold" textAnchor="middle">
+                  {isEn ? '⛔ Blocked!' : '⛔ Pion adverse bloqué'}
+                </text>
               </g>
             )}
           </g>

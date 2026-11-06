@@ -217,8 +217,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     id: 7, linkedEpisodeId: 4, pointsReward: 200, dice: [5, 3], boardHighlights: {},
     titleFr: "Quiz 7/10 : Le Mur de Portes (Bloquer l'adversaire)",
     titleEn: "Quiz 7/10: The Wall of Gates (Prime)",
-    questionFr: "Pourquoi aligner plusieurs Portes côte à côte (Prime) est-il redoutable\u00A0?",
-    questionEn: "Why is aligning several Gates side-by-side (Prime) so formidable?",
+    questionFr: "Pourquoi aligner plusieurs Portes côte à côte est-il si redoutable\u00A0?",
+    questionEn: "Why is lining up several consecutive points side by side so powerful?",
     options: [
       {
         id: "A", isCorrect: true,
@@ -248,8 +248,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     id: 8, linkedEpisodeId: 4, pointsReward: 200, dice: [6, 1], boardHighlights: {},
     titleFr: "Quiz 8/10 : Quand Peut-on Sortir ses Pions ?",
     titleEn: "Quiz 8/10: When Can You Bear Off?",
-    questionFr: "Pion blanc retardataire à gauche : pouvez-vous déjà sortir vos autres pions\u00A0?",
-    questionEn: "White laggard on the left: can you already bear off your other checkers?",
+    questionFr: "Pion retardataire dehors : avez-vous le droit de sortir vos pions\u00A0?",
+    questionEn: "Laggard checker outside: are you allowed to bear off your checkers?",
     options: [
       {
         id: "A", isCorrect: false,
@@ -279,8 +279,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     id: 9, linkedEpisodeId: 5, pointsReward: 200, dice: [0, 0], boardHighlights: {},
     titleFr: "Quiz 9/10 : Gagner Double (Gammon x2)",
     titleEn: "Quiz 9/10: Winning Double (Gammon x2)",
-    questionFr: "Vos 15 pions sont sortis alors que l'adversaire en a sorti zéro : résultat\u00A0?",
-    questionEn: "All 15 checkers borne off while opponent has borne off zero: outcome?",
+    questionFr: "Vos 15 pions sortis alors que l'adversaire en a sorti 0 : résultat\u00A0?",
+    questionEn: "All 15 checkers borne off while opponent has borne off 0: outcome?",
     options: [
       {
         id: "A", isCorrect: false,
@@ -310,7 +310,7 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     id: 10, linkedEpisodeId: 5, pointsReward: 200, dice: [0, 0], boardHighlights: { cube: true },
     titleFr: "Quiz 10/10 : Le Dé Multiplicateur (x2)",
     titleEn: "Quiz 10/10: The Doubling Cube (x2)",
-    questionFr: "À quoi sert le gros dé spécial marqué 2, 4, 8 (Videau) sur le plateau\u00A0?",
+    questionFr: "À quoi sert le gros dé spécial marqué 2, 4, 8 (Videau) sur le tapis\u00A0?",
     questionEn: "What is the special doubling die marked 2, 4, 8 (Cube) used for?",
     options: [
       {

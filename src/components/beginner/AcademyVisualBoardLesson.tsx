@@ -202,24 +202,25 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
           </g>
         )}
 
-        {/* 7. LE MUR DE PORTES (PRIME) */}
+        {/* 7. LE MUR DE PORTES (INFRANCHISSABLE) */}
         {quizId === 7 && (
           <g>
-            {[170, 208, 246, 326].map((x, i) => (
+            {[316, 356, 396, 436].map((x, i) => (
               <g key={i}>
-                <circle cx={x} cy="238" r="10" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
-                <circle cx={x} cy="220" r="10" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
-                <rect x={x - 6} y="195" width="12" height="18" fill="rgba(212,175,55,0.4)" stroke="#D4AF37" rx="2" />
+                <circle cx={x} cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+                <circle cx={x} cy="218" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+                <rect x={x - 6} y="194" width="12" height="18" fill="rgba(212,175,55,0.4)" stroke="#D4AF37" rx="2" />
               </g>
             ))}
-            <g transform="translate(250, 175)">
-              <rect x="-105" y="-10" width="210" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
-              <text x="0" y="3.5" fill="#F3E5AB" fontSize="10.5" fontWeight="black" textAnchor="middle">{isEn ? 'Continuous Wall of Gates (Prime)' : 'Mur Continu de Portes (Prime)'}</text>
+            <g transform="translate(376, 148)">
+              <rect x="-105" y="-11" width="210" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
+              <text x="0" y="3.5" fill="#F3E5AB" fontSize="10.5" fontWeight="black" textAnchor="middle">{isEn ? 'Wall of Gates (Unpassable)' : 'Mur de Portes (Infranchissable)'}</text>
             </g>
-            <circle cx="120" cy="238" r="11" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
-            <g transform="translate(120, 210)">
-              <rect x="-35" y="-9" width="70" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#fca5a5" fontSize="9" fontWeight="bold" textAnchor="middle">Bloqué !</text>
+            <circle cx="476" cy="238" r="12" fill="#18181B" stroke="#EF4444" strokeWidth="2" />
+            <circle cx="476" cy="238" r="5" fill="#EF4444" fillOpacity="0.3" />
+            <g transform="translate(476, 190)">
+              <rect x="-65" y="-10" width="130" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#EF4444" strokeWidth="0.8" />
+              <text x="0" y="3.5" fill="#FCA5A5" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? 'Opponent checker blocked' : 'Pion adverse bloqué'}</text>
             </g>
           </g>
         )}
@@ -230,13 +231,13 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
             {Array.from({ length: 14 }).map((_, idx) => (
               <circle key={idx} cx={340 + (idx % 5) * 36} cy={238 - Math.floor(idx / 5) * 18} r="9" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
             ))}
-            <circle cx="100" cy="238" r="12" fill="#FAF6EE" stroke="#ef4444" strokeWidth="3" />
+            <circle cx="100" cy="238" r="12" fill="#FAF6EE" stroke="#ef4444" strokeWidth="2.5" />
             <g transform="translate(100, 195)">
-              <rect x="-65" y="-9" width="130" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
+              <rect x="-65" y="-9" width="130" height="18" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="0.75" />
               <text x="0" y="3" fill="#fca5a5" fontSize="9.5" fontWeight="black" textAnchor="middle">{isEn ? '1 Laggard Outside!' : '1 Retardataire Dehors !'}</text>
             </g>
-            <g transform="translate(424, 175)">
-              <rect x="-120" y="-9" width="240" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
+            <g transform="translate(424, 180)">
+              <rect x="-120" y="-9" width="240" height="18" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="0.75" />
               <text x="0" y="3" fill="#f87171" fontSize="9" fontWeight="bold" textAnchor="middle">{isEn ? 'Cannot bear off yet (All 15 must be home)' : 'Sortie interdite tant que les 15 ne sont pas rentrés'}</text>
             </g>
           </g>
@@ -249,7 +250,7 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
               <rect key={idx} x="556" y={256 - idx * 16} width="38" height="11" rx="3" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
             ))}
             <g transform="translate(270, 125)">
-              <rect x="-115" y="-30" width="230" height="60" fill="#090B10" fillOpacity="0.94" stroke="#eab308" strokeWidth="1.5" rx="8" />
+              <rect x="-115" y="-30" width="230" height="60" fill="#090B10" fillOpacity="0.95" stroke="#eab308" strokeWidth="1.5" rx="8" />
               <text x="0" y="-5" fill="#F3E5AB" fontSize="16" fontWeight="black" textAnchor="middle">×2 POINTS</text>
               <text x="0" y="15" fill="#fbbf24" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? 'Gammon : Opponent bore off 0 checkers' : "Gammon : L'adversaire n'en a sorti aucun"}</text>
             </g>
@@ -264,7 +265,7 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
               <text x="0" y="10" fill="#F3E5AB" fontSize="28" fontWeight="black" textAnchor="middle">2</text>
             </g>
             <g transform="translate(286, 185)">
-              <rect x="-135" y="-10" width="270" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
+              <rect x="-135" y="-10" width="270" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.75" />
               <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">{isEn ? 'Doubling Cube : Propose to Double Match Stakes' : 'Dé Multiplicateur : Proposez de Doubler la Mise'}</text>
             </g>
           </g>

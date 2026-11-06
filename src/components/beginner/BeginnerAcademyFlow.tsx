@@ -33,6 +33,8 @@ export function BeginnerAcademyFlow({
         if (params.get('tab') === 'quiz' || params.get('step') === 'quiz' || params.get('mode') === 'beginner-academy') {
           setViewState('QUIZ');
         }
+      }
+      if (typeof document !== 'undefined') {
         document.title = lang === 'fr'
           ? "Académie d'Initiation — Backgammon Tour"
           : 'Beginner Academy — Backgammon Tour';
@@ -45,6 +47,14 @@ export function BeginnerAcademyFlow({
       }
     } catch {}
   }, [lang]);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.title = lang === 'fr'
+        ? "Académie d'Initiation — Backgammon Tour"
+        : 'Beginner Academy — Backgammon Tour';
+    }
+  }, [lang, viewState, activeQuizIndex]);
 
   const saveProgress = (points: number, quizIds: number[]) => {
     try { localStorage.setItem('bgtour_beginner_academy_progress', JSON.stringify({ scorePoints: points, completedQuizIds: quizIds })); } catch {}
