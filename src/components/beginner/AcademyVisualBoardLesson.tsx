@@ -55,8 +55,8 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
           );
         })}
 
-        {/* Zone Votre Maison (Sortie) uniquement sur les leçons concernées (1, 3, 4) */}
-        {[1, 3, 4].includes(quizId) && (
+        {/* Zone Votre Maison (Sortie) uniquement sur la leçon 1 */}
+        {quizId === 1 && (
           <g>
             <rect x="296" y="140" width="240" height="115" fill="rgba(16, 185, 129, 0.08)" stroke="#10B981" strokeDasharray="4 4" rx="6" />
             <g transform="translate(416, 155)">
@@ -114,16 +114,15 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 3. PION SEUL VS PORTE (BOUCLIER) */}
         {quizId === 3 && (
           <g>
-            <circle cx="150" cy="238" r="12" fill="#FAF6EE" stroke="#ef4444" strokeWidth="2.5" />
-            <circle cx="150" cy="238" r="18" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 3" />
-            <g transform="translate(150, 185)">
-              <rect x="-75" y="-10" width="150" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.8" />
+            <circle cx="150" cy="238" r="11" fill="#FAF6EE" stroke="#ef4444" strokeWidth="2" />
+            <g transform="translate(150, 175)">
+              <rect x="-75" y="-10" width="150" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="1" />
               <text x="0" y="3.5" fill="#f87171" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? 'Single Checker (In danger)' : 'Pion Seul (En danger)'}</text>
             </g>
             <circle cx="420" cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
             <circle cx="420" cy="218" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-            <g transform="translate(420, 185)">
-              <rect x="-85" y="-10" width="170" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#10B981" strokeWidth="0.8" />
+            <g transform="translate(420, 175)">
+              <rect x="-85" y="-10" width="170" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#10B981" strokeWidth="1" />
               <text x="0" y="3.5" fill="#34D399" fontSize="10.5" fontWeight="black" textAnchor="middle">{isEn ? 'Gate (2 Checkers = Shield)' : 'Porte (2 Pions = Bouclier)'}</text>
             </g>
           </g>

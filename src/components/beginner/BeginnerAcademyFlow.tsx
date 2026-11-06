@@ -97,10 +97,7 @@ export function BeginnerAcademyFlow({
 
   const handleLaunchQuizzesForEpisode = (episodeId: number) => {
     const firstQuizForEp = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => q.linkedEpisodeId === episodeId);
-    if (firstQuizForEp >= 0) {
-      handleSelectQuizIndex(firstQuizForEp);
-      setViewState('QUIZ');
-    }
+    if (firstQuizForEp >= 0) { handleSelectQuizIndex(firstQuizForEp); setViewState('QUIZ'); }
   };
 
   const handleSelectOption = (optionId: string) => {
@@ -110,9 +107,7 @@ export function BeginnerAcademyFlow({
     if (opt?.isCorrect && !completedQuizIds.includes(currentQuiz.id)) {
       const nextPoints = scorePoints + currentQuiz.pointsReward;
       const nextQuizIds = [...completedQuizIds, currentQuiz.id];
-      setScorePoints(nextPoints);
-      setCompletedQuizIds(nextQuizIds);
-      saveProgress(nextPoints, nextQuizIds);
+      setScorePoints(nextPoints); setCompletedQuizIds(nextQuizIds); saveProgress(nextPoints, nextQuizIds);
     }
   };
 
@@ -171,7 +166,7 @@ export function BeginnerAcademyFlow({
             <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider truncate">
               {lang === 'fr' ? currentQuiz.titleFr : currentQuiz.titleEn}
             </span>
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="ml-auto flex items-center gap-1 shrink-0">
               {BEGINNER_10_INITIATION_QUIZZES.map((q, idx) => {
                 const isCur = idx === activeQuizIndex;
                 const isPass = completedQuizIds.includes(q.id);
@@ -179,6 +174,7 @@ export function BeginnerAcademyFlow({
                   <button
                     key={q.id}
                     type="button"
+                    data-testid={`academy-quiz-step-btn-${q.id}`}
                     onClick={() => handleSelectQuizIndex(idx)}
                     title={`Quiz ${q.id}/10`}
                     className={`w-6 h-6 rounded-md text-[11px] font-mono font-bold flex items-center justify-center transition-all ${
