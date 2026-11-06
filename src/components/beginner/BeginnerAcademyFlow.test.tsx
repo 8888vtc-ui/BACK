@@ -22,7 +22,7 @@ describe('BeginnerAcademyFlow Component', () => {
     fireEvent.click(launchBtn);
 
     expect(screen.getByText(/Quiz 1\/10/i)).toBeDefined();
-    const correctOption = screen.getByText(/Suivre la grande flèche dorée en fer à cheval|Follow the golden horseshoe arrow/i);
+    const correctOption = screen.getByTestId('academy-option-B');
     fireEvent.click(correctOption);
 
     expect(screen.getByText(/Exact !|Correct!/i)).toBeDefined();

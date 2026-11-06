@@ -183,12 +183,21 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 6. SORTIR DE LA BARRE CENTRALE EN PRIORITÉ */}
         {quizId === 6 && (
           <g>
+            {/* Zone de Rentrée en haut à droite (Cases 24 à 19) */}
+            <rect x="296" y="5" width="240" height="115" fill="rgba(245, 158, 11, 0.08)" stroke="#F59E0B" strokeDasharray="4 4" rx="6" />
+            <g transform="translate(416, 20)">
+              <rect x="-85" y="-10" width="170" height="18" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#F59E0B" strokeWidth="0.75" />
+              <text x="0" y="3" fill="#FBBF24" fontSize="10" fontWeight="bold" textAnchor="middle">
+                {isEn ? 'Re-entry Zone (Points 19 to 24)' : 'Zone de Rentrée (Cases 24 à 19)'}
+              </text>
+            </g>
+
             <rect x="268" y="95" width="24" height="85" fill="rgba(239, 68, 68, 0.25)" stroke="#ef4444" rx="4" />
             <circle cx="280" cy="135" r="12" fill="#FAF6EE" stroke="#ef4444" strokeWidth="2.5" />
-            <path d="M 280 123 Q 330 65 430 35" fill="none" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
+            <path d="M 280 120 Q 330 65 410 40" fill="none" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
             <g transform="translate(280, 195)">
-              <rect x="-75" y="-10" width="150" height="20" rx="5" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="0.75" />
-              <text x="0" y="3.5" fill="#fca5a5" fontSize="10" fontWeight="black" textAnchor="middle">{isEn ? 'Priority #1 : Enter first' : 'Priorité #1 : Rentrer en jeu'}</text>
+              <rect x="-80" y="-10" width="160" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#F59E0B" strokeOpacity="0.8" strokeWidth="1" />
+              <text x="0" y="3.5" fill="#FBBF24" fontSize="10" fontWeight="black" textAnchor="middle">{isEn ? 'Priority #1 : Enter first' : 'Priorité #1 : Rentrer en jeu'}</text>
             </g>
           </g>
         )}
