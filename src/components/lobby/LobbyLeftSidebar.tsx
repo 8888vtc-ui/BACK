@@ -9,3 +9,4 @@ import { LobbyLeftSidebar } from './LobbySidebarAndWidgets';
 
 export { LobbyLeftSidebar, type LobbyLeftSidebarProps } from './LobbySidebarAndWidgets';
 export default LobbyLeftSidebar;
+

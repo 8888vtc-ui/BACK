@@ -90,7 +90,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
 
     return (
         <nav
-            aria-label="Navigation principale"
+            aria-label={locale === 'en' ? 'Main navigation' : 'Navigation principale'}
             data-testid="app-navbar"
             className="sticky top-0 z-40 w-full border-b border-[#d4af37]/15 bg-gradient-to-b from-[#0b0d12]/95 to-[#050505]/90 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.03),0_8px_24px_-12px_rgba(0,0,0,0.8)]"
         >

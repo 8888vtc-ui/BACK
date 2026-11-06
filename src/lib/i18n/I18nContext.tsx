@@ -2,8 +2,8 @@
 
 /**
  * Contexte d'internationalisation multilingue (FR, EN, ES, PT, DE, AR, JA).
- * Conforme à la Loi 5 & Loi 6 : priorité absolue au choix explicite utilisateur (`bgtour_user_explicit_locale`),
- * Auto-Detect FR par langue navigateur ou fuseau horaire francophone, <= 240 lignes, 0 any.
+ * Unification de clé 'bgtour_locale', priorité absolue au choix explicite utilisateur,
+ * Auto-detect FR via Europe/Paris ou navigator.language, <= 240 lignes, 0 any.
  */
 
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
@@ -86,6 +86,20 @@ const PORTUGUESE_TIMEZONES = new Set(['Europe/Lisbon', 'America/Sao_Paulo', 'Ame
 const ARABIC_TIMEZONES = new Set(['Asia/Riyadh', 'Asia/Dubai', 'Asia/Qatar', 'Asia/Kuwait', 'Asia/Baghdad', 'Asia/Amman', 'Asia/Beirut', 'Africa/Cairo']);
 const VALID_LOCALES = new Set<Locale>(['fr', 'en', 'es', 'pt', 'de', 'ar', 'ja']);
 
+function getSavedUserLocale(): Locale | null {
+    if (typeof window === 'undefined') return null;
+    try {
+        const saved = (
+            window.localStorage?.getItem('bgtour_locale') ||
+            window.localStorage?.getItem('bg_locale') ||
+            window.localStorage?.getItem('backgammon_pro_locale_v1') ||
+            window.localStorage?.getItem('bgtour_user_explicit_locale')
+        ) as Locale | null;
+        if (saved && VALID_LOCALES.has(saved)) return saved;
+    } catch {}
+    return null;
+}
+
 export function detectLocale(): Locale {
     if (typeof window === 'undefined') return 'en';
 
@@ -96,7 +110,6 @@ export function detectLocale(): Locale {
             const urlLang = params.get('lang')?.toLowerCase() as Locale | undefined;
             if (urlLang && VALID_LOCALES.has(urlLang)) {
                 try {
-                    window.localStorage?.setItem('bgtour_user_explicit_locale', urlLang);
                     window.localStorage?.setItem('bgtour_locale', urlLang);
                     window.localStorage?.setItem('bg_locale', urlLang);
                 } catch {}
@@ -105,37 +118,37 @@ export function detectLocale(): Locale {
         }
     } catch {}
 
-    // 2. Choix explicite manuel de l'utilisateur (priorité absolue sur navigator.language)
-    try {
-        const explicit = (
-            window.localStorage?.getItem('bgtour_user_explicit_locale') ||
-            window.sessionStorage?.getItem('bgtour_manual_locale')
-        ) as Locale | null;
-        if (explicit && VALID_LOCALES.has(explicit)) return explicit;
-    } catch {}
+    // 2. Choix explicite utilisateur (localStorage prioritaire sur navigator.language : un nouvel onglet ne l'écrase jamais)
+    const saved = getSavedUserLocale();
+    if (saved) return saved;
 
-    // 3. Auto-Detect : Fuseau horaire francophone OU langue navigateur française -> 'fr'
+    // 3. Auto-Detect initial (si aucun choix dans le localStorage) :
+    // En priorité absolue : fuseau horaire francophone (Europe/Paris) et navigator.language commençant par 'fr'
     let timeZone = '';
     try {
         timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
     } catch {}
-    if (timeZone && FRENCH_TIMEZONES.has(timeZone)) return 'fr';
+    if (timeZone && (timeZone === 'Europe/Paris' || FRENCH_TIMEZONES.has(timeZone))) {
+        return 'fr';
+    }
 
     try {
-        if (typeof navigator !== 'undefined' && navigator.language?.toLowerCase().startsWith('fr')) return 'fr';
-        const candidateLangs: string[] = [];
-        if (typeof navigator !== 'undefined' && Array.isArray(navigator.languages)) candidateLangs.push(...navigator.languages);
-        if (typeof navigator !== 'undefined' && navigator.language) candidateLangs.push(navigator.language);
-        if (candidateLangs.some((c) => (c || '').toLowerCase().trim().startsWith('fr'))) return 'fr';
+        if (typeof navigator !== 'undefined') {
+            if (navigator.language?.toLowerCase().startsWith('fr')) return 'fr';
+            const candidateLangs: string[] = [];
+            if (Array.isArray(navigator.languages)) candidateLangs.push(...navigator.languages);
+            if (navigator.language) candidateLangs.push(navigator.language);
+            if (candidateLangs.some((c) => (c || '').toLowerCase().trim().startsWith('fr'))) return 'fr';
 
-        for (const candidate of candidateLangs) {
-            const navLang = (candidate || '').toLowerCase().trim();
-            if (navLang.startsWith('en')) return 'en';
-            if (navLang.startsWith('es')) return 'es';
-            if (navLang.startsWith('pt')) return 'pt';
-            if (navLang.startsWith('de')) return 'de';
-            if (navLang.startsWith('ar')) return 'ar';
-            if (navLang.startsWith('ja')) return 'ja';
+            for (const candidate of candidateLangs) {
+                const navLang = (candidate || '').toLowerCase().trim();
+                if (navLang.startsWith('en')) return 'en';
+                if (navLang.startsWith('es')) return 'es';
+                if (navLang.startsWith('pt')) return 'pt';
+                if (navLang.startsWith('de')) return 'de';
+                if (navLang.startsWith('ar')) return 'ar';
+                if (navLang.startsWith('ja')) return 'ja';
+            }
         }
     } catch {}
 
@@ -147,12 +160,7 @@ export function detectLocale(): Locale {
         if (timeZone.startsWith('Asia/Tokyo')) return 'ja';
     }
 
-    try {
-        const saved = (window.localStorage?.getItem('bgtour_locale') || window.localStorage?.getItem('bg_locale')) as Locale | null;
-        if (saved && VALID_LOCALES.has(saved)) return saved;
-    } catch {}
-
-    return 'en';
+    return 'fr';
 }
 
 export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
@@ -161,27 +169,6 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
     useEffect(() => {
         if (initialLocale) return;
         const syncDeviceLocale = () => {
-            try {
-                if (typeof window !== 'undefined' && window.location?.search) {
-                    const params = new URLSearchParams(window.location.search);
-                    const urlLang = params.get('lang')?.toLowerCase() as Locale | undefined;
-                    if (urlLang && VALID_LOCALES.has(urlLang)) {
-                        setLocaleState(urlLang);
-                        window.localStorage?.setItem('bgtour_locale', urlLang);
-                        window.localStorage?.setItem('bg_locale', urlLang);
-                        return;
-                    }
-                }
-                const explicit = (
-                    window.localStorage?.getItem('bgtour_user_explicit_locale') ||
-                    window.sessionStorage?.getItem('bgtour_manual_locale') ||
-                    window.localStorage?.getItem('bgtour_locale')
-                ) as Locale | null;
-                if (explicit && VALID_LOCALES.has(explicit)) {
-                    setLocaleState(explicit);
-                    return;
-                }
-            } catch {}
             setLocaleState(detectLocale());
         };
         syncDeviceLocale();
@@ -204,8 +191,6 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
         setLocaleState(newLocale);
         if (typeof window !== 'undefined') {
             try {
-                window.localStorage?.setItem('bgtour_user_explicit_locale', newLocale);
-                window.sessionStorage?.setItem('bgtour_manual_locale', newLocale);
                 window.localStorage?.setItem('bgtour_locale', newLocale);
                 window.localStorage?.setItem('bg_locale', newLocale);
                 document.documentElement.lang = newLocale;

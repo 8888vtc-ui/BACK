@@ -155,12 +155,13 @@ describe('detectLocale — détection automatique de la langue (6 langues + JA)'
         expect(detectLocale()).toBe('ja');
     });
 
-    it('ne reste jamais bloqué sur un vieux localStorage fr quand le navigateur est dans une autre langue', () => {
-        storage['bg_locale'] = 'fr';
+    it('priorise le choix explicite en localStorage sur navigator.language (nouvel onglet persistant)', () => {
+        storage['bgtour_locale'] = 'fr';
         vi.stubGlobal('navigator', { language: 'en-US', languages: ['en-US'] });
-        expect(detectLocale()).toBe('en');
+        expect(detectLocale()).toBe('fr');
 
-        vi.stubGlobal('navigator', { language: 'es-ES', languages: ['es-ES'] });
+        storage['bgtour_locale'] = 'es';
+        vi.stubGlobal('navigator', { language: 'en-US', languages: ['en-US'] });
         expect(detectLocale()).toBe('es');
     });
 
@@ -185,5 +186,11 @@ describe('detectLocale — détection automatique de la langue (6 langues + JA)'
 
         vi.stubGlobal('navigator', { language: 'ja-JP', languages: ['ja-JP'] });
         expect(detectLocale()).toBe('ja');
+    });
+
+    it('auto-détecte le français par défaut sur fuseau Europe/Paris sans choix explicite', () => {
+        vi.stubGlobal('Intl', { DateTimeFormat: () => ({ resolvedOptions: () => ({ timeZone: 'Europe/Paris' }) }) });
+        vi.stubGlobal('navigator', { language: 'en-US', languages: ['en-US'] });
+        expect(detectLocale()).toBe('fr');
     });
 });
