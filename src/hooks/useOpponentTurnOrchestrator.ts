@@ -136,4 +136,11 @@ export function useOpponentTurnOrchestrator({
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boardState.turn, phase, difficulty, autoOpponent, opponentDelayMs, stepDelayMs, arrowPreviewMs, forcedOpponentDice, locale]);
+
+    // Nettoyage strict de tous les timers lors du démontage complet
+    useEffect(() => {
+        return () => {
+            clearOpponentTimers();
+        };
+    }, [clearOpponentTimers]);
 }

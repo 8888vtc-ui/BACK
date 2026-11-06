@@ -181,6 +181,13 @@ export function useMultiplayerClockAndTimers({
         }, 1000);
     }, [matchInfo, onDisconnectForfeit]);
 
+    useEffect(() => {
+        return () => {
+            if (turnTimerRef.current) clearInterval(turnTimerRef.current);
+            if (disconnectTimerRef.current) clearInterval(disconnectTimerRef.current);
+        };
+    }, []);
+
     return {
         turnTimeRemaining,
         setTurnTimeRemaining,

@@ -10,7 +10,7 @@
  *   - Strictement 0 `any`, < 300 lignes.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -24,6 +24,7 @@ export interface PageTransitionProps {
  */
 export function useSpaNavigation() {
     const [isNavigating, setIsNavigating] = useState(false);
+    const navTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     let router: ReturnType<typeof useRouter> | null = null;
     try {
@@ -32,6 +33,12 @@ export function useSpaNavigation() {
     } catch {
         router = null;
     }
+
+    useEffect(() => {
+        return () => {
+            if (navTimerRef.current) clearTimeout(navTimerRef.current);
+        };
+    }, []);
 
     const navigateTo = useCallback(
         (href: string) => {
@@ -42,7 +49,8 @@ export function useSpaNavigation() {
                 window.history.pushState({}, '', href);
                 window.dispatchEvent(new PopStateEvent('popstate'));
             }
-            setTimeout(() => setIsNavigating(false), 180);
+            if (navTimerRef.current) clearTimeout(navTimerRef.current);
+            navTimerRef.current = setTimeout(() => setIsNavigating(false), 180);
         },
         [router],
     );

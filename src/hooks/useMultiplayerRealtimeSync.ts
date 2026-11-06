@@ -2,7 +2,7 @@
  * @file src/hooks/useMultiplayerRealtimeSync.ts
  * @description Synchronisation Realtime, déconnexion adverse et gestion du canal réseau (< 200 lignes, 0 any).
  */
-import { useCallback, useRef, type Dispatch, type SetStateAction, type MutableRefObject } from 'react';
+import { useCallback, useRef, useEffect, type Dispatch, type SetStateAction, type MutableRefObject } from 'react';
 import type { Player } from '../engine/backgammonEngine';
 import type {
     PlayerEloProfile,
@@ -125,6 +125,12 @@ export function useMultiplayerRealtimeSync({
         }
         if (disconnectTimerRef.current) clearInterval(disconnectTimerRef.current);
     }, []);
+
+    useEffect(() => {
+        return () => {
+            clearRealtime();
+        };
+    }, [clearRealtime]);
 
     return {
         realtimeRef,
