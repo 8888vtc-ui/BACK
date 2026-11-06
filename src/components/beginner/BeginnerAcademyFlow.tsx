@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Award, ArrowRight, Sparkles, BookOpen, RotateCcw, CheckCircle, AlertCircle } from 'lucide-react';
+import { Award, ArrowRight, RotateCcw, CheckCircle, AlertCircle } from 'lucide-react';
 import { BeginnerVideoSeriesPlayer } from './BeginnerVideoSeriesPlayer';
 import { AcademyVisualBoardLesson } from './AcademyVisualBoardLesson';
 import { BEGINNER_10_INITIATION_QUIZZES, BeginnerInitiationQuiz } from '../../data/beginner10InitiationQuizzes';
 import { useTranslation } from '../../i18n';
 import { QuickAccountModal } from '../auth/QuickAccountModal';
+
 interface BeginnerAcademyFlowProps {
   onBackToLobby?: () => void;
   onPlayDirect?: () => void;
@@ -29,7 +30,7 @@ export function BeginnerAcademyFlow({
     try {
       if (typeof window !== 'undefined') {
         const params = new URLSearchParams(window.location.search);
-        if (params.get('step') === 'quiz' || params.get('tab') === 'quiz' || params.get('mode') === 'beginner-academy') {
+        if (params.get('tab') === 'quiz' || params.get('step') === 'quiz' || params.get('mode') === 'beginner-academy') {
           setViewState('QUIZ');
         }
         document.title = lang === 'fr'
@@ -91,9 +92,9 @@ export function BeginnerAcademyFlow({
   const handlePlayDirect = () => (onPlayDirect ? onPlayDirect() : typeof window !== 'undefined' ? window.location.assign('/play?gate=beginner&start=guided') : undefined);
 
   return (
-    <div className="w-full min-h-screen py-2 px-3 sm:px-6 flex flex-col items-center justify-start bg-gradient-to-b from-[#06080B] to-[#0D141C] text-white overflow-y-auto">
-      {/* En-tête Académie compact */}
-      <div className="w-full max-w-4xl flex items-center justify-between mb-2 pb-2 border-b border-white/10 gap-2 flex-wrap">
+    <div className="w-full h-full max-h-full py-1.5 px-3 sm:px-6 flex flex-col items-center justify-between bg-gradient-to-b from-[#06080B] to-[#0D141C] text-white overflow-hidden select-none">
+      {/* En-tête Académie ultra-compact */}
+      <div className="w-full max-w-2xl flex items-center justify-between mb-1 pb-1 border-b border-white/10 gap-2 shrink-0">
         <button type="button" onClick={handleBackToLobby} data-testid="academy-back-btn" className="text-xs text-neutral-400 hover:text-white flex items-center gap-1 transition-colors">
           ← {lang === 'fr' ? 'Retour Accueil' : 'Back to Home'}
         </button>
@@ -118,7 +119,7 @@ export function BeginnerAcademyFlow({
         </div>
 
         <div className="flex items-center gap-3">
-          <div data-testid="academy-score-badge" className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/[0.03] border border-white/10 text-zinc-300 text-xs font-mono font-semibold">
+          <div data-testid="academy-score-badge" className="flex items-center gap-1 px-2.5 py-0.5 rounded-xl bg-white/[0.03] border border-white/10 text-zinc-300 text-xs font-mono font-semibold">
             <span>{completedQuizIds.length} / 10 {lang === 'fr' ? 'validés' : 'passed'} • +{scorePoints.toLocaleString()} PTS</span>
           </div>
         </div>
@@ -126,24 +127,26 @@ export function BeginnerAcademyFlow({
 
       {/* Vue 1 : Vidéos */}
       {viewState === 'VIDEO' && (
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full flex-1 flex flex-col items-center justify-center overflow-y-auto">
           <BeginnerVideoSeriesPlayer onEpisodeCompleted={() => {}} onLaunchQuizzes={handleLaunchQuizzesForEpisode} />
         </div>
       )}
 
-      {/* Vue 2 : Quiz d'initiation */}
+      {/* Vue 2 : Quiz d'initiation — 100% sans scroll */}
       {viewState === 'QUIZ' && (
-        <div data-testid="academy-quiz-container" className="w-full max-w-2xl bg-[#0B1015] border border-white/10 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col gap-2.5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">{lang === 'fr' ? currentQuiz.titleFr : currentQuiz.titleEn}</span>
-            {selectedOptionId && <span className="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">+{currentQuiz.pointsReward} PTS</span>}
+        <div data-testid="academy-quiz-container" className="w-full max-w-2xl bg-[#0B1015] border border-white/10 rounded-2xl p-2.5 sm:p-3 shadow-2xl flex flex-col justify-between flex-1 min-h-0 overflow-hidden">
+          <div className="flex items-center justify-between shrink-0">
+            <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">{lang === 'fr' ? currentQuiz.titleFr : currentQuiz.titleEn}</span>
+            {selectedOptionId && <span className="text-[11px] text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">+{currentQuiz.pointsReward} PTS</span>}
           </div>
 
-          <AcademyVisualBoardLesson quizId={currentQuiz.id} isEn={lang === 'en'} />
+          <div className="w-full flex items-center justify-center shrink-0">
+            <AcademyVisualBoardLesson quizId={currentQuiz.id} isEn={lang === 'en'} />
+          </div>
 
-          <h3 className="text-sm sm:text-base font-bold text-white leading-snug">{lang === 'fr' ? currentQuiz.questionFr : currentQuiz.questionEn}</h3>
+          <h3 className="text-xs sm:text-sm font-bold text-white leading-tight shrink-0 my-0.5">{lang === 'fr' ? currentQuiz.questionFr : currentQuiz.questionEn}</h3>
 
-          <div className="flex flex-col gap-1.5 my-1">
+          <div className="flex flex-col gap-1.5 my-0.5 shrink-0">
             {currentQuiz.options.map((opt) => {
               const isSelected = selectedOptionId === opt.id;
               const btnStyle = !selectedOptionId
@@ -160,96 +163,98 @@ export function BeginnerAcademyFlow({
                   type="button"
                   data-testid={`academy-option-${opt.id}`}
                   onClick={() => handleSelectOption(opt.id)}
-                  className={`w-full text-left p-2.5 sm:p-3 rounded-xl border font-medium text-xs sm:text-sm transition-all flex items-start gap-2.5 ${btnStyle}`}
+                  className={`w-full text-left p-2 sm:p-2.5 rounded-xl border font-medium text-xs sm:text-sm transition-all flex items-start gap-2 ${btnStyle}`}
                 >
                   <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold shrink-0">{opt.id}</span>
-                  <div className="flex flex-col flex-1">
+                  <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-white">{lang === 'fr' ? opt.labelFr : opt.labelEn}</span>
-                      {selectedOptionId && opt.isCorrect && <span className="text-[#D4AF37] font-bold text-xs shrink-0 ml-2">➔ Flèche Dorée</span>}
+                      <span className="font-semibold text-white leading-tight truncate">{lang === 'fr' ? opt.labelFr : opt.labelEn}</span>
+                      {selectedOptionId && opt.isCorrect && <span className="text-[#D4AF37] font-bold text-[11px] shrink-0 ml-2">➔ Flèche Dorée</span>}
                     </div>
-                    {selectedOptionId && <span className="text-xs mt-0.5 text-neutral-200">{lang === 'fr' ? opt.explanationFr : opt.explanationEn}</span>}
+                    {selectedOptionId && <span className="text-[11px] mt-0.5 text-neutral-200 leading-tight">{lang === 'fr' ? opt.explanationFr : opt.explanationEn}</span>}
                   </div>
                 </button>
               );
             })}
           </div>
 
-          {selectedOptionId && (
-            <div className={`rounded-xl p-2.5 text-xs flex items-center justify-between gap-3 border ${
-              isSelectedCorrect ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' : 'bg-amber-950/40 border-amber-500/40 text-amber-200'
-            }`}>
-              <div className="flex items-center gap-2">
-                {isSelectedCorrect ? <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> : <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />}
-                <span className="text-xs">{isSelectedCorrect
-                  ? (lang === 'fr' ? 'Coup optimal ! Vos pions sont en parfaite sécurité.' : 'Optimal play! Checkers safe.')
-                  : (lang === 'fr' ? 'Coup imprudent. Cliquez sur « Réessayer » sans stress !' : 'Tip: Risky move. Click "Retry"!')}</span>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {!isSelectedCorrect && (
+          <div className="h-9 shrink-0 flex items-center">
+            {selectedOptionId && (
+              <div className={`w-full rounded-xl px-2.5 py-1.5 text-xs flex items-center justify-between gap-2 border ${
+                isSelectedCorrect ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' : 'bg-amber-950/40 border-amber-500/40 text-amber-200'
+              }`}>
+                <div className="flex items-center gap-1.5 truncate">
+                  {isSelectedCorrect ? <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> : <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
+                  <span className="text-[11px] truncate">{isSelectedCorrect
+                    ? (lang === 'fr' ? 'Coup optimal ! Vos pions sont en parfaite sécurité.' : 'Optimal play! Checkers safe.')
+                    : (lang === 'fr' ? 'Coup imprudent. Cliquez sur « Réessayer » sans stress !' : 'Tip: Risky move. Click "Retry"!')}</span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {!isSelectedCorrect && (
+                    <button
+                      type="button"
+                      data-testid="academy-quiz-retry-btn"
+                      onClick={() => setSelectedOptionId(null)}
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] transition-all active:scale-95"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>{lang === 'fr' ? 'Réessayer' : 'Retry'}</span>
+                    </button>
+                  )}
                   <button
                     type="button"
-                    data-testid="academy-quiz-retry-btn"
-                    onClick={() => setSelectedOptionId(null)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all active:scale-95"
+                    data-testid="academy-quiz-next-btn"
+                    onClick={handleNextQuiz}
+                    className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] text-black font-black text-[11px] uppercase tracking-wider shadow hover:brightness-105 transition-all active:scale-95"
                   >
-                    <RotateCcw className="w-3 h-3" />
-                    <span>{lang === 'fr' ? 'Réessayer' : 'Retry'}</span>
+                    <span>{lang === 'fr' ? 'Question suivante →' : 'Next question →'}</span>
+                    <ArrowRight className="w-3 h-3" />
                   </button>
-                )}
-                <button
-                  type="button"
-                  data-testid="academy-quiz-next-btn"
-                  onClick={handleNextQuiz}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] text-black font-black text-xs uppercase tracking-wider shadow hover:brightness-105 transition-all active:scale-95"
-                >
-                  <span>{lang === 'fr' ? 'Question suivante →' : 'Next question →'}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 
       {/* Vue 3 : Diplôme d'Initié au Cercle */}
       {viewState === 'DIPLOMA' && (
-        <div data-testid="academy-diploma-card" className="w-full max-w-xl bg-gradient-to-b from-[#141A22] to-[#0A0D12] border-2 border-amber-400/50 rounded-3xl p-6 sm:p-8 text-center shadow-2xl flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center shadow-lg shadow-amber-400/20">
-            <Award className="w-8 h-8 text-amber-400" />
+        <div data-testid="academy-diploma-card" className="w-full max-w-xl bg-gradient-to-b from-[#141A22] to-[#0A0D12] border-2 border-amber-400/50 rounded-3xl p-5 sm:p-6 text-center shadow-2xl flex flex-col items-center gap-3">
+          <div className="w-14 h-14 rounded-full bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center shadow-lg shadow-amber-400/20">
+            <Award className="w-7 h-7 text-amber-400" />
           </div>
           <div>
-            <span className="text-amber-400 text-sm font-bold uppercase tracking-widest">{lang === 'fr' ? 'Félicitations' : 'Congratulations'}</span>
-            <h2 className="text-xl sm:text-2xl font-black text-white mt-1">{lang === 'fr' ? "Diplôme d'Initié au Cercle Backgammon" : 'Backgammon Circle Initiate Diploma'}</h2>
-            <p className="text-sm text-neutral-300 mt-1 max-w-md">
+            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest">{lang === 'fr' ? 'Félicitations' : 'Congratulations'}</span>
+            <h2 className="text-lg sm:text-xl font-black text-white mt-0.5">{lang === 'fr' ? "Diplôme d'Initié au Cercle Backgammon" : 'Backgammon Circle Initiate Diploma'}</h2>
+            <p className="text-xs text-neutral-300 mt-0.5 max-w-md">
               {lang === 'fr'
                 ? 'Vous maîtrisez le but du jeu, la sécurité, la barre, le bear-off et le videau. Vous êtes fin prêt à jouer !'
                 : 'You have mastered the game rules, points, bar safety, bear-off, and the doubling cube. You are ready!'}
             </p>
           </div>
-          <div className="px-5 py-2 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-bold text-base">
+          <div className="px-4 py-1.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-bold text-sm">
             +{2000} PTS {lang === 'fr' ? 'Bonus Débloqués !' : 'Bonus Awarded!'}
           </div>
           <button
             type="button"
             data-testid="diploma-launch-guided-match-btn"
             onClick={handlePlayDirect}
-            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition"
+            className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition"
           >
             {lang === 'fr' ? 'Mettre en pratique contre le Bot Doux (Partie Guidée) →' : 'Practice Against Gentle Bot (Guided Match) →'}
           </button>
-          <div className="w-full flex flex-col sm:flex-row gap-2 mt-1">
+          <div className="w-full flex flex-col sm:flex-row gap-2 mt-0.5">
             <button
               type="button"
               onClick={() => onRequestSaveAccount ? onRequestSaveAccount() : setIsAccountModalOpen(true)}
-              className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm border border-white/10 transition"
+              className="flex-1 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 transition"
             >
               {lang === 'fr' ? 'Créer mon compte (Sauvegarder)' : 'Save account'}
             </button>
             <button
               type="button"
               onClick={handleBackToLobby}
-              className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs sm:text-sm border border-white/10 transition"
+              className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs border border-white/10 transition"
             >
               {lang === 'fr' ? 'Retour Accueil' : 'Back to Home'}
             </button>

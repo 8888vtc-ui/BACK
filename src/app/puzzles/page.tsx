@@ -6,25 +6,34 @@ import { BeginnerAcademyFlow } from '../../components/beginner/BeginnerAcademyFl
 import AppNavbar from '../../components/nav/AppNavbar';
 import { LobbyLeftSidebar } from '../../components/lobby/LobbySidebarAndWidgets';
 
-export const metadata: Metadata = {
-    title: 'Quiz ER Backgammon — 18 613 Problèmes Tactiques 3-Ply Certifiés GNU (Équité Réelle)',
-    description:
-        'Quiz ER (Équité Réelle) certifié par GNU Backgammon [world class] : travaillez les 9 piliers mathématiques (Ouvertures, Prime, Blitz, Backgame, Course et Videau).',
-    alternates: {
-        canonical: '/puzzles',
-        languages: {
-            'fr-FR': '/puzzles',
-            'en-US': '/puzzles?lang=en',
-            'es-ES': '/puzzles?lang=es',
-            'pt-BR': '/puzzles?lang=pt',
-            'de-DE': '/puzzles?lang=de',
-            'ar-SA': '/puzzles?lang=ar',
-        },
-    },
-};
-
 export interface PuzzlesPageProps {
     searchParams?: Promise<{ mode?: string; filter?: string; concept?: string; type?: string }>;
+}
+
+export async function generateMetadata({ searchParams }: PuzzlesPageProps): Promise<Metadata> {
+    const resolvedParams = searchParams ? await searchParams : undefined;
+    if (resolvedParams?.mode === 'beginner-academy') {
+        return {
+            title: "Académie d'Initiation — Backgammon Tour",
+            description: "10 leçons et quiz interactifs sur l'échiquier réel pour maîtriser les bases du Backgammon.",
+        };
+    }
+    return {
+        title: 'Quiz ER Backgammon — 18 613 Problèmes Tactiques 3-Ply Certifiés GNU (Équité Réelle)',
+        description:
+            'Quiz ER (Équité Réelle) certifié par GNU Backgammon [world class] : travaillez les 9 piliers mathématiques (Ouvertures, Prime, Blitz, Backgame, Course et Videau).',
+        alternates: {
+            canonical: '/puzzles',
+            languages: {
+                'fr-FR': '/puzzles',
+                'en-US': '/puzzles?lang=en',
+                'es-ES': '/puzzles?lang=es',
+                'pt-BR': '/puzzles?lang=pt',
+                'de-DE': '/puzzles?lang=de',
+                'ar-SA': '/puzzles?lang=ar',
+            },
+        },
+    };
 }
 
 export default async function PuzzlesPage({ searchParams }: PuzzlesPageProps) {
