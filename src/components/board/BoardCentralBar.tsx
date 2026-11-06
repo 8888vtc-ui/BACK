@@ -143,7 +143,7 @@ const BoardCentralBarComponent: React.FC<BoardCentralBarProps> = ({
                 data-testid="bar-danced-banner"
                 className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40 whitespace-nowrap rounded-xl border border-rose-500/80 bg-slate-950/95 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-rose-200 shadow-[0_10px_30px_rgba(244,63,94,0.45)] animate-pulse"
             >
-                {dancedMessage ?? 'Aucun coup possible — Portes fermées (Danse)'}
+                {dancedMessage ?? 'Portes fermées — Tour passé'}
             </div>
         )}
 

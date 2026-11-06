@@ -19,7 +19,12 @@ import { X_BAR, O_BAR, type Player } from './backgammonEngine';
 export const BAR_FANNED_AUTO_PASS_MS = 800;
 
 /** Message explicite affiché lorsque toutes les portes d'entrée sont fermées. */
-export const BAR_DANCED_MESSAGE = 'Aucun coup possible — Portes fermées (Danse)';
+export const BAR_DANCED_MESSAGE = 'Portes fermées — Tour passé (Aucun coup possible)';
+export const BAR_DANCED_MESSAGE_EN = 'Blocked on the bar — Turn passed (No legal moves)';
+
+export function getBarDancedMessage(locale: string = 'fr'): string {
+    return locale.startsWith('en') ? BAR_DANCED_MESSAGE_EN : BAR_DANCED_MESSAGE;
+}
 
 /** Retourne l'index moteur de la barre pour un joueur donné (`0` pour X, `25` pour O). */
 export function getPlayerBarPoint(player: Player): number {
