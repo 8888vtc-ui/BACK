@@ -187,7 +187,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                                         </div>
 
                                         <div className="flex items-center gap-1.5 shrink-0">
-                                            <span className={`text-xs sm:text-sm font-bold ${cand.isOptimal ? 'text-emerald-400' : 'text-white'}`}>
+                                            <span className={`text-sm sm:text-base font-black ${cand.isOptimal ? 'text-emerald-400' : 'text-white'}`}>
                                                 {isEn ? `${cand.winPct.toFixed(1)}% win` : `${cand.winPct.toFixed(1)} % de victoire`}
                                             </span>
                                             {cand.isOptimal ? (

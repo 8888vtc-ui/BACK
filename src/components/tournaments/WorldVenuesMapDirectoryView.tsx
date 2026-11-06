@@ -261,7 +261,7 @@ export const WorldVenuesMapDirectoryView: React.FC<WorldVenuesMapDirectoryViewPr
                                 >
                                     <div className="flex items-center justify-between text-[10px] text-amber-300 font-bold uppercase gap-1">
                                         <span className="truncate">{t.federation} • {t.tier}</span>
-                                        <span className="text-amber-200 shrink-0">{formatTournamentDateFr(t.startDate)}</span>
+                                        <span className="text-amber-200 shrink-0 whitespace-nowrap font-mono">{formatTournamentDateFr(t.startDate)}</span>
                                     </div>
                                     <h4 className="font-sans text-xs font-bold tracking-tight text-white truncate">{t.name}</h4>
                                     <div className="flex items-center justify-between text-[10px] text-slate-400 gap-1">

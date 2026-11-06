@@ -15,18 +15,18 @@ test.describe('Carte Mondiale des Tournois & Clubs — Anti-Chevauchement & Layo
         await expect(pointsBadge).toContainText('10 000 PTS');
         expect(await pointsBadge.innerText()).not.toBe('10 000 PT');
 
-        // 2. Vérification des pilules de zoom sans emojis drapeaux cassés (FR, EU, US)
+        // 2. Vérification des pilules de zoom sans emojis (Lucide icons + texte pur)
         const zoomWorld = page.locator('[data-testid="map-zoom-world"]');
         const zoomFrance = page.locator('[data-testid="map-zoom-france"]');
         const zoomEurope = page.locator('[data-testid="map-zoom-europe"]');
         const zoomAmericas = page.locator('[data-testid="map-zoom-americas"]');
         const zoomAsia = page.locator('[data-testid="map-zoom-asia"]');
 
-        await expect(zoomWorld).toContainText('🌐 Monde');
-        await expect(zoomFrance).toContainText('📍 France & Riviera');
-        await expect(zoomEurope).toContainText('🏛️ Europe');
-        await expect(zoomAmericas).toContainText('🧭 Amériques');
-        await expect(zoomAsia).toContainText('✨ Asie & Dubaï');
+        await expect(zoomWorld).toContainText('Monde');
+        await expect(zoomFrance).toContainText('France & Riviera');
+        await expect(zoomEurope).toContainText('Europe');
+        await expect(zoomAmericas).toContainText('Amériques');
+        await expect(zoomAsia).toContainText('Asie & Dubaï');
 
         // 3. Carte Interactive et Layout Côte-à-Côte
         const mapContainer = page.locator('[data-testid="interactive-world-map"]');
@@ -86,7 +86,7 @@ test.describe('Carte Mondiale des Tournois & Clubs — Anti-Chevauchement & Layo
         const officialSiteBtn = page.locator('[data-testid="club-official-site-btn"]');
         const playOnlineBtn = page.locator('[data-testid="club-play-online-btn"]');
         await expect(officialSiteBtn).toBeVisible();
-        await expect(officialSiteBtn).toContainText('Site Officiel / S’inscrire au Club');
+        await expect(officialSiteBtn).toContainText(/SITE OFFICIEL/i);
         await expect(playOnlineBtn).toBeVisible();
         await expect(playOnlineBtn).toContainText('Jouer au Salon en ligne du Club');
 

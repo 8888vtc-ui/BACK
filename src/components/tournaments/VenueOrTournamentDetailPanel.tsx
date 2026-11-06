@@ -92,7 +92,7 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
                             <Calendar size={14} strokeWidth={1.5} className="text-[#D4AF37] shrink-0" />
                             <div>
                                 <span className="text-slate-400">{dict.officialDatesLabel} </span>
-                                <span className="font-bold text-amber-200">
+                                <span className="font-bold text-amber-200 whitespace-nowrap">
                                     {formatTournamentDateFr(tournament.startDate)} → {formatTournamentDateFr(tournament.endDate)}
                                 </span>
                             </div>

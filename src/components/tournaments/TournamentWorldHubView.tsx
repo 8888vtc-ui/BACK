@@ -42,11 +42,11 @@ export interface TournamentWorldHubViewProps {
     readonly initialTournaments?: ReadonlyArray<TournamentRecord>;
 }
 
-const TIER_FILTERS: ReadonlyArray<{ id: TournamentTier | 'all'; label: string; testId: string }> = [
-    { id: 'all', label: 'Tous', testId: 'filter-tier-all' },
-    { id: 'mega', label: 'MEGA (150+ j. / 50k€+)', testId: 'filter-tier-mega' },
-    { id: 'grand', label: 'GRAND (50-150 j.)', testId: 'filter-tier-grand' },
-    { id: 'moyen', label: 'MOYEN (Clubs & Régional)', testId: 'filter-tier-moyen' },
+const TIER_FILTERS: ReadonlyArray<{ id: TournamentTier | 'all'; labelFr: string; labelEn: string; testId: string }> = [
+    { id: 'all', labelFr: 'Tous', labelEn: 'All', testId: 'filter-tier-all' },
+    { id: 'mega', labelFr: 'MEGA (150+ j. / 50k€+)', labelEn: 'MEGA (150+ players / 50k€+)', testId: 'filter-tier-mega' },
+    { id: 'grand', labelFr: 'GRAND (50-150 j.)', labelEn: 'GRAND (50-150 players)', testId: 'filter-tier-grand' },
+    { id: 'moyen', labelFr: 'MOYEN (Clubs & Régional)', labelEn: 'MEDIUM (Clubs & Regional)', testId: 'filter-tier-moyen' },
 ];
 
 const selectCls = 'rounded-xl border border-white/10 bg-[#141b2d] px-3 py-1.5 text-xs text-slate-200 focus:border-[#d4af37] focus:outline-none';
@@ -170,7 +170,7 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                     <div className="sr-only" aria-hidden="true">
                         {TIER_FILTERS.map((item) => (
                             <button key={item.id} type="button" onClick={() => setSelectedTier(item.id)} data-testid={item.testId}>
-                                {item.label}
+                                {isEn ? item.labelEn : item.labelFr}
                             </button>
                         ))}
                         <select value={selectedFederation} onChange={(e) => setSelectedFederation(e.target.value as TournamentFederation | 'all')} className={selectCls}>

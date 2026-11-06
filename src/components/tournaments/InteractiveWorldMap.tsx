@@ -56,6 +56,10 @@ const GLOBAL_SPACED_HUBS: ReadonlySet<string> = new Set([
     'new york', 'tokyo', 'dubai', 'sydney',
 ]);
 
+const EUROPE_DENSE_CITIES: ReadonlySet<string> = new Set([
+    'londres', 'london', 'paris', 'monte-carlo', 'monaco', 'lyon', 'marseille', 'nice', 'genève', 'geneve',
+]);
+
 export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.memo(({
     venues,
     tournaments,
@@ -127,6 +131,8 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
             for (const m of positionedMarkers) {
                 if (keys.has(m.key)) continue;
                 const cityLower = m.city.toLowerCase();
+                // Anti-chevauchement Europe (Londres/Paris/Monte-Carlo) : label affiché uniquement sur sélection ou hover
+                if (EUROPE_DENSE_CITIES.has(cityLower)) continue;
                 if (cityAssigned.has(cityLower)) continue;
                 keys.add(m.key);
                 cityAssigned.add(cityLower);
