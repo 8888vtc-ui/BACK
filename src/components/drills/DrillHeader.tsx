@@ -20,6 +20,7 @@ import {
     type AdaptiveQuizCategoryId,
 } from '../../features/drills/adaptiveQuizEngine';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 
 export type QuizDrillMode = 'adaptive' | 'pr_math' | 'personal_blunders' | 'speed_60s';
 
@@ -57,6 +58,7 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
     targetQuizEr, onResetAllMastery, onClose,
 }) => {
     const { tierGate } = usePlayerTierGate();
+    const authenticStats = useAuthenticPlayerStats();
     const isBeginner = tierGate === 'BEGINNER';
     const isPersonal = drillMode === 'personal_blunders' || Boolean(isPersonalMatchBlunder);
     const seenCount = adaptiveProfile?.seenQuizIds.length ?? 0;
@@ -104,7 +106,13 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                 <div className="flex flex-wrap items-center gap-1.5 min-w-0" data-testid="quiz-live-rating-badge">
                     <span className="sr-only">Niveau ER : {liveRatingValue}</span>
                     <span data-testid="quiz-target-metric-badge" title="ER / PR : Error Rate / Performance Rating officiel (échelle 0.0 à 30.0 — plus bas est meilleur)" className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-2 py-0.5 font-mono text-[11px] font-black text-emerald-200">
-                        {isBeginner ? `Précision : ${Math.max(50, Math.round(100 - erPrScore * 1.5))} %` : `ER / PR : ${erPrScore.toFixed(1)}`}
+                        {isBeginner
+                            ? `Précision : ${Math.max(50, Math.round(100 - (authenticStats.hasRealPR ? authenticStats.globalPR! : erPrScore) * 1.5))} %`
+                            : !authenticStats.isRegistered
+                            ? 'Mon PR : Non calibré (Invité)'
+                            : !authenticStats.hasRealPR
+                            ? 'Mon PR : En calibrage'
+                            : `ER / PR : ${authenticStats.globalPR?.toFixed(1)}`}
                         <span className="sr-only">ER / PR : {erPrScore.toFixed(1)} Cible ER / PR : ~6.5 (Intermédiaire)</span>
                     </span>
                     <span data-testid="quiz-nplus1-target-badge" title={targetBadgeText} className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#D4AF37]">

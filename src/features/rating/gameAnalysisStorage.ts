@@ -253,6 +253,29 @@ export function saveGameAnalysis(analysis: CompleteGameAnalysis): void {
     if (typeof window !== 'undefined' && window.localStorage) {
         try {
             window.localStorage.setItem(GAME_ANALYSES_STORAGE_KEY, JSON.stringify(list));
+            const rawStats = window.localStorage.getItem('bgtour_real_match_stats_v1');
+            const stats = rawStats ? JSON.parse(rawStats) : {
+                gamesPlayed: 0, totalCheckerLoss: 0, totalCheckerDecisions: 0,
+                totalCubeLoss: 0, totalCubeDecisions: 0, rating: 1500, updatedAt: new Date().toISOString(),
+            };
+            stats.gamesPlayed = list.length;
+            let cLoss = 0, cDec = 0, qLoss = 0, qDec = 0;
+            for (const item of list) {
+                const dec = item.unforcedDecisionsCount || item.decisionsCount || 10;
+                const loss = item.totalEquityLoss || 0;
+                cDec += Math.round(dec * 0.85);
+                cLoss += loss * 0.75;
+                qDec += Math.max(1, Math.round(dec * 0.15));
+                qLoss += loss * 0.25;
+            }
+            stats.totalCheckerLoss = Number(cLoss.toFixed(4));
+            stats.totalCheckerDecisions = cDec;
+            stats.totalCubeLoss = Number(qLoss.toFixed(4));
+            stats.totalCubeDecisions = qDec;
+            if (analysis.estimatedRating) stats.rating = analysis.estimatedRating;
+            stats.updatedAt = new Date().toISOString();
+            window.localStorage.setItem('bgtour_real_match_stats_v1', JSON.stringify(stats));
+            window.dispatchEvent(new CustomEvent('bgtour-stats-updated'));
         } catch (e) {
             console.warn('[GameAnalysisStorage] Échec écriture locale :', e);
         }

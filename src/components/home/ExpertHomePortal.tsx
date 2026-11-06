@@ -11,23 +11,38 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Trophy, EyeOff, Eye, Swords, Share2, Activity, Microscope, Flame, Target } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 
 interface ExpertHomePortalProps {
   readonly onStartExpertMatch: (length: number) => void;
   readonly onInviteFriend?: () => void;
   readonly onOpen3PlyQuizzes: () => void;
+  readonly onOpenPlayerCard?: () => void;
 }
 
 export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
   onStartExpertMatch,
   onInviteFriend,
   onOpen3PlyQuizzes,
+  onOpenPlayerCard,
 }) => {
   const { locale } = useTranslation();
   const isEn = locale === 'en';
+  const stats = useAuthenticPlayerStats();
 
   const [matchLength, setMatchLength] = useState<number>(7);
   const [isPipsHidden, setIsPipsHidden] = useState<boolean>(false);
+
+  const isGuest = !stats.isRegistered;
+  const isCalibrating = stats.isRegistered && stats.gamesPlayed === 0;
+
+  const globalVal = isGuest ? '—' : isCalibrating ? 'En calibrage' : (stats.globalPR?.toFixed(1) ?? '—');
+  const checkerVal = isGuest ? '—' : isCalibrating ? 'En calibrage' : (stats.checkerPR?.toFixed(1) ?? '—');
+  const cubeVal = isGuest ? '—' : isCalibrating ? 'En calibrage' : (stats.cubePR?.toFixed(1) ?? '—');
+
+  const globalSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '1st match required' : '1re partie requise') : `${stats.gamesPlayed} ${stats.gamesPlayed > 1 ? (isEn ? 'parties analysées' : 'parties analysées') : (isEn ? 'partie analysée' : 'partie analysée')}`;
+  const checkerSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.checkerPR! < 5.0 ? 'Niveau Master (< 5.0)' : 'Précision pions');
+  const cubeSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.cubePR! > 7.0 ? 'Axe de travail prioritaire' : 'Précision videau');
 
   const handleLaunchMatch = () => {
     onStartExpertMatch(matchLength);
@@ -42,36 +57,43 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-[#f3d27a]">
               {isEn ? '🏆 Expert / Pro Cockpit · Open Sage 3-Ply (PR 0.23)' : '🏆 Cockpit Expert / Pro · Moteur Open Sage 3-Ply (PR 0.23)'}
             </span>
-            <span className="rounded bg-[#D4AF37]/20 text-[#F3E5AB] border border-[#D4AF37]/40 px-2 py-0.5 text-[10px] font-mono font-bold">
-              MOTEUR OPEN SAGE 3-PLY
-            </span>
           </div>
-          <h2 className="text-base sm:text-lg font-black text-[#f7f3e8]">
-            {isEn ? 'World Championship Telemetry & Tournament Conditions' : 'Télémétrie de Championnat du Monde & Conditions Tournoi'}
-          </h2>
-          <p className="text-xs text-stone-300">
-            {isEn
-              ? 'Rigorous 3-ply neural lookahead, Crawford & DMP score rules, and instantaneous ΔEMG equity tracking.'
-              : 'Évaluation neuronale 3-ply, règles Crawford & DMP, et télémétrie ΔEMG chirurgicale au millième.'}
-          </p>
+          <h2 className="text-base sm:text-lg font-black text-[#f7f3e8]">{isEn ? 'World Championship Telemetry & Tournament Conditions' : 'Télémétrie de Championnat du Monde & Conditions Tournoi'}</h2>
+          <p className="text-xs text-stone-300">{isEn ? 'Rigorous 3-ply neural lookahead, Crawford & DMP score rules, and instantaneous ΔEMG equity tracking.' : 'Évaluation neuronale 3-ply, règles Crawford & DMP, et télémétrie ΔEMG chirurgicale au millième.'}</p>
         </div>
 
-        {/* Télémétrie Joueur Officielle : ER/PR (6.3) & RATING (1500) */}
-        <div className="flex items-center gap-4 bg-black/50 border border-white/10 px-4 py-2 rounded-xl shrink-0 self-stretch sm:self-auto justify-around sm:justify-start">
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] font-mono text-stone-400">ER / PR</span>
-            <span data-testid="expert-er-pr" className="text-base font-black font-mono text-[#f3d27a]">
-              6.3
+        {/* Télémétrie Joueur Officielle : ER/PR & RATING */}
+        {!stats.isRegistered ? (
+          <div className="flex items-center gap-2 bg-black/50 border border-white/10 px-3.5 py-2 rounded-xl shrink-0">
+            <span className="text-xs font-mono text-stone-300">
+              STATUT : <strong className="text-[#f3d27a]">Invité</strong> ({isEn ? 'Sign in to calculate your PR' : 'Inscrivez-vous pour calculer votre PR'})
             </span>
           </div>
-          <div className="h-6 w-px bg-white/10" />
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] font-mono text-stone-400">RATING</span>
-            <span data-testid="expert-rating" className="text-base font-black font-mono text-amber-300">
-              1500
-            </span>
+        ) : stats.gamesPlayed === 0 ? (
+          <div className="flex items-center gap-4 bg-black/50 border border-white/10 px-4 py-2 rounded-xl shrink-0 self-stretch sm:self-auto justify-around sm:justify-start">
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] font-mono text-stone-400">ER / PR</span>
+              <span data-testid="expert-er-pr" className="text-xs sm:text-sm font-bold font-mono text-amber-300">{isEn ? 'Calibrating (0/1 match)' : 'Calibrage (0/1 partie)'}</span>
+            </div>
+            <div className="h-6 w-px bg-white/10" />
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] font-mono text-stone-400">RATING</span>
+              <span data-testid="expert-rating" className="text-base font-black font-mono text-amber-300">{stats.eloRating ?? 1500}</span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center gap-4 bg-black/50 border border-white/10 px-4 py-2 rounded-xl shrink-0 self-stretch sm:self-auto justify-around sm:justify-start">
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] font-mono text-stone-400">ER / PR</span>
+              <span data-testid="expert-er-pr" className="text-base font-black font-mono text-[#f3d27a]">{stats.globalPR?.toFixed(1)}</span>
+            </div>
+            <div className="h-6 w-px bg-white/10" />
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] font-mono text-stone-400">RATING</span>
+              <span data-testid="expert-rating" className="text-base font-black font-mono text-amber-300">{stats.eloRating}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CARTE 1 : COCKPIT DE MATCH DE TOURNOI OFFICIEL */}
@@ -200,26 +222,45 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
           </span>
         </div>
 
-        {/* 3 indicateurs officiels en grille grid-cols-3 */}
+        {/* 3 indicateurs officiels selon le statut réel du joueur */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3">
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-2.5 sm:p-3 text-center flex flex-col items-center">
             <span className="text-[11px] font-mono text-stone-400">ER / PR GLOBAL</span>
-            <span data-testid="pr-global-val" className="text-base sm:text-xl font-mono font-black text-[#f3d27a]">6.3</span>
-            <span className="text-[11px] text-stone-300">Club Avancé</span>
+            <span data-testid="pr-global-val" className={`font-mono font-black ${isCalibrating ? 'text-xs sm:text-sm text-amber-300' : isGuest ? 'text-base sm:text-xl text-stone-500' : 'text-base sm:text-xl text-[#f3d27a]'}`}>{globalVal}</span>
+            <span className="text-[10px] sm:text-[11px] text-stone-300">{globalSub}</span>
           </div>
-
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-2.5 sm:p-3 text-center flex flex-col items-center">
             <span className="text-[11px] font-mono text-stone-400">PR PIONS (CHECKER)</span>
-            <span data-testid="pr-checker-val" className="text-base sm:text-xl font-mono font-black text-emerald-400">4.2</span>
-            <span className="text-[11px] text-emerald-300 font-bold">Niveau Master (&lt; 5.0)</span>
+            <span data-testid="pr-checker-val" className={`font-mono font-black ${isCalibrating ? 'text-xs sm:text-sm text-amber-300' : isGuest ? 'text-base sm:text-xl text-stone-500' : 'text-base sm:text-xl text-emerald-400'}`}>{checkerVal}</span>
+            <span className="text-[10px] sm:text-[11px] text-emerald-300 font-bold">{checkerSub}</span>
           </div>
-
           <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-2.5 sm:p-3 text-center flex flex-col items-center">
             <span className="text-[11px] font-mono text-stone-400">PR VIDEAU (CUBE)</span>
-            <span data-testid="pr-cube-val" className="text-base sm:text-xl font-mono font-black text-amber-300">8.1</span>
-            <span className="text-[11px] text-amber-400 font-bold">Axe de travail prioritaire</span>
+            <span data-testid="pr-cube-val" className={`font-mono font-black ${isCalibrating ? 'text-xs sm:text-sm text-amber-300' : isGuest ? 'text-base sm:text-xl text-stone-500' : 'text-base sm:text-xl text-amber-300'}`}>{cubeVal}</span>
+            <span className="text-[10px] sm:text-[11px] text-amber-400 font-bold">{cubeSub}</span>
           </div>
         </div>
+
+        {isGuest && (
+          <button
+            type="button"
+            data-testid="expert-create-card-cta"
+            onClick={onOpenPlayerCard}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-[#D4AF37]/50 bg-gradient-to-r from-[#D4AF37]/20 via-[#f5d98b]/20 to-[#b88924]/20 hover:bg-[#D4AF37]/30 px-4 py-2 text-xs sm:text-sm font-bold text-[#F3E5AB] transition active:scale-95"
+          >
+            <span>👤 {isEn ? 'Create my Player Card (5s) to activate my PR & Elo →' : 'Créer ma Carte de Joueur (5s) pour activer mon PR & Elo →'}</span>
+          </button>
+        )}
+        {isCalibrating && (
+          <button
+            type="button"
+            data-testid="expert-start-calibration-cta"
+            onClick={handleLaunchMatch}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 px-4 py-2 text-xs sm:text-sm font-bold text-amber-200 transition active:scale-95"
+          >
+            <span>⚔️ {isEn ? 'Play my 1st calibration match →' : 'Lancer ma 1re partie de calibrage →'}</span>
+          </button>
+        )}
 
         {/* 3 boutons d'accès direct aux outils Pro */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">

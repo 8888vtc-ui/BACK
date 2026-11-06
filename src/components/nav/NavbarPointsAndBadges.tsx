@@ -9,6 +9,7 @@
 
 import React, { useEffect, useState } from 'react';
 import type { PlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import {
     CIRCLE_POINTS_STORAGE_KEY,
     INITIAL_CIRCLE_POINTS,
@@ -24,11 +25,12 @@ interface NavbarPointsAndBadgesProps {
 
 export const NavbarPointsAndBadges: React.FC<NavbarPointsAndBadgesProps> = React.memo(({
     tierGate,
-    userElo = 1500,
-    averagePr = 6.3,
+    userElo,
+    averagePr,
     showStats = true,
 }) => {
     const [points, setPoints] = useState<number>(INITIAL_CIRCLE_POINTS);
+    const stats = useAuthenticPlayerStats();
 
     useEffect(() => {
         setPoints(getCirclePointsState().balance);
@@ -53,25 +55,28 @@ export const NavbarPointsAndBadges: React.FC<NavbarPointsAndBadgesProps> = React
     }, []);
 
     const isBeginner = tierGate === 'BEGINNER';
-    const prDisplay = typeof averagePr === 'number' ? `PR ${averagePr.toFixed(1)}` : 'PR 6.3';
+    const displayElo = userElo !== undefined ? userElo : stats.eloRating;
+    const displayPr = averagePr !== undefined
+        ? (averagePr !== null ? `PR ${averagePr.toFixed(1)}` : 'PR : En calibrage')
+        : (stats.hasRealPR ? `PR ${stats.globalPR?.toFixed(1)}` : 'PR : En calibrage');
 
     return (
         <div data-testid="navbar-stats-container" className="flex items-center gap-1.5 sm:gap-2 shrink-0 whitespace-nowrap">
-            {showStats && !isBeginner && (
+            {showStats && !isBeginner && stats.isRegistered && (
                 <div className="hidden lg:flex items-center gap-1.5 font-mono text-xs">
                     <span
                         data-testid="navbar-erpr-badge"
                         title="Performance Rating officiel"
-                        className="rounded-lg border border-emerald-500/30 bg-emerald-950/40 px-2 py-1 font-bold text-emerald-400 tabular-nums shadow-sm"
+                        className={`rounded-lg border px-2 py-1 font-bold tabular-nums shadow-sm ${stats.hasRealPR ? 'border-emerald-500/30 bg-emerald-950/40 text-emerald-400' : 'border-amber-500/30 bg-amber-950/40 text-amber-300'}`}
                     >
-                        {prDisplay}
+                        {displayPr}
                     </span>
                     <span
                         data-testid="navbar-rating-badge"
                         title="Classement compétitif officiel"
                         className="rounded-lg border border-amber-500/30 bg-amber-950/40 px-2 py-1 font-bold text-amber-300 tabular-nums shadow-sm"
                     >
-                        {userElo} Elo
+                        {displayElo ?? 1500} Elo
                     </span>
                 </div>
             )}
