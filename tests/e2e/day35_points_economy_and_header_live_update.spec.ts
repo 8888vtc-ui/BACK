@@ -85,3 +85,4 @@ test.describe('Mission 35/50: Économie 10 000 PTS, Plancher 1 000 PTS & Bourse 
         await expect(pointsBadge).toContainText(/PTS/);
     });
 });
+
