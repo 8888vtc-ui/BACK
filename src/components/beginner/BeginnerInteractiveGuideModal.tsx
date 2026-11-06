@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Volume2, VolumeX, ArrowLeft, ArrowRight, Sparkles, BookOpen, Play } from 'lucide-react';
+import { X, Volume2, VolumeX, ArrowLeft, ArrowRight, Sparkles, BookOpen, Play, Trophy } from 'lucide-react';
 import { BEGINNER_MASTER_GUIDE_CHAPTERS } from '../../data/beginnerMasterGuideBilingual';
 import { useTranslation } from '../../i18n';
 import { soundEngine } from '../../lib/sound/soundEngine';
@@ -35,12 +35,12 @@ export function BeginnerInteractiveGuideModal({
 
   useEffect(() => {
     if (!isOpen && typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      try { window.speechSynthesis.cancel(); } catch {}
       setIsSpeaking(false);
     }
     return () => {
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+        try { window.speechSynthesis.cancel(); } catch {}
       }
     };
   }, [isOpen, chapterIndex]);
@@ -189,8 +189,9 @@ export function BeginnerInteractiveGuideModal({
 
           {/* Sélecteur Interactif de Victoires Simple / Gammon / Backgammon */}
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
-            <div className="text-[11px] font-bold text-stone-300 mb-1.5">
-              {lang === 'fr' ? '🏆 Les 3 Niveaux de Victoire :' : '🏆 The 3 Victory Levels:'}
+            <div className="text-[11px] font-bold text-stone-300 mb-1.5 flex items-center gap-1.5">
+              <Trophy size={13} className="text-[#D4AF37]" strokeWidth={1.5} />
+              <span>{lang === 'fr' ? 'Les 3 Niveaux de Victoire :' : 'The 3 Victory Levels:'}</span>
             </div>
             <div data-testid="guide-victory-types-selector" className="grid grid-cols-3 gap-1.5 mb-2">
               {(['SIMPLE', 'GAMMON', 'BACKGAMMON'] as const).map((vtKey) => {

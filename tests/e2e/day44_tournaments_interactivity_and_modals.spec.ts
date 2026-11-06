@@ -205,3 +205,4 @@ test.describe('Day 44 — Contrôle de l’Interactivité de /tournaments (Filtr
         expect(pageErrors).toHaveLength(0);
     });
 });
+

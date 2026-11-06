@@ -130,8 +130,8 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
                               : 'bg-white/[0.04] border-white/10 text-stone-200 hover:bg-white/10'
                           }`}
                         >
-                          <span className="text-xs font-black flex items-center gap-1">
-                            <span>🎲</span>
+                          <span className="text-xs font-black flex items-center gap-1.5">
+                            <Dices className={`w-3.5 h-3.5 shrink-0 ${isSel ? 'text-slate-950' : 'text-[#D4AF37]'}`} strokeWidth={1.5} />
                             <span>{m.roll[0]} - {m.roll[1]}</span>
                           </span>
                           <span className={`text-xs leading-tight font-bold ${isSel ? 'text-slate-900' : 'text-amber-300/90'}`}>
@@ -152,8 +152,9 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
               {/* Titre du coup sélectionné & Bouton d'écoute vocale */}
               <div className="flex items-center justify-between pb-1">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#f3d27a] font-black text-xs">
-                    🎲 {currentMove.roll[0]} - {currentMove.roll[1]}
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#f3d27a] font-black text-xs">
+                    <Dices className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
+                    <span>{currentMove.roll[0]} - {currentMove.roll[1]}</span>
                   </span>
                   <span className="text-xs font-black text-amber-200">
                     {isEn ? currentMove.titleEn : currentMove.titleFr}
