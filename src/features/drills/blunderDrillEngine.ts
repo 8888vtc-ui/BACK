@@ -7,7 +7,7 @@
  * 3. Délivre un verdict immédiat (optimal, acceptable, douteux, blunder) et invite à rejouer jusqu'au bon coup.
  */
 
-import { applyMove, type Move } from '../../engine/backgammonEngine';
+import { applyMove, X_BAR, O_BAR, type Move } from '../../engine/backgammonEngine';
 import { formatMoveSequenceNotation } from '../../lib/engine/evaluator';
 import { parseCoachNotationMoves } from '../coach/coachMoveNotation';
 import type { PlayerBlunderRecord, DrillValidationResult, BlunderDrillSession, DrillTier } from './types';
@@ -75,23 +75,13 @@ export function areMoveNotationsBoardEquivalent(
 function classifyMoveByDeltaEmg(deltaEmg: number): { readonly verdict: 'optimal' | 'acceptable' | 'blunder'; readonly feedbackMessage: string } {
     const absLoss = Math.abs(deltaEmg);
     if (absLoss <= 0.0005) {
-        return {
-            verdict: 'optimal',
-            feedbackMessage: '👑 Coup optimal trouvé ! Vous avez corrigé cette erreur avec une précision chirurgicale.',
-        };
+        return { verdict: 'optimal', feedbackMessage: '👑 Coup optimal trouvé ! Vous avez corrigé cette erreur avec une précision chirurgicale.' };
     }
     if (absLoss <= 0.020) {
-        return {
-            verdict: 'acceptable',
-            feedbackMessage: `👍 Très bon coup (${deltaEmg.toFixed(3)} EMG) ! Ce n'est pas une erreur, mais voici comment gagner +${absLoss.toFixed(3)} EMG de plus...`,
-        };
+        return { verdict: 'acceptable', feedbackMessage: `👍 Très bon coup (${deltaEmg.toFixed(3)} EMG) ! Ce n'est pas une erreur, mais voici comment gagner +${absLoss.toFixed(3)} EMG de plus...` };
     }
-    return {
-        verdict: 'blunder',
-        feedbackMessage: `❌ Ce coup est une erreur (-${absLoss.toFixed(3)} EMG).`,
-    };
+    return { verdict: 'blunder', feedbackMessage: `❌ Ce coup est une erreur (-${absLoss.toFixed(3)} EMG).` };
 }
-
 
 /**
  * Analyse géométriquement le plateau après le coup du joueur vs après le coup optimal
@@ -104,13 +94,11 @@ export function buildSpecificMistakeExplanation(
 ): string {
     const player = blunder.player;
     const sign = player === 'X' ? 1 : -1;
-    const oppBarIdx = player === 'X' ? 0 : 25;
+    const oppBarIdx = player === 'X' ? O_BAR : X_BAR;
 
     const optMoves = parseExpandedNotationMoves(blunder.optimalMove, player);
     let optBoard = [...blunder.board];
-    for (const m of optMoves) {
-        optBoard = applyMove(optBoard, m, player);
-    }
+    for (const m of optMoves) optBoard = applyMove(optBoard, m, player);
 
     const reasons: string[] = [];
 
@@ -124,14 +112,10 @@ export function buildSpecificMistakeExplanation(
             const wasOppBlot = (blunder.board[pt] ?? 0) === -sign;
             const hitByOpt = (optBoard[pt] ?? 0) * sign >= 1;
             const hitByPlayed = (playedBoardAfter[pt] ?? 0) * sign >= 1;
-            if (wasOppBlot && hitByOpt && !hitByPlayed) {
-                hitPoints.push(pt);
-            }
+            if (wasOppBlot && hitByOpt && !hitByPlayed) hitPoints.push(pt);
         }
         if (hitPoints.length > 0) {
-            reasons.push(
-                `Vous avez manqué la frappe décisive sur la flèche ${hitPoints.join(' et ')} qui envoyait l'adversaire sur la barre et vous donnait l'initiative.`,
-            );
+            reasons.push(`Vous avez manqué la frappe décisive sur la flèche ${hitPoints.join(' et ')} qui envoyait l'adversaire sur la barre et vous donnait l'initiative.`);
         }
     }
 
@@ -141,17 +125,13 @@ export function buildSpecificMistakeExplanation(
         const beforeCount = (blunder.board[pt] ?? 0) * sign;
         const optCount = (optBoard[pt] ?? 0) * sign;
         const playedCount = (playedBoardAfter[pt] ?? 0) * sign;
-        if (beforeCount < 2 && optCount >= 2 && playedCount < 2) {
-            missedMadePoints.push(pt);
-        }
+        if (beforeCount < 2 && optCount >= 2 && playedCount < 2) missedMadePoints.push(pt);
     }
     if (missedMadePoints.length > 0) {
         const pointLabels = missedMadePoints.map((pt) =>
             pt === 5 ? '5 (Golden Point)' : pt === 7 ? '7 (Bar-Point)' : pt === 20 ? '20 (Ancre Dorée)' : `${pt}`,
         );
-        reasons.push(
-            `Vous n'avez pas fermé la porte ${pointLabels.join(' / ')}, alors que le coup optimal (${blunder.optimalMove}) la verrouille immédiatement.`,
-        );
+        reasons.push(`Vous n'avez pas fermé la porte ${pointLabels.join(' / ')}, alors que le coup optimal (${blunder.optimalMove}) la verrouille immédiatement.`);
     }
 
     // 3. Vérifier si le coup joué laisse des blots isolés supplémentaires exposés
@@ -159,14 +139,10 @@ export function buildSpecificMistakeExplanation(
     for (let pt = 1; pt <= 24; pt++) {
         const optCount = (optBoard[pt] ?? 0) * sign;
         const playedCount = (playedBoardAfter[pt] ?? 0) * sign;
-        if (playedCount === 1 && optCount !== 1) {
-            extraBlots.push(pt);
-        }
+        if (playedCount === 1 && optCount !== 1) extraBlots.push(pt);
     }
     if (extraBlots.length > 0) {
-        reasons.push(
-            `Votre coup (${playedNotation}) laisse ${extraBlots.length > 1 ? `des pions isolés vulnérables (blots) sur les flèches ${extraBlots.join(' et ')}` : `un pion isolé vulnérable (blot) sur la flèche ${extraBlots[0]}`} exposé aux tirs adverses.`,
-        );
+        reasons.push(`Votre coup (${playedNotation}) laisse ${extraBlots.length > 1 ? `des pions isolés vulnérables (blots) sur les flèches ${extraBlots.join(' et ')}` : `un pion isolé vulnérable (blot) sur la flèche ${extraBlots[0]}`} exposé aux tirs adverses.`);
     }
 
     // 4. Vérifier si le joueur a enterré un pion sur les flèches basses (1 ou 2) inutilement
@@ -175,9 +151,7 @@ export function buildSpecificMistakeExplanation(
         const optLow = Math.max(0, (optBoard[lowPt] ?? 0) * sign);
         const playedLow = Math.max(0, (playedBoardAfter[lowPt] ?? 0) * sign);
         if (playedLow > beforeLow && playedLow > optLow) {
-            reasons.push(
-                `Vous enterrez prématurément un pion sur la flèche ${lowPt}, où il perd son utilité active pour le reste du combat.`,
-            );
+            reasons.push(`Vous enterrez prématurément un pion sur la flèche ${lowPt}, où il perd son utilité active pour le reste du combat.`);
             break;
         }
     }
@@ -191,9 +165,7 @@ export function buildSpecificMistakeExplanation(
     }
 
     if (reasons.length === 0) {
-        reasons.push(
-            `Le coup ${playedNotation} dégrade la coordination de vos pions par rapport à la ligne optimale ${blunder.optimalMove}, qui maximise le contrôle des cases clés et la sécurité.`,
-        );
+        reasons.push(`Le coup ${playedNotation} dégrade la coordination de vos pions par rapport à la ligne optimale ${blunder.optimalMove}, qui maximise le contrôle des cases clés et la sécurité.`);
     }
 
     return reasons.slice(0, 2).join(' ');
@@ -214,8 +186,21 @@ export function validateDrillMove(
     const normalizedOptimal = normalizeMoveNotation(blunder.optimalMove);
     const normalizedAcceptables = (blunder.acceptableMoves || []).map(normalizeMoveNotation);
 
+    let playedBoard = [...blunder.board];
+    for (const m of playerMoves) {
+        playedBoard = applyMove(playedBoard, m, player);
+    }
+    const playedBoardSig = playedBoard.slice(0, 26).join(',');
+    const optMoves = parseExpandedNotationMoves(blunder.optimalMove, player);
+    const optimalBoardSig = optMoves.length > 0 ? boardSignatureAfterNotation(blunder.board, blunder.optimalMove, player) : '';
+    const isBoardEq = Boolean(playerMoves.length > 0 && optMoves.length > 0 && playedBoardSig === optimalBoardSig);
+
     // 1. Correspondance exacte ou équivalente plateau/notation avec le coup optimal
-    if (normalizedPlayed === normalizedOptimal || areMoveNotationsBoardEquivalent(blunder.board, playedNotation, blunder.optimalMove, player)) {
+    if (
+        normalizedPlayed === normalizedOptimal ||
+        isBoardEq ||
+        areMoveNotationsBoardEquivalent(blunder.board, playedNotation, blunder.optimalMove, player)
+    ) {
         return {
             isCorrect: true,
             verdict: 'optimal',
@@ -230,9 +215,15 @@ export function validateDrillMove(
     }
 
     // 2. Correspondance avec les variantes acceptables ou candidats 3-ply ayant equityLoss <= 0.020
-    const matchedCandidate = (blunder.candidateMoves3Ply || []).find(
-        (c) => areMoveNotationsBoardEquivalent(blunder.board, playedNotation, c.notation, player) && c.equityLoss <= 0.020
-    );
+    const matchedCandidate = (blunder.candidateMoves3Ply || []).find((c) => {
+        const cMoves = parseExpandedNotationMoves(c.notation, player);
+        const cBoardSig = cMoves.length > 0 ? boardSignatureAfterNotation(blunder.board, c.notation, player) : '';
+        const matchesSig = Boolean(cBoardSig && cBoardSig === playedBoardSig);
+        return (
+            (matchesSig || areMoveNotationsBoardEquivalent(blunder.board, playedNotation, c.notation, player)) &&
+            c.equityLoss <= 0.020
+        );
+    });
     if (normalizedAcceptables.includes(normalizedPlayed) || matchedCandidate) {
         const actualLoss = matchedCandidate ? matchedCandidate.equityLoss : 0.010;
         const classified = classifyMoveByDeltaEmg(-actualLoss);
@@ -255,10 +246,6 @@ export function validateDrillMove(
         : Math.max(0.08, Number((blunder.equityLoss * 0.85).toFixed(4)));
     const isBlunder = equityLoss >= 0.08;
     const verdict = isBlunder ? 'blunder' : 'doubtful';
-    let playedBoard = [...blunder.board];
-    for (const m of playerMoves) {
-        playedBoard = applyMove(playedBoard, m, player);
-    }
     const specificMistakeReason = buildSpecificMistakeExplanation(blunder, playedNotation, playedBoard);
 
     return {
@@ -287,7 +274,10 @@ export function validateDrillNotationChoice(
     const normalizedOptimal = normalizeMoveNotation(blunder.optimalMove);
     const normalizedAcceptables = (blunder.acceptableMoves || []).map(normalizeMoveNotation);
 
-    if (areMoveNotationsBoardEquivalent(blunder.board, chosenNotation, blunder.optimalMove, blunder.player)) {
+    if (
+        normalizedPlayed === normalizedOptimal ||
+        areMoveNotationsBoardEquivalent(blunder.board, chosenNotation, blunder.optimalMove, blunder.player)
+    ) {
         return {
             isCorrect: true,
             verdict: 'optimal',
@@ -302,7 +292,10 @@ export function validateDrillNotationChoice(
     }
 
     const matchedCandidate = (blunder.candidateMoves3Ply || []).find(
-        (c) => areMoveNotationsBoardEquivalent(blunder.board, chosenNotation, c.notation, blunder.player) && c.equityLoss > 0 && c.equityLoss <= 0.020
+        (c) =>
+            areMoveNotationsBoardEquivalent(blunder.board, chosenNotation, c.notation, blunder.player) &&
+            c.equityLoss > 0 &&
+            c.equityLoss <= 0.020
     );
     if (normalizedAcceptables.includes(normalizedPlayed) || matchedCandidate) {
         const actualLoss = matchedCandidate ? matchedCandidate.equityLoss : 0.010;
@@ -347,49 +340,18 @@ export function validateDrillNotationChoice(
     };
 }
 
-/**
- * Crée une session de drill avec un sous-ensemble d'erreurs prioritaires.
- */
-export function createDrillSession(options?: {
-    conceptId?: string;
-    tier?: DrillTier;
-    maxBlunders?: number;
-}): BlunderDrillSession {
+export function createDrillSession(options?: { conceptId?: string; tier?: DrillTier; maxBlunders?: number }): BlunderDrillSession {
     const list = getBlundersToReview(options?.conceptId, options?.tier);
-    const max = options?.maxBlunders ?? 5;
-    const selected = list.slice(0, max);
-
-    return {
-        blunders: selected,
-        currentIndex: 0,
-        sessionSolvedCount: 0,
-        sessionAttemptsCount: 0,
-        isCompleted: selected.length === 0,
-    };
+    const selected = list.slice(0, options?.maxBlunders ?? 5);
+    return { blunders: selected, currentIndex: 0, sessionSolvedCount: 0, sessionAttemptsCount: 0, isCompleted: selected.length === 0 };
 }
 
-/**
- * Enregistre le résultat d'un drill et fait avancer la session vers l'erreur suivante.
- */
-export function advanceDrillSession(
-    session: BlunderDrillSession,
-    solved: boolean,
-): BlunderDrillSession {
+export function advanceDrillSession(session: BlunderDrillSession, solved: boolean): BlunderDrillSession {
     const current = session.blunders[session.currentIndex];
-    if (current) {
-        markBlunderAttempt(current.id, solved);
-    }
-
+    if (current) markBlunderAttempt(current.id, solved);
     const nextSolved = solved ? session.sessionSolvedCount + 1 : session.sessionSolvedCount;
     const nextAttempts = session.sessionAttemptsCount + 1;
     const nextIndex = session.currentIndex + 1;
     const isCompleted = nextIndex >= session.blunders.length;
-
-    return {
-        ...session,
-        currentIndex: isCompleted ? session.currentIndex : nextIndex,
-        sessionSolvedCount: nextSolved,
-        sessionAttemptsCount: nextAttempts,
-        isCompleted,
-    };
+    return { ...session, currentIndex: isCompleted ? session.currentIndex : nextIndex, sessionSolvedCount: nextSolved, sessionAttemptsCount: nextAttempts, isCompleted };
 }
