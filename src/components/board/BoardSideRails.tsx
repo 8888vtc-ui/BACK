@@ -272,7 +272,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                 {isQuickChatOpen && (
                     <div data-testid="left-rail-quick-chat-popover" role="group" aria-label={isEn ? 'Quick messages' : 'Messages rapides'} className="absolute left-full ml-1.5 bottom-1 z-50 flex items-center gap-1 rounded-xl border border-[#d4af37]/55 bg-[#120e0a]/98 px-2 py-1 shadow-[0_12px_28px_rgba(0,0,0,0.95)] backdrop-blur-md">
-                        {([{ id: 'gg' as const, label: 'GG' }, { id: 'nice_move' as const, label: isEn ? 'Well played' : 'Bien joué' }, { id: 'unlucky' as const, label: isEn ? 'Tough luck' : 'Pas de chance' }, { id: 'thanks' as const, label: isEn ? 'Thanks' : 'Merci' }]).map((c) => (
+                        {([{ id: 'gg' as const, label: 'GG' }, { id: 'nice_move' as const, label: isEn ? 'Well played' : 'Bien joué' }, { id: 'unlucky' as const, label: isEn ? 'Tough luck' : 'Pas de chance' }, { id: 'thinking' as const, label: isEn ? 'Thinking...' : 'Je réfléchis...' }, { id: 'thanks' as const, label: isEn ? 'Thanks' : 'Merci' }]).map((c) => (
                             <button key={c.id} type="button" data-testid={`quick-chat-btn-${c.id}`} onClick={() => { onSendQuickChat?.(c.id); setIsQuickChatOpen(false); }} className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-[#f7f3e8] hover:border-[#f3c65f]/50 transition active:scale-95 whitespace-nowrap">{c.label}</button>
                         ))}
                     </div>

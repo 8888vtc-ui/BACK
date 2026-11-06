@@ -26,7 +26,7 @@ export interface MultiplayerBannerProps {
     onResign: () => void;
 }
 
-const QUICK_MESSAGES_FR: Record<string, string> = {
+export const QUICK_MESSAGES_FR: Record<string, string> = {
     gg: 'Bonne partie !',
     nice_move: 'Joli coup !',
     unlucky: 'Pas de chance...',
@@ -34,7 +34,7 @@ const QUICK_MESSAGES_FR: Record<string, string> = {
     thanks: 'Merci pour la partie !',
 };
 
-const QUICK_MESSAGES_EN: Record<string, string> = {
+export const QUICK_MESSAGES_EN: Record<string, string> = {
     gg: 'Good game!',
     nice_move: 'Nice move!',
     unlucky: 'Tough luck...',

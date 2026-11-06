@@ -14,6 +14,7 @@ import type { GamePhase } from '../../actions/types';
 import type { MobileHandedness } from '../../hooks/useMobileTouchControls';
 import { getThumbZoneGestureProtectionStyle } from '../../hooks/useMobileTouchControls';
 import { impactLight, impactMedium, impactHeavy } from '../../lib/capacitor/haptics';
+import { useTranslation } from '../../i18n';
 
 export type PrimaryDockActionState =
     | 'ROLL'
@@ -71,6 +72,8 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
     onPassDouble,
     onOpenCoachDrawer,
 }) => {
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
     const [swipedHandedness, setSwipedHandedness] = useState<MobileHandedness | null>(null);
     const touchStartXRef = useRef<number | null>(null);
     const effectiveHandedness: MobileHandedness = handedness ?? swipedHandedness ?? 'right';
@@ -227,7 +230,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                             }}
                             className="flex-1 min-w-0 h-11 sm:h-12 rounded-xl border border-emerald-400/60 bg-emerald-600 px-2 font-sans text-[11px] sm:text-xs font-black uppercase tracking-wider text-white shadow-lg active:scale-95 touch-manipulation tabular-nums truncate"
                         >
-                            ✓ Prendre ×{nextCubeValue}
+                            {isEn ? `✓ Take ×${nextCubeValue}` : `✓ Prendre ×${nextCubeValue}`}
                         </button>
                         <button
                             type="button"
@@ -238,7 +241,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                             }}
                             className="h-11 sm:h-12 shrink-0 rounded-xl border border-rose-400/60 bg-rose-950 px-2.5 font-sans text-[11px] sm:text-xs font-black uppercase tracking-wider text-rose-100 shadow-lg active:scale-95 touch-manipulation"
                         >
-                            ✕ Passer
+                            {isEn ? '✕ Pass' : '✕ Passer'}
                         </button>
                     </div>
                 ) : (
@@ -266,7 +269,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                                 <span aria-hidden="true" className="text-sm shrink-0 animate-bounce">
                                     🎲
                                 </span>
-                                <span className="truncate">Lancer</span>
+                                <span className="truncate">{isEn ? 'Roll' : 'Lancer'}</span>
                             </>
                         )}
                         {primaryState === 'CONFIRM' && (
@@ -274,11 +277,11 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                                 <span aria-hidden="true" className="text-sm shrink-0">
                                     ✓
                                 </span>
-                                <span className="truncate">{canConfirm ? 'Valider' : 'Jouez vos dés'}</span>
+                                <span className="truncate">{canConfirm ? (isEn ? 'Confirm' : 'Valider') : (isEn ? 'Play dice' : 'Jouez vos dés')}</span>
                             </>
                         )}
-                        {primaryState === 'NO_MOVE' && <span className="truncate">Passer</span>}
-                        {primaryState === 'WAITING_OPPONENT' && <span className="truncate">Tour Adverse…</span>}
+                        {primaryState === 'NO_MOVE' && <span className="truncate">{isEn ? 'Pass' : 'Passer'}</span>}
+                        {primaryState === 'WAITING_OPPONENT' && <span className="truncate">{isEn ? 'Opponent Turn…' : 'Tour Adverse…'}</span>}
                     </button>
                 )}
             </div>
