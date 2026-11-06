@@ -159,110 +159,121 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
             role="alert"
             aria-live="assertive"
             data-testid="move-error-pop-toast"
-            className="fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-50 w-[92vw] max-w-md animate-in fade-in slide-in-from-top-4 duration-300"
+            className="fixed top-12 sm:top-14 left-1/2 -translate-x-1/2 z-50 w-[94vw] max-w-xl animate-in fade-in slide-in-from-top-3 duration-300"
         >
-            <div className={`relative rounded-2xl border p-4 backdrop-blur-xl ${errorDetails.badgeBg}`}>
-                {/* En-tête : Sévérité + Indicateur de perte + Bouton Fermer */}
-                <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2 mb-2.5">
-                    <div className="flex items-center gap-2">
-                        <span className="text-base" aria-hidden="true">
-                            {errorDetails.icon}
-                        </span>
-                        <span className="font-display font-black tracking-wider text-xs uppercase text-white">
-                            {errorDetails.title}
-                        </span>
+            <div className="flex items-start gap-2.5 sm:gap-3">
+                {/* Médaillon du Vieux Professeur */}
+                <div className="relative w-12 h-12 rounded-full border-2 border-[#D4AF37] shadow-lg overflow-hidden shrink-0 bg-stone-900 mt-0.5">
+                    <img src="/avatars/einstein-quiz-coach.jpg" alt="Le Professeur" className="w-full h-full object-cover" />
+                    <span className="absolute inset-0 rounded-full border border-amber-300/40 animate-ping pointer-events-none opacity-40" />
+                </div>
+
+                {/* Bulle BD avec queue triangulaire */}
+                <div className="relative flex-1 bg-[#0B0E14]/95 backdrop-blur-md border border-[#D4AF37]/50 rounded-2xl p-3.5 text-zinc-100 shadow-2xl">
+                    {/* Pointe triangulaire de bulle BD */}
+                    <div className="absolute top-4 -left-2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-[#D4AF37]/50" />
+                    <div className="absolute top-4 -left-[6px] w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-[#0B0E14]" />
+
+                    {/* En-tête : Sévérité + Indicateur de perte + Bouton Fermer */}
+                    <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-1.5 mb-2">
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-sm" aria-hidden="true">{errorDetails.icon}</span>
+                            <span className="font-display font-extrabold tracking-wider text-xs uppercase text-[#D4AF37]">
+                                {errorDetails.title}
+                            </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                            {isBeginner ? (
+                                <span data-testid="error-toast-loss-badge" className="font-mono text-[11px] font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
+                                    Chances de victoire : -{errorDetails.deltaWin}%
+                                </span>
+                            ) : (
+                                <span data-testid="error-toast-loss-badge" className="font-mono text-[11px] font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
+                                    -{errorDetails.deltaWin}% chances · -{errorDetails.absLoss.toFixed(3)} EMG
+                                </span>
+                            )}
+                            <button
+                                type="button"
+                                onClick={() => feedback && setDismissedFeedback(feedback)}
+                                data-testid="error-toast-close-btn"
+                                aria-label="Fermer l'alerte d'erreur"
+                                className="h-6 px-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-stone-200 flex items-center justify-center text-[11px] font-semibold transition"
+                            >
+                                Continuer ✕
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        {isBeginner ? (
-                            <span data-testid="error-toast-loss-badge" className="font-mono text-xs font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
-                                Chances de victoire : -{errorDetails.deltaWin}%
-                            </span>
-                        ) : (
-                            <span data-testid="error-toast-loss-badge" className="font-mono text-xs font-black tabular-nums text-amber-300 bg-black/40 px-2 py-0.5 rounded-lg border border-white/10">
-                                -{errorDetails.deltaWin}% chances · -{errorDetails.absLoss.toFixed(3)} EMG
+                    {/* Corps : Conseil factuel 3-ply + Rappel des coups */}
+                    <div className="space-y-1">
+                        {feedback?.errorCategoryLabel && (
+                            <div className="text-xs font-bold text-amber-300 mb-0.5">
+                                {feedback.errorCategoryLabel}
+                            </div>
+                        )}
+                        {isBeginner && (
+                            <span className="text-xs font-extrabold text-[#f3c65f] uppercase tracking-wide block">
+                                {locale === 'en' ? 'Coach Tip :' : 'Astuce du Professeur :'}
                             </span>
                         )}
-                        <button
-                            type="button"
-                            onClick={() => feedback && setDismissedFeedback(feedback)}
-                            data-testid="error-toast-close-btn"
-                            aria-label="Fermer l'alerte d'erreur"
-                            className="h-6 w-6 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs transition"
-                        >
-                            ✕
-                        </button>
+                        <p className="text-[12px] text-slate-100 font-medium leading-snug">
+                            {errorDetails.adviceText}
+                        </p>
+
+                        {(feedback?.playedMove || feedback?.optimalMove) && (
+                            <div className="mt-1.5 flex items-center justify-between rounded-xl bg-black/50 px-2.5 py-1.5 text-xs font-mono border border-white/10">
+                                {feedback.playedMove && (
+                                    <div className="text-rose-300">
+                                        <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-sans font-bold">
+                                            {isBeginner ? 'Ton coup' : 'Joué'}
+                                        </span>
+                                        {feedback.playedMove}
+                                    </div>
+                                )}
+                                {feedback.optimalMove && (
+                                    <div className="text-right text-emerald-300">
+                                        <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-sans font-bold">
+                                            {isBeginner ? 'Coup conseillé' : 'Recommandé 3-ply'}
+                                        </span>
+                                        {feedback.optimalMove}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
-                </div>
 
-                {/* Corps : Conseil factuel 3-ply + Rappel des coups */}
-                <div className="space-y-1.5">
-                    {feedback?.errorCategoryLabel && (
-                        <div className="text-xs font-bold text-amber-300 mb-1">
-                            {feedback.errorCategoryLabel}
-                        </div>
-                    )}
-                    {isBeginner && (
-                        <span className="text-xs font-extrabold text-[#f3c65f] uppercase tracking-wide block">
-                            {locale === 'en' ? 'Coach Tip :' : 'Astuce du Professeur :'}
-                        </span>
-                    )}
-                    <p className="text-[12px] text-slate-100 font-medium leading-snug">
-                        {errorDetails.adviceText}
-                    </p>
+                    {/* Actions 1-Tap : Rejouer ce coup & Analyse Coach */}
+                    <div className="mt-2.5 flex items-center gap-2 pt-1.5 border-t border-white/10">
+                        {onReplayMove && (
+                            <button
+                                type="button"
+                                data-testid="error-toast-replay-btn"
+                                onClick={() => {
+                                    onReplayMove();
+                                    if (feedback) setDismissedFeedback(feedback);
+                                }}
+                                className="flex-1 py-1.5 px-3 rounded-xl bg-gradient-to-r from-[#f3c65f] via-[#f7d77e] to-[#e5b548] text-slate-950 font-black text-xs uppercase tracking-wider shadow hover:brightness-105 active:scale-95 transition flex items-center justify-center gap-1.5"
+                            >
+                                <span>↺</span>
+                                <span>Rejouer ce coup</span>
+                            </button>
+                        )}
 
-                    {(feedback?.playedMove || feedback?.optimalMove) && (
-                        <div className="mt-2 flex items-center justify-between rounded-xl bg-black/50 p-2 text-xs font-mono border border-white/10">
-                            {feedback.playedMove && (
-                                <div className="text-rose-300">
-                                    <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-sans font-bold">
-                                        {isBeginner ? 'Ton coup' : 'Joué'}
-                                    </span>
-                                    {feedback.playedMove}
-                                </div>
-                            )}
-                            {feedback.optimalMove && (
-                                <div className="text-right text-emerald-300">
-                                    <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-sans font-bold">
-                                        {isBeginner ? 'Coup conseillé' : 'Recommandé 3-ply'}
-                                    </span>
-                                    {feedback.optimalMove}
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-                {/* Actions 1-Tap : Rejouer ce coup & Analyse Coach */}
-                <div className="mt-3 flex items-center gap-2 pt-2 border-t border-white/10">
-                    {onReplayMove && (
-                        <button
-                            type="button"
-                            data-testid="error-toast-replay-btn"
-                            onClick={() => {
-                                onReplayMove();
-                                if (feedback) setDismissedFeedback(feedback);
-                            }}
-                            className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-[#f3c65f] via-[#f7d77e] to-[#e5b548] text-slate-950 font-black text-xs uppercase tracking-wider shadow-md hover:brightness-105 active:scale-95 transition flex items-center justify-center gap-1.5"
-                        >
-                            <span>↺</span>
-                            <span>Rejouer ce coup</span>
-                        </button>
-                    )}
-
-                    {onOpenCoach && !isBeginner && (
-                        <button
-                            type="button"
-                            data-testid="error-toast-coach-btn"
-                            onClick={() => {
-                                onOpenCoach();
-                                if (feedback) setDismissedFeedback(feedback);
-                            }}
-                            className="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition flex items-center justify-center gap-1"
-                        >
-                            <span>Coach IA</span>
-                        </button>
-                    )}
+                        {onOpenCoach && !isBeginner && (
+                            <button
+                                type="button"
+                                data-testid="error-toast-coach-btn"
+                                onClick={() => {
+                                    onOpenCoach();
+                                    if (feedback) setDismissedFeedback(feedback);
+                                }}
+                                className="py-1.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition flex items-center justify-center gap-1"
+                            >
+                                <span>Coach IA</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </aside>
