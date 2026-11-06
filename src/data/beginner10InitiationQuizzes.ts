@@ -1,7 +1,8 @@
 /**
  * @file src/data/beginner10InitiationQuizzes.ts
  * @description Banque des 10 quiz d'initiation visuelle pour l'Académie Débutant.
- * Choix A, B, C équilibrés (65-80 car.), 1 seule ligne, zéro jargon, distribution équilibrée.
+ * Choix A, B, C équilibrés (60-76 car.), 1 seule ligne, zéro jargon, questions < 78 car. avec \u00A0?.
+ * Distribution équilibrée (A: 4, B: 3, C: 3).
  * Strictement <= 400 lignes, 0 `any`.
  */
 
@@ -32,7 +33,7 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     titleFr: "Quiz 1/10 : Le Sens de Circulation",
     titleEn: "Quiz 1/10: Direction of Play",
     questionFr: "Quel chemin vos pions blancs doivent-ils suivre pour rentrer chez vous\u00A0?",
-    questionEn: "Which path must your white checkers follow to reach your Home Board?",
+    questionEn: "Which path must your white checkers follow to reach your Home Board\u00A0?",
     options: [
       {
         id: "A", isCorrect: false,
@@ -63,7 +64,7 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     titleFr: "Quiz 2/10 : Le But du Jeu",
     titleEn: "Quiz 2/10: The Goal of the Game",
     questionFr: "Comment gagne-t-on une partie de Backgammon\u00A0?",
-    questionEn: "How do you win a game of Backgammon?",
+    questionEn: "How do you win a game of Backgammon\u00A0?",
     options: [
       {
         id: "A", isCorrect: false,
@@ -88,27 +89,27 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
       },
     ],
   },
-  // QUIZ 3 (Réponse B)
+  // QUIZ 3 (Réponse A)
   {
     id: 3, linkedEpisodeId: 2, pointsReward: 200, dice: [2, 1], boardHighlights: {},
     titleFr: "Quiz 3/10 : Pion Seul vs Porte (Bouclier)",
     titleEn: "Quiz 3/10: Single Checker vs Gate (Shield)",
-    questionFr: "Comment protéger vos pions pour que l'adversaire ne puisse JAMAIS les frapper\u00A0?",
-    questionEn: "How do you protect your checkers so the opponent can NEVER hit them?",
+    questionFr: "Comment protéger vos pions pour les rendre invulnérables aux attaques\u00A0?",
+    questionEn: "How do you protect your checkers so the opponent cannot hit them\u00A0?",
     options: [
       {
-        id: "A", isCorrect: false,
-        labelFr: "En laissant chaque pion isolé tout seul sur des flèches différentes",
-        labelEn: "By leaving each checker completely isolated on separate points",
-        explanationFr: "Un pion seul est vulnérable et peut se faire frapper à tout moment !",
-        explanationEn: "A single blot is vulnerable and can be hit at any moment!",
-      },
-      {
-        id: "B", isCorrect: true,
+        id: "A", isCorrect: true,
         labelFr: "En plaçant au moins 2 pions sur la même flèche pour former une Porte",
         labelEn: "By placing at least 2 checkers on the same point to make a Gate",
         explanationFr: "Parfait ! Une Porte (2 pions ou plus) forme un bouclier imprenable.",
         explanationEn: "Perfect! A Gate (2 or more checkers) creates an impenetrable shield.",
+      },
+      {
+        id: "B", isCorrect: false,
+        labelFr: "En laissant chaque pion isolé tout seul sur des flèches différentes",
+        labelEn: "By leaving each checker completely isolated on separate points",
+        explanationFr: "Un pion seul est vulnérable et peut se faire frapper à tout moment !",
+        explanationEn: "A single blot is vulnerable and can be hit at any moment!",
       },
       {
         id: "C", isCorrect: false,
@@ -119,13 +120,13 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
       },
     ],
   },
-  // QUIZ 4 (Réponse B)
+  // QUIZ 4 (Réponse C)
   {
     id: 4, linkedEpisodeId: 2, pointsReward: 200, dice: [3, 1], boardHighlights: {},
     titleFr: "Quiz 4/10 : Construire une Porte avec les Dés",
     titleEn: "Quiz 4/10: Building a Gate with Dice",
     questionFr: "Pourquoi ce déplacement simultané de deux pions est-il le meilleur coup\u00A0?",
-    questionEn: "Why is this simultaneous two-checker move the optimal play?",
+    questionEn: "Why is this simultaneous two-checker move the optimal play\u00A0?",
     options: [
       {
         id: "A", isCorrect: false,
@@ -135,49 +136,49 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
         explanationEn: "Splitting checkers increases danger instead of protecting you.",
       },
       {
-        id: "B", isCorrect: true,
-        labelFr: "Parce qu'il réunit deux pions ensemble pour créer un bouclier imprenable",
-        labelEn: "Because it brings two checkers together to build an impassable shield",
-        explanationFr: "Exact ! Réunir 2 pions crée une nouvelle Porte sécurisée imprenable.",
-        explanationEn: "Exact! Combining 2 checkers makes a safe Gate that cannot be attacked.",
-      },
-      {
-        id: "C", isCorrect: false,
+        id: "B", isCorrect: false,
         labelFr: "Parce qu'il force vos pions à reculer dans le camp de votre adversaire",
         labelEn: "Because it forces checkers to move backward into the opponent camp",
         explanationFr: "Les pions ne reculent jamais au Backgammon.",
         explanationEn: "Checkers never move backwards in Backgammon.",
       },
+      {
+        id: "C", isCorrect: true,
+        labelFr: "Parce qu'il réunit deux pions ensemble pour créer un bouclier imprenable",
+        labelEn: "Because it brings two checkers together to build an impassable shield",
+        explanationFr: "Exact ! Réunir 2 pions crée une nouvelle Porte sécurisée imprenable.",
+        explanationEn: "Exact! Combining 2 checkers makes a safe Gate that cannot be attacked.",
+      },
     ],
   },
-  // QUIZ 5 (Réponse C)
+  // QUIZ 5 (Réponse A)
   {
     id: 5, linkedEpisodeId: 3, pointsReward: 200, dice: [3, 2], boardHighlights: {},
     titleFr: "Quiz 5/10 : Frapper un Pion Adverse Isolé",
     titleEn: "Quiz 5/10: Hitting an Isolated Checker",
-    questionFr: "Que se passe-t-il quand vous arrivez sur une pointe avec 1 seul pion adverse\u00A0?",
-    questionEn: "What happens when you land on a point with a single opponent checker?",
+    questionFr: "Que se passe-t-il en arrivant sur une case avec un seul pion adverse\u00A0?",
+    questionEn: "What happens when you land on a point with a single opponent checker\u00A0?",
     options: [
       {
-        id: "A", isCorrect: false,
+        id: "A", isCorrect: true,
+        labelFr: "Vous le frappez : il va sur la Barre et doit repartir depuis le début",
+        labelEn: "You hit it: it goes to the Bar and must restart from the beginning",
+        explanationFr: "Magique ! Un pion adverse seul est expulsé sur la barre et perd son avance.",
+        explanationEn: "Brilliant! An isolated opponent checker goes to the bar and loses its lead.",
+      },
+      {
+        id: "B", isCorrect: false,
         labelFr: "Rien ne se passe, vous devez obligatoirement vous arrêter devant lui",
         labelEn: "Nothing happens, you must strictly stop right in front of it",
         explanationFr: "Un pion seul ne bloque personne : vous pouvez et devez le frapper !",
         explanationEn: "A lone blot blocks no one: you can and should hit it!",
       },
       {
-        id: "B", isCorrect: false,
+        id: "C", isCorrect: false,
         labelFr: "Votre pion est détruit et définitivement retiré de la partie en cours",
         labelEn: "Your checker is destroyed and permanently removed from play",
         explanationFr: "Aucun pion n'est détruit : c'est le pion adverse qui va sur la barre.",
         explanationEn: "No checkers are destroyed: the opponent blot goes to the bar.",
-      },
-      {
-        id: "C", isCorrect: true,
-        labelFr: "Vous le frappez : il va sur la Barre et doit repartir depuis le début",
-        labelEn: "You hit it: it goes to the Bar and must restart from the beginning",
-        explanationFr: "Magique ! Un pion adverse seul est expulsé sur la barre et perd son avance.",
-        explanationEn: "Brilliant! An isolated opponent checker goes to the bar and loses its lead.",
       },
     ],
   },
@@ -187,26 +188,26 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     titleFr: "Quiz 6/10 : Sortir de la Barre Centrale en Priorité",
     titleEn: "Quiz 6/10: Entering from the Center Bar",
     questionFr: "Vous avez un pion sur la Barre centrale : que devez-vous jouer en priorité\u00A0?",
-    questionEn: "You have a checker trapped on the Center Bar: what is your top priority?",
+    questionEn: "A checker is trapped on the Center Bar: what is your top priority\u00A0?",
     options: [
       {
         id: "A", isCorrect: false,
-        labelFr: "Ignorer ce pion prisonnier et faire avancer n'importe quel autre pion sur le tapis",
-        labelEn: "Ignore this trapped checker and advance any other checker across the board",
+        labelFr: "Ignorer ce pion et faire avancer n'importe quel autre pion sur le tapis",
+        labelEn: "Ignore this checker and advance any other checker across the board",
         explanationFr: "Interdit par les règles : la rentrée de barre est obligatoire en premier.",
         explanationEn: "Forbidden by the rules: re-entry from the bar is strictly mandatory first.",
       },
       {
         id: "B", isCorrect: true,
-        labelFr: "Obligation absolue : faire rentrer ce pion en jeu sur une pointe libre en face",
-        labelEn: "Strict obligation: enter this checker into play onto an open opposing point",
+        labelFr: "Obligation absolue : faire rentrer ce pion en jeu sur une pointe libre",
+        labelEn: "Strict obligation: enter this checker into play onto an open point",
         explanationFr: "Règle d'or : tant qu'un pion est sur la Barre, aucun autre pion ne peut avancer !",
         explanationEn: "Golden rule: while on the Bar, no other checker on the board can advance!",
       },
       {
         id: "C", isCorrect: false,
         labelFr: "Passer immédiatement son tour sans lancer les dés jusqu'au tour suivant",
-        labelEn: "Immediately forfeit your turn without rolling dice until the next round",
+        labelEn: "Immediately forfeit your turn without rolling dice until next round",
         explanationFr: "Vous ne perdez pas : vous lancez vos dés pour tenter de rentrer.",
         explanationEn: "You do not forfeit: you simply roll dice to enter.",
       },
@@ -218,7 +219,7 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     titleFr: "Quiz 7/10 : Le Mur de Portes (Bloquer l'adversaire)",
     titleEn: "Quiz 7/10: The Wall of Gates (Prime)",
     questionFr: "Pourquoi aligner plusieurs Portes côte à côte est-il si redoutable\u00A0?",
-    questionEn: "Why is lining up several consecutive points side by side so powerful?",
+    questionEn: "Why is building consecutive gates side by side so powerful\u00A0?",
     options: [
       {
         id: "A", isCorrect: true,
@@ -248,8 +249,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     id: 8, linkedEpisodeId: 4, pointsReward: 200, dice: [6, 1], boardHighlights: {},
     titleFr: "Quiz 8/10 : Quand Peut-on Sortir ses Pions ?",
     titleEn: "Quiz 8/10: When Can You Bear Off?",
-    questionFr: "Un pion blanc est encore hors de votre Maison : pouvez-vous déjà sortir les autres\u00A0?",
-    questionEn: "One white checker is still outside your Home Board: can you bear off the others yet?",
+    questionFr: "Un pion est hors de votre Maison : pouvez-vous déjà sortir les autres\u00A0?",
+    questionEn: "One checker is outside Home: can you bear off the others already\u00A0?",
     options: [
       {
         id: "A", isCorrect: false,
@@ -267,34 +268,34 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
       },
       {
         id: "C", isCorrect: true,
-        labelFr: "Non, vos 15 pions doivent TOUS être dans la Maison avant d'en sortir un seul",
-        labelEn: "No, all 15 of your checkers must be safely inside Home before bearing off any",
+        labelFr: "Non, vos 15 pions doivent TOUS être dans la Maison avant d'en sortir un",
+        labelEn: "No, all 15 of your checkers must be safely inside Home before bearing off",
         explanationFr: "Exactement ! La sortie (bear-off) est strictement interdite tant qu'un pion est dehors.",
         explanationEn: "Exactly! Bearing off is strictly forbidden as long as even 1 checker is outside.",
       },
     ],
   },
-  // QUIZ 9 (Réponse B)
+  // QUIZ 9 (Réponse A)
   {
     id: 9, linkedEpisodeId: 5, pointsReward: 200, dice: [0, 0], boardHighlights: {},
     titleFr: "Quiz 9/10 : Gagner Double (Gammon x2)",
     titleEn: "Quiz 9/10: Winning Double (Gammon x2)",
     questionFr: "Vos 15 pions sortis alors que l'adversaire en a sorti 0 : résultat\u00A0?",
-    questionEn: "All 15 checkers borne off while opponent has borne off 0: outcome?",
+    questionEn: "All 15 checkers borne off while opponent has borne off 0: outcome\u00A0?",
     options: [
       {
-        id: "A", isCorrect: false,
+        id: "A", isCorrect: true,
+        labelFr: "Vous gagnez le DOUBLE des points de la manche (Victoire Gammon x2)",
+        labelEn: "You win DOUBLE match points for this game (Gammon victory x2)",
+        explanationFr: "Victoire écrasante (Gammon) ! Sortir ses 15 pions avant le 1er adverse rapporte le double.",
+        explanationEn: "Crushing victory (Gammon)! Bearing off 15 before the opponent awards double.",
+      },
+      {
+        id: "B", isCorrect: false,
         labelFr: "Vous gagnez seulement 1 point classique comme lors d'une fin normale",
         labelEn: "You only win a single standard point like in an ordinary finish",
         explanationFr: "Non ! Une telle avance est récompensée par une victoire double (Gammon).",
         explanationEn: "No! Such dominance is rewarded with a double victory (Gammon).",
-      },
-      {
-        id: "B", isCorrect: true,
-        labelFr: "Vous gagnez le DOUBLE des points de la manche (Victoire Gammon ×2) !",
-        labelEn: "You win DOUBLE match points for this game (Gammon victory ×2)!",
-        explanationFr: "Victoire écrasante (Gammon) ! Sortir ses 15 pions avant le 1er adverse rapporte le double.",
-        explanationEn: "Crushing victory (Gammon)! Bearing off 15 before the opponent awards double.",
       },
       {
         id: "C", isCorrect: false,
@@ -305,13 +306,13 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
       },
     ],
   },
-  // QUIZ 10 (Réponse C)
+  // QUIZ 10 (Réponse B)
   {
     id: 10, linkedEpisodeId: 5, pointsReward: 200, dice: [0, 0], boardHighlights: { cube: true },
     titleFr: "Quiz 10/10 : Le Dé Multiplicateur (x2)",
     titleEn: "Quiz 10/10: The Doubling Cube (x2)",
     questionFr: "À quoi sert le gros dé spécial marqué 2, 4, 8 (Videau) sur le tapis\u00A0?",
-    questionEn: "What is the special doubling die marked 2, 4, 8 (Cube) used for?",
+    questionEn: "What is the special doubling die marked 2, 4, 8 (Cube) used for\u00A0?",
     options: [
       {
         id: "A", isCorrect: false,
@@ -321,18 +322,18 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
         explanationEn: "The cube does not grant re-rolls: it multiplies game points.",
       },
       {
-        id: "B", isCorrect: false,
-        labelFr: "À comptabiliser précisément le nombre total de tours de jeu écoulés",
-        labelEn: "To keep track of the total number of game rounds played",
-        explanationFr: "Ce n'est pas un compte-tours, mais le célèbre dé de doublement (Videau).",
-        explanationEn: "It is not a turn counter, but the famous Doubling Cube.",
-      },
-      {
-        id: "C", isCorrect: true,
+        id: "B", isCorrect: true,
         labelFr: "À proposer de doubler la mise de la partie lorsque votre position domine",
         labelEn: "To propose doubling match stakes when your position is dominant",
         explanationFr: "Génie stratégique ! Le Videau permet de doubler la mise avant de lancer les dés.",
         explanationEn: "Strategic genius! The Doubling Cube doubles the stakes before rolling dice.",
+      },
+      {
+        id: "C", isCorrect: false,
+        labelFr: "À comptabiliser précisément le nombre total de tours de jeu écoulés",
+        labelEn: "To keep track of the total number of game rounds played",
+        explanationFr: "Ce n'est pas un compte-tours, mais le célèbre dé de doublement (Videau).",
+        explanationEn: "It is not a turn counter, but the famous Doubling Cube.",
       },
     ],
   },
