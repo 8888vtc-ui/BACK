@@ -37,6 +37,7 @@ export interface UseCoachLogAnalyzerParams {
     setSelectedCoachHistoryIndex: (index: number | null) => void; notificationLevel: CoachNotificationLevel;
     setCoach: (coach: CoachState | null | ((prev: CoachState | null) => CoachState | null)) => void;
     setCoachHighlight: (highlight: CoachHighlight | null) => void; speakCoachVoice: (text: string) => void;
+    setIsAnalyzing?: (analyzing: boolean) => void;
     onCoachTriggered?: () => void;
 }
 
@@ -64,6 +65,7 @@ export function useCoachLogAnalyzer({
     setCoach,
     setCoachHighlight,
     speakCoachVoice,
+    setIsAnalyzing,
     onCoachTriggered,
 }: UseCoachLogAnalyzerParams): void {
     const matchLogRef = useRef(matchLog);
@@ -178,8 +180,8 @@ export function useCoachLogAnalyzer({
 
                 setSelectedCoachHistoryIndex(null);
 
+                setCoach(coachState);
                 if (shouldNotify(verdict, notificationLevel)) {
-                    setCoach(coachState);
                     setCoachHighlight(highlight);
                     if (verdict === 'blunder') {
                         try { soundEngine.playBlunderAlert(); } catch { /* ignore audio errors */ }
@@ -190,15 +192,13 @@ export function useCoachLogAnalyzer({
                         onCoachTriggered?.();
                     }
                 } else {
-                    setCoach((prev) => {
-                        if (prev === null) return null;
-                        return prev.verdict === 'optimal' ? coachState : prev;
-                    });
                     setCoachHighlight(null);
                 }
             } catch (err) {
                 if (!isStale()) console.warn('[Coach] Erreur évaluation log-driven tour X :', err);
+            } finally {
+                setIsAnalyzing?.(false);
             }
         })();
-    }, [matchLog, gameState, onCoachTriggered, notificationLevel, recordDecisionStats, evaluateCubeAction, cancelActiveOperation, speakCoachVoice, lastPlayerEvalRef, analysisRequestIdRef, setBrilliantMove, setLastMoveFeedback, setCoachHistory, setSelectedCoachHistoryIndex, setCoach, setCoachHighlight]);
+    }, [matchLog, gameState, onCoachTriggered, notificationLevel, recordDecisionStats, evaluateCubeAction, cancelActiveOperation, speakCoachVoice, lastPlayerEvalRef, analysisRequestIdRef, setBrilliantMove, setLastMoveFeedback, setCoachHistory, setSelectedCoachHistoryIndex, setCoach, setCoachHighlight, setIsAnalyzing]);
 }

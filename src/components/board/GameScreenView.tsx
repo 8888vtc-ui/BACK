@@ -221,6 +221,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                     }
                     onToggleRecommendArrow={() => setShowGuidedArrows((prev) => !prev)}
                     isShowingRecommendArrow={showGuidedArrows}
+                    onHoverNotation={showGuidedArrows ? onCandidateHover : undefined}
                 />
             )}
 

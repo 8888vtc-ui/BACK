@@ -87,6 +87,12 @@ export function useCoach({
 
     useEffect(() => () => { activeAbortRef.current?.abort(); }, []);
 
+    useEffect(() => {
+        if (!isAnalyzing) return;
+        const timer = setTimeout(() => setIsAnalyzing(false), 1800);
+        return () => clearTimeout(timer);
+    }, [isAnalyzing]);
+
     const { evaluateCubeAction } = useCoachCubeEvaluator({
         cancelActiveOperation,
         gameState: game.state,
@@ -146,6 +152,7 @@ export function useCoach({
         setCoach,
         setCoachHighlight,
         speakCoachVoice,
+        setIsAnalyzing,
         onCoachTriggered,
     });
 
@@ -187,7 +194,7 @@ export function useCoach({
                 onCoachTriggered,
             });
         } finally {
-            if (!isStale()) setIsAnalyzing(false);
+            setIsAnalyzing(false);
         }
     }, [cancelActiveOperation, currentTurnDiceRef, currentTurnMovesRef, game.dice, game.matchLog, game.moveHistory, game.state, onCoachTriggered, setCoach, setCoachHighlight, speakCoachVoice, turnBoardBeforeRef]);
 

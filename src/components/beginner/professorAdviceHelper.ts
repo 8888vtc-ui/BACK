@@ -122,9 +122,32 @@ export function getFeedbackAdvice(feedback: LastMoveFeedback, lang: 'fr' | 'en' 
     const absLoss = Math.abs(feedback.equityLoss);
 
     if (absLoss <= 0.020 || feedback.verdict === 'optimal') {
+        const bBefore = feedback.boardBefore;
+        const bAfter = feedback.boardAfter;
+        if (bBefore && bAfter && bBefore.length === 26 && bAfter.length === 26) {
+            let closedPoint: number | null = null;
+            for (let p = 1; p <= 24; p++) {
+                if ((bBefore[p] ?? 0) < 2 && (bAfter[p] ?? 0) >= 2) {
+                    closedPoint = p;
+                    break;
+                }
+            }
+            if (closedPoint !== null) {
+                return isEn
+                    ? `Superb! You united your checkers on point ${closedPoint}: this Gate is now an impenetrable shield!`
+                    : `Superbe ! Tu as réuni tes deux pions sur la case ${closedPoint} : cette Porte est maintenant un bouclier imprenable !`;
+            }
+
+            const hit = Math.abs(bAfter[O_BAR] ?? 0) > Math.abs(bBefore[O_BAR] ?? 0) || (feedback.playedMove?.includes('*') ?? false);
+            if (hit) {
+                return isEn
+                    ? "Well played! You hit the opponent's checker and sent it to the central Bar!"
+                    : "Bien joué ! Tu as envoyé le pion adverse sur la Barre centrale !";
+            }
+        }
         return isEn
-            ? 'Excellent move! Your checkers are well coordinated and secure.'
-            : 'Excellent coup ! Tes pions sont bien coordonnés et en sécurité.';
+            ? 'Great move! Your checkers advance toward your Home without leaving an exposed target.'
+            : 'Très bon coup ! Tes pions avancent vers ta Maison sans laisser de cible isolée.';
     }
 
     const lossPct = Math.max(1, Math.round(absLoss * 50));

@@ -18,6 +18,8 @@ import {
 } from '../engine/bgsageClient';
 import { BLUNDER_CAP_EMG_BY_DIFFICULTY } from '../../features/personas/botPersonas';
 import { resolvePersonaMeta } from '../../components/board/BoardPortraitAndActionRails';
+import { getFeedbackAdvice, getProactiveAdvice } from '../../components/beginner/professorAdviceHelper';
+import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
 
 describe('Verrou 1 : Capture immuable du tour humain (HumanTurnSnapshot)', () => {
     it('Preuve 1 : Snapshot pris au lancer humain valide 15 pions par camp et clone le plateau', () => {
@@ -174,5 +176,73 @@ describe('Verrou 4 : Carte d\'adversaire exempte de badges 3-ply mensongers', ()
         // Le badge du bot indique son style humain (ex: Blitz Agressif)
         expect(botMeta.opponentBadge).toBeDefined();
         expect(botMeta.opponentBadge).not.toContain('3-Ply');
+    });
+});
+
+describe('Verrou 5 : Célébration guidée, flèches dorées et vérité physique du Professeur', () => {
+    it('Preuve 6 : getProactiveAdvice sur 6-1 initial recommande 13/7 8/7 et les flèches dorées', () => {
+        const state = createInitialState();
+        state.turn = 'X';
+        const proactive = getProactiveAdvice(state, [6, 1], 'fr');
+        expect(proactive).not.toBeNull();
+        expect(proactive?.bestNotation).toBe('13/7 8/7');
+        expect(proactive?.text).toContain('flèches dorées');
+        expect(proactive?.text).toContain('Bouclier');
+    });
+
+    it('Preuve 7 : getFeedbackAdvice génère le compliment de Porte fermée sur 13/7 8/7', () => {
+        const initial = createInitialState();
+        const boardAfter = [...initial.board];
+        // 13/7 (13: 5->4, 7: 0->1), 8/7 (8: 3->2, 7: 1->2)
+        boardAfter[13] = 4;
+        boardAfter[8] = 2;
+        boardAfter[7] = 2; // porte fermée !
+
+        const feedback: LastMoveFeedback = {
+            verdict: 'optimal',
+            equityLoss: 0.0,
+            playedMove: '13/7 8/7',
+            optimalMove: '13/7 8/7',
+            turnIndex: 1,
+            decisionType: 'checker',
+            boardBefore: initial.board,
+            boardAfter,
+            timestamp: Date.now(),
+        };
+
+        const frAdvice = getFeedbackAdvice(feedback, 'fr');
+        expect(frAdvice).toContain('Superbe !');
+        expect(frAdvice).toContain('case 7');
+        expect(frAdvice).toContain('bouclier imprenable');
+
+        const enAdvice = getFeedbackAdvice(feedback, 'en');
+        expect(enAdvice).toContain('Superb!');
+        expect(enAdvice).toContain('point 7');
+        expect(enAdvice).toContain('impenetrable shield');
+    });
+
+    it('Preuve 8 : getFeedbackAdvice félicite la frappe envoyant à la barre', () => {
+        const initial = createInitialState();
+        const boardBefore = [...initial.board];
+        boardBefore[7] = -1; // blot adverse
+        const boardAfter = [...boardBefore];
+        boardAfter[7] = 1; // blot frappé
+        boardAfter[25] = -1; // adverse sur la barre
+
+        const feedback: LastMoveFeedback = {
+            verdict: 'optimal',
+            equityLoss: 0.005,
+            playedMove: '13/7*',
+            optimalMove: '13/7*',
+            turnIndex: 1,
+            decisionType: 'checker',
+            boardBefore,
+            boardAfter,
+            timestamp: Date.now(),
+        };
+
+        const frAdvice = getFeedbackAdvice(feedback, 'fr');
+        expect(frAdvice).toContain('Bien joué !');
+        expect(frAdvice).toContain('Barre centrale');
     });
 });

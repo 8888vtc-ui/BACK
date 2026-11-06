@@ -10,38 +10,17 @@ import { getProactiveAdvice, getFeedbackAdvice, getBotMoveExplanation } from './
 import { soundEngine } from '../../lib/sound/soundEngine';
 
 export interface LiveProfessorCoachOverlayProps {
-  locale?: string;
-  dice?: [number, number] | null;
-  canUndo?: boolean;
-  onUndoMove?: () => void;
-  onAskProfessorHint?: () => void;
-  lastMoveFeedback?: LastMoveFeedback | null;
-  pipDifference?: number;
-  antiFrustrationNotice?: 'BAR_PRIORITY' | 'CLOSED_POINT' | null;
-  isMasterMove?: boolean;
-  optimalMove?: string | null;
-  whyOptimal?: string | null;
-  lastBotNotation?: string | null;
-  activeTurn?: 'X' | 'O';
-  boardState?: BoardState;
-  onToggleRecommendArrow?: () => void;
-  onHoverNotation?: (notation: string | null) => void;
-  isShowingRecommendArrow?: boolean;
-  prematureDoubleWarning?: boolean;
+  locale?: string; dice?: [number, number] | null; canUndo?: boolean; onUndoMove?: () => void;
+  onAskProfessorHint?: () => void; lastMoveFeedback?: LastMoveFeedback | null; pipDifference?: number;
+  antiFrustrationNotice?: 'BAR_PRIORITY' | 'CLOSED_POINT' | null; isMasterMove?: boolean;
+  optimalMove?: string | null; whyOptimal?: string | null; lastBotNotation?: string | null;
+  activeTurn?: 'X' | 'O'; boardState?: BoardState; onToggleRecommendArrow?: () => void;
+  onHoverNotation?: (notation: string | null) => void; isShowingRecommendArrow?: boolean; prematureDoubleWarning?: boolean;
 }
 
 export function LiveProfessorCoachOverlay({
-  locale: propLocale,
-  dice,
-  canUndo = true,
-  onUndoMove,
-  onAskProfessorHint,
-  lastMoveFeedback,
-  antiFrustrationNotice,
-  isMasterMove = false,
-  optimalMove,
-  lastBotNotation,
-  activeTurn = 'X',
+  locale: propLocale, dice, canUndo = true, onUndoMove, onAskProfessorHint, lastMoveFeedback,
+  antiFrustrationNotice, isMasterMove = false, optimalMove, lastBotNotation, activeTurn = 'X',
   boardState, onToggleRecommendArrow, onHoverNotation, isShowingRecommendArrow = true, prematureDoubleWarning = false,
 }: LiveProfessorCoachOverlayProps) {
   const { locale: contextLocale } = useTranslation();
@@ -50,11 +29,15 @@ export function LiveProfessorCoachOverlay({
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
-  useEffect(() => () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
-  }, []);
+  useEffect(() => () => { if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel(); }, []);
   const [activeNotice, setActiveNotice] = useState<'BAR_PRIORITY' | 'CLOSED_POINT' | null>(antiFrustrationNotice ?? null);
   const [showMasterBadge, setShowMasterBadge] = useState<boolean>(false);
+  const [showOptimalBadge, setShowOptimalBadge] = useState<boolean>(false);
+
+  const isOptimalFeedback = useMemo(() => {
+    if (!lastMoveFeedback) return false;
+    return lastMoveFeedback.verdict === 'optimal' || Math.abs(lastMoveFeedback.equityLoss) <= 0.020;
+  }, [lastMoveFeedback]);
 
   // Temps A : Calcul proactif du meilleur coup au jet de dés
   const proactive = useMemo(
@@ -83,11 +66,30 @@ export function LiveProfessorCoachOverlay({
     setShowMasterBadge(false);
   }, [isMasterMove, dice]);
 
+  // Célébration animée sur bon coup
+  useEffect(() => {
+    if (isOptimalFeedback && (!dice || (dice[0] === 0 && dice[1] === 0))) {
+      setShowOptimalBadge(true);
+      try { soundEngine.playBrilliantMove(); } catch { /* ignore */ }
+      const timer = setTimeout(() => setShowOptimalBadge(false), 4500);
+      return () => clearTimeout(timer);
+    }
+    setShowOptimalBadge(false);
+  }, [isOptimalFeedback, dice]);
+
+  const hasRecentFeedback = Boolean(
+    lastMoveFeedback && (!dice || (dice[0] === 0 && dice[1] === 0))
+  );
+
   const getProfessorPrompt = (): string => {
     if (prematureDoubleWarning) {
       return lang === 'fr'
         ? "🎓 Pas encore ! On ne propose de doubler les points (×2) que lorsqu'on a pris un net avantage dans la partie. Continue d'abord en cliquant sur Lancer les dés !"
         : "🎓 Not yet! You should only offer to double points (×2) when you have built a clear advantage in the game. Continue by clicking Roll Dice first!";
+    }
+
+    if (hasRecentFeedback && lastMoveFeedback) {
+      return getFeedbackAdvice(lastMoveFeedback, lang);
     }
 
     if (activeTurn === 'X' && (!dice || (dice[0] === 0 && dice[1] === 0))) {
@@ -102,7 +104,6 @@ export function LiveProfessorCoachOverlay({
         : "🎓 The Professor: It's your turn! Click Roll Dice in the center of the board to see your movement options.";
     }
 
-    if (lastMoveFeedback && activeTurn === 'X' && !dice) return getFeedbackAdvice(lastMoveFeedback, lang);
     if (proactive) return proactive.text;
     if (lastBotNotation && activeTurn === 'X' && !dice) return getBotMoveExplanation(lastBotNotation, lang);
     if (activeTurn === 'O') return lang === 'fr' ? "L'adversaire analyse la position..." : 'Opponent is thinking...';
@@ -164,6 +165,15 @@ export function LiveProfessorCoachOverlay({
                 <span className="font-black uppercase tracking-wider text-xs text-[#D4AF37]">
                   {lang === 'fr' ? 'PROFESSEUR INTERACTIF' : 'INTERACTIVE PROFESSOR'}
                 </span>
+                {showOptimalBadge && (
+                  <span
+                    data-testid="optimal-celebration-badge"
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400 text-emerald-300 font-bold text-xs shadow-md animate-bounce"
+                  >
+                    <Award className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>{lang === 'fr' ? '✨ BRAVO ! COUP EXCELLENT (+100 PTS)' : '✨ BRAVO! EXCELLENT MOVE (+100 PTS)'}</span>
+                  </span>
+                )}
                 {showMasterBadge && (
                   <span
                     data-testid="master-move-badge"
@@ -255,29 +265,16 @@ export function LiveProfessorCoachOverlay({
           </div>
 
           {currentNotice && (
-            <div
-              data-testid="professor-anti-frustration-alert"
-              className="flex items-center justify-between gap-2 p-2 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-200 text-xs animate-in fade-in"
-            >
+            <div data-testid="professor-anti-frustration-alert" className="flex items-center justify-between gap-2 p-2 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-200 text-xs animate-in fade-in">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>
                   {currentNotice === 'BAR_PRIORITY'
-                    ? (lang === 'fr'
-                        ? '🚨 Règle d’or : Vous avez une dame sur la barre ! Elle doit impérativement rentrer (cases 24 à 19) avant de bouger tout autre pion.'
-                        : '🚨 Golden Rule: You have a checker on the bar! It must re-enter (points 24 to 19) before any other move.')
-                    : (lang === 'fr'
-                        ? '🛡️ Case bloquée : Cette flèche est protégée par 2 dames adverses ou plus (porte faite). Vous ne pouvez pas vous y arrêter.'
-                        : '🛡️ Blocked point: This point is secured by 2+ opponent checkers. You cannot land here.')}
+                    ? (lang === 'fr' ? '🚨 Règle d’or : Dame sur la barre ! Elle doit rentrer (cases 24 à 19) avant tout autre pion.' : '🚨 Golden Rule: Checker on the bar! Must re-enter (points 24 to 19).')
+                    : (lang === 'fr' ? '🛡️ Case bloquée : Protégée par 2 dames adverses ou plus (porte faite).' : '🛡️ Blocked point: Secured by 2+ opponent checkers.')}
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setActiveNotice(null)}
-                className="text-stone-400 hover:text-white text-xs px-1"
-              >
-                ✕
-              </button>
+              <button type="button" onClick={() => setActiveNotice(null)} className="text-stone-400 hover:text-white text-xs px-1">✕</button>
             </div>
           )}
         </div>
