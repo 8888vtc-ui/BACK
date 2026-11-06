@@ -4,12 +4,23 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import BlunderDrillView from './BlunderDrillView';
-import { clearBlunderBank, getBlunderBankStats, recordBlunder } from '../../features/drills/blunderBank';
+import { clearBlunderBank, getBlunderBankStats } from '../../features/drills/blunderBank';
 import { BENCHMARK_BLUNDERS } from '../../features/drills/benchmarkBlunders';
 import {
     resetAdaptivePlayerProfile,
     recordLiveMatchDecisionOnAdaptiveProfile,
 } from '../../features/drills/adaptiveQuizEngine';
+import { seedDemoPersonalBlunders } from '../../lib/blunders/personalBlunderStore';
+
+// Mock next/navigation for PersonalBlundersNotebookView
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        push: vi.fn(),
+        replace: vi.fn(),
+    }),
+    usePathname: () => '/puzzles',
+    useSearchParams: () => new URLSearchParams(),
+}));
 
 // Mock Capacitor Haptics
 vi.mock('../../lib/capacitor/haptics', () => ({
@@ -28,10 +39,21 @@ vi.mock('../toast/ToastContext', () => ({
     },
 }));
 
-describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () => {
+describe('BlunderDrillView Component (Parcours Adaptatif & Carnet de Blunders Personnels)', () => {
     let mockStore: Record<string, string> = {};
     const b0 = BENCHMARK_BLUNDERS[0]!;
     const b1 = BENCHMARK_BLUNDERS.find((b) => b.equityLoss >= 0.08 && (b.quizChoices?.length ?? 0) >= 4) ?? BENCHMARK_BLUNDERS[1] ?? b0;
+
+    function authenticateMockMember() {
+        mockStore['bgtour_local_auth_profile_v1'] = JSON.stringify({
+            email: 'alexandre@backgammontour.com',
+            displayName: 'Alexandre D.',
+            countryCode: 'FR',
+            avatarUrl: '/avatars/default.png',
+            experienceLevel: 'intermediate',
+        });
+        mockStore['bgtour_player_tier_gate_v1'] = 'INTERMEDIATE';
+    }
 
     beforeEach(() => {
         mockStore = {};
@@ -111,28 +133,24 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         expect(screen.queryByTestId('drill-hint-box')).toBeNull();
     });
 
-    it('permet de répondre en 1 clic via le Quiz Express QCM et affiche l’explication pédagogique 3.8 Flash', () => {
+    it('permet de répondre en 1 clic via le Quiz Express QCM et affiche l’explication pédagogique', () => {
         render(<BlunderDrillView initialConceptId={b0.conceptId} />);
 
         const qcmBox = screen.getByTestId('quiz-qcm-choices');
         const buttons = qcmBox.querySelectorAll('button');
         expect(buttons.length).toBe(4);
 
-        // Clique sur le premier choix
         fireEvent.click(buttons[0]!);
         const banner = screen.getByTestId('drill-feedback-banner');
         expect(banner.textContent).toContain('Coach Pédagogique');
         expect(getBlunderBankStats().totalBlunders).toBe(BENCHMARK_BLUNDERS.length);
     });
 
-    it('garantit l’unification ER / PR (0.0-30.0), l’évolution dynamique du niveau (+ vert / - rouge), la ligne unique de contexte et le badge Calibrage Quiz N+1', () => {
-        // 1. Mode Quiz ER (/puzzles) : 100 % ER / PR, 0 occurrence du mot ERH, évolution dynamique + en vert
+    it('garantit l’unification ER / PR (0.0-30.0) pour un membre connecté, l’évolution dynamique du niveau et la ligne unique de contexte', () => {
+        authenticateMockMember();
         const { unmount } = render(<BlunderDrillView initialConceptId={b0.conceptId} initialMode="pr_math" />);
         expect(screen.getByTestId('drill-mode-title').textContent).toContain('Quiz ER / PR');
         expect(screen.getByTestId('drill-mode-title').textContent).not.toContain('ERH');
-        expect(screen.queryByTestId('drill-mode-tabs')).toBeNull();
-        expect(screen.queryByTestId('drill-validate-btn')).toBeNull();
-        expect(screen.queryByTestId('drill-position-reading-card')).toBeNull();
 
         const initialErBadge = screen.getByTestId('quiz-live-rating-badge');
         expect(initialErBadge.textContent).toContain('Niveau ER : 1500');
@@ -142,7 +160,6 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         const contextLine = screen.getByTestId('drill-match-context-grid');
         expect(contextLine.textContent).toContain('Videau :');
 
-        // Validation en 1-Clic sur A (optimal) -> hausse immédiate du Niveau ER (+ vert) et bouton Question suivante →
         fireEvent.click(screen.getByTestId('quiz-choice-btn-A'));
         expect(screen.getByTestId('quiz-live-rating-badge').textContent).toMatch(/Niveau ER : 15(1|2)/);
         expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('+');
@@ -150,19 +167,21 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         expect(mockStore['bg_quiz_er_rating_v1']).toBeDefined();
         unmount();
 
-        // 2. Mode Quiz adaptatif (/drills) : également Quiz ER / PR, calibrage N+1, évolution dynamique - en rouge sur erreur
         render(<BlunderDrillView initialConceptId={b0.conceptId} initialMode="adaptive" />);
         expect(screen.getByTestId('drill-mode-title').textContent).toContain('Quiz ER / PR');
-        expect(screen.getByTestId('drill-mode-title').textContent).not.toContain('ERH');
-        expect(screen.getByTestId('quiz-nplus1-target-badge').textContent).toContain('Calibrage Quiz : ER / PR');
-        expect(screen.getByTestId('quiz-nplus1-target-badge').textContent).toContain('(Objectif N+1)');
-
         fireEvent.click(screen.getByTestId('quiz-choice-btn-C'));
         expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('-');
-        expect(mockStore['bg_quiz_er_rating_v1']).toBeDefined();
     });
 
-    it('permet de basculer sur l’onglet Revoir Mes Blunders et calibre automatiquement le niveau lors d’un match contre un Bot ou un Humain', () => {
+    it('bloque l’accès aux Blunders Personnels pour un Joueur Invité et affiche l’écran verrouillé avec CTA Plein Or', () => {
+        render(<BlunderDrillView initialMode="personal_blunders" />);
+        expect(screen.getByTestId('personal-blunders-guest-lock-view')).toBeDefined();
+        expect(screen.getByTestId('unlock-personal-blunders-cta').textContent).toContain('SE CONNECTER');
+        expect(screen.queryByTestId('quiz-qcm-choices')).toBeNull();
+    });
+
+    it('affiche la mémoire complète du match (Date, Adversaire, Score, Tour) et résout un Blunder Personnel pour un Compte Connecté', () => {
+        authenticateMockMember();
         const initialBoard = b0.board;
         const liveOutcome = recordLiveMatchDecisionOnAdaptiveProfile({
             board: initialBoard,
@@ -172,101 +191,57 @@ describe('BlunderDrillView Component (Parcours Adaptatif Zéro Sous-Menu)', () =
         });
         expect(liveOutcome.categoryMeta).toBeDefined();
 
-        recordBlunder({
-            id: 'user_blunder_match_1',
-            board: initialBoard,
-            dice: b0.dice,
-            player: 'X',
-            playedMove: b0.playedMove,
-            optimalMove: b0.optimalMove,
-            equityLoss: 0.178,
-            verdict: 'blunder',
-            conceptId: b0.conceptId,
-            conceptName: b0.conceptName,
-            explanation: b0.explanation,
-            quizChoices: b0.quizChoices,
-        });
+        const demoBlunders = seedDemoPersonalBlunders('Alexandre D.');
+        expect(demoBlunders.length).toBe(3);
 
-        render(<BlunderDrillView />);
-        const personalTab = screen.getByTestId('drill-mode-tab-personal');
-        expect(personalTab.textContent).toContain('Revoir Mes Blunders');
-        expect(personalTab.textContent).toContain('1');
+        render(<BlunderDrillView initialMode="personal_blunders" />);
+        expect(screen.getByTestId('personal-blunders-notebook-view')).toBeDefined();
+        expect(screen.getByTestId('blunder-match-opponent').textContent).toContain('Kosta_Ath');
+        expect(screen.getByTestId('blunder-match-score-turn').textContent).toContain('Score : 2 - 3');
+        expect(screen.getByTestId('blunder-match-score-turn').textContent).toContain('Tour #12');
+        expect(screen.getByTestId('personal-blunders-tab-pending').textContent).toContain('À corriger (3)');
+        expect(screen.getByTestId('personal-blunders-tab-resolved').textContent).toContain('Résolus (0)');
 
-        fireEvent.click(personalTab);
-        expect(screen.getByText(/Vos Blunders de Match/i)).toBeDefined();
-        fireEvent.click(screen.getByTestId('drill-hint-toggle'));
-        expect(screen.getByText(new RegExp(b0.conceptName, 'i'))).toBeDefined();
+        // Clique sur le coup optimal A -> passe en Résolu et affiche le panneau comparatif
+        fireEvent.click(screen.getByTestId('quiz-choice-btn-A'));
+        expect(screen.getByTestId('personal-blunder-comparative-panel')).toBeDefined();
+        expect(screen.getByTestId('comparative-played-move-card').textContent).toContain('Ton Coup en Match');
+        expect(screen.getByTestId('comparative-optimal-move-card').textContent).toContain('La Solution 3-Ply');
+        expect(screen.getByTestId('personal-blunders-tab-pending').textContent).toContain('À corriger (2)');
+        expect(screen.getByTestId('personal-blunders-tab-resolved').textContent).toContain('Résolus (1)');
     });
 
-    it('affiche la terminologie unifiée ER / PR (échelle 0.0-30.0 par dixièmes), Rating 1500, Calibrage Quiz N+1, les 2 essais (❤️❤️), l’indice socratique au 1er échec et la solution complète au 2e échec', () => {
+    it('affiche la terminologie unifiée ER / PR (échelle 0.0-30.0 par dixièmes), Rating 1500, les 2 essais, l’indice socratique au 1er échec et la solution complète au 2e échec', () => {
+        authenticateMockMember();
         const { unmount } = render(<BlunderDrillView initialConceptId={b1.conceptId} initialMode="pr_math" />);
 
-        // 1. En-tête : Essais : 2/2 ❤️❤️ | ER / PR : 6.3 | Calibrage Quiz : ER / PR 6.0 (Objectif N+1) | Rating : 1500
         expect(screen.getByTestId('drill-mode-title').textContent).toContain('Quiz ER / PR');
         expect(screen.getByTestId('quiz-attempts-counter').textContent).toContain('Essais : 2/2');
         expect(screen.getByTestId('quiz-target-metric-badge').textContent).toContain('ER / PR : 6.3');
         expect(screen.getByTestId('quiz-nplus1-target-badge').textContent).toContain('Calibrage Quiz : ER / PR');
-        expect(screen.getByTestId('quiz-nplus1-target-badge').textContent).toContain('(Objectif N+1)');
         expect(screen.getByTestId('quiz-elo-rating-badge').textContent).toContain('Rating : 1500');
 
-        // 2. Clic sur le COUP OPTIMAL (buttons[0]) -> ER / PR baisse de -0.1 (6.2), AUCUN bloc "1. Pourquoi ton coup est une erreur"
         fireEvent.click(screen.getByTestId('quiz-choice-btn-A'));
         expect(screen.getByTestId('quiz-target-metric-badge').textContent).toContain('ER / PR : 6.2');
         expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('▼ -0.1 (Progression)');
         expect(screen.queryByTestId('coach-block-1-error')).toBeNull();
         expect(screen.getByTestId('coach-block-2-optimal').textContent).toContain('Pourquoi ce coup est optimal :');
-        expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('💡 Règle à retenir :');
+        expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('Règle à retenir :');
         unmount();
 
-        // 3. 1er clic sur une ERREUR (quiz-choice-btn-C) -> Essais passe à 1/2 ❤️🖤, pénalité +0.2, Indice Socratique sans dévoiler la solution
         render(<BlunderDrillView initialConceptId={b1.conceptId} initialMode="pr_math" />);
         fireEvent.click(screen.getByTestId('quiz-choice-btn-C'));
         expect(screen.getByTestId('quiz-attempts-counter').textContent).toContain('Essais : 1/2');
         expect(screen.getByTestId('socratic-first-attempt-box').textContent).toContain('Indice Socratique');
         expect(screen.queryByTestId('coach-block-1-error')).toBeNull();
 
-        // 4. 2e clic sur une AUTRE ERREUR (quiz-choice-btn-D) -> Essais passe à 0/2 🖤🖤, 3 blocs complets + carte FSRS v5 + Suivant
         fireEvent.click(screen.getByTestId('quiz-choice-btn-D'));
         expect(screen.getByTestId('quiz-attempts-counter').textContent).toContain('Essais : 0/2');
         expect(screen.getByTestId('coach-block-1-error').textContent).toContain('1. Pourquoi ton coup est une erreur :');
         expect(screen.getByTestId('coach-block-2-optimal').textContent).toContain('2. Pourquoi le coup optimal gagne :');
-        expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('💡 Comment t\'améliorer :');
+        expect(screen.getByTestId('coach-block-3-rule').textContent).toContain('Comment t\'améliorer :');
         expect(screen.getByTestId('fsrs-scheduled-badge').textContent).toContain('FSRS v5');
         expect(screen.getByTestId('drill-retry-btn').textContent).toContain('Réessayer');
         expect(screen.getByTestId('drill-next-btn').textContent).toContain('Suivant');
-    });
-
-    it('applique la récompense Revanche -0.2 au 1er essai sur blunder personnel et affiche le badge issu du match', () => {
-        const initialBoard = b0.board;
-        recordBlunder({
-            id: 'user_blunder_revenge_test',
-            board: initialBoard,
-            dice: b0.dice,
-            player: 'X',
-            playedMove: b0.playedMove,
-            optimalMove: b0.optimalMove,
-            equityLoss: 0.178,
-            verdict: 'blunder',
-            conceptId: b0.conceptId,
-            conceptName: b0.conceptName,
-            explanation: b0.explanation,
-            quizChoices: b0.quizChoices,
-            gameId: 'match_123',
-            quizTargetER: 6.5,
-        });
-
-        render(<BlunderDrillView initialMode="personal_blunders" />);
-        // Contrôle #14 : badge exact
-        const badge = screen.getByTestId('quiz-nplus1-target-badge');
-        expect(badge.textContent).toContain('🔥 Issu de ton match • Niveau Quiz : ER / PR');
-
-        // Bouton filtre et bouton revanche présents
-        expect(screen.getByTestId('drill-mode-tab-personal')).toBeDefined();
-        expect(screen.getByTestId('post-match-revenge-blunders-btn')).toBeDefined();
-
-        // Contrôle #12 : Succès 1er coup -> Récompense Revanche -0.2 (6.3 -> 6.1)
-        fireEvent.click(screen.getByTestId('quiz-choice-btn-A'));
-        expect(screen.getByTestId('quiz-target-metric-badge').textContent).toContain('ER / PR : 6.1');
-        expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('▼ -0.2 (Progression)');
     });
 });

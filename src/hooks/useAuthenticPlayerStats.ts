@@ -49,6 +49,7 @@ export function checkIsPlayerRegistered(): boolean {
         }
         const userCode = window.localStorage.getItem('bg_user_code');
         if (userCode && userCode !== 'guest_instant' && !userCode.startsWith('guest_')) return true;
+        if (window.localStorage.getItem('bgtour_local_auth_profile_v1')) return true;
         return Boolean(window.localStorage.getItem('sb-access-token') || window.localStorage.getItem('supabase.auth.token'));
     } catch {
         return false;
@@ -154,7 +155,7 @@ export function computeAuthenticStats(): AuthenticPlayerStats {
 }
 
 export function useAuthenticPlayerStats(): AuthenticPlayerStats & { refreshStats: () => void } {
-    const [stats, setStats] = useState<AuthenticPlayerStats>(GUEST_STATS);
+    const [stats, setStats] = useState<AuthenticPlayerStats>(() => computeAuthenticStats());
     const refreshStats = useCallback(() => setStats(computeAuthenticStats()), []);
 
     useEffect(() => {

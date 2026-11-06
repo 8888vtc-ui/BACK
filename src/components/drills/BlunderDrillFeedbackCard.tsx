@@ -106,7 +106,7 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                         className="rounded-xl border border-[#D4AF37]/40 bg-[#180c06]/90 p-2 text-xs text-[#fdf8eb] leading-snug shrink-0"
                         data-testid="drill-hint-box"
                     >
-                        <span className="font-bold text-[#f3c65f]">💡 Indice : </span>
+                        <span className="font-bold text-[#f3c65f]">Indice : </span>
                         {currentBlunder.hint}
                     </div>
                 )}

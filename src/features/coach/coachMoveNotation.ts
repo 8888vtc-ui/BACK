@@ -25,10 +25,6 @@ export function formatCoachSingleMove(move: Move): string {
 /**
  * Formate une séquence complète en numérotation ABSOLUE, en marquant les
  * frappes d'un astérisque (ex. `13/7` suivi d'une étoile).
- *
- * @param moves  Séquence de sous-mouvements dans l'ordre de jeu.
- * @param player Joueur au trait (pour détecter les frappes).
- * @param board  Plateau AVANT la séquence (26 entiers).
  */
 export function formatCoachMoveSequence(
     moves: ReadonlyArray<Move>,
@@ -55,15 +51,7 @@ export function formatCoachMoveSequence(
 
 /**
  * Notation STANDARD de Backgammon (perspective du joueur au trait) d'une
- * séquence complète de sous-mouvements.
- *
- * Contrairement à `formatCoachMoveSequence` (numérotation ABSOLUE du plateau,
- * utilisée par le panneau Coach), cette fonction produit la notation lue
- * « de 24 vers 1 » du point de vue de celui qui joue : pour O, la flèche
- * absolue `p` est rendue `25 - p`. Un coup adverse `24 → 18 → 13` s'affiche
- * donc `24/18 18/13`, jamais `1/7 7/12`.
- *
- * Les frappes sont marquées d'un astérisque et les sorties rendues `off`.
+ * séquence complète de sous-mouvements (« de 24 vers 1 »).
  */
 export function formatStandardMoveSequence(
     moves: ReadonlyArray<Move>,
@@ -81,9 +69,6 @@ export function formatStandardMoveSequence(
         return player === 'X' ? String(point) : String(25 - point);
     };
 
-    // Plateau de repli : si l'appelant ne fournit pas le plateau avant le coup,
-    // on reconstruit une position neutre (aucune frappe détectée) plutôt que de
-    // planter sur un index indéfini.
     let currentBoard = board && board.length >= 26 ? [...board] : null;
     const tokens: string[] = [];
 
@@ -103,17 +88,6 @@ export function formatStandardMoveSequence(
 
 /**
  * Reconstruit la liste des sous-mouvements entre deux plateaux (26 entiers).
- *
- * Algorithme déterministe :
- *   1. Collecte les sources (pions retirés) et destinations (pions ajoutés).
- *   2. Apparie les entrées de barre en premier (`bar/x`).
- *   3. Apparie les sorties (`x/off`) en dernier.
- *   4. Apparie le reste par distance croissante (heuristique stable).
- *
- * Les frappes sont gérées : un blot adverse remplacé par un pion du joueur
- * apparaît comme une destination, et le pion adverse est renvoyé à la barre.
- *
- * @returns La séquence de coups, ou `[]` si les plateaux sont identiques.
  */
 export function movesFromBoardDiff(
     boardBefore: ReadonlyArray<number>,
@@ -125,26 +99,21 @@ export function movesFromBoardDiff(
 
     const before = [...boardBefore];
     const after = [...boardAfter];
-
     const myCount = (v: number) => (player === 'X' ? Math.max(0, v) : Math.max(0, -v));
-
     const barIndex = player === 'X' ? X_BAR : O_BAR;
     const offIndex = player === 'X' ? X_OFF : O_OFF;
 
     const sources: number[] = [];
     const destinations: number[] = [];
 
-    // Barre : pions ré-entrés.
     const barDelta = myCount(before[barIndex]) - myCount(after[barIndex]);
     for (let i = 0; i < barDelta; i++) sources.push(barIndex);
 
-    // Sortie : pions retirés du plateau.
     const offBefore = countOff(before, player);
     const offAfter = countOff(after, player);
     const offDelta = offAfter - offBefore;
     for (let i = 0; i < offDelta; i++) destinations.push(offIndex);
 
-    // Flèches 1..24.
     for (let p = 1; p <= 24; p++) {
         const delta = myCount(after[p]) - myCount(before[p]);
         if (delta > 0) {
@@ -157,29 +126,19 @@ export function movesFromBoardDiff(
     if (sources.length === 0 || destinations.length === 0) return [];
 
     const moves: Move[] = [];
-
-    // 1. Entrées de barre en premier.
     const barSources = sources.filter((s) => s === barIndex);
     const otherSources = sources.filter((s) => s !== barIndex);
-
-    // 2. Sorties en dernier.
     const offDests = destinations.filter((d) => d === offIndex);
     const pointDests = destinations.filter((d) => d !== offIndex);
 
-    // Appariement barre → flèche : X entre en 24..19 (décroissant), O entre en 1..6 (croissant).
-    const sortedPointDests = [...pointDests].sort((a, b) =>
-        player === 'X' ? b - a : a - b,
-    );
+    const sortedPointDests = [...pointDests].sort((a, b) => (player === 'X' ? b - a : a - b));
     for (const _ of barSources) {
         const dst = sortedPointDests.shift();
         if (dst === undefined) break;
         moves.push({ from: barIndex, to: dst });
     }
 
-    // Appariement flèche → flèche : sources les plus reculées d'abord (24→1 pour X, 1→24 pour O).
-    const sortedSources = [...otherSources].sort((a, b) =>
-        player === 'X' ? b - a : a - b,
-    );
+    const sortedSources = [...otherSources].sort((a, b) => (player === 'X' ? b - a : a - b));
     const remainingSources: number[] = [];
     for (const src of sortedSources) {
         const dst = sortedPointDests.shift();
@@ -190,27 +149,19 @@ export function movesFromBoardDiff(
         }
     }
 
-    // Appariement flèche → sortie.
     for (const _ of offDests) {
         const src = remainingSources.shift();
         if (src === undefined) break;
         moves.push({ from: src, to: offIndex });
     }
 
-    // Vérification de cohérence : la séquence doit reproduire `boardAfter`.
     let replay = [...before];
     for (const m of moves) {
         replay = applyMove(replay, m, player);
     }
-    if (replay.join(',') !== after.join(',')) {
-        // Repli : on retourne la séquence brute (meilleur effort) plutôt que rien.
-        return moves;
-    }
-
     return moves;
 }
 
-/** Nombre de pions sortis (bear-off) d'un joueur. */
 function countOff(board: ReadonlyArray<number>, player: Player): number {
     let onBoard = 0;
     for (let p = 1; p <= 24; p++) {
@@ -223,10 +174,6 @@ function countOff(board: ReadonlyArray<number>, player: Player): number {
     return 15 - onBoard;
 }
 
-/**
- * Notation absolue d'un coup à partir des plateaux avant/après.
- * Utilisé quand le moteur ne fournit que le plateau final (bgsage, rollout).
- */
 export function formatCoachMoveSequenceFromBoard(
     boardBefore: ReadonlyArray<number>,
     boardAfter: ReadonlyArray<number>,
@@ -236,36 +183,38 @@ export function formatCoachMoveSequenceFromBoard(
     return formatCoachMoveSequence(moves, player, boardBefore);
 }
 
-/**
- * Normalise une notation pour comparaison insensible à l'ordre, aux astérisques et aux multiplicateurs.
- * Exemple : `"13/11 8/5"` ≡ `"8/5 13/11"`, `"8/5(2)"` ≡ `"8/5 8/5"`.
- */
+// Développe un jeton potentiellement chaîné et/ou multiplié en pas élémentaires.
+function expandMultiSlashToken(rawToken: string): string[] {
+    const clean = rawToken.replace(/\*/g, '').trim();
+    if (!clean) return [];
+    const m = clean.match(/^(.+)\((\d+)\)$/);
+    const base = m ? m[1] : clean;
+    const count = m ? Math.max(1, Math.min(4, Number(m[2]))) : 1;
+    const parts = base.split('/').filter(Boolean);
+    if (parts.length < 2) return [clean];
+    const expanded: string[] = [];
+    for (let k = 0; k < parts.length - 1; k++) {
+        const step = `${parts[k]}/${parts[k + 1]}`;
+        for (let c = 0; c < count; c++) {
+            expanded.push(step);
+        }
+    }
+    return expanded;
+}
+
+// Normalise une notation pour comparaison insensible à l'ordre, aux astérisques et aux multiplicateurs.
 export function normalizeCoachNotation(notation: string): string {
     if (!notation) return '';
     return notation
-        .replace(/\*/g, '')
         .trim()
         .toLowerCase()
         .split(/\s+/)
         .filter(Boolean)
-        .flatMap((token) => {
-            const m = token.match(/^(.+)\((\d+)\)$/);
-            if (!m) return [token];
-            const count = Math.max(1, Math.min(4, Number(m[2])));
-            return Array.from({ length: count }, () => m[1]);
-        })
+        .flatMap((token) => expandMultiSlashToken(token))
         .sort()
         .join(' ');
 }
 
-/**
- * Convertit une notation RELATIVE au joueur (format `formatSingleMove`) vers la
- * notation ABSOLUE du plateau. Utile pour réparer les notations produites par
- * des moteurs externes (bgsage) qui raisonnent en perspective joueur.
- *
- * @param notation Notation relative (ex. `"13/9"` pour O).
- * @param player   Joueur au trait de la notation.
- */
 export function relativeNotationToAbsolute(notation: string, player: Player): string {
     if (!notation || player === 'X') return notation;
 
@@ -273,41 +222,69 @@ export function relativeNotationToAbsolute(notation: string, player: Player): st
         .split(/\s+/)
         .filter(Boolean)
         .map((token) => {
-            const match = token.match(/^(bar|\d+)\/(off|\d+)(\*?)(\(\d+\))?$/i);
-            if (!match) return token;
-            const [, fromStr, toStr, star, mult] = match;
-            const from = fromStr.toLowerCase() === 'bar' ? O_BAR : 25 - Number(fromStr);
-            const to = toStr.toLowerCase() === 'off' ? O_OFF : 25 - Number(toStr);
-            return `${formatCoachPoint(from, false)}/${formatCoachPoint(to, true)}${star ?? ''}${mult ?? ''}`;
+            const multMatch = token.match(/^(.+?)(\(\d+\))?$/);
+            if (!multMatch) return token;
+            const [, body, mult] = multMatch;
+            const segments = body.split('/');
+            if (segments.length < 2) return token;
+            const converted = segments.map((seg, idx) => {
+                const segMatch = seg.match(/^(bar|off|\d+)(\*?)$/i);
+                if (!segMatch) return seg;
+                const [, ptStr, star] = segMatch;
+                const lower = ptStr.toLowerCase();
+                const pt = lower === 'bar' ? O_BAR : lower === 'off' ? O_OFF : 25 - Number(ptStr);
+                return `${formatCoachPoint(pt, idx > 0)}${star ?? ''}`;
+            });
+            return `${converted.join('/')}${mult ?? ''}`;
         })
         .join(' ');
 }
 
-/**
- * Parse une notation de coup Coach en liste de Move.
- */
-export function parseCoachNotationMoves(notation: string, player: Player = 'X'): Move[] {
+export function parseCoachNotationMoves(
+    notation: string,
+    player: Player = 'X',
+    dice?: readonly [number, number] | null,
+): Move[] {
     if (!notation) return [];
     const absNotation = player === 'O' ? relativeNotationToAbsolute(notation, 'O') : notation;
     const bar = player === 'X' ? X_BAR : O_BAR;
     const off = player === 'X' ? X_OFF : O_OFF;
+    const isDouble = Boolean(dice && dice[0] > 0 && dice[0] === dice[1]);
+    const doubleDie = isDouble && dice ? dice[0] : 0;
+
     return absNotation
         .trim()
         .split(/\s+/)
-        .flatMap((token) => {
-            const m = token.match(/^(bar|\d+)\/(off|\d+)\*?(\((\d+)\))?$/i);
+        .filter(Boolean)
+        .flatMap((token) => expandMultiSlashToken(token))
+        .flatMap((stepToken) => {
+            const m = stepToken.match(/^(bar|\d+)\/(off|\d+)$/i);
             if (!m) return [];
             const from = m[1].toLowerCase() === 'bar' ? bar : Number(m[1]);
             const to = m[2].toLowerCase() === 'off' ? off : Number(m[2]);
-            const count = m[4] ? Number(m[4]) : 1;
-            return Array.from({ length: count }, () => ({ from, to }));
+            if (isDouble && doubleDie > 0 && to !== off) {
+                const dist = player === 'X'
+                    ? (from === X_BAR ? 25 - to : from - to)
+                    : (from === O_BAR ? to : to - from);
+                if (dist > doubleDie && dist % doubleDie === 0) {
+                    const steps = dist / doubleDie;
+                    const subMoves: Move[] = [];
+                    let cur = from;
+                    for (let s = 0; s < steps; s++) {
+                        const next = player === 'X'
+                            ? (cur === X_BAR ? 25 - doubleDie : cur - doubleDie)
+                            : (cur === O_BAR ? doubleDie : cur + doubleDie);
+                        subMoves.push({ from: cur, to: next });
+                        cur = next;
+                    }
+                    return subMoves;
+                }
+            }
+            return [{ from, to }];
         });
 }
 
-/**
- * Applique une notation bgsage ou standard (ex: "24/13", "8/4* 4/2", "bar/21", "13/7(2)")
- * sur boardBefore en tenant compte des dés et des étapes intermédiaires.
- */
+// Applique une notation bgsage ou standard sur boardBefore en tenant compte des dés et des frappes intermédiaires.
 export function applyBgsageNotationToBoard(
     boardBefore: readonly number[],
     notation: string,
@@ -323,15 +300,12 @@ export function applyBgsageNotationToBoard(
         : [diceRolled[0], diceRolled[1]];
 
     const absNotation = player === 'O' ? relativeNotationToAbsolute(notation, 'O') : notation;
-    const rawTokens = absNotation.replace(/\*/g, '').trim().split(/\s+/).filter(Boolean);
-    const tokens: string[] = [];
-    for (const tok of rawTokens) {
-        const m = tok.match(/^(.+)\((\d+)\)$/);
-        if (m) {
-            const count = Number(m[2]);
-            for (let i = 0; i < count; i++) tokens.push(m[1]);
-        } else {
-            tokens.push(tok);
+    const rawTokens = absNotation.trim().split(/\s+/).filter(Boolean);
+    const tokens: Array<{ step: string; hasHitStar: boolean }> = [];
+    for (const rawTok of rawTokens) {
+        const hasHitStar = rawTok.includes('*');
+        for (const step of expandMultiSlashToken(rawTok)) {
+            tokens.push({ step, hasHitStar });
         }
     }
 
@@ -339,7 +313,7 @@ export function applyBgsageNotationToBoard(
     const bar = player === 'X' ? X_BAR : O_BAR;
     const off = player === 'X' ? X_OFF : O_OFF;
 
-    for (const tok of tokens) {
+    for (const { step: tok, hasHitStar } of tokens) {
         const parts = tok.split('/');
         if (parts.length < 2) continue;
         const fromStr = parts[0].toLowerCase();
@@ -358,7 +332,40 @@ export function applyBgsageNotationToBoard(
             continue;
         }
 
+        const d0 = diceRolled[0];
+        if (isDouble && d0 > 0 && dist > d0 && dist % d0 === 0) {
+            const stepsCount = dist / d0;
+            let cur = from;
+            let validChain = true;
+            let simBoard = [...board];
+            for (let s = 0; s < stepsCount; s++) {
+                const next = s === stepsCount - 1
+                    ? to
+                    : player === 'X'
+                        ? (cur === X_BAR ? 25 - d0 : cur - d0)
+                        : (cur === O_BAR ? d0 : cur + d0);
+                if (next !== off && next >= 1 && next <= 24) {
+                    const isBlocked = player === 'X' ? simBoard[next] <= -2 : simBoard[next] >= 2;
+                    if (isBlocked) {
+                        validChain = false;
+                        break;
+                    }
+                }
+                simBoard = applyMove(simBoard, { from: cur, to: next }, player);
+                cur = next;
+            }
+            if (validChain) {
+                board = simBoard;
+                for (let s = 0; s < stepsCount; s++) {
+                    const idx = availableDice.indexOf(d0);
+                    if (idx !== -1) availableDice.splice(idx, 1);
+                }
+                continue;
+            }
+        }
+
         let stepResolved = false;
+        const candidates: Array<{ i: number; d1: number; d2: number; mid: number; hitsMid: boolean }> = [];
         for (let i = 0; i < availableDice.length; i++) {
             const d1 = availableDice[i];
             const remainingDice = [...availableDice];
@@ -370,15 +377,20 @@ export function applyBgsageNotationToBoard(
                     : (from === O_BAR ? d1 : from + d1);
                 const isBlocked = player === 'X' ? board[mid] <= -2 : board[mid] >= 2;
                 if (!isBlocked && mid >= 1 && mid <= 24) {
-                    board = applyMove(board, { from, to: mid }, player);
-                    board = applyMove(board, { from: mid, to }, player);
-                    availableDice.splice(i, 1);
-                    const j = availableDice.indexOf(d2);
-                    if (j !== -1) availableDice.splice(j, 1);
-                    stepResolved = true;
-                    break;
+                    const hitsMid = player === 'X' ? board[mid] === -1 : board[mid] === 1;
+                    candidates.push({ i, d1, d2, mid, hitsMid });
                 }
             }
+        }
+        if (candidates.length > 0) {
+            candidates.sort((a, b) => (hasHitStar ? Number(b.hitsMid) - Number(a.hitsMid) : Number(a.hitsMid) - Number(b.hitsMid)));
+            const chosen = candidates[0];
+            board = applyMove(board, { from, to: chosen.mid }, player);
+            board = applyMove(board, { from: chosen.mid, to }, player);
+            availableDice.splice(chosen.i, 1);
+            const j = availableDice.indexOf(chosen.d2);
+            if (j !== -1) availableDice.splice(j, 1);
+            stepResolved = true;
         }
         if (!stepResolved) {
             board = applyMove(board, { from, to }, player);

@@ -91,7 +91,10 @@ export function buildCoachStateFromLogResult(params: {
         bestEndState = { ...evalState, board: bBest };
         optimalHighlightMoves = [...result.optimalMoves];
     } else {
-        const parsedOptimal = parseCoachNotationMoves(trueOptimalNotation, entryPlayer);
+        const parsedOptimal = parseCoachNotationMoves(trueOptimalNotation, entryPlayer, [
+            lastEntry.dice[0],
+            lastEntry.dice[1],
+        ]);
         if (parsedOptimal.length > 0) {
             let bBest = [...evalState.board];
             for (const m of parsedOptimal) bBest = applyMove(bBest, m, entryPlayer);

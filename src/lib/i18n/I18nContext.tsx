@@ -182,19 +182,25 @@ export function detectLocale(): Locale {
         // URLSearchParams indisponible
     }
 
-    // 2. Détection automatique pure selon les langues du navigateur
+    // 2. Détection automatique pure selon les langues du navigateur (priorité absolue au Français si présent)
     try {
+        if (typeof navigator !== 'undefined' && navigator.language?.toLowerCase().startsWith('fr')) {
+            return 'fr';
+        }
         const candidateLangs: string[] = [];
-        if (Array.isArray(navigator.languages)) {
+        if (typeof navigator !== 'undefined' && Array.isArray(navigator.languages)) {
             candidateLangs.push(...navigator.languages);
         }
-        if (navigator.language) {
+        if (typeof navigator !== 'undefined' && navigator.language) {
             candidateLangs.push(navigator.language);
+        }
+
+        if (candidateLangs.some((c) => (c || '').toLowerCase().trim().startsWith('fr'))) {
+            return 'fr';
         }
 
         for (const candidate of candidateLangs) {
             const navLang = (candidate || '').toLowerCase().trim();
-            if (navLang.startsWith('fr')) return 'fr';
             if (navLang.startsWith('en')) return 'en';
             if (navLang.startsWith('es')) return 'es';
             if (navLang.startsWith('pt')) return 'pt';
@@ -259,9 +265,19 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
             setLocaleState(detectLocale());
         };
         syncDeviceLocale();
+        const handleCustomLocaleChange = (e: Event) => {
+            const custom = e as CustomEvent<Locale>;
+            if (custom.detail && VALID_LOCALES.has(custom.detail)) {
+                setLocaleState(custom.detail);
+            }
+        };
         if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
             window.addEventListener('languagechange', syncDeviceLocale);
-            return () => window.removeEventListener('languagechange', syncDeviceLocale);
+            window.addEventListener('bgtour-locale-change', handleCustomLocaleChange);
+            return () => {
+                window.removeEventListener('languagechange', syncDeviceLocale);
+                window.removeEventListener('bgtour-locale-change', handleCustomLocaleChange);
+            };
         }
         return undefined;
     }, [initialLocale]);
@@ -275,6 +291,7 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
                 window.localStorage?.setItem('bg_locale', newLocale);
                 document.documentElement.lang = newLocale;
                 document.documentElement.dir = isRtlLocale(newLocale) ? 'rtl' : 'ltr';
+                window.dispatchEvent(new CustomEvent('bgtour-locale-change', { detail: newLocale }));
             } catch {
                 // ignore
             }

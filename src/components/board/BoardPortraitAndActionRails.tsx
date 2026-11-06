@@ -13,7 +13,6 @@ import { resolveNaturalChallengerAvatarUrl } from '../../features/personas/human
 import { useBoardTheme, type ThemeName } from '../../hooks/useBoardTheme';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
-import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 import { toggleOrientation, getSavedOrientation, saveOrientation } from './boardOrientation';
 import { BotPortraitMedallion, IconAstrolabeCoach, IconHorologyGear, PERSONA_PHOTO_BY_ID } from '../common/MonteCarloIcons';
 import { CountryFlagSvg } from '../common/CountryFlagSvg';
@@ -114,14 +113,8 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <span className="truncate text-[10px] font-semibold text-emerald-300/90">{isGuest ? 'Invité' : 'Grand Cercle'}</span>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
                             {!isBeginner && !isGuest && <span className="text-stone-300">{stats.eloRating ?? 1500}</span>}
-                            {!isBeginner && (
-                                isGuest ? (
-                                    <button type="button" onClick={openTermsAndPrPolicyModal} className="rounded-md border border-amber-500/35 bg-amber-950/40 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-300">
-                                        PR Verrouillé
-                                    </button>
-                                ) : (
-                                    <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(playerPrNum)}`}>PR {playerPrLabel}</span>
-                                )
+                            {!isBeginner && !isGuest && (
+                                <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(playerPrNum)}`}>PR {playerPrLabel}</span>
                             )}
                         </div>
                     </div>

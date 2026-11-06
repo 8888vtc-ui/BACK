@@ -43,14 +43,19 @@ function sanitizeErrorAdviceWithRealBoardFacts(advice: string, boardAfter?: read
     for (let p = 1; p <= 24; p++) {
         if (boardAfter[p] === 1) realBlots.push(p);
     }
-    return advice.replace(/\((?:flèches?|cases?|points?)\s*[\d,\s et]+\)/gi, (match) => {
-        const nums = match.match(/\d+/g)?.map(Number) ?? [];
-        const validNums = nums.filter((n) => realBlots.includes(n));
-        if (validNums.length === 0) {
-            return realBlots.length > 0 ? `(flèche${realBlots.length > 1 ? 's' : ''} ${realBlots.slice(0, 3).join(', ')})` : '';
-        }
-        return `(flèche${validNums.length > 1 ? 's' : ''} ${validNums.slice(0, 3).join(', ')})`;
-    });
+    return advice.replace(
+        /\s*\((?:pion\(s\)\s+isolé\(s\)\s+sur\s+|exposed\s+blot\(s\)\s+on\s+)?(?:flèches?|cases?|points?)\s*[\d,\s et]+\)/gi,
+        (match) => {
+            const nums = match.match(/\d+/g)?.map(Number) ?? [];
+            const validNums = nums.filter((n) => realBlots.includes(n));
+            if (validNums.length === 0) {
+                return realBlots.length > 0
+                    ? ` (pion(s) isolé(s) sur flèche${realBlots.length > 1 ? 's' : ''} ${realBlots.slice(0, 3).join(', ')})`
+                    : '';
+            }
+            return ` (pion(s) isolé(s) sur flèche${validNums.length > 1 ? 's' : ''} ${validNums.slice(0, 3).join(', ')})`;
+        },
+    );
 }
 
 export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({

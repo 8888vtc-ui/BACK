@@ -62,11 +62,15 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
     const bestBlots = features?.blotsAndShots?.best ?? [];
 
     const userShots =
-        features?.shotExposure?.user.totalRolls ??
-        Math.min(36, userBlots.reduce((acc, b) => acc + b.totalShots, 0));
+        userBlots.length === 0
+            ? 0
+            : features?.shotExposure?.user.totalRolls ??
+              Math.min(36, userBlots.reduce((acc, b) => acc + b.totalShots, 0));
     const bestShots =
-        features?.shotExposure?.best.totalRolls ??
-        Math.min(36, bestBlots.reduce((acc, b) => acc + b.totalShots, 0));
+        bestBlots.length === 0
+            ? 0
+            : features?.shotExposure?.best.totalRolls ??
+              Math.min(36, bestBlots.reduce((acc, b) => acc + b.totalShots, 0));
 
     const board = features?.boardStructure ?? {
         innerBoardPoints: 2,

@@ -3,11 +3,10 @@
 /**
  * @file src/components/drills/DrillHeader.tsx
  * @description Barre supérieure unifiée du Quiz (Architecture Tesla 3-Secondes / Monte-Carlo) :
- * - Affiche clairement : `📐 Quiz ER / PR` (ou `🔥 Mes Erreurs` en mode erreurs personnelles).
- * - Affiche le compteur d'essais `Essais : 2/2 ❤️❤️` ("Active Recall / 2e Chance").
- * - Affiche nos 2 indicateurs officiels : `ER / PR : 6.3` et `Rating : 1500`.
- * - Affiche le badge de calibrage adaptatif N+1 ou match personnel.
- * - Strictement <= 200 lignes, 0 any, 0 ERH.
+ * - Affiche clairement : `Quiz ER / PR` (ou `Mes Erreurs` en mode erreurs personnelles).
+ * - Affiche le compteur d'essais `Essais : 2/2` ("Active Recall / 2e Chance") sans emoji système.
+ * - Affiche nos 2 indicateurs officiels : `ER / PR` et `Rating` (verrouillés avec cadenas en mode Invité).
+ * - Strictement <= 200 lignes, 0 any, 0 ERH, 0 emoji.
  */
 
 import React from 'react';
@@ -75,7 +74,7 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
 
     const targetBadgeText = isPersonal
         ? (isEn ? `From your match • Quiz Level: ER / PR ${effectiveQuizTargetEr.toFixed(1)}` : `Issu de ton match • Niveau Quiz : ER / PR ${effectiveQuizTargetEr.toFixed(1)}`)
-        : (isEn ? `Quiz Level: ER / PR ${effectiveQuizTargetEr.toFixed(1)} (N+1 Target)` : `Niveau du Quiz : ER / PR ${effectiveQuizTargetEr.toFixed(1)} (Objectif N+1)`);
+        : (isEn ? `Quiz Calibration: ER / PR ${effectiveQuizTargetEr.toFixed(1)} (N+1 Target)` : `Calibrage Quiz : ER / PR ${effectiveQuizTargetEr.toFixed(1)} (Objectif N+1)`);
 
     return (
         <div className="w-full shrink-0">
@@ -98,12 +97,10 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                             {drillMode === 'personal_blunders' ? 'Mes Erreurs' : 'Quiz ER / PR'} Parcours Adaptatif IA
                         </span>
                     </h1>
-                    {isBeginner ? (
+                    {isBeginner && (
                         <span data-testid="beginner-friendly-badge" className="rounded border border-emerald-400/40 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
                             {isEn ? 'Beginner Accuracy: Simple & Clear' : 'Précision Débutant : Simple & Efficace'}
                         </span>
-                    ) : (
-                        <span data-testid="app-version-badge" className="rounded border border-emerald-400/40 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">v3.1 • 3-Ply</span>
                     )}
                     <span data-testid="quiz-attempts-counter" title="2 essais maximum par position (Active Recall / 2e Chance)" className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 font-mono text-[10px] font-black ${attemptsLeft === 2 ? 'border-emerald-400/40 bg-emerald-950/50 text-emerald-200' : attemptsLeft === 1 ? 'border-amber-400/50 bg-amber-950/60 text-amber-200' : 'border-rose-400/50 bg-rose-950/60 text-rose-200'}`}>
                         <span>{isEn ? 'Tries:' : 'Essais :'} {attemptsLeft}/{maxAttempts}</span><span>{heartsDisplay}</span>
@@ -123,18 +120,14 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                             {!authenticStats.canHavePR
                                 ? (isEn ? 'PR Locked (Account required — ToS §4)' : 'PR Verrouillé (Compte requis — Clause CGU §4)')
                                 : isBeginner
-                                ? `${isEn ? 'Accuracy:' : 'Précision :'} ${Math.max(50, Math.round(100 - (authenticStats.hasRealPR ? authenticStats.globalPR! : erPrScore) * 1.5))} %`
-                                : !authenticStats.hasRealPR
-                                ? (isEn ? 'My PR: Calibrating' : 'Mon PR : En calibrage')
-                                : `ER / PR : ${authenticStats.globalPR?.toFixed(1)}`}
+                                ? `${isEn ? 'Accuracy:' : 'Précision :'} ${Math.max(50, Math.round(100 - erPrScore * 1.5))} %`
+                                : `ER / PR : ${erPrScore.toFixed(1)}`}
                         </span>
                     </button>
                     <span data-testid="quiz-nplus1-target-badge" title={targetBadgeText} className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#D4AF37]">
                         <Target className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
                         <span>
-                            {isBeginner
-                                ? (isEn ? 'Guided Progression Goal' : 'Objectif Progression Guidée')
-                                : !authenticStats.canHavePR
+                            {!authenticStats.canHavePR
                                 ? (isEn ? '3-Ply Certified Training' : 'Entraînement Certifié 3-Ply')
                                 : targetBadgeText}
                         </span>
@@ -142,7 +135,8 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                     <span data-testid="quiz-elo-rating-badge" className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-white/15 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#fdf8eb]">
                         {!authenticStats.canHavePR
                             ? (isEn ? 'Elo: Account required' : 'Elo : Compte requis')
-                            : `Rating : ${authenticStats.eloRating ?? liveRatingValue}`}
+                            : `Rating : ${liveRatingValue}`}
+                        <span className="sr-only">{authenticStats.canHavePR ? `Niveau ER : ${liveRatingValue}` : ''}</span>
                     </span>
                     {authenticStats.canHavePR && activeTenthsDelta !== 0 && (
                         <span data-testid="quiz-live-rating-delta" className={`inline-flex items-center shrink-0 whitespace-nowrap rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black transition-all ${isImprovedTenths ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-300' : 'border-rose-400/60 bg-rose-500/20 text-rose-300'}`}>
@@ -166,8 +160,13 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                                     : 'border-white/15 bg-[#050505] text-[#fdf8eb]/80 hover:border-amber-400/50 hover:text-amber-300'
                             }`}
                         >
-                            <Flame className="w-3 h-3 text-amber-400" strokeWidth={1.5} />
-                            <span>{isEn ? 'Review My Blunders' : 'Revoir Mes Blunders'}</span><span>({personalBlundersCount})</span>
+                            {!authenticStats.isAuthenticated ? (
+                                <Lock className="w-3 h-3 text-amber-400" strokeWidth={1.5} />
+                            ) : (
+                                <Flame className="w-3 h-3 text-amber-400" strokeWidth={1.5} />
+                            )}
+                            <span>{isEn ? 'Review My Blunders' : 'Revoir Mes Blunders'}</span>
+                            {authenticStats.isAuthenticated && <span>({personalBlundersCount})</span>}
                         </button>
                         <button type="button" data-testid="post-match-revenge-blunders-btn" onClick={() => onSelectDrillMode('personal_blunders')} className="sr-only">
                             Mes Blunders ({personalBlundersCount})

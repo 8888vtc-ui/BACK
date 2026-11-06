@@ -2,14 +2,12 @@
 
 /**
  * @file src/components/analysis/AnalysisStudioView.tsx
- * @description Orchestrateur du Studio d'Analyse — Laboratoire Interactif du Joueur.
- * Strictement <= 285 lignes, 0 any.
+ * @description Orchestrateur du Studio d'Analyse — Parcours guidé en 3 étapes avec AppNavbar + LobbyLeftSidebar.
+ * Strictement <= 265 lignes, 0 any, 0 emoji, Zéro-Scroll Desktop 1440x900.
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Camera } from 'lucide-react';
 import { serializeCanonicalXGID, parseXGID, type BoardState } from '../../engine/backgammonEngine';
 import Board from '../board/Board';
 import AppNavbar from '../nav/AppNavbar';
@@ -21,7 +19,7 @@ import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation'
 import {
     clearBoardToTrays, getInitialStartingBoard, countCheckers, autoCompleteRemainingToOff,
     visionResultToBoard26, computeLegalCandidateMovesTop5, computeVerifiedBoardFacts,
-    applyBrushToPoint, FAMOUS_PRESET_POSITIONS,
+    applyBrushToPoint,
     type TrayCount, type ScannedBoardVisionResult, type CandidateMoveAnalysisRow,
 } from '../../lib/analysis/analysisStudioEngine';
 import ManualBoardSetupStage, { type BrushTool } from './ManualBoardSetupStage';
@@ -76,17 +74,22 @@ export function AnalysisStudioView() {
 
     const coachExplanation = useMemo(() => {
         if (!candidates[0]) return undefined;
-        return computeVerifiedBoardFacts(candidates[0].notation, board, board, candidates[0].winPct);
-    }, [candidates, board]);
+        return computeVerifiedBoardFacts(candidates[0].notation, board, board, candidates[0].winPct, isEn);
+    }, [candidates, board, isEn]);
 
     const coachHighlight = useMemo(() => {
         if (!selectedMoveNotation) return null;
         try {
-            return { played: [], optimal: parseCoachNotationMoves(selectedMoveNotation, 'X') };
+            const isOptimalSelected = !candidates[0] || selectedMoveNotation === candidates[0].notation;
+            return {
+                played: [],
+                optimal: parseCoachNotationMoves(selectedMoveNotation, 'X'),
+                optimalTone: isOptimalSelected ? ('gold' as const) : ('sky' as const),
+            };
         } catch {
             return null;
         }
-    }, [selectedMoveNotation]);
+    }, [selectedMoveNotation, candidates]);
 
     const handleCheckerClick = useCallback((point: number) => {
         const next = applyBrushToPoint(board, tray, point, activeBrush);
@@ -167,6 +170,12 @@ export function AnalysisStudioView() {
         }
     };
 
+    const handleSelectPreset = (xgid: string, presetDice: [number, number], defaultMove?: string) => {
+        handleImportXgid(xgid);
+        setDice(presetDice);
+        if (defaultMove) setSelectedMoveNotation(defaultMove);
+    };
+
     const emptyTargets = useMemo(() => new Map<number, number[]>(), []);
     const noop = useCallback(() => {}, []);
 
@@ -175,52 +184,10 @@ export function AnalysisStudioView() {
             <AppNavbar activeTab="play" />
             <div className="flex flex-1 min-h-0 overflow-hidden w-full">
                 <LobbyLeftSidebar />
-                <div className="flex-1 min-w-0 flex flex-col p-1.5 sm:p-2 overflow-hidden max-w-[1600px] mx-auto w-full">
-                    {/* Barre Supérieure */}
-                    <header className="flex flex-wrap items-center justify-between border-b border-[#D4AF37]/30 pb-1.5 mb-1.5 shrink-0 gap-2">
-                        <div className="flex items-center gap-2.5">
-                            <Link href="/" data-testid="studio-back-btn" className="inline-flex items-center gap-1 rounded-lg border border-[#D4AF37]/50 bg-[#12151C] px-2 py-0.5 text-xs font-bold text-[#D4AF37] hover:border-[#D4AF37] hover:text-white transition">
-                                {isEn ? '← Back to Lobby' : '← Retour Salon'}
-                            </Link>
-                            <h1 className="font-sans text-xs sm:text-sm font-black tracking-wide text-white">
-                                {isEn ? '3-Ply Analysis Studio & AI Vision Scanner' : 'Studio d\'Analyse 3-Ply & Scanner Vision IA'}
-                            </h1>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 text-xs">
-                            <button
-                                type="button"
-                                data-testid="open-photo-scanner-btn"
-                                onClick={() => setIsScannerOpen(true)}
-                                className="inline-flex items-center gap-1.5 rounded-lg border border-amber-400/50 bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-300 hover:bg-amber-500/30 transition shadow-sm"
-                            >
-                                <Camera className="w-3.5 h-3.5 text-amber-300" strokeWidth={1.5} />
-                                <span>{isEn ? 'Scan Board Photo (AI Vision)' : 'Scanner une Photo (Vision IA)'}</span>
-                            </button>
-                            <span className="text-[11px] text-stone-400 font-semibold hidden md:inline">{isEn ? 'Classics:' : 'Classiques :'}</span>
-                            {FAMOUS_PRESET_POSITIONS.map((p) => (
-                                <button
-                                    key={p.name}
-                                    type="button"
-                                    onClick={() => {
-                                        handleImportXgid(p.xgid);
-                                        setDice(p.dice);
-                                        if (p.name.includes('3-1')) setSelectedMoveNotation('8/5 6/5');
-                                    }}
-                                    className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-stone-300 hover:border-[#D4AF37] hover:text-white transition"
-                                >
-                                    {p.name.split(' (')[0]}
-                                </button>
-                            ))}
-                            <span className="rounded-full border border-emerald-400/40 bg-emerald-950/70 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
-                                Open Sage • 3-Ply
-                            </span>
-                        </div>
-                    </header>
-
-                    {/* Corps Principal */}
-                    <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 overflow-hidden">
-                        <div className="lg:col-span-7 flex flex-col justify-between bg-[#0B1015] border border-white/10 rounded-2xl p-2 shadow-2xl overflow-hidden min-h-0">
+                <div className="flex-1 min-w-0 flex flex-col p-2 overflow-hidden max-w-[1600px] mx-auto w-full">
+                    {/* Corps Principal en 2 colonnes : Étape 1 + Plateau à gauche | Étape 2 + Étape 3 à droite */}
+                    <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2.5 overflow-hidden">
+                        <div className="lg:col-span-7 flex flex-col justify-between bg-[#0B1015] border border-white/[0.08] rounded-2xl p-2 shadow-2xl overflow-hidden min-h-0">
                             <ManualBoardSetupStage
                                 stats={stats}
                                 activeBrush={activeBrush}
@@ -229,6 +196,8 @@ export function AnalysisStudioView() {
                                 onResetStartingBoard={handleResetStartingBoard}
                                 onCompleteRemainingToOff={handleCompleteRemainingToOff}
                                 onInvertColors={handleInvertColors}
+                                onOpenScanner={() => setIsScannerOpen(true)}
+                                onSelectPreset={handleSelectPreset}
                             />
 
                             <div className="w-full flex-1 min-h-0 flex items-center justify-center py-1">
@@ -249,13 +218,20 @@ export function AnalysisStudioView() {
                             </div>
 
                             {selectedMoveNotation && (
-                                <div className="text-center text-[11px] font-mono text-amber-300 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/30 shrink-0">
-                                    {isEn ? 'Selected move:' : 'Coup sélectionné :'} <strong>{selectedMoveNotation}</strong> ({isEn ? 'Active arrows on board' : 'Flèches actives sur le plateau'})
+                                <div className="flex items-center justify-center shrink-0 pt-0.5">
+                                    <span
+                                        data-testid="selected-move-board-badge"
+                                        className="inline-flex items-center gap-1.5 text-xs text-zinc-200 bg-white/[0.06] px-3 py-0.5 rounded-full border border-white/15"
+                                    >
+                                        <span>{isEn ? 'Selected move:' : 'Coup sélectionné :'}</span>
+                                        <strong className="font-mono text-[#D4AF37]">{selectedMoveNotation}</strong>
+                                        <span className="text-zinc-400">({isEn ? 'Active arrows on board' : 'Flèches actives sur le plateau'})</span>
+                                    </span>
                                 </div>
                             )}
                         </div>
 
-                        <div className="lg:col-span-5 bg-[#12151C] border border-white/10 rounded-2xl p-2.5 shadow-2xl overflow-hidden flex flex-col min-h-0">
+                        <div className="lg:col-span-5 bg-[#12151C] border border-white/[0.08] rounded-2xl p-2.5 shadow-2xl overflow-hidden flex flex-col min-h-0">
                             <AnalysisControlPanel
                                 dice={dice}
                                 onChangeDice={(d) => {

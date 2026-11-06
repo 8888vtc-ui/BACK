@@ -18,7 +18,6 @@ import {
 } from './BoardPortraitAndActionRails';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
-import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 export {
     BoardPortraitTopHud, BoardPortraitBottomHud, BoardRightActionRail,
@@ -222,15 +221,15 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
             </div>
 
             {/* 3. CARTE BAS (Joueur Humain : Invité vs Inscrit) */}
-            <div className="relative flex w-full items-center justify-between gap-1.5 [@media(max-height:540px)]:flex-col [@media(max-height:540px)]:!gap-0.5 border-t border-[#d4af37]/20 pt-1.5 [@media(max-height:540px)]:!pt-0.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
-                <div className="[@media(max-height:540px)]:hidden flex flex-col items-center gap-0.5 min-w-0 flex-1">
+            <div className="relative flex w-full flex-col items-center gap-1 [@media(max-height:540px)]:!gap-0.5 border-t border-[#d4af37]/20 pt-1.5 [@media(max-height:540px)]:!pt-0.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
+                <div className="[@media(max-height:540px)]:hidden flex w-full flex-col items-center gap-1 min-w-0">
                     {isGuided ? (
                         <span data-testid="left-rail-guided-player-badge" className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-950/70 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-emerald-300 whitespace-nowrap">
                             {locale === 'en' ? 'PLAYER • GUIDED PLAY' : 'JOUEUR • PARTIE GUIDÉE'}
                         </span>
                     ) : playerMeta.isGuest ? (
-                        <span data-testid="left-rail-guest-badge" className="inline-flex items-center gap-1 rounded-full border border-stone-500/40 bg-stone-900/70 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-stone-300 whitespace-nowrap">
-                            Invité · Salon Libre
+                        <span data-testid="left-rail-guest-badge" className="inline-flex items-center gap-1 rounded-full border border-stone-500/40 bg-stone-900/70 px-2.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-stone-300 whitespace-nowrap">
+                            {locale === 'en' ? 'Guest · Free Play' : 'Invité · Salon Libre'}
                         </span>
                     ) : (
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
@@ -243,13 +242,19 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             )}
                         </div>
                     )}
-                    <BotPortraitMedallion character="player" size="lg" isActive={isXTurn} customPhotoUrl={playerMeta.avatarUrl} />
-                    <span className="truncate max-w-full font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight">
-                        {isGuided ? (locale === 'en' ? 'You (Student)' : 'Vous (Élève)') : playerMeta.pseudo}
+                    <div className="flex w-full items-center justify-center gap-2">
+                        <BotPortraitMedallion character="player" size="lg" isActive={isXTurn} customPhotoUrl={playerMeta.avatarUrl} />
+                        <div className="flex flex-col items-center gap-1">
+                            <div data-testid="left-rail-score-x" className="flex h-11 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] font-display text-xl font-black tabular-nums text-[#0b0907] shadow-[0_4px_14px_rgba(212,175,55,0.28)]">{scoreX}</div>
+                            <button type="button" data-testid="left-rail-quick-chat-toggle" onClick={() => setIsQuickChatOpen((v) => !v)} title="Réactions rapides" aria-label="Ouvrir les réactions rapides" aria-expanded={isQuickChatOpen} className="flex h-6 w-10 items-center justify-center rounded-md border border-[#d4af37]/40 bg-[#1a140e] text-[10px] font-bold text-[#f3d27a] hover:border-[#d4af37] active:scale-95 transition shrink-0">Chat</button>
+                        </div>
+                    </div>
+                    <span data-testid="left-rail-player-name" className="w-full text-center font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight whitespace-nowrap">
+                        {playerMeta.pseudo}
                     </span>
                 </div>
 
-                <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none">
+                <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none gap-0.5">
                     <span data-testid="left-rail-mobile-player-name" title={playerMeta.pseudo} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">
                         {isGuided ? (locale === 'en' ? 'You (Student)' : 'Vous (Élève)') : playerMeta.pseudo}
                     </span>
@@ -258,37 +263,29 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             {playerMeta.isGuest ? 'Invité' : '1500 Elo'}
                         </span>
                     )}
-                </div>
-
-                <div className="relative z-10 flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
-                    <div className="hidden [@media(max-height:540px)]:relative [@media(max-height:540px)]:inline-flex shrink-0">
-                        <img src={playerMeta.avatarUrl} alt={playerMeta.pseudo} className="h-5 w-5 rounded-full object-cover border border-[#f7f3e8] ring-1 ring-[#d4af37] shadow" />
-                        <span title="Pions Blancs (X)" className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#f7f3e8] border border-[#3b2307]" />
+                    <div className="flex w-full items-center justify-between gap-1">
+                        <div className="relative inline-flex shrink-0">
+                            <img src={playerMeta.avatarUrl} alt={playerMeta.pseudo} className="h-5 w-5 rounded-full object-cover border border-[#f7f3e8] ring-1 ring-[#d4af37] shadow" />
+                            <span title="Pions Blancs (X)" className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#f7f3e8] border border-[#3b2307]" />
+                        </div>
+                        <div className="flex h-6 w-7 shrink-0 items-center justify-center rounded-md border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] font-display text-sm font-black tabular-nums text-[#0b0907]">{scoreX}</div>
                     </div>
-                    <button type="button" data-testid="left-rail-quick-chat-toggle" onClick={() => setIsQuickChatOpen((v) => !v)} title="Réactions rapides" aria-label="Ouvrir les émojis rapides" aria-expanded={isQuickChatOpen} className="flex h-6 w-6 items-center justify-center rounded-md border border-[#d4af37]/40 bg-[#1a140e] text-[11px] hover:border-[#d4af37] active:scale-95 transition shrink-0">💬</button>
-                    <div data-testid="left-rail-score-x" className="flex h-11 w-10 [@media(max-height:540px)]:!h-6 [@media(max-height:540px)]:!w-7 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-md border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] font-display text-xl [@media(max-height:540px)]:!text-sm font-black tabular-nums text-[#0b0907] shadow-[0_4px_14px_rgba(212,175,55,0.28)]">{scoreX}</div>
                 </div>
 
                 {isQuickChatOpen && (
                     <div data-testid="left-rail-quick-chat-popover" role="group" aria-label="Messages rapides" className="absolute left-full ml-1.5 bottom-1 z-50 flex items-center gap-1 rounded-xl border border-[#d4af37]/55 bg-[#120e0a]/98 px-2 py-1 shadow-[0_12px_28px_rgba(0,0,0,0.95)] backdrop-blur-md">
-                        {([{ id: 'gg' as const, label: '👋' }, { id: 'nice_move' as const, label: '👏' }, { id: 'unlucky' as const, label: '😅' }, { id: 'thanks' as const, label: '🙏' }]).map((chat) => (
-                            <button key={chat.id} type="button" data-testid={`quick-chat-btn-${chat.id}`} onClick={() => { onSendQuickChat?.(chat.id); setIsQuickChatOpen(false); }} className="rounded-lg border border-white/10 bg-white/5 px-1.5 py-0.5 text-xs hover:border-[#f3c65f]/50 hover:bg-white/10 transition active:scale-95">{chat.label}</button>
+                        {([{ id: 'gg' as const, label: 'GG' }, { id: 'nice_move' as const, label: 'Bien joué' }, { id: 'unlucky' as const, label: 'Pas de chance' }, { id: 'thanks' as const, label: 'Merci' }]).map((chat) => (
+                            <button key={chat.id} type="button" data-testid={`quick-chat-btn-${chat.id}`} onClick={() => { onSendQuickChat?.(chat.id); setIsQuickChatOpen(false); }} className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-[#f7f3e8] hover:border-[#f3c65f]/50 hover:bg-white/10 transition active:scale-95 whitespace-nowrap">{chat.label}</button>
                         ))}
                     </div>
                 )}
 
                 <div className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${turn === 'X' ? 'bg-[#065f46] text-emerald-50 ring-1 ring-emerald-400/70' : 'bg-[#080605] text-stone-300 border border-white/10'}`}>{playerClock}</div>
 
-                {!isBeginner && (
-                    playerMeta.isGuest ? (
-                        <button type="button" data-testid="left-rail-player-pr" onClick={openTermsAndPrPolicyModal} title="Clause CGU §4 : Compte requis pour activer votre PR" className="w-full [@media(min-height:541px)]:w-auto inline-flex items-center justify-center rounded-lg border border-amber-500/35 bg-amber-950/40 px-2 py-0.5 font-mono text-[10px] font-bold tracking-tight text-amber-300 shadow-sm whitespace-nowrap leading-none hover:border-amber-400/60 transition">
-                            {locale === 'en' ? 'PR Locked (Guest)' : 'PR Verrouillé (Invité)'}
-                        </button>
-                    ) : (
-                        <span data-testid="left-rail-player-pr" className={`w-full [@media(min-height:541px)]:w-auto inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap leading-none ${resolvePrBadgeClasses(playerPrNum)}`}>
-                            PR Match : {playerPrLabel}
-                        </span>
-                    )
+                {!isBeginner && !playerMeta.isGuest && (
+                    <span data-testid="left-rail-player-pr" className={`w-full inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap leading-none ${resolvePrBadgeClasses(playerPrNum)}`}>
+                        PR Match : {playerPrLabel}
+                    </span>
                 )}
             </div>
         </aside>

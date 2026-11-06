@@ -65,16 +65,14 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
             {/* Barre Raccourci Mode Échiquier Pur & Invitation 1-Clic */}
             <div className="w-full flex items-center justify-between px-2 py-0.5 z-30 shrink-0 gap-2">
                 <div className="flex items-center gap-2">
-                    <span
-                        data-testid="app-version-badge"
-                        className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold tracking-tight shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${
-                            tierGate === 'BEGINNER'
-                                ? 'border-[#D4AF37]/45 bg-[#D4AF37]/15 text-[#f3d27a]'
-                                : 'border-[#10B981]/35 bg-gradient-to-r from-[#0F2922]/90 via-[#0B0E14] to-[#D4AF37]/15 text-[#34D399]'
-                        }`}
-                    >
-                        {tierGate === 'BEGINNER' ? '🎓 Mode Débutant • Partie Guidée' : 'v3.1 • 3-Ply • Open Sage'}
-                    </span>
+                    {tierGate === 'BEGINNER' && (
+                        <span
+                            data-testid="app-version-badge"
+                            className="rounded-full border border-[#D4AF37]/45 bg-[#D4AF37]/15 px-2.5 py-0.5 font-mono text-[11px] font-semibold tracking-tight text-[#f3d27a] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                        >
+                            Mode Débutant • Partie Guidée
+                        </span>
+                    )}
                     <NavbarPointsAndBadges tierGate={tierGate} />
                     <button
                         type="button"
@@ -86,7 +84,7 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                                 : 'bg-black/60 text-stone-300 border-white/10 hover:text-white hover:bg-white/10'
                         }`}
                     >
-                        <span>{isFullFocusMode ? '🖥️ Quitter Plein Écran (Touche F)' : '🖥️ Mode Échiquier Pur (Full Focus · Touche F)'}</span>
+                        <span>{isFullFocusMode ? 'Quitter Plein Écran (Touche F)' : 'Mode Échiquier Pur (Full Focus · Touche F)'}</span>
                     </button>
                 </div>
                 <InstantFriendInviteButton

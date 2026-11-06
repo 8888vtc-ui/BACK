@@ -33,8 +33,10 @@ export interface OpponentSubMoveArrow {
 export interface CoachArrowsProps {
     /** Coups joués (rouge). */
     played?: Move[];
-    /** Coups optimaux (vert). */
+    /** Coups optimaux (Or Haute Horlogerie #D4AF37 par défaut, ou bleu clair #38BDF8 en comparaison). */
     optimal?: Move[];
+    /** Couleur de la flèche optimale ('gold' pour #1, 'sky' pour comparer #2 à #5). */
+    optimalTone?: 'gold' | 'sky';
     /** Sous-coups (2 à 4) du dernier tour adverse persistés jusqu'au lancer ou videau. */
     opponent?: OpponentSubMoveArrow[];
     /** Orientation du plateau (normal ou inverted). */
@@ -108,11 +110,17 @@ export function computeArrowCoords(
 const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
     played = [],
     optimal = [],
+    optimalTone = 'gold',
     opponent = [],
     orientation = 'normal',
 }) => {
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
+    const isSkyTone = optimalTone === 'sky';
+    const optStroke = isSkyTone ? '#38BDF8' : '#D4AF37';
+    const optFill = isSkyTone ? 'rgba(56, 189, 248, 0.24)' : 'rgba(212, 175, 55, 0.28)';
+    const optFilter = isSkyTone ? 'url(#glow-sky)' : 'url(#glow-gold)';
+    const optMarker = isSkyTone ? 'url(#arrowhead-sky)' : 'url(#arrowhead-gold)';
     const svgRef = useRef<SVGSVGElement | null>(null);
     const [domCenters, setDomCenters] = useState<Record<string, number> | null>(null);
 
@@ -188,6 +196,9 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
                 <filter id="glow-gold" x="-30%" y="-30%" width="160%" height="160%">
                     <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#D4AF37" floodOpacity="0.8" />
                 </filter>
+                <filter id="glow-sky" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#38BDF8" floodOpacity="0.75" />
+                </filter>
                 <filter id="glow-red" x="-30%" y="-30%" width="160%" height="160%">
                     <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#ef4444" floodOpacity="0.6" />
                 </filter>
@@ -199,6 +210,9 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
                 </marker>
                 <marker id="arrowhead-gold" markerWidth="11" markerHeight="8" refX="9.5" refY="4" orient="auto">
                     <polygon points="0 0, 11 4, 0 8, 3 4" fill="#D4AF37" />
+                </marker>
+                <marker id="arrowhead-sky" markerWidth="11" markerHeight="8" refX="9.5" refY="4" orient="auto">
+                    <polygon points="0 0, 11 4, 0 8, 3 4" fill="#38BDF8" />
                 </marker>
                 <marker id="arrowhead-opponent" markerWidth="10" markerHeight="8" refX="8.5" refY="4" orient="auto">
                     <polygon points="0 0, 10 4, 0 8, 2.5 4" fill={OPPONENT_ARROW_STROKE} />
@@ -239,40 +253,28 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
                 </g>
             ))}
 
-            {optimalArrows.map((a, i) => {
-                const isSharedTarget = optimalArrows.length >= 2 &&
-                    optimalArrows.some((o, oi) => oi !== i && Math.hypot(o.x2 - a.x2, o.y2 - a.y2) < 5);
-                const targetIcon = a.isHit ? '⚡' : isSharedTarget ? '🛡️' : null;
-
-                return (
-                    <g key={`optimal-${i}`} data-testid={`coach-optimal-arrow-${i}`} filter={isBeginner ? "url(#glow-gold)" : "url(#glow-green)"}>
+            {optimalArrows.map((a, i) => (
+                <g key={`optimal-${i}`} data-testid={`coach-optimal-arrow-${i}`} filter={optFilter}>
+                    <circle
+                        data-testid={`coach-ghost-checker-optimal-${i}`}
+                        cx={a.x2} cy={a.y2} r="15"
+                        fill={optFill}
+                        stroke={optStroke} strokeWidth="2"
+                    />
+                    {isBeginner && (
                         <circle
-                            data-testid={`coach-ghost-checker-optimal-${i}`}
-                            cx={a.x2} cy={a.y2} r="15"
-                            fill={isBeginner ? "rgba(212, 175, 55, 0.28)" : "rgba(34, 197, 94, 0.24)"}
-                            stroke={isBeginner ? "#D4AF37" : "#22c55e"} strokeWidth="2"
+                            data-testid={`coach-optimal-target-halo-${i}`}
+                            cx={a.x2} cy={a.y2} r="19" fill="none" stroke={optStroke} strokeWidth="2"
+                            strokeDasharray="4 2" className="animate-pulse"
                         />
-                        {isBeginner && (
-                            <circle
-                                data-testid={`coach-optimal-target-halo-${i}`}
-                                cx={a.x2} cy={a.y2} r="19" fill="none" stroke="#D4AF37" strokeWidth="2"
-                                strokeDasharray="4 2" className="animate-pulse"
-                            />
-                        )}
-                        {isBeginner && targetIcon && (
-                            <g data-testid={`coach-optimal-target-icon-${i}`}>
-                                <circle cx={a.x2} cy={a.y2} r="9" fill="#0c141d" stroke="#D4AF37" strokeWidth="1.5" />
-                                <text x={a.x2} y={a.y2 + 0.5} textAnchor="middle" dominantBaseline="central" fontSize="10">{targetIcon}</text>
-                            </g>
-                        )}
-                        <path
-                            d={a.path} fill="none" stroke={isBeginner ? "#D4AF37" : "#22c55e"} strokeWidth="3.25"
-                            strokeLinecap="round" markerEnd={isBeginner ? "url(#arrowhead-gold)" : "url(#arrowhead-green)"} opacity="0.98"
-                        />
-                        <circle cx={a.x1} cy={a.y1} r="4.5" fill={isBeginner ? "#D4AF37" : "#22c55e"} opacity="0.98" />
-                    </g>
-                );
-            })}
+                    )}
+                    <path
+                        d={a.path} fill="none" stroke={optStroke} strokeWidth="3.25"
+                        strokeLinecap="round" markerEnd={optMarker} opacity="0.98"
+                    />
+                    <circle cx={a.x1} cy={a.y1} r="4.5" fill={optStroke} opacity="0.98" />
+                </g>
+            ))}
         </svg>
     );
 };

@@ -384,10 +384,10 @@ export function runFlashPedagogicalCoach(
 
     const headerSeverityLine =
         verdictTier === 'OPTIMAL'
-            ? `✅ Coup Optimal ! (0.000 EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | Précision 100 %)`
+            ? `Coup Optimal ! (0.000 EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | Précision 100 %)`
             : verdictTier === 'NEAR_OPTIMAL'
-                ? `👍 Très bon coup ! (${facts.deltaEmg.toFixed(3)} EMG | 0 pénalité ${metricLabel})`
-                : `❌ Erreur (${facts.deltaEmg.toFixed(3)} EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | -${facts.winChanceLossPct.toFixed(1)}% de victoire)`;
+                ? `Très bon coup ! (${facts.deltaEmg.toFixed(3)} EMG | 0 pénalité ${metricLabel})`
+                : `Erreur (${facts.deltaEmg.toFixed(3)} EMG | Impact ${metricLabel} : ${deltaSign} ➔ ${nextMetric.toFixed(1)} | -${facts.winChanceLossPct.toFixed(1)}% de victoire)`;
 
     const winChanceDropBadge =
         verdictTier === 'OPTIMAL'
@@ -436,8 +436,8 @@ export function runFlashPedagogicalCoach(
 
     const block3RuleOfThumb =
         verdictTier === 'OPTIMAL' || verdictTier === 'NEAR_OPTIMAL'
-            ? `💡 Règle à retenir : ${facts.semanticProverb}`
-            : `💡 Comment t'améliorer : ${facts.semanticProverb}`;
+            ? `Règle à retenir : ${facts.semanticProverb}`
+            : `Comment t'améliorer : ${facts.semanticProverb}`;
 
     return {
         coachAgent: 'Flash-Pedagogical-Coach',

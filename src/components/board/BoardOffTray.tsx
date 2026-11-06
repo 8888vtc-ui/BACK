@@ -130,7 +130,7 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
                 data-testid={offPoint === 0 ? 'home-board-bearoff-badge' : undefined}
                 className="hidden sm:inline [@media(max-height:540px)]:!hidden text-[10px] font-bold uppercase tracking-normal sm:tracking-widest text-amber-200/75 drop-shadow"
             >
-                {offPoint === 0 ? '🏠 Votre Maison (Sortie)' : 'Sortie'}
+                {offPoint === 0 ? 'Votre Maison (Sortie)' : 'Sortie'}
             </span>
             {isTarget && (
                 <span className="sm:hidden px-0.5 py-0.5 rounded bg-emerald-400 text-slate-950 text-[10px] font-black tracking-tighter leading-none">

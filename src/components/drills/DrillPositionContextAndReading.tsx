@@ -235,7 +235,7 @@ export const DrillPrMathRankingTable: React.FC<{
                 data-testid="drill-3ply-drawer-toggle"
                 className="w-full flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-emerald-300 hover:text-white transition px-1 py-0.5"
             >
-                <span>📊 Détails 3-ply ({rows.length} coups évalués)</span>
+                <span>Détails 3-ply ({rows.length} coups évalués)</span>
                 <span>{open ? '▲ Masquer' : '▼ Afficher ΔEMG & MWC'}</span>
             </button>
             {open && (

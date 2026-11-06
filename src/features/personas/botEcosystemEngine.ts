@@ -162,11 +162,13 @@ export function detectClassicalBlunderPattern(params: {
         return 'BAR_REENTRY_MISCALCULATION';
     }
 
-    // 3. Frapper à tort en s'exposant (augmentation des blots du joueur après une frappe)
+    // 3. Frapper à tort en s'exposant (augmentation des blots du joueur après une frappe sans fermer de porte intérieure)
     const botHitCount = Math.abs(boardAfter[25] ?? 0) - Math.abs(boardBefore[25] ?? 0);
     const playerBlotsBefore = boardBefore.slice(1, 25).filter((v) => v === 1).length;
     const playerBlotsAfter = boardAfter.slice(1, 25).filter((v) => v === 1).length;
-    if (botHitCount > 0 && playerBlotsAfter > playerBlotsBefore) {
+    const homeGatesBefore = boardBefore.slice(1, 7).filter((v) => v >= 2).length;
+    const homeGatesAfter = boardAfter.slice(1, 7).filter((v) => v >= 2).length;
+    if (botHitCount > 0 && playerBlotsAfter > playerBlotsBefore && homeGatesAfter <= homeGatesBefore) {
         return 'RECKLESS_HIT_EXPOSURE';
     }
 

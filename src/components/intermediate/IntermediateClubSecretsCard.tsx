@@ -174,17 +174,18 @@ export function IntermediateClubSecretsCard({
       </div>
 
       {/* Contenu épuré de la Clé sélectionnée dans un conteneur unifié léger */}
-      <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-3.5 flex flex-col md:flex-row md:items-end justify-between gap-3">
-        <div className="flex-1 min-w-0 space-y-1.5">
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <h4 className="text-xs sm:text-sm font-black text-amber-200">
-                {lang === 'fr' ? current.titleFr : current.titleEn}
-              </h4>
-              <p className="text-[11px] text-stone-400">
-                {lang === 'fr' ? current.summaryFr : current.summaryEn}
-              </p>
-            </div>
+      <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 flex flex-col gap-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
+          <div className="min-w-0">
+            <h4 className="text-xs sm:text-sm font-black text-amber-200">
+              {lang === 'fr' ? current.titleFr : current.titleEn}
+            </h4>
+            <p className="text-[11px] text-stone-400">
+              {lang === 'fr' ? current.summaryFr : current.summaryEn}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
             {/* Dans l'onglet 2, bouton switch Masquer les Pips */}
             {activeTab === 2 && onToggleHidePips && (
               <button
@@ -199,29 +200,27 @@ export function IntermediateClubSecretsCard({
                 <span>{lang === 'fr' ? (isPipsHidden ? 'Pips : Masqués' : 'Masquer les Pips') : (isPipsHidden ? 'Pips: Hidden' : 'Hide Pips')}</span>
               </button>
             )}
+
+            {/* Bouton secondaire direct en haut à droite sur la même ligne que le titre Clé #1 */}
+            <Link
+              href="/puzzles?gate=intermediate"
+              data-testid="club-secrets-practice-btn"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-[#D4AF37]/40 font-semibold px-3.5 py-1.5 text-xs transition active:scale-95 whitespace-nowrap shadow-sm shrink-0"
+            >
+              <Play className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
+              <span>{lang === 'fr' ? "S'entraîner sur le Plateau →" : 'Practice on Board →'}</span>
+            </Link>
           </div>
-
-          <ul className="text-xs sm:text-sm text-zinc-200 leading-snug space-y-1.5 pt-0.5">
-            {(lang === 'fr' ? current.pointsFr : current.pointsEn).map((pt, idx) => (
-              <li key={idx} className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 shrink-0" />
-                <span>{pt}</span>
-              </li>
-            ))}
-          </ul>
         </div>
 
-        {/* Bouton direct vers l'exercice sur plateau correspondant */}
-        <div className="shrink-0 flex items-center justify-end md:self-end">
-          <Link
-            href="/puzzles?gate=intermediate"
-            data-testid="club-secrets-practice-btn"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-[#D4AF37]/40 font-semibold px-4 py-2 text-xs sm:text-sm transition active:scale-95 whitespace-nowrap shadow-sm"
-          >
-            <Play className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
-            <span>{lang === 'fr' ? "S'entraîner sur le Plateau →" : 'Practice on Board →'}</span>
-          </Link>
-        </div>
+        <ul className="w-full text-xs text-zinc-200 leading-snug space-y-1.5 pt-0.5">
+          {(lang === 'fr' ? current.pointsFr : current.pointsEn).map((pt, idx) => (
+            <li key={idx} className="flex items-start gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 shrink-0" />
+              <span>{pt}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

@@ -590,7 +590,7 @@ export function selectNextPersonalBlunderQuiz(
             ? unmasteredPersonal
             : personalList.length > 0
               ? personalList
-              : allBlunders.filter((b) => !b.isMastered);
+              : [];
 
     const filteredPool = pool.filter((b) => !sessionSet.has(b.id));
     const effectivePool = filteredPool.length > 0 ? filteredPool : pool;
@@ -599,8 +599,8 @@ export function selectNextPersonalBlunderQuiz(
 
     const reasonLabel =
         personalList.length > 0
-            ? `🔥 Vos Blunders de Match (${unmasteredPersonal.length} à corriger sur ${personalList.length} détectés)`
-            : '🎯 Aucune gaffe personnelle enregistrée en match — Révision de vos erreurs prioritaires';
+            ? `Vos Blunders de Match (${unmasteredPersonal.length} à corriger sur ${personalList.length} détectés)`
+            : 'Aucune gaffe personnelle enregistrée en match — Révision de vos erreurs prioritaires';
 
     return {
         quiz: selected,

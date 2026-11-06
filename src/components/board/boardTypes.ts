@@ -28,7 +28,7 @@ export interface BoardProps {
     onDeselect?: () => void;
     onPlayMove?: (from: number, to: number, die?: 0 | 1) => void;
     onUndo?: () => void;
-    coachHighlight?: { played: { from: number; to: number }[]; optimal: { from: number; to: number }[] } | null;
+    coachHighlight?: { played: { from: number; to: number }[]; optimal: { from: number; to: number }[]; optimalTone?: 'gold' | 'sky' } | null;
     opponentHighlight?: { from: number; to: number; isHit?: boolean }[] | null;
     /** Le double est-il possible pour le joueur au trait ? (halo du videau). */
     canDouble?: boolean;

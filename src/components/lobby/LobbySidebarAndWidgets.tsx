@@ -3,19 +3,27 @@
 /**
  * @file src/components/lobby/LobbySidebarAndWidgets.tsx
  * @description Barre latérale gauche universelle rétractable regroupée en 3 blocs ("Tables", "Entraînement", "Circuit")
- * avec surbrillance active basée sur l'URL (usePathname), badge en ligne sur 1 ligne et zéro doublon.
- * Strictement <= 300 lignes, 0 `any`.
+ * avec cadenas sur Mes Blunders en mode Invité et compteur réel de blunders À corriger en mode Connecté.
+ * Strictement <= 295 lignes, 0 `any`.
  */
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sparkles, Flame, BarChart2, GraduationCap, ChevronRight, ChevronLeft, Users, Share2, LayoutGrid, Dices, Headphones, Scale } from 'lucide-react';
+import {
+    Sparkles, Flame, BarChart2, GraduationCap, ChevronRight, ChevronLeft,
+    Users, Share2, LayoutGrid, Dices, Headphones, Scale, Lock,
+} from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import type { LobbyModuleId } from './LobbyScreen';
 import { getAllBlunders } from '../../features/drills/blunderBank';
 import { isPersonalMatchBlunder } from '../../features/drills/adaptiveQuizEngine';
+import {
+    getPendingPersonalBlundersCount,
+    PERSONAL_BLUNDERS_UPDATED_EVENT,
+} from '../../lib/blunders/personalBlunderStore';
 import { IconLuxuryCrown, IconWorldTourLive, IconHorologyGear } from '../common/MonteCarloIcons';
 import { BeginnerInteractiveGuideModal } from '../beginner/BeginnerInteractiveGuideModal';
 import { BeginnerOpeningMovesExplorer } from '../beginner/BeginnerOpeningMovesExplorer';
@@ -50,21 +58,27 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     const isEn = locale === 'en';
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
+    const authenticStats = useAuthenticPlayerStats();
     const pathname = usePathname() || '/';
 
     const [collapsed, setCollapsed] = useState(false);
     const [blunderCount, setBlunderCount] = useState<number>(0);
     const [isGuideOpen, setIsGuideOpen] = useState(false);
     const [isOpeningExplorerOpen, setIsOpeningExplorerOpen] = useState(false);
-    const onlinePlayersCount = 28 + ((new Date().getHours() * 7 + 13) % 36);
 
     useEffect(() => {
-        try {
-            const count = getAllBlunders().filter((b) => isPersonalMatchBlunder(b) && !b.isMastered).length;
-            setBlunderCount(count);
-        } catch {
-            // safe fallback
-        }
+        const refreshCount = () => {
+            try {
+                const storePending = getPendingPersonalBlundersCount();
+                const legacyPending = getAllBlunders().filter((b) => isPersonalMatchBlunder(b) && !b.isMastered).length;
+                setBlunderCount(storePending > 0 ? storePending : legacyPending);
+            } catch {
+                // safe fallback
+            }
+        };
+        refreshCount();
+        window.addEventListener(PERSONAL_BLUNDERS_UPDATED_EVENT, refreshCount);
+        return () => window.removeEventListener(PERSONAL_BLUNDERS_UPDATED_EVENT, refreshCount);
     }, []);
 
     const activeRailCls = 'border-l-2 border-[#D4AF37] bg-white/[0.06] text-[#D4AF37] font-bold';
@@ -90,6 +104,27 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     const handleInviteClick = () => {
         if (onOpenModule) onOpenModule('multiplayer');
         else if (typeof window !== 'undefined') window.location.assign('/?invite=1');
+    };
+
+    const renderBlundersTrailing = () => {
+        if (collapsed) return null;
+        if (!authenticStats.isAuthenticated) {
+            return (
+                <Lock
+                    data-testid="sidebar-blunder-guest-lock"
+                    className="w-3.5 h-3.5 text-zinc-500 shrink-0"
+                    strokeWidth={1.5}
+                />
+            );
+        }
+        return (
+            <span
+                data-testid="sidebar-blunder-count-badge"
+                className="inline-flex items-center justify-center rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30 font-mono"
+            >
+                {blunderCount}
+            </span>
+        );
     };
 
     return (
@@ -138,8 +173,8 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             type="button"
                             data-testid="sidebar-find-player-btn"
                             onClick={handleFindPlayerClick}
-                            title={`${onlinePlayersCount} ${isEn ? 'players online' : 'joueurs en ligne'}`}
-                            className={`h-10 flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 transition-all duration-150 ${
+                            title={isEn ? 'Find a Player' : 'Trouver un joueur'}
+                            className={`h-9 flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 transition-all duration-150 ${
                                 selectedMode === 'multiplayer' ? activeRailCls : 'text-zinc-100 hover:bg-white/[0.04] hover:text-white'
                             }`}
                         >
@@ -149,12 +184,9 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             </span>
                             {!collapsed && (
                                 <span
-                                    title={`${onlinePlayersCount} ${isEn ? 'players online' : 'joueurs en ligne'}`}
-                                    className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-mono font-semibold text-emerald-400 flex items-center gap-1.5 shrink-0"
-                                >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                                    <span>{onlinePlayersCount}</span>
-                                </span>
+                                    data-testid="sidebar-find-player-status-dot"
+                                    className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"
+                                />
                             )}
                         </button>
 
@@ -199,11 +231,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                         <Flame size={16} strokeWidth={1.5} className="text-[#F59E0B] shrink-0" />
                                         {!collapsed && <span className="truncate">{isEn ? 'My Mistakes' : 'Mes Erreurs'}</span>}
                                     </span>
-                                    {!collapsed && blunderCount > 0 && (
-                                        <span data-testid="sidebar-blunder-count-badge" className="inline-flex items-center justify-center rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30 font-mono">
-                                            {blunderCount}
-                                        </span>
-                                    )}
+                                    {renderBlundersTrailing()}
                                 </Link>
                             </>
                         ) : (
@@ -219,11 +247,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                         <Flame size={16} strokeWidth={1.5} className="text-[#F59E0B] shrink-0" />
                                         {!collapsed && <span className="truncate">{isEn ? 'My Blunders' : 'Mes Blunders'}</span>}
                                     </span>
-                                    {!collapsed && blunderCount > 0 && (
-                                        <span data-testid="sidebar-blunder-count-badge" className="inline-flex items-center justify-center rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30 font-mono">
-                                            {blunderCount}
-                                        </span>
-                                    )}
+                                    {renderBlundersTrailing()}
                                 </Link>
                                 <Link href="/analysis" data-testid="sidebar-pillar-studio" className={`${itemCls} ${isStudioRoute ? activeRailCls : ''}`}>
                                     <span className="flex items-center gap-2.5 truncate">

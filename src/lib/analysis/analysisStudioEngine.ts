@@ -66,9 +66,9 @@ export interface CandidateMoveAnalysisRow {
 }
 
 export const FAMOUS_PRESET_POSITIONS = [
-    { name: 'Ouverture Classique (3-1)', xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:31:0:0:0:7:10', dice: [3, 1] as [number, number] },
-    { name: 'Point d\'Ancre Avancé (6-4)', xgid: 'XGID=-a-B-BD-B---dD---c-db---B-:0:0:1:64:0:0:0:7:10', dice: [6, 4] as [number, number] },
-    { name: 'Décision de Videau (DMP)', xgid: 'XGID=--BBBBBA----dC---b-e-bb-A-:0:0:1:00:4:4:0:5:10', dice: [3, 1] as [number, number] },
+    { name: 'Ouverture Classique (3-1)', nameEn: 'Classic Opening (3-1)', xgid: 'XGID=-b----E-C---eE---c-e----B-:0:0:1:31:0:0:0:7:10', dice: [3, 1] as [number, number] },
+    { name: 'Point d\'Ancre Avancé (6-4)', nameEn: 'Advanced Anchor (6-4)', xgid: 'XGID=-a-B-BD-B---dD---c-db---B-:0:0:1:64:0:0:0:7:10', dice: [6, 4] as [number, number] },
+    { name: 'Décision de Videau (DMP)', nameEn: 'Cube Decision (DMP)', xgid: 'XGID=--BBBBBA----dC---b-e-bb-A-:0:0:1:00:4:4:0:5:10', dice: [3, 1] as [number, number] },
 ];
 
 export function clearBoardToTrays(): { board: number[]; tray: TrayCount } {
@@ -318,9 +318,12 @@ export function computeVerifiedBoardFacts(
     boardBefore: readonly number[],
     boardAfter: readonly number[],
     winPct: number,
+    isEn = false,
 ): string {
     if (bestNotation === '8/5 6/5') {
-        return `Le coup optimal 8/5 6/5 réunit deux pions pour fermer la Porte 5 (le Point d'Or) avec zéro pion isolé exposé (0/36 tir adverse), vous donnant ${winPct.toFixed(1)} % de chances de victoire.`;
+        return isEn
+            ? `Optimal move 8/5 6/5 brings two checkers together to secure the 5-point (the Golden Point) with zero exposed blots (0/36 opponent direct hits), giving you a ${winPct.toFixed(1)}% chance of winning.`
+            : `Le coup optimal 8/5 6/5 réunit deux pions pour fermer la Porte 5 (le Point d'Or) avec zéro pion isolé exposé (0/36 tir adverse), vous donnant ${winPct.toFixed(1)} % de chances de victoire.`;
     }
     const pointsMade: number[] = [];
     for (let pt = 1; pt <= 24; pt++) {
@@ -330,6 +333,16 @@ export function computeVerifiedBoardFacts(
     }
     const blotsCount = boardAfter.slice(1, 25).filter((v) => v === 1).length;
     const hitOccurred = (boardAfter[25] ?? 0) < (boardBefore[25] ?? 0);
+
+    if (isEn) {
+        if (pointsMade.length > 0) {
+            return `Optimal move ${bestNotation} secures point ${pointsMade.join(' & ')} with ${blotsCount} exposed blot(s), giving you a ${winPct.toFixed(1)}% chance of winning.`;
+        }
+        if (hitOccurred) {
+            return `Optimal move ${bestNotation} hits an opponent blot while seizing board control, giving you a ${winPct.toFixed(1)}% chance of winning.`;
+        }
+        return `Optimal move ${bestNotation} improves checker connectivity with ${blotsCount} exposed blot(s), giving you a ${winPct.toFixed(1)}% chance of winning.`;
+    }
 
     const pointNames: Record<number, string> = {
         5: "la Porte 5 (le Point d'Or)",

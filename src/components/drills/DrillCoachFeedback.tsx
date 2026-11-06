@@ -3,11 +3,11 @@
 /**
  * @file src/components/drills/DrillCoachFeedback.tsx
  * @description Panneau de Coaching Interactif en Pleine Page Zéro-Scroll (Architecture Tesla 3-Secondes) :
- * - Gère le **1er essai raté (`attemptsLeft === 1`)** : affiche un **indice socratique ciblé** + pénalité immédiate (`+0.2`), SANS dévoiler la réponse optimale.
- * - Gère la **nuance à 0.010 EMG (`NEAR_OPTIMAL`)** : `👍 Très bon coup ! (-0.010 EMG | 0 pénalité ER / PR)` ("Ton coup n'est vraiment pas un mauvais coup, mais tu peux gagner +0.010 EMG en jouant...").
- * - Sur **Coup Optimal (`OPTIMAL`)** : affiche uniquement `Pourquoi ce coup est optimal` + `💡 Règle à retenir` (sans bloc d'erreur).
- * - Sur **Erreur finale (`attemptsLeft === 0`)** : affiche les 3 blocs complets + notification de création de carte **FSRS v5** si `ΔEMG >= 0.080`.
- * - Strictement < 210 lignes, 0 `any`.
+ * - Gère le 1er essai raté (`attemptsLeft === 1`) : affiche un indice socratique ciblé + pénalité immédiate (`+0.2`), SANS dévoiler la réponse optimale.
+ * - Gère la nuance à 0.010 EMG (`NEAR_OPTIMAL`).
+ * - Sur Coup Optimal (`OPTIMAL`) : affiche uniquement `Pourquoi ce coup est optimal` + `Règle à retenir` (sans bloc d'erreur).
+ * - Sur Erreur finale (`attemptsLeft === 0`) : affiche les 3 blocs complets + notification de création de carte FSRS v5 si `ΔEMG >= 0.080`.
+ * - Strictement <= 235 lignes, 0 `any`, 0 emoji.
  */
 
 import React, { useMemo, useState } from 'react';
@@ -111,10 +111,10 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                     >
                         {isBeginner
                             ? validationResult.isCorrect
-                                ? '✅ Coup Optimal ! (+100% de chances de victoire préservées)'
-                                : `❌ Erreur (-${coachReport.extractorFacts.winChanceLossPct.toFixed(1)}% de chances de victoire)`
+                                ? 'Coup Optimal ! (+100% de chances de victoire préservées)'
+                                : `Erreur (-${coachReport.extractorFacts.winChanceLossPct.toFixed(1)}% de chances de victoire)`
                             : isFirstFailureSocratic
-                                ? `⚠️ 1er Essai Imprécis (${coachReport.extractorFacts.deltaEmg.toFixed(3)} EMG | Impact ER / PR : +0.2 | Essais : 1/2 ❤️🖤)`
+                                ? `1er Essai Imprécis (${coachReport.extractorFacts.deltaEmg.toFixed(3)} EMG | Impact ER / PR : +0.2 | Essais : 1/2 ●○)`
                                 : isNearOptimal
                                     ? gateCheck.feedbackMessage
                                     : coachReport.headerSeverityLine}
@@ -134,7 +134,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                             onClick={handleListenExplanation}
                             className="rounded border border-white/15 bg-[#050505] px-2 py-0.5 text-[10px] font-bold text-[#e2d2b5] hover:text-white transition"
                         >
-                            {isSpeaking ? '🔇 Stop' : '🔈 Écouter'}
+                            {isSpeaking ? 'Stop' : 'Écouter'}
                         </button>
                     </div>
                 </div>
@@ -145,7 +145,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                 {isFirstFailureSocratic ? (
                     <div className="space-y-1.5 rounded-xl bg-[#050505]/80 p-2.5 text-xs leading-snug" data-testid="socratic-first-attempt-box">
                         <div className="font-bold text-amber-300">
-                            🧭 Indice Socratique (2e chance — réduisez votre pénalité de moitié !) :
+                            Indice Socratique (2e chance — réduisez votre pénalité de moitié !) :
                         </div>
                         <p className="text-amber-100">{coachReport.socraticFirstAttemptHint}</p>
                     </div>
@@ -178,7 +178,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                                 data-testid="fsrs-scheduled-badge"
                                 className="rounded border border-amber-400/40 bg-amber-950/60 px-2 py-0.5 text-[10px] font-bold text-amber-200"
                             >
-                                🗂️ Carte de révision FSRS v5 ajoutée à vos Blunders Personnels (ΔEMG ≥ 0.080)
+                                Carte de révision FSRS v5 ajoutée à vos Blunders Personnels (ΔEMG ≥ 0.080)
                             </div>
                         )}
                     </div>
@@ -200,7 +200,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                                 : 'border-white/15 bg-[#050505] text-slate-200 hover:border-[#D4AF37]/60'
                         }`}
                     >
-                        👁️ Voir la menace sur le plateau
+                        Voir la menace sur le plateau
                     </button>
                 )}
                 {!validationResult.isCorrect && handleRetry && (
@@ -210,7 +210,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                         data-testid="drill-retry-btn"
                         className="rounded-xl border border-amber-400/60 bg-amber-950/80 px-2.5 py-1 text-[11px] font-bold text-amber-100 hover:bg-amber-900 transition"
                     >
-                        {isFirstFailureSocratic ? '🔄 2e Essai (Corriger)' : '🔄 Réessayer'}
+                        {isFirstFailureSocratic ? '2e Essai (Corriger)' : 'Réessayer'}
                     </button>
                 )}
                 {!isFirstFailureSocratic && (
@@ -220,7 +220,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                         data-testid="drill-next-btn"
                         className="flex-1 sm:flex-none rounded-xl border border-[#D4AF37] bg-gradient-to-r from-[#D4AF37] via-[#f7d77e] to-[#b88924] px-3 py-1 text-xs font-black uppercase tracking-wider text-[#050505] shadow-[0_4px_16px_rgba(212,175,55,0.35)] hover:brightness-105 transition"
                     >
-                        <span>➡️ Suivant</span>
+                        <span>Suivant →</span>
                         <span className="sr-only">Puzzle Suivant Question suivante →</span>
                     </button>
                 )}

@@ -2,7 +2,7 @@
 
 /**
  * @file src/components/drills/BlunderDrillView.tsx
- * @description Orchestrateur modulaire du Quiz ER / PR (2 essais max, recalibrage N+1, zéro scroll, <= 295 lignes).
+ * @description Orchestrateur modulaire du Quiz ER / PR et du Carnet de Blunders Personnels (<= 295 lignes, 0 any, 0 emoji).
  */
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -12,6 +12,7 @@ import { formatMoveSequenceNotation } from '../../lib/engine/evaluator';
 import Board from '../board/Board';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { useDrillRating } from '../../hooks/useDrillRating';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import { getAllBlunders, getBlunderBankStats, resetAllBlunderMastery, markBlunderAttempt, recordBlunder } from '../../features/drills/blunderBank';
 import { validateDrillMove, validateDrillNotationChoice } from '../../features/drills/blunderDrillEngine';
 import { validateBoardState, computeTenthsMetricDelta } from '../../features/drills/drillSubAgentsPipeline';
@@ -22,11 +23,14 @@ import {
     normalizeToQuizCategory, type AdaptivePlayerProfile,
 } from '../../features/drills/adaptiveQuizEngine';
 import type { PlayerBlunderRecord, DrillValidationResult, BlunderBankStats } from '../../features/drills/types';
+import { getPendingPersonalBlundersCount, PERSONAL_BLUNDERS_UPDATED_EVENT } from '../../lib/blunders/personalBlunderStore';
 import { impactLight, notificationSuccess, notificationError } from '../../lib/capacitor/haptics';
 import { rewardFirstTryQuizOnPublicPr, breakFirstTryQuizStreak } from '../../features/multiplayer/elo';
 import { toast } from '../toast/ToastContext';
 import DrillHeader, { type QuizDrillMode } from './DrillHeader';
 import BlunderDrillFeedbackCard from './BlunderDrillFeedbackCard';
+import PersonalBlundersGuestLockView from './PersonalBlundersGuestLockView';
+import PersonalBlundersNotebookView from './PersonalBlundersNotebookView';
 
 export interface BlunderDrillViewProps {
     initialConceptId?: string;
@@ -43,28 +47,42 @@ function expandNotationTokens(notation: string): string {
 
 export default function BlunderDrillView({ initialConceptId, initialMode = 'adaptive', onClose }: BlunderDrillViewProps) {
     const { theme } = useBoardTheme();
+    const authenticStats = useAuthenticPlayerStats();
     const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptivePlayerProfile>(() => getAdaptivePlayerProfile());
     const [stats, setStats] = useState<BlunderBankStats>(() => getBlunderBankStats());
-    const [drillMode, setDrillMode] = useState<QuizDrillMode>(initialMode);
+    const [drillMode, setDrillMode] = useState<QuizDrillMode>(() => {
+        const sp = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+        return sp?.get('filter') === 'personal-blunders' || sp?.get('mode') === 'personal_blunders' ? 'personal_blunders' : initialMode;
+    });
     const [hearts, setHearts] = useState<number>(5); const [attemptsLeft, setAttemptsLeft] = useState<number>(2);
     const [fsrsScheduled, setFsrsScheduled] = useState<boolean>(false); const [streak, setStreak] = useState<number>(0);
     const [xp, setXp] = useState<number>(0); const [quizStepCount, setQuizStepCount] = useState<number>(0);
     const [hoveredChoiceNotation, setHoveredChoiceNotation] = useState<string | null>(null);
+    const [storePendingCount, setStorePendingCount] = useState<number>(() => getPendingPersonalBlundersCount());
+
+    useEffect(() => {
+        const onStoreUpdate = () => setStorePendingCount(getPendingPersonalBlundersCount());
+        window.addEventListener(PERSONAL_BLUNDERS_UPDATED_EVENT, onStoreUpdate);
+        return () => window.removeEventListener(PERSONAL_BLUNDERS_UPDATED_EVENT, onStoreUpdate);
+    }, []);
 
     const isErMode = drillMode === 'pr_math';
     const { erPrScore, activeMetricScore, activeTenthsDelta, ratingValue, ratingDelta, recordAttempt } = useDrillRating(isErMode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const personalBlundersCount = useMemo(() => getAllBlunders().filter((b) => isPersonalMatchBlunder(b) && !b.isMastered).length, [stats]);
+    const personalBlundersCount = useMemo(() => {
+        const legacyCount = getAllBlunders().filter((b) => isPersonalMatchBlunder(b) && !b.isMastered).length;
+        return storePendingCount > 0 ? storePendingCount : legacyCount;
+    }, [stats, storePendingCount]);
 
     const initialSelection = useMemo(() => {
         const all = getAllBlunders();
         if (initialMode === 'personal_blunders') {
             const pick = selectNextPersonalBlunderQuiz(all);
-            if (pick.quiz) return { quiz: pick.quiz, targetCategory: { id: normalizeToQuizCategory(pick.quiz.conceptId), shortLabel: pick.quiz.conceptName, fullName: pick.quiz.conceptName, icon: '🎯' }, reasonLabel: pick.reasonLabel };
+            if (pick.quiz) return { quiz: pick.quiz, targetCategory: { id: normalizeToQuizCategory(pick.quiz.conceptId), shortLabel: pick.quiz.conceptName, fullName: pick.quiz.conceptName, icon: '' }, reasonLabel: pick.reasonLabel };
         }
         if (initialConceptId && initialConceptId !== 'all') {
             const m = all.find((b) => b.conceptId === initialConceptId);
-            if (m) return { quiz: m, targetCategory: { id: normalizeToQuizCategory(m.conceptId), shortLabel: m.conceptName, fullName: m.conceptName, icon: '🎯' }, reasonLabel: `Focus ciblé · ${m.conceptName}` };
+            if (m) return { quiz: m, targetCategory: { id: normalizeToQuizCategory(m.conceptId), shortLabel: m.conceptName, fullName: m.conceptName, icon: '' }, reasonLabel: `Focus ciblé · ${m.conceptName}` };
         }
         return selectNextAdaptiveQuiz(all);
     }, [initialConceptId, initialMode]);
@@ -226,8 +244,10 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
 
     const handleSelectDrillMode = (nextMode: QuizDrillMode) => {
         setDrillMode(nextMode);
-        const pick = nextMode === 'personal_blunders' ? selectNextPersonalBlunderQuiz(getAllBlunders()) : selectNextAdaptiveQuiz(getAllBlunders());
-        setCurrentBlunder(pick.quiz); setReasonLabel(pick.reasonLabel); setQuizStepCount(0);
+        if (nextMode !== 'personal_blunders') {
+            const pick = selectNextAdaptiveQuiz(getAllBlunders());
+            setCurrentBlunder(pick.quiz); setReasonLabel(pick.reasonLabel); setQuizStepCount(0);
+        }
     };
 
     const handleNextBlunder = () => {
@@ -263,6 +283,14 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             ? currentBlunder.quizTargetER
             : Number((Math.max(0.5, erPrScore - 0.5)).toFixed(1))
         : undefined;
+
+    if (drillMode === 'personal_blunders') {
+        return !authenticStats.isAuthenticated ? (
+            <PersonalBlundersGuestLockView onSwitchToGeneralQuizzes={() => handleSelectDrillMode('pr_math')} />
+        ) : (
+            <PersonalBlundersNotebookView onSwitchToGeneralQuizzes={() => handleSelectDrillMode('pr_math')} />
+        );
+    }
 
     return (
         <div className="relative flex h-full max-h-full w-full max-w-[1920px] mx-auto flex-col p-1 sm:p-1.5 [@media(max-height:540px)]:!p-0.5 text-[#fdf8eb] bg-[#050505] overflow-hidden">

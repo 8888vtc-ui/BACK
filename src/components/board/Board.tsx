@@ -214,6 +214,7 @@ const BoardComponent: React.FC<BoardProps> = ({
                     <CoachArrows
                         played={coachHighlight?.played}
                         optimal={coachHighlight?.optimal}
+                        optimalTone={coachHighlight?.optimalTone}
                         opponent={visibleOpponentArrows}
                         orientation={orientation}
                     />

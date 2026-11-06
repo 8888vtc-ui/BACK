@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Swords, Share2, EyeOff, Eye, Shield, Zap } from 'lucide-react';
+import { Swords, Share2, EyeOff, Eye, Award } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { IntermediateClubSecretsCard } from '../intermediate/IntermediateClubSecretsCard';
 
@@ -27,11 +27,11 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
   };
 
   return (
-    <div data-testid="intermediate-home-portal" className="flex flex-col gap-3 w-full max-w-5xl mx-auto py-1.5 px-1">
+    <div data-testid="intermediate-home-portal" className="flex flex-col gap-3 w-full max-w-5xl mx-auto py-1 px-1">
       {/* En-tête Club Compact */}
       <div className="flex flex-col gap-0.5 text-center sm:text-left px-1">
         <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#D4AF37]">
-          <Shield className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
+          <Award className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
           <span>{isEn ? 'CLUB MODE · PRIORITY TO PLAY & DOUBLING CUBE' : 'MODE INTERMÉDIAIRE / CLUB · PRIORITÉ AU JEU & VIDEAU'}</span>
         </span>
         <h2 className="text-base sm:text-lg font-black text-white">
@@ -47,16 +47,19 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
       {/* BLOC 1 — LANCEMENT DE PARTIE IMMÉDIAT (PRIORITÉ N°1 DU JOUEUR DE CLUB) */}
       <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-4 flex flex-col gap-2.5">
         <div className="flex flex-col gap-1">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 whitespace-nowrap">
+          <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 whitespace-nowrap min-w-0">
               <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a] shrink-0">
-                <Swords size={16} />
+                <Swords size={15} />
               </span>
-              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb] whitespace-nowrap">
+              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb] whitespace-nowrap truncate">
                 {isEn ? 'Play Online — Find Immediate Opponent' : 'Jouer en Ligne — Trouver un Adversaire Immédiat'}
               </h3>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold whitespace-nowrap shrink-0">
-                {isEn ? '● 24/7 Club Matchmaking' : '● Matchmaking Club 24/7'}
+              <span
+                data-testid="intermediate-matchmaking-badge"
+                className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold whitespace-nowrap shrink-0"
+              >
+                {isEn ? '● Live Matchmaking' : '● Matchmaking Direct'}
               </span>
             </div>
 

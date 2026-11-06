@@ -4,7 +4,8 @@
  */
 
 import type { BoardState } from '../../engine/backgammonEngine';
-import { pipCount, serializeCanonicalXGID } from '../../engine/backgammonEngine';
+import { applyMove, pipCount, serializeCanonicalXGID } from '../../engine/backgammonEngine';
+import { computeShotExposure } from '../../lib/engine/shotExposure';
 import { validateBoardState } from '../drills/drillSubAgentsPipeline';
 import { parseCoachNotationMoves } from './coachMoveNotation';
 
@@ -115,12 +116,15 @@ export interface CoachVerifiedFacts {
     readonly realPointsMadeByPlayed: number[];
     readonly missedHit: boolean;
     readonly realBlotsAfterBest: number[];
+    readonly directShotsOnPlayerAfterPlayed: number;
+    readonly directShotsOnPlayerAfterBest: number;
+    readonly summaryText: string;
 }
 
 export function extractVerifiedCoachFacts(
     boardBefore: readonly number[],
     boardPlayedAfter: readonly number[],
-    boardOptimalAfter: readonly number[],
+    boardOptimalAfter: readonly number[] = boardPlayedAfter,
 ): CoachVerifiedFacts {
     const realBlotsAfterPlayed: number[] = [];
     const realBlotsAfterBest: number[] = [];
@@ -128,13 +132,26 @@ export function extractVerifiedCoachFacts(
     const realPointsMadeByPlayed: number[] = [];
 
     for (let p = 1; p <= 24; p++) {
-        if (boardPlayedAfter[p] === 1) realBlotsAfterPlayed.push(p);
-        if (boardOptimalAfter[p] === 1) realBlotsAfterBest.push(p);
+        // Loi mathématique absolue : un blot n'existe sur p que si boardPlayedAfter[p] === 1 (strictement égal à 1)
+        if ((boardPlayedAfter[p] ?? 0) === 1) realBlotsAfterPlayed.push(p);
+        if ((boardOptimalAfter[p] ?? 0) === 1) realBlotsAfterBest.push(p);
         if ((boardBefore[p] ?? 0) < 2 && (boardOptimalAfter[p] ?? 0) >= 2) realPointsMadeByBest.push(p);
         if ((boardBefore[p] ?? 0) < 2 && (boardPlayedAfter[p] ?? 0) >= 2) realPointsMadeByPlayed.push(p);
     }
 
-    const missedHit = (boardOptimalAfter[25] < (boardBefore[25] ?? 0)) && (boardPlayedAfter[25] === (boardBefore[25] ?? 0));
+    const directShotsOnPlayerAfterPlayed =
+        realBlotsAfterPlayed.length === 0 ? 0 : computeShotExposure([...boardPlayedAfter], 'X').totalRolls;
+    const directShotsOnPlayerAfterBest =
+        realBlotsAfterBest.length === 0 ? 0 : computeShotExposure([...boardOptimalAfter], 'X').totalRolls;
+
+    const missedHit =
+        ((boardOptimalAfter[25] ?? 0) < (boardBefore[25] ?? 0)) &&
+        ((boardPlayedAfter[25] ?? 0) === (boardBefore[25] ?? 0));
+
+    const summaryText =
+        realBlotsAfterPlayed.length === 0
+            ? 'Aucun pion isolé (0 blot exposé, 0 lancer adverse sur 36).'
+            : `Pion(s) isolé(s) sur flèche${realBlotsAfterPlayed.length > 1 ? 's' : ''} ${realBlotsAfterPlayed.join(', ')} (${directShotsOnPlayerAfterPlayed} lancers sur 36).`;
 
     return {
         realBlotsAfterPlayed,
@@ -142,8 +159,13 @@ export function extractVerifiedCoachFacts(
         realPointsMadeByPlayed,
         missedHit,
         realBlotsAfterBest,
+        directShotsOnPlayerAfterPlayed,
+        directShotsOnPlayerAfterBest,
+        summaryText,
     };
 }
+
+export const computeVerifiedBoardFacts = extractVerifiedCoachFacts;
 
 /**
  * Capture immuable au lancer de dés du joueur humain (Verrou 1).
@@ -196,35 +218,32 @@ export function createHumanTurnSnapshot(
 
 /**
  * Contrôle physique strict : vérifie qu'une notation ne déplace QUE des pions existants
- * sur le plateau d'origine (Verrou 2 - Assertion B).
+ * sur le plateau d'origine en appliquant les règles exactes de frappe (Verrou 2 - Assertion B).
  */
 export function verifyCheckersPhysicallyExistOnBoard(
     notation: string,
     boardBefore: readonly number[],
     player: 'X' | 'O' = 'X',
+    dice?: readonly [number, number],
 ): boolean {
     if (!notation || notation === 'Pass' || notation === 'Double' || notation === 'Take' || notation === 'Drop') {
         return true;
     }
-    const moves = parseCoachNotationMoves(notation, player);
+    const moves = parseCoachNotationMoves(notation, player, dice);
     if (moves.length === 0) return true;
 
-    const boardSim = [...boardBefore];
+    let boardSim = [...boardBefore];
     for (const m of moves) {
         if (m.from === 0 || (player === 'O' && m.from === 25)) {
             const barCount = player === 'X' ? boardSim[0] : -boardSim[25];
             if (barCount <= 0) return false;
-            if (player === 'X') boardSim[0] -= 1; else boardSim[25] += 1;
         } else if (m.from >= 1 && m.from <= 24) {
             const count = player === 'X' ? boardSim[m.from] : -boardSim[m.from];
             if (count <= 0) return false;
-            if (player === 'X') boardSim[m.from] -= 1; else boardSim[m.from] += 1;
         } else {
             return false;
         }
-        if (m.to >= 1 && m.to <= 24) {
-            if (player === 'X') boardSim[m.to] += 1; else boardSim[m.to] -= 1;
-        }
+        boardSim = applyMove(boardSim, m, player);
     }
     return true;
 }

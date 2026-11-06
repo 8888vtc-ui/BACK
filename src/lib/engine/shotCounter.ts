@@ -49,11 +49,10 @@ function distanceToBlot(from: number, blot: number, opponent: Player): number | 
 
 /** Un dé `die` permet-il un tir direct sur le blot ? */
 export function canHitDirect(board: number[], blot: number, opponent: Player, die: number): boolean {
-    if (barCount(board, opponent) > 0) {
+    const onBar = barCount(board, opponent);
+    if (onBar > 0) {
         const entry = barEntryPoint(opponent, die);
-        if (entry === blot && isLegalLanding(board, entry, opponent)) {
-            return true;
-        }
+        return entry === blot && isLegalLanding(board, entry, opponent);
     }
     for (let q = 1; q <= 24; q++) {
         if (hasChecker(board, q, opponent) && distanceToBlot(q, blot, opponent) === die) {
@@ -71,6 +70,34 @@ function canHitIndirect(
     d1: number,
     d2: number,
 ): boolean {
+    const onBar = barCount(board, opponent);
+    if (onBar >= 2) {
+        if (d1 !== d2 || onBar >= 4) return false;
+        const entry = barEntryPoint(opponent, d1);
+        if (!isLegalLanding(board, entry, opponent)) return false;
+        const remDice = 4 - onBar;
+        for (let k = 1; k <= remDice; k++) {
+            if (distanceToBlot(entry, blot, opponent) === k * d1) return true;
+            for (let q = 1; q <= 24; q++) {
+                if (hasChecker(board, q, opponent) && distanceToBlot(q, blot, opponent) === k * d1) return true;
+            }
+        }
+        return false;
+    }
+    if (onBar === 1) {
+        const canEnterAndHit = (enterDie: number, moveDie: number): boolean => {
+            const entry = barEntryPoint(opponent, enterDie);
+            if (!isLegalLanding(board, entry, opponent)) return false;
+            if (distanceToBlot(entry, blot, opponent) === moveDie) return true;
+            for (let q = 1; q <= 24; q++) {
+                if (hasChecker(board, q, opponent) && distanceToBlot(q, blot, opponent) === moveDie) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        return canEnterAndHit(d1, d2) || canEnterAndHit(d2, d1);
+    }
     const total = d1 + d2;
     for (let q = 1; q <= 24; q++) {
         if (!hasChecker(board, q, opponent)) continue;
