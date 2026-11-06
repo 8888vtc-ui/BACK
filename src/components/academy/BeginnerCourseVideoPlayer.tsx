@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { Play, Pause, Volume2, VolumeX, Mic } from 'lucide-react';
+import { soundEngine } from '../../lib/sound/soundEngine';
 
 export interface InteractiveBoardMission {
     readonly optimalMove: string;
@@ -67,7 +68,7 @@ export const LESSON_BOARD_MISSIONS: Readonly<Record<string, InteractiveBoardMiss
 };
 
 export function speakNarration(text: string, enabled: boolean): void {
-    if (!enabled || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (!enabled || typeof window === 'undefined' || !('speechSynthesis' in window) || soundEngine.isMute()) return;
     try {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);

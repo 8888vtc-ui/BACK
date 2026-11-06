@@ -7,11 +7,12 @@
  * Strictement <= 300 lignes, 0 `any`.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Volume2, Sparkles, Dices } from 'lucide-react';
 import { OPENING_MOVES, OPENING_FAMILIES, type OpeningMove } from '../../data/beginnerOpeningMovesData';
 import { OpeningVisualBoard } from './OpeningVisualBoard';
 import { useTranslation } from '../../i18n';
+import { soundEngine } from '../../lib/sound/soundEngine';
 
 export interface BeginnerOpeningMovesExplorerProps {
   readonly isOpen: boolean;
@@ -26,6 +27,15 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
   const lang = locale === 'en' ? 'en' : 'fr';
   const isEn = lang === 'en';
   const [selectedId, setSelectedId] = useState<string>('3-1');
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch {}
+      }
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -34,13 +44,30 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
 
   const handleSpeak = () => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (soundEngine.isMute()) return;
+    if (isSpeaking || window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
     window.speechSynthesis.cancel();
     const title = isEn ? currentMove.titleEn : currentMove.titleFr;
     const exp = isEn ? currentMove.explanationEn : currentMove.explanationFr;
     const text = `${title}. ${exp}`;
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = isEn ? 'en-US' : 'fr-FR';
+    utt.onend = () => setIsSpeaking(false);
+    utt.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
     window.speechSynthesis.speak(utt);
+  };
+
+  const handleClose = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try { window.speechSynthesis.cancel(); } catch {}
+    }
+    setIsSpeaking(false);
+    onClose();
   };
 
   return (
@@ -67,7 +94,7 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
           <button
             type="button"
             data-testid="opening-close-btn"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Fermer le simulateur d'ouverture"
             className="rounded-lg bg-white/5 p-1.5 text-neutral-400 hover:bg-white/10 hover:text-white transition"
           >

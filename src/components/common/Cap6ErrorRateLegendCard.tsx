@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Volume2, Trophy, Sparkles, Scale, ShieldCheck } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { soundEngine } from '../../lib/sound/soundEngine';
 
 export const CAP_6_TEXT_FR =
   "Selon la norme historique de Snowie et XG, dès qu'un joueur descend à 6 ou 7 d'Error Rate, il joue déjà à un très haut niveau. Sur un match, l'écart technique pur entre un joueur à 6.0 et un Champion du Monde devient si fin que le résultat dépend énormément du hasard des dés ! Comment reprendre alors l'avantage sur le hasard ? Grâce à la psychologie du videau : en s'adaptant au profil réel de l'adversaire en face de soi ! Face à un joueur plus faible, on refuse de laisser le hasard décider dans une simple course : on solidifie son jeu ou on joue le Backgame pour provoquer ses erreurs. Et sur le Videau, on s'adapte à ses tendances (doubler un peu plus tôt s'il refuse trop vite, ou attendre le moment idéal s'il prend trop tard).";
@@ -14,12 +15,30 @@ export function Cap6ErrorRateLegendCard() {
   const { locale } = useTranslation();
   const lang = locale === 'en' ? 'en' : 'fr';
   const isEn = lang === 'en';
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch {}
+      }
+    };
+  }, []);
 
   const handleSpeak = () => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (soundEngine.isMute()) return;
+    if (isSpeaking || window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(isEn ? CAP_6_TEXT_EN : CAP_6_TEXT_FR);
     utt.lang = isEn ? 'en-US' : 'fr-FR';
+    utt.onend = () => setIsSpeaking(false);
+    utt.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
     window.speechSynthesis.speak(utt);
   };
 

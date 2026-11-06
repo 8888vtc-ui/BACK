@@ -21,7 +21,14 @@ const BeginnerInteractiveRulesCourseComponent: React.FC = () => {
     const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
     const [isVoiceEnabled, setIsVoiceEnabled] = useState<boolean>(true);
 
-    useEffect(() => { setCompletedIds(getCompletedBeginnerLessons()); }, []);
+    useEffect(() => {
+        setCompletedIds(getCompletedBeginnerLessons());
+        return () => {
+            if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+                try { window.speechSynthesis.cancel(); } catch {}
+            }
+        };
+    }, []);
 
     const activeLesson = BEGINNER_RULES_LESSONS[activeStepIdx] ?? BEGINNER_RULES_LESSONS[0];
     const mission = LESSON_BOARD_MISSIONS[activeLesson.id] ?? LESSON_BOARD_MISSIONS['lesson-1-horseshoe'];

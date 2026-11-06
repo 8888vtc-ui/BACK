@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Volume2, Dices, EyeOff, Eye, Compass, Trophy, Play } from 'lucide-react';
 import { useTranslation } from '../../i18n';
+import { soundEngine } from '../../lib/sound/soundEngine';
 
 export interface IntermediateClubSecretsCardProps {
   onToggleHidePips?: () => void;
@@ -17,12 +18,30 @@ export function IntermediateClubSecretsCard({
   const { locale } = useTranslation();
   const lang = locale === 'en' ? 'en' : 'fr';
   const [activeTab, setActiveTab] = useState<1 | 2 | 3 | 4>(1);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch {}
+      }
+    };
+  }, []);
 
   const handleSpeak = (text: string) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (soundEngine.isMute()) return;
+    if (isSpeaking || window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = lang === 'fr' ? 'fr-FR' : 'en-US';
+    utt.onend = () => setIsSpeaking(false);
+    utt.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
     window.speechSynthesis.speak(utt);
   };
 

@@ -229,6 +229,13 @@ export class LuxuryBoardAudioEngine {
             } catch {
                 // ignore
             }
+            if (this.isMuted && 'speechSynthesis' in window) {
+                try {
+                    window.speechSynthesis.cancel();
+                } catch {
+                    // ignore
+                }
+            }
         }
     }
 

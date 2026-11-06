@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Volume2, VolumeX, ArrowLeft, ArrowRight, Sparkles, BookOpen, Play } from 'lucide-react';
 import { BEGINNER_MASTER_GUIDE_CHAPTERS } from '../../data/beginnerMasterGuideBilingual';
 import { useTranslation } from '../../i18n';
+import { soundEngine } from '../../lib/sound/soundEngine';
 
 export interface BeginnerInteractiveGuideModalProps {
   isOpen: boolean;
@@ -37,12 +38,18 @@ export function BeginnerInteractiveGuideModal({
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
     }
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, [isOpen, chapterIndex]);
 
   if (!isOpen) return null;
 
   const handleToggleSpeech = () => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (soundEngine.isMute()) return;
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
@@ -65,18 +72,12 @@ export function BeginnerInteractiveGuideModal({
   };
 
   const handlePrev = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) { window.speechSynthesis.cancel(); setIsSpeaking(false); }
     setChapterIndex((prev) => Math.max(0, prev - 1));
   };
 
   const handleNext = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) { window.speechSynthesis.cancel(); setIsSpeaking(false); }
     setChapterIndex((prev) => Math.min(BEGINNER_MASTER_GUIDE_CHAPTERS.length - 1, prev + 1));
   };
 

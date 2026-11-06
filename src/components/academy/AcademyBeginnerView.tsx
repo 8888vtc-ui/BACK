@@ -7,11 +7,12 @@
  * Strictement <= 260 lignes, 0 `any`.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Sparkles, ArrowRight, Shield, Zap, Trophy, Volume2 } from 'lucide-react';
 import { AcademyVisualBoardLesson } from '../beginner/AcademyVisualBoardLesson';
 import { OpeningVisualBoard } from '../beginner/OpeningVisualBoard';
+import { soundEngine } from '../../lib/sound/soundEngine';
 import {
   OPENING_MOVES,
   COACH_GATE_EXPLANATION_FR,
@@ -71,6 +72,15 @@ const RULES: readonly RuleItem[] = [
 export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.memo(({ isEn }) => {
   const [selectedRuleId, setSelectedRuleId] = useState<number>(1);
   const [selectedRollIndex, setSelectedRollIndex] = useState<number>(0);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch {}
+      }
+    };
+  }, []);
 
   const activeRule = RULES.find(r => r.id === selectedRuleId) ?? RULES[0];
   const activeMove = OPENING_MOVES[selectedRollIndex] ?? OPENING_MOVES[0];
@@ -83,9 +93,18 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
 
   const speakExplanation = () => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (soundEngine.isMute()) return;
+    if (isSpeaking || window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(getExplanation());
     utt.lang = isEn ? 'en-US' : 'fr-FR';
+    utt.onend = () => setIsSpeaking(false);
+    utt.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
     window.speechSynthesis.speak(utt);
   };
 

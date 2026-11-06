@@ -212,6 +212,10 @@ export default function CoachPanel({
 
     function handleReplayVoice() {
         if (!speechText) return;
+        if (isSpeaking) {
+            stop();
+            return;
+        }
         speak(speechText, { force: true });
     }
 

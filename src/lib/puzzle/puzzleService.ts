@@ -147,7 +147,7 @@ export interface DailyPuzzleDefinition {
 export interface DailyPuzzleVerdictEvaluation {
     readonly code: DailyPuzzleVerdictCode;
     readonly badgeLabel: string;
-    readonly badgeEmoji: '🟢' | '🟡' | '🟠' | '🔴';
+    readonly badgeEmoji: '🟢' | '🟡' | '🟠' | '🔴' | '';
     readonly deltaEquity: number;
     readonly playerEquity: number;
     readonly bestEquity: number;

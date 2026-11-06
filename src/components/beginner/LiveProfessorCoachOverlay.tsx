@@ -7,6 +7,7 @@ import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
 import { pipCount, type BoardState } from '../../engine/backgammonEngine';
 import { BeginnerInteractiveGuideModal } from './BeginnerInteractiveGuideModal';
 import { getProactiveAdvice, getFeedbackAdvice, getBotMoveExplanation } from './professorAdviceHelper';
+import { soundEngine } from '../../lib/sound/soundEngine';
 
 export interface LiveProfessorCoachOverlayProps {
   locale?: string;
@@ -41,16 +42,17 @@ export function LiveProfessorCoachOverlay({
   optimalMove,
   lastBotNotation,
   activeTurn = 'X',
-  boardState,
-  onToggleRecommendArrow,
-  onHoverNotation,
-  isShowingRecommendArrow = true,
-  prematureDoubleWarning = false,
+  boardState, onToggleRecommendArrow, onHoverNotation, isShowingRecommendArrow = true, prematureDoubleWarning = false,
 }: LiveProfessorCoachOverlayProps) {
   const { locale: contextLocale } = useTranslation();
   const activeLocale = propLocale || contextLocale || 'fr';
   const lang = activeLocale === 'en' ? 'en' : 'fr';
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+
+  useEffect(() => () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+  }, []);
   const [activeNotice, setActiveNotice] = useState<'BAR_PRIORITY' | 'CLOSED_POINT' | null>(antiFrustrationNotice ?? null);
   const [showMasterBadge, setShowMasterBadge] = useState<boolean>(false);
 
@@ -117,32 +119,29 @@ export function LiveProfessorCoachOverlay({
 
   const getRaceCompassText = (): string => {
     if (!boardState?.board) return '';
-    const pips = pipCount(boardState.board);
-    const playerPips = pips.X;
-    const opponentPips = pips.O;
-
+    const { X: playerPips, O: opponentPips } = pipCount(boardState.board);
     if (playerPips > opponentPips) {
-      const retard = playerPips - opponentPips;
       return lang === 'fr'
-        ? `🛡️ Course : Tu as ${retard} cases de retard (${playerPips} contre ${opponentPips}). Garde une défense solide et guette un pion adverse isolé à frapper !`
-        : `🛡️ Race: You are ${retard} steps behind (${playerPips} vs ${opponentPips}). Stay solid and look for an exposed blot to hit!`;
+        ? `🛡️ Course : Tu as ${playerPips - opponentPips} cases de retard (${playerPips} contre ${opponentPips}). Garde une défense solide et guette un pion isolé !`
+        : `🛡️ Race: You are ${playerPips - opponentPips} steps behind (${playerPips} vs ${opponentPips}). Stay solid and look for an exposed blot!`;
     }
     if (playerPips < opponentPips) {
-      const avance = opponentPips - playerPips;
       return lang === 'fr'
-        ? `🏃 Course : Tu es en avance de ${avance} cases (${playerPips} contre ${opponentPips}) ! Ramène tes dames vers la sortie sans prendre de risque.`
-        : `🏃 Race: You lead by ${avance} steps (${playerPips} vs ${opponentPips})! Bring your checkers home safely without taking risks.`;
+        ? `🏃 Course : Tu es en avance de ${opponentPips - playerPips} cases (${playerPips} contre ${opponentPips}) ! Ramène tes dames sans prendre de risque.`
+        : `🏃 Race: You lead by ${opponentPips - playerPips} steps (${playerPips} vs ${opponentPips})! Bring your checkers home safely.`;
     }
-    return lang === 'fr'
-      ? `⚖️ Course serrée (${playerPips} cases partout) : Construis tes portes et protège tes pions isolés.`
-      : `⚖️ Tight race (${playerPips} steps each): Build gates and protect your single blots.`;
+    return lang === 'fr' ? `⚖️ Course serrée (${playerPips} cases partout) : Construis tes portes et protège tes pions isolés.` : `⚖️ Tight race (${playerPips} steps each): Build gates and protect your single blots.`;
   };
 
   const handleSpeakPrompt = () => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (typeof window === 'undefined' || !('speechSynthesis' in window) || soundEngine.isMute()) return;
+    if (isSpeaking) { window.speechSynthesis.cancel(); setIsSpeaking(false); return; }
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(getProfessorPrompt().replace(/^[^\w\s]+/u, '').trim());
     utt.lang = lang === 'fr' ? 'fr-FR' : 'en-US';
+    utt.onend = () => setIsSpeaking(false);
+    utt.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
     window.speechSynthesis.speak(utt);
   };
 
