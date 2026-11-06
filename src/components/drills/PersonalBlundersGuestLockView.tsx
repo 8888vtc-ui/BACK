@@ -102,7 +102,7 @@ export const PersonalBlundersGuestLockView: React.FC<PersonalBlundersGuestLockVi
             >
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-white/10 pb-3.5">
                     <div className="space-y-1 max-w-2xl">
-                        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-[#D4AF37]">
+                        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-2.5 py-0.5 text-xs font-black uppercase tracking-widest text-[#D4AF37]">
                             <span className="h-1.5 w-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
                             <Lock className="w-3 h-3 text-[#D4AF37]" strokeWidth={2} />
                             <span>
@@ -117,7 +117,7 @@ export const PersonalBlundersGuestLockView: React.FC<PersonalBlundersGuestLockVi
                         type="button"
                         data-testid="guest-lock-open-terms-btn"
                         onClick={openTermsAndPrPolicyModal}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-black/50 px-2.5 py-1.5 text-[11px] font-bold text-zinc-300 hover:border-[#D4AF37]/50 hover:text-[#D4AF37] transition shrink-0"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-black/50 px-2.5 py-1.5 text-xs font-bold text-zinc-300 hover:border-[#D4AF37]/50 hover:text-[#D4AF37] transition shrink-0"
                     >
                         <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
                         <span>{isEn ? 'Read ToS §4 Policy' : 'Lire la Clause CGU §4'}</span>
@@ -125,7 +125,7 @@ export const PersonalBlundersGuestLockView: React.FC<PersonalBlundersGuestLockVi
                 </div>
 
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-zinc-400">
                         <span>
                             {isEn
                                 ? 'Preview of Connected Member Training & Match Memory (Locked)'
@@ -144,7 +144,7 @@ export const PersonalBlundersGuestLockView: React.FC<PersonalBlundersGuestLockVi
                                 className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#090B10] px-3.5 py-2.5"
                             >
                                 <div className="flex flex-wrap items-center gap-2.5 text-xs">
-                                    <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/35 bg-amber-950/50 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300">
+                                    <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/35 bg-amber-950/50 px-2 py-0.5 font-mono text-xs font-bold text-amber-300">
                                         <Lock className="w-3 h-3 text-amber-400" />
                                         <span>{isEn ? 'Locked' : 'Verrouillé'}</span>
                                     </span>
@@ -152,24 +152,24 @@ export const PersonalBlundersGuestLockView: React.FC<PersonalBlundersGuestLockVi
                                         <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
                                         <span>{formatMatchDateTime(item.createdAtIso, isEn)}</span>
                                     </span>
-                                    <span className="text-zinc-600">•</span>
+                                    <span className="text-zinc-400">•</span>
                                     <span className="inline-flex items-center gap-1 font-bold text-white">
                                         <Swords className="w-3.5 h-3.5 text-emerald-400" />
                                         <span>
-                                            {isEn ? `vs ${item.opponentName}` : `Contre ${item.opponentName}`}
-                                            {item.opponentElo ? ` (${item.opponentElo} Elo)` : ''}
+                                             {isEn ? `vs ${item.opponentName}` : `Contre ${item.opponentName}`}
+                                             {item.opponentElo ? ` (${item.opponentElo} Elo)` : ''}
                                         </span>
                                     </span>
-                                    <span className="text-zinc-600">•</span>
-                                    <span className="font-mono text-[11px] text-zinc-300">
+                                    <span className="text-zinc-400">•</span>
+                                    <span className="font-mono text-xs text-zinc-300">
                                         {item.matchFormatLabel} ({isEn ? 'Score:' : 'Score :'} {item.scoreBeforeMove.player}-{item.scoreBeforeMove.opponent}) • {isEn ? `Turn #${item.turnNumber}` : `Tour #${item.turnNumber}`}
                                     </span>
-                                    <span className="inline-flex items-center gap-1 rounded border border-white/10 bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-[#D4AF37]">
+                                    <span className="inline-flex items-center gap-1 rounded border border-white/10 bg-black/60 px-1.5 py-0.5 font-mono text-xs text-[#D4AF37]">
                                         <Dices className="w-3 h-3 text-[#D4AF37]" />
                                         <span>{item.dice[0]}-{item.dice[1]}</span>
                                     </span>
                                 </div>
-                                <span className="rounded-md border border-rose-500/40 bg-rose-950/60 px-2 py-0.5 font-mono text-[11px] font-bold text-rose-200">
+                                <span className="rounded-md border border-rose-500/40 bg-rose-950/60 px-2 py-0.5 font-mono text-xs font-bold text-rose-200">
                                     -{item.winProbLossPct.toFixed(1)}% {isEn ? 'win' : 'victoire'} ({item.deltaEmg.toFixed(3)} EMG)
                                 </span>
                             </div>

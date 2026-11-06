@@ -79,7 +79,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                 aria-label="Timeline temporelle des coups"
                 data-testid="board-move-timeline"
                 data-mode="replay"
-                className="w-full max-w-[1260px] mx-auto shrink-0 h-8 flex flex-nowrap items-center justify-between gap-1.5 overflow-hidden whitespace-nowrap rounded-xl border border-amber-400/80 bg-amber-950/90 px-2 py-0.5 text-[11px] text-amber-100 shadow-[0_0_20px_rgba(245,158,11,0.25)] backdrop-blur-md z-30 select-none"
+                className="w-full max-w-[1260px] mx-auto shrink-0 h-8 flex flex-nowrap items-center justify-between gap-1.5 overflow-hidden whitespace-nowrap rounded-xl border border-amber-400/80 bg-amber-950/90 px-2 py-0.5 text-xs text-amber-100 shadow-[0_0_20px_rgba(245,158,11,0.25)] backdrop-blur-md z-30 select-none"
             >
                 <div className="flex items-center gap-1 shrink-0">
                     <button
@@ -114,7 +114,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                     </button>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] shrink-0">
+                <div className="flex items-center gap-1.5 text-xs shrink-0">
                     <span className="rounded bg-amber-500/20 border border-amber-400/50 px-1.5 py-0.5 font-bold uppercase tracking-wider text-amber-200">
                         Consultation · {selectedTurn.player === 'X' ? `Vous (${humanColorLabel})` : `IA (${aiColorLabel})`} [{selectedTurn.dice[0]}-{selectedTurn.dice[1]}]
                     </span>
@@ -125,14 +125,14 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                     )}
                     <button
                         type="button" data-testid="timeline-toggle-phase-btn" onClick={onToggleViewPhase}
-                        className="rounded-md border border-amber-300/60 bg-black/50 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-200 hover:bg-black/80 hover:text-white transition"
+                        className="rounded-md border border-amber-300/60 bg-black/50 px-2 py-0.5 font-mono text-xs font-bold text-amber-200 hover:bg-black/80 hover:text-white transition"
                     >
                         {viewPhase === 'before' ? '👁 AVANT + Flèches' : '👁 APRÈS coup'}
                     </button>
                     {onRewindHere && (
                         <button
                             type="button" data-testid="timeline-rewind-here-btn" onClick={onRewindHere}
-                            className="rounded-md border border-blue-400/70 bg-blue-600/80 px-2 py-0.5 font-bold text-[10px] text-white hover:bg-blue-500 transition"
+                            className="rounded-md border border-blue-400/70 bg-blue-600/80 px-2 py-0.5 font-bold text-xs text-white hover:bg-blue-500 transition"
                         >
                             ⏪ Reprendre d&apos;ici
                         </button>
@@ -148,7 +148,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
             aria-label="Barre de contrôle horlogère"
             data-testid={totalTurns > 0 ? 'board-move-timeline' : 'board-horology-bar'}
             data-mode={totalTurns > 0 ? 'live' : undefined}
-            className="w-full max-w-[1260px] mx-auto shrink-0 h-8 flex flex-nowrap items-center justify-between gap-2 overflow-hidden whitespace-nowrap rounded-xl border border-white/10 bg-slate-950/95 px-2 py-0.5 text-[11px] text-slate-100 shadow-[0_6px_18px_rgba(0,0,0,0.65)] z-30 select-none"
+            className="w-full max-w-[1260px] mx-auto shrink-0 h-8 flex flex-nowrap items-center justify-between gap-2 overflow-hidden whitespace-nowrap rounded-xl border border-white/10 bg-slate-950/95 px-2 py-0.5 text-xs text-slate-100 shadow-[0_6px_18px_rgba(0,0,0,0.65)] z-30 select-none"
         >
             {/* Contrôles Replay rapides (si au moins 1 tour joué) */}
             {totalTurns > 0 ? (
@@ -156,28 +156,28 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                     <button
                         type="button" data-testid="timeline-btn-first" disabled={!canStepPrev} onClick={onStepFirst}
                         title="Revenir au premier coup"
-                        className="inline-flex items-center rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-slate-200 hover:border-amber-400/50 hover:text-white disabled:opacity-35 transition"
+                        className="inline-flex items-center rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-xs font-bold text-slate-200 hover:border-amber-400/50 hover:text-white disabled:opacity-35 transition"
                     >
                         ⏪
                     </button>
                     <button
                         type="button" data-testid="timeline-btn-prev" disabled={!canStepPrev} onClick={onStepPrev}
                         title="Inspecter le coup précédent"
-                        className="inline-flex items-center rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-slate-200 hover:border-amber-400/50 hover:text-white disabled:opacity-35 transition"
+                        className="inline-flex items-center rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-xs font-bold text-slate-200 hover:border-amber-400/50 hover:text-white disabled:opacity-35 transition"
                     >
                         ◀
                     </button>
-                    <span data-testid="timeline-step-counter" className="px-1.5 py-0.5 rounded-md bg-slate-900 border border-white/10 font-mono text-[10px] font-bold tabular-nums text-amber-300">
+                    <span data-testid="timeline-step-counter" className="px-1.5 py-0.5 rounded-md bg-slate-900 border border-white/10 font-mono text-xs font-bold tabular-nums text-amber-300">
                         {totalTurns} / {totalTurns}
                     </span>
                     <button
-                        type="button" data-testid="timeline-btn-next" disabled className="inline-flex items-center rounded-lg border border-white/5 bg-slate-900/40 px-1.5 py-0.5 text-[10px] font-bold text-slate-500 opacity-35"
+                        type="button" data-testid="timeline-btn-next" disabled className="inline-flex items-center rounded-lg border border-white/5 bg-slate-900/40 px-1.5 py-0.5 text-xs font-bold text-slate-500 opacity-35"
                     >
                         ▶
                     </button>
                     <button
                         type="button" data-testid="timeline-btn-live" onClick={onReturnToLive}
-                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/45 bg-emerald-950/60 px-2 py-0.5 text-[10px] font-bold text-emerald-300"
+                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/45 bg-emerald-950/60 px-2 py-0.5 text-xs font-bold text-emerald-300"
                     >
                         <span aria-hidden="true">🟢</span>
                         <span className="hidden sm:inline">Direct</span>
@@ -185,7 +185,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                 </div>
             ) : (
                 <div className="flex items-center gap-1 shrink-0">
-                    <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-950/50 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                    <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-950/50 px-2 py-0.5 text-xs font-bold text-emerald-300">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                         <span>Direct</span>
                     </span>
@@ -201,10 +201,10 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                     <span className="font-sans font-bold text-white tracking-tight whitespace-nowrap">
                         {rival.name}
                     </span>
-                    <span data-testid="dopamine-ai-rival-pr" className="rounded border border-amber-400/40 bg-slate-900 px-1.5 py-0.2 font-mono text-[10px] font-bold tabular-nums text-amber-300">
+                    <span data-testid="dopamine-ai-rival-pr" className="rounded border border-amber-400/40 bg-slate-900 px-1.5 py-0.2 font-mono text-xs font-bold tabular-nums text-amber-300">
                         PR ~{rival.targetPr}
                     </span>
-                    <span data-testid="dopamine-ai-rival-quote" className="truncate italic text-[11px] text-slate-300 max-w-[200px] sm:max-w-[320px] xl:max-w-[480px]" title={rivalQuote}>
+                    <span data-testid="dopamine-ai-rival-quote" className="truncate italic text-xs text-slate-300 max-w-[200px] sm:max-w-[320px] xl:max-w-[480px]" title={rivalQuote}>
                         « {rivalQuote} »
                     </span>
                 </div>
@@ -215,7 +215,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                 {metrics.isBrilliantMove && (
                     <span
                         data-testid="dopamine-brilliant-badge"
-                        className="inline-flex items-center gap-1 rounded-lg border border-cyan-300/80 bg-gradient-to-r from-cyan-950/90 to-emerald-950/90 px-1.5 py-0.5 font-mono text-[10px] font-black uppercase text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.4)] animate-pulse"
+                        className="inline-flex items-center gap-1 rounded-lg border border-cyan-300/80 bg-gradient-to-r from-cyan-950/90 to-emerald-950/90 px-1.5 py-0.5 font-mono text-xs font-black uppercase text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.4)] animate-pulse"
                         title={isEn ? `Unique best move! (+${metrics.brilliantMarginEq.toFixed(3)})` : `Seul coup optimal ! (+${metrics.brilliantMarginEq.toFixed(3)})`}
                     >
                         <span aria-hidden="true">💎</span>
@@ -226,7 +226,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                 {metrics.optimalStreak >= 1 && (
                     <span
                         data-testid="dopamine-combo-badge"
-                        className={`inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 font-mono text-[10px] font-extrabold tabular-nums ${
+                        className={`inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 font-mono text-xs font-extrabold tabular-nums ${
                             metrics.optimalStreak >= 3 ? 'border-amber-300/85 bg-gradient-to-r from-amber-600/35 to-emerald-600/35 text-amber-100' : 'border-emerald-500/50 bg-emerald-950/75 text-emerald-200'
                         }`}
                     >
@@ -238,7 +238,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                 {isHighStakes && (
                     <span
                         data-testid="dopamine-cube-stakes"
-                        className={`inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums ${
+                        className={`inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 font-mono text-xs font-bold tabular-nums ${
                             doublingOfferedBy !== null ? 'border-rose-400/90 bg-rose-950/90 text-rose-100 animate-pulse' : 'border-amber-400/75 bg-amber-950/80 text-amber-200'
                         }`}
                     >
@@ -251,7 +251,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                     <button
                         type="button" data-testid="dopamine-ghost-challenge-btn" onClick={() => onTriggerGhostChallenge(worstBlunder.turnIndex)}
                         title={`Revenir au Tour #${worstBlunder.turnIndex} (-${Math.abs(worstBlunder.coachState.equityLoss).toFixed(3)} Eq) pour battre votre fantôme`}
-                        className="inline-flex items-center gap-1 rounded-lg border border-purple-400/75 bg-purple-950/90 px-1.5 py-0.5 font-mono text-[10px] font-extrabold tabular-nums text-purple-100 hover:border-purple-300 hover:text-white transition active:scale-95"
+                        className="inline-flex items-center gap-1 rounded-lg border border-purple-400/75 bg-purple-950/90 px-1.5 py-0.5 font-mono text-xs font-extrabold tabular-nums text-purple-100 hover:border-purple-300 hover:text-white transition active:scale-95"
                     >
                         <span>👻</span><span>Ghost #{worstBlunder.turnIndex}</span>
                     </button>
@@ -261,7 +261,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                     <button
                         type="button" data-testid="dopamine-instant-rematch-btn" onClick={onInstantRematch}
                         title={`Revanche contre ${rival.name}`}
-                        className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-amber-300 hover:border-amber-400/50 transition active:scale-95"
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-xs font-bold text-amber-300 hover:border-amber-400/50 transition active:scale-95"
                     >
                         <span>🔥</span><span>{isEn ? 'Rematch' : 'Revanche'}</span>
                     </button>

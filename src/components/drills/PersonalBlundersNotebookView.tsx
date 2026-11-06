@@ -175,9 +175,9 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                                 </p>
                             </div>
 
-                            <div className="flex items-center justify-between text-[11px] font-bold text-zinc-300 px-0.5">
+                            <div className="flex items-center justify-between text-xs font-bold text-zinc-300 px-0.5">
                                 <span>{isEn ? 'Select the optimal 3-ply move:' : 'Cliquez sur le meilleur coup 3-ply :'}</span>
-                                <span className="inline-flex items-center gap-1 font-mono text-[10px] text-[#D4AF37]">
+                                <span className="inline-flex items-center gap-1 font-mono text-xs text-[#D4AF37]">
                                     <Dices className="w-3.5 h-3.5 text-[#D4AF37]" />
                                     <span>{activeBlunder.dice[0]}-{activeBlunder.dice[1]} (Case 24 ➔ 1)</span>
                                 </span>
@@ -200,7 +200,7 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                                                     : showWrongStyle ? 'border-rose-400 bg-rose-950/80 text-rose-200' : 'border-white/15 bg-[#090B10] text-white hover:border-[#D4AF37] hover:text-[#D4AF37]'
                                             }`}
                                         >
-                                            <span className="rounded bg-[#D4AF37]/20 px-1.5 py-0.5 text-[10px] font-black text-[#D4AF37]">{letter}</span>
+                                            <span className="rounded bg-[#D4AF37]/20 px-1.5 py-0.5 text-xs font-black text-[#D4AF37]">{letter}</span>
                                             <span className="truncate">{cand.notation}</span>
                                         </button>
                                     );
@@ -226,7 +226,7 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     <div data-testid="comparative-played-move-card" className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-2.5 text-xs space-y-1">
-                                        <div className="flex items-center justify-between font-mono text-[11px] font-black text-rose-300">
+                                        <div className="flex items-center justify-between font-mono text-xs font-black text-rose-300">
                                             <span>{isEn ? `❌ Your Match Move: ${activeBlunder.playerPlayedMove}` : `❌ Ton Coup en Match : ${activeBlunder.playerPlayedMove}`}</span>
                                             <span>{activeBlunder.playerWinProbPct.toFixed(1)}% {isEn ? 'win' : 'victoire'} ({activeBlunder.deltaEmg.toFixed(3)} EMG)</span>
                                         </div>
@@ -237,7 +237,7 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                                     </div>
 
                                     <div data-testid="comparative-optimal-move-card" className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-2.5 text-xs space-y-1">
-                                        <div className="flex items-center justify-between font-mono text-[11px] font-black text-emerald-300">
+                                        <div className="flex items-center justify-between font-mono text-xs font-black text-emerald-300">
                                             <span>{isEn ? `✅ 3-Ply Solution: ${activeBlunder.optimalMove}` : `✅ La Solution 3-Ply : ${activeBlunder.optimalMove}`}</span>
                                             <span>{activeBlunder.optimalWinProbPct.toFixed(1)}% {isEn ? 'win' : 'victoire'} (0.000 EMG)</span>
                                         </div>
@@ -257,10 +257,10 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                                         <ArrowRight className="w-4 h-4 text-black" />
                                     </button>
                                     <div className="flex items-center gap-1.5">
-                                        <button type="button" onClick={() => setClickedNotation(null)} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-white/15 bg-[#090B10] px-2.5 py-1.5 text-[11px] font-bold text-zinc-300 hover:text-white transition">
+                                        <button type="button" onClick={() => setClickedNotation(null)} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-white/15 bg-[#090B10] px-2.5 py-1.5 text-xs font-bold text-zinc-300 hover:text-white transition">
                                             <RotateCcw className="w-3 h-3" /><span>{isEn ? 'Replay Quiz' : 'Rejouer le Quiz'}</span>
                                         </button>
-                                        <button type="button" onClick={() => router.push(`/?xgid=${encodeURIComponent(activeBlunder.xgid)}`)} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-white/15 bg-[#090B10] px-2.5 py-1.5 text-[11px] font-bold text-emerald-300 hover:border-emerald-400/50 transition">
+                                        <button type="button" onClick={() => router.push(`/?xgid=${encodeURIComponent(activeBlunder.xgid)}`)} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-white/15 bg-[#090B10] px-2.5 py-1.5 text-xs font-bold text-emerald-300 hover:border-emerald-400/50 transition">
                                             <Play className="w-3 h-3" /><span>{isEn ? 'Play vs Coach' : 'Jouer contre le Coach'}</span>
                                         </button>
                                     </div>

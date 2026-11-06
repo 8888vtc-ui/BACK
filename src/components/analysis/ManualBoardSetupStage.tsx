@@ -63,7 +63,7 @@ export const ManualBoardSetupStage: React.FC<ManualBoardSetupStageProps> = ({
             {/* Ligne de titre Étape 1 + Sources rapides */}
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center justify-center rounded-md border border-[#D4AF37]/40 bg-[#D4AF37]/15 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#D4AF37]">
+                    <span className="inline-flex items-center justify-center rounded-md border border-[#D4AF37]/40 bg-[#D4AF37]/15 px-2 py-0.5 text-xs font-mono font-bold uppercase tracking-wider text-[#D4AF37]">
                         {isEn ? 'STEP 1' : 'ÉTAPE 1'}
                     </span>
                     <h2 className="text-xs sm:text-sm font-extrabold text-white">
@@ -164,7 +164,7 @@ export const ManualBoardSetupStage: React.FC<ManualBoardSetupStageProps> = ({
                         type="button"
                         data-testid="reset-starting-board-btn"
                         onClick={onResetStartingBoard}
-                        className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#12151C] px-2 py-1 text-[11px] font-semibold text-stone-200 hover:border-[#D4AF37]/50 hover:text-white transition whitespace-nowrap"
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#12151C] px-2 py-1 text-xs font-semibold text-stone-200 hover:border-[#D4AF37]/50 hover:text-white transition whitespace-nowrap"
                     >
                         <RotateCcw className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
                         <span>{isEn ? 'Starting Pos' : 'Position de Départ'}</span>
@@ -174,7 +174,7 @@ export const ManualBoardSetupStage: React.FC<ManualBoardSetupStageProps> = ({
                         type="button"
                         data-testid="clear-board-btn"
                         onClick={onClearBoard}
-                        className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#12151C] px-2 py-1 text-[11px] font-semibold text-stone-300 hover:border-rose-400/50 hover:text-rose-200 transition whitespace-nowrap"
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#12151C] px-2 py-1 text-xs font-semibold text-stone-300 hover:border-rose-400/50 hover:text-rose-200 transition whitespace-nowrap"
                     >
                         <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
                         <span>{isEn ? 'Clear' : 'Vider'}</span>
@@ -184,7 +184,7 @@ export const ManualBoardSetupStage: React.FC<ManualBoardSetupStageProps> = ({
                         type="button"
                         data-testid="complete-to-off-btn"
                         onClick={onCompleteRemainingToOff}
-                        className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#12151C] px-2 py-1 text-[11px] font-semibold text-stone-300 hover:border-emerald-400/50 hover:text-emerald-200 transition whitespace-nowrap"
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#12151C] px-2 py-1 text-xs font-semibold text-stone-300 hover:border-emerald-400/50 hover:text-emerald-200 transition whitespace-nowrap"
                     >
                         <Sparkles className="w-3.5 h-3.5 text-emerald-400" strokeWidth={1.5} />
                         <span>{isEn ? 'Auto-Off' : 'Compléter'}</span>
@@ -194,7 +194,7 @@ export const ManualBoardSetupStage: React.FC<ManualBoardSetupStageProps> = ({
                         type="button"
                         data-testid="invert-colors-btn"
                         onClick={onInvertColors}
-                        className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#12151C] px-2 py-1 text-[11px] font-semibold text-stone-300 hover:border-white/30 hover:text-white transition whitespace-nowrap"
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#12151C] px-2 py-1 text-xs font-semibold text-stone-300 hover:border-white/30 hover:text-white transition whitespace-nowrap"
                     >
                         <ArrowUpDown className="w-3.5 h-3.5" strokeWidth={1.5} />
                         <span>{isEn ? 'Invert' : 'Inverser'}</span>

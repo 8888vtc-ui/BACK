@@ -146,7 +146,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             <span className="text-xs sm:text-sm font-black tracking-wider text-white">
                                 BACKGAMMON
                             </span>
-                            <span className="rounded border border-[#f3c65f]/40 bg-[#f3c65f]/15 px-1.5 py-0.5 text-[11px] font-mono font-bold uppercase tracking-wider text-[#f3c65f]">
+                            <span className="rounded border border-[#f3c65f]/40 bg-[#f3c65f]/15 px-1.5 py-0.5 text-xs font-mono font-bold uppercase tracking-wider text-[#f3c65f]">
                                 TOUR
                             </span>
                         </div>
@@ -206,8 +206,8 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                         aria-label={locale === 'fr' ? 'Switch to English' : 'Passer en Français'}
                         className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900/90 px-2.5 py-1 font-mono text-xs sm:text-sm font-bold tracking-wider text-stone-200 transition hover:border-[#D4AF37]/50 hover:text-[#D4AF37] active:scale-95 shrink-0"
                     >
-                        <span className={locale === 'fr' ? 'text-[#D4AF37] font-black' : 'text-stone-400'}>FR</span>
-                        <span className="text-stone-600">|</span>
+                        <span className={locale === 'fr' ? 'text-[#D4AF37] font-black' : 'text-stone-300'}>FR</span>
+                        <span className="text-stone-400">|</span>
                         <span className={locale === 'en' ? 'text-[#D4AF37] font-black' : 'text-stone-400'}>EN</span>
                     </button>
 

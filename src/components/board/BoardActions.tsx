@@ -85,7 +85,7 @@ export const AutoConfirmControl: React.FC<AutoConfirmControlProps> = ({
                     if (onToggleAutoConfirm) onToggleAutoConfirm();
                     else if (onCycleAutoConfirmMode) onCycleAutoConfirmMode();
                 }}
-                className={`rounded-l-full ${onSelectAutoConfirmMode || onCycleAutoConfirmMode ? 'pr-1.5' : 'rounded-r-full'} border px-2.5 ${compact ? 'py-1' : 'py-1.5'} text-[10px] font-bold uppercase tracking-wider shadow-md backdrop-blur-sm transition whitespace-nowrap touch-manipulation ${
+                className={`rounded-l-full ${onSelectAutoConfirmMode || onCycleAutoConfirmMode ? 'pr-1.5' : 'rounded-r-full'} border px-2.5 ${compact ? 'py-1' : 'py-1.5'} text-xs font-bold uppercase tracking-wider shadow-md backdrop-blur-sm transition whitespace-nowrap touch-manipulation ${
                     isAutoActive
                         ? 'border-[#f3c65f]/80 bg-[#2a1c0b]/95 text-[#fce8b2]'
                         : 'border-[#d4af37]/35 bg-[#140b06]/90 text-amber-100/70 hover:border-[#f3c65f]/60 hover:text-amber-100'
@@ -105,7 +105,7 @@ export const AutoConfirmControl: React.FC<AutoConfirmControlProps> = ({
                         void impactLight();
                         setIsModeMenuOpen((prev) => !prev);
                     }}
-                    className={`rounded-r-full border border-l-0 px-1.5 ${compact ? 'py-1' : 'py-1.5'} text-[10px] font-bold transition touch-manipulation ${
+                    className={`rounded-r-full border border-l-0 px-1.5 ${compact ? 'py-1' : 'py-1.5'} text-xs font-bold transition touch-manipulation ${
                         isAutoActive
                             ? 'border-[#f3c65f]/80 bg-[#2a1c0b]/95 text-[#fce8b2]'
                             : 'border-[#d4af37]/35 bg-[#140b06]/90 text-amber-100/70 hover:text-amber-100'
@@ -143,10 +143,10 @@ export const AutoConfirmControl: React.FC<AutoConfirmControlProps> = ({
                                         : 'border border-transparent text-amber-100/80 hover:bg-white/5 hover:text-white'
                                 }`}
                             >
-                                <span className="text-[11px] font-extrabold uppercase tracking-wider">
+                                <span className="text-xs font-extrabold uppercase tracking-wider">
                                     {active ? '✓ ' : ''}{item.label}
                                 </span>
-                                <span className="text-[11px] text-amber-200/65 leading-tight">
+                                <span className="text-xs text-amber-200 leading-tight">
                                     {item.description}
                                 </span>
                             </button>

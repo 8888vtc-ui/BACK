@@ -84,7 +84,7 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
               const familyMoves = OPENING_MOVES.filter((m) => m.family === famKey);
               return (
                 <div key={famKey} className="rounded-xl border border-white/10 bg-white/[0.02] p-2">
-                  <div className="text-[11px] font-extrabold text-stone-300 mb-1.5 flex items-center gap-1.5">
+                  <div className="text-xs font-extrabold text-stone-300 mb-1.5 flex items-center gap-1.5">
                     <span>{isEn ? familyInfo.labelEn : familyInfo.labelFr}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -107,7 +107,7 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
                             <span>🎲</span>
                             <span>{m.roll[0]} - {m.roll[1]}</span>
                           </span>
-                          <span className={`text-[10px] leading-tight font-bold ${isSel ? 'text-slate-900' : 'text-amber-300/90'}`}>
+                          <span className={`text-xs leading-tight font-bold ${isSel ? 'text-slate-900' : 'text-amber-300/90'}`}>
                             {keyword}
                           </span>
                         </button>
@@ -136,7 +136,7 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
                   type="button"
                   data-testid="opening-voice-btn"
                   onClick={handleSpeak}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-bold hover:bg-amber-500/30 transition"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold hover:bg-amber-500/30 transition"
                 >
                   <Volume2 className="w-3.5 h-3.5" />
                   <span>{isEn ? 'Listen' : 'Écouter'}</span>
@@ -168,7 +168,7 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
             </div>
 
             {/* Règle Mémotechnique Dorée */}
-            <div className="text-[11px] text-stone-300 bg-white/[0.02] p-2 rounded-lg border border-white/5 font-medium">
+            <div className="text-xs text-stone-300 bg-white/[0.02] p-2 rounded-lg border border-white/5 font-medium">
               💡 {isEn
                 ? 'On the first move, creating a two-checker shield is always the top priority!'
                 : 'Au premier coup, créer un bouclier à deux pions est toujours la priorité absolue !'}

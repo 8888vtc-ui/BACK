@@ -149,7 +149,7 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
             <div className="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 rounded-xl border border-[#D4AF37]/35 bg-[#070B12]/90 p-1 shadow-xl backdrop-blur-md">
                 <button type="button" data-testid="map-zoom-in-btn" onClick={() => setZoomDelta((d) => Math.min(3.5, Number((d + 0.6).toFixed(2))))} title={dict.zoomInTitle} aria-label={dict.zoomInTitle} className="flex h-6 w-6 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-mono text-xs font-black text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 transition">+</button>
                 <button type="button" data-testid="map-zoom-out-btn" onClick={() => setZoomDelta((d) => Math.max(-(baseCam.scale - 0.9), Number((d - 0.6).toFixed(2))))} title={dict.zoomOutTitle} aria-label={dict.zoomOutTitle} className="flex h-6 w-6 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-mono text-xs font-black text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 transition">−</button>
-                <button type="button" data-testid="map-zoom-reset-btn" onClick={() => { setZoomDelta(0); onResetPreset(); }} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-bold text-slate-200 hover:border-[#D4AF37] hover:text-white transition">{dict.resetView}</button>
+                <button type="button" data-testid="map-zoom-reset-btn" onClick={() => { setZoomDelta(0); onResetPreset(); }} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-bold text-slate-200 hover:border-[#D4AF37] hover:text-white transition">{dict.resetView}</button>
             </div>
 
             <div

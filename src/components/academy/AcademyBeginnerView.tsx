@@ -217,7 +217,7 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
 
           {/* Conseil du Professeur */}
           <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-            <span className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-wide">
+            <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wide">
               {isEn ? activeMove.titleEn : activeMove.titleFr}
             </span>
             <p className="text-xs sm:text-sm text-neutral-200 leading-relaxed">

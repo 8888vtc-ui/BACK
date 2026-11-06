@@ -168,7 +168,7 @@ export const WorldVenuesMapDirectoryView: React.FC<WorldVenuesMapDirectoryViewPr
                                             type="button"
                                             data-testid={`map-zoom-${z.id}`}
                                             onClick={() => handleSelectPreset(z.id)}
-                                            className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${
+                                            className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-semibold transition ${
                                                 active
                                                     ? 'border-[#D4AF37]/60 bg-white/10 text-[#D4AF37] shadow-sm'
                                                     : 'border-white/10 bg-white/[0.03] text-zinc-300 hover:text-white'
@@ -216,7 +216,7 @@ export const WorldVenuesMapDirectoryView: React.FC<WorldVenuesMapDirectoryViewPr
                             <span>{dict.bottomTournamentsTitle(tournaments.length)}</span>
                         </h3>
                         <div className="flex items-center gap-3">
-                            <span className="hidden sm:inline text-[11px] text-slate-400">{dict.bottomTournamentsHint}</span>
+                            <span className="hidden sm:inline text-xs text-slate-400">{dict.bottomTournamentsHint}</span>
                             {totalPages > 1 && (
                                 <div className="flex items-center gap-1">
                                     <button
@@ -228,7 +228,7 @@ export const WorldVenuesMapDirectoryView: React.FC<WorldVenuesMapDirectoryViewPr
                                     >
                                         <ChevronLeft size={13} strokeWidth={1.5} />
                                     </button>
-                                    <span className="font-mono text-[11px] text-zinc-400 px-1">
+                                    <span className="font-mono text-xs text-zinc-400 px-1">
                                         {safePage + 1}/{totalPages}
                                     </span>
                                     <button
@@ -259,12 +259,12 @@ export const WorldVenuesMapDirectoryView: React.FC<WorldVenuesMapDirectoryViewPr
                                             : 'border-white/10 bg-[#0b101b] hover:border-[#d4af37]/60'
                                     }`}
                                 >
-                                    <div className="flex items-center justify-between text-[10px] text-amber-300 font-bold uppercase gap-1">
+                                    <div className="flex items-center justify-between text-xs text-amber-300 font-bold uppercase gap-1">
                                         <span className="truncate">{t.federation} • {t.tier}</span>
                                         <span className="text-amber-200 shrink-0 whitespace-nowrap font-mono">{formatTournamentDateFr(t.startDate)}</span>
                                     </div>
                                     <h4 className="font-sans text-xs font-bold tracking-tight text-white truncate">{t.name}</h4>
-                                    <div className="flex items-center justify-between text-[10px] text-slate-400 gap-1">
+                                    <div className="flex items-center justify-between text-xs text-slate-400 gap-1">
                                         <span className="truncate">{t.city}, {t.countryCode}</span>
                                         <span className="text-emerald-400 font-semibold shrink-0">{dict.mainMatchPts(t.matchLengthMain)}</span>
                                     </div>

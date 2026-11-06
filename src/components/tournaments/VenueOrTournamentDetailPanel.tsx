@@ -84,7 +84,7 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
                                 <span className="text-slate-400">{dict.cityCountryLabel} </span>
                                 <span className="font-semibold text-white">{tournament.city}, {tournament.countryName}</span>
                                 {tournament.venueName && (
-                                    <span className="block text-[11px] text-slate-300 mt-0.5">{dict.venueLabel} {tournament.venueName}</span>
+                                    <span className="block text-xs text-slate-300 mt-0.5">{dict.venueLabel} {tournament.venueName}</span>
                                 )}
                             </div>
                         </div>
@@ -116,7 +116,7 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
                             </div>
                         </div>
                         {tournament.descriptionFr && (
-                            <p className="text-[11px] text-slate-300 italic pt-1 border-t border-white/5 line-clamp-2">
+                            <p className="text-xs text-slate-300 italic pt-1 border-t border-white/5 line-clamp-2">
                                 « {tournament.descriptionFr} »
                             </p>
                         )}
@@ -159,7 +159,7 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
                             <Building2 size={16} strokeWidth={1.5} className="text-[#D4AF37]" />
                         </span>
                         <div>
-                            <span className="inline-flex items-center gap-1 rounded border border-emerald-400/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                            <span className="inline-flex items-center gap-1 rounded border border-emerald-400/40 bg-emerald-500/15 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-emerald-300">
                                 <Building2 size={11} strokeWidth={1.5} />
                                 <span>{dict.clubBadgePrefix} • {venue.federation}</span>
                             </span>
@@ -186,7 +186,7 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
                             <span className="text-slate-400">{dict.cityAddressLabel} </span>
                             <span className="font-semibold text-white">{venue.city}, {venue.countryName}</span>
                             {venue.address && (
-                                <span className="block text-[11px] text-slate-300 mt-0.5 line-clamp-2">{venue.address}</span>
+                                <span className="block text-xs text-slate-300 mt-0.5 line-clamp-2">{venue.address}</span>
                             )}
                         </div>
                     </div>
@@ -205,7 +205,7 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
                         </div>
                     </div>
                     {venue.atmosphereFr && (
-                        <p className="text-[11px] text-slate-300 italic pt-1 border-t border-white/5 line-clamp-2">
+                        <p className="text-xs text-slate-300 italic pt-1 border-t border-white/5 line-clamp-2">
                             « {venue.atmosphereFr} »
                         </p>
                     )}

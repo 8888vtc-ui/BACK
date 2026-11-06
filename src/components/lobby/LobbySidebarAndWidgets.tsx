@@ -73,7 +73,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
 
     const activeRailCls = 'border-l-2 border-[#D4AF37] bg-white/[0.06] text-[#D4AF37] font-bold';
     const itemCls = 'flex items-center justify-between w-full whitespace-nowrap rounded-lg px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/[0.04] hover:text-white transition-all duration-150';
-    const sectionLabelCls = 'px-3 pb-1 text-[11px] uppercase tracking-[0.15em] text-zinc-500 font-semibold';
+    const sectionLabelCls = 'px-3 pb-1 text-xs uppercase tracking-[0.15em] text-zinc-400 font-semibold';
 
     const isHomeRoute = pathname === '/' || pathname === '/lobby';
     const isTournamentsRoute = pathname.startsWith('/tournaments');

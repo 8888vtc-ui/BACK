@@ -151,7 +151,7 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                     className="pointer-events-auto flex items-center gap-2 rounded-full border border-amber-500/40 bg-slate-950/95 h-[32px] max-h-[34px] px-3.5 py-0.5 shadow-[0_10px_24px_rgba(0,0,0,0.85)] backdrop-blur-md animate-pulse"
                 >
                     <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
-                    <span className="font-sans text-[10px] sm:text-[11px] font-bold text-amber-200 whitespace-nowrap">
+                    <span className="font-sans text-xs font-bold text-amber-200 whitespace-nowrap">
                         {isEn ? `Cube offered (×${nextCubeValue}) — Waiting for reply...` : `Videau proposé (×${nextCubeValue}) — En attente de réponse...`}
                     </span>
                 </div>
@@ -162,14 +162,14 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                     data-testid="center-cube-decision"
                     className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/15 bg-slate-950/95 h-[32px] max-h-[34px] px-3 py-0.5 shadow-[0_10px_24px_rgba(0,0,0,0.85)] backdrop-blur-md"
                 >
-                    <span className="font-sans text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-300 whitespace-nowrap">
+                    <span className="font-sans text-xs font-black uppercase tracking-wider text-amber-300 whitespace-nowrap">
                         {isEn ? `Cube ×${nextCubeValue}` : `Videau ×${nextCubeValue}`}
                     </span>
                     <button
                         type="button"
                         data-testid="center-take-double-button"
                         onClick={(e) => { e.stopPropagation(); onTakeDouble(); }}
-                        className="inline-flex items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-600 h-[24px] px-2.5 py-0 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-md transition hover:bg-emerald-500 active:scale-95 whitespace-nowrap touch-manipulation"
+                        className="inline-flex items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-600 h-[24px] px-2.5 py-0 text-xs font-extrabold uppercase tracking-wider text-white shadow-md transition hover:bg-emerald-500 active:scale-95 whitespace-nowrap touch-manipulation"
                     >
                         {isEn ? `✓ Take (×${nextCubeValue})` : `✓ Prendre (×${nextCubeValue})`}
                     </button>
@@ -177,7 +177,7 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                         type="button"
                         data-testid="center-pass-double-button"
                         onClick={(e) => { e.stopPropagation(); onPassDouble(); }}
-                        className="inline-flex items-center justify-center rounded-full border border-rose-500/60 bg-rose-950 h-[24px] px-2.5 py-0 text-[10px] font-extrabold uppercase tracking-wider text-rose-100 shadow-md transition hover:bg-rose-900 active:scale-95 whitespace-nowrap touch-manipulation"
+                        className="inline-flex items-center justify-center rounded-full border border-rose-500/60 bg-rose-950 h-[24px] px-2.5 py-0 text-xs font-extrabold uppercase tracking-wider text-rose-100 shadow-md transition hover:bg-rose-900 active:scale-95 whitespace-nowrap touch-manipulation"
                     >
                         {isEn ? '✕ Pass' : '✕ Passer'}
                     </button>
@@ -191,9 +191,9 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                             type="button"
                             data-testid="center-roll-button"
                             onClick={(e) => { e.stopPropagation(); onRoll(); }}
-                            className="group relative inline-flex items-center justify-center gap-1 sm:gap-1.5 rounded-full border border-amber-300 bg-gradient-to-r from-amber-400 to-amber-500 h-[30px] sm:h-[32px] max-h-[34px] [@media(max-height:500px)]:!h-[28px] [@media(max-height:500px)]:!max-h-[30px] px-2.5 sm:px-3.5 [@media(max-height:500px)]:!px-2.5 py-0.5 font-sans text-[10px] sm:text-[11px] [@media(max-height:500px)]:!text-[10px] font-black uppercase tracking-wider text-slate-950 shadow-[0_6px_18px_rgba(245,158,11,0.35)] transition-all duration-200 hover:scale-[1.02] hover:brightness-105 active:scale-95 whitespace-nowrap touch-manipulation leading-none"
+                            className="group relative inline-flex items-center justify-center gap-1 sm:gap-1.5 rounded-full border border-amber-300 bg-gradient-to-r from-amber-400 to-amber-500 h-[30px] sm:h-[32px] max-h-[34px] px-2.5 sm:px-3.5 py-0.5 font-sans text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_6px_18px_rgba(245,158,11,0.35)] transition-all duration-200 hover:scale-[1.02] hover:brightness-105 active:scale-95 whitespace-nowrap touch-manipulation leading-none"
                         >
-                            <span aria-hidden="true" className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-slate-950 text-[9px] sm:text-[10px] text-amber-300 shadow-inner">
+                            <span aria-hidden="true" className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-slate-950 text-xs text-amber-300 shadow-inner">
                                 🎲
                             </span>
                             <span className="font-extrabold">{isEn ? 'Roll dice' : 'Lancer les dés'}</span>
@@ -205,11 +205,11 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                                 data-testid="center-double-button"
                                 onClick={(e) => { e.stopPropagation(); onOfferDouble(); }}
                                 aria-label={isEn ? `Offer cube (×${nextCubeValue})` : `Proposer le videau (×${nextCubeValue})`}
-                                className={`group inline-flex items-center justify-center gap-1 rounded-full border border-white/15 bg-slate-900 h-[30px] sm:h-[32px] max-h-[34px] [@media(max-height:500px)]:!h-[28px] [@media(max-height:500px)]:!max-h-[30px] px-2 sm:px-2.5 [@media(max-height:500px)]:!px-2 py-0.5 font-sans text-[10px] sm:text-[11px] [@media(max-height:500px)]:!text-[10px] font-black uppercase tracking-wider text-slate-100 shadow-lg transition-all duration-150 hover:scale-[1.02] hover:border-amber-400/50 hover:text-white active:scale-95 whitespace-nowrap touch-manipulation leading-none ${
+                                className={`group inline-flex items-center justify-center gap-1 rounded-full border border-white/15 bg-slate-900 h-[30px] sm:h-[32px] max-h-[34px] px-2 sm:px-2.5 py-0.5 font-sans text-xs font-black uppercase tracking-wider text-slate-100 shadow-lg transition-all duration-150 hover:scale-[1.02] hover:border-amber-400/50 hover:text-white active:scale-95 whitespace-nowrap touch-manipulation leading-none ${
                                     isPrematureDouble ? 'opacity-50 hover:opacity-75' : ''
                                 }`}
                             >
-                                <span className="rounded-full bg-amber-400 px-1.5 py-0.2 font-mono text-[9px] sm:text-[10px] font-black text-slate-950 shadow-sm">
+                                <span className="rounded-full bg-amber-400 px-1.5 py-0.2 font-mono text-xs font-black text-slate-950 shadow-sm">
                                     ×{nextCubeValue}
                                 </span>
                                 <span className="hidden sm:inline font-bold">{isEn ? 'Double' : 'Doubler'}</span>
@@ -238,7 +238,7 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                                     data-speed={gameSpeed}
                                     aria-label={`Cadence du Bot : ${SPEED_LABELS[gameSpeed].label}`}
                                     onClick={(e) => { e.stopPropagation(); void impactLight(); onCycleGameSpeed(); }}
-                                    className="rounded-full border border-white/10 bg-slate-950/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-200 shadow-md backdrop-blur-sm transition whitespace-nowrap hover:border-amber-400/50 hover:text-white active:scale-95 touch-manipulation"
+                                    className="rounded-full border border-white/10 bg-slate-950/90 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-slate-200 shadow-md backdrop-blur-sm transition whitespace-nowrap hover:border-amber-400/50 hover:text-white active:scale-95 touch-manipulation"
                                 >
                                     <span aria-hidden="true">{SPEED_LABELS[gameSpeed].icon}</span>{' '}
                                     <span className="hidden sm:inline">{SPEED_LABELS[gameSpeed].label}</span>
@@ -257,7 +257,7 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                             data-testid="center-undo-button"
                             title={isEn ? 'Undo last played die (Ctrl+Z)' : 'Annuler le dernier dé joué (Ctrl+Z)'}
                             onClick={(e) => { e.stopPropagation(); void impactLight(); onUndo(); }}
-                            className="rounded-full border border-[#d4af37]/30 bg-[#18130e] h-[24px] sm:h-[26px] max-h-[28px] px-2.5 py-0 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#f7f3e8] shadow-inner transition hover:border-[#d4af37] hover:text-white active:scale-95 flex items-center justify-center whitespace-nowrap touch-manipulation leading-none"
+                            className="rounded-full border border-[#d4af37]/30 bg-[#18130e] h-[24px] sm:h-[26px] max-h-[28px] px-2.5 py-0 text-xs font-bold uppercase tracking-wider text-[#f7f3e8] shadow-inner transition hover:border-[#d4af37] hover:text-white active:scale-95 flex items-center justify-center whitespace-nowrap touch-manipulation leading-none"
                         >
                             {isEn ? '↶ Undo' : '↶ Annuler'}
                         </button>
@@ -269,7 +269,7 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                             title={isEn ? 'Confirm turn (Space / Enter)' : 'Confirmer le tour (Espace / Entrée)'}
                             onClick={(e) => { e.stopPropagation(); void impactMedium(); onConfirm(); }}
                             disabled={!canConfirm}
-                            className="rounded-full border border-amber-300 bg-gradient-to-r from-amber-400 to-amber-500 h-[24px] sm:h-[26px] max-h-[28px] px-3 py-0 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_12px_rgba(245,158,11,0.35)] transition hover:brightness-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 flex items-center justify-center whitespace-nowrap touch-manipulation leading-none"
+                            className="rounded-full border border-amber-300 bg-gradient-to-r from-amber-400 to-amber-500 h-[24px] sm:h-[26px] max-h-[28px] px-3 py-0 text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_12px_rgba(245,158,11,0.35)] transition hover:brightness-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 flex items-center justify-center whitespace-nowrap touch-manipulation leading-none"
                         >
                             {isEn ? '✓ Confirm' : '✓ Valider'}
                         </button>

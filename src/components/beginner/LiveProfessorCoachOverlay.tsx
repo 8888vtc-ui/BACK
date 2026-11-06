@@ -162,13 +162,13 @@ export function LiveProfessorCoachOverlay({
             </span>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-black uppercase tracking-wider text-[10px] text-[#D4AF37]">
+                <span className="font-black uppercase tracking-wider text-xs text-[#D4AF37]">
                   {lang === 'fr' ? 'PROFESSEUR INTERACTIF' : 'INTERACTIVE PROFESSOR'}
                 </span>
                 {showMasterBadge && (
                   <span
                     data-testid="master-move-badge"
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/30 to-amber-600/30 border border-[#D4AF37]/60 text-[#f3d27a] font-bold text-[10px] shadow-sm animate-pulse"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/30 to-amber-600/30 border border-[#D4AF37]/60 text-[#f3d27a] font-bold text-xs shadow-sm animate-pulse"
                   >
                     <Award className="w-3 h-3 text-[#D4AF37]" />
                     <span>{lang === 'fr' ? '✨ Coup de Maître ! (+50 PTS)' : '✨ Master Move! (+50 PTS)'}</span>
@@ -242,14 +242,14 @@ export function LiveProfessorCoachOverlay({
 
         {/* Ligne 2 : Indicateur de Course dynamique épuré */}
         <div className="flex flex-col gap-1.5 pt-1.5 border-t border-[#D4AF37]/20">
-          <div className="flex items-center justify-between text-[11px] text-stone-300 bg-black/30 px-2 py-1 rounded-md border border-white/5">
+          <div className="flex items-center justify-between text-xs text-stone-300 bg-black/30 px-2 py-1 rounded-md border border-white/5">
             <span className="font-medium text-[#f3d27a]">
               {getRaceCompassText()}
             </span>
             <button
               type="button"
               onClick={() => setIsGuideOpen(true)}
-              className="text-[#D4AF37] hover:underline text-[10px] shrink-0 ml-2"
+              className="text-[#D4AF37] hover:underline text-xs shrink-0 ml-2"
             >
               {lang === 'fr' ? 'Aide déplacements ?' : 'Movement help?'}
             </button>

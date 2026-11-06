@@ -50,7 +50,7 @@ export interface DrillHeaderProps {
     readonly onClose?: () => void;
 }
 
-const BACK_BTN_CLS = 'inline-flex items-center gap-1 rounded-lg border border-[#D4AF37]/50 bg-[#050505] px-2 py-1 text-[11px] font-extrabold text-[#D4AF37] hover:border-[#D4AF37] hover:text-white transition shadow shrink-0';
+const BACK_BTN_CLS = 'inline-flex items-center gap-1 rounded-lg border border-[#D4AF37]/50 bg-[#050505] px-2 py-1 text-xs font-extrabold text-[#D4AF37] hover:border-[#D4AF37] hover:text-white transition shadow shrink-0';
 
 export const DrillHeader: React.FC<DrillHeaderProps> = ({
     stats, adaptiveProfile, activeCategoryId, adaptiveReasonLabel,
@@ -98,11 +98,11 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                         </span>
                     </h1>
                     {isBeginner && (
-                        <span data-testid="beginner-friendly-badge" className="rounded border border-emerald-400/40 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
+                        <span data-testid="beginner-friendly-badge" className="rounded border border-emerald-400/40 bg-emerald-950/70 px-1.5 py-0.5 font-mono text-xs font-bold text-emerald-300">
                             {isEn ? 'Beginner Accuracy: Simple & Clear' : 'Précision Débutant : Simple & Efficace'}
                         </span>
                     )}
-                    <span data-testid="quiz-attempts-counter" title="2 essais maximum par position (Active Recall / 2e Chance)" className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 font-mono text-[10px] font-black ${attemptsLeft === 2 ? 'border-emerald-400/40 bg-emerald-950/50 text-emerald-200' : attemptsLeft === 1 ? 'border-amber-400/50 bg-amber-950/60 text-amber-200' : 'border-rose-400/50 bg-rose-950/60 text-rose-200'}`}>
+                    <span data-testid="quiz-attempts-counter" title="2 essais maximum par position (Active Recall / 2e Chance)" className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 font-mono text-xs font-black ${attemptsLeft === 2 ? 'border-emerald-400/40 bg-emerald-950/50 text-emerald-200' : attemptsLeft === 1 ? 'border-amber-400/50 bg-amber-950/60 text-amber-200' : 'border-rose-400/50 bg-rose-950/60 text-rose-200'}`}>
                         <span>{isEn ? 'Tries:' : 'Essais :'} {attemptsLeft}/{maxAttempts}</span><span>{heartsDisplay}</span>
                     </span>
                 </div>
@@ -113,7 +113,7 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                         onClick={!authenticStats.canHavePR ? openTermsAndPrPolicyModal : undefined}
                         data-testid="quiz-target-metric-badge"
                         title="ER / PR : Error Rate / Performance Rating officiel (réservé aux comptes connectés — Clause CGU §4)"
-                        className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-2 py-0.5 font-mono text-[11px] font-black text-emerald-200"
+                        className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-2 py-0.5 font-mono text-xs font-black text-emerald-200"
                     >
                         {!authenticStats.canHavePR && <Lock className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />}
                         <span>
@@ -124,7 +124,7 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                                 : `ER / PR : ${erPrScore.toFixed(1)}`}
                         </span>
                     </button>
-                    <span data-testid="quiz-nplus1-target-badge" title={targetBadgeText} className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#D4AF37]">
+                    <span data-testid="quiz-nplus1-target-badge" title={targetBadgeText} className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-xs font-black text-[#D4AF37]">
                         <Target className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
                         <span>
                             {!authenticStats.canHavePR
@@ -132,14 +132,14 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                                 : targetBadgeText}
                         </span>
                     </span>
-                    <span data-testid="quiz-elo-rating-badge" className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-white/15 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#fdf8eb]">
+                    <span data-testid="quiz-elo-rating-badge" className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-white/15 bg-[#050505] px-2 py-0.5 font-mono text-xs font-black text-[#fdf8eb]">
                         {!authenticStats.canHavePR
                             ? (isEn ? 'Elo: Account required' : 'Elo : Compte requis')
                             : `Rating : ${liveRatingValue}`}
                         <span className="sr-only">{authenticStats.canHavePR ? `Niveau ER : ${liveRatingValue}` : ''}</span>
                     </span>
                     {authenticStats.canHavePR && activeTenthsDelta !== 0 && (
-                        <span data-testid="quiz-live-rating-delta" className={`inline-flex items-center shrink-0 whitespace-nowrap rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black transition-all ${isImprovedTenths ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-300' : 'border-rose-400/60 bg-rose-500/20 text-rose-300'}`}>
+                        <span data-testid="quiz-live-rating-delta" className={`inline-flex items-center shrink-0 whitespace-nowrap rounded-md border px-1.5 py-0.5 font-mono text-xs font-black transition-all ${isImprovedTenths ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-300' : 'border-rose-400/60 bg-rose-500/20 text-rose-300'}`}>
                             {isImprovedTenths ? `▼ ${activeTenthsDelta.toFixed(1)} (${isEn ? 'Progress' : 'Progression'})` : `▲ +${activeTenthsDelta.toFixed(1)} (${isEn ? 'Mistake' : 'Erreur'})`}
                             <span className="sr-only">{liveRatingDelta > 0 ? `+${liveRatingDelta}` : `${liveRatingDelta}`}</span>
                         </span>
@@ -154,7 +154,7 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                             type="button"
                             data-testid="drill-mode-tab-personal"
                             onClick={() => onSelectDrillMode(drillMode === 'personal_blunders' ? 'adaptive' : 'personal_blunders')}
-                            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-black transition ${
+                            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-xs font-black transition ${
                                 drillMode === 'personal_blunders'
                                     ? 'border-amber-400 bg-amber-500/20 text-amber-300'
                                     : 'border-white/15 bg-[#050505] text-[#fdf8eb]/80 hover:border-amber-400/50 hover:text-amber-300'

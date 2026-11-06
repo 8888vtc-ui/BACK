@@ -65,7 +65,7 @@ export const OpeningVisualBoard: React.FC<OpeningVisualBoardProps> = React.memo(
 
   return (
     <div data-testid="opening-visual-board" className="flex flex-col items-center w-full">
-      <div className="flex items-center justify-between w-full px-3 py-1 text-[11px] font-bold text-amber-300/90 tracking-wide">
+      <div className="flex items-center justify-between w-full px-3 py-1 text-xs font-bold text-amber-300/90 tracking-wide">
         <span className="flex items-center gap-1.5 opacity-75">
           <span>←</span><span>{isEn ? 'Middle Table' : 'Milieu du Plateau'}</span>
         </span>
@@ -169,7 +169,7 @@ export const OpeningVisualBoard: React.FC<OpeningVisualBoardProps> = React.memo(
       </div>
 
       <div className="flex items-center justify-between w-full px-3 py-1.5 mt-1">
-        <span className="flex items-center gap-1.5 text-[11px] font-black text-emerald-300 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-500/20">
+        <span className="flex items-center gap-1.5 text-xs font-black text-emerald-300 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-500/20">
           <Home className="w-3.5 h-3.5" /><span>{isEn ? 'Your Home (Exit)' : 'Votre Maison (Sortie)'}</span>
         </span>
 
