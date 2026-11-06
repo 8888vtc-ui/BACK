@@ -47,7 +47,7 @@ export const BEGINNER_MASTER_GUIDE_CHAPTERS: GuideChapterSection[] = [
     summaryEn: 'Travel the board from point 24 to point 1 to bring all checkers safely home.',
     paragraphsFr: [
       'Le plateau compte 24 flèches triangulaires. Vos 15 pions démarrent répartis sur le plateau et cheminent en fer à cheval vers Votre Maison (zone d\'arrivée).',
-      'Un pion seul sur une flèche est un "blot" : s\'il est frappé par un pion adverse, il est banni sur la barre centrale et perd un temps précieux.',
+      'Un pion seul sur une flèche est un pion isolé vulnérable : s\'il est frappé par un pion adverse, il est banni sur la barre centrale et perd un temps précieux.',
       'Deux pions ou plus sur la même case forment une "porte" : un bastion imprenable où l\'adversaire ne peut ni vous frapper, ni poser le moindre pion. En fermant plusieurs portes successives, vous créez un Prime : une muraille totale.',
     ],
     paragraphsEn: [
@@ -134,7 +134,7 @@ export const BEGINNER_MASTER_GUIDE_CHAPTERS: GuideChapterSection[] = [
     paragraphsFr: [
       "1. La Table des 36 Lancers : Avec deux dés à 6 faces, il y a 6 × 6 = 36 combinaisons possibles. Les champions ne devinent rien : ils calculent combien de lancers parmi les 36 permettent d'atteindre leur objectif ou menacent leur adversaire.",
       "2. La Porte 5 d'Or : C'est la flèche la plus puissante du plateau. Fermez la flèche 5 adverse ou la vôtre dès que vos dés l'autorisent pour confisquer les meilleurs lancers de l'autre camp.",
-      "3. Deux par deux : Ne laissez jamais un pion seul (blot) à portée directe de frappe (distance 1 à 6, très fréquente parmi les 36 lancers) sans une compensation majeure.",
+      "3. Deux par deux : Ne laissez jamais un pion seul et isolé à portée directe de frappe (distance 1 à 6, très fréquente parmi les 36 lancers) sans une compensation majeure.",
       "4. Attaquez pour gagner du temps : Frapper un pion adverse le renvoie sur la barre centrale et vous fait gagner un tour complet.",
       "5. Gardez votre calme face aux dés : Sur 36 lancers, les séries chanceuses s'équilibrent toujours. C'est votre régularité stratégique qui fera craquer l'adversaire.",
     ],

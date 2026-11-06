@@ -69,8 +69,8 @@ export const BEGINNER_5_VIDEOS_PLAYLIST: BeginnerVideoEpisode[] = [
         id: "e2-1",
         startSec: 0,
         durationSec: 9,
-        frText: "Quand un pion adverse est tout seul sur une flèche, c'est un 'blot' : une cible facile !",
-        enText: "When an opponent checker stands alone on a point, it is a blot: an easy target!",
+        frText: "Quand un pion adverse est tout seul sur une flèche, il est vulnérable : vous pouvez le frapper !",
+        enText: "When an opponent checker stands alone on a point, it is vulnerable: you can hit it!",
         highlightPoints: [20],
       },
       {
