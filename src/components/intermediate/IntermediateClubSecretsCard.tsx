@@ -154,9 +154,9 @@ export function IntermediateClubSecretsCard({
             type="button"
             data-testid="club-secrets-voice-btn"
             onClick={() => handleSpeak(lang === 'fr' ? current.audioFr : current.audioEn)}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold hover:bg-amber-500/30 transition"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/10 bg-white/[0.04] text-zinc-200 text-xs font-semibold hover:bg-white/[0.08] hover:text-white transition"
           >
-            <Volume2 className="w-3.5 h-3.5" />
+            <Volume2 className="w-3.5 h-3.5 text-zinc-300" strokeWidth={1.5} />
             <span>{lang === 'fr' ? 'Écouter' : 'Listen'}</span>
           </button>
         </div>
@@ -181,11 +181,11 @@ export function IntermediateClubSecretsCard({
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl border text-xs font-semibold transition active:scale-95 ${
                 isSel
-                  ? 'bg-white/10 text-[#D4AF37] border border-[#D4AF37]/50 shadow-sm'
-                  : 'bg-white/[0.03] text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white'
+                  ? 'bg-white/[0.07] border-white/20 text-white shadow-sm'
+                  : 'bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:bg-white/[0.06] hover:text-white'
               }`}
             >
-              <t.icon className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
+              <t.icon className={`w-4 h-4 ${isSel ? 'text-[#D4AF37]' : 'text-zinc-400'}`} strokeWidth={1.5} />
               <span className="truncate">{lang === 'fr' ? t.labelFr : t.labelEn}</span>
             </button>
           );

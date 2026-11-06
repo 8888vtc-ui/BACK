@@ -112,9 +112,8 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
         <>
             <aside
                 aria-label="Menu latéral principal" data-testid="lobby-left-sidebar"
-                className={`hidden lg:flex flex-col justify-between shrink-0 border-r border-white/[0.06] bg-[#0B0E14]/90 backdrop-blur-md py-4 transition-all duration-200 select-none overflow-y-auto ${
-                    collapsed ? 'w-16 px-2 items-center' : 'w-60 px-3'
-                }`}
+                className={`hidden lg:flex flex-col justify-between shrink-0 border-r border-white/[0.06] bg-[#0B0E14]/90 backdrop-blur-md py-4 transition-all duration-200 select-none overflow-y-auto ${collapsed ? 'w-16 px-2 items-center' : 'w-60 px-3'
+                    }`}
             >
                 <div className="flex flex-col gap-3.5 w-full">
                     {/* BLOC 1 : TABLES DE JEU & MATCHMAKING PERMANENT */}
@@ -211,7 +210,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 <Link href="/puzzles?filter=personal-blunders" data-testid="sidebar-my-blunders-link" className={itemCls}>
                                     <span className="flex items-center gap-2.5 truncate">
                                         <Flame size={16} strokeWidth={1.5} className="text-[#F59E0B] shrink-0" />
-                                        {!collapsed && <span className="truncate">{isEn ? 'My Blunders' : 'Mes Blunders'}</span>}
+                                        {!collapsed && <span className="truncate">{isEn ? 'My Blunders' : 'Mes Erreurs (Blunders)'}</span>}
                                     </span>
                                     {renderBlundersTrailing()}
                                 </Link>

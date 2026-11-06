@@ -47,13 +47,13 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
       {/* BLOC 1 — LANCEMENT DE PARTIE IMMÉDIAT (PRIORITÉ N°1 DU JOUEUR DE CLUB) */}
       <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-3.5 sm:p-4 flex flex-col gap-2.5">
         <div className="flex flex-col gap-1">
-          <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 whitespace-nowrap min-w-0">
+          <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 whitespace-nowrap shrink-0">
               <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a] shrink-0">
                 <Swords size={15} />
               </span>
-              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb] whitespace-nowrap truncate">
-                {isEn ? 'Play Online — Find Immediate Opponent' : 'Jouer en Ligne — Trouver un Adversaire Immédiat'}
+              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb] whitespace-nowrap">
+                {isEn ? 'Play Online — Club Match' : 'Jouer en Ligne — Match de Club'}
               </h3>
               <span
                 data-testid="intermediate-matchmaking-badge"
@@ -123,19 +123,26 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
             type="button"
             data-testid="intermediate-play-btn"
             onClick={handlePlayNow}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-black shadow-lg hover:brightness-105 active:scale-95 transition"
+            className="w-full h-14 inline-flex flex-col items-center justify-center rounded-xl bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-2 text-black shadow-lg hover:brightness-105 active:scale-95 transition"
           >
-            <Swords size={16} className="text-black" />
-            <span>{isEn ? 'FIND A PLAYER ONLINE (IMMEDIATE MATCH) →' : 'TROUVER UN JOUEUR EN LIGNE (MATCH IMMÉDIAT) →'}</span>
+            <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap">
+              <Swords size={16} className="text-black shrink-0" />
+              <span>{isEn ? 'FIND AN ONLINE OPPONENT (PLAY NOW) →' : 'TROUVER UN ADVERSAIRE EN LIGNE →'}</span>
+            </span>
+            <span className="text-[11px] font-medium opacity-80 whitespace-nowrap">
+              {isEn
+                ? `${selectedFormat === 0 ? 'Money Game' : `${selectedFormat}-pt Match`} • Calibrated Club Opponent`
+                : `${selectedFormat === 0 ? 'Partie Libre' : `Match ${selectedFormat} pts`} • Adversaire de Club calibré`}
+            </span>
           </button>
 
           <button
             type="button"
             data-testid="intermediate-invite-btn"
             onClick={onInviteFriend}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.06] hover:bg-white/[0.1] px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-white transition active:scale-95"
+            className="w-full h-14 inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.06] hover:bg-white/[0.1] px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-white transition active:scale-95 whitespace-nowrap"
           >
-            <Share2 size={15} />
+            <Share2 size={16} className="shrink-0" />
             <span>{isEn ? 'INVITE A FRIEND — 1-CLICK LINK (< 3S)' : 'INVITER UN AMI — LIEN 1-CLIC (< 3S)'}</span>
           </button>
         </div>
