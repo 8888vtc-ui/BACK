@@ -32,6 +32,9 @@ export function BeginnerAcademyFlow({
         if (params.get('step') === 'quiz' || params.get('tab') === 'quiz' || params.get('mode') === 'beginner-academy') {
           setViewState('QUIZ');
         }
+        document.title = lang === 'fr'
+          ? "Académie d'Initiation — Backgammon Tour"
+          : 'Beginner Academy — Backgammon Tour';
       }
       const saved = localStorage.getItem('bgtour_beginner_academy_progress');
       if (saved) {
@@ -40,7 +43,7 @@ export function BeginnerAcademyFlow({
         if (Array.isArray(parsed.completedQuizIds)) setCompletedQuizIds(parsed.completedQuizIds);
       }
     } catch {}
-  }, []);
+  }, [lang]);
 
   const saveProgress = (points: number, quizIds: number[]) => {
     try { localStorage.setItem('bgtour_beginner_academy_progress', JSON.stringify({ scorePoints: points, completedQuizIds: quizIds })); } catch {}
@@ -95,12 +98,12 @@ export function BeginnerAcademyFlow({
           ← {lang === 'fr' ? 'Retour Accueil' : 'Back to Home'}
         </button>
 
-        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
+        <div className="flex items-center gap-1 bg-white/[0.04] p-1 rounded-xl border border-white/10">
           <button
             type="button"
             data-testid="academy-tab-videos"
             onClick={() => setViewState('VIDEO')}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition ${viewState === 'VIDEO' ? 'bg-[#D4AF37] text-black shadow' : 'text-neutral-400 hover:text-white'}`}
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition ${viewState === 'VIDEO' ? 'bg-white/[0.12] text-white border border-[#D4AF37]/50 shadow-sm' : 'text-neutral-400 hover:text-white'}`}
           >
             {lang === 'fr' ? '5 Vidéos' : '5 Videos'}
           </button>
@@ -108,19 +111,15 @@ export function BeginnerAcademyFlow({
             type="button"
             data-testid="academy-tab-quizzes"
             onClick={() => { setViewState('QUIZ'); setSelectedOptionId(null); }}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition ${viewState === 'QUIZ' || viewState === 'DIPLOMA' ? 'bg-[#D4AF37] text-black shadow' : 'text-neutral-400 hover:text-white'}`}
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition ${viewState === 'QUIZ' || viewState === 'DIPLOMA' ? 'bg-white/[0.12] text-white border border-[#D4AF37]/50 shadow-sm' : 'text-neutral-400 hover:text-white'}`}
           >
             {lang === 'fr' ? '10 Leçons / Quiz' : '10 Lessons / Quizzes'}
           </button>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span data-testid="academy-score-badge">{scorePoints.toLocaleString()} PTS</span>
-          </div>
-          <div className="hidden sm:block text-xs text-neutral-400">
-            {completedQuizIds.length} / 10 {lang === 'fr' ? 'Quiz réussis' : 'Quizzes passed'}
+          <div data-testid="academy-score-badge" className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/[0.03] border border-white/10 text-zinc-300 text-xs font-mono font-semibold">
+            <span>{completedQuizIds.length} / 10 {lang === 'fr' ? 'validés' : 'passed'} • +{scorePoints.toLocaleString()} PTS</span>
           </div>
         </div>
       </div>
@@ -148,12 +147,12 @@ export function BeginnerAcademyFlow({
             {currentQuiz.options.map((opt) => {
               const isSelected = selectedOptionId === opt.id;
               const btnStyle = !selectedOptionId
-                ? 'bg-white/5 border-white/10 text-neutral-200 hover:bg-white/10'
+                ? 'bg-white/[0.03] border-white/[0.08] text-zinc-200 hover:border-white/20 hover:bg-white/[0.06]'
                 : opt.isCorrect
                 ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md shadow-emerald-500/10'
                 : isSelected
                 ? 'bg-rose-500/20 border-rose-500 text-rose-300'
-                : 'bg-white/5 border-white/10 text-neutral-200';
+                : 'bg-white/[0.02] border-white/[0.06] text-zinc-400 opacity-60';
 
               return (
                 <button

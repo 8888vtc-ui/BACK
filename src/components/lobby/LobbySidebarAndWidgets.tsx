@@ -148,7 +148,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         <button
                             type="button" data-testid="sidebar-find-player-btn" onClick={handleFindPlayerClick}
                             title={isEn ? 'Find a Player' : 'Trouver un joueur'}
-                            className="h-9 flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 text-zinc-100 hover:bg-white/[0.04] hover:text-white transition-all duration-150"
+                            className="h-9 flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 bg-transparent border-transparent text-zinc-100 hover:bg-white/[0.04] hover:text-white transition-all duration-150"
                         >
                             <span className="flex items-center gap-2.5 truncate">
                                 <Users className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />

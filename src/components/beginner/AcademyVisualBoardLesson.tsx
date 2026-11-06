@@ -74,14 +74,21 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 1. SENS DE CIRCULATION EN FER À CHEVAL */}
         {quizId === 1 && (
           <g>
-            {/* 2 Pions blancs au départ sur la case 24 (en haut à droite) */}
-            <circle cx="516" cy="22" r="14" fill="#ffffff" stroke="#D4AF37" strokeWidth="2" filter="url(#lesson-gold-glow)" />
-            <circle cx="516" cy="48" r="14" fill="#ffffff" stroke="#D4AF37" strokeWidth="2" filter="url(#lesson-gold-glow)" />
-            <text x="516" y="76" fill="#F3E5AB" fontSize="9" fontWeight="bold" textAnchor="middle">
-              {isEn ? 'Start: Pt 24' : 'Départ : Case 24'}
-            </text>
+            {/* 2 Pions blancs au départ sur la case 24 (en haut à droite) - dessin horloger sobre */}
+            <circle cx="516" cy="22" r="14" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1.5" />
+            <circle cx="516" cy="22" r="8" fill="none" stroke="#D4AF37" strokeWidth="0.75" opacity="0.6" />
+            <circle cx="516" cy="48" r="14" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1.5" />
+            <circle cx="516" cy="48" r="8" fill="none" stroke="#D4AF37" strokeWidth="0.75" opacity="0.6" />
 
-            {/* Belle courbe dorée fluide en fer à cheval sans superposition */}
+            {/* Pilule fond sombre sous l'étiquette Départ */}
+            <g transform="translate(516, 76)">
+              <rect x="-42" y="-10" width="84" height="18" rx="6" fill="#090B10" fillOpacity="0.88" stroke="#D4AF37" strokeWidth="0.75" />
+              <text x="0" y="3" fill="#F3E5AB" fontSize="9" fontWeight="bold" textAnchor="middle">
+                {isEn ? 'Start: Pt 24' : 'Départ : Case 24'}
+              </text>
+            </g>
+
+            {/* Belle courbe dorée fluide en fer à cheval */}
             <path
               d="M 498 48 L 44 48 C 10 48 10 220 44 220 L 460 220"
               fill="none"
@@ -91,9 +98,14 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
               markerEnd="url(#lesson-arrow-gold)"
               filter="url(#lesson-gold-glow)"
             />
-            <text x="280" y="32" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">
-              {isEn ? 'Chemin en Fer à Cheval (Case 24 → Case 1)' : 'Chemin en Fer à Cheval (Case 24 → Case 1)'}
-            </text>
+
+            {/* Pilule fond sombre sous l'étiquette Chemin */}
+            <g transform="translate(280, 32)">
+              <rect x="-140" y="-12" width="280" height="22" rx="6" fill="#090B10" fillOpacity="0.88" stroke="#D4AF37" strokeWidth="0.75" />
+              <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">
+                {isEn ? 'Chemin en Fer à Cheval (Case 24 → Case 1)' : 'Chemin en Fer à Cheval (Case 24 → Case 1)'}
+              </text>
+            </g>
           </g>
         )}
 

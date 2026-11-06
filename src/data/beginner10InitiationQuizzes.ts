@@ -36,8 +36,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "✨ Suivre la grande flèche dorée en fer à cheval jusqu'à Votre Maison (en bas à droite)",
-        labelEn: "✨ Follow the golden horseshoe arrow all the way to Your Home (bottom right)",
+        labelFr: "Suivre la grande flèche dorée en fer à cheval jusqu'à Votre Maison (en bas à droite)",
+        labelEn: "Follow the golden horseshoe arrow all the way to Your Home (bottom right)",
         explanationFr: "Exact ! Vos pions font toujours le tour en fer à cheval jusqu'à votre Maison d'arrivée.",
         explanationEn: "Correct! Your checkers always journey in a horseshoe path right into your Home Board.",
       },
@@ -67,8 +67,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "🏆 En amenant ses 15 pions dans sa Maison, puis en les sortant tous du plateau en premier",
-        labelEn: "🏆 By bringing all 15 checkers into Home, then bearing them all off first",
+        labelFr: "En amenant ses 15 pions dans sa Maison, puis en les sortant tous du plateau en premier",
+        labelEn: "By bringing all 15 checkers into Home, then bearing them all off first",
         explanationFr: "Bravo ! Le premier joueur qui sort ses 15 pions remporte la manche.",
         explanationEn: "Bravo! The first player to bear off all 15 checkers wins the game.",
       },
@@ -98,8 +98,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "🛡️ En plaçant au moins 2 pions de votre couleur sur la même pointe pour former une Porte",
-        labelEn: "🛡️ By placing at least 2 checkers of your color on the same point to form a Gate",
+        labelFr: "En plaçant au moins 2 pions de votre couleur sur la même pointe pour former une Porte",
+        labelEn: "By placing at least 2 checkers of your color on the same point to form a Gate",
         explanationFr: "Parfait ! Une Porte (2 pions ou plus) forme un bouclier imprenable.",
         explanationEn: "Perfect! A Gate (2 or more checkers) creates an impenetrable shield.",
       },
@@ -129,8 +129,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "🛡️ Parce qu'il réunit deux pions ensemble pour créer un bouclier imprenable",
-        labelEn: "🛡️ Because it brings two checkers together to create an impassable shield",
+        labelFr: "Parce qu'il réunit deux pions ensemble pour créer un bouclier imprenable",
+        labelEn: "Because it brings two checkers together to create an impassable shield",
         explanationFr: "Exact ! Réunir 2 pions crée une nouvelle Porte sécurisée que l'adversaire ne peut attaquer.",
         explanationEn: "Exact! Combining 2 checkers makes a safe Gate that the opponent cannot attack.",
       },
@@ -160,8 +160,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "⚡ Vous le frappez ! Il est envoyé sur la Barre centrale et doit repartir de tout au début",
-        labelEn: "⚡ You hit it! It is sent to the Center Bar and must restart from the beginning",
+        labelFr: "Vous le frappez ! Il est envoyé sur la Barre centrale et doit repartir de tout au début",
+        labelEn: "You hit it! It is sent to the Center Bar and must restart from the beginning",
         explanationFr: "Magique ! Un pion adverse seul est expulsé sur la barre et perd toute son avance.",
         explanationEn: "Brilliant! An isolated opponent checker is sent to the bar and loses its race lead.",
       },
@@ -191,8 +191,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "🔓 Priorité absolue : vous devez d'abord faire rentrer ce pion sur une pointe libre en face avant de bouger tout autre pion",
-        labelEn: "🔓 Absolute priority: you must enter this checker onto an open point before moving any other",
+        labelFr: "Priorité absolue : vous devez d'abord faire rentrer ce pion sur une pointe libre en face avant de bouger tout autre pion",
+        labelEn: "Absolute priority: you must enter this checker onto an open point before moving any other",
         explanationFr: "Règle d'or : tant qu'un pion est sur la Barre, aucun autre pion sur le plateau ne peut avancer !",
         explanationEn: "Golden rule: while on the Bar, no other checker on the board can advance!",
       },
@@ -222,8 +222,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "🧱 Cela forme un mur continu que le pion adverse derrière ne peut plus sauter",
-        labelEn: "🧱 It forms a continuous wall that opposing checkers trapped behind cannot leap over",
+        labelFr: "Cela forme un mur continu que le pion adverse derrière ne peut plus sauter",
+        labelEn: "It forms a continuous wall that opposing checkers trapped behind cannot leap over",
         explanationFr: "Chef-d'œuvre tactique ! Un alignement de portes (Prime) emprisonne l'adversaire.",
         explanationEn: "Tactical masterpiece! A wall of gates (Prime) traps opposing checkers completely.",
       },
@@ -253,8 +253,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "⏳ Non, vos 15 pions doivent TOUS être arrivés dans votre Maison avant d'en sortir un seul",
-        labelEn: "⏳ No, all 15 of your checkers must be safely inside your Home before bearing off any",
+        labelFr: "Non, vos 15 pions doivent TOUS être arrivés dans votre Maison avant d'en sortir un seul",
+        labelEn: "No, all 15 of your checkers must be safely inside your Home before bearing off any",
         explanationFr: "Exactement ! La sortie (bear-off) est strictement interdite tant qu'un seul pion est dehors.",
         explanationEn: "Exactly! Bearing off is strictly forbidden as long as even a single checker remains outside.",
       },
@@ -284,8 +284,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "🔥 Vous gagnez le DOUBLE des points (2 points au lieu d'1) !",
-        labelEn: "🔥 You win DOUBLE points (2 points instead of 1)!",
+        labelFr: "Vous gagnez le DOUBLE des points (2 points au lieu d'1) !",
+        labelEn: "You win DOUBLE points (2 points instead of 1)!",
         explanationFr: "Victoire écrasante (Gammon) ! Sortir ses 15 pions avant le premier pion adverse rapporte le double.",
         explanationEn: "Crushing victory (Gammon)! Bearing off all 15 before the opponent bears off 1 awards double.",
       },
@@ -315,8 +315,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     options: [
       {
         id: "A", isCorrect: true,
-        labelFr: "🎲 À proposer de doubler les points de la manche quand votre stratégie vous donne l'avantage !",
-        labelEn: "🎲 To propose doubling the game stakes when your strategy gives you the advantage!",
+        labelFr: "À proposer de doubler les points de la manche quand votre stratégie vous donne l'avantage !",
+        labelEn: "To propose doubling the game stakes when your strategy gives you the advantage!",
         explanationFr: "Génie stratégique ! Le Videau permet de doubler la mise de la manche avant de lancer les dés.",
         explanationEn: "Strategic genius! The Doubling Cube doubles the match stakes before rolling dice.",
       },
