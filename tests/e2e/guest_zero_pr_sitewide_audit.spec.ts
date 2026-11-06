@@ -84,12 +84,11 @@ test.describe('Sitewide Audit: Zero PR/Elo for Guests & Official Terms Clause 4'
     // Switch back to FR
     await page.getByTestId('navbar-locale-toggle-btn').click();
 
-    // 4. Check /puzzles in Guest Mode: PR Verrouillé & Elo Compte requis
+    // 4. Check /puzzles in Guest Mode: Écran de verrouillage officiel GuestFeatureLockView
     await page.goto('/puzzles?lang=fr', { waitUntil: 'domcontentloaded' });
-    const drillHeader = page.getByTestId('quiz-live-rating-badge');
-    await expect(drillHeader).toBeVisible({ timeout: 15000 });
-    await expect(page.getByTestId('quiz-target-metric-badge')).toContainText('PR Verrouillé');
-    await expect(page.getByTestId('quiz-elo-rating-badge')).toContainText('Compte requis');
+    await expect(page.getByTestId('guest-feature-lock-view')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByTestId('unlock-personal-blunders-cta')).toContainText('SE CONNECTER / CRÉER MON COMPTE GRATUIT →');
+    await expect(page.getByTestId('guest-return-play-btn')).toContainText('Retourner jouer une partie');
 
     // 5. Check /analysis and /tournaments in Guest Mode: no "PR 7.25" or "1500 Elo" attributed to Guest
     for (const route of ['/analysis?lang=fr', '/tournaments?lang=fr']) {

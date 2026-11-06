@@ -46,9 +46,16 @@ function expandNotationTokens(notation: string): string {
     }).join(' ');
 }
 
-export default function BlunderDrillView({ initialConceptId, initialMode = 'adaptive', onClose }: BlunderDrillViewProps) {
-    const { theme } = useBoardTheme();
+export default function BlunderDrillView(props: BlunderDrillViewProps) {
     const authenticStats = useAuthenticPlayerStats();
+    if (!authenticStats.isAuthenticated) {
+        return <PersonalBlundersGuestLockView featureMode="quizzes" onUnlockedSuccess={authenticStats.refreshStats} />;
+    }
+    return <BlunderDrillActiveSession {...props} />;
+}
+
+function BlunderDrillActiveSession({ initialConceptId, initialMode = 'adaptive', onClose }: BlunderDrillViewProps) {
+    const { theme } = useBoardTheme();
     const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptivePlayerProfile>(() => getAdaptivePlayerProfile());
     const [stats, setStats] = useState<BlunderBankStats>(() => getBlunderBankStats());
     const [drillMode, setDrillMode] = useState<QuizDrillMode>(() => {
@@ -110,7 +117,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     }, [currentBlunder]);
 
     const applyValidationFeedback = useCallback((result: DrillValidationResult) => {
-        if (!authenticStats.isAuthenticated || !currentBlunder) return;
+        if (!currentBlunder) return;
         setValidationResult(result);
         setHoveredChoiceNotation(null);
         const isNearOptimal = result.verdict === 'acceptable' || (result.equityLoss > 0 && result.equityLoss <= 0.020);
@@ -137,7 +144,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             }
             setStats(getBlunderBankStats());
         }
-    }, [authenticStats.isAuthenticated, currentBlunder, recordAttempt, attemptsLeft, drillMode]);
+    }, [currentBlunder, recordAttempt, attemptsLeft, drillMode]);
 
     const boardState: BoardState = useMemo(() => ({
         board: validationResult && currentBlunder ? validatedInitialBoard : currentBoard,
@@ -233,22 +240,18 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             setCurrentBlunder(pick.quiz); setReasonLabel(pick.reasonLabel); setQuizStepCount(0);
         }
     };
-
     const handleNextBlunder = () => {
         if (!validationResult) return;
-        const exclude = currentBlunder ? [currentBlunder.id] : [];
-        const nextPick = drillMode === 'personal_blunders' ? selectNextPersonalBlunderQuiz(getAllBlunders(), exclude) : selectNextAdaptiveQuiz(getAllBlunders(), exclude);
+        const nextPick = drillMode === 'personal_blunders' ? selectNextPersonalBlunderQuiz(getAllBlunders(), currentBlunder ? [currentBlunder.id] : []) : selectNextAdaptiveQuiz(getAllBlunders(), currentBlunder ? [currentBlunder.id] : []);
         setCurrentBlunder(nextPick.quiz); setReasonLabel(nextPick.reasonLabel);
         setQuizStepCount((prev) => prev + 1); setStats(getBlunderBankStats()); impactLight();
     };
-
     const handleResetAllMastery = () => {
         resetAllBlunderMastery(); setAdaptiveProfile(resetAdaptivePlayerProfile());
         setHearts(5); setAttemptsLeft(2); setStreak(0);
         const nextPick = selectNextAdaptiveQuiz(getAllBlunders());
         setCurrentBlunder(nextPick.quiz); setReasonLabel(nextPick.reasonLabel);
-        setQuizStepCount(0); setStats(getBlunderBankStats());
-        toast.info('Votre profil adaptatif a été réinitialisé.');
+        setQuizStepCount(0); setStats(getBlunderBankStats()); toast.info('Votre profil adaptatif a été réinitialisé.');
     };
 
     const coachHighlight = useMemo(() => {
@@ -264,9 +267,6 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     const safeErScore = erPrScore ?? 6.3;
     const effectiveTargetQuizEr = currentBlunder ? (typeof currentBlunder.quizTargetER === 'number' ? currentBlunder.quizTargetER : Number((Math.max(0.5, safeErScore - 0.5)).toFixed(1))) : undefined;
 
-    if (!authenticStats.isAuthenticated) {
-        return <PersonalBlundersGuestLockView featureMode={drillMode === 'personal_blunders' ? 'personal_blunders' : 'quizzes'} onUnlockedSuccess={authenticStats.refreshStats} />;
-    }
     if (drillMode === 'personal_blunders') {
         return <PersonalBlundersNotebookView onSwitchToGeneralQuizzes={() => handleSelectDrillMode('pr_math')} />;
     }

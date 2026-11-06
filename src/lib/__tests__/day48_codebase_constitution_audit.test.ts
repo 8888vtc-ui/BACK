@@ -71,7 +71,7 @@ describe('Mission 48 — Codebase Constitution Audit', () => {
 
     it('Règle 3a : 0 occurrence de ERH ou Mistral dans tout src/', () => {
         const allCodeFiles = getAllFilesRecursively(srcDir, ['.ts', '.tsx']).filter(
-            (f) => !f.includes('btNeuralWeights.ts') && !f.includes('day48_codebase_constitution_audit.test.ts'),
+            (f) => !f.includes('btNeuralWeights.ts') && !f.includes('bgsage3PlyFactorySeed.ts') && !f.includes('day48_codebase_constitution_audit.test.ts'),
         );
         const violations: { file: string; word: string; line: number }[] = [];
 

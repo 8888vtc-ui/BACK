@@ -147,3 +147,4 @@ describe('Mission 1/25 — Verrou Central Invité & Coupe-circuit LocalStorage',
         expect(readLocalPlayerElo()).toBe(1620);
     });
 });
+
