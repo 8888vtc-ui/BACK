@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Volume2, Sparkles, Shield, Dices, EyeOff, Eye, Compass, Trophy } from 'lucide-react';
+import { Volume2, Dices, EyeOff, Eye, Compass, Trophy, Play } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 
 export interface IntermediateClubSecretsCardProps {
@@ -108,13 +108,13 @@ export function IntermediateClubSecretsCard({
   return (
     <div
       data-testid="intermediate-club-secrets-card"
-      className="w-full rounded-2xl border border-[#D4AF37]/35 bg-gradient-to-b from-[#141009] to-[#0a0d13] p-4 sm:p-5 shadow-xl text-white"
+      className="w-full bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-5 text-white"
     >
       {/* Header avec switcher vocal */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
         <div className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
-            <Trophy className="w-4 h-4 text-[#D4AF37]" />
+            <Trophy className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
           </span>
           <div>
             <h3 className="text-sm sm:text-base font-black text-[#fdf8eb]">
@@ -147,7 +147,7 @@ export function IntermediateClubSecretsCard({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 my-2.5">
         {(
           [
-            { id: 1, labelFr: '1. Le Videau', labelEn: '1. Doubling Cube', icon: Sparkles },
+            { id: 1, labelFr: '1. Le Videau', labelEn: '1. Doubling Cube', icon: Dices },
             { id: 2, labelFr: '2. Compter sans Pips', labelEn: '2. Count No Pips', icon: EyeOff },
             { id: 3, labelFr: '3. Pions Isolés /36', labelEn: '3. Blots on 36', icon: Dices },
             { id: 4, labelFr: '4. Plans de Jeu', labelEn: '4. Game Plans', icon: Compass },
@@ -160,22 +160,22 @@ export function IntermediateClubSecretsCard({
               type="button"
               data-testid={`club-key-tab-${t.id}`}
               onClick={() => setActiveTab(t.id)}
-              className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl border text-xs font-bold transition active:scale-95 ${
+              className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl border text-xs font-semibold transition active:scale-95 ${
                 isSel
-                  ? 'bg-gradient-to-r from-[#D4AF37] to-[#b88924] border-[#F3E5AB] text-slate-950 font-black shadow-md'
-                  : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10 hover:text-white'
+                  ? 'bg-white/10 text-[#D4AF37] border border-[#D4AF37]/50 shadow-sm'
+                  : 'bg-white/[0.03] text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white'
               }`}
             >
-              <t.icon className={`w-3.5 h-3.5 ${isSel ? 'text-slate-950' : 'text-amber-400'}`} />
+              <t.icon className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
               <span className="truncate">{lang === 'fr' ? t.labelFr : t.labelEn}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Contenu de la Clé sélectionnée avec bouton direct vers exercice */}
-      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 sm:p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex-1 min-w-0 space-y-1.5">
+      {/* Contenu épuré de la Clé sélectionnée dans un conteneur unifié léger */}
+      <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex-1 min-w-0 space-y-2">
           <div className="flex items-center justify-between gap-2">
             <div>
               <h4 className="text-xs sm:text-sm font-black text-amber-200">
@@ -201,13 +201,10 @@ export function IntermediateClubSecretsCard({
             )}
           </div>
 
-          <ul className="space-y-1">
+          <ul className="text-sm text-zinc-200 leading-relaxed space-y-2 pt-1">
             {(lang === 'fr' ? current.pointsFr : current.pointsEn).map((pt, idx) => (
-              <li
-                key={idx}
-                className="flex items-start gap-1.5 text-xs text-stone-200 bg-white/[0.02] border border-white/5 px-2.5 py-1.5 rounded-lg leading-snug"
-              >
-                <span className="text-[#D4AF37] font-bold shrink-0">•</span>
+              <li key={idx} className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-2 shrink-0" />
                 <span>{pt}</span>
               </li>
             ))}
@@ -219,9 +216,10 @@ export function IntermediateClubSecretsCard({
           <Link
             href="/puzzles?gate=intermediate"
             data-testid="club-secrets-practice-btn"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition whitespace-nowrap"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-[#D4AF37]/40 font-semibold px-5 py-2.5 text-xs sm:text-sm transition active:scale-95 whitespace-nowrap shadow-sm"
           >
-            <span>{lang === 'fr' ? "🎲 S'entraîner sur le Plateau →" : '🎲 Practice on Board →'}</span>
+            <Play className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
+            <span>{lang === 'fr' ? "S'entraîner sur le Plateau →" : 'Practice on Board →'}</span>
           </Link>
         </div>
       </div>

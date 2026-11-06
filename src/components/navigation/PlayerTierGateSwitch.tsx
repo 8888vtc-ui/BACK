@@ -10,9 +10,9 @@ interface PlayerTierGateSwitchProps {
 }
 
 const GATES: ReadonlyArray<{ readonly id: PlayerTierGate; readonly label: string; readonly badge: string }> = [
-    { id: 'BEGINNER', label: 'Débutant', badge: '🌱 Découverte' },
-    { id: 'INTERMEDIATE', label: 'Intermédiaire', badge: '♟️ Club' },
-    { id: 'EXPERT', label: 'Expert / Pro', badge: '🏆 3-Ply' },
+    { id: 'BEGINNER', label: 'Débutant', badge: 'Découverte' },
+    { id: 'INTERMEDIATE', label: 'Intermédiaire', badge: 'Club' },
+    { id: 'EXPERT', label: 'Expert / Pro', badge: '3-Ply' },
 ];
 
 export const PlayerTierGateSwitch: React.FC<PlayerTierGateSwitchProps> = React.memo(({
@@ -38,10 +38,10 @@ export const PlayerTierGateSwitch: React.FC<PlayerTierGateSwitchProps> = React.m
                         data-testid={`tier-gate-btn-${g.id.toLowerCase()}`}
                         onClick={() => onSelectGate(g.id)}
                         aria-pressed={isActive}
-                        className={`relative rounded-lg font-sans font-bold transition-all duration-150 touch-manipulation select-none whitespace-nowrap px-3 sm:px-3.5 py-1.5 text-sm sm:text-base ${
+                        className={`relative rounded-lg font-sans transition-all duration-150 touch-manipulation select-none whitespace-nowrap px-3 sm:px-3.5 py-1.5 text-sm sm:text-base ${
                             isActive
-                                ? 'bg-gradient-to-r from-[#D4AF37] to-[#b88924] text-slate-950 font-black shadow-[0_2px_10px_rgba(212,175,55,0.35)]'
-                                : 'text-stone-300 hover:text-white hover:bg-white/[0.04]'
+                                ? 'bg-white/10 text-[#D4AF37] border border-[#D4AF37]/50 font-semibold shadow-sm'
+                                : 'text-zinc-300 hover:text-white hover:bg-white/[0.04] border border-transparent'
                         }`}
                     >
                         <span>{g.label}</span>

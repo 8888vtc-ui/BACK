@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Swords, Share2, EyeOff, Eye } from 'lucide-react';
+import { Swords, Share2, EyeOff, Eye, Shield, Zap } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { IntermediateClubSecretsCard } from '../intermediate/IntermediateClubSecretsCard';
 
@@ -27,11 +27,12 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
   };
 
   return (
-    <div data-testid="intermediate-home-portal" className="flex flex-col gap-3.5 w-full max-w-5xl mx-auto py-2 px-1">
+    <div data-testid="intermediate-home-portal" className="flex flex-col gap-4 w-full max-w-5xl mx-auto py-3 px-1">
       {/* En-tête Club Compact */}
       <div className="flex flex-col gap-1 text-center sm:text-left px-1">
-        <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#f3c65f]">
-          {isEn ? '♟️ CLUB MODE · PRIORITY TO PLAY & DOUBLING CUBE' : '♟️ MODE INTERMÉDIAIRE / CLUB · PRIORITÉ AU JEU & VIDEAU'}
+        <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#D4AF37]">
+          <Shield className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
+          <span>{isEn ? 'CLUB MODE · PRIORITY TO PLAY & DOUBLING CUBE' : 'MODE INTERMÉDIAIRE / CLUB · PRIORITÉ AU JEU & VIDEAU'}</span>
         </span>
         <h2 className="text-lg sm:text-xl font-black text-white">
           {isEn ? 'Sharpen your club reflexes and crush blunders' : 'Affûtez vos réflexes de club et étouffez les erreurs'}
@@ -44,15 +45,16 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
       </div>
 
       {/* BLOC 1 — LANCEMENT DE PARTIE IMMÉDIAT (PRIORITÉ N°1 DU JOUEUR DE CLUB) */}
-      <div className="rounded-2xl border-2 border-[#D4AF37]/50 bg-gradient-to-b from-[#18130b] via-[#100d07] to-[#0a0d13] p-4 sm:p-5 shadow-[0_8px_32px_rgba(212,175,55,0.14)] flex flex-col gap-3">
+      <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-5 flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
                 <Swords size={18} />
               </span>
-              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb]">
-                {isEn ? '⚡ Immediate Club Game (Priority #1)' : '⚡ Lancement de Partie Immédiat (Priorité N°1)'}
+              <h3 className="inline-flex items-center gap-1.5 text-sm sm:text-base font-black text-[#fdf8eb]">
+                <Zap className="w-5 h-5 text-[#D4AF37]" strokeWidth={1.5} />
+                <span>{isEn ? 'Immediate Club Game (Priority #1)' : 'Lancement de Partie Immédiat (Priorité N°1)'}</span>
               </h3>
             </div>
             <p className="text-xs text-stone-300 mt-0.5">
@@ -79,8 +81,8 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
                   onClick={() => setSelectedFormat(fmt.id)}
                   className={`px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-bold transition active:scale-95 ${
                     active
-                      ? 'bg-[#D4AF37] border-[#F3E5AB] text-slate-950 font-black shadow-md'
-                      : 'bg-white/[0.04] border-white/10 text-stone-200 hover:bg-white/10 hover:text-white'
+                      ? 'bg-white/10 text-[#D4AF37] border border-[#D4AF37]/50 font-bold shadow-sm'
+                      : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {fmt.label}
@@ -115,9 +117,9 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
             type="button"
             data-testid="intermediate-play-btn"
             onClick={handlePlayNow}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] px-4 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-slate-950 shadow-lg hover:brightness-105 active:scale-95 transition"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-black shadow-lg hover:brightness-105 active:scale-95 transition"
           >
-            <Swords size={17} className="text-slate-950" />
+            <Swords size={17} className="text-black" />
             <span>{isEn ? 'PLAY NOW (CLUB OPPONENT) →' : 'JOUER MAINTENANT (ADVERSAIRE DE CLUB) →'}</span>
           </button>
 
