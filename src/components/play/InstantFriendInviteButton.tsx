@@ -13,6 +13,7 @@ import { useTranslation } from '../../i18n';
 
 export interface InstantFriendInviteButtonProps {
   readonly matchLength?: number;
+  readonly onCreateRoom?: (matchLength: number) => Promise<string>;
   readonly onInviteCreated?: (roomId: string, inviteUrl: string) => void;
   readonly isWaitingOpponent?: boolean;
   readonly onCancelInvite?: () => void;
@@ -28,6 +29,7 @@ export function buildInstantInviteUrl(roomCode: string, matchLength: number = 5)
 
 export const InstantFriendInviteButton: React.FC<InstantFriendInviteButtonProps> = ({
   matchLength = 5,
+  onCreateRoom,
   onInviteCreated,
   isWaitingOpponent = false,
   onCancelInvite,
@@ -40,14 +42,37 @@ export const InstantFriendInviteButton: React.FC<InstantFriendInviteButtonProps>
   const [currentCode, setCurrentCode] = useState<string>('');
   const [selectedLength, setSelectedLength] = useState<number>(matchLength);
 
-  const handleOpenModal = useCallback(() => {
-    const code = generateRoomCode();
-    setCurrentCode(code);
+  const handleOpenModal = useCallback(async () => {
+    let code = currentCode;
+    if (!code) {
+      if (onCreateRoom) {
+        try {
+          code = await onCreateRoom(selectedLength);
+        } catch {
+          code = generateRoomCode();
+        }
+      } else {
+        code = generateRoomCode();
+      }
+      setCurrentCode(code);
+    }
     setCopied(false);
     setIsOpen(true);
     const url = buildInstantInviteUrl(code, selectedLength);
     onInviteCreated?.(code, url);
-  }, [selectedLength, onInviteCreated]);
+  }, [currentCode, selectedLength, onCreateRoom, onInviteCreated]);
+
+  const handleSelectLength = useCallback(async (len: number) => {
+    setSelectedLength(len);
+    if (onCreateRoom) {
+      try {
+        const code = await onCreateRoom(len);
+        setCurrentCode(code);
+        const url = buildInstantInviteUrl(code, len);
+        onInviteCreated?.(code, url);
+      } catch { /* fallback */ }
+    }
+  }, [onCreateRoom, onInviteCreated]);
 
   const handleCopyLink = useCallback(async () => {
     const url = buildInstantInviteUrl(currentCode, selectedLength);
@@ -64,9 +89,12 @@ export const InstantFriendInviteButton: React.FC<InstantFriendInviteButtonProps>
 
   const handleClose = () => {
     setIsOpen(false);
-    if (isWaitingOpponent) {
-      onCancelInvite?.();
-    }
+  };
+
+  const handleCancelRoom = () => {
+    onCancelInvite?.();
+    setCurrentCode('');
+    setIsOpen(false);
   };
 
   return (
@@ -119,7 +147,7 @@ export const InstantFriendInviteButton: React.FC<InstantFriendInviteButtonProps>
                     key={len}
                     type="button"
                     data-testid={`invite-length-btn-${len}`}
-                    onClick={() => setSelectedLength(len)}
+                    onClick={() => handleSelectLength(len)}
                     className={`rounded-lg py-1.5 text-xs font-mono font-bold transition border ${
                       selectedLength === len
                         ? 'border-[#f3d27a] bg-[#d4af37]/20 text-white'
@@ -177,13 +205,23 @@ export const InstantFriendInviteButton: React.FC<InstantFriendInviteButtonProps>
                 <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
                 <span>{isEn ? 'Waiting for opponent...' : 'En attente de ton adversaire...'}</span>
               </div>
-              <button
-                type="button"
-                onClick={handleClose}
-                className="text-xs text-stone-400 hover:text-white underline"
-              >
-                {isEn ? 'Close' : 'Fermer'}
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  data-testid="invite-cancel-room-btn"
+                  onClick={handleCancelRoom}
+                  className="text-xs text-rose-400 hover:text-rose-300 underline"
+                >
+                  {isEn ? 'Cancel' : 'Annuler'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="text-xs text-stone-400 hover:text-white underline"
+                >
+                  {isEn ? 'Close' : 'Fermer'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

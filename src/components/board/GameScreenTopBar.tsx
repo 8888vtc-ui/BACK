@@ -99,6 +99,9 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                 <div className="shrink-0 whitespace-nowrap">
                     <InstantFriendInviteButton
                         matchLength={game.state.matchLength}
+                        onCreateRoom={(len) => multiplayer.createPrivateRoom(len)}
+                        onCancelInvite={multiplayer.cancelMatchmaking}
+                        isWaitingOpponent={Boolean(multiplayer.privateRoomCode && multiplayer.status === 'searching')}
                         className="shrink-0 whitespace-nowrap"
                     />
                 </div>

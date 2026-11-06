@@ -22,7 +22,7 @@ import { useGamePersistence } from '../hooks/useGamePersistence';
 import { useGameModals } from '../hooks/useGameModals';
 import { useOpeningAssistant } from '../hooks/useOpeningAssistant';
 import { useMatchBootstrap } from '../hooks/useMatchBootstrap';
-import { usePrivateRoomInvite } from '../hooks/usePrivateRoomInvite';
+import { usePrivateRoomInvite, extractRoomCodeFromUrl } from '../hooks/usePrivateRoomInvite';
 import { toast } from '../components/toast/ToastContext';
 import { notificationSuccess } from '../lib/capacitor/haptics';
 import { soundEngine } from '../lib/sound/soundEngine';
@@ -146,18 +146,13 @@ export default function Home() {
             if (multiplayer.matchInfo.localRole) setPlayerColor(multiplayer.matchInfo.localRole);
             const opp = multiplayer.opponentProfile;
             const isEn = locale === 'en';
-            const isGuestLocal = Boolean(multiplayer.localProfile.isGuest);
-            const matchMetaLabel = isGuestLocal
-                ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical')
-                : `${opp?.rating ?? 1500} Elo`;
+            const matchMetaLabel = multiplayer.localProfile.isGuest ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical') : `${opp?.rating ?? 1500} Elo`;
             const lenText = matchLen === 0 ? 'Money Game' : `${matchLen} pts`;
             if (multiplayer.matchInfo.isClubChallenger && opp) {
-                const challengerDiff = opp.clubBotDifficulty && opp.clubBotDifficulty !== 'beginner' ? opp.clubBotDifficulty : 'intermediate';
+                const diff = opp.clubBotDifficulty && opp.clubBotDifficulty !== 'beginner' ? opp.clubBotDifficulty : 'intermediate';
                 window.setTimeout(() => {
-                    game.startNewMatch(matchLen, challengerDiff);
-                    resetGameHistory(); modals.closeMatchmaking(); modals.closePrivateRoomModal();
-                    setAppScreen('GAME');
-                    window.setTimeout(() => { game.rollDice(); }, 180);
+                    game.startNewMatch(matchLen, diff); resetGameHistory(); modals.closeMatchmaking(); modals.closePrivateRoomModal();
+                    setAppScreen('GAME'); window.setTimeout(() => { game.rollDice(); }, 180);
                     toast.success(isEn ? `Match vs ${opp.displayName} (${matchMetaLabel}) — ${lenText}.` : `Match contre ${opp.displayName} (${matchMetaLabel}) en ${lenText}.`, isEn ? 'Opponent Found' : 'Adversaire Trouvé');
                 }, 1350);
                 return;
@@ -201,15 +196,18 @@ export default function Home() {
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !hasAutoStartedRef.current) {
+            const roomCode = extractRoomCodeFromUrl(window.location.search);
+            if (roomCode) {
+                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;
+                modals.openPrivateRoomModal(roomCode); return;
+            }
             const params = new URLSearchParams(window.location.search);
             const modeParam = params.get('mode');
-            if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1' || Boolean(params.get('room')) || Boolean(params.get('inviteRoom'))) {
+            if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1') {
                 hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true; modals.openMatchmaking();
-            } else if (params.get('start') === 'guided') {
-                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch();
-                handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
-            } else if (window.location.pathname.startsWith('/play')) {
+            } else if (params.get('start') === 'guided' || window.location.pathname.startsWith('/play')) {
                 hasAutoStartedRef.current = true;
+                if (params.get('start') === 'guided') { userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch(); }
                 handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
             }
         }

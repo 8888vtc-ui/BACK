@@ -83,6 +83,7 @@ function notifyMockSubscribers(room: GameRoomRecord): void {
     for (const sub of mockSubscribers) {
         if (sub.roomId === room.id) {
             sub.callbacks.onRoomStateChange(room);
+            if (room.status === 'in_progress') sub.callbacks.onPresenceChange(true);
         }
     }
 }
@@ -173,7 +174,8 @@ export async function createGameRoom(params: CreateRoomParams): Promise<GameRoom
  */
 export async function joinGameRoomByCode(params: JoinRoomParams): Promise<GameRoomRecord> {
     const { code, guest } = params;
-    const cleanCode = code.trim().toUpperCase();
+    let cleanCode = code.trim().toUpperCase().replace(/^BG_/, 'BG-');
+    if (!cleanCode.startsWith('BG-') && /^[2-9A-HJ-NP-Z]{4}$/i.test(cleanCode)) cleanCode = `BG-${cleanCode}`;
 
     if (!isSupabaseConfigured()) {
         const room = mockRoomsRegistry.get(cleanCode);
@@ -197,6 +199,7 @@ export async function joinGameRoomByCode(params: JoinRoomParams): Promise<GameRo
 
         mockRoomsRegistry.set(room.id, updatedRoom);
         mockRoomsRegistry.set(cleanCode, updatedRoom);
+        if (room.code) mockRoomsRegistry.set(room.code.toUpperCase(), updatedRoom);
         notifyMockSubscribers(updatedRoom);
         crossTabChannel?.postMessage(updatedRoom);
         return updatedRoom;
