@@ -180,7 +180,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                         type="button" data-testid="timeline-btn-live" onClick={onReturnToLive}
                         className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/45 bg-emerald-950/60 px-2 py-0.5 text-xs font-bold text-emerald-300"
                     >
-                        <span aria-hidden="true">🟢</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                         <span className="hidden sm:inline">Direct</span>
                     </button>
                 </div>
@@ -231,7 +231,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                             metrics.optimalStreak >= 3 ? 'border-amber-300/85 bg-gradient-to-r from-amber-600/35 to-emerald-600/35 text-amber-100' : 'border-emerald-500/50 bg-emerald-950/75 text-emerald-200'
                         }`}
                     >
-                        <span>{metrics.optimalStreak >= 3 ? '🔥' : '⚡'}</span>
+                        <span className="text-amber-400 font-bold">★</span>
                         <span>x{metrics.optimalStreak}</span>
                     </span>
                 )}
@@ -264,7 +264,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                         title={`Revanche contre ${rival.name}`}
                         className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-xs font-bold text-amber-300 hover:border-amber-400/50 transition active:scale-95"
                     >
-                        <span>🔥</span><span>{isEn ? 'Rematch' : 'Revanche'}</span>
+                        <span>Revanche</span>
                     </button>
                 )}
             </div>

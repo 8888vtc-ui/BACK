@@ -109,8 +109,8 @@ export function LiveProfessorCoachOverlay({
 
     if (activeBestNotation) {
       return lang === 'fr'
-        ? `💡 Conseil du Professeur : Joue ${activeBestNotation} pour faire avancer tes pions vers ta maison.`
-        : `💡 Professor Tip: Play ${activeBestNotation} to advance your checkers toward your home board.`;
+        ? `Conseil du Professeur : Joue ${activeBestNotation} pour faire avancer tes pions vers ta maison.`
+        : `Professor Tip: Play ${activeBestNotation} to advance your checkers toward your home board.`;
     }
     return lang === 'fr'
       ? "🎓 Le Professeur : C'est à ton tour ! Clique sur Lancer les dés au centre du plateau."
@@ -170,7 +170,7 @@ export function LiveProfessorCoachOverlay({
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/30 to-amber-600/30 border border-[#D4AF37]/60 text-[#f3d27a] font-bold text-xs shadow-sm animate-pulse"
                   >
                     <Award className="w-3 h-3 text-[#D4AF37]" />
-                    <span>{lang === 'fr' ? '✨ Coup de Maître ! (+50 PTS)' : '✨ Master Move! (+50 PTS)'}</span>
+                    <span>{lang === 'fr' ? 'Coup de Maître ! (+50 PTS)' : 'Master Move! (+50 PTS)'}</span>
                   </span>
                 )}
               </div>

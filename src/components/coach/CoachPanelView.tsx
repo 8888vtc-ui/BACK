@@ -110,7 +110,7 @@ const CoachPanelViewComponent: React.FC<CoachPanelViewProps> = ({
                             type="button" onClick={onToggleVoice} data-testid="coach-voice-toggle-btn"
                             aria-pressed={isVoiceEnabled} aria-label={isVoiceEnabled ? 'Voix Coach' : 'Voix muette'}
                             title={isVoiceEnabled ? 'Désactiver la voix du Coach' : 'Activer la voix du Coach'}
-                            className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[11px] font-bold transition active:scale-95 ${
+                            className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-xs font-bold transition active:scale-95 ${
                                 isVoiceEnabled ? 'border-amber-400/60 bg-amber-400/15 text-amber-300' : 'border-white/10 bg-slate-900 text-slate-400 hover:border-white/25 hover:text-slate-200'
                             }`}
                         >

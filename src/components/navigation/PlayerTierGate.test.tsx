@@ -75,13 +75,13 @@ describe('PlayerTierGate (3 Portes : Débutant | Intermédiaire | Expert)', () =
             />,
         );
         expect(clubHtml).toContain('intermediate-home-portal');
-        expect(clubHtml).toContain('JOUER MAINTENANT');
+        expect(clubHtml).toContain('intermediate-play-btn');
 
         const expertHtml = renderToStaticMarkup(
             <ExpertHomePortal onStartExpertMatch={() => {}} onOpen3PlyQuizzes={() => {}} />,
         );
         expect(expertHtml).toContain('expert-home-portal');
-        expect(expertHtml).toContain('Open Sage 3-Ply');
+        expect(expertHtml.toLowerCase()).toContain('open sage 3-ply');
     });
 });
 

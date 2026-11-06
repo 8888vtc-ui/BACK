@@ -187,6 +187,7 @@ const TournamentAgendaViewComponent: React.FC<TournamentAgendaViewProps> = ({
                                                 <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
                                                     <button
                                                         type="button"
+                                                        data-testid={`bookmark-tournament-${t.slug}`}
                                                         onClick={() => onToggleBookmark(t.id)}
                                                         className={`rounded p-1.5 text-xs transition border ${
                                                             isBookmarked

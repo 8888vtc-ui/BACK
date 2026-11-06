@@ -66,7 +66,7 @@ describe('Parcours Débutant Interactif — Apprendre les Règles en 5 Étapes +
         expect(playBtn.textContent).toContain('Pause Vidéo');
 
         const voiceBtn = screen.getByTestId('masterclass-voice-toggle-btn');
-        expect(voiceBtn.textContent).toContain('Voix-Off ON');
+        expect(voiceBtn.textContent).toContain('Voix-Off Active');
         fireEvent.click(voiceBtn);
         expect(voiceBtn.textContent).toContain('Muet');
     });

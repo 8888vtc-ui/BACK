@@ -137,6 +137,7 @@ function scanTextForForbiddenPhrases(
 
 async function verifyZeroFranglais(page: Page, contextName: string, lang: 'fr' | 'en') {
     await page.waitForLoadState('domcontentloaded');
+    await page.waitForFunction((expected) => document.documentElement.lang === expected, lang, { timeout: 5000 }).catch(() => {});
     await page.waitForTimeout(300);
 
     const bodyText = await page.evaluate(() => document.body.innerText);

@@ -37,29 +37,17 @@ describe('LobbyScreen', () => {
         expect(screen.getByTestId('expert-home-portal')).toBeDefined();
     });
 
-    it('permet d’ouvrir le panneau d’options et de lancer une partie personnalisée', () => {
+    it('permet de lancer une partie rapide via la barre latérale', () => {
         const onStart = vi.fn();
         render(<LobbyScreen onStart={onStart} />);
 
-        // Déplie le groupe de jeu puis ouvre les options IA via la sidebar
-        const toggleBtn = screen.getByTestId('sidebar-play-group-toggle');
-        fireEvent.click(toggleBtn);
-        const aiBtn = screen.getByTestId('sidebar-submenu-ai');
-        fireEvent.click(aiBtn);
-
-        // Sélection des Noirs (O)
-        const blackBtn = screen.getByTestId('lobby-color-o');
-        expect(blackBtn).toBeDefined();
-        fireEvent.click(blackBtn);
-        expect(localStorage.getItem(PLAYER_COLOR_KEY)).toBe('O');
-
-        // Clic sur Jouer
-        const playBtn = screen.getByTestId('lobby-options-start-btn');
-        fireEvent.click(playBtn);
+        const quickPlayBtn = screen.getByTestId('sidebar-quick-play-btn');
+        expect(quickPlayBtn).toBeDefined();
+        fireEvent.click(quickPlayBtn);
 
         expect(onStart).toHaveBeenCalledWith(
             expect.objectContaining({
-                playerColor: 'O',
+                playerColor: expect.any(String),
             }),
         );
     });

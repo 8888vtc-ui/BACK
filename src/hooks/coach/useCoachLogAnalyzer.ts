@@ -2,7 +2,8 @@ import { useEffect, useRef, type MutableRefObject } from 'react';
 import type { BoardState } from '../../engine/backgammonEngine';
 import { formatCoachMoveSequence, movesFromBoardDiff } from '../../features/coach/coachMoveNotation';
 import { soundEngine } from '../../lib/sound/soundEngine';
-import { analyzeHumanMoveFromLogWithBgsage, type CoachVerdict } from '../../features/coach/logAnalyzer';
+import * as logAnalyzer from '../../features/coach/logAnalyzer';
+import type { CoachVerdict } from '../../features/coach/logAnalyzer';
 import { handleBlunderAndDecisionRecording } from './coachBlunderRecorder';
 import { shouldNotify, type CoachNotificationLevel } from '../../features/coach/coachNotificationSettings';
 import {
@@ -108,7 +109,7 @@ export function useCoachLogAnalyzer({
 
         void (async () => {
             try {
-                const result = await analyzeHumanMoveFromLogWithBgsage({
+                const result = await logAnalyzer.analyzeHumanMoveFromLogWithBgsage({
                     logEntry: lastEntry,
                     packet,
                     localPlayer: 'X',

@@ -7,7 +7,8 @@ test.describe('Mission 37/50: Scanner Playwright de Lisibilité Typographique (f
 
     for (const route of ROUTES) {
         for (const lang of ['fr', 'en'] as const) {
-            test(`Audit Lisibilité & Zero-Scroll sur ${route} [${lang.toUpperCase()}]`, async ({ page }) => {
+            test(`Audit Lisibilité & Zero-Scroll sur ${route} [${lang.toUpperCase()}]`, async ({ page, isMobile }) => {
+                test.skip(isMobile, 'Audit réservé au Desktop 1440x900');
                 const url = `${route}${route.includes('?') ? '&' : '?'}lang=${lang}`;
                 await page.goto(url);
 

@@ -123,7 +123,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                     <span className="font-sans font-bold text-xs tracking-tight text-white">
                         Cercle Monte-Carlo · Coach prêt
                     </span>
-                    <span className="text-[11px] font-medium text-slate-400">
+                    <span className="text-xs font-medium text-slate-400">
                         {mode === 'fun'
                             ? 'Mode Ludique · Pip count · Plan de jeu · Historique'
                             : 'Mode Pro · Pip count · Plan de jeu · Historique'}
@@ -138,7 +138,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                             data-testid={`experience-mode-${mKey}-btn`}
                             aria-pressed={mode === mKey}
                             onClick={() => handleSwitchMode(mKey)}
-                            className={`rounded-lg px-2 py-1 text-[11px] font-bold transition ${
+                            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
                                 mode === mKey ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'
                             }`}
                         >
@@ -167,7 +167,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                             }`}
                         >
                             <span className="text-base leading-none">{p.avatar}</span>
-                            <span className="mt-1 w-full truncate text-[10px] font-bold">{p.shortName}</span>
+                            <span className="mt-1 w-full truncate text-xs font-bold">{p.shortName}</span>
                         </button>
                     );
                 })}
@@ -182,8 +182,8 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                         </span>
                         <div>
                             <div className="font-sans text-xs font-bold text-white">{persona.name}</div>
-                            <div className="text-[10px] font-semibold text-amber-300">{persona.styleBadge}</div>
-                            <div className="text-[10px] text-slate-400">{persona.skillTaught}</div>
+                            <div className="text-xs font-semibold text-amber-300">{persona.styleBadge}</div>
+                            <div className="text-xs text-slate-400">{persona.skillTaught}</div>
                         </div>
                     </div>
 
@@ -192,7 +192,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                             type="button"
                             data-testid="persona-mute-btn"
                             onClick={() => setIsMuted((m) => !m)}
-                            className="rounded-lg border border-white/10 bg-slate-900 px-1.5 py-1 text-[10px] font-semibold text-slate-300 hover:border-white/25"
+                            className="rounded-lg border border-white/10 bg-slate-900 px-1.5 py-1 text-xs font-semibold text-slate-300 hover:border-white/25"
                             title="Mettre le personnage en muet"
                         >
                             {isMuted ? 'Muet' : 'Actif'}
@@ -201,7 +201,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                             type="button"
                             data-testid="persona-report-btn"
                             onClick={() => setReportedNotice(true)}
-                            className="rounded-lg border border-white/10 bg-slate-900 px-1.5 py-1 text-[10px] font-semibold text-slate-300 hover:border-rose-400/50 hover:text-rose-300"
+                            className="rounded-lg border border-white/10 bg-slate-900 px-1.5 py-1 text-xs font-semibold text-slate-300 hover:border-rose-400/50 hover:text-rose-300"
                             title="Signaler un message (Conformité App Store 1.2)"
                         >
                             <Flag size={12} strokeWidth={1.5} className="text-rose-400" />
@@ -209,14 +209,14 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                     </div>
                 </div>
                 {reportedNotice && (
-                    <p className="mt-1.5 rounded bg-emerald-950/70 px-2 py-1 text-[10px] text-emerald-200">
+                    <p className="mt-1.5 rounded bg-emerald-950/70 px-2 py-1 text-xs text-emerald-200">
                         Signalement enregistré (Conformité App Store Section 1.2).
                     </p>
                 )}
             </div>
 
             {silentTutorLuckNote && (
-                <div data-testid="coach-silent-tutor-bot-luck" className="rounded-xl border border-cyan-500/40 bg-cyan-950/35 px-2.5 py-1.5 text-[11px] font-semibold text-cyan-200">
+                <div data-testid="coach-silent-tutor-bot-luck" className="rounded-xl border border-cyan-500/40 bg-cyan-950/35 px-2.5 py-1.5 text-xs font-semibold text-cyan-200">
                     {silentTutorLuckNote}
                 </div>
             )}
@@ -229,7 +229,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                 {messages.map((m) => (
                     <div
                         key={m.id}
-                        className={`rounded-lg px-2.5 py-1.5 text-[11px] leading-relaxed ${
+                        className={`rounded-lg px-2.5 py-1.5 text-xs leading-relaxed ${
                             m.sender === 'player'
                                 ? 'ml-6 bg-amber-400/15 text-amber-100 border border-amber-400/30'
                                 : 'mr-2 bg-slate-900 text-slate-200 border border-white/10'
@@ -246,7 +246,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                     <button
                         type="button"
                         onClick={onReplayMove}
-                        className="mt-1 w-full rounded-lg border border-amber-400/60 bg-amber-500/20 px-2.5 py-1.5 text-[11px] font-bold text-amber-200 hover:bg-amber-500/30 transition"
+                        className="mt-1 w-full rounded-lg border border-amber-400/60 bg-amber-500/20 px-2.5 py-1.5 text-xs font-bold text-amber-200 hover:bg-amber-500/30 transition"
                     >
                         Reprendre mon coup (Tuteur Préventif)
                     </button>
@@ -260,7 +260,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                     ['Dés truqués ?', 'Ces dés sont-ils truqués ?'],
                     ['Videau ?', 'Quand doubler au Videau ?'],
                 ].map(([label, prompt]) => (
-                    <button key={label} type="button" onClick={() => handleSendMessage(prompt)} className="rounded-full border border-white/10 bg-slate-950 px-2 py-0.5 text-[10px] font-semibold text-slate-300 hover:border-amber-400/50 hover:text-white">
+                    <button key={label} type="button" onClick={() => handleSendMessage(prompt)} className="rounded-full border border-white/10 bg-slate-950 px-2 py-0.5 text-xs font-semibold text-slate-300 hover:border-amber-400/50 hover:text-white">
                         {label}
                     </button>
                 ))}
@@ -270,14 +270,14 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                 <input
                     type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)}
                     placeholder={`Parler à ${persona.shortName}...`}
-                    className="flex-1 rounded-lg border border-white/10 bg-slate-950 px-2.5 py-1.5 text-[11px] text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-none"
+                    className="flex-1 rounded-lg border border-white/10 bg-slate-950 px-2.5 py-1.5 text-xs text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-none"
                 />
-                <button type="submit" className="rounded-lg border border-amber-400/50 bg-amber-400/15 px-2.5 py-1.5 text-[11px] font-bold text-amber-300 hover:bg-amber-400/25">
+                <button type="submit" className="rounded-lg border border-amber-400/50 bg-amber-400/15 px-2.5 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-400/25">
                     Envoyer
                 </button>
             </form>
 
-            <div data-testid="coach-idle-session-stats" className="flex items-center justify-between rounded-xl border border-white/10 bg-slate-950 px-3 py-1.5 font-mono text-[11px] shadow-inner">
+            <div data-testid="coach-idle-session-stats" className="flex items-center justify-between rounded-xl border border-white/10 bg-slate-950 px-3 py-1.5 font-mono text-xs shadow-inner">
                 <span className="text-white font-bold">Vous : PR {prValue.toFixed(1)}</span>
                 <span data-testid="persona-live-pr-badge" className="text-amber-300 font-bold" title="Error Rate temps réel du Bot (plafonné à 10.0)">
                     Bot : PR {botLivePr === null ? '—' : botLivePr.toFixed(1)}

@@ -6,6 +6,7 @@ import { createInitialState } from '../engine/backgammonEngine';
 import * as logAnalyzer from '../features/coach/logAnalyzer';
 import * as cubeCoach from '../features/coach/cubeCoach';
 import type { MatchLogEntry } from '../actions/types';
+import { savePlayerPassport } from '../lib/supabase/auth';
 
 function createEmptyRefs() {
     return {
@@ -18,6 +19,12 @@ function createEmptyRefs() {
 describe('useCoach hook', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
+        savePlayerPassport({
+            pseudo: 'GrandMaster',
+            email: 'member@backgammontour.com',
+            experienceLevel: 'expert',
+            registeredAt: '2026-11-01',
+        });
     });
 
     it('initialise matchStatsX et matchStatsO avec PR à 0', () => {

@@ -85,7 +85,8 @@ describe('BlunderDrillView Component (Parcours Adaptatif & Carnet de Blunders Pe
     });
 
     it('affiche l’en-tête adaptatif Zéro Sous-Menu, le radar des 9 compétences, le badge Premium Offert et le premier défi', () => {
-        const html = renderToStaticMarkup(<BlunderDrillView />);
+        const { container } = render(<BlunderDrillView />);
+        const html = container.innerHTML;
 
         expect(html).toContain('Parcours Adaptatif IA');
         expect(html).toContain('data-testid="premium-launch-badge"');
@@ -100,7 +101,8 @@ describe('BlunderDrillView Component (Parcours Adaptatif & Carnet de Blunders Pe
     });
 
     it('affiche les boutons de contrôle : Indice, Réinitialiser et les 4 choix QCM Express sans menu déroulant', () => {
-        const html = renderToStaticMarkup(<BlunderDrillView />);
+        const { container } = render(<BlunderDrillView />);
+        const html = container.innerHTML;
 
         expect(html).toContain('data-testid="drill-hint-toggle"');
         expect(html).toContain('Indice');
@@ -117,7 +119,8 @@ describe('BlunderDrillView Component (Parcours Adaptatif & Carnet de Blunders Pe
     });
 
     it('affiche le plateau SVG interactif de Backgammon et les dés', () => {
-        const html = renderToStaticMarkup(<BlunderDrillView />);
+        const { container } = render(<BlunderDrillView />);
+        const html = container.innerHTML;
 
         expect(html).toContain('svg');
         expect(html).toContain('data-testid="board-die-0"');

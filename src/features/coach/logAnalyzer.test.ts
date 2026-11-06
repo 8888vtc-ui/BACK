@@ -361,11 +361,11 @@ describe('reconstructBoardFromLog & Audit 3 (Cache LRU + Off-List Blunders)', ()
         }
     });
 
-    it('Bug 1 & Bug 5 : /api/evaluate ajoute source="bgsage-cloud-run", et CoachRequestSchema / LLM_TIMEOUT_MS (8000ms) acceptent doubtful/inaccuracy sans rejet HTTP 400', async () => {
+    it('Bug 1 & Bug 5 : /api/evaluate ajoute source="bgsage-cloud-run", et CoachRequestSchema / LLM_TIMEOUT_MS (4000ms) acceptent doubtful/inaccuracy sans rejet HTTP 400', async () => {
         const { CoachRequestSchema } = await import('../../lib/security/schemas');
         const { LLM_TIMEOUT_MS } = await import('../../components/coach/useCoachExplanation');
 
-        expect(LLM_TIMEOUT_MS).toBeGreaterThanOrEqual(8000);
+        expect(LLM_TIMEOUT_MS).toBeLessThanOrEqual(4000);
 
         const validDoubtful = CoachRequestSchema.safeParse({
             verdict: 'doubtful',

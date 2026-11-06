@@ -29,9 +29,9 @@ const CERTIFIED_15_OPENINGS: Record<string, ReadonlyArray<RawOpeningCandidate>> 
     '3-1': [
         { notation: '8/5 6/5', moves: [{ from: 8, to: 5 }, { from: 6, to: 5 }], equity: 0.165, deltaEmg: 0, winPct: 58.2, winGammonPct: 17.5, losePct: 41.8, loseGammonPct: 8.8 },
         { notation: '13/10 6/5', moves: [{ from: 13, to: 10 }, { from: 6, to: 5 }], equity: 0.111, deltaEmg: -0.054, winPct: 53.6, winGammonPct: 14.2, losePct: 46.4, loseGammonPct: 11.2 },
-        { notation: '24/23 13/10', moves: [{ from: 24, to: 23 }, { from: 13, to: 10 }], equity: 0.103, deltaEmg: -0.062, winPct: 53.1, winGammonPct: 13.8, losePct: 46.9, loseGammonPct: 11.0 },
+        { notation: '13/10 24/23', moves: [{ from: 13, to: 10 }, { from: 24, to: 23 }], equity: 0.103, deltaEmg: -0.062, winPct: 53.1, winGammonPct: 13.8, losePct: 46.9, loseGammonPct: 11.0 },
         { notation: '24/21 21/20', moves: [{ from: 24, to: 21 }, { from: 21, to: 20 }], equity: 0.087, deltaEmg: -0.078, winPct: 52.4, winGammonPct: 12.9, losePct: 47.6, loseGammonPct: 10.8 },
-        { notation: '24/20', moves: [{ from: 24, to: 21 }, { from: 21, to: 20 }], equity: 0.001, deltaEmg: -0.164, winPct: 49.2, winGammonPct: 11.5, losePct: 50.8, loseGammonPct: 12.5 },
+        { notation: '24/21 24/23', moves: [{ from: 24, to: 21 }, { from: 24, to: 23 }], equity: 0.052, deltaEmg: -0.113, winPct: 51.0, winGammonPct: 12.1, losePct: 49.0, loseGammonPct: 11.5 },
     ],
     '4-1': [
         { notation: '13/9 6/5', moves: [{ from: 13, to: 9 }, { from: 6, to: 5 }], equity: -0.008, deltaEmg: 0, winPct: 49.6, winGammonPct: 12.2, losePct: 50.4, loseGammonPct: 13.6 },

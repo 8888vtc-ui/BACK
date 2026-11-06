@@ -196,8 +196,8 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                     }`}
                 >
                     <div className="flex items-center gap-0.5">
-                        <span aria-hidden="true" className="text-[11px] leading-none">
-                            {isTilted ? '🔥' : '🎓'}
+                        <span aria-hidden="true" className="text-xs leading-none">
+                            {isTilted ? 'Tilt' : 'Coach'}
                         </span>
                         <span
                             data-testid="thumb-dock-coach-badge"

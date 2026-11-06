@@ -120,7 +120,7 @@ const CoachLiveAiRadarComponent: React.FC<CoachLiveAiRadarProps> = ({
             <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5">
                     <span aria-hidden="true">📡</span>
-                    <span className="font-bold uppercase tracking-wider text-[10px] text-[#f3c65f]">
+                    <span className="font-bold uppercase tracking-wider text-xs text-[#f3c65f]">
                         {isEn ? 'Live AI Radar (Trice / Magriel / GTO)' : 'Radar Temps Réel vs IA'}
                     </span>
                 </div>
@@ -135,7 +135,7 @@ const CoachLiveAiRadarComponent: React.FC<CoachLiveAiRadarProps> = ({
                                 ? 'Toggle Socratic Second Chance training mode on blunders'
                                 : 'Activer/Désactiver le mode Seconde Chance Socratique sur les gaffes'
                         }
-                        className={`rounded-full border px-2 py-0.5 text-[10px] font-bold transition ${
+                        className={`rounded-full border px-2 py-0.5 text-xs font-bold transition ${
                             secondChanceEnabled
                                 ? 'border-emerald-500/60 bg-emerald-950/70 text-emerald-200'
                                 : 'border-slate-700 bg-slate-900 text-slate-400'
@@ -155,24 +155,24 @@ const CoachLiveAiRadarComponent: React.FC<CoachLiveAiRadarProps> = ({
             {/* Grille des 3 indicateurs temps réel contre l'IA */}
             <div className="grid grid-cols-3 gap-1.5 text-center">
                 <div className="rounded-lg border border-slate-800 bg-slate-950/80 p-1.5">
-                    <div className="text-[11px] uppercase text-slate-400 font-semibold">
+                    <div className="text-xs uppercase text-slate-400 font-semibold">
                         {isEn ? 'Trice EPC' : 'Course EPC (Trice)'}
                     </div>
-                    <div className="font-mono text-[11px] font-bold text-white" data-testid="radar-trice-epc">
+                    <div className="font-mono text-xs font-bold text-white" data-testid="radar-trice-epc">
                         {radar.epcX.epc.toFixed(0)} <span className="text-slate-500">vs</span> {radar.epcO.epc.toFixed(0)}
                     </div>
-                    <div className="text-[11px] text-slate-400">
+                    <div className="text-xs text-slate-400">
                         {isEn ? `Wastage: ${radar.epcX.wastage.toFixed(1)}` : `Gaspi : +${radar.epcX.wastage.toFixed(1)}p`}
                     </div>
                 </div>
 
                 <div className="rounded-lg border border-slate-800 bg-slate-950/80 p-1.5">
-                    <div className="text-[11px] uppercase text-slate-400 font-semibold">
+                    <div className="text-xs uppercase text-slate-400 font-semibold">
                         {isEn ? 'Magriel Posture' : 'Posture Magriel'}
                     </div>
                     <div
                         data-testid="radar-magriel-posture"
-                        className={`font-mono text-[11px] font-black ${
+                        className={`font-mono text-xs font-black ${
                             radar.magriel.posture === 'BOLD' ? 'text-amber-300' : 'text-cyan-300'
                         }`}
                     >
@@ -184,17 +184,17 @@ const CoachLiveAiRadarComponent: React.FC<CoachLiveAiRadarProps> = ({
                               ? '🛡️ SAFE'
                               : '🛡️ SÉCURITÉ'}
                     </div>
-                    <div className="text-[11px] text-slate-400">Score {radar.magriel.score >= 0 ? `+${radar.magriel.score}` : radar.magriel.score}</div>
+                    <div className="text-xs text-slate-400">Score {radar.magriel.score >= 0 ? `+${radar.magriel.score}` : radar.magriel.score}</div>
                 </div>
 
                 <div className="rounded-lg border border-slate-800 bg-slate-950/80 p-1.5">
-                    <div className="text-[11px] uppercase text-slate-400 font-semibold">
+                    <div className="text-xs uppercase text-slate-400 font-semibold">
                         {isEn ? 'Janowski Cube' : 'Videau (GTO)'}
                     </div>
-                    <div className="font-mono text-[11px] font-bold text-indigo-300" data-testid="radar-janowski-tp">
+                    <div className="font-mono text-xs font-bold text-indigo-300" data-testid="radar-janowski-tp">
                         TP {takePointPct}
                     </div>
-                    <div className="text-[11px] text-slate-400">
+                    <div className="text-xs text-slate-400">
                         {radar.raceCube.isPureRace ? radar.raceCube.action : `Gammon ${gammonPricePct}`}
                     </div>
                 </div>
@@ -204,7 +204,7 @@ const CoachLiveAiRadarComponent: React.FC<CoachLiveAiRadarProps> = ({
             {secondChanceEnabled && isBlunder && onReplayMove && (
                 <div
                     data-testid="coach-second-chance-banner"
-                    className="flex items-center justify-between gap-2 rounded-lg border border-emerald-500/50 bg-emerald-950/50 px-2.5 py-2 text-[11px] text-emerald-100"
+                    className="flex items-center justify-between gap-2 rounded-lg border border-emerald-500/50 bg-emerald-950/50 px-2.5 py-2 text-xs text-emerald-100"
                 >
                     <span>
                         
@@ -216,7 +216,7 @@ const CoachLiveAiRadarComponent: React.FC<CoachLiveAiRadarProps> = ({
                         type="button"
                         data-testid="coach-second-chance-replay-btn"
                         onClick={onReplayMove}
-                        className="shrink-0 rounded-lg border border-emerald-400 bg-emerald-600 px-2.5 py-1 text-[10px] font-black uppercase text-white hover:bg-emerald-500 transition active:scale-95"
+                        className="shrink-0 rounded-lg border border-emerald-400 bg-emerald-600 px-2.5 py-1 text-xs font-black uppercase text-white hover:bg-emerald-500 transition active:scale-95"
                     >
                         {isEn ? '⏪ Retry Turn' : '⏪ Rejouer'}
                     </button>

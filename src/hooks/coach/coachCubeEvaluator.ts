@@ -1,6 +1,6 @@
 import { type BoardState, serializeXGID } from '../../engine/backgammonEngine';
+import * as cubeCoach from '../../features/coach/cubeCoach';
 import {
-    analyzeCubeDecision,
     mapGameCubeAction,
     type CubeAction,
     type CubeActionType,
@@ -36,7 +36,7 @@ export function executeCubeEvaluation({
     historyLength,
 }: ExecuteCubeEvaluationParams): ExecuteCubeEvaluationResult {
     const normalizedAction = mapGameCubeAction(action) ?? 'double';
-    const cubeRes = analyzeCubeDecision(evalState, normalizedAction);
+    const cubeRes = cubeCoach.analyzeCubeDecision(evalState, normalizedAction);
     const rawLoss =
         cubeRes.equityLoss ??
         (cubeRes.verdict === 'blunder' ? -0.12 : cubeRes.verdict === 'inaccuracy' ? -0.045 : cubeRes.verdict === 'good' ? -0.015 : 0);
