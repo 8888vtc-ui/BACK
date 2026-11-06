@@ -28,7 +28,7 @@ export const LobbyMatchedVersus: React.FC<LobbyMatchedVersusProps> = ({
         <div className="py-6 space-y-6 animate-fade-in text-center" data-testid="lobby-matched-view">
             <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-4 py-1.5 text-xs font-bold text-emerald-300 animate-pulse">
                 <Sparkles className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span>{isEn ? 'Opponent found! Preparing match...' : 'Adversaire trouvé ! Préparation du match...'}</span>
+                <span>{isEn ? 'Opponent found!' : 'Adversaire trouvé !'}</span>
             </span>
 
             <div className="grid grid-cols-2 gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5">

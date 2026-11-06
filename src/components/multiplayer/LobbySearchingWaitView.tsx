@@ -67,8 +67,8 @@ export const LobbySearchingWaitView: React.FC<LobbySearchingWaitViewProps> = ({
                 <div className="space-y-0.5">
                     <div className="text-sm sm:text-base font-extrabold text-white">
                         {isEn
-                            ? `Searching for a Club player (${selectedLength === 0 ? 'Money Game' : `Match ${selectedLength} pts`})...`
-                            : `Recherche d'un joueur de niveau Club (${selectedLength === 0 ? 'Money Game' : `Match ${selectedLength} pts`})...`}
+                            ? 'Searching for an available player in the Club...'
+                            : 'Recherche d\'un joueur disponible dans le Salon...'}
                     </div>
                     <div className="text-xs text-amber-300/95 font-medium">
                         {searchStepLabel}
