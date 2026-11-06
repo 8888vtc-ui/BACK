@@ -21,36 +21,36 @@ export interface OpeningMove {
 
 export const OPENING_FAMILIES = {
   GATES: {
-    labelFr: '🏛️ Bâtir une Porte (Bouclier)',
-    labelEn: '🏛️ Make a Gate (Shield)',
+    labelFr: 'Bâtir une Porte (Bouclier)',
+    labelEn: 'Make a Gate (Shield)',
     color: 'from-amber-500/20 to-amber-900/30 border-amber-500/40 text-amber-300',
   },
   RUNNING: {
-    labelFr: '🏃 Course & Grande Évasion',
-    labelEn: '🏃 Running & Great Escape',
+    labelFr: 'Course & Grande Évasion',
+    labelEn: 'Running & Great Escape',
     color: 'from-emerald-500/20 to-emerald-900/30 border-emerald-500/40 text-emerald-300',
   },
   BUILDING: {
-    labelFr: '🧱 Construction & Préparation',
-    labelEn: '🧱 Construction & Preparation',
+    labelFr: 'Construction & Préparation',
+    labelEn: 'Construction & Preparation',
     color: 'from-sky-500/20 to-sky-900/30 border-sky-500/40 text-sky-300',
   },
 } as const;
 
 export const COACH_GATE_EXPLANATION_FR =
-  "🛡️ Bâtissez une Porte imprenable ! Suivez les deux flèches dorées : en réunissant ces deux pions ensemble sur la même pointe, vous créez un bouclier solide. L'adversaire ne pourra ni s'y poser, ni frapper vos pions !";
+  "Bâtissez une Porte imprenable ! Suivez les deux flèches dorées : en réunissant ces deux pions ensemble sur la même pointe, vous créez un bouclier solide. L'adversaire ne pourra ni s'y poser, ni frapper vos pions !";
 export const COACH_GATE_EXPLANATION_EN =
-  '🛡️ Build an Impenetrable Gate! Follow the two golden arrows: by bringing these two checkers together on the same point, you create a solid shield. Your opponent cannot land there or hit your checkers!';
+  'Build an Impenetrable Gate! Follow the two golden arrows: by bringing these two checkers together on the same point, you create a solid shield. Your opponent cannot land there or hit your checkers!';
 
 export const COACH_RUNNING_EXPLANATION_FR =
-  "🏃 La Grande Évasion ! Suivez la longue flèche dorée pour faire fuir l'un de vos deux pions prisonniers au fond du camp adverse et le ramener en sécurité vers vos autres pions.";
+  "La Grande Évasion ! Suivez la longue flèche dorée pour faire fuir l'un de vos deux pions prisonniers au fond du camp adverse et le ramener en sécurité vers vos autres pions.";
 export const COACH_RUNNING_EXPLANATION_EN =
-  "🏃 The Great Escape! Follow the long golden arrow to free one of your trapped back checkers from the opponent's camp and bring it safely home.";
+  "The Great Escape! Follow the long golden arrow to free one of your trapped back checkers from the opponent's camp and bring it safely home.";
 
 export const COACH_BUILDING_EXPLANATION_FR =
-  '🧱 Préparez le terrain ! Comme les dés ne permettent pas de fermer une porte tout de suite, faites avancer vos pions du milieu et décollez un pion arrière en suivant les flèches dorées pour préparer une porte au prochain tour.';
+  'Préparez le terrain ! Comme les dés ne permettent pas de fermer une porte tout de suite, faites avancer vos pions du milieu et décollez un pion arrière en suivant les flèches dorées pour préparer une porte au prochain tour.';
 export const COACH_BUILDING_EXPLANATION_EN =
-  '🧱 Prepare the Ground! Since the dice cannot make a gate right now, advance your middle checkers and unstick a back checker along the golden arrows to prepare a gate for next turn.';
+  'Prepare the Ground! Since the dice cannot make a gate right now, advance your middle checkers and unstick a back checker along the golden arrows to prepare a gate for next turn.';
 
 export const OPENING_MOVES: OpeningMove[] = [
   // 1. Les Lancers Royaux (Bâtir une Porte)

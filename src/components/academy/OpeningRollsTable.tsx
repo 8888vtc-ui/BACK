@@ -2,11 +2,12 @@
 
 /**
  * Tableau interactif des 15 coups d'ouverture au Backgammon (Équité Monte-Carlo 3-Ply).
- * Loi de Scalabilité : strictement 0 any, < 300 lignes.
+ * Loi de Scalabilité : strictement 0 any, < 300 lignes, 0 emoji.
  */
 
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { Search } from 'lucide-react';
 import {
     OPENING_ROLLS_15,
     type OpeningCategory,
@@ -110,7 +111,7 @@ const OpeningRollsTableComponent: React.FC<OpeningRollsTableProps> = ({ content,
                         aria-hidden="true"
                         className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs sm:text-sm text-amber-400/70"
                     >
-                        🔍
+                        <Search className="w-3.5 h-3.5 text-amber-400/70" />
                     </span>
                     <input
                         id="academy-openings-search-input"
@@ -153,7 +154,7 @@ const OpeningRollsTableComponent: React.FC<OpeningRollsTableProps> = ({ content,
                                             href={`/academy/openings/${entry.roll}`}
                                             className="hover:underline hover:text-amber-200 inline-flex items-center gap-1.5"
                                         >
-                                            <span>🎲 {entry.roll}</span>
+                                            <span>{entry.roll}</span>
                                             <span className="text-xs text-amber-300/80">↗</span>
                                         </Link>
                                     </td>

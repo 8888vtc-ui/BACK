@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Play, RotateCcw } from 'lucide-react';
+import { Play, RotateCcw, Swords, Home, Shield } from 'lucide-react';
 
 interface MoveStep {
   readonly from: number;
@@ -70,7 +70,7 @@ export const OpeningVisualBoard: React.FC<OpeningVisualBoardProps> = React.memo(
           <span>←</span><span>{isEn ? 'Middle Table' : 'Milieu du Plateau'}</span>
         </span>
         <span className="flex items-center gap-1 text-rose-300 bg-rose-950/40 px-2 py-0.5 rounded-md border border-rose-500/20">
-          <span>⚔️</span><span>{isEn ? 'Opponent Camp' : 'Camp Adverse'}</span>
+          <Swords className="w-3.5 h-3.5" /><span>{isEn ? 'Opponent Camp' : 'Camp Adverse'}</span>
         </span>
       </div>
 
@@ -161,7 +161,7 @@ export const OpeningVisualBoard: React.FC<OpeningVisualBoardProps> = React.memo(
             return (
               <g key={`gate-${pt}`} className="animate-bounce">
                 <circle cx={x} cy={y} r="10" fill="#18181b" stroke="#D4AF37" strokeWidth="1.5" />
-                <text x={x} y={y + 3.5} textAnchor="middle" fontSize="10" fill="#D4AF37">🛡️</text>
+                <text x={x} y={y + 3.5} textAnchor="middle" fontSize="10" fill="#D4AF37" fontWeight="bold">✦</text>
               </g>
             );
           })}
@@ -170,7 +170,7 @@ export const OpeningVisualBoard: React.FC<OpeningVisualBoardProps> = React.memo(
 
       <div className="flex items-center justify-between w-full px-3 py-1.5 mt-1">
         <span className="flex items-center gap-1.5 text-[11px] font-black text-emerald-300 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-500/20">
-          <span>🏠</span><span>{isEn ? 'Your Home (Exit)' : 'Votre Maison (Sortie)'}</span>
+          <Home className="w-3.5 h-3.5" /><span>{isEn ? 'Your Home (Exit)' : 'Votre Maison (Sortie)'}</span>
         </span>
 
         <button

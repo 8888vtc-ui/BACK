@@ -59,7 +59,7 @@ const OpeningRollDetailViewComponent: React.FC<OpeningRollDetailViewProps> = ({ 
                     <span>/</span>
                     <Link href="/academy" className="hover:text-amber-200">Gammon Academy</Link>
                     <span>/</span>
-                    <span className="font-mono font-bold text-[#f5cf70]">🎲 {guideEntry.roll}</span>
+                    <span className="font-mono font-bold text-[#f5cf70]">{guideEntry.roll}</span>
                 </nav>
 
                 {/* Carte Principale du Jet d'Ouverture */}
@@ -70,7 +70,7 @@ const OpeningRollDetailViewComponent: React.FC<OpeningRollDetailViewProps> = ({ 
                                 MONTE-CARLO 3-PLY · OPENING ROLL {guideEntry.roll}
                             </span>
                             <h1 className="font-serif text-2xl sm:text-4xl font-black text-[#fff6d6]">
-                                🎲 {guideEntry.roll} — {guideEntry.nickname[safeLocale] ?? guideEntry.nickname.en}
+                                {guideEntry.roll} — {guideEntry.nickname[safeLocale] ?? guideEntry.nickname.en}
                             </h1>
                         </div>
                         <div className="rounded-2xl border border-white/10 bg-emerald-500/15 px-5 py-3 text-center">
@@ -150,7 +150,7 @@ const OpeningRollDetailViewComponent: React.FC<OpeningRollDetailViewProps> = ({ 
                             href="/"
                             className="rounded-xl border border-[#fef08a] bg-gradient-to-b from-[#f5cf70] to-[#b38428] px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider text-[#1c1004]"
                         >
-                            🎲 Pratiquer {guideEntry.roll} contre l’IA 3-Ply
+                            Pratiquer {guideEntry.roll} contre l’IA 3-Ply →
                         </Link>
                     </div>
                 </article>
@@ -173,7 +173,7 @@ const OpeningRollDetailViewComponent: React.FC<OpeningRollDetailViewProps> = ({ 
                                             : 'border-white/10 bg-black/40 text-slate-300 hover:border-white/25 hover:text-amber-200'
                                     }`}
                                 >
-                                    🎲 {item.roll} ({item.optimalMove})
+                                    {item.roll} ({item.optimalMove})
                                 </Link>
                             );
                         })}

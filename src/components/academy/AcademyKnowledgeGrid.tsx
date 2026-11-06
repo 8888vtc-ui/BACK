@@ -8,6 +8,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Globe } from 'lucide-react';
 import { KNOWLEDGE_BASE_CONCEPTS } from '../../features/knowledge/knowledgeBaseData';
 import type { AcademyLocaleContent } from '../../features/academy/academyTranslations';
 import {
@@ -99,8 +100,9 @@ const AcademyKnowledgeGridComponent: React.FC<AcademyKnowledgeGridProps> = ({ co
             >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
                     <div>
-                        <h2 id="glossary-heading" className="font-serif text-lg sm:text-xl font-black tracking-wide text-[#f5cf70]">
-                            🌍 {content.glossarySectionTitle}
+                        <h2 id="glossary-heading" className="flex items-center gap-2 font-serif text-lg sm:text-xl font-black tracking-wide text-[#f5cf70]">
+                            <Globe className="w-5 h-5 text-[#f5cf70] shrink-0" />
+                            <span>{content.glossarySectionTitle}</span>
                         </h2>
                         <p className="text-xs sm:text-sm text-slate-400">{content.glossarySectionDesc}</p>
                     </div>
@@ -112,12 +114,12 @@ const AcademyKnowledgeGridComponent: React.FC<AcademyKnowledgeGridProps> = ({ co
                     <table className="w-full text-left border-collapse text-xs sm:text-sm">
                         <thead>
                             <tr className="border-b border-white/10 bg-[#101624] font-extrabold uppercase tracking-wider text-[#e5c158]">
-                                <th className="py-3 px-3.5">🇫🇷 FR</th>
-                                <th className="py-3 px-3.5">🇬🇧 EN</th>
-                                <th className="py-3 px-3.5">🇪🇸 ES</th>
-                                <th className="py-3 px-3.5">🇵🇹 PT</th>
-                                <th className="py-3 px-3.5">🇩🇪 DE</th>
-                                <th className="py-3 px-3.5">🇸🇦 AR</th>
+                                <th className="py-3 px-3.5">FR</th>
+                                <th className="py-3 px-3.5">EN</th>
+                                <th className="py-3 px-3.5">ES</th>
+                                <th className="py-3 px-3.5">PT</th>
+                                <th className="py-3 px-3.5">DE</th>
+                                <th className="py-3 px-3.5">AR</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10">

@@ -89,7 +89,7 @@ const MatchEquityCalculatorComponent: React.FC<MatchEquityCalculatorProps> = ({ 
         >
             <div className="space-y-2">
                 <span className="inline-block rounded-full border border-white/10 bg-amber-500/10 px-3 py-0.5 text-xs font-extrabold uppercase tracking-widest text-[#f3c65f]">
-                    🧮 {labels.badge}
+                    {labels.badge}
                 </span>
                 <h2 id="calc-heading" className="font-serif text-xl sm:text-2xl font-black tracking-wide text-[#f5cf70]">
                     {labels.title}

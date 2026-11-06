@@ -52,7 +52,7 @@ const ConceptDetailViewComponent: React.FC<ConceptDetailViewProps> = ({ slug }) 
                     <header className="space-y-2 border-b border-white/10 pb-5">
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="rounded-full border border-white/10 bg-black/50 px-3 py-0.5 text-xs font-extrabold uppercase tracking-widest text-[#f3c65f]">
-                                🏛️ {concept.author} · {concept.difficulty.toUpperCase()}
+                                {concept.author} · {concept.difficulty.toUpperCase()}
                             </span>
                             {concept.tags.map((tag) => (
                                 <span
@@ -85,7 +85,7 @@ const ConceptDetailViewComponent: React.FC<ConceptDetailViewProps> = ({ slug }) 
                         {concept.formulaOrRule && (
                             <div className="rounded-2xl border border-white/10 bg-[#070b13] p-5 space-y-2">
                                 <div className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-emerald-300">
-                                    📐 {concept.formulaOrRule.name}
+                                    {concept.formulaOrRule.name}
                                 </div>
                                 {concept.formulaOrRule.formula && (
                                     <div className="font-mono text-xs sm:text-sm font-bold text-emerald-200 bg-black/50 p-2.5 rounded-xl border border-white/10">
@@ -142,7 +142,7 @@ const ConceptDetailViewComponent: React.FC<ConceptDetailViewProps> = ({ slug }) 
                             href="/drills"
                             className="rounded-xl border border-[#fef08a] bg-gradient-to-b from-[#f5cf70] to-[#b38428] px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider text-[#1c1004]"
                         >
-                            🎯 S’entraîner sur ce Concept (Drills)
+                            S’entraîner sur ce Concept (Drills) →
                         </Link>
                     </div>
                 </article>
