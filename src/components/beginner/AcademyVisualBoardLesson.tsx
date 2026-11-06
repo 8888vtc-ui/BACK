@@ -90,7 +90,6 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 2. LE BUT DU JEU (Sortir ses 15 dames) */}
         {quizId === 2 && (
           <g>
-            <rect x="296" y="140" width="240" height="115" fill="rgba(212, 175, 55, 0.05)" stroke="#D4AF37" strokeDasharray="4 4" rx="6" />
             <g transform="translate(416, 140)">
               <rect x="-95" y="-11" width="190" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
               <text x="0" y="3.5" fill="#F3E5AB" fontSize="10.5" fontWeight="black" textAnchor="middle">
@@ -153,8 +152,8 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
             <circle cx="346" cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
             <circle cx="346" cy="220" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
 
-            {/* Cartouche opaque vert relevé à y=158 (au-dessus des flèches) */}
-            <g transform="translate(346, 158)">
+            {/* Cartouche opaque vert relevé à y=145 (bien au-dessus des flèches) */}
+            <g transform="translate(346, 145)">
               <rect x="-110" y="-11" width="220" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#10B981" strokeWidth="1" />
               <text x="0" y="4" fill="#34D399" fontSize="10.5" fontWeight="black" textAnchor="middle">
                 {isEn ? 'Convergence = Impassable Gate' : 'Convergence = Bouclier Imprenable'}
