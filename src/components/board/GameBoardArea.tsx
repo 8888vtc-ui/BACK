@@ -229,7 +229,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                                 canDouble={replay.isLive && game.canDouble} doublingOfferedBy={game.doublingOfferedBy}
                                 onOfferDouble={replay.isLive ? (onOfferDouble ?? game.offerDouble) : NOOP} onTakeDouble={replay.isLive ? (onTakeDouble ?? game.takeDouble) : NOOP} onPassDouble={replay.isLive ? (onPassDouble ?? game.passDouble) : NOOP}
                                 isPrematureDouble={isPrematureDouble} theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? (game.gamePhase ?? 'AI_TURN_SHOWING_ARROWS') : 'REPLAY_VIEW'}
-                                onRoll={replay.isLive ? () => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); game.rollDice(); } : replay.returnToLive}
+                                onRoll={replay.isLive ? () => { if (propIsOnlineMatch && game.state.turn !== playerColor) return; if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); game.rollDice(); } : replay.returnToLive}
                                 onConfirm={replay.isLive ? () => game.commitHumanMove() : replay.returnToLive}
                                 canUndo={replay.isLive && game.canUndo} canConfirm={replay.isLive && game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
                                 autoConfirmEnabled={game.autoConfirmTurn} onToggleAutoConfirm={game.toggleAutoConfirmTurn}

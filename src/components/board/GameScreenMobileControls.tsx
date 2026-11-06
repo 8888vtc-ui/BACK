@@ -34,11 +34,14 @@ export const GameScreenMobileControls: React.FC<GameScreenMobileControlsProps> =
     onSetCubeSheetOpen,
     onOpenCoachDrawer,
 }) => {
+    const localRole = multiplayer.matchInfo?.localRole ?? 'X';
+    const isPvpActiveTurn = isMultiplayerActive ? game.state.turn === localRole : game.isHumanTurn;
+
     return (
         <>
             <MobileThumbDock
                 gamePhase={game.gamePhase}
-                isHumanTurn={game.isHumanTurn}
+                isHumanTurn={isPvpActiveTurn}
                 hasDice={Boolean(game.dice)}
                 canUndo={game.canUndo}
                 canConfirm={game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
@@ -51,6 +54,7 @@ export const GameScreenMobileControls: React.FC<GameScreenMobileControlsProps> =
                 isAnalyzingCoach={isAnalyzingCoach}
                 isTilted={tilt.isTilted}
                 onRoll={() => {
+                    if (isMultiplayerActive && game.state.turn !== localRole) return;
                     tilt.markRollTimestamp();
                     game.rollDice();
                 }}
