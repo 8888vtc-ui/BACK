@@ -20,6 +20,23 @@ import {
 export const BLUNDER_BANK_STORAGE_KEY = PERSONAL_BLUNDERS_STORAGE_KEY;
 
 const benchmarkProgressMap = new Map<string, { timesReviewed: number; timesSolved: number; isMastered: boolean; lastAttemptDate?: string }>();
+const dynamicFactoryQuizzes: PlayerBlunderRecord[] = [];
+const dynamicFactoryIds = new Set<string>();
+
+export function registerFactoryQuizzes(quizzes: PlayerBlunderRecord[]): void {
+    const existingIds = new Set(BENCHMARK_BLUNDERS.map((b) => b.id));
+    for (const q of quizzes) {
+        if (!existingIds.has(q.id) && !dynamicFactoryIds.has(q.id)) {
+            dynamicFactoryIds.add(q.id);
+            dynamicFactoryQuizzes.push(q);
+        }
+    }
+}
+
+export function clearRegisteredFactoryQuizzes(): void {
+    dynamicFactoryQuizzes.length = 0;
+    dynamicFactoryIds.clear();
+}
 
 export function personalBlunderToPlayerBlunder(rec: PersonalBlunderRecord): PlayerBlunderRecord {
     const choices = rec.candidatesTop4.map((c) => c.notation);
@@ -73,7 +90,7 @@ export function createDefaultBenchmarkBlunders(): PlayerBlunderRecord[] {
 export function getAllBlunders(): PlayerBlunderRecord[] {
     const personal = getPersonalBlunders().map(personalBlunderToPlayerBlunder);
     const benchmarks = createDefaultBenchmarkBlunders();
-    return [...personal, ...benchmarks];
+    return [...personal, ...benchmarks, ...dynamicFactoryQuizzes];
 }
 
 export function saveAllBlunders(blunders: PlayerBlunderRecord[]): void {

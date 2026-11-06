@@ -10,7 +10,9 @@ import { applyMove, computeLegalTargets, type BoardState } from '../../engine/ba
 import { formatMoveSequenceNotation } from '../../lib/engine/evaluator';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { useDrillRating } from '../../hooks/useDrillRating';
-import { getAllBlunders, getBlunderBankStats, resetAllBlunderMastery, markBlunderAttempt, recordBlunder } from '../../features/drills/blunderBank';
+import { getAllBlunders, getBlunderBankStats, resetAllBlunderMastery, markBlunderAttempt, recordBlunder, registerFactoryQuizzes } from '../../features/drills/blunderBank';
+import { buildHarvestedBlunder, type HarvestedSeedInput } from '../../features/drills/benchmarkBlunders';
+import { getSavedPlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { validateDrillNotationChoice } from '../../features/drills/blunderDrillEngine';
 import { validateBoardState, computeTenthsMetricDelta } from '../../features/drills/drillSubAgentsPipeline';
 import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
@@ -60,6 +62,18 @@ export function BlunderDrillActiveSession({ initialConceptId, initialMode = 'ada
     useEffect(() => {
         const onStoreUpdate = () => setStorePendingCount(getPendingPersonalBlundersCount());
         window.addEventListener(PERSONAL_BLUNDERS_UPDATED_EVENT, onStoreUpdate);
+        if (typeof window !== 'undefined') {
+            const gate = getSavedPlayerTierGate();
+            fetch(`/api/quizzes/factory?limit=100&gate=${gate}&random=true`)
+                .then((r) => r.json())
+                .then((data) => {
+                    if (data.success && Array.isArray(data.quizzes)) {
+                        const loaded = data.quizzes.map((s: HarvestedSeedInput, idx: number) => buildHarvestedBlunder(s, idx));
+                        registerFactoryQuizzes(loaded);
+                    }
+                })
+                .catch(() => {});
+        }
         return () => window.removeEventListener(PERSONAL_BLUNDERS_UPDATED_EVENT, onStoreUpdate);
     }, []);
 

@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as fs from 'fs';
 import * as path from 'path';
 import { BGSAGE_3PLY_FACTORY_SEED } from '../../../../features/drills/bgsage3PlyFactorySeed';
+import { normalizePorteGate, isQuizInPorteGate } from '../../../../features/drills/quizTierGates';
 import type { HarvestedSeedInput } from '../../../../features/drills/benchmarkBlunders';
 import type { DrillTier, BlunderVerdict } from '../../../../features/drills/types';
 
@@ -78,13 +79,16 @@ export async function GET(request: NextRequest) {
         const offsetParam = parseInt(searchParams.get('offset') ?? '0', 10);
         const offset = Number.isFinite(offsetParam) ? Math.max(0, offsetParam) : 0;
         const tierParam = searchParams.get('tier');
+        const gateParam = searchParams.get('gate');
         const typeParam = searchParams.get('type');
         const randomParam = searchParams.get('random') === 'true';
 
         const { quizzes: all, totalOnDisk } = loadQuizzesFromDisk();
         let filtered = all;
 
-        if (tierParam) {
+        if (gateParam) {
+            filtered = filtered.filter((q) => isQuizInPorteGate(q, gateParam));
+        } else if (tierParam) {
             const tierNum = parseInt(tierParam, 10);
             if (Number.isFinite(tierNum)) {
                 filtered = filtered.filter((q) => q.tier === tierNum);
@@ -117,6 +121,7 @@ export async function GET(request: NextRequest) {
             totalQuizzes: all.length,
             checkerCount,
             cubeCount,
+            gate: gateParam ? normalizePorteGate(gateParam) : null,
             totalFiltered: filtered.length,
             limit,
             offset,

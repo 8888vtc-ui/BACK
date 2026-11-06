@@ -99,7 +99,7 @@ function extractMatchContextFromXgid(xgid: string): NonNullable<PlayerBlunderRec
     };
 }
 
-function buildHarvestedBlunder(seed: HarvestedSeedInput, _idx: number): PlayerBlunderRecord {
+export function buildHarvestedBlunder(seed: HarvestedSeedInput, _idx: number): PlayerBlunderRecord {
     let cachedBoard: number[] | null = null;
     let cachedContext: NonNullable<PlayerBlunderRecord['matchContext']> | null = null;
     let cachedSemantic: ReturnType<typeof resolveSemanticArchetype> | null = null;
