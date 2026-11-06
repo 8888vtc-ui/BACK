@@ -36,22 +36,22 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
   const isGuest = !stats.isRegistered;
   const isCalibrating = stats.isRegistered && stats.gamesPlayed === 0;
 
-  const globalVal = isGuest ? '—' : isCalibrating ? 'En calibrage' : (stats.globalPR?.toFixed(1) ?? '6.3');
-  const checkerVal = isGuest ? '—' : isCalibrating ? 'En calibrage' : (stats.checkerPR?.toFixed(1) ?? '4.2');
-  const cubeVal = isGuest ? '—' : isCalibrating ? 'En calibrage' : (stats.cubePR?.toFixed(1) ?? '8.1');
+  const globalVal = isGuest ? '—' : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.globalPR?.toFixed(1) ?? '6.3');
+  const checkerVal = isGuest ? '—' : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.checkerPR?.toFixed(1) ?? '4.2');
+  const cubeVal = isGuest ? '—' : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.cubePR?.toFixed(1) ?? '8.1');
 
-  const globalSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '1st match required' : '1re partie requise') : `${stats.gamesPlayed} ${stats.gamesPlayed > 1 ? (isEn ? 'parties analysées' : 'parties analysées') : (isEn ? 'partie analysée' : 'partie analysée')}`;
-  const checkerSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.checkerPR! < 5.0 ? 'Niveau Master (< 5.0)' : 'Précision pions');
-  const cubeSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.cubePR! > 7.0 ? 'Axe de travail prioritaire' : 'Précision videau');
+  const globalSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '1st match required' : '1re partie requise') : `${stats.gamesPlayed} ${stats.gamesPlayed > 1 ? (isEn ? 'analyzed matches' : 'parties analysées') : (isEn ? 'analyzed match' : 'partie analysée')}`;
+  const checkerSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.checkerPR! < 5.0 ? (isEn ? 'Master Level (< 5.0)' : 'Niveau Master (< 5.0)') : (isEn ? 'Checker accuracy' : 'Précision pions'));
+  const cubeSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.cubePR! > 7.0 ? (isEn ? 'Priority study area' : 'Axe de travail prioritaire') : (isEn ? 'Cube accuracy' : 'Précision videau'));
 
   const handleLaunchMatch = () => {
     onStartExpertMatch(matchLength);
   };
 
   return (
-    <div data-testid="expert-home-portal" className="flex flex-col gap-3.5 w-full max-w-5xl mx-auto py-1 sm:py-2">
+    <div data-testid="expert-home-portal" className="flex flex-col gap-3 w-full max-w-5xl mx-auto py-1">
       {/* En-tête Cockpit Pro avec Télémétrie Officielle */}
-      <div className="rounded-2xl border border-white/[0.08] bg-[#0B0E14]/90 p-4 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+      <div className="rounded-2xl border border-white/[0.08] bg-[#0B0E14]/90 p-3.5 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5">
         <div className="flex flex-col gap-0.5 max-w-xl">
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4AF37]">
@@ -89,7 +89,7 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
       </div>
 
       {/* CARTE 1 : COCKPIT DE MATCH DE TOURNOI OFFICIEL */}
-      <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-4 sm:p-5 flex flex-col gap-3">
+      <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-4 flex flex-col gap-2.5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -115,7 +115,7 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             type="button"
             data-testid="expert-hide-pips-btn"
             onClick={() => setIsPipsHidden((prev) => !prev)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold transition ${
               isPipsHidden
                 ? 'bg-amber-500/20 border-amber-400 text-amber-300'
                 : 'bg-white/5 border-white/10 text-stone-300 hover:bg-white/10'
@@ -152,7 +152,7 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
                 type="button"
                 data-testid={fmt.testId}
                 onClick={() => setMatchLength(fmt.len)}
-                className={`px-3 py-1.5 rounded-xl border text-xs font-bold font-mono transition active:scale-95 ${
+                className={`px-3 py-1 rounded-xl border text-xs font-bold font-mono transition active:scale-95 ${
                   isSelected
                     ? 'bg-white/10 text-[#D4AF37] border border-[#D4AF37]/50 font-bold shadow-sm'
                     : 'bg-white/[0.03] text-zinc-300 border-white/10 hover:bg-white/[0.06] hover:text-white'
@@ -165,12 +165,12 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
         </div>
 
         {/* Boutons d'action : Lancer le match Or + Inviter un adversaire */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-0.5">
           <button
             type="button"
             data-testid="expert-play-btn"
             onClick={handleLaunchMatch}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-black shadow-lg hover:brightness-105 active:scale-95 transition"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-black shadow-lg hover:brightness-105 active:scale-95 transition"
           >
             <Swords className="w-4 h-4 text-black" strokeWidth={1.75} />
             <span>
@@ -183,7 +183,7 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             type="button"
             data-testid="expert-invite-btn"
             onClick={onInviteFriend ?? (() => {})}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-4 py-3 text-xs sm:text-sm font-bold text-stone-200 hover:bg-white/10 hover:text-white active:scale-95 transition"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-4 py-2.5 text-xs sm:text-sm font-bold text-stone-200 hover:bg-white/10 hover:text-white active:scale-95 transition"
           >
             <Share2 className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
             <span>
@@ -196,9 +196,9 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
       {/* CARTE 2 : BILAN DE PERFORMANCE OFFICIEL (PIONS VS VIDEAU) & OUTILS PRO */}
       <div
         data-testid="decomposed-pr-panel"
-        className="rounded-2xl border border-white/[0.08] bg-[#0B0E14]/90 p-4 sm:p-5 shadow-xl text-white flex flex-col gap-3"
+        className="rounded-2xl border border-white/[0.08] bg-[#0B0E14]/90 p-4 shadow-xl text-white flex flex-col gap-2.5"
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/10 pb-2">
           <div className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#D4AF37]/20 text-[#f3d27a]">
               <Activity className="w-4 h-4 text-[#D4AF37]" />
@@ -213,24 +213,24 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             </div>
           </div>
           <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold">
-            PR CIBLE &lt; 6.0
+            {isEn ? 'TARGET PR < 6.0' : 'PR CIBLE < 6.0'}
           </span>
         </div>
 
         {/* 3 indicateurs officiels selon le statut réel du joueur */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3">
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-2.5 sm:p-3 text-center flex flex-col items-center">
-            <span className="text-[11px] font-mono text-stone-400">ER / PR GLOBAL</span>
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-2 sm:p-2.5 text-center flex flex-col items-center">
+            <span className="text-[11px] font-mono text-stone-400">{isEn ? 'OVERALL ER / PR' : 'ER / PR GLOBAL'}</span>
             <span data-testid="pr-global-val" className={`font-mono font-black ${isCalibrating ? 'text-xs sm:text-sm text-amber-300' : isGuest ? 'text-base sm:text-xl text-stone-500' : 'text-base sm:text-xl text-[#f3d27a]'}`}>{globalVal}</span>
             <span className="text-[10px] sm:text-[11px] text-stone-300">{globalSub}</span>
           </div>
-          <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/20 p-2.5 sm:p-3 text-center flex flex-col items-center">
-            <span className="text-[11px] font-mono text-stone-400">PR PIONS (CHECKER)</span>
+          <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/20 p-2 sm:p-2.5 text-center flex flex-col items-center">
+            <span className="text-[11px] font-mono text-stone-400">{isEn ? 'CHECKER PR' : 'PR PIONS (CHECKER)'}</span>
             <span data-testid="pr-checker-val" className={`font-mono font-black ${isCalibrating ? 'text-xs sm:text-sm text-amber-300' : isGuest ? 'text-base sm:text-xl text-stone-500' : 'text-base sm:text-xl text-emerald-400'}`}>{checkerVal}</span>
             <span className="text-[10px] sm:text-[11px] text-emerald-300 font-bold">{checkerSub}</span>
           </div>
-          <div className="rounded-xl border border-amber-500/25 bg-amber-950/20 p-2.5 sm:p-3 text-center flex flex-col items-center">
-            <span className="text-[11px] font-mono text-stone-400">PR VIDEAU (CUBE)</span>
+          <div className="rounded-xl border border-amber-500/25 bg-amber-950/20 p-2 sm:p-2.5 text-center flex flex-col items-center">
+            <span className="text-[11px] font-mono text-stone-400">{isEn ? 'CUBE PR' : 'PR VIDEAU (CUBE)'}</span>
             <span data-testid="pr-cube-val" className={`font-mono font-black ${isCalibrating ? 'text-xs sm:text-sm text-amber-300' : isGuest ? 'text-base sm:text-xl text-stone-500' : 'text-base sm:text-xl text-amber-300'}`}>{cubeVal}</span>
             <span className="text-[10px] sm:text-[11px] text-amber-400 font-bold">{cubeSub}</span>
           </div>

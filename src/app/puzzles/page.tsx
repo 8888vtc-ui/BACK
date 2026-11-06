@@ -1,9 +1,10 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import BlunderDrillView from '../../components/drills/BlunderDrillView';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
 import { BeginnerAcademyFlow } from '../../components/beginner/BeginnerAcademyFlow';
+import AppNavbar from '../../components/nav/AppNavbar';
+import { LobbyLeftSidebar } from '../../components/lobby/LobbySidebarAndWidgets';
 
 export const metadata: Metadata = {
     title: 'Quiz ER Backgammon — 18 613 Problèmes Tactiques 3-Ply Certifiés GNU (Équité Réelle)',
@@ -35,14 +36,20 @@ export default async function PuzzlesPage({ searchParams }: PuzzlesPageProps) {
             : 'pr_math';
 
     return (
-        <main className="flex h-dvh max-h-dvh w-screen overflow-hidden flex-col items-center bg-slate-950 text-slate-100">
-            <ErrorBoundary name="Quizz Adaptatifs">
-                {isBeginnerAcademy ? (
-                    <BeginnerAcademyFlow />
-                ) : (
-                    <BlunderDrillView initialMode={initialMode} />
-                )}
-            </ErrorBoundary>
+        <main className="flex h-dvh max-h-dvh w-screen overflow-hidden flex-col bg-slate-950 text-slate-100">
+            <AppNavbar activeTab="puzzles" />
+            <div className="flex flex-1 min-h-0 overflow-hidden w-full">
+                <LobbyLeftSidebar />
+                <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
+                    <ErrorBoundary name="Quizz Adaptatifs">
+                        {isBeginnerAcademy ? (
+                            <BeginnerAcademyFlow />
+                        ) : (
+                            <BlunderDrillView initialMode={initialMode} />
+                        )}
+                    </ErrorBoundary>
+                </div>
+            </div>
         </main>
     );
 }

@@ -241,6 +241,15 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
         if (initialLocale) return;
         const syncDeviceLocale = () => {
             try {
+                const sessionManual = window.sessionStorage?.getItem('bgtour_manual_locale') as Locale | null;
+                if (sessionManual && VALID_LOCALES.has(sessionManual)) {
+                    setLocaleState(sessionManual);
+                    return;
+                }
+                if (typeof navigator !== 'undefined' && navigator.language?.toLowerCase().startsWith('fr')) {
+                    setLocaleState('fr');
+                    return;
+                }
                 const manual = (window.localStorage?.getItem('bgtour_locale') || window.localStorage?.getItem('bg_locale')) as Locale | null;
                 if (manual && VALID_LOCALES.has(manual)) {
                     setLocaleState(manual);
@@ -261,6 +270,7 @@ export function I18nProvider({ children, initialLocale }: I18nProviderProps) {
         setLocaleState(newLocale);
         if (typeof window !== 'undefined') {
             try {
+                window.sessionStorage?.setItem('bgtour_manual_locale', newLocale);
                 window.localStorage?.setItem('bgtour_locale', newLocale);
                 window.localStorage?.setItem('bg_locale', newLocale);
                 document.documentElement.lang = newLocale;

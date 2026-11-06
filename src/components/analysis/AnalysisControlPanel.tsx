@@ -12,7 +12,8 @@
  */
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Zap, GraduationCap, Play } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 import type { CandidateMoveAnalysisRow } from '../../lib/analysis/analysisStudioEngine';
 
 export interface AnalysisControlPanelProps {
@@ -35,20 +36,20 @@ export interface AnalysisControlPanelProps {
     readonly coachExplanation?: string;
 }
 
-export function formatCubeAdvice(rec?: string): string {
-    if (!rec) return 'Pas de Double (Garder le Videau à 1)';
+export function formatCubeAdvice(rec?: string, isEn = false): string {
+    if (!rec) return isEn ? 'No Double (Keep Cube at 1)' : 'Pas de Double (Garder le Videau à 1)';
     const upper = rec.toUpperCase();
     if (upper.includes('NO DOUBLE') || upper.includes('NO_DOUBLE')) {
-        return 'Pas de Double (Garder le Videau à 1)';
+        return isEn ? 'No Double (Keep Cube at 1)' : 'Pas de Double (Garder le Videau à 1)';
     }
     if (upper.includes('DOUBLE') && upper.includes('TAKE')) {
-        return 'Doubler maintenant (×2) / Prendre';
+        return isEn ? 'Double Now (×2) / Take' : 'Doubler maintenant (×2) / Prendre';
     }
     if (upper.includes('DOUBLE') && upper.includes('PASS')) {
-        return 'Doubler maintenant (×2) / Passer';
+        return isEn ? 'Double Now (×2) / Pass' : 'Doubler maintenant (×2) / Passer';
     }
     if (upper.includes('TOO GOOD')) {
-        return 'Trop beau pour doubler (Jouer le gammon)';
+        return isEn ? 'Too Good to Double (Play for Gammon)' : 'Trop beau pour doubler (Jouer le gammon)';
     }
     return rec;
 }
@@ -74,7 +75,8 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
     cubeRecommendation = 'No Double',
     coachExplanation,
 }) => {
-    const router = useRouter();
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
     const [xgidExpanded, setXgidExpanded] = useState<boolean>(false);
     const [localXgidInput, setLocalXgidInput] = useState<string>(xgidString);
 
@@ -86,7 +88,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
             {/* 1. Sélecteur Visuel des Dés & Format de Match */}
             <div className="rounded-xl border border-white/10 bg-[#0B1015] p-2.5 flex flex-col gap-2">
                 <div className="flex items-center justify-between text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
-                    <span>Sélecteur des Dés :</span>
+                    <span>{isEn ? 'Dice Selector:' : 'Sélecteur des Dés :'}</span>
                     <span className="font-mono text-white text-sm">
                         {DIE_FACES[dice[0] - 1]} {dice[0]} — {DIE_FACES[dice[1] - 1]} {dice[1]}
                     </span>
@@ -94,7 +96,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
 
                 {/* Dé 1 */}
                 <div className="flex items-center gap-1.5 text-xs">
-                    <span className="w-12 text-stone-400 font-semibold text-[11px]">Dé 1 :</span>
+                    <span className="w-12 text-stone-400 font-semibold text-[11px]">{isEn ? 'Die 1:' : 'Dé 1 :'}</span>
                     <div className="flex flex-1 gap-1">
                         {[1, 2, 3, 4, 5, 6].map((val) => (
                             <button
@@ -116,7 +118,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
 
                 {/* Dé 2 */}
                 <div className="flex items-center gap-1.5 text-xs">
-                    <span className="w-12 text-stone-400 font-semibold text-[11px]">Dé 2 :</span>
+                    <span className="w-12 text-stone-400 font-semibold text-[11px]">{isEn ? 'Die 2:' : 'Dé 2 :'}</span>
                     <div className="flex flex-1 gap-1">
                         {[1, 2, 3, 4, 5, 6].map((val) => (
                             <button
@@ -138,13 +140,13 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
 
                 {/* Format de match */}
                 <div className="flex items-center gap-2 pt-1 border-t border-white/5 text-xs">
-                    <span className="text-stone-400 text-[11px]">Format :</span>
+                    <span className="text-stone-400 text-[11px]">{isEn ? 'Format:' : 'Format :'}</span>
                     <select
                         value={matchLength}
                         onChange={(e) => onChangeMatchLength(Number(e.target.value))}
                         className="rounded-lg border border-white/15 bg-black/60 px-2 py-0.5 text-xs text-stone-200 focus:outline-none"
                     >
-                        <option value="0">Partie Libre (Money)</option>
+                        <option value="0">{isEn ? 'Money Game' : 'Partie Libre (Money)'}</option>
                         <option value="3">Match 3 pts</option>
                         <option value="5">Match 5 pts</option>
                         <option value="7">Match 7 pts</option>
@@ -164,15 +166,16 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                 </div>
             </div>
 
-            {/* 2. Bouton Lancer l'Analyse 3-Ply */}
+            {/* 2. Bouton Lancer l'Analyse 3-Ply (Unique bouton plein Or) */}
             <button
                 type="button"
                 data-testid="run-analysis-btn"
                 disabled={loading}
                 onClick={onRunAnalysis}
-                className="w-full rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#c69214] py-2 text-xs font-black uppercase tracking-wider text-[#1a0f08] shadow-md hover:brightness-105 disabled:opacity-50 transition"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] py-2 text-xs font-bold uppercase tracking-wider text-black shadow-md hover:brightness-105 disabled:opacity-50 transition"
             >
-                {loading ? 'Calcul 3-ply en cours...' : '⚡ ANALYSER CETTE POSITION EN 3-PLY'}
+                <Zap className="w-3.5 h-3.5 text-black" strokeWidth={1.75} />
+                <span>{loading ? (isEn ? 'Running 3-ply analysis...' : 'Calcul 3-ply en cours...') : (isEn ? 'ANALYZE POSITION IN 3-PLY' : 'ANALYSER CETTE POSITION EN 3-PLY')}</span>
             </button>
 
             {errorMessage && (
@@ -185,7 +188,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
             {candidates.length > 0 && (
                 <div data-testid="analysis-results-section" className="flex flex-col gap-1.5">
                     <h2 className="text-xs font-extrabold uppercase tracking-wider text-emerald-400 border-b border-emerald-500/30 pb-1">
-                        Top 5 des Coups Légaux (Équité 3-Ply) :
+                        {isEn ? 'Top 5 Legal Moves (3-Ply Equity):' : 'Top 5 des Coups Légaux (Équité 3-Ply) :'}
                     </h2>
                     <div className="flex flex-col gap-1">
                         {candidates.map((cand, idx) => {
@@ -211,11 +214,11 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                                         </span>
                                     </div>
                                     <div className="mt-1 flex items-center gap-2 font-mono text-[10px] text-stone-400">
-                                        <span>Gagne : {cand.winPct}%</span>
+                                        <span>{isEn ? 'Win:' : 'Gagne :'} {cand.winPct}%</span>
                                         <span>·</span>
                                         <span>Gammon : {cand.winGammonPct}%</span>
                                         <span>·</span>
-                                        <span>Perd : {cand.losePct}%</span>
+                                        <span>{isEn ? 'Lose:' : 'Perd :'} {cand.losePct}%</span>
                                     </div>
                                 </button>
                             );
@@ -224,18 +227,21 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
 
                     {/* Conseil Videau 3-Ply */}
                     <div data-testid="cube-decision-box" className="p-2 rounded-xl border border-sky-400/30 bg-sky-950/40 text-xs flex items-center justify-between">
-                        <span className="font-bold text-sky-300 uppercase">Conseil Videau 3-Ply :</span>
-                        <span className="font-mono font-bold text-white">{formatCubeAdvice(cubeRecommendation)}</span>
+                        <span className="font-bold text-sky-300 uppercase">{isEn ? '3-Ply Cube Advice:' : 'Conseil Videau 3-Ply :'}</span>
+                        <span className="font-mono font-bold text-white">{formatCubeAdvice(cubeRecommendation, isEn)}</span>
                     </div>
 
                     {/* 4. Explication du Coach */}
                     <div data-testid="coach-explanation-card" className="p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#070a10] text-xs flex flex-col gap-1">
                         <div className="font-bold text-[#D4AF37] flex items-center gap-1.5">
-                            <span>🎓 Explication du Coach :</span>
+                            <GraduationCap className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
+                            <span>{isEn ? 'Coach Explanation:' : 'Explication du Coach :'}</span>
                         </div>
                         <p className="text-stone-300 leading-snug">
                             {coachExplanation ||
-                                `Le coup optimal #${candidates[0]?.notation} maximise vos chances de victoire (${candidates[0]?.winPct} %) en sécurisant vos pions sans concéder de tirs directs à l'adversaire.`}
+                                (isEn
+                                    ? `Optimal move #${candidates[0]?.notation} maximizes winning chances (${candidates[0]?.winPct}%) while keeping checkers safe.`
+                                    : `Le coup optimal #${candidates[0]?.notation} maximise vos chances de victoire (${candidates[0]?.winPct} %) en sécurisant vos pions sans concéder de tirs directs à l'adversaire.`)}
                         </p>
                     </div>
 
@@ -244,9 +250,10 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                         type="button"
                         data-testid="play-position-from-here-btn"
                         onClick={onPlayPositionFromHere}
-                        className="w-full rounded-xl border border-emerald-400 bg-emerald-500/20 py-2 text-xs font-black uppercase text-emerald-300 hover:bg-emerald-500/30 transition shadow"
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-400 bg-emerald-500/20 py-2 text-xs font-black uppercase text-emerald-300 hover:bg-emerald-500/30 transition shadow"
                     >
-                        🎮 Jouer cette position contre le Coach IA à partir d&apos;ici →
+                        <Play className="w-3.5 h-3.5 text-emerald-300" strokeWidth={1.75} />
+                        <span>{isEn ? 'Play this position against AI Coach from here →' : 'Jouer cette position contre le Coach IA à partir d\'ici →'}</span>
                     </button>
                 </div>
             )}
@@ -258,7 +265,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                     onClick={() => setXgidExpanded((prev) => !prev)}
                     className="flex items-center justify-between w-full text-[11px] font-semibold text-stone-400 hover:text-stone-200 transition"
                 >
-                    <span>▸ Options avancées : Importer / Copier un code XGID</span>
+                    <span>{isEn ? '▸ Advanced options: Import / Copy XGID code' : '▸ Options avancées : Importer / Copier un code XGID'}</span>
                     <span>{xgidExpanded ? '▲' : '▼'}</span>
                 </button>
                 {xgidExpanded && (
@@ -268,7 +275,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                             data-testid="xgid-input"
                             value={localXgidInput}
                             onChange={(e) => setLocalXgidInput(e.target.value)}
-                            placeholder="Collez une chaîne XGID..."
+                            placeholder={isEn ? 'Paste XGID string...' : 'Collez une chaîne XGID...'}
                             className="w-full rounded-lg border border-white/20 bg-black/70 px-2 py-1 font-mono text-xs text-amber-200 focus:outline-none"
                         />
                         <button
@@ -276,7 +283,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                             onClick={() => onImportXgid(localXgidInput)}
                             className="rounded-lg border border-white/20 bg-white/5 py-1 text-[11px] font-bold text-stone-200 hover:bg-white/10"
                         >
-                            Charger ce XGID
+                            {isEn ? 'Load XGID' : 'Charger ce XGID'}
                         </button>
                     </div>
                 )}

@@ -282,7 +282,8 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
                         <svg aria-hidden="true" viewBox="0 0 24 24" className="h-3.5 w-3.5 text-amber-300" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                     </div>
                     <span data-testid="lobby-auth-status" className="hidden sm:inline text-xs font-semibold text-slate-200 whitespace-nowrap">{isEn ? 'Guest Player' : 'Joueur Invité'}</span>
-                    <span className="text-[11px] text-amber-400 font-semibold">{isEn ? 'Sign In' : 'Connexion'}</span>
+                    <span aria-hidden="true" className="text-slate-500">•</span>
+                    <span className="text-[11px] text-amber-400 font-semibold whitespace-nowrap">{isEn ? 'Sign In' : 'Connexion'}</span>
                     <span aria-hidden="true" className="text-[11px] text-slate-400">▾</span>
                 </button>
             )}

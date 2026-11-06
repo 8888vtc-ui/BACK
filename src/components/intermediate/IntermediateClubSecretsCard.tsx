@@ -108,12 +108,12 @@ export function IntermediateClubSecretsCard({
   return (
     <div
       data-testid="intermediate-club-secrets-card"
-      className="w-full bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-5 text-white"
+      className="w-full bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-4 text-white"
     >
       {/* Header avec switcher vocal */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/10 pb-2.5">
         <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
+          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
             <Trophy className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
           </span>
           <div>
@@ -135,7 +135,7 @@ export function IntermediateClubSecretsCard({
             type="button"
             data-testid="club-secrets-voice-btn"
             onClick={() => handleSpeak(lang === 'fr' ? current.audioFr : current.audioEn)}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold hover:bg-amber-500/30 transition"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold hover:bg-amber-500/30 transition"
           >
             <Volume2 className="w-3.5 h-3.5" />
             <span>{lang === 'fr' ? 'Écouter' : 'Listen'}</span>
@@ -144,7 +144,7 @@ export function IntermediateClubSecretsCard({
       </div>
 
       {/* 4 Onglets Clairs */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 my-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 my-2">
         {(
           [
             { id: 1, labelFr: '1. Le Videau', labelEn: '1. Doubling Cube', icon: Dices },
@@ -174,14 +174,14 @@ export function IntermediateClubSecretsCard({
       </div>
 
       {/* Contenu épuré de la Clé sélectionnée dans un conteneur unifié léger */}
-      <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex-1 min-w-0 space-y-2">
+      <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-3.5 flex flex-col md:flex-row md:items-end justify-between gap-3">
+        <div className="flex-1 min-w-0 space-y-1.5">
           <div className="flex items-center justify-between gap-2">
             <div>
               <h4 className="text-xs sm:text-sm font-black text-amber-200">
                 {lang === 'fr' ? current.titleFr : current.titleEn}
               </h4>
-              <p className="text-[11px] text-stone-400 mt-0.5">
+              <p className="text-[11px] text-stone-400">
                 {lang === 'fr' ? current.summaryFr : current.summaryEn}
               </p>
             </div>
@@ -201,10 +201,10 @@ export function IntermediateClubSecretsCard({
             )}
           </div>
 
-          <ul className="text-sm text-zinc-200 leading-relaxed space-y-2 pt-1">
+          <ul className="text-xs sm:text-sm text-zinc-200 leading-snug space-y-1.5 pt-0.5">
             {(lang === 'fr' ? current.pointsFr : current.pointsEn).map((pt, idx) => (
-              <li key={idx} className="flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-2 shrink-0" />
+              <li key={idx} className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 shrink-0" />
                 <span>{pt}</span>
               </li>
             ))}
@@ -212,11 +212,11 @@ export function IntermediateClubSecretsCard({
         </div>
 
         {/* Bouton direct vers l'exercice sur plateau correspondant */}
-        <div className="shrink-0 flex items-center justify-end md:justify-center">
+        <div className="shrink-0 flex items-center justify-end md:self-end">
           <Link
             href="/puzzles?gate=intermediate"
             data-testid="club-secrets-practice-btn"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-[#D4AF37]/40 font-semibold px-5 py-2.5 text-xs sm:text-sm transition active:scale-95 whitespace-nowrap shadow-sm"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-[#D4AF37]/40 font-semibold px-4 py-2 text-xs sm:text-sm transition active:scale-95 whitespace-nowrap shadow-sm"
           >
             <Play className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
             <span>{lang === 'fr' ? "S'entraîner sur le Plateau →" : 'Practice on Board →'}</span>

@@ -11,6 +11,8 @@
  */
 
 import React from 'react';
+import { Dices } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 import type { DrillValidationResult } from '../../features/drills/types';
 
 export interface DrillChoicesGridProps {
@@ -26,7 +28,7 @@ export interface DrillChoicesGridProps {
     readonly hoveredChoiceNotation: string | null;
     readonly onHoverChoice?: (notation: string | null) => void;
     readonly onHoverQuizChoice?: (notation: string | null) => void;
-    readonly onSelectChoice?: (notation: string) => void;
+    readonly onSelectChoice?: (notation: string | null | string) => void;
     readonly onSelectQuizChoice?: (notation: string) => void;
 }
 
@@ -46,6 +48,8 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
     onSelectChoice,
     onSelectQuizChoice,
 }) => {
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
     if (!choices || choices.length === 0) return null;
     const handleHover = onHoverQuizChoice ?? onHoverChoice;
     const handleSelect = onSelectQuizChoice ?? onSelectChoice;
@@ -64,15 +68,16 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
                     title="ER / PR : Error Rate / Performance Rating officiel (0.0 = Perfection, 30.0 = Novice)"
                     className="font-bold text-emerald-300"
                 >
-                    📐 Jouez sur le plateau ou cliquez un coup (ER / PR) :
+                    {isEn ? 'Play on the board or select a move (ER / PR):' : 'Jouez sur le plateau ou cliquez un coup (ER / PR) :'}
                 </span>
                 <div
                     data-testid="drill-dice-direction-badge"
                     className="inline-flex items-center gap-1.5 rounded-lg border border-[#D4AF37]/30 bg-[#12151C] px-2 py-0.5 font-mono text-[10px] font-bold text-[#fdf8eb]"
                 >
-                    <span className="text-[#D4AF37]">🎲 Blanc joue {dice[0]}-{dice[1]}</span>
+                    <Dices className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
+                    <span className="text-[#D4AF37]">{isEn ? `White plays ${dice[0]}-${dice[1]}` : `Blanc joue ${dice[0]}-${dice[1]}`}</span>
                     <span className="text-slate-400">•</span>
-                    <span className="text-slate-300">Sens : Case 24 ➔ Case 1</span>
+                    <span className="text-slate-300">{isEn ? 'Direction: Pt 24 ➔ Pt 1' : 'Sens : Case 24 ➔ Case 1'}</span>
                 </div>
             </div>
 

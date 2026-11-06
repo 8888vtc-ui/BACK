@@ -108,13 +108,13 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             type="button"
                             data-testid="sidebar-quick-play-btn"
                             onClick={handleQuickPlayClick}
-                            title={isEn ? 'Game Lobby' : 'Salon de Jeu'}
-                            className={`flex items-center gap-2.5 w-full whitespace-nowrap rounded-r-lg px-3 py-2 text-xs font-bold transition-all duration-150 ${
+                            title={isEn ? 'Game Room' : 'Salon de Jeu'}
+                            className={`h-10 flex items-center gap-2.5 w-full whitespace-nowrap rounded-r-lg px-3 text-sm font-bold transition-all duration-150 ${
                                 isHomeRoute && (selectedMode === null || selectedMode === 'ai') ? activeRailCls : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white'
                             }`}
                         >
                             <LayoutGrid className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
-                            {!collapsed && <span className="truncate">{isEn ? 'Game Lobby' : 'Salon de Jeu'}</span>}
+                            {!collapsed && <span className="truncate">{isEn ? 'Game Room' : 'Salon de Jeu'}</span>}
                         </button>
 
                         {isBeginner && (
@@ -123,7 +123,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 data-testid="sidebar-guided-play-btn"
                                 onClick={() => { if (typeof window !== 'undefined') window.location.assign('/play?gate=beginner&start=guided'); }}
                                 title={isEn ? 'Start Guided Match with the Professor' : 'Lancer une partie guidée avec le Professeur'}
-                                className={itemCls}
+                                className="h-10 flex items-center justify-between w-full whitespace-nowrap rounded-lg px-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.04] hover:text-white transition-all duration-150"
                             >
                                 <span className="flex items-center gap-2.5 truncate">
                                     <GraduationCap className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
@@ -137,18 +137,18 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             data-testid="sidebar-find-player-btn"
                             onClick={handleFindPlayerClick}
                             title={`${onlinePlayersCount} ${isEn ? 'players online' : 'joueurs en ligne'}`}
-                            className={`flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 py-2 text-xs font-semibold transition-all duration-150 ${
+                            className={`h-10 flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 transition-all duration-150 ${
                                 selectedMode === 'multiplayer' ? activeRailCls : 'text-zinc-100 hover:bg-white/[0.04] hover:text-white'
                             }`}
                         >
                             <span className="flex items-center gap-2.5 truncate">
                                 <Users className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
-                                {!collapsed && <span className="text-xs font-medium text-zinc-100 truncate">{isEn ? 'Find a Player' : 'Trouver un joueur'}</span>}
+                                {!collapsed && <span className="text-sm font-medium text-zinc-100 truncate">{isEn ? 'Find a Player' : 'Trouver un joueur'}</span>}
                             </span>
                             {!collapsed && (
                                 <span
                                     title={`${onlinePlayersCount} ${isEn ? 'players online' : 'joueurs en ligne'}`}
-                                    className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-semibold text-emerald-400 flex items-center gap-1 shrink-0"
+                                    className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-mono font-semibold text-emerald-400 flex items-center gap-1.5 shrink-0"
                                 >
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                                     <span>{onlinePlayersCount}</span>

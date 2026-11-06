@@ -265,7 +265,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                                 aria-label={ui.pwa.installAppAria}
                                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-white/25 hover:text-white"
                             >
-                                <span>{ui.pwa.installApp}</span>
+                                <span>{locale === 'en' ? 'Install App' : "Installer l'App"}</span>
                             </button>
                         </div>
                     )}

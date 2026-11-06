@@ -27,17 +27,17 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
   };
 
   return (
-    <div data-testid="intermediate-home-portal" className="flex flex-col gap-4 w-full max-w-5xl mx-auto py-3 px-1">
+    <div data-testid="intermediate-home-portal" className="flex flex-col gap-3 w-full max-w-5xl mx-auto py-1.5 px-1">
       {/* En-tête Club Compact */}
-      <div className="flex flex-col gap-1 text-center sm:text-left px-1">
+      <div className="flex flex-col gap-0.5 text-center sm:text-left px-1">
         <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#D4AF37]">
           <Shield className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
           <span>{isEn ? 'CLUB MODE · PRIORITY TO PLAY & DOUBLING CUBE' : 'MODE INTERMÉDIAIRE / CLUB · PRIORITÉ AU JEU & VIDEAU'}</span>
         </span>
-        <h2 className="text-lg sm:text-xl font-black text-white">
+        <h2 className="text-base sm:text-lg font-black text-white">
           {isEn ? 'Sharpen your club reflexes and crush blunders' : 'Affûtez vos réflexes de club et étouffez les erreurs'}
         </h2>
-        <p className="text-xs sm:text-sm text-stone-300 max-w-2xl leading-relaxed">
+        <p className="text-xs text-stone-300 max-w-2xl leading-relaxed">
           {isEn
             ? 'Play immediately against calibrated club opponents, master the doubling cube, and count race mentally without pips.'
             : 'Jouez immédiatement contre des joueurs de club calibrés, maîtrisez le videau et comptez la course sans compteur de pips.'}
@@ -45,83 +45,84 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
       </div>
 
       {/* BLOC 1 — LANCEMENT DE PARTIE IMMÉDIAT (PRIORITÉ N°1 DU JOUEUR DE CLUB) */}
-      <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-5 flex flex-col gap-3">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a]">
-                <Swords size={18} />
+      <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-4 flex flex-col gap-2.5">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 whitespace-nowrap">
+              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-[#D4AF37]/20 text-[#f3d27a] shrink-0">
+                <Swords size={16} />
               </span>
-              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb]">
+              <h3 className="text-sm sm:text-base font-black text-[#fdf8eb] whitespace-nowrap">
                 {isEn ? 'Play Online — Find Immediate Opponent' : 'Jouer en Ligne — Trouver un Adversaire Immédiat'}
               </h3>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
-                {isEn ? '● 24/7 Club Matchmaking Active' : '● Matchmaking Club Actif 24/7'}
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold whitespace-nowrap shrink-0">
+                {isEn ? '● 24/7 Club Matchmaking' : '● Matchmaking Club 24/7'}
               </span>
             </div>
-            <p className="text-xs text-stone-300 mt-0.5">
-              {isEn
-                ? 'Select match format and launch instantly against a club adversary with realistic thinking delays.'
-                : 'Choisissez votre format et lancez en 1 clic contre un joueur de club (délais humains calibrés).'}
-            </p>
+
+            {/* Sélecteur direct 1-clic : 3, 5, 7 pts, Money Game + Switch Masquer les Pips */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              {[
+                { id: 3, label: '3 pts', testId: 'match-format-3' },
+                { id: 5, label: '5 pts', testId: 'match-format-5' },
+                { id: 7, label: '7 pts', testId: 'match-format-7' },
+                { id: 0, label: isEn ? 'Money Game' : 'Partie Libre', testId: 'match-format-money' },
+              ].map((fmt) => {
+                const active = selectedFormat === fmt.id;
+                return (
+                  <button
+                    key={fmt.id}
+                    type="button"
+                    data-testid={fmt.testId}
+                    onClick={() => setSelectedFormat(fmt.id)}
+                    className={`px-2.5 py-1 rounded-xl border text-xs font-bold transition active:scale-95 whitespace-nowrap ${
+                      active
+                        ? 'bg-white/10 text-[#D4AF37] border border-[#D4AF37]/50 font-bold shadow-sm'
+                        : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    {fmt.label}
+                  </button>
+                );
+              })}
+
+              {/* Switch Mode Tournoi : Masquer les Pips */}
+              <button
+                type="button"
+                data-testid="hide-pips-toggle-btn"
+                onClick={() => setIsPipsHidden((prev) => !prev)}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs font-bold transition active:scale-95 shrink-0 whitespace-nowrap ${
+                  isPipsHidden
+                    ? 'bg-amber-500/20 border-amber-400 text-amber-300'
+                    : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10'
+                }`}
+              >
+                {isPipsHidden ? <EyeOff size={13} /> : <Eye size={13} />}
+                <span>
+                  {isEn
+                    ? (isPipsHidden ? 'Pips: Hidden' : 'Hide Pips')
+                    : (isPipsHidden ? 'Pips : Masqués' : 'Masquer les Pips')}
+                </span>
+              </button>
+            </div>
           </div>
 
-          {/* Sélecteur direct 1-clic : 3, 5, 7 pts, Money Game + Switch Masquer les Pips */}
-          <div className="flex flex-wrap items-center gap-2 self-end sm:self-center">
-            {[
-              { id: 3, label: '3 pts', testId: 'match-format-3' },
-              { id: 5, label: '5 pts', testId: 'match-format-5' },
-              { id: 7, label: '7 pts', testId: 'match-format-7' },
-              { id: 0, label: isEn ? 'Money Game' : 'Partie Libre', testId: 'match-format-money' },
-            ].map((fmt) => {
-              const active = selectedFormat === fmt.id;
-              return (
-                <button
-                  key={fmt.id}
-                  type="button"
-                  data-testid={fmt.testId}
-                  onClick={() => setSelectedFormat(fmt.id)}
-                  className={`px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-bold transition active:scale-95 ${
-                    active
-                      ? 'bg-white/10 text-[#D4AF37] border border-[#D4AF37]/50 font-bold shadow-sm'
-                      : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  {fmt.label}
-                </button>
-              );
-            })}
-
-            {/* Switch Mode Tournoi : Masquer les Pips */}
-            <button
-              type="button"
-              data-testid="hide-pips-toggle-btn"
-              onClick={() => setIsPipsHidden((prev) => !prev)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-bold transition active:scale-95 shrink-0 ${
-                isPipsHidden
-                  ? 'bg-amber-500/20 border-amber-400 text-amber-300'
-                  : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10'
-              }`}
-            >
-              {isPipsHidden ? <EyeOff size={14} /> : <Eye size={14} />}
-              <span>
-                {isEn
-                  ? (isPipsHidden ? 'Pips: Hidden' : 'Hide Pips (Tournament)')
-                  : (isPipsHidden ? 'Pips : Masqués' : 'Masquer les Pips (Tournoi)')}
-              </span>
-            </button>
-          </div>
+          <p className="text-xs text-stone-300">
+            {isEn
+              ? 'Select match format and launch instantly against a club adversary with realistic thinking delays.'
+              : 'Choisissez votre format et lancez en 1 clic contre un joueur de club (délais humains calibrés).'}
+          </p>
         </div>
 
         {/* Boutons d'action : JOUER MAINTENANT (Or) & INVITER UN AMI */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-0.5">
           <button
             type="button"
             data-testid="intermediate-play-btn"
             onClick={handlePlayNow}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-black shadow-lg hover:brightness-105 active:scale-95 transition"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-black shadow-lg hover:brightness-105 active:scale-95 transition"
           >
-            <Swords size={17} className="text-black" />
+            <Swords size={16} className="text-black" />
             <span>{isEn ? 'FIND A PLAYER ONLINE (IMMEDIATE MATCH) →' : 'TROUVER UN JOUEUR EN LIGNE (MATCH IMMÉDIAT) →'}</span>
           </button>
 
@@ -129,7 +130,7 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
             type="button"
             data-testid="intermediate-invite-btn"
             onClick={onInviteFriend}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.06] hover:bg-white/[0.1] px-4 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white transition active:scale-95"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.06] hover:bg-white/[0.1] px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-white transition active:scale-95"
           >
             <Share2 size={15} />
             <span>{isEn ? 'INVITE A FRIEND — 1-CLICK LINK (< 3S)' : 'INVITER UN AMI — LIEN 1-CLIC (< 3S)'}</span>

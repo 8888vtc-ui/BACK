@@ -44,13 +44,13 @@ const RULES: readonly RuleItem[] = [
   },
   {
     id: 2, quizId: 3,
-    labelFr: '2. Faire une Porte (Bouclier 🛡️)', labelEn: '2. Make a Gate (Shield 🛡️)',
+    labelFr: '2. Faire une Porte (Bouclier)', labelEn: '2. Make a Gate (Shield)',
     descFr: '2 pions ou plus ensemble forment une porte : un bouclier imprenable.',
     descEn: '2 or more checkers together make an impenetrable protective gate.',
   },
   {
     id: 3, quizId: 5,
-    labelFr: '3. Frapper un Pion Seul ⚡', labelEn: '3. Hit a Lone Blot ⚡',
+    labelFr: '3. Frapper un Pion Seul', labelEn: '3. Hit a Lone Blot',
     descFr: 'Un pion adverse isolé est expulsé sur la Barre centrale.',
     descEn: 'An isolated opponent checker is hit and sent to the central Bar.',
   },
@@ -90,14 +90,14 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
   };
 
   return (
-    <div data-testid="academy-beginner-view" className="space-y-8 w-full max-w-6xl mx-auto">
+    <div data-testid="academy-beginner-view" className="space-y-6 w-full max-w-6xl mx-auto">
       {/* En-tête bienveillant Débutant */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-1.5">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
           <Sparkles className="w-3.5 h-3.5" />
           <span>{isEn ? 'Beginner Portal • Visual Board Practice' : 'Portail Débutant • Entraînement Visuel sur Plateau'}</span>
         </div>
-        <h2 className="text-xl sm:text-2xl font-black text-white font-serif">
+        <h2 className="text-xl sm:text-2xl font-black text-white font-sans tracking-tight">
           {isEn ? 'Learn Backgammon Directly on the Board' : 'Apprenez le Backgammon Directement sur le Plateau'}
         </h2>
         <p className="text-xs sm:text-sm text-neutral-300 max-w-2xl mx-auto">
@@ -112,15 +112,15 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
         {/* STUDIO 1 : LE PLATEAU INTERACTIF DES RÈGLES */}
         <section
           data-testid="beginner-rules-studio"
-          className="rounded-2xl border border-amber-400/25 bg-[#0B1015]/95 p-4 sm:p-5 shadow-2xl space-y-4"
+          className="rounded-2xl border border-white/10 bg-[#0B1015]/95 p-4 sm:p-5 shadow-2xl space-y-4"
         >
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
                 {isEn ? 'Studio 1 • Visual Rules' : 'Studio 1 • Les Règles Essentielles'}
               </span>
               <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                <Shield className="w-4 h-4 text-amber-400" />
+                <Shield className="w-4 h-4 text-[#D4AF37]" />
                 {isEn ? 'Interactive Board: 5 Golden Situations' : 'Plateau Interactif : Les 5 Situations Clés'}
               </h3>
             </div>
@@ -134,10 +134,10 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
                 type="button"
                 data-testid={`rule-pill-${r.id}`}
                 onClick={() => setSelectedRuleId(r.id)}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+                className={`px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition ${
                   selectedRuleId === r.id
-                    ? 'bg-amber-400 text-black shadow-md shadow-amber-400/20'
-                    : 'bg-white/5 text-neutral-300 hover:bg-white/10'
+                    ? 'bg-white/10 text-[#D4AF37] border-[#D4AF37]/50 shadow-sm'
+                    : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
                 }`}
               >
                 {isEn ? r.labelEn : r.labelFr}
@@ -153,11 +153,11 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
             {isEn ? activeRule.descEn : activeRule.descFr}
           </div>
 
-          {/* Bouton direct vers les 10 défis */}
+          {/* Bouton direct vers les 10 défis (Unique bouton plein Or) */}
           <Link
             href="/puzzles?mode=beginner-academy"
             data-testid="beginner-launch-challenges-btn"
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f7d77e] to-[#b88924] text-black font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] text-black font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition"
           >
             <span>{isEn ? 'Play 10 Board Challenges (+2,000 PTS) →' : 'Jouer les 10 Défis sur le Plateau (+2 000 PTS) →'}</span>
             <ArrowRight className="w-4 h-4" />
@@ -167,15 +167,15 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
         {/* STUDIO 2 : SIMULATEUR DES 15 COUPS D'OUVERTURE */}
         <section
           data-testid="beginner-openings-studio"
-          className="rounded-2xl border border-amber-400/25 bg-[#0B1015]/95 p-4 sm:p-5 shadow-2xl space-y-4"
+          className="rounded-2xl border border-white/10 bg-[#0B1015]/95 p-4 sm:p-5 shadow-2xl space-y-4"
         >
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
                 {isEn ? 'Studio 2 • 15 Opening Rolls' : 'Studio 2 • 15 Coups d\'Ouverture'}
               </span>
               <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                <Zap className="w-4 h-4 text-amber-400" />
+                <Zap className="w-4 h-4 text-[#D4AF37]" />
                 {isEn ? 'Visual Opening Simulator' : 'Simulateur Visuel d\'Ouverture'}
               </h3>
             </div>
@@ -183,7 +183,7 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
               type="button"
               onClick={speakExplanation}
               title={isEn ? 'Listen to coach voice' : 'Écouter le conseil vocal'}
-              className="p-2 rounded-xl bg-amber-400/10 border border-amber-400/25 text-amber-300 hover:bg-amber-400/20 transition"
+              className="p-2 rounded-xl bg-white/5 border border-white/15 text-[#D4AF37] hover:bg-white/10 transition"
             >
               <Volume2 className="w-4 h-4" />
             </button>
@@ -197,13 +197,13 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
                 type="button"
                 data-testid={`opening-pill-${m.id}`}
                 onClick={() => setSelectedRollIndex(idx)}
-                className={`py-1.5 px-2 rounded-lg text-xs font-bold transition ${
+                className={`py-1.5 px-2 rounded-lg border text-xs font-mono font-bold transition ${
                   selectedRollIndex === idx
-                    ? 'bg-amber-400 text-black shadow-md shadow-amber-400/20'
-                    : 'bg-white/5 text-neutral-300 hover:bg-white/10'
+                    ? 'bg-white/10 text-[#D4AF37] border-[#D4AF37]/50 shadow-sm'
+                    : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
                 }`}
               >
-                🎲 {m.id}
+                {m.id}
               </button>
             ))}
           </div>
@@ -217,8 +217,8 @@ export const AcademyBeginnerView: React.FC<AcademyBeginnerViewProps> = React.mem
 
           {/* Conseil du Professeur */}
           <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-            <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wide">
-              💡 {isEn ? activeMove.titleEn : activeMove.titleFr}
+            <span className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-wide">
+              {isEn ? activeMove.titleEn : activeMove.titleFr}
             </span>
             <p className="text-xs sm:text-sm text-neutral-200 leading-relaxed">
               {getExplanation()}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { BookOpen, Play, Sparkles, Dices } from 'lucide-react';
+import { BookOpen, Play, Sparkles, Dices, GraduationCap } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { BeginnerInteractiveGuideModal } from '../beginner/BeginnerInteractiveGuideModal';
 import { BeginnerOpeningMovesExplorer } from '../beginner/BeginnerOpeningMovesExplorer';
@@ -36,7 +36,8 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                 {/* En-tête épuré sans boîte lourde */}
                 <div className="flex flex-col gap-1 text-center sm:text-left px-1">
                     <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-400">
-                        {isEn ? '🌱 BEGINNER MODE • GUIDED DISCOVERY' : '🌱 MODE DÉBUTANT • DÉCOUVERTE GUIDÉE'}
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-400" strokeWidth={1.5} />
+                        <span>{isEn ? 'BEGINNER MODE • GUIDED DISCOVERY' : 'MODE DÉBUTANT • DÉCOUVERTE GUIDÉE'}</span>
                     </span>
                     <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
                         {isEn ? 'Learn the rules and play at your own pace' : 'Apprenez les règles et jouez à votre rythme'}
@@ -87,8 +88,9 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.05] text-stone-200">
                                     <Play size={20} strokeWidth={1.8} />
                                 </span>
-                                <span className="rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-mono font-semibold text-stone-300">
-                                    {isEn ? '🎓 The Professor' : '🎓 Le Professeur'}
+                                <span className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs font-mono font-semibold text-stone-300">
+                                    <GraduationCap className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
+                                    <span>{isEn ? 'The Professor' : 'Le Professeur'}</span>
                                 </span>
                             </div>
                             <h3 className="text-base sm:text-lg font-black text-white">
@@ -119,7 +121,8 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                         onClick={() => setIsGuideOpen(true)}
                         className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs sm:text-sm font-bold text-zinc-200 hover:border-[#D4AF37]/50 hover:bg-white/[0.08] active:scale-95 transition"
                     >
-                        <span>{isEn ? '📖 Audio Guide (6 chapters)' : '📖 Guide Audio (6 chapitres)'}</span>
+                        <BookOpen className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
+                        <span>{isEn ? 'Audio Guide (6 chapters)' : 'Guide Audio (6 chapitres)'}</span>
                     </button>
                     <button
                         type="button"
@@ -127,7 +130,8 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                         onClick={() => setIsOpeningExplorerOpen(true)}
                         className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs sm:text-sm font-bold text-zinc-200 hover:border-[#D4AF37]/50 hover:bg-white/[0.08] active:scale-95 transition"
                     >
-                        <span>{isEn ? '🎲 15 Opening Moves' : '🎲 Les 15 Coups d’Ouverture'}</span>
+                        <Dices className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
+                        <span>{isEn ? '15 Opening Moves' : 'Les 15 Coups d’Ouverture'}</span>
                     </button>
                 </div>
             </div>

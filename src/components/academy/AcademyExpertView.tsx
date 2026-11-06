@@ -55,14 +55,14 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
   };
 
   return (
-    <div data-testid="academy-expert-view" className="space-y-8 w-full max-w-6xl mx-auto">
+    <div data-testid="academy-expert-view" className="space-y-6 w-full max-w-6xl mx-auto">
       {/* En-tête Pro */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-1.5">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/40 text-purple-300 text-xs font-bold">
           <Award className="w-3.5 h-3.5" />
           <span>{isEn ? 'Expert & Pro Portal • Grandmaster Analytics' : 'Portail Expert & Pro • Théorie & Mathématique Grand-Maître'}</span>
         </div>
-        <h2 className="text-xl sm:text-2xl font-black text-white font-serif">
+        <h2 className="text-xl sm:text-2xl font-black text-white font-sans tracking-tight">
           {isEn ? 'Grandmaster Strategy & Mathematical Precision' : 'Stratégie Grand-Maître & Modélisation Mathématique'}
         </h2>
         <p className="text-xs sm:text-sm text-neutral-300 max-w-2xl mx-auto">
@@ -81,7 +81,7 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
           <Award className="w-4 h-4" />
           <span>{isEn ? 'Benchmark Standard • Snowie / eXtreme Gammon' : 'Standard Officiel • Norme Snowie / eXtreme Gammon'}</span>
         </div>
-        <h3 className="text-lg sm:text-xl font-bold text-white font-serif">
+        <h3 className="text-lg sm:text-xl font-bold text-white font-sans tracking-tight">
           {isEn
             ? 'The Cap 6.0 Law & High-Level Accuracy'
             : 'La Loi du Cap 6.0 & La Précision de Haut Niveau'}
@@ -114,7 +114,7 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
       <section data-testid="expert-kazaross-section" className="space-y-3">
         <div className="flex items-center gap-2">
           <Calculator className="w-5 h-5 text-amber-400" />
-          <h3 className="text-base sm:text-lg font-bold text-white font-serif">
+          <h3 className="text-base sm:text-lg font-bold text-white font-sans tracking-tight">
             {isEn ? 'Interactive Tools: Kazaross-XG2 MET & Keith Count' : 'Outil Interactif : MET Kazaross-XG2 & Course de Keith'}
           </h3>
         </div>
@@ -126,7 +126,7 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-amber-400" />
-            <h3 className="text-base sm:text-lg font-bold text-white font-serif">
+            <h3 className="text-base sm:text-lg font-bold text-white font-sans tracking-tight">
               {isEn ? 'Grandmaster Concept Compendium (6 per view)' : 'Encyclopédie des Concepts Grand-Maître (6 par vue)'}
             </h3>
           </div>
@@ -137,8 +137,8 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
               type="button"
               data-testid="filter-theme-all"
               onClick={() => handleSelectTheme('all')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-                activeTheme === 'all' ? 'bg-amber-400 text-black' : 'bg-white/5 text-neutral-300 hover:bg-white/10'
+              className={`px-3 py-1 rounded-lg border text-xs font-bold transition ${
+                activeTheme === 'all' ? 'bg-white/10 text-[#D4AF37] border-[#D4AF37]/50' : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
               }`}
             >
               {isEn ? 'All' : 'Tous'}
@@ -147,8 +147,8 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
               type="button"
               data-testid="filter-theme-cube"
               onClick={() => handleSelectTheme('cube-match')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-                activeTheme === 'cube-match' ? 'bg-amber-400 text-black' : 'bg-white/5 text-neutral-300 hover:bg-white/10'
+              className={`px-3 py-1 rounded-lg border text-xs font-bold transition ${
+                activeTheme === 'cube-match' ? 'bg-white/10 text-[#D4AF37] border-[#D4AF37]/50' : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
               }`}
             >
               {isEn ? 'Cube & Match' : 'Videau & Match'}
@@ -157,8 +157,8 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
               type="button"
               data-testid="filter-theme-prime"
               onClick={() => handleSelectTheme('prime-blitz')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-                activeTheme === 'prime-blitz' ? 'bg-amber-400 text-black' : 'bg-white/5 text-neutral-300 hover:bg-white/10'
+              className={`px-3 py-1 rounded-lg border text-xs font-bold transition ${
+                activeTheme === 'prime-blitz' ? 'bg-white/10 text-[#D4AF37] border-[#D4AF37]/50' : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
               }`}
             >
               {isEn ? 'Prime & Blitz' : 'Prime & Blitz'}
@@ -167,8 +167,8 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
               type="button"
               data-testid="filter-theme-race"
               onClick={() => handleSelectTheme('race-bearoff')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-                activeTheme === 'race-bearoff' ? 'bg-amber-400 text-black' : 'bg-white/5 text-neutral-300 hover:bg-white/10'
+              className={`px-3 py-1 rounded-lg border text-xs font-bold transition ${
+                activeTheme === 'race-bearoff' ? 'bg-white/10 text-[#D4AF37] border-[#D4AF37]/50' : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
               }`}
             >
               {isEn ? 'Race & Bear-off' : 'Course & Bear-off'}

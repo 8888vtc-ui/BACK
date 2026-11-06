@@ -123,16 +123,11 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
                 cityAssigned.add(m.city.toLowerCase());
             }
         }
-        for (const m of positionedMarkers) {
-            if (keys.has(m.key)) continue;
-            const cityLower = m.city.toLowerCase();
-            if (cityAssigned.has(cityLower)) continue;
-            if (isGlobalView) {
-                if (GLOBAL_SPACED_HUBS.has(cityLower)) {
-                    keys.add(m.key);
-                    cityAssigned.add(cityLower);
-                }
-            } else {
+        if (!isGlobalView) {
+            for (const m of positionedMarkers) {
+                if (keys.has(m.key)) continue;
+                const cityLower = m.city.toLowerCase();
+                if (cityAssigned.has(cityLower)) continue;
                 keys.add(m.key);
                 cityAssigned.add(cityLower);
             }

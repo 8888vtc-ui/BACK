@@ -13,6 +13,7 @@ import React, { useMemo } from 'react';
 import type { PlayerBlunderRecord } from '../../features/drills/types';
 import { computePositionTelemetry } from './DrillPositionContextAndReading';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useTranslation } from '../../i18n';
 
 export interface DrillContextStripProps {
     readonly currentBlunder: PlayerBlunderRecord;
@@ -33,11 +34,11 @@ export function computeTierFromTargetER(targetER: number): 1 | 2 | 3 | 4 {
     return 1;
 }
 
-export const TIER_LABELS: Record<number, { badge: string; color: string }> = {
-    1: { badge: '🌱 Palier 1 · Débutant', color: 'border-emerald-500/40 bg-emerald-950/70 text-emerald-200' },
-    2: { badge: '🎲 Palier 2 · Joueur de Club', color: 'border-amber-500/40 bg-amber-950/70 text-amber-200' },
-    3: { badge: '♟️ Palier 3 · Intermédiaire / Compétition', color: 'border-sky-500/40 bg-sky-950/70 text-sky-200' },
-    4: { badge: '🏆 Palier 4 · Expert / Grand-Maître', color: 'border-purple-500/40 bg-purple-950/70 text-purple-200' },
+export const TIER_LABELS: Record<number, { badgeFr: string; badgeEn: string; color: string }> = {
+    1: { badgeFr: 'Palier 1 · Débutant', badgeEn: 'Tier 1 · Beginner', color: 'border-emerald-500/40 bg-emerald-950/70 text-emerald-200' },
+    2: { badgeFr: 'Palier 2 · Joueur de Club', badgeEn: 'Tier 2 · Club Player', color: 'border-amber-500/40 bg-amber-950/70 text-amber-200' },
+    3: { badgeFr: 'Palier 3 · Intermédiaire / Compétition', badgeEn: 'Tier 3 · Intermediate / Tourney', color: 'border-sky-500/40 bg-sky-950/70 text-sky-200' },
+    4: { badgeFr: 'Palier 4 · Expert / Grand-Maître', badgeEn: 'Tier 4 · Expert / Grandmaster', color: 'border-purple-500/40 bg-purple-950/70 text-purple-200' },
 };
 
 export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
@@ -52,6 +53,8 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
 }) => {
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
     const telemetry = useMemo(() => computePositionTelemetry(currentBlunder, isBeginner), [currentBlunder, isBeginner]);
 
     const erForTier = typeof targetQuizEr === 'number'
@@ -73,7 +76,7 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
                     </span>
                     <span className="sr-only">{totalBlunders}</span>
                     <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${tierInfo.color}`}>
-                        {tierInfo.badge}
+                        {isEn ? tierInfo.badgeEn : tierInfo.badgeFr}
                     </span>
                     {isThemeUnlocked ? (
                         <span
@@ -81,11 +84,11 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
                             title={`Thème stratégique : ${currentBlunder.conceptName}`}
                             className="rounded border border-emerald-500/40 bg-emerald-950/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-200"
                         >
-                            🔓 {currentBlunder.conceptName}
+                            {currentBlunder.conceptName}
                         </span>
                     ) : (
                         <span data-testid="drill-theme-badge" className="sr-only">
-                            Thème : Mystère 🔒
+                            Thème : Mystère
                         </span>
                     )}
                 </div>
@@ -97,7 +100,7 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
                         data-testid="drill-hint-toggle"
                         className="rounded-lg border border-white/10 bg-[#050505] px-2 py-0.5 text-[11px] font-bold text-[#D4AF37] hover:border-[#D4AF37]/50 transition"
                     >
-                        💡 {showHint ? 'Masquer' : 'Indice'}
+                        {showHint ? (isEn ? 'Hide Hint' : 'Masquer') : (isEn ? 'Hint' : 'Indice')}
                     </button>
                     <button
                         type="button"
@@ -105,7 +108,7 @@ export const DrillContextStrip: React.FC<DrillContextStripProps> = ({
                         data-testid="drill-reset-btn"
                         className="rounded-lg border border-white/10 bg-[#050505] px-2 py-0.5 text-[11px] font-semibold text-[#e2d2b5] hover:border-white/25 transition"
                     >
-                        ↺ Réinitialiser
+                        {isEn ? '↺ Reset' : '↺ Réinitialiser'}
                     </button>
                 </div>
             </div>
