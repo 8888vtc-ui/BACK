@@ -19,6 +19,7 @@ import {
     borneOffCount,
     generateLegalMoves,
 } from './backgammonEngine';
+import { computeJacobyMultiplier } from './cubeRules';
 import { evaluateBoard } from '../lib/engine/evaluator';
 
 export type WinType = 'single' | 'gammon' | 'backgammon' | 'pass';
@@ -40,7 +41,11 @@ export type AIDifficulty = 'beginner' | 'intermediate' | 'expert' | 'grandmaster
  * - Gammon : le perdant n'a sorti aucun pion (2x).
  * - Backgammon : le perdant n'a sorti aucun pion ET a encore au moins 1 pion sur la barre ou dans le jan intérieur du vainqueur (3x).
  */
-export function evaluateWin(board: number[], cubeValue: number = 1): GameResult | null {
+export function evaluateWin(
+    board: number[],
+    cubeValue: number = 1,
+    matchLength?: number
+): GameResult | null {
     const validCube = cubeValue && cubeValue > 0 ? cubeValue : 1;
     const xOff = borneOffCount(board, 'X');
     const oOff = borneOffCount(board, 'O');
@@ -64,10 +69,18 @@ export function evaluateWin(board: number[], cubeValue: number = 1): GameResult 
             }
         }
 
-        if (inHomeOrBar) {
-            return { winner, loser, winType: 'backgammon', multiplier: 3, pointsWon: 3 * validCube };
-        }
-        return { winner, loser, winType: 'gammon', multiplier: 2, pointsWon: 2 * validCube };
+        const rawType: WinType = inHomeOrBar ? 'backgammon' : 'gammon';
+        const rawMult = inHomeOrBar ? 3 : 2;
+        const multiplier = matchLength !== undefined
+            ? computeJacobyMultiplier({ matchLength, cubeValue: validCube, rawMultiplier: rawMult })
+            : rawMult;
+        return {
+            winner,
+            loser,
+            winType: rawType,
+            multiplier,
+            pointsWon: multiplier * validCube,
+        };
     }
 
     if (oOff === 15) {
@@ -89,10 +102,18 @@ export function evaluateWin(board: number[], cubeValue: number = 1): GameResult 
             }
         }
 
-        if (inHomeOrBar) {
-            return { winner, loser, winType: 'backgammon', multiplier: 3, pointsWon: 3 * validCube };
-        }
-        return { winner, loser, winType: 'gammon', multiplier: 2, pointsWon: 2 * validCube };
+        const rawType: WinType = inHomeOrBar ? 'backgammon' : 'gammon';
+        const rawMult = inHomeOrBar ? 3 : 2;
+        const multiplier = matchLength !== undefined
+            ? computeJacobyMultiplier({ matchLength, cubeValue: validCube, rawMultiplier: rawMult })
+            : rawMult;
+        return {
+            winner,
+            loser,
+            winType: rawType,
+            multiplier,
+            pointsWon: multiplier * validCube,
+        };
     }
 
     return null;
