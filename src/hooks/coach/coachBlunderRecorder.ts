@@ -5,7 +5,6 @@
  * et utilise le vrai contexte de match (Adversaire, Elo, Score, Tour, Date) pour un Compte Connecté.
  */
 import { pipCount, serializeCanonicalXGID, type BoardState } from '../../engine/backgammonEngine';
-import { recordBlunder } from '../../features/drills/blunderBank';
 import { classifyLivePositionCategory, recordLiveMatchDecisionOnAdaptiveProfile } from '../../features/drills/adaptiveQuizEngine';
 import { evaluateBrilliantMoveCriteria } from '../../features/coach/tacticalExplainer';
 import { recordPersonalMatchBlunder, type PersonalBlunderCandidate } from '../../lib/blunders/personalBlunderStore';
@@ -28,6 +27,8 @@ export function handleBlunderAndDecisionRecording(params: {
     difficulty?: AIDifficulty | string;
     opponentName?: string;
     opponentElo?: number | null;
+    challengerProfile?: { displayName?: string; username?: string; rating?: number; countryName?: string } | null;
+    isAuthenticated?: boolean;
     userId?: string;
     recordDecisionStats: (verdict: CoachVerdict, rawEquityLoss: number, playedMove: string, optimalMove: string) => void;
     setBrilliantMove: (brilliant: boolean) => void;
@@ -53,10 +54,11 @@ export function handleBlunderAndDecisionRecording(params: {
     });
     if (!isStale()) setBrilliantMove(isBrilliant);
 
-    // LOI 1 : En navigateur, un Joueur Invité (`!checkIsPlayerRegistered()`) n'enregistre AUCUN blunder ni historique.
-    if (typeof window !== 'undefined' && !checkIsPlayerRegistered() && !params.userId) return;
+    // LOI 1 : Interdit tout enregistrement si !isAuthenticated (0 blunder pour pending_guest_session)
+    const isAuthed = params.isAuthenticated ?? (typeof window !== 'undefined' ? checkIsPlayerRegistered() : Boolean(params.userId && params.userId !== 'pending_guest_session'));
+    if (!isAuthed || params.userId === 'pending_guest_session') return;
 
-    const liveOutcome = recordLiveMatchDecisionOnAdaptiveProfile({
+    recordLiveMatchDecisionOnAdaptiveProfile({
         board: lastEntry.boardBefore, turnIndex: lastEntry.turnIndex, equityLoss, isCube: false,
     });
 
@@ -65,9 +67,12 @@ export function handleBlunderAndDecisionRecording(params: {
         try {
             const passport = typeof window !== 'undefined' ? readPlayerPassport() : null;
             const resolvedUserId = params.userId || passport?.pseudo || passport?.email || 'connected_member';
+            const challenger = params.challengerProfile;
             const persona = getBotPersona(difficulty, 'fr');
-            const resolvedOpponentName = params.opponentName || persona.name;
-            const resolvedOpponentElo = params.opponentElo !== undefined ? params.opponentElo : 1500;
+            const resolvedOpponentName = challenger
+                ? (challenger.displayName || challenger.username || 'Adversaire')
+                : (params.opponentName || persona.name);
+            const resolvedOpponentElo = challenger?.rating ?? (params.opponentElo !== undefined ? params.opponentElo : null);
 
             const ctx = lastEntry.packet?.matchContext;
             const matchLength = gameState?.matchLength ?? ctx?.matchLength ?? 5;
@@ -76,6 +81,8 @@ export function handleBlunderAndDecisionRecording(params: {
             const cubeValue = gameState?.cubeValue ?? ctx?.cubeValue ?? 1;
             const cubeOwner = gameState?.cubeOwner !== undefined ? gameState.cubeOwner : (ctx?.cubeOwner ?? null);
             const isCrawford = gameState?.crawford ?? ctx?.crawford ?? false;
+            const realDateIso = new Date().toISOString();
+            const realTurnNumber = lastEntry.turnIndex;
 
             const catMeta = classifyLivePositionCategory(lastEntry.boardBefore, lastEntry.turnIndex, false);
             const choiceSet = new Set<string>();
@@ -88,18 +95,6 @@ export function handleBlunderAndDecisionRecording(params: {
             const quizChoices = Array.from(choiceSet).slice(0, 4);
             const whyFailedFr = coachState.whyFailed || `En jouant ${playedNotation}, vous cédez -${absLoss.toFixed(3)} EMG face à ${resolvedOpponentName}.`;
             const solutionFr = coachState.whyOptimal || coachState.explanation || `Le coup optimal 3-ply était ${result.optimalNotation} (gain de +${absLoss.toFixed(3)} EMG par rapport à ${playedNotation}).`;
-
-            recordBlunder({
-                id: `user_blunder_${lastEntry.turnIndex}_${Date.now()}`,
-                board: [...lastEntry.boardBefore], dice: [lastEntry.dice[0], lastEntry.dice[1]], player: 'X',
-                playedMove: playedNotation, optimalMove: result.optimalNotation,
-                acceptableMoves: result.candidateMoves.filter((m) => Math.abs(m.equityLoss) < 0.02).map((m) => m.notation),
-                equityLoss: absLoss, verdict: absLoss >= 0.20 ? 'howler' : absLoss >= 0.08 ? 'blunder' : 'doubtful',
-                tier: liveOutcome.categoryState.level, conceptId: catMeta.id, conceptName: catMeta.fullName,
-                whyFailed: whyFailedFr, explanation: solutionFr,
-                hint: `Catégorie ciblée : ${catMeta.fullName} — cherchez comment ${result.optimalNotation} protège votre structure.`,
-                quizChoices, matchContext: { matchLength, scoreX, scoreO, cubeValue, cubeOwner, crawford: isCrawford },
-            });
 
             const pips = pipCount([...lastEntry.boardBefore]);
             const xgid = serializeCanonicalXGID({
@@ -125,17 +120,35 @@ export function handleBlunderAndDecisionRecording(params: {
             });
 
             recordPersonalMatchBlunder({
-                userId: resolvedUserId, opponentName: resolvedOpponentName, opponentElo: resolvedOpponentElo,
-                matchFormatLabel: matchLength > 0 ? `Match en ${matchLength} pts` : 'Money Game', matchLength,
-                scoreBeforeMove: { player: scoreX, opponent: scoreO }, isCrawford, turnNumber: lastEntry.turnIndex,
-                decisionType: 'CHECKER_PLAY', board: [...lastEntry.boardBefore], player: lastEntry.player, xgid,
-                dice: [lastEntry.dice[0], lastEntry.dice[1]], cubeValue, cubeOwner,
-                pipCount: { player: pips.X, opponent: pips.O }, conceptId: catMeta.id,
-                conceptNameFr: catMeta.fullName, conceptNameEn: catMeta.shortLabel,
-                playerPlayedMove: playedNotation, playerWinProbPct: playedWinPct,
-                optimalMove: result.optimalNotation, optimalWinProbPct: bestWinPct, winProbLossPct: winLossPct,
-                deltaEmg: -Number(absLoss.toFixed(3)), erPenaltyPoints: Number(Math.min(0.5, Math.max(0.2, absLoss * 4.2)).toFixed(1)),
-                candidatesTop4, mistakeExplanationFr: whyFailedFr,
+                userId: resolvedUserId,
+                createdAtIso: realDateIso,
+                opponentName: resolvedOpponentName,
+                opponentElo: resolvedOpponentElo,
+                matchFormatLabel: matchLength > 0 ? `Match en ${matchLength} pts` : 'Money Game',
+                matchLength,
+                scoreBeforeMove: { player: scoreX, opponent: scoreO },
+                isCrawford,
+                turnNumber: realTurnNumber,
+                decisionType: 'CHECKER_PLAY',
+                board: [...lastEntry.boardBefore],
+                player: lastEntry.player,
+                xgid,
+                dice: [lastEntry.dice[0], lastEntry.dice[1]],
+                cubeValue,
+                cubeOwner,
+                pipCount: { player: pips.X, opponent: pips.O },
+                conceptId: catMeta.id,
+                conceptNameFr: catMeta.fullName,
+                conceptNameEn: catMeta.shortLabel,
+                playerPlayedMove: playedNotation,
+                playerWinProbPct: playedWinPct,
+                optimalMove: result.optimalNotation,
+                optimalWinProbPct: bestWinPct,
+                winProbLossPct: winLossPct,
+                deltaEmg: -Number(absLoss.toFixed(3)),
+                erPenaltyPoints: Number(Math.min(0.5, Math.max(0.2, absLoss * 4.2)).toFixed(1)),
+                candidatesTop4,
+                mistakeExplanationFr: whyFailedFr,
                 mistakeExplanationEn: `Playing ${playedNotation} loses -${absLoss.toFixed(3)} EMG (-${winLossPct}% win chances) against ${resolvedOpponentName}.`,
                 solutionExplanationFr: solutionFr,
                 solutionExplanationEn: `The 3-ply optimal move ${result.optimalNotation} preserves ${bestWinPct}% winning chances and protects your structure.`,

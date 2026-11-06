@@ -101,6 +101,7 @@ export default function Home() {
         isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: rawTriggerCoach,
     } = useCoach({
         game: isLiveMatch ? { ...game, matchLog: [], moveHistory: [] } : game,
+        challengerProfile: multiplayer.opponentProfile,
         currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
     });
 

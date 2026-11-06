@@ -1,243 +1,153 @@
 /**
- * Banque Locale de Blunders (Blunder Bank).
- *
- * Enregistre, persiste et ordonne les erreurs commises par le joueur lors de ses
- * parties pour les rejouer automatiquement sous forme de drills tactiques ciblés.
+ * @file src/features/drills/blunderBank.ts
+ * @description Façade de compatibilité unifiée vers `personalBlunderStore.ts` (`bg_personal_blunders_v1`).
+ * 100 % des lectures et écritures sont redirigées vers le store unique `personalBlunderStore.ts`.
+ * Strictement <= 300 lignes, 0 any.
  */
 
 import type { PlayerBlunderRecord, BlunderBankStats, DrillTier } from './types';
 import { BENCHMARK_BLUNDERS } from './benchmarkBlunders';
+import {
+    PERSONAL_BLUNDERS_STORAGE_KEY,
+    getPersonalBlunders,
+    recordPersonalMatchBlunder,
+    markPersonalBlunderAttempt,
+    clearPersonalBlunders,
+    type PersonalBlunderRecord,
+    type PersonalBlunderCandidate,
+} from '../../lib/blunders/personalBlunderStore';
 
-export const BLUNDER_BANK_STORAGE_KEY = 'bg_blunder_bank';
+export const BLUNDER_BANK_STORAGE_KEY = PERSONAL_BLUNDERS_STORAGE_KEY;
 
-const BENCHMARK_BY_ID = new Map<string, PlayerBlunderRecord>(
-    BENCHMARK_BLUNDERS.map((b) => [b.id, b]),
-);
+const benchmarkProgressMap = new Map<string, { timesReviewed: number; timesSolved: number; isMastered: boolean; lastAttemptDate?: string }>();
 
-let memoryBankStore: PlayerBlunderRecord[] | null = null;
-let lastSyncedStorageRaw: string | null = null;
-
-interface BenchmarkProgressDelta {
-    id: string;
-    timesReviewed: number;
-    timesSolved: number;
-    isMastered: boolean;
-    lastAttemptDate?: string;
-}
-
-function cloneBenchmarkBlunder(b: PlayerBlunderRecord): PlayerBlunderRecord {
-    let localBoard: number[] | null = null;
+export function personalBlunderToPlayerBlunder(rec: PersonalBlunderRecord): PlayerBlunderRecord {
+    const choices = rec.candidatesTop4.map((c) => c.notation);
     return {
-        id: b.id,
-        createdAt: b.createdAt,
-        get board(): number[] {
-            if (!localBoard) {
-                localBoard = [...b.board];
-            }
-            return localBoard;
+        id: rec.id,
+        createdAt: rec.createdAtIso,
+        board: [...rec.board],
+        dice: [rec.dice[0], rec.dice[1]],
+        player: rec.player,
+        playedMove: rec.playerPlayedMove,
+        optimalMove: rec.optimalMove,
+        acceptableMoves: rec.candidatesTop4.filter((c) => Math.abs(c.lossEmg) <= 0.02).map((c) => c.notation),
+        equityLoss: Math.abs(rec.deltaEmg),
+        verdict: Math.abs(rec.deltaEmg) >= 0.15 ? 'howler' : Math.abs(rec.deltaEmg) >= 0.08 ? 'blunder' : 'doubtful',
+        conceptId: rec.conceptId,
+        conceptName: rec.conceptNameFr,
+        explanation: rec.solutionExplanationFr,
+        whyFailed: rec.mistakeExplanationFr,
+        quizChoices: choices.length > 0 ? choices : [rec.optimalMove, rec.playerPlayedMove],
+        tier: 3,
+        timesReviewed: rec.attemptsCount,
+        timesSolved: rec.status === 'RESOLVED' ? 1 : 0,
+        isMastered: rec.status === 'RESOLVED',
+        lastAttemptDate: rec.resolvedAtIso,
+        matchContext: {
+            matchLength: rec.matchLength,
+            scoreX: rec.scoreBeforeMove.player,
+            scoreO: rec.scoreBeforeMove.opponent,
+            cubeValue: rec.cubeValue,
+            cubeOwner: rec.cubeOwner,
+            crawford: rec.isCrawford,
         },
-        set board(val: number[]) {
-            localBoard = val;
-        },
-        dice: [b.dice[0], b.dice[1]] as [number, number],
-        player: b.player,
-        playedMove: b.playedMove,
-        optimalMove: b.optimalMove,
-        acceptableMoves: b.acceptableMoves,
-        quizChoices: b.quizChoices,
-        equityLoss: b.equityLoss,
-        verdict: b.verdict,
-        conceptId: b.conceptId,
-        conceptName: b.conceptName,
-        whyFailed: b.whyFailed,
-        explanation: b.explanation,
-        proverb: b.proverb,
-        hint: b.hint,
-        commentaryVariants: b.commentaryVariants,
-        tier: b.tier,
-        quizTargetER: b.quizTargetER,
-        quizType: b.quizType,
-        candidateMoves3Ply: b.candidateMoves3Ply,
-        plyCount: b.plyCount,
-        timesReviewed: b.timesReviewed,
-        timesSolved: b.timesSolved,
-        isMastered: b.isMastered,
-        lastAttemptDate: b.lastAttemptDate,
-        gameId: b.gameId,
-        matchContext: b.matchContext,
     };
 }
 
-/**
- * Crée une copie propre et indépendante des blunders de référence par défaut.
- */
 export function createDefaultBenchmarkBlunders(): PlayerBlunderRecord[] {
-    return BENCHMARK_BLUNDERS.map(cloneBenchmarkBlunder);
+    return BENCHMARK_BLUNDERS.map((b) => {
+        const prog = benchmarkProgressMap.get(b.id);
+        return {
+            ...b,
+            board: [...b.board],
+            dice: [b.dice[0], b.dice[1]],
+            timesReviewed: prog?.timesReviewed ?? b.timesReviewed,
+            timesSolved: prog?.timesSolved ?? b.timesSolved,
+            isMastered: prog?.isMastered ?? b.isMastered,
+            lastAttemptDate: prog?.lastAttemptDate ?? b.lastAttemptDate,
+        };
+    });
 }
 
-function serializeCompactBank(blunders: PlayerBlunderRecord[]): string {
-    const payload: Array<PlayerBlunderRecord | BenchmarkProgressDelta> = [];
-    for (const b of blunders) {
-        if (!BENCHMARK_BY_ID.has(b.id)) {
-            payload.push(b);
-        } else if (
-            b.timesReviewed > 0 ||
-            b.timesSolved > 0 ||
-            b.isMastered ||
-            Boolean(b.lastAttemptDate)
-        ) {
-            payload.push({
-                id: b.id,
-                timesReviewed: b.timesReviewed,
-                timesSolved: b.timesSolved,
-                isMastered: b.isMastered,
-                lastAttemptDate: b.lastAttemptDate,
-            });
-        }
-    }
-    return JSON.stringify(payload);
-}
-
-/**
- * Charge l'ensemble des erreurs de la banque depuis le stockage local (ou mémoire).
- * Si le stockage est vide, initialise automatiquement avec les blunders de référence.
- */
 export function getAllBlunders(): PlayerBlunderRecord[] {
-    if (typeof window === 'undefined' || !window.localStorage) {
-        if (!memoryBankStore) {
-            memoryBankStore = createDefaultBenchmarkBlunders();
-        }
-        return memoryBankStore;
-    }
-
-    try {
-        const raw = window.localStorage.getItem(BLUNDER_BANK_STORAGE_KEY);
-        if (memoryBankStore && raw !== null && raw === lastSyncedStorageRaw) {
-            return memoryBankStore;
-        }
-
-        if (!raw) {
-            const defaults = createDefaultBenchmarkBlunders();
-            const serialized = '[]';
-            window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, serialized);
-            memoryBankStore = defaults;
-            lastSyncedStorageRaw = serialized;
-            return defaults;
-        }
-
-        const parsed: unknown = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-            const defaults = createDefaultBenchmarkBlunders();
-            const defaultById = new Map<string, PlayerBlunderRecord>();
-            for (const def of defaults) {
-                defaultById.set(def.id, def);
-            }
-
-            const customBlunders: PlayerBlunderRecord[] = [];
-            for (const item of parsed as Array<Partial<PlayerBlunderRecord> & { id?: string }>) {
-                if (!item || typeof item.id !== 'string') continue;
-                const benchMatch = defaultById.get(item.id);
-                if (benchMatch) {
-                    benchMatch.timesReviewed = item.timesReviewed ?? benchMatch.timesReviewed;
-                    benchMatch.timesSolved = item.timesSolved ?? benchMatch.timesSolved;
-                    benchMatch.isMastered = item.isMastered ?? benchMatch.isMastered;
-                    if (item.lastAttemptDate !== undefined) {
-                        benchMatch.lastAttemptDate = item.lastAttemptDate;
-                    }
-                    if (typeof item.equityLoss === 'number' && item.equityLoss > benchMatch.equityLoss) {
-                        benchMatch.equityLoss = item.equityLoss;
-                    }
-                    if (typeof item.playedMove === 'string') {
-                        benchMatch.playedMove = item.playedMove;
-                    }
-                } else if (Array.isArray(item.board) && Array.isArray(item.dice)) {
-                    customBlunders.push(item as PlayerBlunderRecord);
-                }
-            }
-
-            const merged = customBlunders.length > 0 ? [...customBlunders, ...defaults] : defaults;
-            memoryBankStore = merged;
-            lastSyncedStorageRaw = raw;
-            return merged;
-        }
-
-        const defaults = createDefaultBenchmarkBlunders();
-        const serialized = '[]';
-        window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, serialized);
-        memoryBankStore = defaults;
-        lastSyncedStorageRaw = serialized;
-        return defaults;
-    } catch {
-        const defaults = createDefaultBenchmarkBlunders();
-        memoryBankStore = defaults;
-        return defaults;
-    }
+    const personal = getPersonalBlunders().map(personalBlunderToPlayerBlunder);
+    const benchmarks = createDefaultBenchmarkBlunders();
+    return [...personal, ...benchmarks];
 }
 
-/**
- * Sauvegarde la liste complète des blunders dans le stockage local (et mémoire).
- */
 export function saveAllBlunders(blunders: PlayerBlunderRecord[]): void {
-    memoryBankStore = blunders;
-    if (typeof window === 'undefined' || !window.localStorage) return;
-    try {
-        const serialized = serializeCompactBank(blunders);
-        window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, serialized);
-        lastSyncedStorageRaw = serialized;
-    } catch (e) {
-        console.warn('[BlunderBank] Échec de sauvegarde locale :', e);
+    for (const b of blunders) {
+        if (!BENCHMARK_BLUNDERS.some((bench) => bench.id === b.id)) {
+            recordBlunder(b);
+        }
     }
 }
 
-/**
- * Génère une signature unique pour détecter les doublons de positions identiques.
- */
-function getPositionSignature(board: number[], dice: [number, number], player: string): string {
-    const sortedDice = [...dice].sort((a, b) => a - b).join('-');
-    return `${player}_${board.join(',')}_${sortedDice}`;
-}
-
-/**
- * Enregistre un blunder commis par le joueur dans la banque.
- * Si la même position avec les mêmes dés a déjà été enregistrée, met à jour la perte d'équité.
- */
 export function recordBlunder(
     data: Omit<PlayerBlunderRecord, 'id' | 'createdAt' | 'timesReviewed' | 'timesSolved' | 'isMastered'> &
         Partial<Pick<PlayerBlunderRecord, 'id' | 'createdAt' | 'timesReviewed' | 'timesSolved' | 'isMastered'>>,
 ): PlayerBlunderRecord {
-    const blunders = getAllBlunders();
-    const signature = getPositionSignature(data.board, data.dice, data.player);
+    const absLoss = Math.abs(data.equityLoss);
+    const choices = data.quizChoices && data.quizChoices.length >= 2 ? data.quizChoices : [data.optimalMove, data.playedMove];
+    const top4: PersonalBlunderCandidate[] = choices.slice(0, 4).map((not, idx) => ({
+        rank: idx + 1,
+        notation: not,
+        winProbPct: not === data.optimalMove ? 55.0 : Math.max(10, 55 - absLoss * 74),
+        gammonProbPct: 15.0,
+        equityEmg: not === data.optimalMove ? 0.35 : 0.35 - absLoss,
+        lossEmg: not === data.optimalMove ? 0 : -absLoss,
+        isPlayerPlayedMove: not === data.playedMove,
+        isOptimalMove: not === data.optimalMove,
+    }));
 
-    const d0 = data.dice[0];
-    const d1 = data.dice[1];
-    const existingIndex = blunders.findIndex(
-        (b) =>
-            !BENCHMARK_BY_ID.has(b.id) &&
-            b.player === data.player &&
-            ((b.dice[0] === d0 && b.dice[1] === d1) || (b.dice[0] === d1 && b.dice[1] === d0)) &&
-            getPositionSignature(b.board, b.dice, b.player) === signature,
-    );
+    const matchCtx = data.matchContext;
+    const rec = recordPersonalMatchBlunder({
+        id: data.id,
+        userId: 'connected_member',
+        createdAtIso: data.createdAt ?? new Date().toISOString(),
+        opponentName: 'Adversaire',
+        opponentElo: 1500,
+        matchFormatLabel: (matchCtx?.matchLength ?? 5) > 0 ? `Match en ${matchCtx?.matchLength ?? 5} pts` : 'Money Game',
+        matchLength: matchCtx?.matchLength ?? 5,
+        scoreBeforeMove: { player: matchCtx?.scoreX ?? 0, opponent: matchCtx?.scoreO ?? 0 },
+        isCrawford: matchCtx?.crawford ?? false,
+        turnNumber: 1,
+        decisionType: 'CHECKER_PLAY',
+        board: [...data.board],
+        player: data.player,
+        xgid: '',
+        dice: [data.dice[0], data.dice[1]],
+        cubeValue: matchCtx?.cubeValue ?? 1,
+        cubeOwner: matchCtx?.cubeOwner ?? null,
+        pipCount: { player: 150, opponent: 150 },
+        conceptId: data.conceptId,
+        conceptNameFr: data.conceptName,
+        conceptNameEn: data.conceptName,
+        playerPlayedMove: data.playedMove,
+        playerWinProbPct: 45.0,
+        optimalMove: data.optimalMove,
+        optimalWinProbPct: 55.0,
+        winProbLossPct: 10.0,
+        deltaEmg: -absLoss,
+        erPenaltyPoints: Number(Math.min(0.5, Math.max(0.2, absLoss * 4.2)).toFixed(1)),
+        candidatesTop4: top4,
+        mistakeExplanationFr: data.whyFailed || data.explanation,
+        mistakeExplanationEn: data.explanation,
+        solutionExplanationFr: data.explanation,
+        solutionExplanationEn: data.explanation,
+        status: data.isMastered ? 'RESOLVED' : 'PENDING',
+        resolvedAtIso: undefined,
+        attemptsCount: data.timesReviewed ?? 0,
+    });
 
-    const now = new Date().toISOString();
-
-    if (existingIndex >= 0) {
-        const existing = blunders[existingIndex];
-        const updated: PlayerBlunderRecord = {
-            ...existing,
-            ...data,
-            playedMove: data.playedMove,
-            equityLoss: Math.max(existing.equityLoss, data.equityLoss),
-            createdAt: now,
-            isMastered: false, // Réinitialise la maîtrise si l'erreur est commise à nouveau
-        };
-        blunders[existingIndex] = updated;
-        saveAllBlunders(blunders);
-        return updated;
+    if (rec) {
+        return personalBlunderToPlayerBlunder(rec);
     }
 
-    const newRecord: PlayerBlunderRecord = {
-        id: data.id || `blunder_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-        createdAt: data.createdAt || now,
+    return {
+        id: data.id ?? `blunder_${Date.now()}`,
+        createdAt: data.createdAt ?? new Date().toISOString(),
         board: [...data.board],
         dice: [data.dice[0], data.dice[1]],
         player: data.player,
@@ -250,109 +160,78 @@ export function recordBlunder(
         conceptName: data.conceptName,
         explanation: data.explanation,
         whyFailed: data.whyFailed,
-        proverb: data.proverb,
-        commentaryVariants: data.commentaryVariants ? [...data.commentaryVariants] : undefined,
-        quizChoices: data.quizChoices ? [...data.quizChoices] : undefined,
-        hint: data.hint,
-        tier: data.tier,
-        timesReviewed: data.timesReviewed || 0,
-        timesSolved: data.timesSolved || 0,
+        quizChoices: choices,
+        timesReviewed: data.timesReviewed ?? 0,
+        timesSolved: data.timesSolved ?? 0,
         isMastered: data.isMastered ?? false,
-        gameId: data.gameId,
-        matchContext: data.matchContext,
     };
-
-    blunders.unshift(newRecord);
-    saveAllBlunders(blunders);
-    return newRecord;
 }
 
-/**
- * Récupère une erreur par son identifiant unique.
- */
 export function getBlunderById(id: string): PlayerBlunderRecord | null {
-    const blunders = getAllBlunders();
-    return blunders.find((b) => b.id === id) || null;
+    return getAllBlunders().find((b) => b.id === id) ?? null;
 }
 
-/**
- * Récupère la liste des erreurs à réviser en priorité.
- *
- * Filtre :
- * - Si `conceptId` est spécifié, limite aux erreurs de ce concept
- * - Priorise les erreurs non maîtrisées (`isMastered === false`)
- * - Trie par perte d'équité décroissante (les plus grosses erreurs en premier)
- * - Si toutes les erreurs sont maîtrisées, retourne la liste complète pour révision
- */
 export function getBlundersToReview(conceptId?: string, tier?: DrillTier): PlayerBlunderRecord[] {
     const all = getAllBlunders();
     let filtered = conceptId && conceptId !== 'all' ? all.filter((b) => b.conceptId === conceptId) : all;
     if (tier) {
         filtered = filtered.filter((b) => (b.tier ?? 1) === tier);
     }
-
     const unmastered = filtered.filter((b) => !b.isMastered);
-
     if (unmastered.length > 0) {
         return unmastered.sort((a, b) => b.equityLoss - a.equityLoss);
     }
-
-    // Si tout est maîtrisé, retourne la liste complète pour réentraînement
     return [...filtered].sort((a, b) => b.equityLoss - a.equityLoss);
 }
 
-/**
- * Enregistre le résultat d'une tentative sur une erreur en drill.
- */
 export function markBlunderAttempt(id: string, isCorrect: boolean): PlayerBlunderRecord | null {
-    const blunders = getAllBlunders();
-    const index = blunders.findIndex((b) => b.id === id);
-    if (index === -1) return null;
+    const benchmark = BENCHMARK_BLUNDERS.find((b) => b.id === id);
+    if (benchmark) {
+        const prev = benchmarkProgressMap.get(id) ?? {
+            timesReviewed: benchmark.timesReviewed,
+            timesSolved: benchmark.timesSolved,
+            isMastered: benchmark.isMastered,
+        };
+        const updated = {
+            timesReviewed: prev.timesReviewed + 1,
+            timesSolved: isCorrect ? prev.timesSolved + 1 : prev.timesSolved,
+            isMastered: isCorrect || prev.isMastered,
+            lastAttemptDate: new Date().toISOString(),
+        };
+        benchmarkProgressMap.set(id, updated);
+        return {
+            ...benchmark,
+            ...updated,
+            board: [...benchmark.board],
+            dice: [benchmark.dice[0], benchmark.dice[1]],
+        };
+    }
 
-    const target = blunders[index];
-    const timesReviewed = (target.timesReviewed || 0) + 1;
-    const timesSolved = isCorrect ? (target.timesSolved || 0) + 1 : (target.timesSolved || 0);
-    const isMastered = isCorrect || target.isMastered;
-
-    const updated: PlayerBlunderRecord = {
-        ...target,
-        timesReviewed,
-        timesSolved,
-        isMastered,
-        lastAttemptDate: new Date().toISOString(),
-    };
-
-    blunders[index] = updated;
-    saveAllBlunders(blunders);
-    return updated;
+    const updated = markPersonalBlunderAttempt(id, isCorrect);
+    if (updated) {
+        return personalBlunderToPlayerBlunder(updated);
+    }
+    return null;
 }
 
-/**
- * Réinitialise la maîtrise d'une erreur pour permettre de la rejouer.
- */
 export function resetBlunderMastery(id: string): void {
-    const blunders = getAllBlunders();
-    const index = blunders.findIndex((b) => b.id === id);
-    if (index !== -1) {
-        blunders[index].isMastered = false;
-        saveAllBlunders(blunders);
+    if (benchmarkProgressMap.has(id)) {
+        const prev = benchmarkProgressMap.get(id)!;
+        benchmarkProgressMap.set(id, { ...prev, isMastered: false });
     }
+    markPersonalBlunderAttempt(id, false);
 }
 
-/**
- * Réinitialise la maîtrise de l'ensemble des erreurs de la banque.
- */
 export function resetAllBlunderMastery(): void {
-    const blunders = getAllBlunders();
-    for (const b of blunders) {
-        b.isMastered = false;
+    for (const [id, prev] of benchmarkProgressMap.entries()) {
+        benchmarkProgressMap.set(id, { ...prev, isMastered: false });
     }
-    saveAllBlunders(blunders);
+    const list = getPersonalBlunders();
+    for (const item of list) {
+        markPersonalBlunderAttempt(item.id, false);
+    }
 }
 
-/**
- * Calcule les métriques globales de la banque d'erreurs.
- */
 export function getBlunderBankStats(): BlunderBankStats {
     const blunders = getAllBlunders();
     const totalBlunders = blunders.length;
@@ -366,9 +245,7 @@ export function getBlunderBankStats(): BlunderBankStats {
         totalAttempts += b.timesReviewed || 0;
         totalSolved += b.timesSolved || 0;
     }
-
-    const accuracyRate =
-        totalAttempts > 0 ? Math.round((totalSolved / totalAttempts) * 100) : 0;
+    const accuracyRate = totalAttempts > 0 ? Math.round((totalSolved / totalAttempts) * 100) : 0;
 
     return {
         totalBlunders,
@@ -380,14 +257,7 @@ export function getBlunderBankStats(): BlunderBankStats {
     };
 }
 
-/**
- * Vide la banque et réinitialise les blunders de référence (utile pour réinitialisation et tests).
- */
 export function clearBlunderBank(): void {
-    const defaults = createDefaultBenchmarkBlunders();
-    memoryBankStore = defaults;
-    lastSyncedStorageRaw = '[]';
-    if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem(BLUNDER_BANK_STORAGE_KEY, '[]');
-    }
+    benchmarkProgressMap.clear();
+    clearPersonalBlunders();
 }

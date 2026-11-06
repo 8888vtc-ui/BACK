@@ -57,7 +57,7 @@ export interface PersonalBlunderRecord {
     readonly attemptsCount: number;
 }
 
-export const PERSONAL_BLUNDERS_STORAGE_KEY = 'bgtour_personal_match_blunders_v2';
+export const PERSONAL_BLUNDERS_STORAGE_KEY = 'bg_personal_blunders_v1';
 export const PERSONAL_BLUNDERS_UPDATED_EVENT = 'bgtour-personal-blunders-updated';
 
 function emitPersonalBlundersUpdate(): void {
@@ -69,7 +69,10 @@ function emitPersonalBlundersUpdate(): void {
 export function getPersonalBlunders(): PersonalBlunderRecord[] {
     if (typeof window === 'undefined') return [];
     try {
-        const raw = window.localStorage.getItem(PERSONAL_BLUNDERS_STORAGE_KEY);
+        let raw = window.localStorage.getItem(PERSONAL_BLUNDERS_STORAGE_KEY);
+        if (!raw) {
+            raw = window.localStorage.getItem('bgtour_personal_match_blunders_v2');
+        }
         if (!raw) return [];
         const parsed = JSON.parse(raw) as unknown;
         if (!Array.isArray(parsed)) return [];
@@ -110,7 +113,11 @@ export type NewPersonalBlunderInput = Omit<
     readonly attemptsCount?: number;
 };
 
-export function recordPersonalMatchBlunder(input: NewPersonalBlunderInput): PersonalBlunderRecord {
+export function recordPersonalMatchBlunder(input: NewPersonalBlunderInput): PersonalBlunderRecord | null {
+    // Loi 1 : Interdit tout enregistrement si !isAuthenticated (0 blunder pour pending_guest_session)
+    if (!input.userId || input.userId === 'pending_guest_session') {
+        return null;
+    }
     const existing = getPersonalBlunders();
     const record: PersonalBlunderRecord = {
         ...input,
@@ -119,8 +126,28 @@ export function recordPersonalMatchBlunder(input: NewPersonalBlunderInput): Pers
         status: input.status ?? 'PENDING',
         attemptsCount: input.attemptsCount ?? 0,
     };
-    const filtered = existing.filter((b) => b.id !== record.id);
-    const updated = [record, ...filtered].slice(0, 100);
+    const samePositionIdx = existing.findIndex(
+        (b) =>
+            b.id === record.id ||
+            (b.player === record.player &&
+                ((b.dice[0] === record.dice[0] && b.dice[1] === record.dice[1]) ||
+                    (b.dice[0] === record.dice[1] && b.dice[1] === record.dice[0])) &&
+                b.board.length === record.board.length &&
+                b.board.every((val, i) => val === record.board[i])),
+    );
+    let updated: PersonalBlunderRecord[];
+    if (samePositionIdx >= 0) {
+        const prev = existing[samePositionIdx];
+        const merged: PersonalBlunderRecord = {
+            ...prev,
+            ...record,
+            deltaEmg: Math.min(prev.deltaEmg, record.deltaEmg),
+            status: 'PENDING',
+        };
+        updated = existing.map((item, idx) => (idx === samePositionIdx ? merged : item));
+    } else {
+        updated = [record, ...existing.filter((b) => b.id !== record.id)].slice(0, 100);
+    }
     savePersonalBlunders(updated);
     return record;
 }

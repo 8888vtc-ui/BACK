@@ -20,6 +20,11 @@ export interface UseCoachLogAnalyzerParams {
     matchLog?: ReadonlyArray<MatchLogEntry>; gameState: BoardState;
     difficulty?: 'beginner' | 'intermediate' | 'expert' | 'grandmaster' | string;
     botId?: string;
+    challengerProfile?: { displayName?: string; username?: string; rating?: number; countryName?: string } | null;
+    opponentName?: string;
+    opponentElo?: number | null;
+    isAuthenticated?: boolean;
+    userId?: string;
     lastPlayerEvalRef: MutableRefObject<string | null>; analysisRequestIdRef: MutableRefObject<number>;
     humanSnapshotRef?: MutableRefObject<HumanTurnSnapshot | null>; latestHumanPacketIdRef?: MutableRefObject<string | null>;
     cancelActiveOperation: () => { requestId: number; controller: AbortController };
@@ -38,6 +43,11 @@ export function useCoachLogAnalyzer({
     matchLog,
     gameState,
     difficulty,
+    challengerProfile,
+    opponentName,
+    opponentElo,
+    isAuthenticated,
+    userId,
     lastPlayerEvalRef,
     analysisRequestIdRef,
     humanSnapshotRef,
@@ -137,6 +147,11 @@ export function useCoachLogAnalyzer({
                         equityLoss,
                         gameState,
                         difficulty,
+                        challengerProfile,
+                        opponentName,
+                        opponentElo,
+                        isAuthenticated,
+                        userId,
                         recordDecisionStats,
                         setBrilliantMove,
                         isStale,

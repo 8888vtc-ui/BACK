@@ -134,6 +134,7 @@ export interface UseCoachDeps {
         moveHistory?: ReadonlyArray<CoachMoveHistoryItem>;
         matchLog?: ReadonlyArray<MatchLogEntry>;
     };
+    challengerProfile?: { displayName?: string; username?: string; rating?: number; countryName?: string } | null;
     currentTurnMovesRef: React.MutableRefObject<{ from: number; to: number }[]>;
     currentTurnDiceRef: React.MutableRefObject<[number, number] | null>;
     turnBoardBeforeRef: React.MutableRefObject<number[]>;

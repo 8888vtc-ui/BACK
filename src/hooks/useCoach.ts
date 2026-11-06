@@ -30,6 +30,7 @@ export type { CoachState, EvaluatedMove, MatchStats, LastMoveFeedback, CoachAnal
 
 export function useCoach({
     game,
+    challengerProfile,
     currentTurnMovesRef,
     currentTurnDiceRef,
     turnBoardBeforeRef,
@@ -129,6 +130,7 @@ export function useCoach({
         matchLog: game.matchLog,
         gameState: game.state,
         difficulty: game.difficulty,
+        challengerProfile,
         lastPlayerEvalRef,
         analysisRequestIdRef,
         humanSnapshotRef,
