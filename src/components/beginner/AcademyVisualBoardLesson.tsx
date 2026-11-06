@@ -128,22 +128,24 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
           </g>
         )}
 
-        {/* 4. CONSTRUIRE UNE PORTE AVEC LES DÉS (Dés 3 et 1 visibles au centre) */}
+        {/* 4. CONSTRUIRE UNE PORTE AVEC LES DÉS (Dés 3 et 1 visibles au centre droit) */}
         {quizId === 4 && (
           <g>
-            {/* 2 Petits Dés (3 et 1) au centre du tapis */}
-            <g transform="translate(280, 80)">
-              <rect x="-13" y="-28" width="26" height="26" rx="5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-              <circle cx="-6" cy="-21" r="2" fill="#18181b" /><circle cx="0" cy="-15" r="2" fill="#18181b" /><circle cx="6" cy="-9" r="2" fill="#18181b" />
-              <rect x="-13" y="4" width="26" height="26" rx="5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-              <circle cx="0" cy="17" r="2.5" fill="#18181b" />
+            {/* 2 Dés (3 et 1) côte à côte dans le feutre droit, hors de la barre */}
+            <g transform="translate(420, 115)">
+              <rect x="-13" y="-13" width="26" height="26" rx="5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+              <circle cx="-6" cy="-6" r="2" fill="#18181b" /><circle cx="0" cy="0" r="2" fill="#18181b" /><circle cx="6" cy="6" r="2" fill="#18181b" />
+            </g>
+            <g transform="translate(456, 115)">
+              <rect x="-13" y="-13" width="26" height="26" rx="5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+              <circle cx="0" cy="0" r="2.5" fill="#18181b" />
             </g>
 
             {/* Pions de départ relevés à cy=238 (hors bordure) */}
             <circle cx="210" cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
             <circle cx="460" cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
 
-            {/* Flèches courbes qui passent largement sous le cartouche */}
+            {/* Flèches courbes qui convergent vers la flèche 5 */}
             <path d="M 210 224 Q 278 185 338 220" fill="none" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
             <path d="M 460 224 Q 412 185 354 220" fill="none" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
 
@@ -151,9 +153,9 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
             <circle cx="346" cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
             <circle cx="346" cy="220" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
 
-            {/* Cartouche opaque vert relevé à y=155 (au-dessus des flèches) */}
-            <g transform="translate(346, 155)">
-              <rect x="-110" y="-11" width="220" height="22" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#10B981" strokeWidth="1" strokeOpacity="0.5" />
+            {/* Cartouche opaque vert relevé à y=158 (au-dessus des flèches) */}
+            <g transform="translate(346, 158)">
+              <rect x="-110" y="-11" width="220" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#10B981" strokeWidth="1" />
               <text x="0" y="4" fill="#34D399" fontSize="10.5" fontWeight="black" textAnchor="middle">
                 {isEn ? 'Convergence = Impassable Gate' : 'Convergence = Bouclier Imprenable'}
               </text>
