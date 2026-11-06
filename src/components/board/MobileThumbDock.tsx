@@ -197,7 +197,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                 >
                     <div className="flex items-center gap-0.5">
                         <span aria-hidden="true" className="text-[11px] leading-none">
-                            {isTilted ? <Flame className="w-3.5 h-3.5 text-rose-400" strokeWidth={1.5} /> : <GraduationCap className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />}
+                            {isTilted ? '🔥' : '🎓'}
                         </span>
                         <span
                             data-testid="thumb-dock-coach-badge"
@@ -231,7 +231,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                             }}
                             className="flex-1 min-w-0 h-11 sm:h-12 rounded-xl border border-emerald-400/60 bg-emerald-600 px-2 font-sans text-[11px] sm:text-xs font-black uppercase tracking-wider text-white shadow-lg active:scale-95 touch-manipulation tabular-nums truncate"
                         >
-                            {isEn ? `Take ×${nextCubeValue}` : `Prendre ×${nextCubeValue}`}
+                            {isEn ? `✓ Take ×${nextCubeValue}` : `✓ Prendre ×${nextCubeValue}`}
                         </button>
                         <button
                             type="button"
@@ -242,7 +242,7 @@ const MobileThumbDockComponent: React.FC<MobileThumbDockProps> = ({
                             }}
                             className="h-11 sm:h-12 shrink-0 rounded-xl border border-rose-400/60 bg-rose-950 px-2.5 font-sans text-[11px] sm:text-xs font-black uppercase tracking-wider text-rose-100 shadow-lg active:scale-95 touch-manipulation"
                         >
-                            {isEn ? 'Pass' : 'Passer'}
+                            {isEn ? '✕ Pass' : '✕ Passer'}
                         </button>
                     </div>
                 ) : (

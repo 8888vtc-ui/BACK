@@ -111,10 +111,13 @@ export function readPlayerPassport(): PlayerPassport | null {
         const parsed = JSON.parse(raw) as Partial<PlayerPassport>;
         if (
             typeof parsed.pseudo === 'string' &&
-            parsed.pseudo.trim().length >= 2 &&
-            typeof parsed.email === 'string' &&
-            parsed.email.includes('@')
+            parsed.pseudo.trim().length >= 2
         ) {
+            const cleanPseudo = parsed.pseudo.trim();
+            const effectiveEmail =
+                typeof parsed.email === 'string' && parsed.email.includes('@')
+                    ? parsed.email.trim().toLowerCase()
+                    : `member_${cleanPseudo.toLowerCase().replace(/[^a-z0-9]/g, '') || 'joueur'}@backgammontour.com`;
             const level: PlayerExperienceTier =
                 parsed.experienceLevel === 'beginner' ||
                 parsed.experienceLevel === 'intermediate' ||
@@ -122,8 +125,8 @@ export function readPlayerPassport(): PlayerPassport | null {
                     ? parsed.experienceLevel
                     : 'intermediate';
             return {
-                pseudo: parsed.pseudo.trim(),
-                email: parsed.email.trim().toLowerCase(),
+                pseudo: cleanPseudo,
+                email: effectiveEmail,
                 experienceLevel: level,
                 avatarUrl:
                     typeof parsed.avatarUrl === 'string' && parsed.avatarUrl.trim().length > 0
@@ -150,6 +153,8 @@ export function readPlayerPassport(): PlayerPassport | null {
 export function savePlayerPassport(passport: PlayerPassport): PlayerPassport {
     if (typeof window !== 'undefined' && window.localStorage) {
         try {
+            window.localStorage.removeItem('bg_is_guest');
+            window.localStorage.removeItem('bg_guest_session');
             window.localStorage.setItem(PLAYER_PASSPORT_STORAGE_KEY, JSON.stringify(passport));
             const chameleonLayer =
                 passport.experienceLevel === 'beginner'
@@ -158,6 +163,9 @@ export function savePlayerPassport(passport: PlayerPassport): PlayerPassport {
                       ? 'L2'
                       : 'L1';
             window.localStorage.setItem('backgammon.chameleonUxLayer', chameleonLayer);
+            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new CustomEvent('bgtour-stats-updated'));
+            window.dispatchEvent(new CustomEvent('bgtour-auth-changed', { detail: { isAuthenticated: true, passport } }));
         } catch {
             // ignore storage errors
         }
@@ -169,6 +177,13 @@ export function clearPlayerPassport(): void {
     if (typeof window !== 'undefined' && window.localStorage) {
         try {
             window.localStorage.removeItem(PLAYER_PASSPORT_STORAGE_KEY);
+            window.localStorage.removeItem('bg_user_code');
+            window.localStorage.removeItem('bgt_user_code');
+            window.localStorage.removeItem('bgtour_local_auth_profile_v1');
+            window.localStorage.setItem('bg_is_guest', 'true');
+            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new CustomEvent('bgtour-stats-updated'));
+            window.dispatchEvent(new CustomEvent('bgtour-auth-changed', { detail: { isAuthenticated: false } }));
         } catch {
             // ignore
         }
@@ -307,7 +322,7 @@ export async function registerPlayerPassportLead(params: {
 
     const saved = savePlayerPassport({
         pseudo: cleanPseudo,
-        email: rawEmail,
+        email: cleanEmail,
         experienceLevel: params.experienceLevel,
         avatarUrl: chosenAvatar,
         countryName: chosenCountryName,

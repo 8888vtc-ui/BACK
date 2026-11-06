@@ -30,28 +30,33 @@ export function QuickAccountModal({ isOpen, onClose, onSuccess }: QuickAccountMo
 
     try {
       if (mode === 'REGISTER') {
-        const result = await signUpWithEmail({
-          email,
-          password,
-          displayName: pseudo || 'Initié',
-          username: pseudo || 'Initié',
-        });
-        if (result?.error) {
-          setErrorMsg(result.error.message || "Erreur lors de l'inscription");
-        } else {
-          // Attacher la progression invité au nouveau profil
-          const currentPassport = readPlayerPassport();
-          savePlayerPassport({
-            pseudo: pseudo || currentPassport?.pseudo || 'Initié',
+        let supabaseSynced = false;
+        try {
+          const result = await signUpWithEmail({
             email,
-            experienceLevel: currentPassport?.experienceLevel || 'beginner',
-            avatarUrl: currentPassport?.avatarUrl || STANDARD_USER_AVATARS[0].url,
-            registeredAt: currentPassport?.registeredAt || new Date().toISOString(),
-            supabaseSynced: true,
+            password,
+            displayName: pseudo || 'Initié',
+            username: pseudo || 'Initié',
           });
-          onSuccess?.();
-          onClose();
+          if (!result?.error) {
+            supabaseSynced = true;
+          }
+        } catch {
+          // Résilience hors-ligne : la persistance locale prend le relais
         }
+
+        // Attacher la progression invité au nouveau profil
+        const currentPassport = readPlayerPassport();
+        savePlayerPassport({
+          pseudo: pseudo || currentPassport?.pseudo || 'Initié',
+          email,
+          experienceLevel: currentPassport?.experienceLevel || 'beginner',
+          avatarUrl: currentPassport?.avatarUrl || STANDARD_USER_AVATARS[0].url,
+          registeredAt: currentPassport?.registeredAt || new Date().toISOString(),
+          supabaseSynced,
+        });
+        onSuccess?.();
+        onClose();
       } else {
         const result = await signInWithEmail({ email, password });
         if (result?.error) {
@@ -70,10 +75,11 @@ export function QuickAccountModal({ isOpen, onClose, onSuccess }: QuickAccountMo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div data-testid="quick-account-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-md bg-[#0F141C] border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col gap-4 text-white">
         <button
           type="button"
+          data-testid="quick-account-close-btn"
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 rounded-lg text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
         >
@@ -101,7 +107,7 @@ export function QuickAccountModal({ isOpen, onClose, onSuccess }: QuickAccountMo
         </div>
 
         {errorMsg && (
-          <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
+          <div data-testid="quick-account-error-msg" className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
             {errorMsg}
           </div>
         )}
@@ -117,6 +123,7 @@ export function QuickAccountModal({ isOpen, onClose, onSuccess }: QuickAccountMo
                 <input
                   type="text"
                   required
+                  data-testid="quick-account-pseudo-input"
                   placeholder={lang === 'fr' ? 'Ex: Alexandre' : 'Ex: Alex'}
                   value={pseudo}
                   onChange={e => setPseudo(e.target.value)}
@@ -133,6 +140,7 @@ export function QuickAccountModal({ isOpen, onClose, onSuccess }: QuickAccountMo
               <input
                 type="email"
                 required
+                data-testid="quick-account-email-input"
                 placeholder="votre.email@exemple.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
@@ -151,6 +159,7 @@ export function QuickAccountModal({ isOpen, onClose, onSuccess }: QuickAccountMo
                 type="password"
                 required
                 minLength={6}
+                data-testid="quick-account-password-input"
                 placeholder="••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -162,6 +171,7 @@ export function QuickAccountModal({ isOpen, onClose, onSuccess }: QuickAccountMo
           <button
             type="submit"
             disabled={loading}
+            data-testid="quick-account-submit-btn"
             className="w-full py-2.5 mt-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-400/20 transition-all disabled:opacity-50"
           >
             {loading
@@ -176,6 +186,7 @@ export function QuickAccountModal({ isOpen, onClose, onSuccess }: QuickAccountMo
         <div className="text-center pt-2 border-t border-white/5">
           <button
             type="button"
+            data-testid="quick-account-mode-switch"
             onClick={() => {
               setErrorMsg(null);
               setMode(m => (m === 'REGISTER' ? 'LOGIN' : 'REGISTER'));

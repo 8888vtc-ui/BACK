@@ -177,9 +177,11 @@ export function useAuthenticPlayerStats(): AuthenticPlayerStats & { refreshStats
         const handleStorage = () => refreshStats();
         window.addEventListener('storage', handleStorage);
         window.addEventListener(STATS_UPDATED_EVENT, handleStorage);
+        window.addEventListener('bgtour-auth-changed', handleStorage);
         return () => {
             window.removeEventListener('storage', handleStorage);
             window.removeEventListener(STATS_UPDATED_EVENT, handleStorage);
+            window.removeEventListener('bgtour-auth-changed', handleStorage);
         };
     }, [refreshStats]);
 

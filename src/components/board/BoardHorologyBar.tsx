@@ -128,7 +128,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                         type="button" data-testid="timeline-toggle-phase-btn" onClick={onToggleViewPhase}
                         className="rounded-md border border-amber-300/60 bg-black/50 px-2 py-0.5 font-mono text-xs font-bold text-amber-200 hover:bg-black/80 hover:text-white transition"
                     >
-                        {viewPhase === 'before' ? 'AVANT + Flèches' : 'APRÈS coup'}
+                        {viewPhase === 'before' ? '👁 AVANT + Flèches' : '👁 APRÈS coup'}
                     </button>
                     {onRewindHere && (
                         <button
@@ -180,7 +180,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                         type="button" data-testid="timeline-btn-live" onClick={onReturnToLive}
                         className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/45 bg-emerald-950/60 px-2 py-0.5 text-xs font-bold text-emerald-300"
                     >
-                        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
+                        <span aria-hidden="true">🟢</span>
                         <span className="hidden sm:inline">Direct</span>
                     </button>
                 </div>
@@ -219,7 +219,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                         className="inline-flex items-center gap-1 rounded-lg border border-cyan-300/80 bg-gradient-to-r from-cyan-950/90 to-emerald-950/90 px-1.5 py-0.5 font-mono text-xs font-black uppercase text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.4)] animate-pulse"
                         title={isEn ? `Unique best move! (+${metrics.brilliantMarginEq.toFixed(3)})` : `Seul coup optimal ! (+${metrics.brilliantMarginEq.toFixed(3)})`}
                     >
-                        <Sparkles className="w-3 h-3 text-cyan-400" strokeWidth={1.5} />
+                        <span aria-hidden="true">💎</span>
                         <span>{isEn ? 'BRILLIANT' : 'BRILLANT'} (+{metrics.brilliantMarginEq.toFixed(3)})</span>
                     </span>
                 )}
@@ -231,7 +231,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                             metrics.optimalStreak >= 3 ? 'border-amber-300/85 bg-gradient-to-r from-amber-600/35 to-emerald-600/35 text-amber-100' : 'border-emerald-500/50 bg-emerald-950/75 text-emerald-200'
                         }`}
                     >
-                        {metrics.optimalStreak >= 3 ? <Flame className="w-3.5 h-3.5 text-amber-400" strokeWidth={1.5} /> : <Zap className="w-3.5 h-3.5 text-amber-400" strokeWidth={1.5} />}
+                        <span>{metrics.optimalStreak >= 3 ? '🔥' : '⚡'}</span>
                         <span>x{metrics.optimalStreak}</span>
                     </span>
                 )}
@@ -243,7 +243,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                             doublingOfferedBy !== null ? 'border-rose-400/90 bg-rose-950/90 text-rose-100 animate-pulse' : 'border-amber-400/75 bg-amber-950/80 text-amber-200'
                         }`}
                     >
-                        <Dices className="w-3.5 h-3.5 text-amber-400" strokeWidth={1.5} />
+                        <span>🎰</span>
                         <span>{doublingOfferedBy !== null ? `2× (${cubeValue * 2})` : `${cubeValue}×`}</span>
                     </span>
                 )}
@@ -254,7 +254,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                         title={`Revenir au Tour #${worstBlunder.turnIndex} (-${Math.abs(worstBlunder.coachState.equityLoss).toFixed(3)} Eq) pour battre votre fantôme`}
                         className="inline-flex items-center gap-1 rounded-lg border border-purple-400/75 bg-purple-950/90 px-1.5 py-0.5 font-mono text-xs font-extrabold tabular-nums text-purple-100 hover:border-purple-300 hover:text-white transition active:scale-95"
                     >
-                        <span>Ghost #{worstBlunder.turnIndex}</span>
+                        <span>👻</span><span>Ghost #{worstBlunder.turnIndex}</span>
                     </button>
                 )}
 
@@ -264,7 +264,7 @@ const BoardHorologyBarComponent: React.FC<BoardHorologyBarProps> = ({
                         title={`Revanche contre ${rival.name}`}
                         className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-1.5 py-0.5 text-xs font-bold text-amber-300 hover:border-amber-400/50 transition active:scale-95"
                     >
-                        <Flame className="w-3.5 h-3.5 text-amber-400" strokeWidth={1.5} /><span>{isEn ? 'Rematch' : 'Revanche'}</span>
+                        <span>🔥</span><span>{isEn ? 'Rematch' : 'Revanche'}</span>
                     </button>
                 )}
             </div>

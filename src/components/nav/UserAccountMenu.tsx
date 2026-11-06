@@ -107,11 +107,18 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
     }, [isControlled, onUserResolved]);
 
     useEffect(() => {
+        const syncPassport = () => setLocalPassport(readPlayerPassport());
+        window.addEventListener('storage', syncPassport); window.addEventListener('bgtour-auth-changed', syncPassport); window.addEventListener('bgtour-stats-updated', syncPassport);
+        return () => {
+            window.removeEventListener('storage', syncPassport); window.removeEventListener('bgtour-auth-changed', syncPassport); window.removeEventListener('bgtour-stats-updated', syncPassport);
+        };
+    }, []);
+
+    useEffect(() => {
         if (!isDropdownOpen) return;
         const onDown = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setIsDropdownOpen(false); };
         const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsDropdownOpen(false); };
-        document.addEventListener('mousedown', onDown);
-        document.addEventListener('keydown', onKey);
+        document.addEventListener('mousedown', onDown); document.addEventListener('keydown', onKey);
         return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
     }, [isDropdownOpen]);
 
@@ -123,11 +130,10 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
     const handleOpenAuth = () => { if (onOpenAuthModal) onOpenAuthModal(); else setIsAuthModalOpen(true); };
 
     const handleLogout = async () => {
-        setIsDropdownOpen(false); clearPlayerPassport(); setLocalPassport(null);
-        if (onSignOut) { await onSignOut(); } else {
-            await supabaseSignOut(); setInternalUser(null); setInternalProfile(null);
-            setInternalStatus(isSupabaseConfigured() ? 'anonymous' : 'offline');
-        }
+        setIsDropdownOpen(false); clearPlayerPassport(); setLocalPassport(null); setInternalUser(null); setInternalProfile(null);
+        const nextStatus: AuthStatus = isSupabaseConfigured() ? 'anonymous' : 'offline';
+        setInternalStatus(nextStatus); onUserResolved?.(null, null, nextStatus);
+        if (onSignOut) { await onSignOut(); } else { await supabaseSignOut(); }
     };
 
     const handleApplyUserCode = () => {
