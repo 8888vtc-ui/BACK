@@ -8,8 +8,8 @@
  * Strictement <= 260 lignes, 0 any, 0 emoji.
  */
 
-import React, { useState } from 'react';
-import { Zap, Sparkles, Play, Star, Dices, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Zap, Sparkles, Play, Star, Dices, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { CandidateMoveAnalysisRow } from '../../lib/analysis/analysisStudioEngine';
 
@@ -60,7 +60,24 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
     const isEn = locale === 'en';
     const [xgidExpanded, setXgidExpanded] = useState<boolean>(false);
     const [localXgidInput, setLocalXgidInput] = useState<string>(xgidString);
+    const [copied, setCopied] = useState<boolean>(false);
     const bestWinPct = candidates[0]?.winPct ?? 50;
+
+    useEffect(() => {
+        setLocalXgidInput(xgidString);
+    }, [xgidString]);
+
+    const handleCopyXgid = async () => {
+        try {
+            if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                await navigator.clipboard.writeText(xgidString);
+            }
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            // ignore
+        }
+    };
 
     return (
         <div className="flex flex-col gap-2 h-full min-h-0 justify-between select-none" data-testid="analysis-control-panel">
@@ -230,6 +247,17 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                             <span>{isEn ? 'Play this position against AI Coach from here →' : "Jouer cette position contre le Coach IA à partir d'ici →"}</span>
                         </button>
 
+                        <button
+                            type="button"
+                            data-testid="copy-xgid-btn"
+                            onClick={handleCopyXgid}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.06] hover:bg-white/[0.12] hover:border-[#D4AF37]/60 px-2.5 py-2 text-xs font-bold text-[#D4AF37] transition shrink-0"
+                            title={isEn ? 'Copy XGID code to clipboard' : 'Copier le code XGID dans le presse-papier'}
+                        >
+                            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                            <span>{copied ? (isEn ? 'Copied !' : 'Copié !') : (isEn ? 'Copy XGID' : 'Copier XGID')}</span>
+                        </button>
+
                         <button type="button" data-testid="toggle-xgid-drawer-btn" onClick={() => setXgidExpanded((prev) => !prev)} className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-2 text-xs font-semibold text-zinc-300 hover:text-white transition shrink-0">
                             <span>XGID</span>
                             {xgidExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -239,12 +267,25 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                     {xgidExpanded && (
                         <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-black/60 p-1.5 shrink-0">
                             <input
-                                type="text" data-testid="xgid-input" value={localXgidInput}
-                                onChange={(e) => setLocalXgidInput(e.target.value)}
+                                type="text"
+                                data-testid="xgid-input"
+                                value={localXgidInput}
+                                onChange={(e) => {
+                                    const v = e.target.value;
+                                    setLocalXgidInput(v);
+                                    if (v.trim().startsWith('XGID=') || v.includes(':')) {
+                                        onImportXgid(v);
+                                    }
+                                }}
                                 placeholder={isEn ? 'Paste XGID string...' : 'Collez une chaîne XGID...'}
                                 className="flex-1 rounded-lg border border-white/20 bg-black/70 px-2 py-1 font-mono text-xs text-amber-200 focus:outline-none"
                             />
-                            <button type="button" onClick={() => onImportXgid(localXgidInput)} className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-bold text-stone-200 hover:bg-white/15">
+                            <button
+                                type="button"
+                                data-testid="load-xgid-btn"
+                                onClick={() => onImportXgid(localXgidInput)}
+                                className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-bold text-stone-200 hover:bg-white/15"
+                            >
                                 {isEn ? 'Load' : 'Charger'}
                             </button>
                         </div>

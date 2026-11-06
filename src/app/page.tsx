@@ -205,13 +205,23 @@ export default function Home() {
             const modeParam = params.get('mode');
             if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1') {
                 hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true; modals.openMatchmaking();
-            } else if (params.get('start') === 'guided' || window.location.pathname.startsWith('/play')) {
+            } else if (params.get('start') === 'guided' || window.location.pathname.startsWith('/play') || params.get('from') === 'analysis') {
                 hasAutoStartedRef.current = true;
                 if (params.get('start') === 'guided') { userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch(); }
+                const rawCustom = typeof window !== 'undefined' ? window.sessionStorage.getItem('bgtour_custom_analysis_position') : null;
+                if (rawCustom) {
+                    try {
+                        const c = JSON.parse(rawCustom);
+                        window.sessionStorage.removeItem('bgtour_custom_analysis_position');
+                        handleLobbyStart({ matchLength: c.matchLength ?? 7, difficulty: 'intermediate', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
+                        window.setTimeout(() => { game.applyRemoteState({ board: c.board, dice: c.dice, turn: c.turn || 'X', phase: 'PLAYING_MOVES', usedDice: [false, false] }); }, 200);
+                        return;
+                    } catch { /* fallback */ }
+                }
                 handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
             }
         }
-    }, [handleLobbyStart, modals, multiplayer]);
+    }, [handleLobbyStart, modals, multiplayer, game]);
 
     const handleBackToLobby = useCallback(() => {
         userInitiatedMultiplayerRef.current = false;
@@ -244,32 +254,19 @@ export default function Home() {
 
     const mainAmbianceClass = theme === 'snowie_classic'
         ? 'bg-[#06110b] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#0e2e1d_0%,#081b11_50%,#030805_100%)] text-slate-100 selection:bg-amber-500'
-        : theme === 'tournament'
-            ? 'bg-[#16070a] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#38121a_0%,#1f090e_50%,#090304_100%)] text-slate-100 selection:bg-amber-600'
-            : 'bg-slate-950 bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#162a4a_0%,#0b1528_50%,#020617_100%)] text-slate-100 selection:bg-amber-500';
+        : theme === 'tournament' ? 'bg-[#16070a] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#38121a_0%,#1f090e_50%,#090304_100%)] text-slate-100 selection:bg-amber-600' : 'bg-slate-950 bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#162a4a_0%,#0b1528_50%,#020617_100%)] text-slate-100 selection:bg-amber-500';
 
     if (appScreen === 'LOBBY') {
         return (
             <PageTransition isTransitioning={isNavigating}>
                 <LobbyView onStart={handleLobbyStart} onOpenModule={handleOpenLobbyModule} initialMatchLength={7} initialCoachEnabled={isLiveAdviceEnabled} />
-                <GameModalsContainer
-                    theme={theme} modals={modals} game={game} multiplayer={multiplayer}
-                    isMultiplayerActive={isMultiplayerActive} latestGameAnalysis={latestGameAnalysis}
-                    turnsHistory={turnsHistory} openingEntry={openingEntry}
-                    onApplyOpeningMove={openingEntry ? () => handleApplyOpeningMove(openingEntry.bestMoves) : () => { }}
-                    onResetGameHistory={resetGameHistory} locale={locale}
-                />
+                <GameModalsContainer theme={theme} modals={modals} game={game} multiplayer={multiplayer} isMultiplayerActive={isMultiplayerActive} latestGameAnalysis={latestGameAnalysis} turnsHistory={turnsHistory} openingEntry={openingEntry} onApplyOpeningMove={openingEntry ? () => handleApplyOpeningMove(openingEntry.bestMoves) : () => { }} onResetGameHistory={resetGameHistory} locale={locale} />
             </PageTransition>
         );
     }
 
     if (appScreen === 'SUMMARY') {
-        return (
-            <SummaryView
-                scoreX={game.state.scoreX} scoreO={game.state.scoreO} ambianceClass={mainAmbianceClass}
-                onReviewBoard={() => setAppScreen('GAME')} onBackToLobby={handleBackToLobby}
-            />
-        );
+        return <SummaryView scoreX={game.state.scoreX} scoreO={game.state.scoreO} ambianceClass={mainAmbianceClass} onReviewBoard={() => setAppScreen('GAME')} onBackToLobby={handleBackToLobby} />;
     }
 
     return (

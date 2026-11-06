@@ -29,3 +29,4 @@ describe('QuickAccountModal Component', () => {
         expect(html).toContain('10 000 PTS');
     });
 });
+

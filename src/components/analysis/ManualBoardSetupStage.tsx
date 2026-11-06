@@ -177,7 +177,7 @@ export const ManualBoardSetupStage: React.FC<ManualBoardSetupStageProps> = ({
                         className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#12151C] px-2 py-1 text-xs font-semibold text-stone-300 hover:border-rose-400/50 hover:text-rose-200 transition whitespace-nowrap"
                     >
                         <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
-                        <span>{isEn ? 'Clear' : 'Vider'}</span>
+                        <span>{isEn ? 'Clear Board' : 'Vider le plateau'}</span>
                     </button>
 
                     <button

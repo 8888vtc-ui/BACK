@@ -38,6 +38,10 @@ export function AnalysisStudioView() {
     const [dice, setDice] = useState<[number, number]>([3, 1]);
     const [matchLength, setMatchLength] = useState<number>(7);
     const [isCrawford, setIsCrawford] = useState<boolean>(false);
+    const [cubeValue, setCubeValue] = useState<number>(1);
+    const [cubeOwner, setCubeOwner] = useState<'X' | 'O' | null>(null);
+    const [scoreX, setScoreX] = useState<number>(0);
+    const [scoreO, setScoreO] = useState<number>(0);
     const [selectedMoveNotation, setSelectedMoveNotation] = useState<string | null>('8/5 6/5');
     const [bgsageData, setBgsageData] = useState<BgsageEvaluateResponse | null>(null);
     const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
@@ -49,16 +53,16 @@ export function AnalysisStudioView() {
     const boardState: BoardState = useMemo(() => ({
         board,
         turn: 'X',
-        cubeValue: 1,
-        cubeOwner: null,
+        cubeValue,
+        cubeOwner,
         dice,
         matchLength,
-        scoreX: 0,
-        scoreO: 0,
+        scoreX,
+        scoreO,
         crawford: isCrawford,
         doubled: false,
         resigned: 0,
-    }), [board, dice, matchLength, isCrawford]);
+    }), [board, dice, matchLength, isCrawford, cubeValue, cubeOwner, scoreX, scoreO]);
 
     const xgidString = useMemo(() => {
         try {
@@ -113,6 +117,7 @@ export function AnalysisStudioView() {
     const handleResetStartingBoard = () => {
         const init = getInitialStartingBoard();
         setBoard(init.board); setTray(init.tray); setActiveBrush('white'); setBgsageData(null); setSelectedMoveNotation('8/5 6/5');
+        setCubeValue(1); setCubeOwner(null); setScoreX(0); setScoreO(0); setIsCrawford(false);
     };
 
     const handleCompleteRemainingToOff = () => {
@@ -153,8 +158,10 @@ export function AnalysisStudioView() {
     const handlePlayPositionFromHere = () => {
         const validBoard = autoCompleteRemainingToOff(board);
         if (typeof window !== 'undefined') {
-            window.sessionStorage.setItem('bgtour_custom_analysis_position', JSON.stringify({ board: validBoard, dice, matchLength, turn: 'X' }));
-            router.push('/play?from=analysis');
+            window.sessionStorage.setItem('bgtour_custom_analysis_position', JSON.stringify({
+                board: validBoard, dice, matchLength, turn: 'X', cubeValue, cubeOwner, scoreX, scoreO,
+            }));
+            window.location.assign('/play?from=analysis');
         }
     };
 
@@ -164,7 +171,14 @@ export function AnalysisStudioView() {
             setBoard(parsed.board);
             setTray({ white: 0, black: 0 });
             if (parsed.dice && parsed.dice[0] > 0 && parsed.dice[1] > 0) setDice([parsed.dice[0], parsed.dice[1]]);
-            if (parsed.matchLength) setMatchLength(parsed.matchLength);
+            if (parsed.matchLength !== undefined) setMatchLength(parsed.matchLength);
+            if (parsed.cubeValue !== undefined) setCubeValue(parsed.cubeValue);
+            if (parsed.cubeOwner !== undefined) setCubeOwner(parsed.cubeOwner);
+            if (parsed.scoreX !== undefined) setScoreX(parsed.scoreX);
+            if (parsed.scoreO !== undefined) setScoreO(parsed.scoreO);
+            if (parsed.crawford !== undefined) setIsCrawford(parsed.crawford);
+            setErrorMessage(null);
+            setBgsageData(null);
         } catch {
             setErrorMessage(isEn ? 'Invalid XGID string.' : 'Code XGID invalide.');
         }
