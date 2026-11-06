@@ -169,7 +169,7 @@ export function computeAuthenticStats(): AuthenticPlayerStats {
 }
 
 export function useAuthenticPlayerStats(): AuthenticPlayerStats & { refreshStats: () => void } {
-    const [stats, setStats] = useState<AuthenticPlayerStats>(() => computeAuthenticStats());
+    const [stats, setStats] = useState<AuthenticPlayerStats>(GUEST_STATS);
     const refreshStats = useCallback(() => setStats(computeAuthenticStats()), []);
 
     useEffect(() => {

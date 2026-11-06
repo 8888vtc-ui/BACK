@@ -58,7 +58,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
     const [internalStatus, setInternalStatus] = useState<AuthStatus>('anonymous');
     const [internalUser, setInternalUser] = useState<User | null>(null);
     const [internalProfile, setInternalProfile] = useState<Profile | null>(null);
-    const [localPassport, setLocalPassport] = useState<PlayerPassport | null>(() => readPlayerPassport());
+    const [localPassport, setLocalPassport] = useState<PlayerPassport | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [inputCode, setInputCode] = useState('');
@@ -107,6 +107,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
     }, [isControlled, onUserResolved]);
 
     useEffect(() => {
+        setLocalPassport(readPlayerPassport());
         const syncPassport = () => setLocalPassport(readPlayerPassport());
         window.addEventListener('storage', syncPassport); window.addEventListener('bgtour-auth-changed', syncPassport); window.addEventListener('bgtour-stats-updated', syncPassport);
         return () => {

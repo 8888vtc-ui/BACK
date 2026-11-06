@@ -14,7 +14,7 @@ import { persistExplanation, resolveL2CachedExplanation } from './coachExplanati
 import { buildKnowledgeVaultEntry } from '../../features/coach/knowledgeVaultHarvester';
 import type { Locale } from '../../lib/i18n/types';
 
-export const LLM_TIMEOUT_MS = 14000;
+export const LLM_TIMEOUT_MS = 4000;
 export type ExplanationSource = 'llm' | 'rule-based' | 'cache' | null;
 
 export interface UseCoachExplanationParams {
@@ -144,16 +144,11 @@ export function useCoachExplanation({
         };
         const vaultBuilt = buildKnowledgeVaultEntry({ promptParams, board, xgid, dice });
         const ruleBased = vaultBuilt.selectedVariant ?? generateRuleBasedExplanation(promptParams);
-        const explanation = board && board.length >= 25
-            ? verifyAndSanitizeCoachTextAgainstBoard(ruleBased.explanation, board, locale === 'en' ? 'en' : 'fr').sanitizedText
-            : ruleBased.explanation;
-        const summary = board && board.length >= 25
-            ? verifyAndSanitizeCoachTextAgainstBoard(ruleBased.summary, board, locale === 'en' ? 'en' : 'fr').sanitizedText
-            : ruleBased.summary;
+        const isFr = locale !== 'en';
+        const explanation = board && board.length >= 25 ? verifyAndSanitizeCoachTextAgainstBoard(ruleBased.explanation, board, isFr ? 'fr' : 'en').sanitizedText : ruleBased.explanation;
+        const summary = board && board.length >= 25 ? verifyAndSanitizeCoachTextAgainstBoard(ruleBased.summary, board, isFr ? 'fr' : 'en').sanitizedText : ruleBased.summary;
         return {
-            ...ruleBased,
-            explanation,
-            summary,
+            ...ruleBased, explanation, summary,
             symbolicAudit: ruleBased.symbolic_audit,
             pedagogicalExplanation: ruleBased.pedagogical_explanation,
             rawText: explanation,
