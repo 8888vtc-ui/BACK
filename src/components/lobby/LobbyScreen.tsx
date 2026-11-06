@@ -147,6 +147,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                 onSelectPlayTab={() => setSelectedMode('ai')}
                 onOpenSettings={() => { setSelectedMode('ai'); setShowOptions(true); }}
                 onUserResolved={handleUserResolved}
+                tierGate={tierGate}
+                onSelectGate={setTierGate}
             />
 
             <div className="relative z-10 flex flex-1 min-h-0 w-full">

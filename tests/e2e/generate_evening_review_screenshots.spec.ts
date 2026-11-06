@@ -27,20 +27,26 @@ test.describe('Day 25: 12 HD Screenshots Album for Evening Review (1440x900)', (
         await page.screenshot({ path: path.join(OUT_DIR, '01_home_beginner_fr.png'), fullPage: false });
 
         // --- 02. Accueil Intermédiaire (FR) ---
-        await page.getByTestId('tier-gate-btn-intermediate').first().click();
+        const intermediateBtn = page.locator('[data-testid="tier-gate-btn-intermediate"]:visible').first();
+        await expect(intermediateBtn).toBeVisible({ timeout: 10000 });
+        await intermediateBtn.click();
         await expect(page.getByTestId('intermediate-home-portal')).toBeVisible({ timeout: 10000 });
         await page.waitForTimeout(400);
         await page.screenshot({ path: path.join(OUT_DIR, '02_home_intermediate_fr.png'), fullPage: false });
 
         // --- 03. Accueil Expert / Pro (FR) ---
-        await page.getByTestId('tier-gate-btn-expert').first().click();
+        const expertBtn = page.locator('[data-testid="tier-gate-btn-expert"]:visible').first();
+        await expect(expertBtn).toBeVisible({ timeout: 10000 });
+        await expertBtn.click();
         await expect(page.getByTestId('expert-home-portal')).toBeVisible({ timeout: 10000 });
         await page.waitForTimeout(400);
         await page.screenshot({ path: path.join(OUT_DIR, '03_home_expert_fr.png'), fullPage: false });
 
         // --- 04. Accueil Intermédiaire (EN) - Sans franglais ---
         await page.getByTestId('navbar-locale-toggle-btn').click();
-        await page.getByTestId('tier-gate-btn-intermediate').first().click();
+        const intermediateBtnEn = page.locator('[data-testid="tier-gate-btn-intermediate"]:visible').first();
+        await expect(intermediateBtnEn).toBeVisible({ timeout: 10000 });
+        await intermediateBtnEn.click();
         await expect(page.getByTestId('intermediate-home-portal')).toBeVisible({ timeout: 10000 });
         await page.waitForTimeout(400);
         await page.screenshot({ path: path.join(OUT_DIR, '04_home_intermediate_en_no_franglais.png'), fullPage: false });

@@ -22,7 +22,7 @@ import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
 import IosInstallModal from '../pwa/IosInstallModal';
 import { PlayerTierGateSwitch } from '../navigation/PlayerTierGateSwitch';
-import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { usePlayerTierGate, type PlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { NavbarPointsAndBadges } from './NavbarPointsAndBadges';
 
 export type NavTabId = 'play' | 'tournaments' | 'puzzles' | 'drills' | 'openings' | 'progression' | 'academy';
@@ -34,6 +34,8 @@ export interface AppNavbarProps {
     onOpenSettings?: () => void;
     onUserResolved?: (user: User | null, profile: Profile | null, status: AuthStatus) => void;
     statusBadge?: React.ReactNode;
+    tierGate?: PlayerTierGate;
+    onSelectGate?: (gate: PlayerTierGate) => void;
 }
 
 interface NavItem {
@@ -52,11 +54,15 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
     onOpenSettings,
     onUserResolved,
     statusBadge,
+    tierGate: propTierGate,
+    onSelectGate: propOnSelectGate,
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { t, ui, locale, setLocale } = useTranslation();
     const { canInstall, isInstalled, showIosModal, setShowIosModal, handleInstallClick } = usePwaInstall();
-    const { tierGate, setTierGate } = usePlayerTierGate();
+    const defaultGateHook = usePlayerTierGate();
+    const tierGate = propTierGate ?? defaultGateHook.tierGate;
+    const setTierGate = propOnSelectGate ?? defaultGateHook.setTierGate;
 
     const navItems = useMemo<ReadonlyArray<NavItem>>(
         () => [
