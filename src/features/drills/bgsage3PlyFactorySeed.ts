@@ -1,7 +1,7 @@
 /**
  * @file src/features/drills/bgsage3PlyFactorySeed.ts
  * @description Seed généré depuis data/quizzes/bgsage_3ply_er_factory.jsonl (quiz 3-ply certifiés bgsage + gnubg).
- * Strictement <= 400 lignes, 0 any, 0 ERH, 0 ouverture (pips < 145, plyCount >= 6).
+ * Strictement <= 400 lignes, 0 any, 0 ouverture (pips < 145, plyCount >= 6).
  */
 
 import type { HarvestedSeedInput } from './benchmarkBlunders';

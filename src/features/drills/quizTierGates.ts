@@ -91,3 +91,4 @@ export function isQuizInPorteGate(
     const config = PORTE_GATES_CONFIG[gate];
     return er >= config.minEr && er <= config.maxEr;
 }
+

@@ -11,6 +11,7 @@ import { getTheoryConceptById } from '../knowledge/knowledgeBaseData';
 import { buildNeuroSymbolicAudit } from '../../lib/coach/symbolicAudit';
 import { buildMichyMagrielWoolseySynthesis } from '../../lib/coach/prompts';
 import { evaluateTacticalMotif } from './ruleBasedTacticsEvaluator';
+import { translateCoachExplanationForBeginner } from './beginnerCoachTranslator';
 import type { CoachPromptParams, CoachStructuredResponse } from './prompts';
 
 export function generateRuleBasedExplanation(params: CoachPromptParams): CoachStructuredResponse {
@@ -27,11 +28,14 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
     const defaultLoss = verdict === 'optimal' || playedMove === optimalMove ? 0 : -0.05;
     const absLoss = Math.abs(rawEquityLoss ?? defaultLoss);
     const equityLoss = absLoss < 0.0005 ? 0 : -absLoss;
-
-    const cubeExplanationResult = buildCubeRuleBasedExplanation({ ...params, equityLoss });
-    if (cubeExplanationResult) return cubeExplanationResult;
-
     const isEn = language === 'en';
+    const isOptimalVerdict = verdict === 'optimal' || playedMove === optimalMove || absLoss < 0.001;
+
+    if (params.playerLevel !== 'beginner') {
+        const cubeExplanationResult = buildCubeRuleBasedExplanation({ ...params, equityLoss });
+        if (cubeExplanationResult) return cubeExplanationResult;
+    }
+
     const diff = features?.pipCountDiff ?? { player: 150, opponent: 150, leader: 'tie', diff: 0 };
     const player = features?.player ?? 'X';
     const userBlots = features?.blotsAndShots?.user ?? [];
@@ -59,7 +63,6 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
     let { summary, keyConcept, advice, whyFailed, whyOptimal, conceptId } = tactical;
 
     let explanation = `${whyFailed} ${whyOptimal}`;
-    const isOptimalVerdict = verdict === 'optimal' || playedMove === optimalMove || absLoss < 0.001;
 
     if (!isOptimalVerdict && features) {
         const userBlotPts = userBlots.map((b) => b.point).slice(0, 4);
@@ -160,6 +163,35 @@ export function generateRuleBasedExplanation(params: CoachPromptParams): CoachSt
         userBlotPoints: userBlots.map((b) => b.point), bestBlotPoints: bestBlots.map((b) => b.point),
         locale: isEn ? 'en' : 'fr',
     });
+
+    if (params.playerLevel === 'beginner') {
+        const isCubeMove = optimalMove.includes('Double') || optimalMove.includes('Pass') || optimalMove.includes('Take');
+        const beginnerText = translateCoachExplanationForBeginner({
+            optimalMove,
+            playedMove,
+            quizType: isCubeMove ? 'CUBE_DECISION' : 'CHECKER_PLAY',
+            conceptId,
+            language: isEn ? 'en' : 'fr',
+        });
+        const beginnerResult: CoachStructuredResponse = {
+            verdict,
+            summary: isEn ? `Optimal move: ${optimalMove}` : `Coup optimal : ${optimalMove}`,
+            explanation: beginnerText,
+            keyConcept: isEn ? 'Safe move' : 'Coup de sécurité',
+            advice: beginnerText,
+            whyFailed: isOptimalVerdict ? '' : beginnerText,
+            whyOptimal: beginnerText,
+            conceptId,
+            symbolic_audit: neuroSymbolic.symbolic_audit,
+            pedagogical_explanation: {
+                ...neuroSymbolic.pedagogical_explanation,
+                headline: isEn ? `Optimal move: ${optimalMove}` : `Coup optimal : ${optimalMove}`,
+                tactical_rationale: beginnerText,
+                correct_play_canonical: optimalMove,
+            },
+        };
+        return language !== 'fr' && language !== 'en' ? localizeOfflineExplanation(beginnerResult, params) : beginnerResult;
+    }
 
     const baseResult: CoachStructuredResponse = {
         verdict, summary, explanation, keyConcept, advice, whyFailed, whyOptimal, conceptId,
