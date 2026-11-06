@@ -66,11 +66,11 @@ export function AnalysisStudioView() {
 
     const xgidString = useMemo(() => {
         try {
-            return serializeCanonicalXGID({ ...boardState, board: autoCompleteRemainingToOff(board) });
+            return serializeCanonicalXGID({ ...boardState, dice, board: autoCompleteRemainingToOff(board) });
         } catch {
             return '';
         }
-    }, [boardState, board]);
+    }, [boardState, dice, board]);
 
     const candidates = useMemo<CandidateMoveAnalysisRow[]>(() => {
         return computeLegalCandidateMovesTop5(boardState, dice, bgsageData);
@@ -105,32 +105,21 @@ export function AnalysisStudioView() {
     }, [board, tray]);
 
     const handleClearBoard = () => {
-        const cleared = clearBoardToTrays();
-        setBoard(cleared.board);
-        setTray(cleared.tray);
-        setActiveBrush('white');
-        setBgsageData(null);
-        setSelectedMoveNotation(null);
+        const c = clearBoardToTrays();
+        setBoard(c.board); setTray(c.tray); setActiveBrush('white'); setBgsageData(null); setSelectedMoveNotation(null);
     };
 
     const handleResetStartingBoard = () => {
-        const initial = getInitialStartingBoard();
-        setBoard(initial.board);
-        setTray(initial.tray);
-        setActiveBrush('white');
-        setBgsageData(null);
-        setSelectedMoveNotation('8/5 6/5');
+        const init = getInitialStartingBoard();
+        setBoard(init.board); setTray(init.tray); setActiveBrush('white'); setBgsageData(null); setSelectedMoveNotation('8/5 6/5');
     };
 
     const handleCompleteRemainingToOff = () => {
-        setBoard((prev) => autoCompleteRemainingToOff(prev));
-        setTray({ white: 0, black: 0 });
+        setBoard((prev) => autoCompleteRemainingToOff(prev)); setTray({ white: 0, black: 0 });
     };
 
     const handleInvertColors = () => {
-        setBoard((prev) => prev.map((v) => -v));
-        setTray((t) => ({ white: t.black, black: t.white }));
-        setBgsageData(null);
+        setBoard((prev) => prev.map((v) => -v)); setTray((t) => ({ white: t.black, black: t.white })); setBgsageData(null);
     };
 
     const handleScanComplete = (result: ScannedBoardVisionResult) => {
@@ -163,12 +152,7 @@ export function AnalysisStudioView() {
     const handlePlayPositionFromHere = () => {
         const validBoard = autoCompleteRemainingToOff(board);
         if (typeof window !== 'undefined') {
-            window.sessionStorage.setItem('bgtour_custom_analysis_position', JSON.stringify({
-                board: validBoard,
-                dice,
-                matchLength,
-                turn: 'X',
-            }));
+            window.sessionStorage.setItem('bgtour_custom_analysis_position', JSON.stringify({ board: validBoard, dice, matchLength, turn: 'X' }));
             router.push('/play?from=analysis');
         }
     };
@@ -274,7 +258,8 @@ export function AnalysisStudioView() {
                         onChangeDice={(d) => {
                             setDice(d);
                             setBgsageData(null);
-                            const top = computeLegalCandidateMovesTop5(boardState, d);
+                            const nextState = { ...boardState, dice: d, board: autoCompleteRemainingToOff(board) };
+                            const top = computeLegalCandidateMovesTop5(nextState, d, null);
                             if (top[0]) setSelectedMoveNotation(top[0].notation);
                         }}
                         matchLength={matchLength}

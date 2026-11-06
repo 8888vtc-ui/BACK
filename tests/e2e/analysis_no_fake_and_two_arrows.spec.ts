@@ -80,5 +80,52 @@ test.describe('Studio d\'Analyse — Tolérance Zéro Anti-Fake & Double Flèche
         // 7. Zéro erreur runtime dans la console
         expect(pageErrors.length).toBe(0);
     });
+
+    test('Changement de dés vers 2-1 : synchronisation dés, top coups 13/11 6/5 & 24/23 13/11, zéro triple 0.000 EMG', async ({ page }) => {
+        const pageErrors: Error[] = [];
+        page.on('pageerror', (err) => pageErrors.push(err));
+
+        await page.goto('/analysis');
+        await page.waitForLoadState('domcontentloaded');
+
+        // 1. Sélectionner Dé 1 = 2
+        const die1Btn2 = page.locator('[data-testid="die-1-btn-2"]');
+        await die1Btn2.click();
+
+        // 2. Sélectionner Dé 2 = 1
+        const die2Btn1 = page.locator('[data-testid="die-2-btn-1"]');
+        await die2Btn1.click();
+
+        // 3. Vérification de la synchronisation des dés sur le plateau
+        const boardDie0 = page.locator('[data-testid="board-die-0"]');
+        const boardDie1 = page.locator('[data-testid="board-die-1"]');
+        await expect(boardDie0).toBeVisible();
+        await expect(boardDie1).toBeVisible();
+
+        // 4. Coup #1 pour 2-1 : doit être 13/11 6/5 (jamais 6/4 4/3 !)
+        const moveRow0 = page.locator('[data-testid="analysis-move-row-0"]');
+        await expect(moveRow0).toBeVisible();
+        await expect(moveRow0).toContainText('13/11 6/5');
+        await expect(moveRow0).toContainText('Optimal 0.000 EMG');
+
+        // Coup #2 pour 2-1 : doit être 24/23 13/11
+        const moveRow1 = page.locator('[data-testid="analysis-move-row-1"]');
+        await expect(moveRow1).toBeVisible();
+        await expect(moveRow1).toContainText('24/23 13/11');
+        await expect(moveRow1).not.toContainText('0.000 EMG'); // Le #2 a un delta négatif strict !
+
+        // 5. Interdiction formelle du triple 0.000 EMG
+        const moveRow2 = page.locator('[data-testid="analysis-move-row-2"]');
+        await expect(moveRow2).toBeVisible();
+        await expect(moveRow2).not.toContainText('0.000 EMG');
+
+        // 6. Deux flèches distinctes actives sur le plateau pour 13/11 6/5
+        const arrow0 = page.locator('[data-testid="coach-optimal-arrow-0"]');
+        const arrow1 = page.locator('[data-testid="coach-optimal-arrow-1"]');
+        await expect(arrow0).toBeVisible();
+        await expect(arrow1).toBeVisible();
+
+        expect(pageErrors.length).toBe(0);
+    });
 });
 

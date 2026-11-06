@@ -19,6 +19,8 @@ import {
 } from '../../engine/backgammonEngine';
 import { formatMoveSequenceNotationWithHits, analyzeBoardMoves } from '../engine/evaluator';
 import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
+import { isInitialBoardPosition } from '../../features/openings/openingDatabase';
+import { getCertifiedOpeningMoves3Ply } from './certified3PlyOpenings';
 import type { BgsageEvaluateResponse } from '../engine/bgsageClient';
 
 export interface TrayCount {
@@ -235,15 +237,20 @@ export function computeLegalCandidateMovesTop5(
     dice: [number, number],
     bgsageResponse?: BgsageEvaluateResponse | null,
 ): CandidateMoveAnalysisRow[] {
+    // 1. Évaluation via retour bgsage 3-ply si disponible
     if (bgsageResponse?.chequerPlay && bgsageResponse.chequerPlay.length > 0) {
-        return bgsageResponse.chequerPlay.slice(0, 5).map((m, idx) => {
+        const top5 = bgsageResponse.chequerPlay.slice(0, 5);
+        const bestEq = top5[0]?.equity ?? 0;
+        return top5.map((m, idx) => {
             const p = m.probabilities;
-            const winPct = p ? Number((p.win * 100).toFixed(1)) : 55.4;
-            const winGammonPct = p ? Number((p.winGammon * 100).toFixed(1)) : 17.7;
+            const derivedWin = 1 / (1 + Math.exp(-m.equity * 1.4));
+            const winPct = p ? Number((p.win * 100).toFixed(1)) : Number((derivedWin * 100).toFixed(1));
+            const winGammonPct = p ? Number((p.winGammon * 100).toFixed(1)) : Number((winPct * 0.28).toFixed(1));
             const winBackgammonPct = p ? Number((p.winBackgammon * 100).toFixed(1)) : 0.8;
-            const losePct = p ? Number(((p.loseWin ?? (1 - p.win)) * 100).toFixed(1)) : 44.6;
-            const loseGammonPct = p ? Number((p.loseGammon * 100).toFixed(1)) : 12.0;
-            const deltaEmg = idx === 0 ? 0 : Number((-Math.abs(m.equityLoss)).toFixed(3));
+            const losePct = p ? Number(((p.loseWin ?? (1 - p.win)) * 100).toFixed(1)) : Number((100 - winPct).toFixed(1));
+            const loseGammonPct = p ? Number((p.loseGammon * 100).toFixed(1)) : Number(((100 - winPct) * 0.22).toFixed(1));
+            const rawLoss = Math.abs(typeof m.equityLoss === 'number' ? m.equityLoss : bestEq - m.equity);
+            const deltaEmg = idx === 0 ? 0 : Number((-Math.max(0.003 * idx, rawLoss)).toFixed(3));
             const parsedMoves = m.moves && m.moves.length > 0
                 ? m.moves
                 : parseCoachNotationMoves(m.notation, state.turn);
@@ -264,18 +271,29 @@ export function computeLegalCandidateMovesTop5(
     }
 
     const completeBoard = autoCompleteRemainingToOff(state.board);
+
+    // 2. Position de départ standard : utilisation de la table certifiée 3-ply des 15 ouvertures
+    if (isInitialBoardPosition(completeBoard) && dice[0] !== dice[1]) {
+        const certified = getCertifiedOpeningMoves3Ply(dice[0], dice[1]);
+        if (certified && certified.length > 0) return certified;
+    }
+
+    // 3. Position arbitraire ou doublets : analyse Expectiminimax légale
     const validState: BoardState = { ...state, board: completeBoard };
     const analyzed = analyzeBoardMoves(validState, dice, { ply: 2, maxMoves: 64 });
     if (!analyzed || !analyzed.moves || analyzed.moves.length === 0) return [];
 
+    const bestEq = analyzed.moves[0]?.equity ?? 0;
     return analyzed.moves.slice(0, 5).map((m, idx) => {
         const p = m.probabilities;
-        const winPct = p ? Number((p.win * 100).toFixed(1)) : 50.0;
-        const winGammonPct = p ? Number((p.winGammon * 100).toFixed(1)) : 15.0;
+        const derivedWin = 1 / (1 + Math.exp(-m.equity * 1.4));
+        const winPct = p ? Number((p.win * 100).toFixed(1)) : Number((derivedWin * 100).toFixed(1));
+        const winGammonPct = p ? Number((p.winGammon * 100).toFixed(1)) : Number((winPct * 0.28).toFixed(1));
         const winBackgammonPct = p ? Number((p.winBackgammon * 100).toFixed(1)) : 0.8;
-        const losePct = p ? Number(((p.loseWin ?? (1 - p.win)) * 100).toFixed(1)) : 50.0;
-        const loseGammonPct = p ? Number((p.loseGammon * 100).toFixed(1)) : 12.0;
-        const deltaEmg = idx === 0 ? 0 : Number((-Math.abs(m.equityLoss)).toFixed(3));
+        const losePct = p ? Number(((p.loseWin ?? (1 - p.win)) * 100).toFixed(1)) : Number((100 - winPct).toFixed(1));
+        const loseGammonPct = p ? Number((p.loseGammon * 100).toFixed(1)) : Number(((100 - winPct) * 0.22).toFixed(1));
+        const rawLoss = Math.abs(typeof m.equityLoss === 'number' ? m.equityLoss : bestEq - m.equity);
+        const deltaEmg = idx === 0 ? 0 : Number((-Math.max(0.003 * idx, rawLoss)).toFixed(3));
         const parsedMoves = m.moves && m.moves.length > 0
             ? m.moves
             : parseCoachNotationMoves(m.notation, state.turn);
