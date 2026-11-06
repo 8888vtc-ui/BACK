@@ -53,6 +53,7 @@ const selectCls = 'rounded-xl border border-white/10 bg-[#141b2d] px-3 py-1.5 te
 
 const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = ({ initialTournaments }) => {
     const { locale } = useTranslation();
+    const isEn = locale === 'en';
     const dict = getTournamentsDict(locale);
 
     const [tournaments, setTournaments] = useState<ReadonlyArray<TournamentRecord>>(initialTournaments ?? []);
@@ -173,20 +174,20 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                             </button>
                         ))}
                         <select value={selectedFederation} onChange={(e) => setSelectedFederation(e.target.value as TournamentFederation | 'all')} className={selectCls}>
-                            <option value="all">Toutes Fédérations</option><option value="WBGF">WBGF</option><option value="USBGF">USBGF</option><option value="FFB">FFB</option>
+                            <option value="all">{isEn ? 'All Federations' : 'Toutes Fédérations'}</option><option value="WBGF">WBGF</option><option value="USBGF">USBGF</option><option value="FFB">FFB</option>
                             <option value="UKBGF">UKBGF</option><option value="EUBGF">EUBGF</option><option value="WBA">WBA</option>
                         </select>
                         <select value={sortBy} onChange={(e) => setSortBy(e.target.value as TournamentSortField)} className={selectCls}>
-                            <option value="startDate">Trier : Date</option><option value="prizePool">Trier : Dotation</option>
-                            <option value="entryFee">Trier : Inscription</option><option value="tier">Trier : Prestige</option>
+                            <option value="startDate">{isEn ? 'Sort: Date' : 'Trier : Date'}</option><option value="prizePool">{isEn ? 'Sort: Prize Pool' : 'Trier : Dotation'}</option>
+                            <option value="entryFee">{isEn ? 'Sort: Entry Fee' : 'Trier : Inscription'}</option><option value="tier">{isEn ? 'Sort: Prestige' : 'Trier : Prestige'}</option>
                         </select>
                         <button type="button" onClick={() => setOnlyBookmarked((prev) => !prev)} data-testid="filter-my-agenda">
-                            Mon Agenda ({bookmarkedIds.size})
+                            {isEn ? 'My Calendar' : 'Mon Agenda'} ({bookmarkedIds.size})
                         </button>
-                        <button type="button" onClick={() => setViewMode('grid')} data-testid="view-mode-grid">Tournois</button>
-                        <button type="button" onClick={() => setViewMode('venues')} data-testid="view-mode-venues">Carte &amp; Clubs</button>
-                        <button type="button" onClick={() => setViewMode('agenda')} data-testid="view-mode-agenda">Agenda</button>
-                        <button type="button" onClick={() => setViewMode('results')} data-testid="view-mode-results">Palmarès</button>
+                        <button type="button" onClick={() => setViewMode('grid')} data-testid="view-mode-grid">{isEn ? 'Tournaments' : 'Tournois'}</button>
+                        <button type="button" onClick={() => setViewMode('venues')} data-testid="view-mode-venues">{isEn ? 'Map & Clubs' : 'Carte & Clubs'}</button>
+                        <button type="button" onClick={() => setViewMode('agenda')} data-testid="view-mode-agenda">{isEn ? 'Calendar' : 'Agenda'}</button>
+                        <button type="button" onClick={() => setViewMode('results')} data-testid="view-mode-results">{isEn ? 'Champions' : 'Palmarès'}</button>
                     </div>
 
                     {viewMode === 'agenda' ? (

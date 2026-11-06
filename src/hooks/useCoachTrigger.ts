@@ -1,8 +1,9 @@
 /**
  * Helpers d'exécution manuelle et de détection d'action videau pour `useCoach.ts` (< 200 lignes, 0 any).
+ * Conforme à la Loi 3 : utilise exclusivement `evaluateWithBgsage` (Open Sage 3-ply).
  */
 
-import { type BoardState, type Move, type Player, applyMove, serializeXGID } from '../engine/backgammonEngine';
+import { type BoardState, type Move, type Player, applyMove, serializeCanonicalXGID, serializeXGID } from '../engine/backgammonEngine';
 import type { GameResult } from '../engine/aiHeuristics';
 import {
     extractStrategicFeatures,
@@ -12,9 +13,8 @@ import {
 import { detectLocale } from '../lib/i18n/I18nContext';
 import type { Locale } from '../lib/i18n/types';
 import { mapGameCubeAction, type CubeAction, type CubeActionType } from '../features/coach/cubeCoach';
-import { analyzeBoardMoves } from '../lib/engine/evaluator';
-import { evaluatePosition } from '../lib/analysisService';
-import { formatCoachMoveSequence, movesFromBoardDiff } from '../features/coach/coachMoveNotation';
+import { evaluateWithBgsage } from '../lib/engine/bgsageClient';
+import { formatCoachMoveSequence, movesFromBoardDiff, parseCoachNotationMoves } from '../features/coach/coachMoveNotation';
 import type { CoachHighlight } from '../components/board/boardThemes';
 import { analyzeHumanMoveFromLogWithBgsage } from '../features/coach/logAnalyzer';
 import type { MatchLogEntry } from '../actions/types';
@@ -32,9 +32,6 @@ export interface DetectedCubeDecision {
     nextOfferSnapshot?: BoardState | null;
 }
 
-/**
- * Détecte de manière pure si une transition d'état correspond à une décision de videau du joueur X.
- */
 export function detectPlayerCubeDecision(params: {
     moveHistory?: ReadonlyArray<CoachMoveHistoryItem>;
     doublingOfferedBy?: Player | null;
@@ -57,11 +54,7 @@ export function detectPlayerCubeDecision(params: {
         if (mapped && (!lastItem.player || lastItem.player === 'X')) {
             const stateToEval = lastItem.state ?? currentState;
             return {
-                decision: {
-                    key: `hist:${history.length}:${rawCubeType}:${stateToEval.cubeValue}`,
-                    action: mapped,
-                    stateToEval,
-                },
+                decision: { key: `hist:${history.length}:${rawCubeType}:${stateToEval.cubeValue}`, action: mapped, stateToEval },
                 updatedOfferSnapshot: stateBeforeCubeOffer,
                 nextPrevOfferedBy: doublingOfferedBy ?? null,
             };
@@ -70,20 +63,12 @@ export function detectPlayerCubeDecision(params: {
 
     const currOfferedBy = doublingOfferedBy ?? null;
     if (currOfferedBy === 'O' && prevOfferedBy !== 'O') {
-        return {
-            decision: null,
-            updatedOfferSnapshot: { ...currentState, board: [...currentState.board] },
-            nextPrevOfferedBy: currOfferedBy,
-        };
+        return { decision: null, updatedOfferSnapshot: { ...currentState, board: [...currentState.board] }, nextPrevOfferedBy: currOfferedBy };
     }
 
     if (currOfferedBy === 'X' && prevOfferedBy !== 'X') {
         return {
-            decision: {
-                key: `offer:${currentState.scoreX}-${currentState.scoreO}:${currentState.cubeValue}:${currentState.board.join(',')}`,
-                action: 'OFFER_DOUBLE',
-                stateToEval: currentState,
-            },
+            decision: { key: `offer:${currentState.scoreX}-${currentState.scoreO}:${currentState.cubeValue}:${currentState.board.join(',')}`, action: 'OFFER_DOUBLE', stateToEval: currentState },
             updatedOfferSnapshot: stateBeforeCubeOffer,
             nextPrevOfferedBy: currOfferedBy,
         };
@@ -94,21 +79,13 @@ export function detectPlayerCubeDecision(params: {
         const isPass = phase === 'GAME_OVER' || gameResult?.winType === 'pass';
         const decisionType: CubeActionType = isPass ? 'PASS_DOUBLE' : 'TAKE_DOUBLE';
         return {
-            decision: {
-                key: `${decisionType}:${snapshot.scoreX}-${snapshot.scoreO}:${snapshot.cubeValue}:${snapshot.board.join(',')}`,
-                action: decisionType,
-                stateToEval: snapshot,
-            },
+            decision: { key: `${decisionType}:${snapshot.scoreX}-${snapshot.scoreO}:${snapshot.cubeValue}:${snapshot.board.join(',')}`, action: decisionType, stateToEval: snapshot },
             updatedOfferSnapshot: null,
             nextPrevOfferedBy: currOfferedBy,
         };
     }
 
-    return {
-        decision: null,
-        updatedOfferSnapshot: stateBeforeCubeOffer,
-        nextPrevOfferedBy: currOfferedBy,
-    };
+    return { decision: null, updatedOfferSnapshot: stateBeforeCubeOffer, nextPrevOfferedBy: currOfferedBy };
 }
 
 export async function runManualTriggerAnalysis(
@@ -134,36 +111,22 @@ export async function runManualTriggerAnalysis(
         });
         if (result) {
             const loggedMoves = [...entryToAnalyze.movePlayed];
-            const playedMoves =
-                loggedMoves.length > 0 ? loggedMoves : movesFromBoardDiff(entryToAnalyze.boardBefore, entryToAnalyze.boardAfter, 'X');
+            const playedMoves = loggedMoves.length > 0 ? loggedMoves : movesFromBoardDiff(entryToAnalyze.boardBefore, entryToAnalyze.boardAfter, 'X');
             const playedNotation = formatCoachMoveSequence(playedMoves, 'X', entryToAnalyze.boardBefore);
-            return buildCoachStateFromLogResult({
-                lastEntry: entryToAnalyze,
-                result,
-                playedMoves,
-                playedNotation,
-                gameState: stateToEval,
-            });
+            return buildCoachStateFromLogResult({ lastEntry: entryToAnalyze, result, playedMoves, playedNotation, gameState: stateToEval });
         }
     }
 
-    const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout analyse coach (8s)')), 8000),
-    );
-    const analysisPromise = (async () => {
-        const res = await evaluatePosition(stateToEval, { ply: 3, timeoutMs: 2500 });
-        if (res && res.moves && res.moves.length > 0) {
-            return { best: res.moves[0], candidates: res.moves };
-        }
-        const localRes = analyzeBoardMoves(stateToEval, evalDice, { ply: 3, maxMoves: 5 });
-        if (localRes && localRes.bestMove) {
-            return { best: localRes.bestMove, candidates: localRes.moves };
-        }
-        throw new Error('Aucun coup légal détecté');
-    })();
-
-    const { best, candidates } = await Promise.race([analysisPromise, timeoutPromise]);
-    const bestMoves: Move[] = extractCandidateMoveList(best);
+    const xgid = serializeCanonicalXGID({ ...stateToEval, dice: evalDice });
+    const res = await evaluateWithBgsage(xgid, 3, 2500);
+    if (!res || !res.chequerPlay || res.chequerPlay.length === 0) {
+        throw new Error('OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED');
+    }
+    const best = res.chequerPlay[0];
+    const candidates = res.chequerPlay;
+    const bestMoves: Move[] = extractCandidateMoveList(best).length > 0
+        ? extractCandidateMoveList(best)
+        : parseCoachNotationMoves(best.notation, 'X', evalDice);
 
     let bestEndState: BoardState = stateToEval;
     if (bestMoves.length > 0) {
@@ -173,10 +136,7 @@ export async function runManualTriggerAnalysis(
     }
 
     const features = extractStrategicFeatures(stateToEval, bestEndState, bestEndState);
-    const absoluteBestNotation =
-        bestMoves.length > 0
-            ? formatCoachMoveSequence(bestMoves, 'X', stateToEval.board)
-            : best.notation || 'Pass';
+    const absoluteBestNotation = bestMoves.length > 0 ? formatCoachMoveSequence(bestMoves, 'X', stateToEval.board) : best.notation || 'Pass';
 
     const ruleBased = generateRuleBasedExplanation({
         verdict: 'optimal',
@@ -192,7 +152,7 @@ export async function runManualTriggerAnalysis(
             cubeOwner: stateToEval.cubeOwner,
             crawford: stateToEval.crawford,
         }),
-        language: typeof window !== 'undefined' ? detectLocale() : 'fr',
+        language: (typeof window !== 'undefined' ? detectLocale() : 'fr') as Locale,
     });
 
     return {
@@ -209,17 +169,16 @@ export async function runManualTriggerAnalysis(
             positionKey: serializeXGID(stateToEval),
             candidateMoves: candidates.slice(0, 5).map((m, idx) => {
                 const candMoves = extractCandidateMoveList(m);
-                const notation =
-                    candMoves.length > 0 ? formatCoachMoveSequence(candMoves, 'X', stateToEval.board) : m.notation;
-                const probs = 'probabilities' in m && m.probabilities ? m.probabilities : undefined;
+                const notation = candMoves.length > 0 ? formatCoachMoveSequence(candMoves, 'X', stateToEval.board) : m.notation;
+                const probs = m.probabilities ?? undefined;
                 return {
                     rank: idx + 1,
                     notation,
                     equity: m.equity,
                     equityLoss: m.equityLoss,
-                    winProbability: probs?.win ?? ('winProb' in m ? (m as { winProb?: number }).winProb : undefined),
-                    gammonProbability: probs?.winGammon ?? ('gammonProb' in m ? (m as { gammonProb?: number }).gammonProb : undefined),
-                    backgammonProbability: probs?.winBackgammon ?? ('bgProb' in m ? (m as { bgProb?: number }).bgProb : undefined),
+                    winProbability: probs?.win,
+                    gammonProbability: probs?.winGammon,
+                    backgammonProbability: probs?.winBackgammon,
                 };
             }),
             boardBefore: [...stateToEval.board],

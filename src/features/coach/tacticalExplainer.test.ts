@@ -121,10 +121,10 @@ describe('explainTacticalDifference — Diagnostic stratégique FR', () => {
             recurringErrorCount: 4,
             locale: 'fr',
         });
-        expect(copy.headerBadge).toContain('😵 Gaffe');
+        expect(copy.headerBadge).toContain('Gaffe');
         expect(copy.bulletDiagnostic).toBe('Ce pion isolé donne 14 lancers sur 36 pour te frapper.');
         expect(copy.bulletAction).toBe('Prends plutôt la case 5 pour bâtir un mur.');
-        expect(copy.bulletHabitHook).toBe("⚠️ C'est ta 4e erreur similaire cette semaine.");
+        expect(copy.bulletHabitHook).toBe("C'est ta 4e erreur similaire cette semaine.");
         expect(copy.ctaPills).toEqual(['Voir danger', 'Voir idée', 'Réessayer']);
         expect(copy.wordCountLevel1).toBeGreaterThanOrEqual(15);
         expect(copy.wordCountLevel1).toBeLessThanOrEqual(28);

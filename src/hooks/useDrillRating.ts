@@ -6,6 +6,7 @@
  * gérant exclusivement nos 2 indicateurs officiels :
  * 1. `ER / PR` (`0.0` à `30.0`, initialisé à `6.3`, évolution par dixièmes `-0.1`/`-0.2` ou `+0.1` à `+0.5`)
  * 2. `Rating` compétitif (Elo / Glicko-2 autour de `1500`)
+ * Loi 1 : Si `!isAuthenticated` (Joueur Invité), retourne `null` et n'écrit RIEN dans `localStorage`.
  * Strictement 0 `any`, < 160 lignes.
  */
 
@@ -17,6 +18,7 @@ import {
     type QuizErState,
 } from '../features/drills/quizRatingStore';
 import { computeTenthsMetricDelta } from '../features/drills/drillSubAgentsPipeline';
+import { checkIsPlayerRegistered, STATS_UPDATED_EVENT } from './useAuthenticPlayerStats';
 
 const QuizErStateSchema = z.object({
     mode: z.literal('ER'),
@@ -30,6 +32,7 @@ const QuizErStateSchema = z.object({
 
 function readValidatedErState(): QuizErState {
     if (typeof window === 'undefined' || !window.localStorage) return DEFAULT_ER_STATE;
+    if (!checkIsPlayerRegistered()) return DEFAULT_ER_STATE;
     try {
         const raw = window.localStorage.getItem(QUIZ_ER_STORAGE_KEY);
         if (!raw) return DEFAULT_ER_STATE;
@@ -42,11 +45,11 @@ function readValidatedErState(): QuizErState {
 
 export interface UseDrillRatingReturn {
     readonly modeLabel: 'ER';
-    readonly erPrScore: number;
+    readonly erPrScore: number | null;
     readonly erPrDelta: number;
-    readonly activeMetricScore: number;
+    readonly activeMetricScore: number | null;
     readonly activeTenthsDelta: number;
-    readonly ratingValue: number;
+    readonly ratingValue: number | null;
     readonly ratingDelta: number;
     readonly solvedCount: number;
     readonly recordAttempt: (isCorrect: boolean, tier?: number, equityLoss?: number, explicitTenthsDelta?: number) => void;
@@ -54,14 +57,27 @@ export interface UseDrillRatingReturn {
 }
 
 export function useDrillRating(_isErMode?: boolean): UseDrillRatingReturn {
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => checkIsPlayerRegistered());
     const [erState, setErState] = useState<QuizErState>(() => readValidatedErState());
 
     useEffect(() => {
-        setErState(readValidatedErState());
+        const sync = () => {
+            const auth = checkIsPlayerRegistered();
+            setIsAuthenticated(auth);
+            setErState(readValidatedErState());
+        };
+        sync();
+        window.addEventListener('storage', sync);
+        window.addEventListener(STATS_UPDATED_EVENT, sync);
+        return () => {
+            window.removeEventListener('storage', sync);
+            window.removeEventListener(STATS_UPDATED_EVENT, sync);
+        };
     }, []);
 
     const recordAttempt = useCallback(
         (isCorrect: boolean, tier: number = 2, equityLoss: number = 0.084, explicitTenthsDelta?: number) => {
+            if (!checkIsPlayerRegistered()) return;
             const safeTier = Math.max(1, Math.min(4, tier));
             const tenthsDelta =
                 typeof explicitTenthsDelta === 'number'
@@ -98,13 +114,13 @@ export function useDrillRating(_isErMode?: boolean): UseDrillRatingReturn {
 
     return {
         modeLabel: 'ER',
-        erPrScore: erState.erPrScore,
-        erPrDelta: erState.lastDeltaTenths,
-        activeMetricScore: erState.erPrScore,
-        activeTenthsDelta: erState.lastDeltaTenths,
-        ratingValue: erState.erRating,
-        ratingDelta: erState.lastDeltaEr,
-        solvedCount: erState.solvedCount,
+        erPrScore: isAuthenticated ? erState.erPrScore : null,
+        erPrDelta: isAuthenticated ? erState.lastDeltaTenths : 0,
+        activeMetricScore: isAuthenticated ? erState.erPrScore : null,
+        activeTenthsDelta: isAuthenticated ? erState.lastDeltaTenths : 0,
+        ratingValue: isAuthenticated ? erState.erRating : null,
+        ratingDelta: isAuthenticated ? erState.lastDeltaEr : 0,
+        solvedCount: isAuthenticated ? erState.solvedCount : 0,
         recordAttempt,
         recordOutcome: recordAttempt,
     };

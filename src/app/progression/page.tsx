@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import ProgressionDashboard from '../../components/stats/ProgressionDashboard';
-import { BackToLobbyButton } from '../../components/nav/PageTransition';
+import AppNavbar from '../../components/nav/AppNavbar';
+import { LobbyLeftSidebar } from '../../components/lobby/LobbySidebarAndWidgets';
 
 export const metadata: Metadata = {
     title: 'Calcul Performance Rating (PR) & Indice ER / PR Backgammon | Progression',
@@ -23,30 +23,14 @@ export const metadata: Metadata = {
 
 export default function ProgressionPage() {
     return (
-        <main className="flex h-dvh overflow-y-auto flex-col items-center p-4 md:p-8 space-y-6 bg-slate-950 text-slate-100">
-            <div className="w-full max-w-6xl flex flex-wrap items-center justify-between gap-2">
-                <BackToLobbyButton label="Retour au Lobby" />
-
-                <Link
-                    href="/drills"
-                    className="flex items-center gap-2 rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#c69214] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#1a0f08] shadow-md transition hover:brightness-105"
-                >
-                    <span>🎯</span>
-                    <span>Lancer le Quizz Adaptatif ER / PR (9 Compétences)</span>
-                </Link>
+        <main className="flex h-dvh max-h-dvh w-screen overflow-hidden flex-col bg-[#050505] text-slate-100">
+            <AppNavbar activeTab="puzzles" />
+            <div className="flex flex-1 min-h-0 overflow-hidden w-full">
+                <LobbyLeftSidebar />
+                <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-y-auto p-3 sm:p-5 items-center">
+                    <ProgressionDashboard />
+                </div>
             </div>
-            <ProgressionDashboard />
-            <section
-                aria-label="Guide de calcul du Performance Rating et de l'Indice ER / PR"
-                className="w-full max-w-6xl rounded-2xl border border-white/10 bg-slate-900/60 p-4 text-xs text-slate-300 space-y-1.5"
-            >
-                <h2 className="font-bold text-[#f3c65f] uppercase tracking-wider">
-                    📐 Comment sont calculés le Performance Rating (PR) et l&apos;Indice ER / PR ?
-                </h2>
-                <p>
-                    Le <strong>Performance Rating (PR)</strong> officiel mesure l&apos;équité moyenne perdue par décision non forcée multipliée par 500 : un Grand-Maître joue sous <strong>PR 3.0</strong>, un joueur de Club entre <strong>PR 5.0 et 10.0</strong>. Notre <strong>indice ER / PR</strong> complète ce score en mesurant votre maîtrise tactique (échelle 0.0–30.0) et votre <strong>Rating</strong> (1500 Elo / Glicko-2).
-                </p>
-            </section>
         </main>
     );
 }

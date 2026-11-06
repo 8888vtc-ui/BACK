@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Modale de Bilan Complet & Estimation du PR (< 300 lignes, 0 any — LOI 5).
+ * Modale de Bilan Complet & Estimation du PR (<= 265 lignes, 0 any — LOI 6).
  */
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
@@ -57,9 +57,7 @@ export default function GameReviewModal({
 
     useEffect(() => {
         if (!isOpen) return;
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
+        const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
     }, [isOpen, onClose]);
@@ -135,15 +133,12 @@ export default function GameReviewModal({
                 onClick={(e) => e.stopPropagation()}
                 className={`relative w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl shadow-2xl my-auto transition-all ${modalClasses.container}`}
             >
-                {/* 1. En-tête du Modal */}
                 <div className={`flex items-center justify-between border-b p-4 sm:p-5 ${modalClasses.header}`}>
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-amber-400/40 bg-amber-400/15 text-lg text-amber-300 shadow-inner">📊</div>
                         <div>
                             <div className="flex flex-wrap items-center gap-2">
-                                <h2 id="game-review-title" className="font-sans text-lg sm:text-xl font-black tracking-tight text-white">
-                                    Bilan &amp; Estimation du PR
-                                </h2>
+                                <h2 id="game-review-title" className="font-sans text-lg sm:text-xl font-black tracking-tight text-white">Bilan &amp; Estimation du PR</h2>
                                 <span className="rounded-full border border-amber-400/40 bg-slate-900 px-2.5 py-0.5 text-xs font-bold text-amber-300">{analysis.prCategory === 'Débutant' ? 'En Progression' : analysis.prCategory}</span>
                                 <span data-testid="daily-quota-badge" className="rounded-full border border-white/10 bg-slate-900 px-2.5 py-0.5 text-[11px] font-semibold text-slate-300">{quotaBadgeLabel}</span>
                             </div>
@@ -173,7 +168,6 @@ export default function GameReviewModal({
                     </div>
                 </div>
 
-                {/* 2. Onglets de Navigation Post-Partie (5 onglets distincts sans doublon) */}
                 <div role="tablist" aria-label="Sections du bilan" className="flex items-center gap-1.5 border-b border-white/10 bg-slate-950/80 px-4 sm:px-6 py-2.5 overflow-x-auto">
                     <button type="button" role="tab" aria-selected={activeTab === 'overview'} onClick={() => setActiveTab('overview')} className={tabBtnClass('overview')} data-testid="tab-overview">
                         <span>📈</span><span>Courbe &amp; Synthèse</span>
@@ -194,7 +188,6 @@ export default function GameReviewModal({
                     </button>
                 </div>
 
-                {/* 3. Corps de l'onglet actif avec défilement */}
                 <div className="p-4 sm:p-6 space-y-5 overflow-y-auto max-h-[calc(90vh-170px)]">
                     {effectiveIsQuotaReached ? (
                         <SoftPaywallCard analysis={analysis} userId={userId} locale={locale} />
@@ -203,10 +196,7 @@ export default function GameReviewModal({
                             {activeTab === 'overview' && (
                                 <div className="space-y-5 animate-in fade-in">
                                     <GameReviewOverviewCards analysis={analysis} />
-                                    <EquityCurveChart
-                                        moves={evaluatedMoves} selectedIndex={selectedIndex}
-                                        onSelectIndex={(idx) => { setSelectedIndex(idx); setDrillModeActive(false); setActiveTab('step_by_step'); }}
-                                    />
+                                    <EquityCurveChart moves={evaluatedMoves} selectedIndex={selectedIndex} onSelectIndex={(idx) => { setSelectedIndex(idx); setDrillModeActive(false); setActiveTab('step_by_step'); }} />
                                 </div>
                             )}
 
@@ -229,10 +219,7 @@ export default function GameReviewModal({
 
                             {activeTab === 'concepts' && (
                                 <div className="animate-in fade-in">
-                                    <ConceptsErrorSummary
-                                        moves={evaluatedMoves}
-                                        onSelectMoveIndex={(idx) => { setSelectedIndex(idx); setDrillModeActive(false); setActiveTab('step_by_step'); }}
-                                    />
+                                    <ConceptsErrorSummary moves={evaluatedMoves} onSelectMoveIndex={(idx) => { setSelectedIndex(idx); setDrillModeActive(false); setActiveTab('step_by_step'); }} />
                                 </div>
                             )}
 
@@ -240,11 +227,7 @@ export default function GameReviewModal({
                                 <GameReviewMovesTable
                                     evaluatedMoves={evaluatedMoves} mistakesCount={mistakesCount}
                                     filterOnlyMistakes={filterOnlyMistakes} onSetFilterOnlyMistakes={setFilterOnlyMistakes}
-                                    onInspectMove={(originalIndex, drill) => {
-                                        setSelectedIndex(originalIndex);
-                                        setDrillModeActive(drill);
-                                        setActiveTab('step_by_step');
-                                    }}
+                                    onInspectMove={(originalIndex, drill) => { setSelectedIndex(originalIndex); setDrillModeActive(drill); setActiveTab('step_by_step'); }}
                                 />
                             )}
 
@@ -259,20 +242,13 @@ export default function GameReviewModal({
                     )}
                 </div>
 
-                {/* 4. Barre d'action inférieure (Drill in-place sans quitter le match) */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 p-4 bg-slate-950/90">
                     <button
-                        type="button"
-                        data-testid="review-inline-drill-btn"
-                        onClick={() => {
-                            setSelectedIndex(mistakeIndices[0] ?? 0);
-                            setDrillModeActive(true);
-                            setActiveTab('step_by_step');
-                        }}
+                        type="button" data-testid="review-inline-drill-btn"
+                        onClick={() => { setSelectedIndex(mistakeIndices[0] ?? 0); setDrillModeActive(true); setActiveTab('step_by_step'); }}
                         className="rounded-xl border border-amber-400/50 bg-amber-400/15 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-amber-400/25 transition shadow-sm flex items-center gap-1.5"
                     >
-                        <span>🎯</span>
-                        <span>Rejouer mes erreurs en Drill</span>
+                        <span>🎯</span><span>Rejouer mes erreurs en Drill</span>
                     </button>
                     <div className="flex items-center gap-2">
                         <button
@@ -287,13 +263,9 @@ export default function GameReviewModal({
                             }}
                             className="rounded-xl border border-blue-500/40 bg-blue-950/40 px-3.5 py-2 text-xs font-bold text-blue-300 hover:bg-blue-900/40 transition flex items-center gap-1.5"
                         >
-                            <span>📤</span>
-                            <span>Partager le score</span>
+                            <span>📤</span><span>Partager le score</span>
                         </button>
-                        <button
-                            type="button" onClick={onClose}
-                            className="rounded-xl border border-white/15 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition"
-                        >
+                        <button type="button" onClick={onClose} className="rounded-xl border border-white/15 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition">
                             Fermer
                         </button>
                     </div>

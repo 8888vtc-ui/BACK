@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Carte Verdict & Comparaison des coups — style eXtreme Gammon / Snowie (< 300 lignes, 0 any).
+ * Carte Verdict & Comparaison des coups — style eXtreme Gammon / Snowie (<= 250 lignes, 0 any).
  * Intègre le bouton viral `ShareBlunderButton` ("Partager ce Quiz (HD)" 1200x630).
  */
 
@@ -35,20 +35,14 @@ export interface CoachMoveComparisonCardProps {
     keyConcept?: string | null;
 }
 
-/** Palier de décision dérivé de la perte d'équité. */
 export type DecisionTier = 'optimal' | 'good' | 'inaccuracy' | 'blunder';
 
-/** Seuils officiels (exigence 3.3 du cahier des charges). */
 export const DECISION_THRESHOLDS = {
     OPTIMAL: 0.01,
     GOOD: 0.02,
     BLUNDER: 0.08,
 } as const;
 
-/**
- * Classe une perte d'équité dans l'un des 4 paliers.
- * `≤ 0.010` optimal · `≤ 0.020` bon · `≤ 0.080` imprécision · `> 0.080` blunder.
- */
 export function classifyDecisionTier(equityLoss: number | null): DecisionTier {
     const loss = Math.abs(equityLoss ?? 0);
     if (loss <= DECISION_THRESHOLDS.OPTIMAL) return 'optimal';
@@ -61,15 +55,11 @@ interface TierStyle {
     icon: string;
     label: string;
     subtitle: string;
-    /** Classes du bandeau de verdict. */
     bannerClass: string;
-    /** Classes du texte du bandeau. */
     textClass: string;
-    /** Classes de l'encadré du coup joué. */
     playedClass: string;
 }
 
-/** Style visuel de chaque palier. */
 export function getTierStyle(tier: DecisionTier, isEn: boolean): TierStyle {
     switch (tier) {
         case 'optimal':
@@ -111,20 +101,12 @@ export function CoachMoveComparisonCard({
     const tier = classifyDecisionTier(equityLoss);
     const style = getTierStyle(tier, isEn);
     const isError = tier === 'inaccuracy' || tier === 'blunder';
-    const isBrilliant =
-        tier === 'optimal' &&
-        Boolean(playedMove && optimalMove && playedMove.trim() === optimalMove.trim()) &&
-        Math.abs(equityLoss ?? 0) === 0;
+    const isBrilliant = tier === 'optimal' && Boolean(playedMove && optimalMove && playedMove.trim() === optimalMove.trim()) && Math.abs(equityLoss ?? 0) === 0;
     const formattedLoss = equityLoss !== null ? Math.abs(equityLoss).toFixed(3) : null;
     const prImpact = equityLoss !== null ? (Math.abs(equityLoss) * 500).toFixed(1) : null;
     const mwcDropPct = equityLoss !== null ? Math.max(1, Math.round(Math.abs(equityLoss) * 50)) : null;
-
-    // Affiche la perte d'équité exacte dès qu'elle atteint 0.001 (calibrage PR 1–5).
     const hasMicroLoss = equityLoss !== null && Math.abs(equityLoss) >= 0.001;
-    const bannerLabel =
-        !formattedLoss || (!hasMicroLoss && (tier === 'optimal' || tier === 'good'))
-            ? style.label
-            : `${style.label} (-${formattedLoss})`;
+    const bannerLabel = !formattedLoss || (!hasMicroLoss && (tier === 'optimal' || tier === 'good')) ? style.label : `${style.label} (-${formattedLoss})`;
 
     const handleSelectLayer = (next: ChameleonUxLayer) => {
         setChameleonLayer(next);
@@ -132,35 +114,19 @@ export function CoachMoveComparisonCard({
     };
 
     return (
-        <div
-            className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-3 space-y-2.5 shadow-lg"
-            data-testid="coach-move-comparison-card"
-        >
-            {/* 0. Sélecteur Caméléon 3 Couches (🌱 Débutant | ⚔️ Club | 👑 Pro) + Badge Coup Brillant !! */}
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-3 space-y-2.5 shadow-lg" data-testid="coach-move-comparison-card">
             <div className="flex flex-wrap items-center justify-between gap-1.5">
-                <div
-                    role="group"
-                    aria-label="Niveau de langage du Coach"
-                    data-testid="coach-chameleon-layer-bar"
-                    className="inline-flex rounded-xl border border-white/10 bg-slate-900/90 p-0.5"
-                >
-                    {(
-                        [
-                            { id: 'L0' as const, label: chameleonLabels.beginner },
-                            { id: 'L1' as const, label: chameleonLabels.club },
-                            { id: 'L2' as const, label: chameleonLabels.pro },
-                        ]
-                    ).map((item) => (
+                <div role="group" aria-label="Niveau de langage du Coach" data-testid="coach-chameleon-layer-bar" className="inline-flex rounded-xl border border-white/10 bg-slate-900/90 p-0.5">
+                    {([
+                        { id: 'L0' as const, label: chameleonLabels.beginner },
+                        { id: 'L1' as const, label: chameleonLabels.club },
+                        { id: 'L2' as const, label: chameleonLabels.pro },
+                    ]).map((item) => (
                         <button
-                            key={item.id}
-                            type="button"
-                            data-testid={`coach-chameleon-btn-${item.id}`}
-                            aria-pressed={chameleonLayer === item.id}
-                            onClick={() => handleSelectLayer(item.id)}
+                            key={item.id} type="button" data-testid={`coach-chameleon-btn-${item.id}`}
+                            aria-pressed={chameleonLayer === item.id} onClick={() => handleSelectLayer(item.id)}
                             className={`rounded-lg px-2 py-0.5 text-[11px] font-extrabold transition ${
-                                chameleonLayer === item.id
-                                    ? 'bg-[#d4af37] text-slate-950 shadow'
-                                    : 'text-slate-300 hover:text-white'
+                                chameleonLayer === item.id ? 'bg-[#d4af37] text-slate-950 shadow' : 'text-slate-300 hover:text-white'
                             }`}
                         >
                             {item.label}
@@ -169,170 +135,87 @@ export function CoachMoveComparisonCard({
                 </div>
 
                 {isBrilliant && (
-                    <span
-                        data-testid="coach-brilliant-move-badge"
-                        className="inline-flex items-center gap-1 rounded-full border border-cyan-400/60 bg-cyan-950/80 px-2.5 py-0.5 text-[11px] font-black text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.35)]"
-                    >
-                        <span>!!</span>
-                        <span>{chameleonLabels.brilliantBadge}</span>
+                    <span data-testid="coach-brilliant-move-badge" className="inline-flex items-center gap-1 rounded-full border border-cyan-400/60 bg-cyan-950/80 px-2.5 py-0.5 text-[11px] font-black text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.35)]">
+                        <span>!!</span><span>{chameleonLabels.brilliantBadge}</span>
                     </span>
                 )}
                 {tier === 'blunder' && (
-                    <span
-                        data-testid="coach-blunder-quiz-saved-badge"
-                        className="inline-flex items-center gap-1 rounded-full border border-emerald-400/50 bg-emerald-950/80 px-2.5 py-0.5 text-[11px] font-bold text-emerald-200"
-                    >
+                    <span data-testid="coach-blunder-quiz-saved-badge" className="inline-flex items-center gap-1 rounded-full border border-emerald-400/50 bg-emerald-950/80 px-2.5 py-0.5 text-[11px] font-bold text-emerald-200">
                         <span>📌 {chameleonLabels.savedQuizBadge}</span>
                     </span>
                 )}
             </div>
 
-            {/* 1. Bandeau de verdict immédiat */}
-            <div
-                data-testid="coach-verdict-banner"
-                data-tier={tier}
-                className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 ${style.bannerClass}`}
-            >
+            <div data-testid="coach-verdict-banner" data-tier={tier} className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 ${style.bannerClass}`}>
                 <div className="flex items-center gap-2 min-w-0">
-                    <span aria-hidden="true" className="text-base shrink-0">
-                        {style.icon}
-                    </span>
-                    <span
-                        className={`truncate text-xs sm:text-sm font-black uppercase tracking-wide ${style.textClass}`}
-                    >
-                        {bannerLabel}
-                    </span>
+                    <span aria-hidden="true" className="text-base shrink-0">{style.icon}</span>
+                    <span className={`truncate text-xs sm:text-sm font-black uppercase tracking-wide ${style.textClass}`}>{bannerLabel}</span>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                     {chameleonLayer === 'L0' && isError && mwcDropPct && (
-                        <span
-                            data-testid="coach-chameleon-human-loss"
-                            className="rounded bg-amber-900/70 border border-amber-400/50 px-1.5 py-0.5 text-[11px] font-bold text-amber-100"
-                        >
+                        <span data-testid="coach-chameleon-human-loss" className="rounded bg-amber-900/70 border border-amber-400/50 px-1.5 py-0.5 text-[11px] font-bold text-amber-100">
                             {chameleonLabels.formatWinChanceLoss(mwcDropPct)}
                         </span>
                     )}
                     {tier === 'blunder' && prImpact && (
-                        <span
-                            data-testid="coach-blunder-pr-impact"
-                            className="rounded bg-rose-900/70 border border-rose-500/50 px-1.5 py-0.5 font-mono text-[11px] font-bold text-rose-200"
-                        >
+                        <span data-testid="coach-blunder-pr-impact" className="rounded bg-rose-900/70 border border-rose-500/50 px-1.5 py-0.5 font-mono text-[11px] font-bold text-rose-200">
                             PR +{prImpact}
                         </span>
                     )}
-                    <span className="text-[10px] font-semibold text-slate-400">
-                        {isEn ? 'White (X)' : 'Blanc (X)'}
-                    </span>
+                    <span className="text-[10px] font-semibold text-slate-400">{isEn ? 'White (X)' : 'Blanc (X)'}</span>
                     {onClose && (
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="rounded px-1 text-xs text-slate-400 transition hover:text-white"
-                            title={isEn ? 'Dismiss analysis' : 'Masquer cette analyse'}
-                            aria-label={isEn ? 'Dismiss analysis' : "Fermer l'analyse"}
-                        >
+                        <button type="button" onClick={onClose} className="rounded px-1 text-xs text-slate-400 transition hover:text-white" title={isEn ? 'Dismiss analysis' : 'Masquer cette analyse'} aria-label={isEn ? 'Dismiss analysis' : "Fermer l'analyse"}>
                             ✕
                         </button>
                     )}
                 </div>
             </div>
 
-            {/* 1b. Accroche unique (résumé analytique si disponible, sinon accroche du palier) */}
-            <p
-                data-testid="coach-playful-subtitle"
-                className="px-1 text-[11px] font-semibold leading-relaxed text-slate-200"
-            >
+            <p data-testid="coach-playful-subtitle" className="px-1 text-[11px] font-semibold leading-relaxed text-slate-200">
                 {summary || style.subtitle}
             </p>
 
-            {/* 2. Comparaison côte à côte (ou carte unifiée si le coup joué est exactement le coup optimal) */}
             {playedMove && optimalMove && playedMove.trim() === optimalMove.trim() ? (
-                <div
-                    className="rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-2.5 space-y-1 ring-1 ring-inset ring-emerald-500/20"
-                    data-testid="coach-optimal-move-card"
-                >
+                <div className="rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-2.5 space-y-1 ring-1 ring-inset ring-emerald-500/20" data-testid="coach-optimal-move-card">
                     <div className="flex items-center justify-between gap-2">
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
-                            <span aria-hidden="true">⭐</span>
-                            <span>{isEn ? 'Your move = Best Monte-Carlo move' : 'Votre coup = Meilleur coup Monte-Carlo'}</span>
+                            <span aria-hidden="true">⭐</span><span>{isEn ? 'Your move = Best Monte-Carlo move' : 'Votre coup = Meilleur coup Monte-Carlo'}</span>
                         </span>
                     </div>
-                    <div
-                        className="break-words font-mono text-sm sm:text-base font-black leading-snug text-emerald-100"
-                        title={optimalMove}
-                    >
-                        {optimalMove}
-                    </div>
+                    <div className="break-words font-mono text-sm sm:text-base font-black leading-snug text-emerald-100" title={optimalMove}>{optimalMove}</div>
                     {(whyOptimal || whyFailed) && (
-                        <p className="border-t border-emerald-900/40 pt-1 text-[10px] leading-snug text-emerald-200/90">
-                            {whyOptimal || whyFailed}
-                        </p>
+                        <p className="border-t border-emerald-900/40 pt-1 text-[10px] leading-snug text-emerald-200/90">{whyOptimal || whyFailed}</p>
                     )}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {/* Votre coup joué */}
                     {playedMove && (
-                        <div
-                            className={`rounded-xl border p-2.5 space-y-1 ${style.playedClass}`}
-                            data-testid="coach-played-move-card"
-                        >
+                        <div className={`rounded-xl border p-2.5 space-y-1 ${style.playedClass}`} data-testid="coach-played-move-card">
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">
-                                <span aria-hidden="true">{isError ? '❌' : '🎯'}</span>
-                                <span>{isEn ? 'Your move' : 'Votre coup joué'}</span>
+                                <span aria-hidden="true">{isError ? '❌' : '🎯'}</span><span>{isEn ? 'Your move' : 'Votre coup joué'}</span>
                             </span>
-                            <div
-                                className="break-words font-mono text-sm sm:text-base font-black leading-snug text-white"
-                                title={playedMove}
-                            >
-                                {playedMove}
-                            </div>
-                            {whyFailed && (
-                                <p className="border-t border-slate-700/50 pt-1 text-[10px] leading-snug text-slate-300">
-                                    {whyFailed}
-                                </p>
-                            )}
+                            <div className="break-words font-mono text-sm sm:text-base font-black leading-snug text-white" title={playedMove}>{playedMove}</div>
+                            {whyFailed && <p className="border-t border-slate-700/50 pt-1 text-[10px] leading-snug text-slate-300">{whyFailed}</p>}
                         </div>
                     )}
 
-                    {/* Meilleur coup Open Sage */}
                     {optimalMove && (
-                        <div
-                            className="rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-2.5 space-y-1 ring-1 ring-inset ring-emerald-500/20"
-                            data-testid="coach-optimal-move-card"
-                        >
+                        <div className="rounded-xl border border-emerald-700/60 bg-emerald-950/30 p-2.5 space-y-1 ring-1 ring-inset ring-emerald-500/20" data-testid="coach-optimal-move-card">
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
-                                <span aria-hidden="true">⭐</span>
-                                <span>{isEn ? 'Best move (Monte-Carlo)' : 'Meilleur coup Monte-Carlo'}</span>
+                                <span aria-hidden="true">⭐</span><span>{isEn ? 'Best move (Monte-Carlo)' : 'Meilleur coup Monte-Carlo'}</span>
                             </span>
-                            <div
-                                className="break-words font-mono text-sm sm:text-base font-black leading-snug text-emerald-100"
-                                title={optimalMove}
-                            >
-                                {optimalMove}
-                            </div>
-                            {whyOptimal && (
-                                <p className="border-t border-emerald-900/40 pt-1 text-[10px] leading-snug text-emerald-200/90">
-                                    {whyOptimal}
-                                </p>
-                            )}
+                            <div className="break-words font-mono text-sm sm:text-base font-black leading-snug text-emerald-100" title={optimalMove}>{optimalMove}</div>
+                            {whyOptimal && <p className="border-t border-emerald-900/40 pt-1 text-[10px] leading-snug text-emerald-200/90">{whyOptimal}</p>}
                         </div>
                     )}
                 </div>
             )}
 
-            {/* 3. Actions : Rejouer ce tour + Partage Viral HD */}
             {(onReplayMove || (isError && optimalMove)) && (
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
                     {onReplayMove && (
-                        <button
-                            type="button"
-                            onClick={onReplayMove}
-                            data-testid="coach-replay-move-btn"
-                            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-blue-900/30 transition hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98]"
-                        >
-                            <span aria-hidden="true">⏪</span>
-                            <span>{isEn ? 'Replay this turn on the board' : 'Rejouer ce tour sur le plateau'}</span>
+                        <button type="button" onClick={onReplayMove} data-testid="coach-replay-move-btn" className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-blue-900/30 transition hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98]">
+                            <span aria-hidden="true">⏪</span><span>{isEn ? 'Replay this turn on the board' : 'Rejouer ce tour sur le plateau'}</span>
                         </button>
                     )}
                     {isError && optimalMove && (
@@ -340,11 +223,8 @@ export function CoachMoveComparisonCard({
                             data={{
                                 board: board && board.length >= 26 ? board : DEFAULT_SHARE_BOARD,
                                 dice: dice && dice.length === 2 ? [dice[0], dice[1]] : [6, 5],
-                                bestMoveNotation: optimalMove,
-                                playedMoveNotation: playedMove ?? undefined,
-                                equityLoss: equityLoss ?? undefined,
-                                keyConcept: keyConcept ?? undefined,
-                                locale,
+                                bestMoveNotation: optimalMove, playedMoveNotation: playedMove ?? undefined,
+                                equityLoss: equityLoss ?? undefined, keyConcept: keyConcept ?? undefined, locale,
                             }}
                             variant="full"
                         />

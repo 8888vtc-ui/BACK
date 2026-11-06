@@ -1,3 +1,8 @@
+/**
+ * Constructeur déterministe de `HumanMoveAnalysis` depuis `bgsage` 3-Ply (`logAnalyzerBgsageBuilder.ts`).
+ * Strictement <= 385 lignes, 0 any.
+ */
+
 import type { Player, BoardState, Move } from '../../engine/backgammonEngine';
 import { applyMove, type generateLegalMoves } from '../../engine/backgammonEngine';
 import type { MatchLogEntry } from '../../actions/types';
@@ -26,21 +31,11 @@ import {
 } from './turnSnapshot';
 import { classifyVerdict, type CoachVerdict, type HumanMoveAnalysis } from './logAnalyzer';
 
-/**
- * Séquence de sous-mouvements fiable pour l'affichage : celle du log si elle
- * est complète, sinon reconstruite depuis le différentiel boardBefore → boardAfter.
- */
 export function resolvePlayedMoves(logEntry: MatchLogEntry): ReadonlyArray<{ from: number; to: number }> {
-    if (logEntry.movePlayed && logEntry.movePlayed.length > 0) {
-        return logEntry.movePlayed;
-    }
+    if (logEntry.movePlayed && logEntry.movePlayed.length > 0) return logEntry.movePlayed;
     return movesFromBoardDiff(logEntry.boardBefore, logEntry.boardAfter, logEntry.player);
 }
 
-/**
- * Calcule le plateau d'arrivée effectif : si `boardAfter` est identique à `boardBefore`
- * alors que `movePlayed` contient des coups, rejoue `movePlayed` sur `boardBefore`.
- */
 export function resolveEffectiveBoardAfter(logEntry: MatchLogEntry): number[] {
     if (
         logEntry.movePlayed &&
@@ -48,33 +43,17 @@ export function resolveEffectiveBoardAfter(logEntry: MatchLogEntry): number[] {
         boardsMatchOnPointsAndBar(logEntry.boardBefore, logEntry.boardAfter)
     ) {
         let b = [...logEntry.boardBefore];
-        for (const m of logEntry.movePlayed) {
-            b = applyMove(b, m, logEntry.player);
-        }
+        for (const m of logEntry.movePlayed) b = applyMove(b, m, logEntry.player);
         return b;
     }
     return [...logEntry.boardAfter];
 }
 
-/**
- * Clé canonique d'une séquence de sous-mouvements, insensible à l'ordre.
- */
 export function moveSequenceKey(moves: ReadonlyArray<{ from: number; to: number }>): string {
-    return moves
-        .map((m) => `${m.from}>${m.to}`)
-        .sort()
-        .join('|');
+    return moves.map((m) => `${m.from}>${m.to}`).sort().join('|');
 }
 
-/**
- * Fusionne les sous-mouvements chaînés d'un même pion (ex. 24/18 + 18/13 -> 24/13)
- * et développe les multiplicateurs (ex. 8/5(2) -> 8/5 8/5) pour une comparaison canonique.
- */
-function collapseParsedMovesKey(
-    notation: string,
-    player: Player = 'X',
-    dice?: readonly [number, number],
-): string {
+function collapseParsedMovesKey(notation: string, player: Player = 'X', dice?: readonly [number, number]): string {
     const moves = parseCoachNotationMoves(notation, player, dice);
     if (moves.length === 0) return '';
     const list = moves.map((m) => ({ ...m }));
@@ -94,16 +73,11 @@ function collapseParsedMovesKey(
         }
     }
     return list
-        .map((m) => {
-            const fromKey = m.from === 0 || m.from === 25 ? 'bar' : String(m.from);
-            const toKey = m.to === 0 || m.to === 25 ? 'off' : String(m.to);
-            return `${fromKey}>${toKey}`;
-        })
+        .map((m) => `${m.from === 0 || m.from === 25 ? 'bar' : m.from}>${m.to === 0 || m.to === 25 ? 'off' : m.to}`)
         .sort()
         .join('|');
 }
 
-// Vérifie si deux notations sont équivalentes même lorsque les sous-mouvements sont chaînés ou inversés.
 export function notationsAreEquivalent(
     a: string,
     b: string,
@@ -114,9 +88,7 @@ export function notationsAreEquivalent(
     const normB = normalizeCoachNotation(b);
     if (!normA || !normB) return false;
     if (normA === normB) return true;
-    const tokensA = normA.split(' ').filter(Boolean).sort().join(' ');
-    const tokensB = normB.split(' ').filter(Boolean).sort().join(' ');
-    if (tokensA === tokensB) return true;
+    if (normA.split(' ').filter(Boolean).sort().join(' ') === normB.split(' ').filter(Boolean).sort().join(' ')) return true;
     const collapsedA = collapseParsedMovesKey(a, player, dice);
     const collapsedB = collapseParsedMovesKey(b, player, dice);
     return Boolean(collapsedA && collapsedA === collapsedB);
@@ -125,10 +97,8 @@ export function notationsAreEquivalent(
 function toBgsageMoveMetrics(m: BgsageMove): BgsageMoveMetrics {
     const winProb = m.probabilities?.win ?? 0.5;
     const winGammonProb = m.probabilities?.winGammon ?? 0;
-    const winBackgammonProb = m.probabilities?.winBackgammon ?? 0;
     const loseProb = m.probabilities?.loseWin ?? Math.max(0, 1 - winProb);
     const loseGammonProb = m.probabilities?.loseGammon ?? 0;
-    const loseBackgammonProb = m.probabilities?.loseBackgammon ?? 0;
     return {
         equity: m.equity,
         cubelessEquity: m.cubelessEquity ?? m.equity,
@@ -136,11 +106,11 @@ function toBgsageMoveMetrics(m: BgsageMove): BgsageMoveMetrics {
         winProb,
         winSingleProb: m.probabilities?.winSingle ?? Math.max(0, winProb - winGammonProb),
         winGammonProb,
-        winBackgammonProb,
+        winBackgammonProb: m.probabilities?.winBackgammon ?? 0,
         loseProb,
         loseSingleProb: m.probabilities?.loseSingle ?? Math.max(0, loseProb - loseGammonProb),
         loseGammonProb,
-        loseBackgammonProb,
+        loseBackgammonProb: m.probabilities?.loseBackgammon ?? 0,
         playerGamePlan: m.playerGamePlan ?? 'contact',
         opponentGamePlan: m.opponentGamePlan ?? 'contact',
         evalLevel: m.evalLevel ?? undefined,
@@ -165,19 +135,11 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
         if (m.moves && m.moves.length > 0) {
             if (m.board && m.board.length === 26) {
                 const engineBoard = bgsageMoveBoardToProjectBoard(m.board, logEntry.player, source);
-                return {
-                    moves: m.moves,
-                    board: engineBoard,
-                    notation: formatCoachMoveSequence(m.moves, logEntry.player, boardBefore),
-                };
+                return { moves: m.moves, board: engineBoard, notation: formatCoachMoveSequence(m.moves, logEntry.player, boardBefore) };
             }
             let simBoard = [...boardBefore];
             for (const mv of m.moves) simBoard = applyMove(simBoard, mv, logEntry.player);
-            return {
-                moves: m.moves,
-                board: simBoard,
-                notation: formatCoachMoveSequence(m.moves, logEntry.player, boardBefore),
-            };
+            return { moves: m.moves, board: simBoard, notation: formatCoachMoveSequence(m.moves, logEntry.player, boardBefore) };
         }
         if (m.board && m.board.length === 26) {
             const engineBoard = bgsageMoveBoardToProjectBoard(m.board, logEntry.player, source);
@@ -185,11 +147,7 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
                 legalSeqs.find((s) => boardsMatchOnPointsAndBar(s.board, engineBoard)) ??
                 legalSeqs.find((s) => boardsMatchOnPoints(s.board, engineBoard));
             if (matchedSeq) {
-                return {
-                    moves: matchedSeq.moves,
-                    board: matchedSeq.board,
-                    notation: formatCoachMoveSequence(matchedSeq.moves, logEntry.player, boardBefore),
-                };
+                return { moves: matchedSeq.moves, board: matchedSeq.board, notation: formatCoachMoveSequence(matchedSeq.moves, logEntry.player, boardBefore) };
             }
             return {
                 moves: movesFromBoardDiff(boardBefore, engineBoard, logEntry.player),
@@ -203,11 +161,7 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
                 legalSeqs.find((s) => boardsMatchOnPointsAndBar(s.board, simBoard)) ??
                 legalSeqs.find((s) => boardsMatchOnPoints(s.board, simBoard));
             if (matchedSeq) {
-                return {
-                    moves: matchedSeq.moves,
-                    board: matchedSeq.board,
-                    notation: formatCoachMoveSequence(matchedSeq.moves, logEntry.player, boardBefore),
-                };
+                return { moves: matchedSeq.moves, board: matchedSeq.board, notation: formatCoachMoveSequence(matchedSeq.moves, logEntry.player, boardBefore) };
             }
             const parsedMoves = parseCoachNotationMoves(m.notation, logEntry.player, dicePair);
             return {
@@ -233,11 +187,7 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
                 notation: formatCoachMoveSequence(matchedByNotation.moves, logEntry.player, boardBefore),
             };
         }
-        return {
-            moves: [] as Move[],
-            board: null as number[] | null,
-            notation: absNotation,
-        };
+        return { moves: [] as Move[], board: null as number[] | null, notation: absNotation };
     };
 
     const playedMoves = resolvePlayedMoves(logEntry);
@@ -261,40 +211,28 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
 
     const playedBoardSig = boardSignature(effectiveBoardAfter);
 
-    // Résolution physique stricte de la meilleure séquence parmi les coups légaux (ZÉRO fallback sur legalSeqs[0])
     const bestLegalSeq = legalSeqs.find((s) => {
         if (resolvedBest.board) {
-            return (
-                boardsMatchOnPointsAndBar(s.board, resolvedBest.board) ||
-                boardSignature(s.board) === boardSignature(resolvedBest.board)
-            );
+            return boardsMatchOnPointsAndBar(s.board, resolvedBest.board) || boardSignature(s.board) === boardSignature(resolvedBest.board);
         }
         if (bestMove.board && bestMove.board.length === 26) {
             const engineBoard = bgsageMoveBoardToProjectBoard(bestMove.board, logEntry.player, bgsageResult.source);
-            return (
-                boardsMatchOnPointsAndBar(s.board, engineBoard) ||
-                boardSignature(s.board) === boardSignature(engineBoard)
-            );
+            return boardsMatchOnPointsAndBar(s.board, engineBoard) || boardSignature(s.board) === boardSignature(engineBoard);
         }
         const simBoard = applyBgsageNotationToBoard(boardBefore, bestMove.notation, dicePair, logEntry.player);
-        return Boolean(
-            simBoard &&
-            (boardsMatchOnPointsAndBar(s.board, simBoard) || boardSignature(s.board) === boardSignature(simBoard)),
-        );
+        return Boolean(simBoard && (boardsMatchOnPointsAndBar(s.board, simBoard) || boardSignature(s.board) === boardSignature(simBoard)));
     });
 
     const optimalSubMoves = bestLegalSeq?.moves ?? (resolvedBest.moves.length > 0 ? resolvedBest.moves : []);
     const bestBoardResolved = bestLegalSeq?.board ?? resolvedBest.board;
 
-    // Verrou 3 : Transposition exacte du meilleur coup (plateau identique ou notation équivalente) = 0.0000 EMG garanti !
     const isExactTranspositionOfBest = Boolean(
         (bestBoardResolved &&
-            (boardSignature(bestBoardResolved) === playedBoardSig ||
-                boardsMatchOnPointsAndBar(bestBoardResolved, effectiveBoardAfter))) ||
-        notationsAreEquivalent(resolvedBest.notation, playedNotation, logEntry.player, dicePair) ||
-        notationsAreEquivalent(resolvedBest.notation, canonicalNotation, logEntry.player, dicePair) ||
-        notationsAreEquivalent(bestMove.notation, playedNotation, logEntry.player, dicePair) ||
-        notationsAreEquivalent(bestMove.notation, canonicalNotation, logEntry.player, dicePair),
+            (boardSignature(bestBoardResolved) === playedBoardSig || boardsMatchOnPointsAndBar(bestBoardResolved, effectiveBoardAfter))) ||
+            notationsAreEquivalent(resolvedBest.notation, playedNotation, logEntry.player, dicePair) ||
+            notationsAreEquivalent(resolvedBest.notation, canonicalNotation, logEntry.player, dicePair) ||
+            notationsAreEquivalent(bestMove.notation, playedNotation, logEntry.player, dicePair) ||
+            notationsAreEquivalent(bestMove.notation, canonicalNotation, logEntry.player, dicePair),
     );
 
     const matched = isExactTranspositionOfBest
@@ -303,29 +241,12 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
               if (m.board && m.board.length === 26) {
                   if (boardSignature(m.board) === playedBoardSig) return true;
                   const engineBoard = bgsageMoveBoardToProjectBoard(m.board, logEntry.player, bgsageResult.source);
-                  if (
-                      boardSignature(engineBoard) === playedBoardSig ||
-                      boardsMatchOnPointsAndBar(engineBoard, effectiveBoardAfter)
-                  ) {
-                      return true;
-                  }
+                  if (boardSignature(engineBoard) === playedBoardSig || boardsMatchOnPointsAndBar(engineBoard, effectiveBoardAfter)) return true;
               }
               const simBoard = applyBgsageNotationToBoard(boardBefore, m.notation, dicePair, logEntry.player);
-              if (
-                  simBoard &&
-                  (boardSignature(simBoard) === playedBoardSig ||
-                      boardsMatchOnPointsAndBar(simBoard, effectiveBoardAfter))
-              ) {
-                  return true;
-              }
+              if (simBoard && (boardSignature(simBoard) === playedBoardSig || boardsMatchOnPointsAndBar(simBoard, effectiveBoardAfter))) return true;
               const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
-              if (
-                  resolvedCand.board &&
-                  (boardSignature(resolvedCand.board) === playedBoardSig ||
-                      boardsMatchOnPointsAndBar(resolvedCand.board, effectiveBoardAfter))
-              ) {
-                  return true;
-              }
+              if (resolvedCand.board && (boardSignature(resolvedCand.board) === playedBoardSig || boardsMatchOnPointsAndBar(resolvedCand.board, effectiveBoardAfter))) return true;
               const absMoveNotation = relativeNotationToAbsolute(m.notation, logEntry.player);
               return (
                   notationsAreEquivalent(resolvedCand.notation, playedNotation, logEntry.player, dicePair) ||
@@ -349,7 +270,6 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
           : resolvedBest.notation;
 
     const bestEquity = effectiveBestMove.equity;
-
     let playedEquity: number;
     let equityLoss: number;
     let verdict: CoachVerdict;
@@ -361,8 +281,7 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
     } else if (matched) {
         playedEquity = matched.equity;
         equityLoss = Math.max(0, bestEquity - playedEquity);
-        const rawVerdict = classifyVerdict(equityLoss);
-        verdict = sanitizeVerdictWithEquityThreshold(equityLoss, rawVerdict);
+        verdict = sanitizeVerdictWithEquityThreshold(equityLoss, classifyVerdict(equityLoss));
     } else {
         const offList = estimateOffListEquityLoss({
             evalState,
@@ -374,21 +293,15 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
         });
         playedEquity = bestEquity - offList.equityLoss;
         equityLoss = Math.max(0, bestEquity - playedEquity);
-        const rawVerdict = classifyVerdict(equityLoss);
-        verdict = sanitizeVerdictWithEquityThreshold(equityLoss, rawVerdict);
+        verdict = sanitizeVerdictWithEquityThreshold(equityLoss, classifyVerdict(equityLoss));
     }
 
-    const verifiedFacts = extractVerifiedCoachFacts(
-        boardBefore,
-        effectiveBoardAfter,
-        bestBoardResolved ?? effectiveBoardAfter,
-    );
+    const verifiedFacts = extractVerifiedCoachFacts(boardBefore, effectiveBoardAfter, bestBoardResolved ?? effectiveBoardAfter);
 
     const candidateMoves = bgsageResult.chequerPlay.map((m) => {
         const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
-        const isMatch = m === matched;
         return {
-            notation: isMatch ? playedNotation : resolvedCand.notation,
+            notation: m === matched ? playedNotation : resolvedCand.notation,
             equity: m.equity,
             equityLoss: m.equityLoss,
             winProbability: m.probabilities?.win,
@@ -410,10 +323,9 @@ export function buildHumanMoveAnalysisFromBgsageResult(params: {
 
     const topCandidates = bgsageResult.chequerPlay.slice(0, 5).map((m, idx) => {
         const resolvedCand = resolveBgsageCandidateSeq(m, bgsageResult.source);
-        const isMatch = m === matched;
         return {
             rank: m.rank ?? idx + 1,
-            notation: isMatch ? playedNotation : resolvedCand.notation,
+            notation: m === matched ? playedNotation : resolvedCand.notation,
             equity: m.equity,
             cubelessEquity: m.cubelessEquity ?? m.equity,
             equityLoss: m.equityLoss,

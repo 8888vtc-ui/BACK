@@ -28,6 +28,8 @@ import {
     getAdaptivePlayerProfile,
     type AdaptivePlayerProfile,
 } from '../../features/drills/adaptiveQuizEngine';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
+import PersonalBlundersGuestLockView from '../drills/PersonalBlundersGuestLockView';
 
 export interface ProgressionDashboardProps {
     onBackToGame?: () => void;
@@ -61,6 +63,7 @@ const INITIAL_PROGRESSION_STATS: PlayerProgressionStats = {
 };
 
 export default function ProgressionDashboard({ onBackToGame }: ProgressionDashboardProps) {
+    const authenticStats = useAuthenticPlayerStats();
     const [stats, setStats] = useState<PlayerProgressionStats>(INITIAL_PROGRESSION_STATS);
     const [selectedAnalysis, setSelectedAnalysis] = useState<CompleteGameAnalysis | null>(null);
     const [isReviewOpen, setIsReviewOpen] = useState(false);
@@ -173,6 +176,10 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
             setIsReviewOpen(true);
         }
     };
+
+    if (!authenticStats.isAuthenticated) {
+        return <PersonalBlundersGuestLockView featureMode="progression" onUnlockedSuccess={authenticStats.refreshStats} />;
+    }
 
     return (
         <div className="w-full max-w-6xl space-y-6 text-[#fdf8eb]">

@@ -77,6 +77,7 @@ describe('BlunderDrillView Component (Parcours Adaptatif & Carnet de Blunders Pe
 
         clearBlunderBank();
         resetAdaptivePlayerProfile();
+        authenticateMockMember();
     });
 
     afterEach(() => {
@@ -173,10 +174,16 @@ describe('BlunderDrillView Component (Parcours Adaptatif & Carnet de Blunders Pe
         expect(screen.getByTestId('quiz-live-rating-delta').textContent).toContain('-');
     });
 
-    it('bloque l’accès aux Blunders Personnels pour un Joueur Invité et affiche l’écran verrouillé avec CTA Plein Or', () => {
-        render(<BlunderDrillView initialMode="personal_blunders" />);
+    it('bloque l’accès aux Quiz et aux Blunders Personnels pour un Joueur Invité et affiche l’écran verrouillé avec CTA Plein Or', () => {
+        window.localStorage.clear();
+        const { unmount } = render(<BlunderDrillView initialMode="personal_blunders" />);
         expect(screen.getByTestId('personal-blunders-guest-lock-view')).toBeDefined();
         expect(screen.getByTestId('unlock-personal-blunders-cta').textContent).toContain('SE CONNECTER');
+        expect(screen.queryByTestId('quiz-qcm-choices')).toBeNull();
+        unmount();
+
+        render(<BlunderDrillView initialMode="pr_math" />);
+        expect(screen.getByTestId('guest-feature-lock-view')).toBeDefined();
         expect(screen.queryByTestId('quiz-qcm-choices')).toBeNull();
     });
 

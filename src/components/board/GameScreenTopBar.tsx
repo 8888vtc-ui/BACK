@@ -4,6 +4,7 @@ import React from 'react';
 import MatchHeader from '../hud/MatchHeader';
 import { InstantFriendInviteButton } from '../play/InstantFriendInviteButton';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useTranslation } from '../../i18n';
 import { NavbarPointsAndBadges } from '../nav/NavbarPointsAndBadges';
 import type { ThemeName } from './boardThemes';
 import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
@@ -59,6 +60,8 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
     isVip,
 }) => {
     const { tierGate } = usePlayerTierGate();
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
 
     return (
         <>
@@ -70,7 +73,7 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                             data-testid="app-version-badge"
                             className="rounded-full border border-[#D4AF37]/45 bg-[#D4AF37]/15 px-2.5 py-0.5 font-mono text-[11px] font-semibold tracking-tight text-[#f3d27a] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                         >
-                            Mode Débutant • Partie Guidée
+                            {isEn ? 'Beginner Mode • Guided Play' : 'Mode Débutant • Partie Guidée'}
                         </span>
                     )}
                     <NavbarPointsAndBadges tierGate={tierGate} />
@@ -84,7 +87,7 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                                 : 'bg-black/60 text-stone-300 border-white/10 hover:text-white hover:bg-white/10'
                         }`}
                     >
-                        <span>{isFullFocusMode ? 'Quitter Plein Écran (Touche F)' : 'Mode Échiquier Pur (Full Focus · Touche F)'}</span>
+                        <span>{isFullFocusMode ? (isEn ? 'Exit Fullscreen (Key F)' : 'Quitter Plein Écran (Touche F)') : (isEn ? 'Pure Board Mode (Full Focus · Key F)' : 'Mode Échiquier Pur (Full Focus · Touche F)')}</span>
                     </button>
                 </div>
                 <InstantFriendInviteButton

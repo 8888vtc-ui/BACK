@@ -2,8 +2,7 @@
 
 /**
  * Barre supérieure encastrée du jeu — Plaque d'Ébénisterie en Noyer & Laiton Brossé.
- * Ultra-fine sur mobile (< 44px : h-9 / 36px) pour libérer > 85% de la hauteur au plateau.
- * Strictement < 280 lignes, 0 any.
+ * Conforme aux Lois 3, 5 et 6 : 0 emoji dans getHudVerdictConfig, multilingue FR/EN, <= 250 lignes, 0 any.
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -22,12 +21,7 @@ import { useSoundManager } from '../../hooks/useSoundManager';
 import { getHudThemeClasses, useBoardTheme } from '../../hooks/useBoardTheme';
 import { getBotPersona } from '../../features/personas/botPersonas';
 import { useTranslation } from '../../i18n';
-import {
-    readStoredChameleonLayer,
-    writeStoredChameleonLayer,
-    CHAMELEON_LAYER_CHANGE_EVENT,
-    type ChameleonLayer,
-} from '../../features/chameleon/chameleonProfile';
+import { readStoredChameleonLayer, writeStoredChameleonLayer, CHAMELEON_LAYER_CHANGE_EVENT, type ChameleonLayer } from '../../features/chameleon/chameleonProfile';
 
 export interface MatchHudProps {
     matchLength: number; scoreX: number; scoreO: number; turn: Player; crawford?: boolean;
@@ -43,34 +37,19 @@ export interface MatchHudProps {
     notificationLevel?: CoachNotificationLevel; onChangeNotificationLevel?: (level: CoachNotificationLevel) => void;
     coachQuotaBadge?: string; isVip?: boolean; autoConfirmMode?: AutoConfirmMode;
     onSelectAutoConfirmMode?: (mode: AutoConfirmMode) => void; gameSpeed?: GameSpeed;
-    onSelectGameSpeed?: (speed: GameSpeed) => void;
-    customOpponentLabel?: string | null;
+    onSelectGameSpeed?: (speed: GameSpeed) => void; customOpponentLabel?: string | null;
 }
 
-const FR_BOT_DISPLAY_NAMES: Record<AIDifficulty, string> = {
-    beginner: 'Maxime',
-    intermediate: 'Sofia',
-    expert: 'Victor',
-    grandmaster: 'Viktor',
-};
+const FR_BOT_DISPLAY_NAMES: Record<AIDifficulty, string> = { beginner: 'Maxime', intermediate: 'Sofia', expert: 'Victor', grandmaster: 'Viktor' };
 
-const CHAMELEON_PILL_LABELS: Record<ChameleonLayer, string> = {
-    0: '🌱 Essentiel',
-    1: '♟️ Club',
-    2: '🔬 Pro',
-};
-
-function getHudVerdictConfig(
-    fb: LastMoveFeedback,
-    layer: ChameleonLayer = 1,
-): { icon: string; label: string; badgeClass: string } {
+function getHudVerdictConfig(fb: LastMoveFeedback, layer: ChameleonLayer = 1, isEn = false): { dotClass: string; label: string; badgeClass: string } {
     const absLoss = Math.abs(fb.equityLoss);
     const mwcPct = Math.max(1, Math.round(absLoss * 50));
     const lossStr = layer === 0 ? `(-${mwcPct}% chances)` : `(-${absLoss.toFixed(3)}) · -${mwcPct}%`;
-    if (fb.verdict === 'optimal') return { icon: '🟢', label: 'COUP OPTIMAL', badgeClass: 'border-emerald-400/70 bg-emerald-950/90 text-emerald-100' };
-    if (fb.verdict === 'good') return { icon: '👍', label: 'BON COUP', badgeClass: 'border-emerald-500/55 bg-emerald-950/75 text-emerald-200' };
-    if (fb.verdict === 'inaccuracy') return { icon: '🟡', label: `IMPRÉCISION ${lossStr}`, badgeClass: 'border-amber-400/75 bg-amber-950/90 text-amber-100' };
-    return { icon: '🔴', label: `BLUNDER MAJEUR ${lossStr}`, badgeClass: 'border-rose-400/80 bg-rose-950/90 text-rose-100' };
+    if (fb.verdict === 'optimal' || absLoss <= 0.005) return { dotClass: 'bg-emerald-400', label: isEn ? 'OPTIMAL MOVE' : 'COUP OPTIMAL', badgeClass: 'border-emerald-400/70 bg-emerald-950/90 text-emerald-100' };
+    if (fb.verdict === 'good' || absLoss <= 0.020) return { dotClass: 'bg-emerald-400', label: isEn ? 'GOOD MOVE' : 'BON COUP', badgeClass: 'border-emerald-500/55 bg-emerald-950/75 text-emerald-200' };
+    if (fb.verdict === 'inaccuracy' || absLoss < 0.080) return { dotClass: 'bg-amber-400', label: `${isEn ? 'INACCURACY' : 'IMPRÉCISION'} ${lossStr}`, badgeClass: 'border-amber-400/75 bg-amber-950/90 text-amber-100' };
+    return { dotClass: 'bg-rose-400', label: `${isEn ? 'MAJOR BLUNDER' : 'BLUNDER MAJEUR'} ${lossStr}`, badgeClass: 'border-rose-400/80 bg-rose-950/90 text-rose-100' };
 }
 
 const MatchHudComponent: React.FC<MatchHudProps> = ({
@@ -89,6 +68,7 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
     const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
     const [chameleonLayer, setChameleonLayer] = useState<ChameleonLayer>(1);
     const { locale } = useTranslation();
+    const isEn = locale === 'en';
     const { isMuted, toggleMute } = useSoundManager();
     const { setTheme } = useBoardTheme(theme);
     const settingsMenuRef = useRef<HTMLDivElement>(null);
@@ -97,10 +77,7 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
     useEffect(() => {
         const stored = readStoredChameleonLayer();
         if (stored !== null) setChameleonLayer(stored);
-        const onSync = (e: Event) => {
-            const detail = (e as CustomEvent<ChameleonLayer | null>).detail;
-            setChameleonLayer(detail ?? 1);
-        };
+        const onSync = (e: Event) => setChameleonLayer((e as CustomEvent<ChameleonLayer | null>).detail ?? 1);
         window.addEventListener(CHAMELEON_LAYER_CHANGE_EVENT, onSync);
         return () => window.removeEventListener(CHAMELEON_LAYER_CHANGE_EVENT, onSync);
     }, []);
@@ -110,35 +87,25 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
         setChameleonLayer(next);
         writeStoredChameleonLayer(next);
     };
-
     const activePersona = getBotPersona(difficulty, locale);
     const botFirstName = locale === 'fr' ? FR_BOT_DISPLAY_NAMES[difficulty] : activePersona.shortName;
     const opponentDisplayLabel = customOpponentLabel || `${activePersona.avatar} ${botFirstName}`;
-
     const isHumanTurn = turn === playerColor;
     const barCount = boardState ? (turn === 'X' ? boardState.board[0] : Math.abs(boardState.board[25])) : 0;
     const hasBarChecker = barCount > 0;
-    const entryTargetText = turn === 'X' ? 'flèches 19 à 24' : 'flèches 1 à 6';
+    const entryTargetText = turn === 'X' ? (isEn ? 'points 19 to 24' : 'flèches 19 à 24') : (isEn ? 'points 1 to 6' : 'flèches 1 à 6');
 
     useEffect(() => {
         if (!isSettingsOpen) return;
         const onOutside = (e: MouseEvent) => {
-            if (settingsMenuRef.current && !settingsMenuRef.current.contains(e.target as Node) && !settingsToggleBtnRef.current?.contains(e.target as Node)) {
-                setIsSettingsOpen(false);
-            }
+            if (settingsMenuRef.current && !settingsMenuRef.current.contains(e.target as Node) && !settingsToggleBtnRef.current?.contains(e.target as Node)) setIsSettingsOpen(false);
         };
         const onEsc = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                e.preventDefault(); e.stopPropagation();
-                setIsSettingsOpen(false); settingsToggleBtnRef.current?.focus();
-            }
+            if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setIsSettingsOpen(false); settingsToggleBtnRef.current?.focus(); }
         };
         document.addEventListener('mousedown', onOutside);
         document.addEventListener('keydown', onEsc);
-        return () => {
-            document.removeEventListener('mousedown', onOutside);
-            document.removeEventListener('keydown', onEsc);
-        };
+        return () => { document.removeEventListener('mousedown', onOutside); document.removeEventListener('keydown', onEsc); };
     }, [isSettingsOpen]);
 
     useEffect(() => {
@@ -153,24 +120,15 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
         return () => window.removeEventListener('keydown', onGlobalKey);
     }, [isGameActive, isSettingsOpen, isLeaveModalOpen]);
 
-    const handleLobbyClick = () => {
-        if (isGameActive) { setIsLeaveModalOpen(true); return; }
-        onBackToLobby?.();
-    };
-
+    const handleLobbyClick = () => { if (isGameActive) { setIsLeaveModalOpen(true); return; } onBackToLobby?.(); };
     const hudClasses = getHudThemeClasses(theme);
+    const chameleonLabel = chameleonLayer === 0 ? (isEn ? 'Essential' : 'Essentiel') : chameleonLayer === 1 ? 'Club' : 'Pro';
 
     return (
         <>
-            <header
-                role="region" aria-label="Barre de match"
-                className="relative z-40 w-full max-w-[1260px] mx-auto h-9 max-md:max-h-[40px] md:h-11 max-sm:rounded-none max-sm:border-x-0 rounded-xl border border-white/10 bg-slate-950/95 px-1.5 sm:px-3 shadow-lg backdrop-blur-xl transition-all duration-200 flex items-center justify-between gap-1 sm:gap-2 min-w-0 max-w-full overflow-hidden sm:overflow-visible touch-manipulation"
-            >
+            <header role="region" aria-label={isEn ? 'Match HUD' : 'Barre de match'} className="relative z-40 w-full max-w-[1260px] mx-auto h-9 max-md:max-h-[40px] md:h-11 max-sm:rounded-none max-sm:border-x-0 rounded-xl border border-white/10 bg-slate-950/95 px-1.5 sm:px-3 shadow-lg backdrop-blur-xl transition-all duration-200 flex items-center justify-between gap-1 sm:gap-2 min-w-0 max-w-full overflow-hidden sm:overflow-visible touch-manipulation">
                 <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1 overflow-hidden">
-                    <button
-                        type="button" onClick={handleLobbyClick} data-testid="hud-back-to-lobby-btn" title="Menu de Session / Retour au Salon"
-                        className="flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-1.5 sm:px-2.5 py-1 text-[11px] font-bold text-slate-200 transition hover:border-white/25 hover:bg-slate-800 hover:text-white active:scale-95 shrink-0 touch-manipulation"
-                    >
+                    <button type="button" onClick={handleLobbyClick} data-testid="hud-back-to-lobby-btn" title={isEn ? 'Session Menu / Back to Lobby' : 'Menu de Session / Retour au Salon'} className="flex items-center gap-1 rounded-lg border border-white/10 bg-slate-900 px-1.5 sm:px-2.5 py-1 text-[11px] font-bold text-slate-200 transition hover:border-white/25 hover:bg-slate-800 hover:text-white active:scale-95 shrink-0 touch-manipulation">
                         <span aria-hidden="true" className="text-amber-300">←</span>
                         <span className="hidden sm:inline">Lobby</span>
                     </button>
@@ -190,7 +148,6 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                             title={`${activePersona.name} — ${activePersona.styleBadge} (${activePersona.skillTaught})`}
                             className="hidden xl:inline-flex items-center gap-1 shrink-0 rounded-lg border border-amber-400/35 bg-amber-500/10 px-2 py-0.5 text-[11px] font-bold text-amber-200"
                         >
-                            <span aria-hidden="true">{activePersona.avatar}</span>
                             <span>{activePersona.shortName}</span>
                         </span>
                     </div>
@@ -201,21 +158,19 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                         <span
                             data-testid="hud-bar-checker-alert"
                             className="flex items-center gap-1.5 shrink-0 rounded-lg border border-rose-500/60 bg-rose-950/80 px-2.5 py-0.5 text-[11px] font-bold text-rose-100 animate-pulse"
-                            title={`Vous avez ${barCount} pion${barCount > 1 ? 's' : ''} sur la barre : rentrée obligatoire dans le camp adverse (${entryTargetText})`}
                         >
-                            <span aria-hidden="true">⚠️</span>
-                            <span>{barCount} sur la barre : rentrée obligatoire ({entryTargetText})</span>
+                            <span className="h-2 w-2 rounded-full bg-rose-400" aria-hidden="true" />
+                            <span>{barCount} {isEn ? `on the bar: mandatory entry (${entryTargetText})` : `sur la barre : rentrée obligatoire (${entryTargetText})`}</span>
                         </span>
                     )}
                     {lastMoveFeedback && (() => {
-                        const v = getHudVerdictConfig(lastMoveFeedback, chameleonLayer);
+                        const v = getHudVerdictConfig(lastMoveFeedback, chameleonLayer, isEn);
                         return (
                             <button
                                 type="button" onClick={onTriggerCoach} data-testid="hud-verdict-badge"
-                                title={`Dernier verdict XG : ${v.label} (cliquer pour ouvrir le Coach)`}
-                                className={`${hasBarChecker && isHumanTurn ? 'hidden 2xl:flex' : 'flex'} items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border px-2 py-0.5 font-mono text-[11px] font-extrabold tracking-wide tabular-nums transition hover:brightness-110 ${v.badgeClass}`}
+                                className={`${hasBarChecker && isHumanTurn ? 'hidden 2xl:flex' : 'flex'} items-center gap-1.5 shrink-0 whitespace-nowrap rounded-lg border px-2 py-0.5 font-mono text-[11px] font-extrabold tracking-wide tabular-nums transition hover:brightness-110 ${v.badgeClass}`}
                             >
-                                <span aria-hidden="true">{v.icon}</span>
+                                <span aria-hidden="true" className={`h-2 w-2 rounded-full ${v.dotClass}`} />
                                 <span>{v.label}</span>
                             </button>
                         );
@@ -224,9 +179,8 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                         <span
                             data-testid="hud-last-move"
                             className="whitespace-nowrap truncate rounded-lg border border-white/10 bg-slate-900 px-2.5 py-0.5 font-mono text-[11px] font-bold tabular-nums text-amber-200"
-                            title={`Dernier coup adverse : ${lastMoveNotation}`}
                         >
-                            <span className="hidden xl:inline font-sans font-normal text-slate-400 mr-1">Dernier coup :</span>
+                            <span className="hidden xl:inline font-sans font-normal text-slate-400 mr-1">{isEn ? 'Last move:' : 'Dernier coup :'}</span>
                             {lastMoveNotation}
                         </span>
                     )}
@@ -234,40 +188,31 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
 
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                     <button
-                        type="button"
-                        onClick={handleCycleChameleon}
-                        data-testid="hud-chameleon-layer-btn"
-                        title="Affichage Caméléon : basculer entre Essentiel (0% jargon), Club (Course ±) et Pro (Pips exacts & MWC)"
+                        type="button" onClick={handleCycleChameleon} data-testid="hud-chameleon-layer-btn"
                         className="hidden sm:inline-flex h-7 items-center gap-1 shrink-0 rounded-lg border border-white/10 bg-slate-900 px-2 text-[11px] font-bold text-amber-200 transition hover:border-[#f3c65f]/50 hover:text-white active:scale-95"
                     >
-                        <span>{CHAMELEON_PILL_LABELS[chameleonLayer]}</span>
+                        <span>{chameleonLabel}</span>
                     </button>
 
                     {(serverSeedHash || onOpenDiceAudit) && (
                         <button
                             type="button" onClick={onOpenDiceAudit} data-testid="hud-provably-fair-btn"
-                            title="Audit Anti-Tricherie SHA-256 & Mode Gammon36 en 1 Clic"
                             className="flex h-7 items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border border-emerald-500/45 bg-emerald-950/60 px-2 text-[11px] font-bold text-emerald-200 transition hover:border-emerald-400 hover:text-white active:scale-95"
                         >
-                            <span aria-hidden="true">🛡</span>
-                            <span className="hidden lg:inline">Dés Certifiés</span>
+                            <span className="hidden lg:inline">{isEn ? 'Fair Dice' : 'Dés Certifiés'}</span>
                         </button>
                     )}
 
                     {onTriggerCoach && (
                         <button
                             type="button" onClick={onTriggerCoach} data-testid="hud-coach-btn"
-                            title={coachQuotaBadge ? `Coach IA (${isVip ? 'VIP Illimité' : `${coachQuotaBadge} analyses aujourd'hui`})` : "Ouvrir l'analyse du Coach IA"}
                             className="hidden md:flex h-7 items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900 px-2 text-[11px] font-bold text-slate-100 transition hover:border-white/25 hover:bg-slate-800 hover:text-white active:scale-95 touch-manipulation"
                         >
-                            <span aria-hidden="true">🎓</span>
                             <span className="hidden sm:inline">Coach</span>
                             {coachQuotaBadge && (
                                 <span
                                     data-testid="hud-coach-quota-badge"
-                                    className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-black tabular-nums ${
-                                        isVip ? 'bg-amber-400/20 text-amber-300' : 'bg-white/10 text-amber-200'
-                                    }`}
+                                    className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-black tabular-nums ${isVip ? 'bg-amber-400/20 text-amber-300' : 'bg-white/10 text-amber-200'}`}
                                 >
                                     {coachQuotaBadge}
                                 </span>
@@ -281,10 +226,10 @@ const MatchHudComponent: React.FC<MatchHudProps> = ({
                         <button
                             ref={settingsToggleBtnRef} type="button" onClick={() => setIsSettingsOpen((prev) => !prev)}
                             aria-expanded={isSettingsOpen} aria-haspopup="dialog" aria-controls="hud-settings-menu"
-                            data-testid="hud-settings-toggle-btn" title="Paramètres : Son, Orientation, Thème"
+                            data-testid="hud-settings-toggle-btn" title={isEn ? 'Settings' : 'Paramètres'}
                             className={`flex h-7 w-7 items-center justify-center rounded-lg border text-xs transition touch-manipulation ${isSettingsOpen ? 'border-[#f3c65f] bg-slate-800 text-white' : 'border-white/10 bg-slate-900 text-slate-300 hover:border-white/25 hover:text-white'}`}
                         >
-                            <span aria-hidden="true">⚙️</span>
+                            <span aria-hidden="true">⚙</span>
                         </button>
 
                         <HudSettingsMenu

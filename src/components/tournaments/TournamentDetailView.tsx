@@ -14,6 +14,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import AppNavbar from '../nav/AppNavbar';
+import { LobbyLeftSidebar } from '../lobby/LobbySidebarAndWidgets';
 import type { TournamentRecord, TournamentTier } from '../../features/tournaments/tournamentTypes';
 import { getCountryFlagEmoji, buildGoogleCalendarUrl, generateTournamentIcs } from '../../features/tournaments/tournamentEngine';
 import { loadBookmarkedTournamentIds, toggleTournamentBookmark, triggerIcsDownload } from '../../lib/supabase/tournamentService';
@@ -52,12 +53,14 @@ const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ to
 
     return (
         <div
-            className="h-dvh max-h-dvh w-full overflow-y-auto overflow-x-hidden overscroll-y-contain bg-[#070b13] text-slate-100 flex flex-col"
+            className="h-dvh max-h-dvh w-full overflow-hidden bg-[#070b13] text-slate-100 flex flex-col"
             data-testid="tournament-detail-view"
         >
             <AppNavbar activeTab="tournaments" />
 
-            <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 flex flex-col gap-6">
+            <div className="flex flex-1 min-h-0 overflow-hidden w-full">
+                <LobbyLeftSidebar />
+                <main className="flex-1 max-w-5xl w-full mx-auto overflow-y-auto px-4 py-8 flex flex-col gap-6">
                 <nav className="flex items-center gap-2 text-xs text-slate-400" aria-label="Breadcrumb">
                     <Link href="/tournaments" className="hover:text-[#d4af37] transition">← Base Mondiale des Tournois</Link>
                     <span>/</span>
@@ -243,7 +246,8 @@ const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ to
                         </div>
                     </section>
                 )}
-            </main>
+                </main>
+            </div>
         </div>
     );
 };

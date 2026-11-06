@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Zone centrale de jeu (Plateau interactif + Éclairage Zénithal + Panneau Coach, < 275 lignes, 0 any).
+ * Zone centrale de jeu (Plateau interactif + Éclairage Zénithal + Panneau Coach, < 270 lignes, 0 any).
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -19,12 +19,7 @@ import { getRecommendedClockConfig } from '../../features/multiplayer/clockManag
 import Board from './Board';
 import BoardHorologyBar from './BoardHorologyBar';
 import BoardLivePersonaBubble from './BoardLivePersonaBubble';
-import {
-    BoardLeftPlayerRail,
-    BoardRightActionRail,
-    BoardPortraitTopHud,
-    BoardPortraitBottomHud,
-} from './BoardSideRails';
+import { BoardLeftPlayerRail, BoardRightActionRail, BoardPortraitTopHud, BoardPortraitBottomHud } from './BoardSideRails';
 import CoachSidebar, { type CoachSidebarProps } from '../coach/CoachSidebar';
 import MobilePortraitCoachBanner from '../coach/MobilePortraitCoachBanner';
 import MoveErrorPopToast from '../coach/MoveErrorPopToast';
@@ -36,46 +31,23 @@ const NEXT_SPEED: Record<GameSpeed, GameSpeed> = { coach: 'tournament', tourname
 const NOOP = () => {};
 
 export interface GameBoardAreaProps {
-    theme: ThemeName;
-    game: UseBackgammonGameReturn;
-    activeDie: 0 | 1;
-    isBoardLoading: boolean;
-    activeCoachHighlight: CoachHighlight | null;
-    onCheckerClick: (point: number) => void;
-    onCheckerRightClick: (point: number) => void;
-    onDestinationClick: (destination: number) => void;
-    onPlayMove: (from: number, to: number, die?: 0 | 1) => void;
-    onSelectDie: (die: 0 | 1) => void;
-    onDiceClick?: () => void;
-    onDeselect: () => void;
-    coach: CoachSidebarProps['coach'];
-    isAnalyzing: boolean;
-    onDismissCoach: () => void;
-    onReplayMove?: () => void;
-    onOpenKnowledgeConcept?: (conceptId: string) => void;
-    onBlunderClick?: () => void;
-    onCandidateHover?: (notation: string | null) => void;
-    turnsHistory?: unknown[];
-    coachHistory?: ReadonlyArray<CoachAnalysisHistoryEntry>;
-    selectedCoachHistoryIndex?: number | null;
-    onSelectCoachHistoryIndex?: (index: number | null) => void;
-    onTriggerCoach: () => void;
-    matchStats?: CoachSidebarProps['matchStats'];
-    matchStatsO?: CoachSidebarProps['matchStatsO'];
-    prX?: number | null;
-    prO?: number | null;
-    lastMoveFeedback?: LastMoveFeedback | null;
-    locale?: string;
-    gameId: string;
-    matchContext?: Partial<BuildMatchContextParams>;
-    isMatchStarted?: boolean;
-    playerColor?: 'X' | 'O';
-    onBackToLobby?: () => void;
-    onToggleTheme?: () => void;
-    challengerProfile?: PlayerEloProfile | null;
+    theme: ThemeName; game: UseBackgammonGameReturn; activeDie: 0 | 1; isBoardLoading: boolean;
+    activeCoachHighlight: CoachHighlight | null; onCheckerClick: (point: number) => void;
+    onCheckerRightClick: (point: number) => void; onDestinationClick: (destination: number) => void;
+    onPlayMove: (from: number, to: number, die?: 0 | 1) => void; onSelectDie: (die: 0 | 1) => void;
+    onDiceClick?: () => void; onDeselect: () => void; coach: CoachSidebarProps['coach'];
+    isAnalyzing: boolean; onDismissCoach: () => void; onReplayMove?: () => void;
+    onOpenKnowledgeConcept?: (conceptId: string) => void; onBlunderClick?: () => void;
+    onCandidateHover?: (notation: string | null) => void; turnsHistory?: unknown[];
+    coachHistory?: ReadonlyArray<CoachAnalysisHistoryEntry>; selectedCoachHistoryIndex?: number | null;
+    onSelectCoachHistoryIndex?: (index: number | null) => void; onTriggerCoach: () => void;
+    matchStats?: CoachSidebarProps['matchStats']; matchStatsO?: CoachSidebarProps['matchStatsO'];
+    prX?: number | null; prO?: number | null; lastMoveFeedback?: LastMoveFeedback | null;
+    locale?: string; gameId: string; matchContext?: Partial<BuildMatchContextParams>;
+    isMatchStarted?: boolean; playerColor?: 'X' | 'O'; onBackToLobby?: () => void;
+    onToggleTheme?: () => void; challengerProfile?: PlayerEloProfile | null;
     onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
-    onOfferDouble?: () => void;
-    isPrematureDouble?: boolean;
+    onOfferDouble?: () => void; isPrematureDouble?: boolean;
 }
 
 const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
@@ -86,8 +58,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     onCandidateHover, turnsHistory, coachHistory = [], selectedCoachHistoryIndex = null,
     onSelectCoachHistoryIndex, onTriggerCoach, matchStats, matchStatsO, prX, prO, lastMoveFeedback, locale,
     gameId, matchContext, isMatchStarted = true, playerColor = 'X', onBackToLobby, onToggleTheme,
-    challengerProfile = null, onSendQuickChat,
-    onOfferDouble, isPrematureDouble = false,
+    challengerProfile = null, onSendQuickChat, onOfferDouble, isPrematureDouble = false,
 }) => {
     const { tierGate } = usePlayerTierGate();
     const isXTurn = game.state.turn === 'X';
@@ -107,15 +78,8 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
         });
     }, []);
 
-    const clockConfig = useMemo(() => {
-        return getRecommendedClockConfig(game.state.matchLength || 7, 'bronstein', 'normal');
-    }, [game.state.matchLength]);
-
-    const clock = useFischerClock({
-        config: clockConfig,
-        activePlayer: game.state.turn,
-        isPaused: !isMatchStarted || game.phase === 'GAME_OVER',
-    });
+    const clockConfig = useMemo(() => getRecommendedClockConfig(game.state.matchLength || 7, 'bronstein', 'normal'), [game.state.matchLength]);
+    const clock = useFischerClock({ config: clockConfig, activePlayer: game.state.turn, isPaused: !isMatchStarted || game.phase === 'GAME_OVER' });
     const activeDelaySeconds = clock.delayRemainingMs > 0 ? Math.ceil(clock.delayRemainingMs / 1000) : 0;
 
     useEffect(() => {
@@ -139,12 +103,8 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
         const log = game.matchLog ?? [];
         if (log.length > 0) {
             return log.map((e) => ({
-                turnNumber: e.turnIndex,
-                player: e.player,
-                dice: [e.dice[0], e.dice[1]],
-                boardBefore: [...e.boardBefore],
-                boardAfter: [...e.boardAfter],
-                moves: [...e.movePlayed],
+                turnNumber: e.turnIndex, player: e.player, dice: [e.dice[0], e.dice[1]],
+                boardBefore: [...e.boardBefore], boardAfter: [...e.boardAfter], moves: [...e.movePlayed],
             }));
         }
         return Array.isArray(turnsHistory) && turnsHistory.length > 0 ? (turnsHistory as RawGameTurn[]) : [];
@@ -175,20 +135,10 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
 
     const displayState = useMemo<BoardState>(() => {
         if (!replay.isLive && replay.selectedTurn) {
-            const targetBoard =
-                replayViewPhase === 'before' ? replay.selectedTurn.boardBefore : replay.selectedTurn.boardAfter;
-            return {
-                ...game.state,
-                board: [...targetBoard],
-                turn: replay.selectedTurn.player,
-                dice: [...replay.selectedTurn.dice] as [number, number],
-            };
+            const targetBoard = replayViewPhase === 'before' ? replay.selectedTurn.boardBefore : replay.selectedTurn.boardAfter;
+            return { ...game.state, board: [...targetBoard], turn: replay.selectedTurn.player, dice: [...replay.selectedTurn.dice] as [number, number] };
         }
-        if (
-            (previewBoardMode === 'before' || selectedCoachHistoryIndex !== null) &&
-            displayCoach?.boardBefore &&
-            displayCoach.boardBefore.length === 26
-        ) {
+        if ((previewBoardMode === 'before' || selectedCoachHistoryIndex !== null) && displayCoach?.boardBefore && displayCoach.boardBefore.length === 26) {
             return { ...game.state, board: [...displayCoach.boardBefore] };
         }
         return game.state;
@@ -196,150 +146,83 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
 
     const displayCoachHighlight = useMemo<CoachHighlight | null>(() => {
         if (replay.isLive) {
-            if (!game.dice || (game.dice[0] === 0 && game.dice[1] === 0) || game.gamePhase !== 'HUMAN_MOVING' || game.state.turn !== 'X') {
-                return null;
-            }
-            if (previewBoardMode === 'before' || selectedCoachHistoryIndex !== null) {
-                return activeCoachHighlight;
-            }
-            if (
-                displayCoach?.boardBefore &&
-                displayCoach.boardBefore.length === 26 &&
-                displayCoach.boardBefore.join(',') !== game.state.board.join(',')
-            ) {
-                return null;
-            }
+            if (!game.dice || (game.dice[0] === 0 && game.dice[1] === 0) || game.gamePhase !== 'HUMAN_MOVING' || game.state.turn !== 'X') return null;
+            if (previewBoardMode === 'before' || selectedCoachHistoryIndex !== null) return activeCoachHighlight;
+            if (displayCoach?.boardBefore && displayCoach.boardBefore.length === 26 && displayCoach.boardBefore.join(',') !== game.state.board.join(',')) return null;
             return activeCoachHighlight;
         }
         if (!replay.selectedTurn || replayViewPhase === 'after') return null;
         if (replayCoachEntry?.highlight) return replayCoachEntry.highlight;
         return replay.selectedTurn.player === 'X' ? { optimal: [...replay.selectedTurn.moves], played: [] } : null;
-    }, [replay.isLive, previewBoardMode, selectedCoachHistoryIndex, displayCoach, game.state.board, replay.selectedTurn, replayViewPhase, replayCoachEntry, activeCoachHighlight]);
+    }, [replay.isLive, previewBoardMode, selectedCoachHistoryIndex, displayCoach, game.state.board, replay.selectedTurn, replayViewPhase, replayCoachEntry, activeCoachHighlight, game.dice, game.gamePhase, game.state.turn]);
 
     const handleSyncedReplayMove = () => {
         if (!replay.isLive && replay.selectedTurn && game.rewindToLogTurn) {
             game.rewindToLogTurn(replay.selectedTurn.turnNumber);
-            replay.returnToLive();
-            setPreviewBoardMode('live');
-            onSelectCoachHistoryIndex?.(null);
-            onDismissCoach();
+            replay.returnToLive(); setPreviewBoardMode('live'); onSelectCoachHistoryIndex?.(null); onDismissCoach();
             return;
         }
-        setPreviewBoardMode('live');
-        replay.returnToLive();
-        onReplayMove?.();
+        setPreviewBoardMode('live'); replay.returnToLive(); onReplayMove?.();
     };
+
+    const isGuided = Boolean(tierGate === 'BEGINNER' || game.difficulty === 'beginner');
 
     return (
         <div className="w-full max-w-full h-full min-h-0 min-w-0 flex-1 overflow-hidden relative grid grid-cols-[minmax(0,1fr)] lg:grid-cols-12 gap-1 sm:gap-3 [@media(max-height:500px)]:!gap-0 max-w-[1920px] mx-auto px-0 sm:px-2 pb-0.5 sm:pb-1 [@media(max-height:500px)]:!p-0">
-            <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 -z-0"
-                style={{
-                    background:
-                        'radial-gradient(ellipse 72% 60% at 50% 45%, rgba(245, 196, 81, 0.10) 0%, rgba(16, 185, 129, 0.04) 42%, rgba(0, 0, 0, 0.55) 100%)',
-                }}
-            />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-0" style={{ background: 'radial-gradient(ellipse 72% 60% at 50% 45%, rgba(245, 196, 81, 0.10) 0%, rgba(16, 185, 129, 0.04) 42%, rgba(0, 0, 0, 0.55) 100%)' }} />
 
-            <div
-                data-testid="board-main-column"
-                className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 max-w-full flex flex-col items-center justify-center gap-0 overflow-hidden w-full relative z-10 transition-all duration-200`}
-            >
+            <div data-testid="board-main-column" className={`col-span-1 ${isFocusFullBoard ? 'lg:col-span-12' : 'lg:col-span-8'} h-full min-h-0 min-w-0 max-w-full flex flex-col items-center justify-center gap-0 overflow-hidden w-full relative z-10 transition-all duration-200`}>
                 <MoveErrorPopToast
-                    feedback={lastMoveFeedback}
-                    boardBefore={lastMoveFeedback?.boardBefore ?? displayCoach?.boardBefore}
-                    boardAfter={lastMoveFeedback?.boardAfter ?? game.state.board}
-                    onReplayMove={handleSyncedReplayMove}
-                    onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
-                    isBeginner={tierGate === 'BEGINNER'}
+                    feedback={lastMoveFeedback} boardBefore={lastMoveFeedback?.boardBefore ?? displayCoach?.boardBefore}
+                    boardAfter={lastMoveFeedback?.boardAfter ?? game.state.board} onReplayMove={handleSyncedReplayMove}
+                    onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }} isBeginner={tierGate === 'BEGINNER'}
                 />
 
                 <BoardPortraitTopHud
-                    difficulty={game.difficulty}
-                    locale={locale}
-                    isXTurn={isXTurn}
-                    scoreX={game.state.scoreX}
-                    scoreO={game.state.scoreO}
-                    cubeValue={game.state.cubeValue}
-                    matchLength={game.state.matchLength}
-                    turn={game.state.turn}
-                    playerClock={clock.formattedX}
-                    opponentClock={clock.formattedO}
-                    delaySeconds={activeDelaySeconds}
-                    prX={prX}
-                    prO={prO}
-                    challengerProfile={challengerProfile}
-                    isGuidedMode={Boolean(tierGate === 'BEGINNER' || game.difficulty === 'beginner')}
+                    difficulty={game.difficulty} locale={locale} isXTurn={isXTurn} scoreX={game.state.scoreX} scoreO={game.state.scoreO}
+                    cubeValue={game.state.cubeValue} matchLength={game.state.matchLength} turn={game.state.turn}
+                    playerClock={clock.formattedX} opponentClock={clock.formattedO} delaySeconds={activeDelaySeconds}
+                    prX={prX} prO={prO} challengerProfile={challengerProfile} isGuidedMode={isGuided}
                 />
 
                 <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 [@media(max-height:500px)]:!gap-1 px-0 sm:px-3 py-0 sm:py-1.5 [@media(max-height:500px)]:!p-0 overflow-hidden">
                     {!challengerProfile && (
                         <BoardLivePersonaBubble
-                            difficulty={game.difficulty}
-                            isPlayerThinking={Boolean(game.state.turn === 'X' && game.state.dice)}
-                            turnsCount={effectiveTurns.length}
-                            verdict={displayCoach?.verdict ?? null}
-                            equityLoss={displayCoach?.equityLoss ?? null}
-                            boardBefore={displayCoach?.boardBefore}
-                            boardAfter={game.state.board}
+                            difficulty={game.difficulty} isPlayerThinking={Boolean(game.state.turn === 'X' && game.state.dice)}
+                            turnsCount={effectiveTurns.length} verdict={displayCoach?.verdict ?? null} equityLoss={displayCoach?.equityLoss ?? null}
+                            boardBefore={displayCoach?.boardBefore} boardAfter={game.state.board}
                             opponentDice={!displayState.dice ? game.lastOpponentDice : null}
-                            onReplayMove={handleSyncedReplayMove}
-                            onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
+                            onReplayMove={handleSyncedReplayMove} onOpenCoach={() => { setIsFocusFullBoard(false); onTriggerCoach(); }}
                         />
                     )}
 
                     <BoardLeftPlayerRail
-                        difficulty={game.difficulty}
-                        locale={locale}
-                        isGuidedMode={Boolean(tierGate === 'BEGINNER' || game.difficulty === 'beginner')}
-                        isXTurn={isXTurn}
-                        scoreX={game.state.scoreX}
-                        scoreO={game.state.scoreO}
-                        cubeValue={game.state.cubeValue}
-                        matchLength={game.state.matchLength}
-                        crawford={game.state.crawford}
-                        isDMP={game.isDMP}
-                        turn={game.state.turn}
-                        playerClock={clock.formattedX}
-                        opponentClock={clock.formattedO}
-                        delaySeconds={activeDelaySeconds}
-                        prX={prX}
-                        prO={prO}
-                        challengerProfile={challengerProfile}
-                        opponentDice={!displayState.dice ? game.lastOpponentDice : null}
-                        onSendQuickChat={onSendQuickChat}
-                        isBrowserFullscreen={isBrowserFullscreen}
-                        isFocusFullBoard={isFocusFullBoard}
-                        onToggleFullscreen={handleToggleBrowserFullscreen}
-                        onToggleCoach={() => { setIsFocusFullBoard((v) => !v); onTriggerCoach(); }}
-                        onToggleTheme={onToggleTheme}
-                        onBackToLobby={onBackToLobby}
-                        canUndo={replay.isLive && game.canUndo}
-                        onUndo={replay.isLive ? game.undoMove : NOOP}
-                        autoConfirmEnabled={game.autoConfirmTurn}
-                        onToggleAutoConfirm={game.toggleAutoConfirmTurn}
-                        autoRollEnabled={autoRollEnabled}
-                        onToggleAutoRoll={handleToggleAutoRoll}
+                        difficulty={game.difficulty} locale={locale} isGuidedMode={isGuided} isXTurn={isXTurn}
+                        scoreX={game.state.scoreX} scoreO={game.state.scoreO} cubeValue={game.state.cubeValue}
+                        matchLength={game.state.matchLength} crawford={game.state.crawford} isDMP={game.isDMP} turn={game.state.turn}
+                        playerClock={clock.formattedX} opponentClock={clock.formattedO} delaySeconds={activeDelaySeconds}
+                        prX={prX} prO={prO} challengerProfile={challengerProfile} opponentDice={!displayState.dice ? game.lastOpponentDice : null}
+                        onSendQuickChat={onSendQuickChat} isBrowserFullscreen={isBrowserFullscreen} isFocusFullBoard={isFocusFullBoard}
+                        onToggleFullscreen={handleToggleBrowserFullscreen} onToggleCoach={() => { setIsFocusFullBoard((v) => !v); onTriggerCoach(); }}
+                        onToggleTheme={onToggleTheme} onBackToLobby={onBackToLobby} canUndo={replay.isLive && game.canUndo}
+                        onUndo={replay.isLive ? game.undoMove : NOOP} autoConfirmEnabled={game.autoConfirmTurn}
+                        onToggleAutoConfirm={game.toggleAutoConfirmTurn} autoRollEnabled={autoRollEnabled} onToggleAutoRoll={handleToggleAutoRoll}
                     />
 
-                    {/* COLONNE CENTRALE : Plateau 100 % Hauteur */}
                     <div className="flex-1 min-w-0 min-h-0 h-full flex items-center justify-center">
                         <ErrorBoundary name="Plateau de jeu">
                             <Board
-                                state={displayState}
-                                leftDieTargets={replay.isLive ? game.leftDieTargets : new Map()} rightDieTargets={replay.isLive ? game.rightDieTargets : new Map()}
+                                state={displayState} leftDieTargets={replay.isLive ? game.leftDieTargets : new Map()} rightDieTargets={replay.isLive ? game.rightDieTargets : new Map()}
                                 selectedPoint={replay.isLive ? (game.selected?.point ?? null) : null} selectedDie={game.selected ? game.selected.die : activeDie}
                                 usedDice={replay.isLive ? game.usedDice : [false, false]} opponentDice={!displayState.dice ? game.lastOpponentDice : null}
                                 onCheckerClick={replay.isLive ? (pt) => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); onCheckerClick(pt); } : NOOP}
                                 onCheckerRightClick={replay.isLive ? onCheckerRightClick : NOOP} onDestinationClick={replay.isLive ? onDestinationClick : NOOP}
                                 onPlayMove={replay.isLive ? onPlayMove : NOOP} onSelectDie={replay.isLive ? onSelectDie : NOOP}
                                 onDiceClick={replay.isLive ? onDiceClick : NOOP} onDeselect={replay.isLive ? onDeselect : NOOP} onUndo={replay.isLive ? game.undoMove : NOOP}
-                                coachHighlight={displayCoachHighlight}
-                                opponentHighlight={!replay.isLive && replay.selectedTurn?.player === 'O' && replayViewPhase === 'before' ? [...replay.selectedTurn.moves] : game.opponentHighlight}
+                                coachHighlight={displayCoachHighlight} opponentHighlight={!replay.isLive && replay.selectedTurn?.player === 'O' && replayViewPhase === 'before' ? [...replay.selectedTurn.moves] : game.opponentHighlight}
                                 canDouble={replay.isLive && game.canDouble} doublingOfferedBy={game.doublingOfferedBy}
                                 onOfferDouble={replay.isLive ? (onOfferDouble ?? game.offerDouble) : NOOP} onTakeDouble={replay.isLive ? game.takeDouble : NOOP} onPassDouble={replay.isLive ? game.passDouble : NOOP}
-                                isPrematureDouble={isPrematureDouble}
-                                theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? (game.gamePhase ?? 'AI_TURN_SHOWING_ARROWS') : 'REPLAY_VIEW'}
+                                isPrematureDouble={isPrematureDouble} theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? (game.gamePhase ?? 'AI_TURN_SHOWING_ARROWS') : 'REPLAY_VIEW'}
                                 onRoll={replay.isLive ? () => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); game.rollDice(); } : replay.returnToLive}
                                 onConfirm={replay.isLive ? () => game.commitHumanMove() : replay.returnToLive}
                                 canUndo={replay.isLive && game.canUndo} canConfirm={replay.isLive && game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
@@ -352,27 +235,15 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     </div>
 
                     <BoardRightActionRail
-                        isBrowserFullscreen={isBrowserFullscreen}
-                        isFocusFullBoard={isFocusFullBoard}
-                        onToggleFullscreen={handleToggleBrowserFullscreen}
-                        onToggleCoach={() => { setIsFocusFullBoard((v) => !v); onTriggerCoach(); }}
-                        onToggleTheme={onToggleTheme}
-                        onBackToLobby={onBackToLobby}
-                        canUndo={replay.isLive && game.canUndo}
-                        onUndo={replay.isLive ? game.undoMove : NOOP}
-                        autoConfirmEnabled={game.autoConfirmTurn}
-                        onToggleAutoConfirm={game.toggleAutoConfirmTurn}
-                        autoRollEnabled={autoRollEnabled}
-                        onToggleAutoRoll={handleToggleAutoRoll}
+                        isBrowserFullscreen={isBrowserFullscreen} isFocusFullBoard={isFocusFullBoard}
+                        onToggleFullscreen={handleToggleBrowserFullscreen} onToggleCoach={() => { setIsFocusFullBoard((v) => !v); onTriggerCoach(); }}
+                        onToggleTheme={onToggleTheme} onBackToLobby={onBackToLobby} canUndo={replay.isLive && game.canUndo}
+                        onUndo={replay.isLive ? game.undoMove : NOOP} autoConfirmEnabled={game.autoConfirmTurn}
+                        onToggleAutoConfirm={game.toggleAutoConfirmTurn} autoRollEnabled={autoRollEnabled} onToggleAutoRoll={handleToggleAutoRoll}
                     />
                 </div>
 
-                <BoardPortraitBottomHud
-                    scoreX={game.state.scoreX}
-                    turn={game.state.turn}
-                    playerClock={clock.formattedX}
-                    delaySeconds={activeDelaySeconds}
-                />
+                <BoardPortraitBottomHud scoreX={game.state.scoreX} turn={game.state.turn} playerClock={clock.formattedX} delaySeconds={activeDelaySeconds} />
 
                 {isMatchStarted && (
                     <>
@@ -395,11 +266,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                                 onRewindHere={handleSyncedReplayMove} difficulty={game.difficulty}
                                 coachHistory={coachHistory} cubeValue={game.state.cubeValue} doublingOfferedBy={game.doublingOfferedBy}
                                 onTriggerGhostChallenge={(turnIdx) => {
-                                    game.rewindToLogTurn?.(turnIdx);
-                                    replay.returnToLive();
-                                    setPreviewBoardMode('live');
-                                    onSelectCoachHistoryIndex?.(null);
-                                    onDismissCoach();
+                                    game.rewindToLogTurn?.(turnIdx); replay.returnToLive(); setPreviewBoardMode('live'); onSelectCoachHistoryIndex?.(null); onDismissCoach();
                                 }}
                                 locale={locale}
                             />
@@ -408,10 +275,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                 )}
             </div>
 
-            <div
-                data-testid="board-coach-column"
-                className={`${isFocusFullBoard ? 'hidden' : 'hidden lg:flex lg:col-span-4'} h-full min-h-0 min-w-0 overflow-hidden relative z-10`}
-            >
+            <div data-testid="board-coach-column" className={`${isFocusFullBoard ? 'hidden' : 'hidden lg:flex lg:col-span-4'} h-full min-h-0 min-w-0 overflow-hidden relative z-10`}>
                 <CoachSidebar
                     coach={displayCoach} isAnalyzing={isAnalyzing}
                     onDismiss={() => { onDismissCoach(); setIsFocusFullBoard(true); }}

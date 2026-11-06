@@ -128,6 +128,7 @@ export function useCoach({
     useCoachLogAnalyzer({
         matchLog: game.matchLog,
         gameState: game.state,
+        difficulty: game.difficulty,
         lastPlayerEvalRef,
         analysisRequestIdRef,
         humanSnapshotRef,

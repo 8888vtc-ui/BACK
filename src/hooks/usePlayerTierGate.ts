@@ -26,7 +26,10 @@ export function getSavedPlayerTierGate(): PlayerTierGate {
         }
     } catch {}
     try {
-        const saved = localStorage.getItem(PLAYER_TIER_GATE_STORAGE_KEY) ?? localStorage.getItem('bgt_player_tier_gate');
+        const saved =
+            localStorage.getItem(PLAYER_TIER_GATE_STORAGE_KEY) ??
+            localStorage.getItem('bgt_player_tier_gate') ??
+            localStorage.getItem('bgtour_player_tier_gate_v1');
         if (saved === 'BEGINNER' || saved === 'INTERMEDIATE' || saved === 'EXPERT') {
             return saved;
         }
@@ -37,7 +40,7 @@ export function getSavedPlayerTierGate(): PlayerTierGate {
 }
 
 export function usePlayerTierGate() {
-    const [tierGate, setTierGateState] = useState<PlayerTierGate>('BEGINNER');
+    const [tierGate, setTierGateState] = useState<PlayerTierGate>(() => getSavedPlayerTierGate());
     const [isHydrated, setIsHydrated] = useState(false);
 
     useEffect(() => {

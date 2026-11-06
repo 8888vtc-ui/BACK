@@ -37,9 +37,10 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     const { theme: activeTheme, setTheme } = useBoardTheme();
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
+    const isEn = locale === 'en';
     const isGuided = Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
     const [playerMeta, setPlayerMeta] = useState<{ pseudo: string; avatarUrl: string; countryName: string; isGuest: boolean; careerPr: number | null }>({
-        pseudo: 'Joueur Invité', avatarUrl: STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg', countryName: 'France', isGuest: true, careerPr: null,
+        pseudo: isEn ? 'Guest Player' : 'Joueur Invité', avatarUrl: STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg', countryName: 'France', isGuest: true, careerPr: null,
     });
     useEffect(() => {
         const passport = readPlayerPassport();
@@ -55,8 +56,8 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
             }
             if (totalDec >= 3) careerPr = Number(Math.max(0, (totalLoss / totalDec) * 500).toFixed(1));
         }
-        setPlayerMeta({ pseudo: isGuest ? 'Joueur Invité' : (rawPseudo || 'Vous'), avatarUrl: passport?.avatarUrl || (STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg'), countryName: passport?.countryName || 'France', isGuest, careerPr });
-    }, []);
+        setPlayerMeta({ pseudo: isGuest ? (isEn ? 'Guest Player' : 'Joueur Invité') : (rawPseudo || (isEn ? 'You' : 'Vous')), avatarUrl: passport?.avatarUrl || (STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg'), countryName: passport?.countryName || 'France', isGuest, careerPr });
+    }, [isEn]);
     const {
         botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue,
         opponentDisplayName, opponentBadge, opponentPhotoUrl,
@@ -93,12 +94,12 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
                             {!isGuided && (
                                 <span className="font-mono text-stone-200 font-bold">
-                                    {challengerProfile ? `${botElo} Elo` : 'Adversaire'}
+                                    {challengerProfile ? `${botElo} Elo` : (isEn ? 'Opponent' : 'Adversaire')}
                                 </span>
                             )}
                             {!isGuided && challengerProfile && (
                                 <span className={`inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap ${resolvePrBadgeClasses(opponentPrNum)}`}>
-                                    PR Match : {opponentPrValue}
+                                    {isEn ? 'Match PR:' : 'PR Match :'} {opponentPrValue}
                                 </span>
                             )}
                         </div>
@@ -137,12 +138,12 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 {challengerProfile ? (
                     <div data-testid="left-rail-online-status" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/25 bg-emerald-950/30 px-2 py-1 text-[10px] font-medium text-emerald-300/90">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>Connecté · Match classé</span>
+                        <span>{isEn ? 'Online · Ranked Match' : 'Connecté · Match classé'}</span>
                     </div>
                 ) : (
                     <div data-testid="left-rail-bot-engine-badge" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-[#d4af37]/25 bg-black/45 px-2 py-1 text-[10px] font-semibold text-[#f3d27a]">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
-                        <span>{isGuided ? '• Partie Guidée' : 'Adversaire du Cercle'}</span>
+                        <span>{isGuided ? (isEn ? '• Guided Play' : '• Partie Guidée') : (isEn ? 'Club Opponent' : 'Adversaire du Cercle')}</span>
                     </div>
                 )}
             </div>
@@ -151,19 +152,19 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
             <div className="[@media(max-height:540px)]:hidden flex w-full items-center justify-between gap-1 my-auto py-0.5 shrink-0">
                 <div className="flex-1 rounded-xl border border-[#d4af37]/20 bg-[#14100c] px-1.5 py-1.5 text-center shadow-inner min-w-0">
                     <div className="text-[9px] uppercase tracking-wider text-stone-400">
-                        Videau <span className="font-mono font-bold text-[#f3d27a]">×{cubeValue}</span>
+                        {isEn ? 'Cube' : 'Videau'} <span className="font-mono font-bold text-[#f3d27a]">×{cubeValue}</span>
                     </div>
                     <div className="mt-0.5 font-display text-xs italic font-bold text-[#f7f3e8] leading-tight whitespace-nowrap">
-                        Match <span className="font-mono not-italic font-extrabold text-[#d4af37]">{matchLength > 0 ? `${matchLength} pts` : 'Libre'}</span>
+                        Match <span className="font-mono not-italic font-extrabold text-[#d4af37]">{matchLength > 0 ? `${matchLength} pts` : (isEn ? 'Money' : 'Libre')}</span>
                     </div>
-                    {crawford && <div data-testid="left-rail-crawford-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">🛡️ Crawford</div>}
-                    {isDMP && <div data-testid="left-rail-dmp-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">⚔️ DMP</div>}
+                    {crawford && <div data-testid="left-rail-crawford-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">Crawford</div>}
+                    {isDMP && <div data-testid="left-rail-dmp-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">DMP</div>}
                 </div>
 
                 {isGuided ? (
                     <div data-testid="left-rail-guided-pace-badge" className="flex flex-col items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-950/40 p-1.5 shadow-inner gap-0.5 shrink-0 w-14 text-center select-none">
                         <span className="text-sm font-black text-emerald-300 leading-none">∞</span>
-                        <span className="font-extrabold text-[8px] uppercase tracking-wider text-emerald-300 leading-tight">À votre rythme</span>
+                        <span className="font-extrabold text-[8px] uppercase tracking-wider text-emerald-300 leading-tight">{isEn ? 'Your pace' : 'À votre rythme'}</span>
                     </div>
                 ) : (
                     <div data-testid="left-rail-clock-block" className="flex flex-col items-center justify-between rounded-xl border border-[#d4af37]/40 bg-[#080605] p-1 shadow-inner gap-0.5 shrink-0 w-13">

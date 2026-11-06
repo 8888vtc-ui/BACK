@@ -30,7 +30,7 @@ test.describe('Personal Blunders Notebook & Guest /play Integrity (1440x900)', (
         // Single Full-Gold CTA present
         const unlockCta = page.getByTestId('unlock-personal-blunders-cta');
         await expect(unlockCta).toBeVisible();
-        await expect(unlockCta).toContainText('SE CONNECTER / CRÉER MON COMPTE POUR DÉBLOQUER & CORRIGER MES BLUNDERS');
+        await expect(unlockCta).toContainText('SE CONNECTER / CRÉER MON COMPTE GRATUIT');
 
         // SCENARIO 2: Guest Player on /play — Zero "PR Match :" badge, no "v3.1 • 3-Ply • Open Sage", full "Joueur Invité"
         await page.goto('/play', { waitUntil: 'domcontentloaded' });

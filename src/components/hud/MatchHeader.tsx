@@ -28,6 +28,7 @@ import type { CoachNotificationLevel } from '../../features/coach/coachNotificat
 import { pipCount } from '../../engine/backgammonEngine';
 import MatchHud from './MatchHud';
 import { useCoachQuota } from '../../hooks/useCoachQuota';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import { soundEngine } from '../../lib/sound/soundEngine';
 import { impactHeavy, impactMedium } from '../../lib/capacitor/haptics';
 import { toast } from '../toast/ToastContext';
@@ -98,6 +99,9 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
     isVip,
 }) => {
     const quotaData = useCoachQuota();
+    const authenticStats = useAuthenticPlayerStats();
+    const effectivePrX = authenticStats.canHavePR ? prX : null;
+    const effectivePrO = authenticStats.canHavePR ? prO : null;
     const effectiveIsVip = isVip ?? quotaData.isVip;
     const effectiveBadge =
         coachQuotaBadge ??
@@ -210,8 +214,8 @@ const MatchHeaderComponent: React.FC<MatchHeaderProps> = ({
                 onOpenExportImport={onOpenExportImport}
                 onTriggerCoach={onTriggerCoach}
                 canDouble={canDoubleAllowed}
-                prX={prX}
-                prO={prO}
+                prX={effectivePrX}
+                prO={effectivePrO}
                 isAiThinking={game.phase === 'OPPONENT_THINKING' || game.state.turn === 'O'}
                 difficulty={game.difficulty}
                 pipX={pips.X}

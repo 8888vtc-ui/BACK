@@ -23,6 +23,7 @@ import { saveGameAnalysis } from '../../features/rating/gameAnalysisStorage';
 import { recordBlunder } from '../../features/drills/blunderBank';
 import { upsertRecurringError } from '../../lib/supabase/db';
 import { getCurrentUser } from '../../lib/supabase/auth';
+import { checkIsPlayerRegistered } from '../../hooks/useAuthenticPlayerStats';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
 import type { MajorBlunder, MatchSummaryPayload } from './postMatchReportHelpers';
 
@@ -56,6 +57,11 @@ export async function persistPostMatchReport(
     const { analysis, summary, blunders, gameId, userId } = params;
     let localSaved = false;
     let queuedMutations = 0;
+
+    // LOI 1 : Un Joueur Invité n'a ni historique de partie, ni PR sauvegardé, ni Blunders enregistrés.
+    if (typeof window !== 'undefined' && !checkIsPlayerRegistered() && !userId) {
+        return { localSaved: false, queuedMutations: 0 };
+    }
 
     const reportId = `report_${gameId}_${Date.now()}`;
     const createdAt = new Date().toISOString();

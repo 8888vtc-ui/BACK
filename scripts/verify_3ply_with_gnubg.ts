@@ -27,7 +27,7 @@ import {
 } from '../src/engine/backgammonEngine';
 import { isContactPosition } from '../src/features/drills/drillSubAgentsPipeline';
 import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../src/lib/engine/gnubg3PlyCertifiedPositions';
-import { analyzeBtCoreMoves } from '../src/lib/engine/btCoreEngine';
+import { findBestBoardMove, formatMoveSequenceNotation } from '../src/lib/engine/evaluator';
 
 const GNUBG_CLI_PATH = 'C:\\Program Files (x86)\\gnubg\\gnubg-cli.exe';
 
@@ -239,18 +239,13 @@ function main() {
 
             const state = normalizeBoardForX(item.xgid);
             const tBt0 = performance.now();
-            const btRes = analyzeBtCoreMoves(state, item.dice, {
-                ply: 3,
-                maxMoves: 30,
-                timeBudgetMs: 250,
-                useCertifiedTable: false,
-            });
+            const bestEval = findBestBoardMove(state, item.dice, 2);
             const btCoreTimeMs = Math.round(performance.now() - tBt0);
-            const btTop1 = btRes.moves[0]?.notation ?? '';
+            const btTop1 = bestEval ? formatMoveSequenceNotation(bestEval.sequence.moves, 'X') : '';
             const gTop1 = gnubgMoves[0]!.notation;
             const top1Match = normMove(btTop1) === normMove(gTop1);
             const gTop3 = new Set(gnubgMoves.slice(0, 3).map((m) => normMove(m.notation)));
-            const top3Overlap = btRes.moves.slice(0, 3).filter((m) => gTop3.has(normMove(m.notation))).length;
+            const top3Overlap = gTop3.has(normMove(btTop1)) ? 1 : 0;
             // Perte d'équité (mesurée par GNUBG) du coup choisi par notre moteur
             const gMatch = gnubgMoves.find((m) => normMove(m.notation) === normMove(btTop1));
             const btLossOfGnubgTop1 = gMatch ? gMatch.equityLoss : null;

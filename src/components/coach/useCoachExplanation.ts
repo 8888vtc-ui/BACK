@@ -8,6 +8,7 @@ import {
     computeExplanationCacheKey,
     globalExplanationCache,
 } from '../../features/coach';
+import { extractVerifiedCoachFacts } from '../../features/coach/turnSnapshot';
 import { parseStreamedExplanation, type CoachDisplayVerdict, type ParsedExplanation } from './coachPanelHelpers';
 import { persistExplanation, resolveL2CachedExplanation } from './coachExplanationPersistence';
 import { buildKnowledgeVaultEntry } from '../../features/coach/knowledgeVaultHarvester';
@@ -81,21 +82,11 @@ export function useCoachExplanation({
     const cacheKey = (() => {
         if (!playedMove) return '';
         return computeExplanationCacheKey({
-            positionKey,
-            xgid,
-            board,
-            dice,
-            cubeValue: matchCtx?.cubeValue,
-            cubeOwner: matchCtx?.cubeOwner,
-            crawford: matchCtx?.crawford,
-            playedMove,
-            optimalMove,
-            verdict: isBlunder ? 'blunder' : 'doubtful',
-            matchLength: matchCtx?.matchLength,
-            scoreX: matchCtx?.scoreX,
-            scoreO: matchCtx?.scoreO,
-            tier: effectiveTier,
-            locale,
+            positionKey, xgid, board, dice,
+            cubeValue: matchCtx?.cubeValue, cubeOwner: matchCtx?.cubeOwner, crawford: matchCtx?.crawford,
+            playedMove, optimalMove, verdict: isBlunder ? 'blunder' : 'doubtful',
+            matchLength: matchCtx?.matchLength, scoreX: matchCtx?.scoreX, scoreO: matchCtx?.scoreO,
+            tier: effectiveTier, locale,
         });
     })();
 
@@ -124,17 +115,8 @@ export function useCoachExplanation({
     const persist = useCallback(
         (parsed: ParsedExplanation, source: 'llm' | 'rule-based') => {
             persistExplanation({
-                cacheKey,
-                parsed,
-                source,
-                gameId,
-                playedMove,
-                optimalMove,
-                verdict,
-                equityLoss: -absLoss,
-                positionKey: xgid || positionKey,
-                board,
-                dice,
+                cacheKey, parsed, source, gameId, playedMove, optimalMove,
+                verdict, equityLoss: -absLoss, positionKey: xgid || positionKey, board, dice,
             });
         },
         [cacheKey, gameId, playedMove, optimalMove, verdict, absLoss, xgid, positionKey, board, dice],
@@ -149,40 +131,19 @@ export function useCoachExplanation({
             contactStatus: 'contact',
         };
         const resolvedVerdict =
-            verdict === 'optimal'
-                ? 'optimal'
-                : verdict === 'good'
-                  ? 'good'
-                  : isBlunder
-                    ? 'blunder'
-                    : verdict === 'inaccuracy'
-                      ? 'inaccuracy'
-                      : 'doubtful';
-        const vaultBuilt = buildKnowledgeVaultEntry({
-            promptParams: {
-                verdict: resolvedVerdict,
-                equityLoss: -absLoss,
-                playedMove: playedMove ?? (locale === 'en' ? 'Played move' : 'Coup joué'),
-                optimalMove: optimalMove ?? (locale === 'en' ? 'Optimal move' : 'Coup optimal'),
-                features: safeFeatures,
-                matchContext: matchCtx ?? undefined,
-                playerLevel,
-                language: (locale as Locale),
-            },
-            board,
-            xgid,
-            dice,
-        });
-        const ruleBased = vaultBuilt.selectedVariant ?? generateRuleBasedExplanation({
-            verdict: resolvedVerdict,
+            verdict === 'optimal' ? 'optimal' : verdict === 'good' ? 'good' : isBlunder ? 'blunder' : verdict === 'inaccuracy' ? 'inaccuracy' : 'doubtful';
+        const promptParams = {
+            verdict: resolvedVerdict as 'optimal' | 'good' | 'blunder' | 'inaccuracy' | 'doubtful',
             equityLoss: -absLoss,
             playedMove: playedMove ?? (locale === 'en' ? 'Played move' : 'Coup joué'),
             optimalMove: optimalMove ?? (locale === 'en' ? 'Optimal move' : 'Coup optimal'),
             features: safeFeatures,
             matchContext: matchCtx ?? undefined,
             playerLevel,
-            language: (locale as Locale),
-        });
+            language: locale as Locale,
+        };
+        const vaultBuilt = buildKnowledgeVaultEntry({ promptParams, board, xgid, dice });
+        const ruleBased = vaultBuilt.selectedVariant ?? generateRuleBasedExplanation(promptParams);
         return {
             ...ruleBased,
             symbolicAudit: ruleBased.symbolic_audit,
@@ -203,19 +164,13 @@ export function useCoachExplanation({
             setStreamedText('');
             setCachedExplanation(null);
 
-            // Niveau 1 : Cache canonique mémoire L1 (0 ms) — ignoré si l'utilisateur demande explicitement l'Analyse Profonde
             if (!forceDeepAnalysis && cacheKey && globalExplanationCache.has(cacheKey)) {
                 const cached = globalExplanationCache.get(cacheKey);
                 if (cached) {
                     setCachedExplanation({
-                        summary: cached.summary,
-                        explanation: cached.explanation,
-                        keyConcept: cached.keyConcept,
-                        advice: cached.advice,
-                        whyFailed: cached.whyFailed,
-                        whyOptimal: cached.whyOptimal,
-                        conceptId: cached.conceptId,
-                        rawText: cached.rawText,
+                        summary: cached.summary, explanation: cached.explanation, keyConcept: cached.keyConcept,
+                        advice: cached.advice, whyFailed: cached.whyFailed, whyOptimal: cached.whyOptimal,
+                        conceptId: cached.conceptId, rawText: cached.rawText,
                     });
                     setExplanationSource('cache');
                     setIsStreaming(false);
@@ -223,7 +178,6 @@ export function useCoachExplanation({
                 }
             }
 
-            // Niveau 2 : Cache persistant L2 (IndexedDB local + Cache Global Partagé Supabase `coach_explanations`)
             const hasCanonicalPos = Boolean(xgid || positionKey || (board && board.length > 0));
             if (cacheKey && hasCanonicalPos) {
                 const l2Cached = await resolveL2CachedExplanation(cacheKey, isOffline);
@@ -236,7 +190,6 @@ export function useCoachExplanation({
                 }
             }
 
-            // Mode hors-ligne -> Heuristique déterministe rule-based (0 ms)
             if (isOffline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
                 const parsedResult = buildRuleBased();
                 setCachedExplanation(parsedResult);
@@ -246,31 +199,25 @@ export function useCoachExplanation({
                 return;
             }
 
-            // Niveau 3 : Streaming SSE LLM Cloud Run avec timeout de 8 s
             const controller = new AbortController();
             abortControllerRef.current = controller;
             const timeoutId = setTimeout(() => controller.abort(), LLM_TIMEOUT_MS);
 
             try {
+                const verifiedFacts = board && board.length >= 25
+                    ? extractVerifiedCoachFacts(board, board, board)
+                    : undefined;
                 const payload = {
                     positionKey: positionKey ?? undefined,
                     xgid: xgid ?? undefined,
                     board: board ?? undefined,
                     dice: dice ? ([dice[0], dice[1]] as [number, number]) : undefined,
-                    verdict:
-                        verdict === 'optimal'
-                            ? 'optimal'
-                            : verdict === 'good'
-                              ? 'good'
-                              : isBlunder
-                                ? 'blunder'
-                                : verdict === 'inaccuracy'
-                                  ? 'inaccuracy'
-                                  : 'doubtful',
+                    verdict: verdict === 'optimal' ? 'optimal' : verdict === 'good' ? 'good' : isBlunder ? 'blunder' : verdict === 'inaccuracy' ? 'inaccuracy' : 'doubtful',
                     equityLoss: -absLoss,
                     playedMove: playedMove ?? (locale === 'en' ? 'Played move' : 'Coup joué'),
                     optimalMove: optimalMove ?? (locale === 'en' ? 'Optimal move' : 'Coup optimal'),
                     features,
+                    verifiedFacts,
                     matchContext: matchCtx,
                     playerLevel: forceDeepAnalysis ? 'grandmaster' : playerLevel,
                     playerTier: effectiveTier,
@@ -318,7 +265,7 @@ export function useCoachExplanation({
                 if (accumulated) persist(parseStreamedExplanation(accumulated), 'llm');
             } catch (err: unknown) {
                 if (isStale()) return;
-                console.warn('[CoachPanel] Échec API ou timeout (3s), repli heuristique 0ms :', err);
+                console.warn('[CoachPanel] Échec API ou timeout, repli heuristique 0ms :', err);
                 const parsedFallback = buildRuleBased();
                 setCachedExplanation(parsedFallback);
                 setExplanationSource('rule-based');
@@ -329,7 +276,7 @@ export function useCoachExplanation({
                 if (!isStale()) setIsStreaming(false);
             }
         },
-        [onExplain, cacheKey, isOffline, buildRuleBased, persist, verdict, isBlunder, absLoss, playedMove, optimalMove, features, matchCtx, playerLevel, locale, apiUrl, board, positionKey, xgid],
+        [onExplain, cacheKey, isOffline, buildRuleBased, persist, verdict, isBlunder, absLoss, playedMove, optimalMove, features, matchCtx, playerLevel, effectiveTier, locale, apiUrl, board, dice, positionKey, xgid],
     );
 
     return { streamedText, isStreaming, streamError, explanationSource, cachedExplanation, executeExplain, abort };

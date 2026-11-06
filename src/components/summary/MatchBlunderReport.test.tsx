@@ -4,14 +4,22 @@
  */
 
 import React from 'react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { MatchBlunderReport } from './MatchBlunderReport';
 import { PostMatchTrainingReport } from './PostMatchTrainingReport';
 import { createInitialState } from '../../engine/backgammonEngine';
 import type { CompleteGameAnalysis } from '../../features/rating/types';
 
+beforeEach(() => {
+    window.localStorage.setItem(
+        'bgtour_local_auth_profile_v1',
+        JSON.stringify({ email: 'gm@backgammontour.com', displayName: 'GM Member' }),
+    );
+});
+
 afterEach(() => {
+    window.localStorage.clear();
     cleanup();
     vi.restoreAllMocks();
 });

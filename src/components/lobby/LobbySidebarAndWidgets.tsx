@@ -4,7 +4,7 @@
  * @file src/components/lobby/LobbySidebarAndWidgets.tsx
  * @description Barre latérale gauche universelle rétractable regroupée en 3 blocs ("Tables", "Entraînement", "Circuit")
  * avec cadenas sur Mes Blunders en mode Invité et compteur réel de blunders À corriger en mode Connecté.
- * Strictement <= 295 lignes, 0 `any`.
+ * Strictement <= 265 lignes, 0 `any`.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -20,10 +20,7 @@ import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import type { LobbyModuleId } from './LobbyScreen';
 import { getAllBlunders } from '../../features/drills/blunderBank';
 import { isPersonalMatchBlunder } from '../../features/drills/adaptiveQuizEngine';
-import {
-    getPendingPersonalBlundersCount,
-    PERSONAL_BLUNDERS_UPDATED_EVENT,
-} from '../../lib/blunders/personalBlunderStore';
+import { getPendingPersonalBlundersCount, PERSONAL_BLUNDERS_UPDATED_EVENT } from '../../lib/blunders/personalBlunderStore';
 import { IconLuxuryCrown, IconWorldTourLive, IconHorologyGear } from '../common/MonteCarloIcons';
 import { BeginnerInteractiveGuideModal } from '../beginner/BeginnerInteractiveGuideModal';
 import { BeginnerOpeningMovesExplorer } from '../beginner/BeginnerOpeningMovesExplorer';
@@ -46,13 +43,8 @@ export interface LobbyLeftSidebarProps {
 }
 
 export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
-    selectedMode = null,
-    onQuickPlay,
-    onFindOpponent,
-    onOpenPassport,
-    onSelectMultiplayerMode,
-    onOpenModule,
-    onOpenSettings,
+    selectedMode = null, onQuickPlay, onFindOpponent, onOpenPassport,
+    onSelectMultiplayerMode, onOpenModule, onOpenSettings,
 }) => {
     const { locale } = useTranslation();
     const isEn = locale === 'en';
@@ -72,9 +64,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                 const storePending = getPendingPersonalBlundersCount();
                 const legacyPending = getAllBlunders().filter((b) => isPersonalMatchBlunder(b) && !b.isMastered).length;
                 setBlunderCount(storePending > 0 ? storePending : legacyPending);
-            } catch {
-                // safe fallback
-            }
+            } catch { /* safe fallback */ }
         };
         refreshCount();
         window.addEventListener(PERSONAL_BLUNDERS_UPDATED_EVENT, refreshCount);
@@ -109,19 +99,10 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     const renderBlundersTrailing = () => {
         if (collapsed) return null;
         if (!authenticStats.isAuthenticated) {
-            return (
-                <Lock
-                    data-testid="sidebar-blunder-guest-lock"
-                    className="w-3.5 h-3.5 text-zinc-500 shrink-0"
-                    strokeWidth={1.5}
-                />
-            );
+            return <Lock data-testid="sidebar-blunder-guest-lock" className="w-3.5 h-3.5 text-zinc-500 shrink-0" strokeWidth={1.5} />;
         }
         return (
-            <span
-                data-testid="sidebar-blunder-count-badge"
-                className="inline-flex items-center justify-center rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30 font-mono"
-            >
+            <span data-testid="sidebar-blunder-count-badge" className="inline-flex items-center justify-center rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30 font-mono">
                 {blunderCount}
             </span>
         );
@@ -130,8 +111,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     return (
         <>
             <aside
-                aria-label="Menu latéral principal"
-                data-testid="lobby-left-sidebar"
+                aria-label="Menu latéral principal" data-testid="lobby-left-sidebar"
                 className={`hidden lg:flex flex-col justify-between shrink-0 border-r border-white/[0.06] bg-[#0B0E14]/90 backdrop-blur-md py-4 transition-all duration-200 select-none overflow-y-auto ${
                     collapsed ? 'w-16 px-2 items-center' : 'w-60 px-3'
                 }`}
@@ -142,9 +122,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         {!collapsed && <span className={sectionLabelCls}>{isEn ? 'Tables' : 'Tables'}</span>}
 
                         <button
-                            type="button"
-                            data-testid="sidebar-quick-play-btn"
-                            onClick={handleQuickPlayClick}
+                            type="button" data-testid="sidebar-quick-play-btn" onClick={handleQuickPlayClick}
                             title={isEn ? 'Game Room' : 'Salon de Jeu'}
                             className={`h-10 flex items-center gap-2.5 w-full whitespace-nowrap rounded-r-lg px-3 text-sm font-bold transition-all duration-150 ${
                                 isHomeRoute && (selectedMode === null || selectedMode === 'ai') ? activeRailCls : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white'
@@ -156,8 +134,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
 
                         {isBeginner && (
                             <button
-                                type="button"
-                                data-testid="sidebar-guided-play-btn"
+                                type="button" data-testid="sidebar-guided-play-btn"
                                 onClick={() => { if (typeof window !== 'undefined') window.location.assign('/play?gate=beginner&start=guided'); }}
                                 title={isEn ? 'Start Guided Match with the Professor' : 'Lancer une partie guidée avec le Professeur'}
                                 className="h-10 flex items-center justify-between w-full whitespace-nowrap rounded-lg px-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.04] hover:text-white transition-all duration-150"
@@ -170,9 +147,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         )}
 
                         <button
-                            type="button"
-                            data-testid="sidebar-find-player-btn"
-                            onClick={handleFindPlayerClick}
+                            type="button" data-testid="sidebar-find-player-btn" onClick={handleFindPlayerClick}
                             title={isEn ? 'Find a Player' : 'Trouver un joueur'}
                             className={`h-9 flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 transition-all duration-150 ${
                                 selectedMode === 'multiplayer' ? activeRailCls : 'text-zinc-100 hover:bg-white/[0.04] hover:text-white'
@@ -182,18 +157,11 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 <Users className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
                                 {!collapsed && <span className="text-sm font-medium text-zinc-100 truncate">{isEn ? 'Find a Player' : 'Trouver un joueur'}</span>}
                             </span>
-                            {!collapsed && (
-                                <span
-                                    data-testid="sidebar-find-player-status-dot"
-                                    className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"
-                                />
-                            )}
+                            {!collapsed && <span data-testid="sidebar-find-player-status-dot" className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />}
                         </button>
 
                         <button
-                            type="button"
-                            data-testid="sidebar-invite-friend-btn"
-                            onClick={handleInviteClick}
+                            type="button" data-testid="sidebar-invite-friend-btn" onClick={handleInviteClick}
                             title={isEn ? 'Invite a Friend (1-Click)' : 'Inviter un ami (1-Clic)'}
                             className="flex items-center gap-2.5 w-full whitespace-nowrap rounded-r-lg px-3 py-1.5 text-xs font-medium text-zinc-400 hover:bg-white/[0.04] hover:text-white transition-all duration-150"
                         >

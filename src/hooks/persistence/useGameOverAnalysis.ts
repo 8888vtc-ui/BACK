@@ -3,6 +3,7 @@ import { persistGameUpdate } from '../../lib/offline/persistenceService';
 import { analyzeCompleteGame, saveGameAnalysis, type CompleteGameAnalysis, type RawGameTurn } from '../../features/rating';
 import { analyzeHumanMoveFromLogWithBgsage } from '../../features/coach/logAnalyzer';
 import { parseFromXGID } from '../../features/export';
+import { checkIsPlayerRegistered } from '../useAuthenticPlayerStats';
 import type { GameResult, UseBackgammonGameReturn } from '../useBackgammonGame';
 import type { Player } from '../../engine/backgammonEngine';
 import type { MatchLogEntry } from '../../actions/types';
@@ -118,13 +119,16 @@ export function useGameOverAnalysis({
                 crawford: gameCrawford,
             };
             const analysis = analyzeCompleteGame(turnsForAnalysis, analysisOptions);
-            saveGameAnalysis(analysis);
+            const isRegistered = checkIsPlayerRegistered();
+            if (isRegistered) {
+                saveGameAnalysis(analysis);
+            }
             setLatestGameAnalysis(analysis);
 
             // Passe d'enrichissement neuronal Open Sage (`bgsage` 3-ply) pour tout coup de X
             // qui ne serait pas encore dans `bgsageCache` (ex. le tout dernier coup de la manche).
             const xTurns = turnsForAnalysis.filter((t) => t.player === 'X');
-            if (xTurns.length > 0) {
+            if (isRegistered && xTurns.length > 0) {
                 void Promise.all(
                     xTurns.map((t, idx) =>
                         analyzeHumanMoveFromLogWithBgsage({
@@ -151,7 +155,9 @@ export function useGameOverAnalysis({
                     .then((results) => {
                         if (results.some((r) => r?.source === 'bgsage')) {
                             const refined = analyzeCompleteGame(turnsForAnalysis, analysisOptions);
-                            saveGameAnalysis(refined);
+                            if (checkIsPlayerRegistered()) {
+                                saveGameAnalysis(refined);
+                            }
                             setLatestGameAnalysis(refined);
                         }
                     })

@@ -1,10 +1,7 @@
 'use client';
 
 /**
- * Diagnostic pédagogique Neuro-Symbolique Bi-Niveau du Grand-Maître (< 300 lignes, 0 `any`).
- * - Niveau 1 (Débutant / `fun`) : Plateau interactif cliquable (`MiniBoardDiagram`) + simulation
- *   visuelle directe sur le plateau (`[Voir danger]`, `[Voir idée]`, clic direct sur une flèche du plateau).
- * - Niveau 2 (Pro / `pro`) : télémétrie chirurgicale 3-ply (ΔEMG / mEMG, tirs /36, équation de Douglas Zare).
+ * Diagnostic pédagogique Neuro-Symbolique Bi-Niveau du Grand-Maître (<= 270 lignes, 0 `any`).
  */
 
 import React, { useMemo, useState } from 'react';
@@ -15,9 +12,7 @@ import { readStoredExperienceMode, storeExperienceMode, type ExperienceMode } fr
 import { buildBiLevelCoachMicroCopy, evaluateBrilliantMoveCriteria } from '../../features/coach/tacticalExplainer';
 import MiniBoardDiagram, { parseDiagramMoveNotation } from '../board/MiniBoardDiagram';
 
-const DEFAULT_BEGINNER_BOARD: ReadonlyArray<number> = Object.freeze([
-    0, -2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, -5, 5, 0, 0, 0, -3, 0, -5, 0, 0, 0, 0, 2, 0,
-]);
+const DEFAULT_BEGINNER_BOARD: ReadonlyArray<number> = Object.freeze([0, -2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, -5, 5, 0, 0, 0, -3, 0, -5, 0, 0, 0, 0, 2, 0]);
 
 export interface CoachDiagnosticBoxProps {
     tacticalSummary?: string | null; explanation?: string | null; summary?: string | null;
@@ -47,11 +42,7 @@ function applyNotationToBoard(baseBoard: ReadonlyArray<number>, notation: string
 }
 
 function describeClickedPointForBeginner(pt: number, board: ReadonlyArray<number>, isGoalPt: boolean, bestMove: string, isEn: boolean): string {
-    if (isGoalPt) {
-        return isEn
-            ? `🎉 Great eye! Point ${pt} is the key target of the Master move (${bestMove}): your checkers form a solid shield here!`
-            : `🎉 Bien vu ! La case ${pt} est la cible clé du coup de Maître (${bestMove}) : tes dames y forment un bouclier solide !`;
-    }
+    if (isGoalPt) return isEn ? `🎉 Great eye! Point ${pt} is the key target of the Master move (${bestMove}): your checkers form a solid shield here!` : `🎉 Bien vu ! La case ${pt} est la cible clé du coup de Maître (${bestMove}) : tes dames y forment un bouclier solide !`;
     const count = board[pt] ?? 0;
     if (pt === 5) return isEn ? '⭐ Point 5 (Golden Point): the most valuable shield in your home board!' : '⭐ Case 5 (Point d’Or) : la case la plus précieuse devant ta Maison ! 2 dames ici bloquent tout.';
     if (pt === 7) return isEn ? '🏰 Point 7 (Bar Point): blocks the opponent from escaping with a 6.' : '🏰 Case 7 (Point de Barre) : ferme la porte aux 6 adverses qui tentent de s’enfuir.';
@@ -69,12 +60,8 @@ function formatEmotionalVerdict(loss: number, shots: number, level: ExperienceMo
             ? { badge: isEn ? '✨ Brilliant Move (!!) · Bold play validated by 3-ply' : '✨ Coup Brillant (!!) · Audace validée par le 3-ply', toneCls: 'border-cyan-400/50 bg-cyan-950/40 text-cyan-200' }
             : { badge: isEn ? '🎯 Master Move (!) · Best play on the board' : '🎯 Coup de Maître (!) · Meilleur coup du plateau', toneCls: 'border-emerald-400/50 bg-emerald-950/40 text-emerald-200' };
     }
-    if (loss <= 0.045) {
-        return { badge: level === 'fun' ? (isEn ? `⚡ Stronger Option (?!) · -${winPct}% win chance` : `⚡ Option plus forte (?!) · -${winPct}% de chances de gain`) : `🤔 Imprécision mineure (?!) · ΔEMG -${loss.toFixed(3)}`, toneCls: 'border-amber-400/40 bg-amber-950/30 text-amber-200' };
-    }
-    if (loss <= 0.085) {
-        return { badge: level === 'fun' ? (isEn ? `⚠️ Risky Line (?) · -${winPct}% win chance` : `⚠️ Ligne risquée (?) · -${winPct}% de chances de gain`) : `⚠️ Erreur (?) · ΔEMG -${loss.toFixed(3)} (~-${winPct}% MWC)`, toneCls: 'border-orange-500/50 bg-orange-950/40 text-orange-200' };
-    }
+    if (loss <= 0.045) return { badge: level === 'fun' ? (isEn ? `⚡ Stronger Option (?!) · -${winPct}% win chance` : `⚡ Option plus forte (?!) · -${winPct}% de chances de gain`) : `🤔 Imprécision mineure (?!) · ΔEMG -${loss.toFixed(3)}`, toneCls: 'border-amber-400/40 bg-amber-950/30 text-amber-200' };
+    if (loss <= 0.085) return { badge: level === 'fun' ? (isEn ? `⚠️ Risky Line (?) · -${winPct}% win chance` : `⚠️ Ligne risquée (?) · -${winPct}% de chances de gain`) : `⚠️ Erreur (?) · ΔEMG -${loss.toFixed(3)} (~-${winPct}% MWC)`, toneCls: 'border-orange-500/50 bg-orange-950/40 text-orange-200' };
     return { badge: level === 'fun' ? (isEn ? `🎯 Key Turning Point (??) · -${winPct}% win chance` : `🎯 Tournant décisif (??) · -${winPct}% de chances de gain`) : `🚨 Blunder (??) · ΔEMG -${loss.toFixed(3)} (~-${winPct}% MWC)`, toneCls: 'border-rose-500/60 bg-rose-950/50 text-rose-200' };
 }
 
@@ -138,7 +125,6 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
         whyFailed || (isEn ? 'Step 2 (Weakness): Look at the direct shots conceded to the AI.' : "Indice 2 (Zone) : Observez les tirs directs concédés à l'IA."),
         whyOptimal || summary || (isEn ? 'Step 3 (Solution): Consolidate your key points.' : 'Indice 3 (Solution) : Verrouillez vos portes maîtresses.'),
     ];
-
     const zareSummary = pedagogicalExplanation?.zare_luck_vs_skill || advice;
     const michyProverb = pedagogicalExplanation?.michy_proverb;
     const modeTabs: Array<{ id: DiagnosticViewMode; label: string; activeCls: string; testId: string }> = [
@@ -146,7 +132,6 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
         { id: 'socratic', label: isEn ? '❓ 3 Hints' : '❓ 3 Indices', activeCls: 'bg-amber-600 text-white shadow-sm', testId: 'coach-mode-socratic-btn' },
         { id: 'zare', label: isEn ? '⚖️ Skill vs Luck' : '⚖️ Niveau vs Dés', activeCls: 'bg-emerald-600 text-white shadow-sm', testId: 'coach-mode-zare-btn' },
     ];
-
     const handleBeginnerPointClick = (pt: number) => {
         const isGoal = optimalTargets.includes(pt);
         if (isGoal) { setBoardSimState('optimal'); setActiveVisualCta('idea'); }
@@ -167,15 +152,11 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
                 </div>
                 <div role="tablist" aria-label={isEn ? 'Coaching mode' : 'Mode de coaching'} className="ml-auto flex items-center gap-1 rounded-lg bg-slate-900/90 p-0.5 border border-indigo-800/50">
                     {modeTabs.map((tab) => (
-                        <button key={tab.id} type="button" role="tab" aria-selected={mode === tab.id} data-testid={tab.testId} onClick={() => setMode(tab.id)} className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition ${mode === tab.id ? tab.activeCls : 'text-slate-400 hover:text-slate-200'}`}>
-                            {tab.label}
-                        </button>
+                        <button key={tab.id} type="button" role="tab" aria-selected={mode === tab.id} data-testid={tab.testId} onClick={() => setMode(tab.id)} className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition ${mode === tab.id ? tab.activeCls : 'text-slate-400 hover:text-slate-200'}`}>{tab.label}</button>
                     ))}
                 </div>
                 {keyConcept && (onOpenKnowledgeConcept ? (
-                    <button type="button" onClick={() => onOpenKnowledgeConcept(conceptId || keyConcept)} data-testid="coach-concept-badge-btn" title={isEn ? `Open theory guide: ${keyConcept}` : `Ouvrir la fiche théorique : ${keyConcept}`} className="flex items-center gap-1 rounded-full border border-indigo-500/70 bg-indigo-900/70 px-2 py-0.5 text-[11px] font-bold text-indigo-200 hover:bg-indigo-700/80 hover:text-white transition active:scale-95 cursor-pointer shadow-sm">
-                        <span aria-hidden="true">📖</span><span>{keyConcept}</span>
-                    </button>
+                    <button type="button" onClick={() => onOpenKnowledgeConcept(conceptId || keyConcept)} data-testid="coach-concept-badge-btn" title={isEn ? `Open theory guide: ${keyConcept}` : `Ouvrir la fiche théorique : ${keyConcept}`} className="flex items-center gap-1 rounded-full border border-indigo-500/70 bg-indigo-900/70 px-2 py-0.5 text-[11px] font-bold text-indigo-200 hover:bg-indigo-700/80 hover:text-white transition active:scale-95 cursor-pointer shadow-sm"><span aria-hidden="true">📖</span><span>{keyConcept}</span></button>
                 ) : (
                     <span className="rounded-full border border-indigo-700/60 bg-indigo-900/60 px-2 py-0.5 text-[11px] font-bold text-indigo-200">{keyConcept}</span>
                 ))}
@@ -226,16 +207,8 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
                                 {boardSimState === 'optimal' ? (isEn ? '⏮ See before move' : '⏮ Revoir avant le coup') : (isEn ? '▶ Animate Master move on board' : '▶ Simuler le coup sur le plateau')}
                             </button>
                         </div>
-                        <MiniBoardDiagram
-                            board={displayedBoard} dice={dice ?? [3, 1]} turn="X"
-                            playedMove={effectivePlayedMove} optimalMove={effectiveBestMove}
-                            hideOptimalArrow={activeVisualCta === 'danger'} hidePlayedArrow={activeVisualCta === 'idea' || boardSimState === 'optimal'}
-                            highlightedPoints={activeVisualCta === 'danger' ? dangerTargets : optimalTargets}
-                            onPointClick={handleBeginnerPointClick} locale={isEn ? 'en' : 'fr'}
-                        />
-                        {clickedPointFeedback && (
-                            <div data-testid="coach-board-point-feedback" className="rounded-lg border border-amber-400/50 bg-amber-950/50 px-2.5 py-1.5 text-[11px] font-semibold text-amber-100">{clickedPointFeedback}</div>
-                        )}
+                        <MiniBoardDiagram board={displayedBoard} dice={dice ?? [3, 1]} turn="X" playedMove={effectivePlayedMove} optimalMove={effectiveBestMove} hideOptimalArrow={activeVisualCta === 'danger'} hidePlayedArrow={activeVisualCta === 'idea' || boardSimState === 'optimal'} highlightedPoints={activeVisualCta === 'danger' ? dangerTargets : optimalTargets} onPointClick={handleBeginnerPointClick} locale={isEn ? 'en' : 'fr'} />
+                        {clickedPointFeedback && <div data-testid="coach-board-point-feedback" className="rounded-lg border border-amber-400/50 bg-amber-950/50 px-2.5 py-1.5 text-[11px] font-semibold text-amber-100">{clickedPointFeedback}</div>}
                     </div>
 
                     <div data-testid="coach-bilevel-cta-row" className="flex flex-wrap items-center gap-1.5 pt-0.5">
@@ -243,22 +216,12 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
                         <button type="button" data-testid="coach-cta-idea-btn" onClick={() => { setBoardSimState('optimal'); setActiveVisualCta((v) => (v === 'idea' ? null : 'idea')); }} className={`rounded-full border px-2.5 py-1 text-[10px] font-bold transition ${activeVisualCta === 'idea' ? 'border-emerald-400 bg-emerald-500/25 text-emerald-100' : 'border-emerald-500/40 bg-slate-950/70 text-emerald-300 hover:bg-emerald-950/50'}`}>{biLevelMicroCopy.ctaPills[1]}</button>
                         <button type="button" data-testid="coach-cta-retry-btn" onClick={() => onRetryMove?.()} className="rounded-full border border-amber-500/40 bg-slate-950/70 px-2.5 py-1 text-[10px] font-bold text-amber-300 hover:bg-amber-950/50 transition">{biLevelMicroCopy.ctaPills[2]}</button>
                     </div>
-                    {activeVisualCta === 'danger' && (
-                        <div data-testid="coach-cta-danger-detail" className="rounded-lg border border-rose-500/40 bg-rose-950/40 p-2 text-[11px] leading-relaxed text-rose-100">
-                            ⚠️ <strong>{isEn ? 'Danger on the board:' : 'Danger sur le plateau :'}</strong> {whyFailed || biLevelMicroCopy.dangerDetail}
-                        </div>
-                    )}
-                    {activeVisualCta === 'idea' && (
-                        <div data-testid="coach-cta-idea-detail" className="rounded-lg border border-emerald-500/40 bg-emerald-950/40 p-2 text-[11px] leading-relaxed text-emerald-100">
-                            💡 <strong>{isEn ? 'Master move applied on board:' : 'Coup du Maître joué sur le plateau :'}</strong> {whyOptimal || biLevelMicroCopy.ideaDetail}
-                        </div>
-                    )}
+                    {activeVisualCta === 'danger' && <div data-testid="coach-cta-danger-detail" className="rounded-lg border border-rose-500/40 bg-rose-950/40 p-2 text-[11px] leading-relaxed text-rose-100">⚠️ <strong>{isEn ? 'Danger on the board:' : 'Danger sur le plateau :'}</strong> {whyFailed || biLevelMicroCopy.dangerDetail}</div>}
+                    {activeVisualCta === 'idea' && <div data-testid="coach-cta-idea-detail" className="rounded-lg border border-emerald-500/40 bg-emerald-950/40 p-2 text-[11px] leading-relaxed text-emerald-100">💡 <strong>{isEn ? 'Master move applied on board:' : 'Coup du Maître joué sur le plateau :'}</strong> {whyOptimal || biLevelMicroCopy.ideaDetail}</div>}
                 </div>
             )}
 
-            {mode === 'flash' && levelMode === 'pro' && pedagogicalExplanation?.headline && (
-                <p data-testid="coach-sweller-headline" className="text-xs font-extrabold tracking-wide text-amber-100">⚡ {pedagogicalExplanation.headline}</p>
-            )}
+            {mode === 'flash' && levelMode === 'pro' && pedagogicalExplanation?.headline && <p data-testid="coach-sweller-headline" className="text-xs font-extrabold tracking-wide text-amber-100">⚡ {pedagogicalExplanation.headline}</p>}
 
             {mode === 'socratic' && (
                 <div data-testid="coach-socratic-panel" className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-950/20 p-2.5">
@@ -271,9 +234,7 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
                         {socraticStep >= 2 && <p className="rounded bg-slate-900/70 p-2 border border-amber-500/30">{socraticHints[1]}</p>}
                         {socraticStep >= 3 && <p className="rounded bg-emerald-950/50 p-2 border border-emerald-500/40 text-emerald-200 font-semibold">{socraticHints[2]}</p>}
                     </div>
-                    {socraticStep < 3 && (
-                        <button type="button" data-testid="coach-socratic-next-btn" onClick={() => setSocraticStep((prev) => Math.min(3, prev + 1))} className="w-full rounded-lg border border-amber-400/50 bg-amber-500/20 py-1 text-[11px] font-bold text-amber-200 hover:bg-amber-500/30 transition">{isEn ? 'Reveal next hint →' : "Dévoiler l'indice suivant →"}</button>
-                    )}
+                    {socraticStep < 3 && <button type="button" data-testid="coach-socratic-next-btn" onClick={() => setSocraticStep((prev) => Math.min(3, prev + 1))} className="w-full rounded-lg border border-amber-400/50 bg-amber-500/20 py-1 text-[11px] font-bold text-amber-200 hover:bg-amber-500/30 transition">{isEn ? 'Reveal next hint →' : "Dévoiler l'indice suivant →"}</button>}
                 </div>
             )}
 
@@ -295,9 +256,7 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
                 <>
                     {tacticalSummary && <p data-testid="coach-tactical-summary" className="text-xs leading-relaxed text-slate-200">{tacticalSummary}</p>}
                     {summary && summary !== tacticalSummary && <p className="text-xs font-semibold leading-snug text-white">{summary}</p>}
-                    {levelMode === 'pro' && triptych?.opponent_intention && (
-                        <div className="flex items-start gap-1.5 rounded-lg border border-cyan-900/40 bg-cyan-950/25 p-2"><span aria-hidden="true" className="mt-0.5 shrink-0 text-[10px]">🤖</span><span className="text-[11px] leading-relaxed text-cyan-200"><strong className="text-cyan-100">{isEn ? 'AI Plan:' : "Plan de l'IA :"}</strong> {triptych.opponent_intention}</span></div>
-                    )}
+                    {levelMode === 'pro' && triptych?.opponent_intention && <div className="flex items-start gap-1.5 rounded-lg border border-cyan-900/40 bg-cyan-950/25 p-2"><span aria-hidden="true" className="mt-0.5 shrink-0 text-[10px]">🤖</span><span className="text-[11px] leading-relaxed text-cyan-200"><strong className="text-cyan-100">{isEn ? 'AI Plan:' : "Plan de l'IA :"}</strong> {triptych.opponent_intention}</span></div>}
                     {(whyFailed || whyOptimal) && (
                         <div className="space-y-1.5">
                             {whyFailed && <div className="flex items-start gap-1.5 rounded-lg border border-rose-900/40 bg-rose-950/30 p-2"><span aria-hidden="true" className="mt-0.5 shrink-0 text-[10px] text-rose-400">❌</span><span className="text-[11px] leading-relaxed text-rose-200">{whyFailed}</span></div>}

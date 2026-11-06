@@ -5,7 +5,7 @@
  * @description Panneau de Contrôle Pédagogique en Étapes 2 & 3 du Studio d'Analyse :
  * - ÉTAPE 2 : Sélecteur compact des Dés & du Format sur 1 ligne + SEUL bouton plein Or (#D4AF37) [ANALYSER LA POSITION →]
  * - ÉTAPE 3 : Meilleurs Coups avec % de victoire en grand ("58.2 % de victoire", "-4.6 %") & Explication du Coach.
- * Strictement <= 290 lignes, 0 any, 0 emoji.
+ * Strictement <= 260 lignes, 0 any, 0 emoji.
  */
 
 import React, { useState } from 'react';
@@ -52,29 +52,14 @@ export function formatCubeAdvice(rec?: string, isEn = false): string {
 }
 
 export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
-    dice,
-    onChangeDice,
-    matchLength,
-    onChangeMatchLength,
-    isCrawford,
-    onChangeCrawford,
-    onRunAnalysis,
-    loading,
-    errorMessage,
-    candidates,
-    selectedNotation,
-    onSelectMoveNotation,
-    xgidString,
-    onImportXgid,
-    onPlayPositionFromHere,
-    cubeRecommendation = 'No Double',
-    coachExplanation,
+    dice, onChangeDice, matchLength, onChangeMatchLength, isCrawford, onChangeCrawford,
+    onRunAnalysis, loading, errorMessage, candidates, selectedNotation, onSelectMoveNotation,
+    xgidString, onImportXgid, onPlayPositionFromHere, cubeRecommendation = 'No Double', coachExplanation,
 }) => {
     const { locale } = useTranslation();
     const isEn = locale === 'en';
     const [xgidExpanded, setXgidExpanded] = useState<boolean>(false);
     const [localXgidInput, setLocalXgidInput] = useState<string>(xgidString);
-
     const bestWinPct = candidates[0]?.winPct ?? 50;
 
     return (
@@ -93,8 +78,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
 
                     <div className="flex items-center gap-2 text-xs">
                         <select
-                            data-testid="analysis-match-format-select"
-                            value={matchLength}
+                            data-testid="analysis-match-format-select" value={matchLength}
                             onChange={(e) => onChangeMatchLength(Number(e.target.value))}
                             className="rounded-lg border border-white/15 bg-black/60 px-2 py-0.5 text-xs font-semibold text-stone-200 focus:outline-none"
                         >
@@ -107,12 +91,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                         </select>
 
                         <label className="flex items-center gap-1 text-[11px] font-medium text-stone-300 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={isCrawford}
-                                onChange={(e) => onChangeCrawford(e.target.checked)}
-                                className="rounded border-white/20 bg-black/60 accent-[#D4AF37]"
-                            />
+                            <input type="checkbox" checked={isCrawford} onChange={(e) => onChangeCrawford(e.target.checked)} className="rounded border-white/20 bg-black/60 accent-[#D4AF37]" />
                             <span>Crawford</span>
                         </label>
                     </div>
@@ -122,45 +101,29 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                 <div className="flex items-center justify-between gap-2 bg-black/40 border border-white/[0.06] rounded-lg px-2 py-1.5">
                     <div className="flex items-center gap-1.5 shrink-0">
                         <Dices className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-white text-slate-950 font-mono text-xs font-black shadow-sm">
-                            {dice[0]}
-                        </span>
+                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-white text-slate-950 font-mono text-xs font-black shadow-sm">{dice[0]}</span>
                         <span className="text-zinc-500 font-bold">-</span>
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-white text-slate-950 font-mono text-xs font-black shadow-sm">
-                            {dice[1]}
-                        </span>
+                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-white text-slate-950 font-mono text-xs font-black shadow-sm">{dice[1]}</span>
                     </div>
 
                     <div className="flex items-center gap-1 flex-1 justify-end">
-                        <span className="text-[10px] text-zinc-400 font-semibold mr-0.5">{isEn ? 'D1' : 'D1'}</span>
+                        <span className="text-[10px] text-zinc-400 font-semibold mr-0.5">D1</span>
                         {[1, 2, 3, 4, 5, 6].map((val) => (
                             <button
-                                key={`d1-${val}`}
-                                type="button"
-                                data-testid={`die-1-btn-${val}`}
+                                key={`d1-${val}`} type="button" data-testid={`die-1-btn-${val}`}
                                 onClick={() => onChangeDice([val, dice[1]])}
-                                className={`w-6 h-6 rounded border text-xs font-mono font-bold transition ${
-                                    dice[0] === val
-                                        ? 'border-[#D4AF37] bg-[#D4AF37]/25 text-[#D4AF37]'
-                                        : 'border-white/10 bg-white/5 text-stone-300 hover:border-white/30'
-                                }`}
+                                className={`w-6 h-6 rounded border text-xs font-mono font-bold transition ${dice[0] === val ? 'border-[#D4AF37] bg-[#D4AF37]/25 text-[#D4AF37]' : 'border-white/10 bg-white/5 text-stone-300 hover:border-white/30'}`}
                             >
                                 {val}
                             </button>
                         ))}
                         <span className="text-zinc-600 mx-0.5">|</span>
-                        <span className="text-[10px] text-zinc-400 font-semibold mr-0.5">{isEn ? 'D2' : 'D2'}</span>
+                        <span className="text-[10px] text-zinc-400 font-semibold mr-0.5">D2</span>
                         {[1, 2, 3, 4, 5, 6].map((val) => (
                             <button
-                                key={`d2-${val}`}
-                                type="button"
-                                data-testid={`die-2-btn-${val}`}
+                                key={`d2-${val}`} type="button" data-testid={`die-2-btn-${val}`}
                                 onClick={() => onChangeDice([dice[0], val])}
-                                className={`w-6 h-6 rounded border text-xs font-mono font-bold transition ${
-                                    dice[1] === val
-                                        ? 'border-[#D4AF37] bg-[#D4AF37]/25 text-[#D4AF37]'
-                                        : 'border-white/10 bg-white/5 text-stone-300 hover:border-white/30'
-                                }`}
+                                className={`w-6 h-6 rounded border text-xs font-mono font-bold transition ${dice[1] === val ? 'border-[#D4AF37] bg-[#D4AF37]/25 text-[#D4AF37]' : 'border-white/10 bg-white/5 text-stone-300 hover:border-white/30'}`}
                             >
                                 {val}
                             </button>
@@ -170,10 +133,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
 
                 {/* LE SEUL bouton plein Or (#D4AF37) de la page */}
                 <button
-                    type="button"
-                    data-testid="run-analysis-btn"
-                    disabled={loading}
-                    onClick={onRunAnalysis}
+                    type="button" data-testid="run-analysis-btn" disabled={loading} onClick={onRunAnalysis}
                     className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] py-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-black shadow-md hover:brightness-105 disabled:opacity-50 transition"
                 >
                     <Zap className="w-4 h-4 text-black" strokeWidth={1.75} />
@@ -211,21 +171,13 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                             const diffSign = winDiffPct > 0 ? `+${winDiffPct}%` : `${winDiffPct}%`;
                             return (
                                 <button
-                                    key={cand.notation}
-                                    type="button"
-                                    data-testid={`analysis-move-row-${idx}`}
+                                    key={cand.notation} type="button" data-testid={`analysis-move-row-${idx}`}
                                     onClick={() => onSelectMoveNotation(cand.notation)}
-                                    className={`flex flex-col px-2.5 py-1.5 rounded-xl border text-left transition ${
-                                        isSelected
-                                            ? 'border-[#D4AF37] bg-white/[0.08] shadow-sm ring-1 ring-[#D4AF37]/40'
-                                            : 'border-white/[0.08] bg-black/40 hover:border-white/25'
-                                    }`}
+                                    className={`flex flex-col px-2.5 py-1.5 rounded-xl border text-left transition ${isSelected ? 'border-[#D4AF37] bg-white/[0.08] shadow-sm ring-1 ring-[#D4AF37]/40' : 'border-white/[0.08] bg-black/40 hover:border-white/25'}`}
                                 >
                                     <div className="flex items-center justify-between gap-2">
                                         <div className="flex items-center gap-2 min-w-0">
-                                            <span className="font-mono text-xs font-extrabold text-[#fdf8eb]">
-                                                #{cand.rank} {cand.notation}
-                                            </span>
+                                            <span className="font-mono text-xs font-extrabold text-[#fdf8eb]">#{cand.rank} {cand.notation}</span>
                                             {cand.isOptimal && (
                                                 <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300 whitespace-nowrap">
                                                     <Star className="w-2.5 h-2.5 text-emerald-300 fill-emerald-300" />
@@ -248,18 +200,13 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                                         </div>
                                     </div>
                                     <div className="mt-0.5 flex items-center justify-between text-[11px] text-zinc-300 font-sans">
-                                        <span>
-                                            {isEn
-                                                ? `Win: ${cand.winPct}% • Gammon (×2): ${cand.winGammonPct}% • Loss: ${cand.losePct}%`
-                                                : `Victoire : ${cand.winPct}% • Gammon (×2) : ${cand.winGammonPct}% • Défaite : ${cand.losePct}%`}
-                                        </span>
+                                        <span>{isEn ? `Win: ${cand.winPct}% • Gammon (×2): ${cand.winGammonPct}% • Loss: ${cand.losePct}%` : `Victoire : ${cand.winPct}% • Gammon (×2) : ${cand.winGammonPct}% • Défaite : ${cand.losePct}%`}</span>
                                     </div>
                                 </button>
                             );
                         })}
                     </div>
 
-                    {/* Conseil Videau + Explication du Coach unifiés pour le Zéro-Scroll */}
                     <div data-testid="coach-explanation-card" className="p-2.5 rounded-xl border border-[#D4AF37]/30 bg-[#070a10] flex flex-col gap-1 shrink-0">
                         <div className="flex items-center justify-between gap-2">
                             <div className="font-bold text-xs text-[#D4AF37] flex items-center gap-1.5">
@@ -271,31 +218,19 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                             </span>
                         </div>
                         <p className="text-xs text-zinc-100 leading-snug">
-                            {coachExplanation ||
-                                (isEn
-                                    ? `Optimal move #${candidates[0]?.notation} maximizes winning chances (${candidates[0]?.winPct}%) while keeping checkers safe.`
-                                    : `Le coup optimal #${candidates[0]?.notation} maximise vos chances de victoire (${candidates[0]?.winPct} %) en sécurisant vos pions sans concéder de tirs directs à l'adversaire.`)}
+                            {coachExplanation || (isEn
+                                ? `Optimal move #${candidates[0]?.notation} maximizes winning chances (${candidates[0]?.winPct}%) while keeping checkers safe.`
+                                : `Le coup optimal #${candidates[0]?.notation} maximise vos chances de victoire (${candidates[0]?.winPct} %) en sécurisant vos pions sans concéder de tirs directs à l'adversaire.`)}
                         </p>
                     </div>
 
-                    {/* Bouton secondaire Haute Horlogerie sobre + Accordéon XGID */}
                     <div className="flex items-center justify-between gap-2 shrink-0">
-                        <button
-                            type="button"
-                            data-testid="play-position-from-here-btn"
-                            onClick={onPlayPositionFromHere}
-                            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-[#D4AF37]/40 py-2 px-3 text-xs font-semibold transition"
-                        >
+                        <button type="button" data-testid="play-position-from-here-btn" onClick={onPlayPositionFromHere} className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-[#D4AF37]/40 py-2 px-3 text-xs font-semibold transition">
                             <Play className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
                             <span>{isEn ? 'Play this position against AI Coach from here →' : "Jouer cette position contre le Coach IA à partir d'ici →"}</span>
                         </button>
 
-                        <button
-                            type="button"
-                            data-testid="toggle-xgid-drawer-btn"
-                            onClick={() => setXgidExpanded((prev) => !prev)}
-                            className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-2 text-[11px] font-semibold text-zinc-300 hover:text-white transition shrink-0"
-                        >
+                        <button type="button" data-testid="toggle-xgid-drawer-btn" onClick={() => setXgidExpanded((prev) => !prev)} className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-2 text-[11px] font-semibold text-zinc-300 hover:text-white transition shrink-0">
                             <span>XGID</span>
                             {xgidExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                         </button>
@@ -304,18 +239,12 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                     {xgidExpanded && (
                         <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-black/60 p-1.5 shrink-0">
                             <input
-                                type="text"
-                                data-testid="xgid-input"
-                                value={localXgidInput}
+                                type="text" data-testid="xgid-input" value={localXgidInput}
                                 onChange={(e) => setLocalXgidInput(e.target.value)}
                                 placeholder={isEn ? 'Paste XGID string...' : 'Collez une chaîne XGID...'}
                                 className="flex-1 rounded-lg border border-white/20 bg-black/70 px-2 py-1 font-mono text-xs text-amber-200 focus:outline-none"
                             />
-                            <button
-                                type="button"
-                                onClick={() => onImportXgid(localXgidInput)}
-                                className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-bold text-stone-200 hover:bg-white/15"
-                            >
+                            <button type="button" onClick={() => onImportXgid(localXgidInput)} className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-bold text-stone-200 hover:bg-white/15">
                                 {isEn ? 'Load' : 'Charger'}
                             </button>
                         </div>

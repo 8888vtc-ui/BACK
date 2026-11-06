@@ -18,6 +18,8 @@ import type { HumanTurnSnapshot } from '../../features/coach/turnSnapshot';
 
 export interface UseCoachLogAnalyzerParams {
     matchLog?: ReadonlyArray<MatchLogEntry>; gameState: BoardState;
+    difficulty?: 'beginner' | 'intermediate' | 'expert' | 'grandmaster' | string;
+    botId?: string;
     lastPlayerEvalRef: MutableRefObject<string | null>; analysisRequestIdRef: MutableRefObject<number>;
     humanSnapshotRef?: MutableRefObject<HumanTurnSnapshot | null>; latestHumanPacketIdRef?: MutableRefObject<string | null>;
     cancelActiveOperation: () => { requestId: number; controller: AbortController };
@@ -35,6 +37,7 @@ export interface UseCoachLogAnalyzerParams {
 export function useCoachLogAnalyzer({
     matchLog,
     gameState,
+    difficulty,
     lastPlayerEvalRef,
     analysisRequestIdRef,
     humanSnapshotRef,
@@ -132,6 +135,8 @@ export function useCoachLogAnalyzer({
                         playedNotation,
                         verdict,
                         equityLoss,
+                        gameState,
+                        difficulty,
                         recordDecisionStats,
                         setBrilliantMove,
                         isStale,

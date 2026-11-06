@@ -1,0 +1,7 @@
+{
+  "diffEditor.maxComputationTime": 0,
+  "files.watcherExclude": {
+    "**/data/quizzes/*.log": true
+  }
+}
+

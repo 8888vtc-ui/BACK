@@ -1,14 +1,6 @@
 /**
  * @file scripts/audit_bots_vs_gnubg.ts
  * @description Audit indépendant de TOUS les bots du projet face à GNU Backgammon 3-ply cubeful.
- *
- * Pour chacune des 50 positions de `gnubg3PlyCertifiedPositions.ts` :
- * 1. GNUBG note TOUS les coups légaux (`hint 999`, 3-ply sur le Top-5, plis inférieurs au-delà).
- * 2. Chaque bot choisit son coup ; on lit la perte d'équité de ce coup dans la liste GNUBG
- *    (appariement par plateau résultant, pas par texte).
- * 3. On agrège : % de coups identiques à GNUBG, perte moyenne (EMG), PR ≈ perte × 500, nb de blunders (> 0.080).
- *
- * Usage : npx tsx scripts/audit_bots_vs_gnubg.ts
  */
 
 import { spawnSync } from 'node:child_process';
@@ -25,7 +17,6 @@ import { GNUBG_3PLY_CERTIFIED_POSITIONS } from '../src/lib/engine/gnubg3PlyCerti
 import { parseCoachNotationMoves } from '../src/features/coach/coachMoveNotation';
 import { selectBotMoveWithBgsage } from '../src/lib/engine/bgsageClient';
 import { findBestBoardMove } from '../src/lib/engine/evaluator';
-import { analyzeBtCoreMoves } from '../src/lib/engine/btCoreEngine';
 import { selectBestOpponentSequence, type AIDifficulty } from '../src/engine/aiHeuristics';
 
 const GNUBG_CLI_PATH = 'C:\\Program Files (x86)\\gnubg\\gnubg-cli.exe';
@@ -50,7 +41,6 @@ function parseAllMoves(block: string): GnubgScoredMove[] {
     return out;
 }
 
-/** Développe la notation GNUBG (ex. `8/4(2)`, frappes chaînées, `bar/22`) en sous-coups simples. */
 function expandGnubgNotation(notation: string): string {
     const tokens: string[] = [];
     for (const raw of notation.replace(/\*/g, '').trim().split(/\s+/)) {
@@ -79,7 +69,6 @@ function boardAfterGnubgMove(base: number[], notation: string): string | null {
     }
 }
 
-/** LCG déterministe (audit reproductible) pour les bots qui tirent au hasard. */
 function makeLcg(seed: number): () => number {
     let s = seed >>> 0;
     return () => {
@@ -101,17 +90,6 @@ const BOTS: Array<{ id: string; label: string; pick: BotPick }> = [
             return r?.sequence ?? null;
         }) as BotPick,
     })),
-    // Les bots de repli local (`pickLocalMove`, BT-ERH) ont été supprimés le 2026-11-01 après cet audit
-    // (≈ 40 % de coups identiques à GNUBG). Leurs résultats historiques sont dans BOTS_AUDIT_POSTMORTEM.md.
-    {
-        id: 'btcore_3ply_engine_only',
-        label: 'BT-Core « 3-ply » seul (sans table GNUBG)',
-        pick: async (st, d, legal) => {
-            const r = analyzeBtCoreMoves(st, d, { candidateMoves: legal, ply: 3, maxMoves: 1, useCertifiedTable: false });
-            const m = r.bestMove;
-            return m?.moves && m.board ? { moves: m.moves, board: m.board } : null;
-        },
-    },
     {
         id: 'evaluator_2ply',
         label: 'Évaluateur heuristique tri-phase 2-ply (findBestBoardMove)',
@@ -129,7 +107,6 @@ async function main(): Promise<void> {
     const tmpDir = path.join(process.cwd(), 'node_modules', '.cache');
     fs.mkdirSync(tmpDir, { recursive: true });
 
-    // 1. GNUBG note tous les coups légaux de chaque position
     const lines = [
         'set output mwc off',
         'set evaluation chequerplay evaluation plies 3',
@@ -158,7 +135,6 @@ async function main(): Promise<void> {
         return { p, state, scored, byBoard };
     });
 
-    // 2. Chaque bot joue les 50 positions
     const results: Array<Record<string, number | string>> = [];
     for (const bot of BOTS) {
         let matched = 0;

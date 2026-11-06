@@ -2,7 +2,8 @@
 
 /**
  * @file src/components/drills/BlunderDrillView.tsx
- * @description Orchestrateur modulaire du Quiz ER / PR et du Carnet de Blunders Personnels (<= 295 lignes, 0 any, 0 emoji).
+ * @description Orchestrateur modulaire du Quiz ER / PR et du Carnet de Blunders Personnels (<= 290 lignes, 0 any, 0 emoji).
+ * Loi 1 : Tout Joueur Invité (`!authenticStats.isAuthenticated`) est bloqué en amont par `PersonalBlundersGuestLockView`.
  */
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -78,11 +79,11 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         const all = getAllBlunders();
         if (initialMode === 'personal_blunders') {
             const pick = selectNextPersonalBlunderQuiz(all);
-            if (pick.quiz) return { quiz: pick.quiz, targetCategory: { id: normalizeToQuizCategory(pick.quiz.conceptId), shortLabel: pick.quiz.conceptName, fullName: pick.quiz.conceptName, icon: '' }, reasonLabel: pick.reasonLabel };
+            if (pick.quiz) return { quiz: pick.quiz, reasonLabel: pick.reasonLabel };
         }
         if (initialConceptId && initialConceptId !== 'all') {
             const m = all.find((b) => b.conceptId === initialConceptId);
-            if (m) return { quiz: m, targetCategory: { id: normalizeToQuizCategory(m.conceptId), shortLabel: m.conceptName, fullName: m.conceptName, icon: '' }, reasonLabel: `Focus ciblé · ${m.conceptName}` };
+            if (m) return { quiz: m, reasonLabel: `Focus ciblé · ${m.conceptName}` };
         }
         return selectNextAdaptiveQuiz(all);
     }, [initialConceptId, initialMode]);
@@ -95,7 +96,6 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     const [selectedPoint, setSelectedPoint] = useState<number | null>(null); const [selectedDie, setSelectedDie] = useState<0 | 1 | null>(null);
     const [showHint, setShowHint] = useState<boolean>(false); const [validationResult, setValidationResult] = useState<DrillValidationResult | null>(null);
     const failedOnCurrentQuizRef = useRef<boolean>(false);
-
     const liveDrillRef = useRef<{ board: number[]; usedDice: [boolean, boolean]; playedMoves: Move[] }>({ board: currentBoard, usedDice: [false, false], playedMoves: [] });
     liveDrillRef.current = { board: currentBoard, usedDice, playedMoves };
 
@@ -110,10 +110,9 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
     }, [currentBlunder]);
 
     const applyValidationFeedback = useCallback((result: DrillValidationResult) => {
+        if (!authenticStats.isAuthenticated || !currentBlunder) return;
         setValidationResult(result);
         setHoveredChoiceNotation(null);
-        if (!currentBlunder) return;
-
         const isNearOptimal = result.verdict === 'acceptable' || (result.equityLoss > 0 && result.equityLoss <= 0.020);
         if (result.isCorrect) {
             const isPersonal = Boolean((currentBlunder && isPersonalMatchBlunder(currentBlunder)) || drillMode === 'personal_blunders');
@@ -121,42 +120,31 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             recordAttempt(true, currentBlunder.tier ?? 2, result.equityLoss, explicitDelta);
             markBlunderAttempt(currentBlunder.id, true);
             setAdaptiveProfile(recordAdaptiveQuizOutcome(currentBlunder, true).profile);
-            setStats(getBlunderBankStats());
-            notificationSuccess();
+            setStats(getBlunderBankStats()); notificationSuccess();
             if (!failedOnCurrentQuizRef.current) rewardFirstTryQuizOnPublicPr();
             setStreak((prev) => { const next = prev + 1; setXp((c) => c + 25 * Math.min(next, 4)); return next; });
         } else {
             const nextAttempts = Math.max(0, attemptsLeft - 1);
-            setAttemptsLeft(nextAttempts);
-            failedOnCurrentQuizRef.current = true;
-            breakFirstTryQuizStreak();
-            notificationError();
-            setStreak(0);
-            setHearts((prev) => Math.max(0, prev - 1));
-
+            setAttemptsLeft(nextAttempts); failedOnCurrentQuizRef.current = true;
+            breakFirstTryQuizStreak(); notificationError(); setStreak(0); setHearts((prev) => Math.max(0, prev - 1));
             const penaltyTenths = nextAttempts === 1 ? 0.2 : computeTenthsMetricDelta(false, result.equityLoss || currentBlunder.equityLoss);
             recordAttempt(false, currentBlunder.tier ?? 2, result.equityLoss || currentBlunder.equityLoss, penaltyTenths);
             markBlunderAttempt(currentBlunder.id, false);
             setAdaptiveProfile(recordAdaptiveQuizOutcome(currentBlunder, false).profile);
-
             if (nextAttempts === 0 && (result.equityLoss || currentBlunder.equityLoss) >= 0.080) {
                 recordBlunder({ ...currentBlunder, id: `fsrs_drill_${currentBlunder.id}`, playedMove: result.playedNotation, gameId: 'quiz_fsrs_v5' });
                 setFsrsScheduled(true);
             }
             setStats(getBlunderBankStats());
         }
-    }, [currentBlunder, recordAttempt, attemptsLeft, drillMode]);
+    }, [authenticStats.isAuthenticated, currentBlunder, recordAttempt, attemptsLeft, drillMode]);
 
     const boardState: BoardState = useMemo(() => ({
         board: validationResult && currentBlunder ? validatedInitialBoard : currentBoard,
-        turn: currentBlunder?.player ?? 'X',
-        cubeValue: currentBlunder?.matchContext?.cubeValue ?? 1,
-        cubeOwner: currentBlunder?.matchContext?.cubeOwner ?? null,
-        dice: currentBlunder?.dice ?? [3, 1],
-        matchLength: currentBlunder?.matchContext?.matchLength ?? 7,
-        scoreX: currentBlunder?.matchContext?.scoreX ?? 0,
-        scoreO: currentBlunder?.matchContext?.scoreO ?? 0,
-        crawford: currentBlunder?.matchContext?.crawford ?? false,
+        turn: currentBlunder?.player ?? 'X', cubeValue: currentBlunder?.matchContext?.cubeValue ?? 1,
+        cubeOwner: currentBlunder?.matchContext?.cubeOwner ?? null, dice: currentBlunder?.dice ?? [3, 1],
+        matchLength: currentBlunder?.matchContext?.matchLength ?? 7, scoreX: currentBlunder?.matchContext?.scoreX ?? 0,
+        scoreO: currentBlunder?.matchContext?.scoreO ?? 0, crawford: currentBlunder?.matchContext?.crawford ?? false,
         doubled: false, resigned: 0,
     }), [currentBoard, currentBlunder, validationResult, validatedInitialBoard]);
 
@@ -166,12 +154,8 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         catch { return { leftDieTargets: new Map<number, number[]>(), rightDieTargets: new Map<number, number[]>() }; }
     }, [boardState, currentBlunder, usedDice]);
 
-    const canConfirmBoardMove = useMemo(() => {
-        if (!currentBlunder || validationResult !== null || playedMoves.length === 0) return false;
-        return (usedDice[0] && usedDice[1]) || (leftDieTargets.size === 0 && rightDieTargets.size === 0);
-    }, [currentBlunder, validationResult, playedMoves.length, usedDice, leftDieTargets.size, rightDieTargets.size]);
-
-    const pendingBoardNotation = useMemo(() => (playedMoves.length > 0 && currentBlunder ? formatMoveSequenceNotation(playedMoves, currentBlunder.player) : null), [playedMoves, currentBlunder]);
+    const canConfirmBoardMove = Boolean(currentBlunder && validationResult === null && playedMoves.length > 0 && ((usedDice[0] && usedDice[1]) || (leftDieTargets.size === 0 && rightDieTargets.size === 0)));
+    const pendingBoardNotation = playedMoves.length > 0 && currentBlunder ? formatMoveSequenceNotation(playedMoves, currentBlunder.player) : null;
 
     const handleConfirmBoardMove = useCallback(() => {
         if (!currentBlunder || validationResult !== null || playedMoves.length === 0) return;
@@ -255,8 +239,7 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         const exclude = currentBlunder ? [currentBlunder.id] : [];
         const nextPick = drillMode === 'personal_blunders' ? selectNextPersonalBlunderQuiz(getAllBlunders(), exclude) : selectNextAdaptiveQuiz(getAllBlunders(), exclude);
         setCurrentBlunder(nextPick.quiz); setReasonLabel(nextPick.reasonLabel);
-        setQuizStepCount((prev) => prev + 1); setStats(getBlunderBankStats());
-        impactLight();
+        setQuizStepCount((prev) => prev + 1); setStats(getBlunderBankStats()); impactLight();
     };
 
     const handleResetAllMastery = () => {
@@ -278,18 +261,14 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
         return { played: wrongMoves, optimal: optimalMoves };
     }, [validationResult, currentBlunder, playedMoves, hoveredChoiceNotation, attemptsLeft]);
 
-    const effectiveTargetQuizEr = currentBlunder
-        ? typeof currentBlunder.quizTargetER === 'number'
-            ? currentBlunder.quizTargetER
-            : Number((Math.max(0.5, erPrScore - 0.5)).toFixed(1))
-        : undefined;
+    const safeErScore = erPrScore ?? 6.3;
+    const effectiveTargetQuizEr = currentBlunder ? (typeof currentBlunder.quizTargetER === 'number' ? currentBlunder.quizTargetER : Number((Math.max(0.5, safeErScore - 0.5)).toFixed(1))) : undefined;
 
+    if (!authenticStats.isAuthenticated) {
+        return <PersonalBlundersGuestLockView featureMode={drillMode === 'personal_blunders' ? 'personal_blunders' : 'quizzes'} onUnlockedSuccess={authenticStats.refreshStats} />;
+    }
     if (drillMode === 'personal_blunders') {
-        return !authenticStats.isAuthenticated ? (
-            <PersonalBlundersGuestLockView onSwitchToGeneralQuizzes={() => handleSelectDrillMode('pr_math')} />
-        ) : (
-            <PersonalBlundersNotebookView onSwitchToGeneralQuizzes={() => handleSelectDrillMode('pr_math')} />
-        );
+        return <PersonalBlundersNotebookView onSwitchToGeneralQuizzes={() => handleSelectDrillMode('pr_math')} />;
     }
 
     return (
@@ -305,13 +284,13 @@ export default function BlunderDrillView({ initialConceptId, initialMode = 'adap
             ) : (
                 <div className="flex-1 min-h-0 h-full w-full flex flex-col [@media(orientation:landscape)]:grid [@media(orientation:landscape)]:grid-cols-12 [@media(orientation:landscape)]:grid-rows-[auto_1fr] lg:grid lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-1 sm:gap-1.5 [@media(max-height:540px)]:!gap-1 overflow-hidden">
                     <div className="shrink-0 [@media(orientation:landscape)]:col-span-4 [@media(orientation:landscape)]:col-start-9 [@media(orientation:landscape)]:row-start-1 lg:col-span-4 lg:col-start-9 lg:row-start-1">
-                        <DrillHeader stats={stats} adaptiveProfile={adaptiveProfile} activeCategoryId={normalizeToQuizCategory(currentBlunder.conceptId)} adaptiveReasonLabel={reasonLabel} drillMode={drillMode} personalBlundersCount={personalBlundersCount} isPersonalMatchBlunder={Boolean(currentBlunder && isPersonalMatchBlunder(currentBlunder))} onSelectDrillMode={handleSelectDrillMode} hearts={hearts} attemptsLeft={attemptsLeft} maxAttempts={2} streak={streak} xp={xp} erPrScore={erPrScore} targetQuizEr={effectiveTargetQuizEr} activeTenthsDelta={activeTenthsDelta} liveRatingValue={ratingValue} liveRatingDelta={ratingDelta} onResetAllMastery={handleResetAllMastery} onClose={onClose} />
+                        <DrillHeader stats={stats} adaptiveProfile={adaptiveProfile} activeCategoryId={normalizeToQuizCategory(currentBlunder.conceptId)} adaptiveReasonLabel={reasonLabel} drillMode={drillMode} personalBlundersCount={personalBlundersCount} isPersonalMatchBlunder={Boolean(currentBlunder && isPersonalMatchBlunder(currentBlunder))} onSelectDrillMode={handleSelectDrillMode} hearts={hearts} attemptsLeft={attemptsLeft} maxAttempts={2} streak={streak} xp={xp} erPrScore={safeErScore} targetQuizEr={effectiveTargetQuizEr} activeTenthsDelta={activeTenthsDelta} liveRatingValue={ratingValue ?? 1500} liveRatingDelta={ratingDelta} onResetAllMastery={handleResetAllMastery} onClose={onClose} />
                     </div>
                     <div className="flex-1 min-h-0 min-w-0 flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#050505] p-0.5 shadow-2xl [@media(orientation:landscape)]:col-span-8 [@media(orientation:landscape)]:col-start-1 [@media(orientation:landscape)]:row-start-1 [@media(orientation:landscape)]:row-span-2 lg:col-span-8 lg:col-start-1 lg:row-start-1 lg:row-span-2 [@media(orientation:landscape)]:h-full lg:h-full">
                         <Board state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={leftDieTargets} rightDieTargets={rightDieTargets} selectedPoint={selectedPoint} selectedDie={selectedDie} usedDice={usedDice} onCheckerClick={handleCheckerClick} onCheckerRightClick={(pt) => { if (!validationResult) { impactLight(); setSelectedPoint(pt); setSelectedDie(1); } }} onDestinationClick={(dest) => { if (!validationResult && selectedPoint !== null) handlePlayMove(selectedPoint, dest, selectedDie ?? undefined); }} onPlayMove={handlePlayMove} onSelectDie={(d) => setSelectedDie(d)} onDiceClick={() => setSelectedDie((prev) => (prev === 1 ? 0 : 1))} onDeselect={() => { setSelectedPoint(null); setSelectedDie(null); }} onConfirm={handleConfirmBoardMove} onUndo={handleResetCurrentAttempt} canConfirm={canConfirmBoardMove} canUndo={playedMoves.length > 0 && !validationResult} coachHighlight={coachHighlight} theme={theme} />
                     </div>
                     <div className="flex-1 min-h-0 min-w-0 overflow-hidden flex flex-col [@media(orientation:landscape)]:col-span-4 [@media(orientation:landscape)]:col-start-9 [@media(orientation:landscape)]:row-start-2 lg:col-span-4 lg:col-start-9 lg:row-start-2 [@media(orientation:landscape)]:h-full lg:h-full max-h-[46dvh] [@media(orientation:landscape)]:max-h-full lg:max-h-full shrink-0">
-                        <BlunderDrillFeedbackCard currentBlunder={currentBlunder} currentIndex={quizStepCount} totalBlunders={stats.totalBlunders} showHint={showHint} onToggleHint={() => setShowHint((prev) => !prev)} onResetAttempt={handleResetCurrentAttempt} validationResult={validationResult} attemptsLeft={attemptsLeft} fsrsScheduled={fsrsScheduled} pendingBoardNotation={pendingBoardNotation} canConfirmBoardMove={canConfirmBoardMove} onConfirmBoardMove={handleConfirmBoardMove} onNextBlunder={handleNextBlunder} onSelectQuizChoice={handleSelectQuizChoice} onHoverQuizChoice={setHoveredChoiceNotation} hoveredChoiceNotation={hoveredChoiceNotation} drillMode={drillMode} targetQuizEr={effectiveTargetQuizEr} currentMetricScore={activeMetricScore} ratingDelta={ratingDelta} />
+                        <BlunderDrillFeedbackCard currentBlunder={currentBlunder} currentIndex={quizStepCount} totalBlunders={stats.totalBlunders} showHint={showHint} onToggleHint={() => setShowHint((prev) => !prev)} onResetAttempt={handleResetCurrentAttempt} validationResult={validationResult} attemptsLeft={attemptsLeft} fsrsScheduled={fsrsScheduled} pendingBoardNotation={pendingBoardNotation} canConfirmBoardMove={canConfirmBoardMove} onConfirmBoardMove={handleConfirmBoardMove} onNextBlunder={handleNextBlunder} onSelectQuizChoice={handleSelectQuizChoice} onHoverQuizChoice={setHoveredChoiceNotation} hoveredChoiceNotation={hoveredChoiceNotation} drillMode={drillMode} targetQuizEr={effectiveTargetQuizEr} currentMetricScore={activeMetricScore ?? safeErScore} ratingDelta={ratingDelta} />
                     </div>
                 </div>
             )}

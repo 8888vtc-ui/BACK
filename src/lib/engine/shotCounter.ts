@@ -202,8 +202,8 @@ export function computeDiceMatrix36(
             const status: DiceCell36['status'] = isDirect
                 ? 'direct_hit'
                 : isIndirect
-                  ? 'indirect_hit'
-                  : 'safe';
+                    ? 'indirect_hit'
+                    : 'safe';
             if (status === 'direct_hit') directHitsCount++;
             else if (status === 'indirect_hit') indirectHitsCount++;
 
@@ -218,4 +218,15 @@ export function computeDiceMatrix36(
         safeRollsCount: 36 - directHitsCount - indirectHitsCount,
         exposedBlots,
     };
+}
+
+/**
+ * Compte le nombre total exact de lancers sur 36 permettant à l'adversaire de frapper un blot de `player`.
+ */
+export function countOpponentHittingRolls36(
+    board: ReadonlyArray<number>,
+    player: Player = 'X',
+): number {
+    const matrix = computeDiceMatrix36(board, player);
+    return matrix.directHitsCount + matrix.indirectHitsCount;
 }

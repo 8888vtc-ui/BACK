@@ -155,7 +155,12 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
         const groundTruthAudit = buildGroundTruthNeuroSymbolicAudit(params);
         const userPrompt = buildCoachUserPrompt(params);
         const tierDirective = getTierSystemPrompt(playerTier, params.language === 'en' ? 'en' : 'fr');
-        const systemPrompt = `${getCoachSystemPrompt(params.language)}\n\n${tierDirective}`;
+        const verifiedBlots = (params.features?.blotsAndShots?.user ?? []).map((b) => b.point);
+        const verifiedShots = params.features?.shotExposure?.user.totalRolls ?? 0;
+        const verifiedFactsGuard = verifiedBlots.length === 0
+            ? '\n\n[FAITS PHYSIQUES VÉRIFIÉS : 0 blot exposé après le coup joué (0 lancer adverse sur 36). INTERDICTION ABSOLUE d’inventer un pion isolé (blot) sur le plateau.]'
+            : `\n\n[FAITS PHYSIQUES VÉRIFIÉS : Blots réels après le coup joué uniquement sur flèche(s) ${verifiedBlots.join(', ')} (${verifiedShots}/36 lancers). INTERDICTION ABSOLUE de mentionner un blot sur une flèche absente de cette liste.]`;
+        const systemPrompt = `${getCoachSystemPrompt(params.language)}\n\n${tierDirective}${verifiedFactsGuard}`;
         const requestPayload: Record<string, unknown> = {
             model,
             messages: [

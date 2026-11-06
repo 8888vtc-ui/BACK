@@ -9,6 +9,7 @@
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import AppNavbar from '../nav/AppNavbar';
+import { LobbyLeftSidebar } from '../lobby/LobbySidebarAndWidgets';
 import { KNOWLEDGE_BASE_CONCEPTS } from '../../features/knowledge/knowledgeBaseData';
 import { useTranslation } from '../../i18n';
 
@@ -29,14 +30,16 @@ const ConceptDetailViewComponent: React.FC<ConceptDetailViewProps> = ({ slug }) 
         <div
             dir={dir}
             data-testid={`concept-detail-${concept.slug}`}
-            className="h-dvh w-full overflow-y-auto text-slate-100 flex flex-col relative"
+            className="h-dvh max-h-dvh w-full overflow-hidden text-slate-100 flex flex-col relative"
             style={{
                 background: 'radial-gradient(ellipse 85% 50% at 50% -8%, rgba(212, 175, 55, 0.16) 0%, rgba(20, 28, 46, 0.92) 42%, #090d16 78%, #04060b 100%)',
             }}
         >
             <AppNavbar activeTab="academy" />
 
-            <main className="mx-auto w-full max-w-5xl flex-1 space-y-6 px-4 py-8 sm:px-6">
+            <div className="flex flex-1 min-h-0 overflow-hidden w-full">
+                <LobbyLeftSidebar />
+                <main className="mx-auto w-full max-w-5xl flex-1 overflow-y-auto space-y-6 px-4 py-8 sm:px-6">
                 <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-slate-300">
                     <Link href="/" className="hover:text-amber-200">Backgammon Tour</Link>
                     <span>/</span>
@@ -168,7 +171,8 @@ const ConceptDetailViewComponent: React.FC<ConceptDetailViewProps> = ({ slug }) 
                         })}
                     </div>
                 </section>
-            </main>
+                </main>
+            </div>
         </div>
     );
 };
