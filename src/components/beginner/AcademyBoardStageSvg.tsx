@@ -239,7 +239,7 @@ export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.m
             </g>
             {progress > 0.5 && (
               <g transform="translate(290, 165)">
-                <rect x="-85" y="-10" width="170" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
+                <rect x="-85" y="-10" width="170" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
                 <text x="0" y="3.5" fill="#F3E5AB" fontSize="12" fontWeight="black" textAnchor="middle">
                   {isEn ? 'Double Stakes (x2)!' : 'Doublez la mise (x2) !'}
                 </text>

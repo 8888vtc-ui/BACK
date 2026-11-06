@@ -248,8 +248,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     id: 8, linkedEpisodeId: 4, pointsReward: 200, dice: [6, 1], boardHighlights: {},
     titleFr: "Quiz 8/10 : Quand Peut-on Sortir ses Pions ?",
     titleEn: "Quiz 8/10: When Can You Bear Off?",
-    questionFr: "Pion retardataire dehors : avez-vous le droit de sortir vos pions\u00A0?",
-    questionEn: "Laggard checker outside: are you allowed to bear off your checkers?",
+    questionFr: "Un pion blanc est encore hors de votre Maison : pouvez-vous déjà sortir les autres\u00A0?",
+    questionEn: "One white checker is still outside your Home Board: can you bear off the others yet?",
     options: [
       {
         id: "A", isCorrect: false,

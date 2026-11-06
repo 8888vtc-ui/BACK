@@ -59,8 +59,8 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
           );
         })}
 
-        {/* Zone Votre Maison (Sortie) uniquement sur les leçons concernées (1, 2, 3, 4, 8) */}
-        {[1, 2, 3, 4, 8].includes(quizId) && (
+        {/* Zone Votre Maison (Sortie) uniquement sur les leçons concernées (1, 2, 3, 4) */}
+        {[1, 2, 3, 4].includes(quizId) && (
           <g>
             <rect x="296" y="140" width="240" height="115" fill="rgba(16, 185, 129, 0.08)" stroke="#10B981" strokeDasharray="4 4" rx="6" />
             <g transform="translate(416, 155)">
@@ -228,17 +228,36 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 8. QUAND A-T-ON LE DROIT DE SORTIR SES PIONS ? */}
         {quizId === 8 && (
           <g>
-            {Array.from({ length: 14 }).map((_, idx) => (
-              <circle key={idx} cx={340 + (idx % 5) * 36} cy={238 - Math.floor(idx / 5) * 18} r="9" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
+            <rect x="296" y="140" width="240" height="115" fill="rgba(239, 68, 68, 0.05)" stroke="#ef4444" strokeDasharray="4 4" rx="6" />
+
+            {[
+              [316, 238], [316, 218], [316, 198],
+              [356, 238], [356, 218], [356, 198],
+              [396, 238], [396, 218], [396, 198],
+              [436, 238], [436, 218], [436, 198],
+              [476, 238], [476, 218],
+            ].map(([x, y], idx) => (
+              <circle key={idx} cx={x} cy={y} r="10.5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.2" />
             ))}
-            <circle cx="100" cy="238" r="12" fill="#FAF6EE" stroke="#ef4444" strokeWidth="2.5" />
-            <g transform="translate(100, 195)">
-              <rect x="-65" y="-9" width="130" height="18" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#fca5a5" fontSize="9.5" fontWeight="black" textAnchor="middle">{isEn ? '1 Laggard Outside!' : '1 Retardataire Dehors !'}</text>
+
+            <g transform="translate(568, 200)">
+              <rect x="-26" y="-12" width="52" height="24" rx="5" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="1" />
+              <text x="0" y="4.5" fill="#ef4444" fontSize="10" fontWeight="black" textAnchor="middle">✕ BLOQUÉ</text>
             </g>
-            <g transform="translate(424, 180)">
-              <rect x="-120" y="-9" width="240" height="18" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#f87171" fontSize="9" fontWeight="bold" textAnchor="middle">{isEn ? 'Cannot bear off yet (All 15 must be home)' : 'Sortie interdite tant que les 15 ne sont pas rentrés'}</text>
+
+            <g transform="translate(416, 160)">
+              <rect x="-105" y="-11" width="210" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="1" />
+              <text x="0" y="3.5" fill="#fca5a5" fontSize="10" fontWeight="black" textAnchor="middle">
+                {isEn ? 'Bear-off blocked (14/15 Home)' : 'Sortie bloquée (14/15 dans la Maison)'}
+              </text>
+            </g>
+
+            <circle cx="100" cy="238" r="11" fill="#FAF6EE" stroke="#ef4444" strokeWidth="2.5" />
+            <g transform="translate(100, 195)">
+              <rect x="-65" y="-10" width="130" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="1" />
+              <text x="0" y="3.5" fill="#fca5a5" fontSize="9.5" fontWeight="black" textAnchor="middle">
+                {isEn ? '1 Laggard Outside!' : '1 Retardataire Dehors !'}
+              </text>
             </g>
           </g>
         )}
