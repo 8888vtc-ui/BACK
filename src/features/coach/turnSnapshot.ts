@@ -304,3 +304,61 @@ export function sanitizeVerdictWithEquityThreshold(equityLoss: number, rawVerdic
     if (absLoss >= 0.080) return 'blunder';
     return (rawVerdict === 'blunder' ? 'blunder' : 'inaccuracy');
 }
+
+/**
+ * Verrou anti-hallucination des cases/blots (MISSION 10/25).
+ * Toute flèche p in {1..24} citée comme "pion isolé (blot)" DOIT vérifier physiquement boardAfterMove[p] === 1.
+ * Si boardAfterMove[p] >= 2 ou <= 0, interdiction formelle de l'appeler pion isolé !
+ */
+export function verifyAndSanitizeCoachTextAgainstBoard(
+    text: string,
+    boardAfterMove: readonly number[] | undefined,
+    lang: 'fr' | 'en' = 'fr',
+    player: 'X' | 'O' = 'X',
+): { sanitizedText: string; hasHallucination: boolean; correctedPoints: number[] } {
+    if (!text || !boardAfterMove || boardAfterMove.length < 25) {
+        return { sanitizedText: text, hasHallucination: false, correctedPoints: [] };
+    }
+
+    const correctedPoints: number[] = [];
+    let sanitized = text;
+    const isEn = lang === 'en';
+
+    const blotRegexes = [
+        /(?:pion(?:s)?\s+isolé(?:s)?|blot(?:s)?|pion(?:s)?\s+seul(?:s)?)\s+(?:sur\s+(?:la\s+)?(?:case|flèche)\s+|en\s+|sur\s+)(\d{1,2})/gi,
+        /(?:case|flèche)s?\s+(\d{1,2})\s+(?:comme\s+(?:un\s+)?(?:blot|pion isolé|pion seul)|laissée?\s+(?:exposée?|isolée?))/gi,
+        /laisse\s+(?:un\s+)?(?:blot|pion isolé|pion seul)\s+(?:sur\s+(?:la\s+)?(?:case|flèche)\s+|en\s+|sur\s+)(\d{1,2})/gi,
+        /(?:blot|lone\s+checker|isolated\s+checker)s?\s+(?:on\s+(?:point\s+)?|at\s+)(\d{1,2})/gi,
+        /point\s+(\d{1,2})\s+(?:as\s+a\s+(?:blot|lone\s+checker|isolated\s+checker)|left\s+exposed)/gi,
+        /leaves\s+a\s+(?:blot|lone\s+checker|isolated\s+checker)\s+(?:on\s+(?:point\s+)?|at\s+)(\d{1,2})/gi,
+    ];
+
+    for (const regex of blotRegexes) {
+        sanitized = sanitized.replace(regex, (match, ptStr) => {
+            const p = parseInt(ptStr, 10);
+            if (isNaN(p) || p < 1 || p > 24) return match;
+            const rawVal = boardAfterMove[p] ?? 0;
+            const count = player === 'X' ? rawVal : -rawVal;
+
+            if (count === 1) {
+                return match;
+            }
+
+            correctedPoints.push(p);
+            if (count >= 2) {
+                return isEn
+                    ? `secure point on point ${p} (${count} checkers)`
+                    : `porte consolidée sur la case ${p} (${count} pions)`;
+            }
+            return isEn
+                ? `cleared point ${p}`
+                : `case ${p} libérée`;
+        });
+    }
+
+    return {
+        sanitizedText: sanitized,
+        hasHallucination: correctedPoints.length > 0,
+        correctedPoints,
+    };
+}

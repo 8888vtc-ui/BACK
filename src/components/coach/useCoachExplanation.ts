@@ -8,7 +8,7 @@ import {
     computeExplanationCacheKey,
     globalExplanationCache,
 } from '../../features/coach';
-import { extractVerifiedCoachFacts } from '../../features/coach/turnSnapshot';
+import { extractVerifiedCoachFacts, verifyAndSanitizeCoachTextAgainstBoard } from '../../features/coach/turnSnapshot';
 import { parseStreamedExplanation, type CoachDisplayVerdict, type ParsedExplanation } from './coachPanelHelpers';
 import { persistExplanation, resolveL2CachedExplanation } from './coachExplanationPersistence';
 import { buildKnowledgeVaultEntry } from '../../features/coach/knowledgeVaultHarvester';
@@ -144,11 +144,19 @@ export function useCoachExplanation({
         };
         const vaultBuilt = buildKnowledgeVaultEntry({ promptParams, board, xgid, dice });
         const ruleBased = vaultBuilt.selectedVariant ?? generateRuleBasedExplanation(promptParams);
+        const explanation = board && board.length >= 25
+            ? verifyAndSanitizeCoachTextAgainstBoard(ruleBased.explanation, board, locale === 'en' ? 'en' : 'fr').sanitizedText
+            : ruleBased.explanation;
+        const summary = board && board.length >= 25
+            ? verifyAndSanitizeCoachTextAgainstBoard(ruleBased.summary, board, locale === 'en' ? 'en' : 'fr').sanitizedText
+            : ruleBased.summary;
         return {
             ...ruleBased,
+            explanation,
+            summary,
             symbolicAudit: ruleBased.symbolic_audit,
             pedagogicalExplanation: ruleBased.pedagogical_explanation,
-            rawText: ruleBased.explanation,
+            rawText: explanation,
         };
     }, [verdict, isBlunder, absLoss, playedMove, optimalMove, features, matchCtx, playerLevel, locale, board, xgid, dice]);
 
@@ -253,7 +261,10 @@ export function useCoachExplanation({
                             const token = parsedItem.token ?? parsedItem.content ?? '';
                             if (token && !isStale()) {
                                 accumulated += token;
-                                setStreamedText(accumulated);
+                                const safeText = board && board.length >= 25
+                                    ? verifyAndSanitizeCoachTextAgainstBoard(accumulated, board, locale === 'en' ? 'en' : 'fr').sanitizedText
+                                    : accumulated;
+                                setStreamedText(safeText);
                             }
                         } catch {
                             // Fragment JSON partiel ignoré
@@ -262,7 +273,14 @@ export function useCoachExplanation({
                 }
                 if (isStale()) return;
                 setExplanationSource('llm');
-                if (accumulated) persist(parseStreamedExplanation(accumulated), 'llm');
+                if (accumulated) {
+                    const parsed = parseStreamedExplanation(accumulated);
+                    if (board && board.length >= 25) {
+                        parsed.explanation = verifyAndSanitizeCoachTextAgainstBoard(parsed.explanation ?? '', board, locale === 'en' ? 'en' : 'fr').sanitizedText;
+                        parsed.summary = verifyAndSanitizeCoachTextAgainstBoard(parsed.summary ?? '', board, locale === 'en' ? 'en' : 'fr').sanitizedText;
+                    }
+                    persist(parsed, 'llm');
+                }
             } catch (err: unknown) {
                 if (isStale()) return;
                 console.warn('[CoachPanel] Échec API ou timeout, repli heuristique 0ms :', err);

@@ -39,6 +39,7 @@ import {
     getTierSystemPrompt,
     enforceTierVocabularyGuard,
 } from '../../../lib/coach/coachAdaptiveKnowledgeDb';
+import { verifyAndSanitizeCoachTextAgainstBoard } from '../../../features/coach/turnSnapshot';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,20 +133,38 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
             dice: body.dice,
         });
 
+        const boardAfterMove = Array.isArray(body.board) && body.board.length >= 25 ? body.board : undefined;
+        let verifiedBlots = (params.features?.blotsAndShots?.user ?? []).map((b) => b.point);
+        if (boardAfterMove) {
+            const physicalBlots: number[] = [];
+            for (let p = 1; p <= 24; p++) {
+                if ((boardAfterMove[p] ?? 0) === 1) physicalBlots.push(p);
+            }
+            verifiedBlots = physicalBlots;
+        }
+
         const rawVariant = harvested.selectedVariant;
+        let finalExplanation = enforceTierVocabularyGuard(
+            rawVariant.explanation,
+            playerTier,
+            params.language === 'en' ? 'en' : 'fr',
+            { deltaEmg: body.equityLoss, optimalMove: body.optimalMove, playedMove: body.playedMove }
+        ).sanitizedText;
+        let finalSummary = enforceTierVocabularyGuard(
+            rawVariant.summary,
+            playerTier,
+            params.language === 'en' ? 'en' : 'fr'
+        ).sanitizedText;
+
+        if (boardAfterMove) {
+            finalExplanation = verifyAndSanitizeCoachTextAgainstBoard(finalExplanation, boardAfterMove, params.language === 'en' ? 'en' : 'fr').sanitizedText;
+            finalSummary = verifyAndSanitizeCoachTextAgainstBoard(finalSummary, boardAfterMove, params.language === 'en' ? 'en' : 'fr').sanitizedText;
+        }
+
         const sanitizedVariant = {
             ...rawVariant,
-            explanation: enforceTierVocabularyGuard(
-                rawVariant.explanation,
-                playerTier,
-                params.language === 'en' ? 'en' : 'fr',
-                { deltaEmg: body.equityLoss, optimalMove: body.optimalMove, playedMove: body.playedMove }
-            ).sanitizedText,
-            summary: enforceTierVocabularyGuard(
-                rawVariant.summary,
-                playerTier,
-                params.language === 'en' ? 'en' : 'fr'
-            ).sanitizedText,
+            explanation: finalExplanation,
+            summary: finalSummary,
         };
 
         if (!apiKey) {
@@ -155,7 +174,6 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
         const groundTruthAudit = buildGroundTruthNeuroSymbolicAudit(params);
         const userPrompt = buildCoachUserPrompt(params);
         const tierDirective = getTierSystemPrompt(playerTier, params.language === 'en' ? 'en' : 'fr');
-        const verifiedBlots = (params.features?.blotsAndShots?.user ?? []).map((b) => b.point);
         const verifiedShots = params.features?.shotExposure?.user.totalRolls ?? 0;
         const verifiedFactsGuard = verifiedBlots.length === 0
             ? '\n\n[FAITS PHYSIQUES VÉRIFIÉS : 0 blot exposé après le coup joué (0 lancer adverse sur 36). INTERDICTION ABSOLUE d’inventer un pion isolé (blot) sur le plateau.]'
@@ -286,12 +304,18 @@ export async function POST(req: NextRequest | Request): Promise<Response> {
                                 playedMove: body.playedMove,
                             }
                         );
-                        verifiedAudit.pedagogical_explanation.tactical_rationale = guardResult.sanitizedText;
-                        verifiedAudit.pedagogical_explanation.headline = enforceTierVocabularyGuard(
+                        let rationale = guardResult.sanitizedText;
+                        let headline = enforceTierVocabularyGuard(
                             verifiedAudit.pedagogical_explanation.headline,
                             playerTier,
                             params.language === 'en' ? 'en' : 'fr'
                         ).sanitizedText;
+                        if (boardAfterMove) {
+                            rationale = verifyAndSanitizeCoachTextAgainstBoard(rationale, boardAfterMove, params.language === 'en' ? 'en' : 'fr').sanitizedText;
+                            headline = verifyAndSanitizeCoachTextAgainstBoard(headline, boardAfterMove, params.language === 'en' ? 'en' : 'fr').sanitizedText;
+                        }
+                        verifiedAudit.pedagogical_explanation.tactical_rationale = rationale;
+                        verifiedAudit.pedagogical_explanation.headline = headline;
                     }
                     controller.enqueue(
                         encoder.encode(formatSseEvent({ done: true, verifiedAudit })),

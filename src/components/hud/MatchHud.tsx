@@ -47,10 +47,13 @@ function getHudVerdictConfig(fb: LastMoveFeedback, layer: ChameleonLayer = 1, is
     const absLoss = Math.abs(fb.equityLoss);
     const mwcPct = Math.max(1, Math.round(absLoss * 50));
     const lossStr = layer === 0 ? `(-${mwcPct}% chances)` : `(-${absLoss.toFixed(3)}) · -${mwcPct}%`;
-    if (fb.verdict === 'optimal' || absLoss <= 0.005) return { dotClass: 'bg-emerald-400', label: isEn ? 'OPTIMAL MOVE' : 'COUP OPTIMAL', badgeClass: 'border-emerald-400/70 bg-emerald-950/90 text-emerald-100' };
-    if (fb.verdict === 'good' || absLoss <= 0.020) return { dotClass: 'bg-emerald-400', label: isEn ? 'GOOD MOVE' : 'BON COUP', badgeClass: 'border-emerald-500/55 bg-emerald-950/75 text-emerald-200' };
-    if (fb.verdict === 'inaccuracy' || absLoss < 0.080) return { dotClass: 'bg-amber-400', label: `${isEn ? 'INACCURACY' : 'IMPRÉCISION'} ${lossStr}`, badgeClass: 'border-amber-400/75 bg-amber-950/90 text-amber-100' };
-    return { dotClass: 'bg-rose-400', label: `${isEn ? 'MAJOR BLUNDER' : 'BLUNDER MAJEUR'} ${lossStr}`, badgeClass: 'border-rose-400/80 bg-rose-950/90 text-rose-100' };
+    if (absLoss <= 0.020 || fb.verdict === 'optimal' || fb.verdict === 'good') {
+        return { dotClass: 'bg-emerald-400', label: isEn ? 'OPTIMAL MOVE' : 'COUP OPTIMAL', badgeClass: 'border-emerald-400/70 bg-emerald-950/90 text-emerald-100' };
+    }
+    if (absLoss < 0.080 || fb.verdict === 'inaccuracy') {
+        return { dotClass: 'bg-amber-400', label: `${isEn ? 'INACCURACY' : 'IMPRÉCISION'} ${lossStr}`, badgeClass: 'border-amber-400/75 bg-amber-950/90 text-amber-100' };
+    }
+    return { dotClass: 'bg-rose-400', label: `${isEn ? 'BLUNDER' : 'BLUNDER MAJEUR'} ${lossStr}`, badgeClass: 'border-rose-400/80 bg-rose-950/90 text-rose-100' };
 }
 
 const MatchHudComponent: React.FC<MatchHudProps> = ({
