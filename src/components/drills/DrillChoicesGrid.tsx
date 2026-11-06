@@ -14,6 +14,11 @@ import React from 'react';
 import { Dices } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { DrillValidationResult } from '../../features/drills/types';
+import {
+    filterLegalCubeChoices,
+    formatCubeChoiceButtonLabel,
+    normalizeCubeActionKey,
+} from '../../features/drills/drillCubeDecisionHelper';
 
 export interface DrillChoicesGridProps {
     readonly choices: ReadonlyArray<string>;
@@ -30,6 +35,8 @@ export interface DrillChoicesGridProps {
     readonly onHoverQuizChoice?: (notation: string | null) => void;
     readonly onSelectChoice?: (notation: string | null | string) => void;
     readonly onSelectQuizChoice?: (notation: string) => void;
+    readonly matchLength?: number;
+    readonly isCubeDecision?: boolean;
 }
 
 export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
@@ -47,12 +54,22 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
     onHoverQuizChoice,
     onSelectChoice,
     onSelectQuizChoice,
+    matchLength = 7,
+    isCubeDecision,
 }) => {
     const { locale } = useTranslation();
     const isEn = locale === 'en';
     if (!choices || choices.length === 0) return null;
     const handleHover = onHoverQuizChoice ?? onHoverChoice;
     const handleSelect = onSelectQuizChoice ?? onSelectChoice;
+
+    const isCube = Boolean(
+        isCubeDecision ||
+            (dice[0] === 0 && dice[1] === 0) ||
+            choices.some((c) => /double/i.test(c)),
+    );
+
+    const activeChoices = isCube ? filterLegalCubeChoices(choices, matchLength) : choices;
 
     const isQuizLocked =
         validationResult !== null && (validationResult.isCorrect || attemptsLeft <= 0);
@@ -75,22 +92,39 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
                     className="inline-flex items-center gap-1.5 rounded-lg border border-[#D4AF37]/30 bg-[#12151C] px-2 py-0.5 font-mono text-[10px] font-bold text-[#fdf8eb]"
                 >
                     <Dices className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
-                    <span className="text-[#D4AF37]">{isEn ? `White plays ${dice[0]}-${dice[1]}` : `Blanc joue ${dice[0]}-${dice[1]}`}</span>
-                    <span className="text-slate-400">•</span>
-                    <span className="text-slate-300">{isEn ? 'Direction: Pt 24 ➔ Pt 1' : 'Sens : Case 24 ➔ Case 1'}</span>
+                    {isCube ? (
+                        <>
+                            <span className="text-[#D4AF37]">{isEn ? '🎲 Doubling Cube Decision' : '🎲 Décision de Videau'}</span>
+                            <span className="text-slate-400">•</span>
+                            <span className="text-slate-300">{isEn ? 'Action before roll' : 'Action avant de lancer'}</span>
+                        </>
+                    ) : (
+                        <>
+                            <span className="text-[#D4AF37]">{isEn ? `White plays ${dice[0]}-${dice[1]}` : `Blanc joue ${dice[0]}-${dice[1]}`}</span>
+                            <span className="text-slate-400">•</span>
+                            <span className="text-slate-300">{isEn ? 'Direction: Pt 24 ➔ Pt 1' : 'Sens : Case 24 ➔ Case 1'}</span>
+                        </>
+                    )}
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-1.5">
-                {choices.map((choice, idx) => {
+                {activeChoices.map((choice, idx) => {
                     const letter = String.fromCharCode(65 + idx);
                     const isHovered = hoveredChoiceNotation === choice;
-                    const isValidatedOptimal =
-                        showSolutionHighlight && choice.trim() === optimalMove.trim();
-                    const isValidatedWrongUser =
+                    const displayLabel = isCube ? formatCubeChoiceButtonLabel(choice, isEn ? 'en' : 'fr') : choice;
+                    const isMatchOptimal =
+                        choice.trim() === optimalMove.trim() ||
+                        (isCube && normalizeCubeActionKey(choice) === normalizeCubeActionKey(optimalMove));
+                    const isValidatedOptimal = showSolutionHighlight && isMatchOptimal;
+                    const isMatchPlayedWrong =
                         validationResult !== null &&
                         !validationResult.isCorrect &&
-                        choice.trim() === validationResult.playedNotation.trim();
+                        (choice.trim() === validationResult.playedNotation.trim() ||
+                            (isCube &&
+                                normalizeCubeActionKey(choice) ===
+                                    normalizeCubeActionKey(validationResult.playedNotation)));
+                    const isValidatedWrongUser = isMatchPlayedWrong;
 
                     return (
                         <button
@@ -124,7 +158,7 @@ export const DrillChoicesGrid: React.FC<DrillChoicesGridProps> = ({
                             >
                                 {letter}
                             </span>
-                            <span>{choice}</span>
+                            <span>{displayLabel}</span>
                         </button>
                     );
                 })}

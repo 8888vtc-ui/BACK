@@ -12,13 +12,17 @@ import { formatMoveSequenceNotation } from '../../lib/engine/evaluator';
 import { parseCoachNotationMoves } from '../coach/coachMoveNotation';
 import type { PlayerBlunderRecord, DrillValidationResult, BlunderDrillSession, DrillTier } from './types';
 import { getBlundersToReview, markBlunderAttempt } from './blunderBank';
+import { normalizeCubeActionKey } from './drillCubeDecisionHelper';
 
 /**
  * Nettoie une notation de coups pour une comparaison insensible à l'ordre et aux astérisques.
+ * Gère également les équivalences canoniques de videau (FR/EN/abréviations).
  * Exemple : "24/20 13/11" équivaut à "13/11 24/20".
  */
 export function normalizeMoveNotation(notation: string): string {
     if (!notation) return '';
+    const cubeKey = normalizeCubeActionKey(notation);
+    if (cubeKey) return cubeKey;
     return notation
         .replace(/\*/g, '')
         .trim()

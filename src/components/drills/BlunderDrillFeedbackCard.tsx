@@ -98,6 +98,8 @@ export const BlunderDrillFeedbackCard: React.FC<BlunderDrillFeedbackCardProps> =
                         hoveredChoiceNotation={hoveredChoiceNotation}
                         onSelectQuizChoice={onSelectQuizChoice}
                         onHoverQuizChoice={onHoverQuizChoice}
+                        matchLength={currentBlunder.matchContext?.matchLength ?? 7}
+                        isCubeDecision={currentBlunder.quizType === 'CUBE_DECISION' || currentBlunder.conceptId === 'cube_decision'}
                     />
                 )}
 

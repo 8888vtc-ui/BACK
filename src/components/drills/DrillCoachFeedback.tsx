@@ -18,7 +18,12 @@ import {
 import { evaluateMoveBlunderGate } from '../../lib/coachSystemPrompt';
 import { useCoachVoice } from '../../hooks/useCoachVoice';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useTranslation } from '../../i18n';
 import { buildCandidateMathTable, DrillPrMathRankingTable } from './DrillPositionContextAndReading';
+import {
+    isCubeDecisionQuiz,
+    extractCubeTelemetry,
+} from '../../features/drills/drillCubeDecisionHelper';
 
 export interface DrillCoachFeedbackProps {
     readonly currentBlunder: PlayerBlunderRecord;
@@ -49,14 +54,28 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
 }) => {
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
     const { isSpeaking, speak, stop } = useCoachVoice();
     const [threatHighlighted, setThreatHighlighted] = useState<boolean>(false);
     const handleRetry = onResetAttempt ?? onRetryAttempt;
+
+    const isCube = useMemo(() => isCubeDecisionQuiz(currentBlunder), [currentBlunder]);
+    const cubeTelemetry = useMemo(() => (isCube ? extractCubeTelemetry(currentBlunder) : null), [isCube, currentBlunder]);
 
     const coachReport = useMemo(
         () => runFlashPedagogicalCoach(currentBlunder, validationResult, currentMetricScore, isErMode),
         [currentBlunder, validationResult, currentMetricScore, isErMode],
     );
+
+    const optimalWhyWins = useMemo(() => {
+        if (!isCube || !cubeTelemetry) return coachReport.block2WhyOptimalWins;
+        const optLetter = coachReport.extractorFacts.optimalLetter;
+        const optNot = currentBlunder.optimalMove;
+        return isEn
+            ? `Optimal cube decision is ${optLetter} (${optNot}): ${cubeTelemetry.winPct}% Win, ${cubeTelemetry.gammonPct}% Gammon and Take Point of ${cubeTelemetry.takePointPct}%.`
+            : `La décision optimale de videau est ${optLetter} (${optNot}) : ${cubeTelemetry.winPct}% de victoire, ${cubeTelemetry.gammonPct}% de Gammon et un seuil de prise (Take Point) de ${cubeTelemetry.takePointPct}%.`;
+    }, [isCube, cubeTelemetry, coachReport.block2WhyOptimalWins, coachReport.extractorFacts.optimalLetter, currentBlunder.optimalMove, isEn]);
 
     const mathRankingRows = useMemo(
         () => (isErMode ? buildCandidateMathTable(currentBlunder, validationResult.playedNotation) : []),
@@ -77,7 +96,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
             : [
                   coachReport.headerSeverityLine,
                   coachReport.block1WhyError ?? '',
-                  coachReport.block2WhyOptimalWins,
+                  optimalWhyWins,
                   coachReport.block3RuleOfThumb,
               ].filter(Boolean);
         speak(parts.join('. '), { force: true });
@@ -151,6 +170,22 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                     </div>
                 ) : (
                     <div className="space-y-1.5 rounded-xl bg-[#050505]/75 p-2 text-xs leading-snug">
+                        {isCube && cubeTelemetry && (
+                            <div
+                                data-testid="drill-cube-telemetry-badge"
+                                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#D4AF37]/40 bg-[#12151C] px-2.5 py-1 text-[11px] font-mono font-bold"
+                            >
+                                <span className="text-emerald-400" data-testid="cube-win-pct">
+                                    {isEn ? `Win: ${cubeTelemetry.winPct}%` : `% de victoire : ${cubeTelemetry.winPct}%`}
+                                </span>
+                                <span className="text-amber-400" data-testid="cube-gammon-pct">
+                                    {isEn ? `Gammon: ${cubeTelemetry.gammonPct}%` : `% de Gammon : ${cubeTelemetry.gammonPct}%`}
+                                </span>
+                                <span className="text-cyan-400" data-testid="cube-take-point-pct">
+                                    {isEn ? `Take Point: ${cubeTelemetry.takePointPct}%` : `Seuil de prise (Take Point) : ${cubeTelemetry.takePointPct}%`}
+                                </span>
+                            </div>
+                        )}
                         {!validationResult.isCorrect && coachReport.block1WhyError && (
                             <div data-testid="coach-block-1-error" className="text-rose-200">
                                 <span className="font-bold text-rose-300">1. Pourquoi ton coup est une erreur : </span>
@@ -165,7 +200,7 @@ export const DrillCoachFeedback: React.FC<DrillCoachFeedbackProps> = ({
                                         ? 'Pourquoi ce coup est optimal : '
                                         : '2. Pourquoi le coup optimal gagne : '}
                             </span>
-                            <span>{coachReport.block2WhyOptimalWins}</span>
+                            <span>{optimalWhyWins}</span>
                         </div>
                         <div
                             data-testid="coach-block-3-rule"
