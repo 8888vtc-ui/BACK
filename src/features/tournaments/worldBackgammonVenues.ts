@@ -228,7 +228,7 @@ export const WORLD_BACKGAMMON_VENUES: ReadonlyArray<WorldBackgammonVenue> = Obje
         atmosphereFr: 'Ligue sociale et compétitive dynamique à travers tout le Grand Chicago pour débutants, intermédiaires et maîtres.',
         playerBenefitsFr: Object.freeze([
             'Réseau de clubs à travers Chicago et sa banlieue (animé par Jill Murphy)',
-            'Divisions adaptées à chaque niveau : Beginner, Intermediate et Master',
+            'Divisions adaptées à chaque niveau : Débutant, Intermédiaire et Master',
             'Grands tournois événements avec dotations et ambiance conviviale du Midwest',
         ]),
         seoSummaryFr: 'La ligue officielle Chicago Backgammon League réunissant les clubs et tournois de Chicago.',
