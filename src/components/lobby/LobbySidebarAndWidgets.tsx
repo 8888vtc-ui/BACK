@@ -71,7 +71,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
         return () => window.removeEventListener(PERSONAL_BLUNDERS_UPDATED_EVENT, refreshCount);
     }, []);
 
-    const activeRailCls = 'border-l-2 border-[#D4AF37] bg-white/[0.06] text-[#D4AF37] font-bold';
+    const activeRailCls = 'border-l-2 border-[#D4AF37] bg-gradient-to-r from-[#D4AF37]/12 to-transparent text-[#F3E5AB] font-semibold';
     const itemCls = 'flex items-center justify-between w-full whitespace-nowrap rounded-lg px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/[0.04] hover:text-white transition-all duration-150';
     const sectionLabelCls = 'px-3 pb-1 text-xs uppercase tracking-[0.15em] text-zinc-400 font-semibold';
 
@@ -124,8 +124,8 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         <button
                             type="button" data-testid="sidebar-quick-play-btn" onClick={handleQuickPlayClick}
                             title={isEn ? 'Game Room' : 'Salon de Jeu'}
-                            className={`h-10 flex items-center gap-2.5 w-full whitespace-nowrap rounded-r-lg px-3 text-sm font-bold transition-all duration-150 ${
-                                isHomeRoute && (selectedMode === null || selectedMode === 'ai') ? activeRailCls : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white'
+                            className={`h-10 flex items-center gap-2.5 w-full whitespace-nowrap rounded-r-lg px-3 text-sm transition-all duration-150 ${
+                                isHomeRoute ? activeRailCls : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white'
                             }`}
                         >
                             <LayoutGrid className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
@@ -149,9 +149,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         <button
                             type="button" data-testid="sidebar-find-player-btn" onClick={handleFindPlayerClick}
                             title={isEn ? 'Find a Player' : 'Trouver un joueur'}
-                            className={`h-9 flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 transition-all duration-150 ${
-                                selectedMode === 'multiplayer' ? activeRailCls : 'text-zinc-100 hover:bg-white/[0.04] hover:text-white'
-                            }`}
+                            className="h-9 flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 text-zinc-100 hover:bg-white/[0.04] hover:text-white transition-all duration-150"
                         >
                             <span className="flex items-center gap-2.5 truncate">
                                 <Users className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
@@ -191,7 +189,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                 <button type="button" data-testid="sidebar-beginner-audio-guide-btn" onClick={() => setIsGuideOpen(true)} className={itemCls}>
                                     <span className="flex items-center gap-2.5 truncate">
                                         <Headphones size={16} strokeWidth={1.5} className="text-[#38BDF8] shrink-0" />
-                                        {!collapsed && <span className="truncate">{isEn ? 'Audio Guide' : 'Guide Audio (6 chap.)'}</span>}
+                                        {!collapsed && <span className="truncate">{isEn ? 'Audio Guide & Rules' : 'Guide Audio & Règles'}</span>}
                                     </span>
                                 </button>
                                 <Link href="/puzzles?filter=personal-blunders" data-testid="sidebar-my-blunders-link" className={itemCls}>

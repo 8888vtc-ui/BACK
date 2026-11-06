@@ -113,26 +113,38 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                     </div>
                 </div>
 
-                {/* Barre fine des 2 boutons-capsules secondaires */}
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
-                    <button
-                        type="button"
-                        data-testid="beginner-open-guide-btn"
-                        onClick={() => setIsGuideOpen(true)}
-                        className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs sm:text-sm font-bold text-zinc-200 hover:border-[#D4AF37]/50 hover:bg-white/[0.08] active:scale-95 transition"
-                    >
-                        <BookOpen className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
-                        <span>{isEn ? 'Audio Guide (6 chapters)' : 'Guide Audio (6 chapitres)'}</span>
-                    </button>
-                    <button
-                        type="button"
-                        data-testid="beginner-openings-btn"
-                        onClick={() => setIsOpeningExplorerOpen(true)}
-                        className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs sm:text-sm font-bold text-zinc-200 hover:border-[#D4AF37]/50 hover:bg-white/[0.08] active:scale-95 transition"
-                    >
-                        <Dices className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
-                        <span>{isEn ? '15 Opening Moves' : 'Les 15 Coups d’Ouverture'}</span>
-                    </button>
+                {/* Bandeau d'accompagnement rassurant en 1 ligne sobre */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-5 py-3 text-xs sm:text-sm text-stone-300">
+                    <div className="flex flex-wrap items-center gap-1.5 text-center sm:text-left">
+                        <span className="font-bold text-[#F3E5AB]">
+                            {isEn ? 'Recommended path:' : 'Parcours recommandé :'}
+                        </span>
+                        <span className="text-zinc-300">
+                            {isEn
+                                ? '1. Learn the rules in 3 min (+2,000 PTS)  •  2. Play your first guided game with The Professor'
+                                : '1. Découvrez les règles en 3 min (+2 000 PTS)  •  2. Lancez votre 1re partie guidée avec Le Professeur'}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                        <button
+                            type="button"
+                            data-testid="beginner-open-guide-btn"
+                            onClick={() => setIsGuideOpen(true)}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D4AF37] hover:text-[#F3E5AB] hover:underline transition"
+                        >
+                            <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
+                            <span>{isEn ? 'Listen to Audio Guide' : 'Écouter le Guide Audio'}</span>
+                        </button>
+                        <button
+                            type="button"
+                            data-testid="beginner-openings-btn"
+                            onClick={() => setIsOpeningExplorerOpen(true)}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:underline transition"
+                        >
+                            <Dices className="w-3.5 h-3.5 text-zinc-400" strokeWidth={1.5} />
+                            <span>{isEn ? '15 Opening Moves' : 'Les 15 Ouvertures'}</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
