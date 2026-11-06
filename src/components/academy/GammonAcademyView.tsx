@@ -13,6 +13,7 @@
 
 import React from 'react';
 import AppNavbar from '../nav/AppNavbar';
+import { LobbyLeftSidebar } from '../lobby/LobbySidebarAndWidgets';
 import { useTranslation, type PrimaryLocale } from '../../i18n';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import AcademyBeginnerView from './AcademyBeginnerView';
@@ -32,18 +33,21 @@ export const GammonAcademyView: React.FC = () => {
     <div
       dir={dir}
       data-testid="gammon-academy-view"
-      className="min-h-dvh w-full overflow-y-auto text-slate-100 selection:bg-amber-600/40 flex flex-col relative"
+      className="h-dvh max-h-dvh w-full overflow-hidden text-slate-100 selection:bg-amber-600/40 flex flex-col relative"
       style={{
         background: 'radial-gradient(ellipse 85% 50% at 50% -8%, rgba(212, 175, 55, 0.14) 0%, rgba(20, 28, 46, 0.92) 42%, #090d16 78%, #04060b 100%)',
       }}
     >
       <AppNavbar activeTab="academy" />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
-        {tierGate === 'BEGINNER' && <AcademyBeginnerView isEn={isEn} />}
-        {tierGate === 'INTERMEDIATE' && <AcademyIntermediateView isEn={isEn} />}
-        {tierGate === 'EXPERT' && <AcademyExpertView locale={safeLocale} />}
-      </main>
+      <div className="flex flex-1 min-h-0 overflow-hidden w-full">
+        <LobbyLeftSidebar />
+        <main className="mx-auto w-full max-w-6xl flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+          {tierGate === 'BEGINNER' && <AcademyBeginnerView isEn={isEn} />}
+          {tierGate === 'INTERMEDIATE' && <AcademyIntermediateView isEn={isEn} />}
+          {tierGate === 'EXPERT' && <AcademyExpertView locale={safeLocale} />}
+        </main>
+      </div>
     </div>
   );
 };

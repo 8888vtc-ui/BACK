@@ -5,20 +5,20 @@
  *
  * Rôle : Hub complet de découverte, recherche, filtrage par cases à cocher [☑ Tournois] / [☑ Clubs],
  * carte du monde interactive, agenda personnel, palmarès et référencement d'un club inconnu.
- *
- * Dépendances : AppNavbar, TournamentCard, TournamentAgendaView, TournamentResultsArchiveView,
- * WorldVenuesMapDirectoryView, SubmitTournamentModal, tournamentEngine, tournamentService.
- * Retrait : Supprimer ce composant et sa route associée.
- * Strictly 0 `any`, React.memo, budget <= 295 lignes (SCALABILITY.md R1 & R2).
+ * Intègre la Sidebar gauche permanente (LobbyLeftSidebar), bilingue FR/EN, zéro emoji, zéro scroll 1440x900.
+ * Strictly 0 `any`, React.memo, budget <= 260 lignes (SCALABILITY.md R1 & R2).
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Building2 } from 'lucide-react';
 import AppNavbar from '../nav/AppNavbar';
-import TournamentCard from './TournamentCard';
+import { LobbyLeftSidebar } from '../lobby/LobbySidebarAndWidgets';
 import TournamentAgendaView from './TournamentAgendaView';
 import TournamentResultsArchiveView from './TournamentResultsArchiveView';
 import WorldVenuesMapDirectoryView from './WorldVenuesMapDirectoryView';
 import SubmitTournamentModal from './SubmitTournamentModal';
+import { useTranslation } from '../../i18n';
+import { getTournamentsDict } from '../../lib/i18n/tournamentsDict';
 import type {
     TournamentRecord, TournamentTier, TournamentRegion, TournamentFederation,
     TournamentSortField, TournamentSubmissionInput,
@@ -44,14 +44,17 @@ export interface TournamentWorldHubViewProps {
 
 const TIER_FILTERS: ReadonlyArray<{ id: TournamentTier | 'all'; label: string; testId: string }> = [
     { id: 'all', label: 'Tous', testId: 'filter-tier-all' },
-    { id: 'mega', label: '👑 MEGA (150+ j. / 50k€+)', testId: 'filter-tier-mega' },
-    { id: 'grand', label: '🏆 GRAND (50-150 j.)', testId: 'filter-tier-grand' },
-    { id: 'moyen', label: '🎖️ MOYEN (Clubs & Régional)', testId: 'filter-tier-moyen' },
+    { id: 'mega', label: 'MEGA (150+ j. / 50k€+)', testId: 'filter-tier-mega' },
+    { id: 'grand', label: 'GRAND (50-150 j.)', testId: 'filter-tier-grand' },
+    { id: 'moyen', label: 'MOYEN (Clubs & Régional)', testId: 'filter-tier-moyen' },
 ];
 
 const selectCls = 'rounded-xl border border-white/10 bg-[#141b2d] px-3 py-1.5 text-xs text-slate-200 focus:border-[#d4af37] focus:outline-none';
 
 const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = ({ initialTournaments }) => {
+    const { locale } = useTranslation();
+    const dict = getTournamentsDict(locale);
+
     const [tournaments, setTournaments] = useState<ReadonlyArray<TournamentRecord>>(initialTournaments ?? []);
     const [allVenues, setAllVenues] = useState<ReadonlyArray<WorldBackgammonVenue>>(WORLD_BACKGAMMON_VENUES);
     const [bookmarkedIds, setBookmarkedIds] = useState<ReadonlySet<string>>(new Set());
@@ -124,86 +127,81 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
 
     return (
         <div
-            className="h-dvh max-h-dvh w-full overflow-y-auto overflow-x-hidden overscroll-y-contain bg-[#070b13] text-slate-100 flex flex-col"
+            className="h-screen max-h-screen w-full overflow-hidden bg-[#070b13] text-slate-100 flex flex-col"
             data-testid="tournament-world-hub-view"
         >
             <AppNavbar activeTab="tournaments" />
 
-            <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-2.5 flex flex-col gap-2.5">
-                {/* Compact Horizontal Hero Bar (sans les 4 badges compteurs en doublon) */}
-                <header className="rounded-2xl border border-[#d4af37]/30 bg-gradient-to-r from-[#0e1626] via-[#0b101b] to-[#070b13] px-4 py-2.5 shadow-xl">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <h1 className="font-serif text-base sm:text-lg lg:text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                            <span className="text-[#d4af37]">🏛️</span>
-                            <span>OÙ JOUER : CARTE MONDIALE DES CLUBS &amp; TOURNOIS</span>
-                        </h1>
+            <div className="flex flex-1 min-h-0 overflow-hidden w-full">
+                <LobbyLeftSidebar />
 
-                        <div className="flex flex-wrap items-center gap-2 shrink-0">
-                            <button
-                                type="button"
-                                onClick={handleOpenSubmitClubFromHub}
-                                data-testid="open-submit-club-btn"
-                                className="rounded-xl border border-emerald-400/80 bg-emerald-500/20 px-3 py-1.5 text-xs font-bold text-emerald-200 hover:bg-emerald-500/30 transition"
-                            >
-                                + Enregistrer mon Club
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setIsSubmitModalOpen(true)}
-                                data-testid="open-submit-tournament-btn"
-                                className="rounded-xl border border-[#d4af37] bg-gradient-to-r from-amber-500/20 via-yellow-500/30 to-amber-500/20 px-3 py-1.5 text-xs font-bold text-yellow-200 hover:brightness-110 transition"
-                            >
-                                + Référencer un Tournoi
-                            </button>
+                <main className="flex-1 min-w-0 overflow-y-auto lg:overflow-hidden px-4 py-2.5 flex flex-col gap-3 max-w-7xl mx-auto">
+                    {/* Compact Horizontal Hero Bar */}
+                    <header className="rounded-2xl border border-white/10 bg-[#0b101b] px-4 py-2 shadow-xl shrink-0">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <h1 className="font-sans text-sm sm:text-base lg:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                                <Building2 size={18} strokeWidth={1.5} className="text-[#D4AF37] shrink-0" />
+                                <span>{dict.heroTitle}</span>
+                            </h1>
+
+                            <div className="flex flex-wrap items-center gap-2 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={handleOpenSubmitClubFromHub}
+                                    data-testid="open-submit-club-btn"
+                                    className="rounded-xl border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:border-[#D4AF37]/50 hover:text-white transition"
+                                >
+                                    {dict.registerClubBtn}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsSubmitModalOpen(true)}
+                                    data-testid="open-submit-tournament-btn"
+                                    className="rounded-xl border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:border-[#D4AF37]/50 hover:text-white transition"
+                                >
+                                    {dict.submitTournamentBtn}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </header>
+                    </header>
 
-                {/* Contrôles secondaires masqués (sr-only) — toute la filtration visible est fusionnée dans la barre unique de la carte */}
-                <div className="sr-only" aria-hidden="true">
-                    {viewMode !== 'grid' && viewMode !== 'venues' && (
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Rechercher par ville, pays, club"
-                            data-testid="tournament-search-input"
-                        />
-                    )}
-                    {TIER_FILTERS.map((item) => (
-                        <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => setSelectedTier(item.id)}
-                            data-testid={item.testId}
-                        >
-                            {item.label}
+                    {/* Contrôles secondaires sr-only */}
+                    <div className="sr-only" aria-hidden="true">
+                        {TIER_FILTERS.map((item) => (
+                            <button key={item.id} type="button" onClick={() => setSelectedTier(item.id)} data-testid={item.testId}>
+                                {item.label}
+                            </button>
+                        ))}
+                        <select value={selectedFederation} onChange={(e) => setSelectedFederation(e.target.value as TournamentFederation | 'all')} className={selectCls}>
+                            <option value="all">Toutes Fédérations</option><option value="WBGF">WBGF</option><option value="USBGF">USBGF</option><option value="FFB">FFB</option>
+                            <option value="UKBGF">UKBGF</option><option value="EUBGF">EUBGF</option><option value="WBA">WBA</option>
+                        </select>
+                        <select value={sortBy} onChange={(e) => setSortBy(e.target.value as TournamentSortField)} className={selectCls}>
+                            <option value="startDate">Trier : Date</option><option value="prizePool">Trier : Dotation</option>
+                            <option value="entryFee">Trier : Inscription</option><option value="tier">Trier : Prestige</option>
+                        </select>
+                        <button type="button" onClick={() => setOnlyBookmarked((prev) => !prev)} data-testid="filter-my-agenda">
+                            Mon Agenda ({bookmarkedIds.size})
                         </button>
-                    ))}
-                    <select value={selectedFederation} onChange={(e) => setSelectedFederation(e.target.value as TournamentFederation | 'all')} className={selectCls}>
-                        <option value="all">Toutes Fédérations</option><option value="WBGF">WBGF</option><option value="USBGF">USBGF</option><option value="FFB">FFB</option>
-                        <option value="UKBGF">UKBGF</option><option value="EUBGF">EUBGF</option><option value="WBA">WBA</option>
-                    </select>
-                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value as TournamentSortField)} className={selectCls}>
-                        <option value="startDate">Trier : Date</option><option value="prizePool">Trier : Dotation</option>
-                        <option value="entryFee">Trier : Inscription</option><option value="tier">Trier : Prestige</option>
-                    </select>
-                    <button
-                        type="button"
-                        onClick={() => setOnlyBookmarked((prev) => !prev)}
-                        data-testid="filter-my-agenda"
-                    >
-                        ⭐ Mon Agenda ({bookmarkedIds.size})
-                    </button>
-                    <button type="button" onClick={() => setViewMode('grid')} data-testid="view-mode-grid">🗂️ Tournois</button>
-                    <button type="button" onClick={() => setViewMode('venues')} data-testid="view-mode-venues">🌍 Carte &amp; Clubs</button>
-                    <button type="button" onClick={() => setViewMode('agenda')} data-testid="view-mode-agenda">📅 Agenda</button>
-                    <button type="button" onClick={() => setViewMode('results')} data-testid="view-mode-results">🏆 Palmarès</button>
-                </div>
+                        <button type="button" onClick={() => setViewMode('grid')} data-testid="view-mode-grid">Tournois</button>
+                        <button type="button" onClick={() => setViewMode('venues')} data-testid="view-mode-venues">Carte &amp; Clubs</button>
+                        <button type="button" onClick={() => setViewMode('agenda')} data-testid="view-mode-agenda">Agenda</button>
+                        <button type="button" onClick={() => setViewMode('results')} data-testid="view-mode-results">Palmarès</button>
+                    </div>
 
-                {/* Contenu selon viewMode */}
-                {viewMode === 'grid' ? (
-                    <div className="flex flex-col gap-6">
+                    {viewMode === 'agenda' ? (
+                        <TournamentAgendaView
+                            monthGroups={monthGroups}
+                            bookmarkedIds={bookmarkedIds}
+                            onlyBookmarked={onlyBookmarked}
+                            onToggleOnlyBookmarked={() => setOnlyBookmarked((prev) => !prev)}
+                            onToggleBookmark={handleToggleBookmark}
+                            onExportIcs={handleExportSingleIcs}
+                            onExportAllIcs={handleExportAllIcs}
+                        />
+                    ) : viewMode === 'results' ? (
+                        <TournamentResultsArchiveView results={filteredResults} />
+                    ) : (
                         <WorldVenuesMapDirectoryView
                             venues={filteredVenues}
                             tournaments={sortedTournaments}
@@ -219,70 +217,17 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                             onClubCreated={handleClubCreated}
                             onRegionPresetSelect={(region) => setSelectedRegion(region)}
                         />
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {sortedTournaments.map((t) => (
-                                <TournamentCard
-                                    key={t.id}
-                                    tournament={t}
-                                    isBookmarked={bookmarkedIds.has(t.id)}
-                                    onToggleBookmark={handleToggleBookmark}
-                                    onExportIcs={handleExportSingleIcs}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                ) : viewMode === 'venues' ? (
-                    <WorldVenuesMapDirectoryView
-                        venues={filteredVenues}
-                        tournaments={sortedTournaments}
-                        searchQuery={searchQuery}
-                        onSearchQueryChange={setSearchQuery}
-                        showClubs={showMapClubs}
-                        showTournaments={showMapTournaments}
-                        onToggleClubs={() => setShowMapClubs((prev) => !prev)}
-                        onToggleTournaments={() => setShowMapTournaments((prev) => !prev)}
-                        isSubmitClubOpen={isSubmitClubModalOpen}
-                        onOpenSubmitClub={() => setIsSubmitClubModalOpen(true)}
-                        onCloseSubmitClub={() => setIsSubmitClubModalOpen(false)}
-                        onClubCreated={handleClubCreated}
-                        onRegionPresetSelect={(region) => setSelectedRegion(region)}
-                    />
-                ) : viewMode === 'agenda' ? (
-                    <TournamentAgendaView
-                        monthGroups={monthGroups}
-                        bookmarkedIds={bookmarkedIds}
-                        onlyBookmarked={onlyBookmarked}
-                        onToggleOnlyBookmarked={() => setOnlyBookmarked((prev) => !prev)}
-                        onToggleBookmark={handleToggleBookmark}
-                        onExportIcs={handleExportSingleIcs}
-                        onExportAllIcs={handleExportAllIcs}
-                    />
-                ) : viewMode === 'results' ? (
-                    <TournamentResultsArchiveView results={filteredResults} />
-                ) : (
-                    <WorldVenuesMapDirectoryView
-                        venues={filteredVenues}
-                        tournaments={sortedTournaments}
-                        searchQuery={searchQuery}
-                        onSearchQueryChange={setSearchQuery}
-                        showClubs={showMapClubs}
-                        showTournaments={showMapTournaments}
-                        onToggleClubs={() => setShowMapClubs((prev) => !prev)}
-                        onToggleTournaments={() => setShowMapTournaments((prev) => !prev)}
-                        isSubmitClubOpen={isSubmitClubModalOpen}
-                        onOpenSubmitClub={() => setIsSubmitClubModalOpen(true)}
-                        onCloseSubmitClub={() => setIsSubmitClubModalOpen(false)}
-                        onClubCreated={handleClubCreated}
-                        onRegionPresetSelect={(region) => setSelectedRegion(region)}
-                    />
-                )}
-            </main>
+                    )}
+                </main>
+            </div>
 
-            <SubmitTournamentModal
-                isOpen={isSubmitModalOpen}
-                onClose={() => setIsSubmitModalOpen(false)}
-                onSubmitTournament={handleSubmitTournament}
-            />
+            {isSubmitModalOpen && (
+                <SubmitTournamentModal
+                    isOpen={isSubmitModalOpen}
+                    onClose={() => setIsSubmitModalOpen(false)}
+                    onSubmitTournament={handleSubmitTournament}
+                />
+            )}
         </div>
     );
 };

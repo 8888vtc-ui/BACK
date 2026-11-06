@@ -3,19 +3,20 @@
 /**
  * @file src/components/tournaments/InteractiveWorldMap.tsx
  * @description Carte du Monde Haute Horlogerie SVG (TopoJSON world-atlas 176 pays, 1000×500)
- * Dégradé #151E2B / #0F1722, liseré or #D4AF37, clusters anti-amas en Europe (+X clubs),
- * pilules de villes contrastées et cadrage mondial 100% zéro-scroll.
+ * Zéro emoji système, anti-chevauchement des labels en Europe en vue Monde, multilingue FR/EN,
+ * et cadrage mondial 100% zéro-scroll (h-[340px]).
  * Strictement <= 260 lignes, 0 any (SCALABILITY.md).
  */
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from '../../i18n';
+import { getTournamentsDict } from '../../lib/i18n/tournamentsDict';
 import type { WorldBackgammonVenue } from '../../features/tournaments/worldBackgammonVenues';
 import type { TournamentRecord } from '../../features/tournaments/tournamentTypes';
 import { getTournamentMapCoords } from '../../lib/supabase/tournamentService';
 import { WORLD_ATLAS_COUNTRY_PATHS } from './worldAtlasPaths';
 import {
     type RawMarkerNode,
-    type PositionedMarkerNode,
     computeSpiralOffsetMarkers,
 } from './mapMarkerLayout';
 
@@ -51,8 +52,8 @@ const PRESET_CAMERA: Readonly<Record<MapPresetRegionId, CameraState>> = {
     asia: { scale: 2.4, focusX: 740, focusY: 165, lat: 31, lng: 85 },
 };
 
-const GLOBAL_KEY_HUBS: ReadonlySet<string> = new Set([
-    'paris', 'monte-carlo', 'londres', 'geneve', 'copenhague', 'istanbul', 'athenes', 'new york', 'tokyo', 'dubai', 'sydney'
+const GLOBAL_SPACED_HUBS: ReadonlySet<string> = new Set([
+    'new york', 'tokyo', 'dubai', 'sydney',
 ]);
 
 export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.memo(({
@@ -68,6 +69,8 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
     onResetPreset,
     onSelectPreset,
 }) => {
+    const { locale } = useTranslation();
+    const dict = getTournamentsDict(locale);
     const [zoomDelta, setZoomDelta] = useState<number>(0);
     const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 
@@ -76,7 +79,7 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
     const baseCam = PRESET_CAMERA[activePreset] ?? PRESET_CAMERA.world;
     const effectiveScale = Math.max(0.9, Math.min(6, Number((baseCam.scale + zoomDelta).toFixed(2))));
     const pinScale = useMemo(() => Math.max(0.26, Math.min(1, 1 / Math.pow(effectiveScale, 0.72))), [effectiveScale]);
-    const isGlobalView = effectiveScale < 2.5;
+    const isGlobalView = effectiveScale < 2.2;
 
     const txPct = useMemo(() => ((500 - baseCam.focusX) / 1000) * 100 * effectiveScale, [baseCam.focusX, effectiveScale]);
     const tyPct = useMemo(() => ((242 - baseCam.focusY) / 425) * 100 * effectiveScale, [baseCam.focusY, effectiveScale]);
@@ -125,7 +128,7 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
             const cityLower = m.city.toLowerCase();
             if (cityAssigned.has(cityLower)) continue;
             if (isGlobalView) {
-                if (GLOBAL_KEY_HUBS.has(cityLower)) {
+                if (GLOBAL_SPACED_HUBS.has(cityLower)) {
                     keys.add(m.key);
                     cityAssigned.add(cityLower);
                 }
@@ -140,12 +143,12 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
     return (
         <div
             data-testid="interactive-world-map"
-            className="min-h-[460px] h-[460px] w-full bg-[#070B12] rounded-2xl border border-[#D4AF37]/30 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.85)] select-none"
+            className="min-h-[420px] h-[420px] w-full bg-[#070B12] rounded-2xl border border-[#D4AF37]/30 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.85)] select-none"
         >
-            <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 rounded-xl border border-[#D4AF37]/35 bg-[#070B12]/90 p-1.5 shadow-xl backdrop-blur-md">
-                <button type="button" data-testid="map-zoom-in-btn" onClick={() => setZoomDelta((d) => Math.min(3.5, Number((d + 0.6).toFixed(2))))} title="Zoomer (+)" aria-label="Zoomer sur la carte" className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-mono text-sm font-black text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 transition">+</button>
-                <button type="button" data-testid="map-zoom-out-btn" onClick={() => setZoomDelta((d) => Math.max(-(baseCam.scale - 0.9), Number((d - 0.6).toFixed(2))))} title="Dézoomer (-)" aria-label="Dézoomer la carte" className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-mono text-sm font-black text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 transition">−</button>
-                <button type="button" data-testid="map-zoom-reset-btn" onClick={() => { setZoomDelta(0); onResetPreset(); }} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:border-[#D4AF37] hover:text-white transition">Réinitialiser la vue</button>
+            <div className="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 rounded-xl border border-[#D4AF37]/35 bg-[#070B12]/90 p-1 shadow-xl backdrop-blur-md">
+                <button type="button" data-testid="map-zoom-in-btn" onClick={() => setZoomDelta((d) => Math.min(3.5, Number((d + 0.6).toFixed(2))))} title={dict.zoomInTitle} aria-label={dict.zoomInTitle} className="flex h-6 w-6 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-mono text-xs font-black text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 transition">+</button>
+                <button type="button" data-testid="map-zoom-out-btn" onClick={() => setZoomDelta((d) => Math.max(-(baseCam.scale - 0.9), Number((d - 0.6).toFixed(2))))} title={dict.zoomOutTitle} aria-label={dict.zoomOutTitle} className="flex h-6 w-6 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-mono text-xs font-black text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 transition">−</button>
+                <button type="button" data-testid="map-zoom-reset-btn" onClick={() => { setZoomDelta(0); onResetPreset(); }} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-bold text-slate-200 hover:border-[#D4AF37] hover:text-white transition">{dict.resetView}</button>
             </div>
 
             <div
@@ -165,7 +168,7 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
                     className="w-full h-full select-none"
                     preserveAspectRatio="xMidYMid meet"
                     role="img"
-                    aria-label="Carte mondiale interactive des tournois et clubs"
+                    aria-label={dict.heroTitle}
                 >
                     <defs>
                         <linearGradient id="landGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -187,41 +190,12 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
                         ))}
                     </g>
 
-                    {isGlobalView && frenchClusteredCount > 0 && (
-                        <g
-                            data-testid="map-cluster-france"
-                            onClick={() => (onSelectPreset ? onSelectPreset('france') : onResetPreset())}
-                            className="cursor-pointer group"
-                        >
-                            <rect
-                                x="520"
-                                y="118"
-                                width="58"
-                                height="18"
-                                rx="9"
-                                fill="rgba(11,16,27,0.92)"
-                                stroke="#D4AF37"
-                                strokeWidth="1.2"
-                                className="group-hover:stroke-amber-300 transition"
-                            />
-                            <text x="549" y="130.5" textAnchor="middle" fill="#FDE68A" fontSize="9.5" fontWeight="700">
-                                +{frenchClusteredCount} clubs 🔍
-                            </text>
-                        </g>
-                    )}
-
                     {positionedMarkers.map((marker) => {
                         const isClub = marker.kind === 'club';
                         const isSelected = isClub ? selectedVenueId === marker.id : selectedTournamentId === marker.id;
                         const isHovered = hoveredKey === marker.key;
-                        const showLabel = visibleCityLabelKeys.has(marker.key);
-                        const radius = (isSelected ? 7.2 : isHovered ? 6.2 : 5.0) * pinScale;
+                        const radius = (isSelected ? 6.8 : isHovered ? 5.8 : 4.6) * pinScale;
                         const mainColor = isClub ? '#10B981' : '#D4AF37';
-
-                        const pillWidth = Math.max(34, marker.city.length * 6.2 + 14) * pinScale;
-                        const pillHeight = 15 * pinScale;
-                        const pillX = marker.svgX - pillWidth / 2;
-                        const pillY = marker.svgY + marker.labelDy * pinScale - 10 * pinScale;
 
                         return (
                             <g
@@ -232,7 +206,7 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
                                 onMouseLeave={() => setHoveredKey(null)}
                                 className="cursor-pointer group"
                             >
-                                <circle cx={marker.svgX} cy={marker.svgY} r={12 * pinScale} fill={mainColor} opacity={isSelected ? 0.45 : isHovered ? 0.35 : 0.16} />
+                                <circle cx={marker.svgX} cy={marker.svgY} r={11 * pinScale} fill={mainColor} opacity={isSelected ? 0.45 : isHovered ? 0.35 : 0.16} />
                                 <circle
                                     cx={marker.svgX}
                                     cy={marker.svgY}
@@ -241,41 +215,70 @@ export const InteractiveWorldMap: React.FC<InteractiveWorldMapProps> = React.mem
                                     stroke={isSelected ? '#ffffff' : '#070B12'}
                                     strokeWidth={(isSelected ? 1.8 : 1.2) * pinScale}
                                 />
+                                <circle cx={marker.svgX} cy={marker.svgY} r={1.8 * pinScale} fill="#070B12" className="pointer-events-none" />
+                            </g>
+                        );
+                    })}
+
+                    {isGlobalView && frenchClusteredCount > 0 && (
+                        <g
+                            data-testid="map-cluster-france"
+                            onClick={() => (onSelectPreset ? onSelectPreset('france') : onResetPreset())}
+                            className="cursor-pointer group"
+                        >
+                            <rect
+                                x="412"
+                                y="116"
+                                width="54"
+                                height="16"
+                                rx="8"
+                                fill="rgba(11,16,27,0.95)"
+                                stroke="#D4AF37"
+                                strokeWidth="1"
+                                className="group-hover:stroke-amber-300 transition"
+                            />
+                            <text x="439" y="127" textAnchor="middle" fill="#FDE68A" fontSize="9" fontWeight="700">
+                                {dict.clusterClubsLabel(frenchClusteredCount)}
+                            </text>
+                        </g>
+                    )}
+
+                    {positionedMarkers.map((marker) => {
+                        if (!visibleCityLabelKeys.has(marker.key)) return null;
+                        const isClub = marker.kind === 'club';
+                        const isSelected = isClub ? selectedVenueId === marker.id : selectedTournamentId === marker.id;
+                        const isHovered = hoveredKey === marker.key;
+                        const pillWidth = Math.max(34, marker.city.length * 6.0 + 14) * pinScale;
+                        const pillHeight = 14 * pinScale;
+                        const isDenseEuropeGlobal = isGlobalView && marker.svgX >= 450 && marker.svgX <= 560 && marker.svgY <= 155;
+                        const pillX = isDenseEuropeGlobal ? marker.svgX - pillWidth - 8 * pinScale : marker.svgX - pillWidth / 2;
+                        const pillY = isDenseEuropeGlobal ? marker.svgY - 19 * pinScale : marker.svgY + marker.labelDy * pinScale - 10 * pinScale;
+                        const textX = pillX + pillWidth / 2;
+                        const textY = pillY + 9.8 * pinScale;
+
+                        return (
+                            <g key={`lbl-${marker.key}`} className="pointer-events-none select-none">
+                                <rect
+                                    x={pillX}
+                                    y={pillY}
+                                    width={pillWidth}
+                                    height={pillHeight}
+                                    rx={7 * pinScale}
+                                    fill="rgba(8,11,18,0.95)"
+                                    stroke={isSelected ? '#d4af37' : 'rgba(212,175,55,0.35)'}
+                                    strokeWidth={Math.max(0.6, 0.9 * pinScale)}
+                                />
                                 <text
-                                    x={marker.svgX}
-                                    y={marker.svgY + 2.2 * pinScale}
+                                    x={textX}
+                                    y={textY}
                                     textAnchor="middle"
-                                    fontSize={6.0 * pinScale}
-                                    className="pointer-events-none select-none"
+                                    fill={isSelected ? '#fde68a' : isHovered ? '#ffffff' : '#f1f5f9'}
+                                    fontSize={8.5 * pinScale}
+                                    fontWeight={isSelected || isHovered ? 'bold' : '600'}
+                                    data-testid={`map-city-label-${marker.slug}`}
                                 >
-                                    {isClub ? '🏛️' : '🏆'}
+                                    {marker.city}
                                 </text>
-                                {showLabel && (
-                                    <g className="pointer-events-none select-none">
-                                        <rect
-                                            x={pillX}
-                                            y={pillY}
-                                            width={pillWidth}
-                                            height={pillHeight}
-                                            rx={7.5 * pinScale}
-                                            fill="rgba(8,11,18,0.88)"
-                                            stroke={isSelected ? '#d4af37' : 'rgba(212,175,55,0.35)'}
-                                            strokeWidth={Math.max(0.6, 0.9 * pinScale)}
-                                        />
-                                        <text
-                                            x={marker.svgX}
-                                            y={marker.svgY + (marker.labelDy - 1.5) * pinScale}
-                                            textAnchor="middle"
-                                            fill={isSelected ? '#fde68a' : isHovered ? '#ffffff' : '#f1f5f9'}
-                                            fontSize={8.5 * pinScale}
-                                            fontWeight={isSelected || isHovered ? 'bold' : '600'}
-                                            className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
-                                            data-testid={`map-city-label-${marker.slug}`}
-                                        >
-                                            {marker.city}
-                                        </text>
-                                    </g>
-                                )}
                             </g>
                         );
                     })}

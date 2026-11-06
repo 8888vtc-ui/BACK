@@ -2,13 +2,14 @@
 
 /**
  * @file src/components/lobby/LobbySidebarAndWidgets.tsx
- * @description Barre latérale gauche rétractable regroupée en 3 blocs ("Tables", "Entraînement", "Circuit")
- * avec menu sur-mesure en mode Débutant, badge en ligne compact sur 1 ligne et zéro doublon.
+ * @description Barre latérale gauche universelle rétractable regroupée en 3 blocs ("Tables", "Entraînement", "Circuit")
+ * avec surbrillance active basée sur l'URL (usePathname), badge en ligne sur 1 ligne et zéro doublon.
  * Strictement <= 300 lignes, 0 `any`.
  */
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Sparkles, Flame, BarChart2, GraduationCap, ChevronRight, ChevronLeft, Users, Share2, LayoutGrid, Dices, Headphones } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
@@ -20,23 +21,23 @@ import { BeginnerInteractiveGuideModal } from '../beginner/BeginnerInteractiveGu
 import { BeginnerOpeningMovesExplorer } from '../beginner/BeginnerOpeningMovesExplorer';
 
 export interface LobbyLeftSidebarProps {
-    readonly selectedMode: 'ai' | 'multiplayer' | 'training' | null;
-    readonly matchLength: number;
+    readonly selectedMode?: 'ai' | 'multiplayer' | 'training' | null;
+    readonly matchLength?: number;
     readonly isSubmenuOpen?: boolean;
-    readonly onQuickPlay: () => void;
+    readonly onQuickPlay?: () => void;
     readonly onFindOpponent?: () => void;
     readonly onOpenPassport?: () => void;
-    readonly onSelectMoneyGame: () => void;
-    readonly onSelectMatchGame: () => void;
-    readonly onSelectAiMode: () => void;
-    readonly onSelectMultiplayerMode: () => void;
+    readonly onSelectMoneyGame?: () => void;
+    readonly onSelectMatchGame?: () => void;
+    readonly onSelectAiMode?: () => void;
+    readonly onSelectMultiplayerMode?: () => void;
     readonly onOpenModule?: (moduleId: LobbyModuleId) => void;
     readonly onOpenTableClock?: () => void;
-    readonly onOpenSettings: () => void;
+    readonly onOpenSettings?: () => void;
 }
 
 export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
-    selectedMode,
+    selectedMode = null,
     onQuickPlay,
     onFindOpponent,
     onOpenPassport,
@@ -48,6 +49,8 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     const isEn = locale === 'en';
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
+    const pathname = usePathname() || '/';
+
     const [collapsed, setCollapsed] = useState(false);
     const [blunderCount, setBlunderCount] = useState<number>(0);
     const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -63,20 +66,40 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
         }
     }, []);
 
-    const activeRailCls = 'border-l-2 border-[#D4AF37] bg-gradient-to-r from-[#D4AF37]/12 to-transparent text-[#F3E5AB]';
+    const activeRailCls = 'border-l-2 border-[#D4AF37] bg-white/[0.06] text-[#D4AF37] font-bold';
     const itemCls = 'flex items-center justify-between w-full whitespace-nowrap rounded-lg px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/[0.04] hover:text-white transition-all duration-150';
     const sectionLabelCls = 'px-3 pb-1 text-[11px] uppercase tracking-[0.15em] text-zinc-500 font-semibold';
+
+    const isHomeRoute = pathname === '/' || pathname === '/lobby';
+    const isTournamentsRoute = pathname.startsWith('/tournaments');
+    const isPuzzlesRoute = pathname.startsWith('/puzzles') || pathname.startsWith('/drills');
+    const isStudioRoute = pathname.startsWith('/analysis');
+    const isAcademyRoute = pathname.startsWith('/academy');
+
+    const handleQuickPlayClick = () => {
+        if (onQuickPlay && isHomeRoute) onQuickPlay();
+        else if (typeof window !== 'undefined') window.location.assign('/');
+    };
+    const handleFindPlayerClick = () => {
+        if (onSelectMultiplayerMode) onSelectMultiplayerMode();
+        else if (onFindOpponent) onFindOpponent();
+        else if (typeof window !== 'undefined') window.location.assign('/?mode=matchmaking&match=5');
+    };
+    const handleInviteClick = () => {
+        if (onOpenModule) onOpenModule('multiplayer');
+        else if (typeof window !== 'undefined') window.location.assign('/?invite=1');
+    };
 
     return (
         <>
             <aside
                 aria-label="Menu latéral principal"
                 data-testid="lobby-left-sidebar"
-                className={`hidden lg:flex flex-col justify-between shrink-0 border-r border-white/[0.06] bg-[#0B0E14]/90 backdrop-blur-md py-5 transition-all duration-200 select-none overflow-y-auto ${
+                className={`hidden lg:flex flex-col justify-between shrink-0 border-r border-white/[0.06] bg-[#0B0E14]/90 backdrop-blur-md py-4 transition-all duration-200 select-none overflow-y-auto ${
                     collapsed ? 'w-16 px-2 items-center' : 'w-60 px-3'
                 }`}
             >
-                <div className="flex flex-col gap-4 w-full">
+                <div className="flex flex-col gap-3.5 w-full">
                     {/* BLOC 1 : TABLES DE JEU & MATCHMAKING PERMANENT */}
                     <div className="flex flex-col gap-1">
                         {!collapsed && <span className={sectionLabelCls}>{isEn ? 'Tables' : 'Tables'}</span>}
@@ -84,14 +107,14 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         <button
                             type="button"
                             data-testid="sidebar-quick-play-btn"
-                            onClick={onQuickPlay}
-                            title={isEn ? 'Game Room' : 'Salon de Jeu'}
+                            onClick={handleQuickPlayClick}
+                            title={isEn ? 'Game Lobby' : 'Salon de Jeu'}
                             className={`flex items-center gap-2.5 w-full whitespace-nowrap rounded-r-lg px-3 py-2 text-xs font-bold transition-all duration-150 ${
-                                selectedMode === null || selectedMode === 'ai' ? activeRailCls : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white'
+                                isHomeRoute && (selectedMode === null || selectedMode === 'ai') ? activeRailCls : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white'
                             }`}
                         >
                             <LayoutGrid className="w-4 h-4 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
-                            {!collapsed && <span className="truncate">{isEn ? 'Game Room' : 'Salon de Jeu'}</span>}
+                            {!collapsed && <span className="truncate">{isEn ? 'Game Lobby' : 'Salon de Jeu'}</span>}
                         </button>
 
                         {isBeginner && (
@@ -112,11 +135,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         <button
                             type="button"
                             data-testid="sidebar-find-player-btn"
-                            onClick={() => {
-                                if (onSelectMultiplayerMode) onSelectMultiplayerMode();
-                                else if (onFindOpponent) onFindOpponent();
-                                else if (typeof window !== 'undefined') window.location.assign('/play?mode=matchmaking&match=5');
-                            }}
+                            onClick={handleFindPlayerClick}
                             title={`${onlinePlayersCount} ${isEn ? 'players online' : 'joueurs en ligne'}`}
                             className={`flex items-center justify-between w-full whitespace-nowrap rounded-r-lg px-3 py-2 text-xs font-semibold transition-all duration-150 ${
                                 selectedMode === 'multiplayer' ? activeRailCls : 'text-zinc-100 hover:bg-white/[0.04] hover:text-white'
@@ -140,7 +159,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                         <button
                             type="button"
                             data-testid="sidebar-invite-friend-btn"
-                            onClick={() => onOpenModule?.('multiplayer')}
+                            onClick={handleInviteClick}
                             title={isEn ? 'Invite a Friend (1-Click)' : 'Inviter un ami (1-Clic)'}
                             className="flex items-center gap-2.5 w-full whitespace-nowrap rounded-r-lg px-3 py-1.5 text-xs font-medium text-zinc-400 hover:bg-white/[0.04] hover:text-white transition-all duration-150"
                         >
@@ -155,7 +174,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
 
                         {isBeginner ? (
                             <>
-                                <Link href="/puzzles?mode=beginner-academy" data-testid="sidebar-my-quizzes-link" className={itemCls}>
+                                <Link href="/puzzles?mode=beginner-academy" data-testid="sidebar-my-quizzes-link" className={`${itemCls} ${isPuzzlesRoute ? activeRailCls : ''}`}>
                                     <span className="flex items-center gap-2.5 truncate">
                                         <Sparkles size={16} strokeWidth={1.5} className="text-[#10B981] shrink-0" />
                                         {!collapsed && <span className="truncate">{isEn ? '10-Lesson Initiation' : 'Initiation (10 Leçons)'}</span>}
@@ -187,7 +206,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                             </>
                         ) : (
                             <>
-                                <Link href="/puzzles" data-testid="sidebar-my-quizzes-link" className={itemCls}>
+                                <Link href="/puzzles" data-testid="sidebar-my-quizzes-link" className={`${itemCls} ${isPuzzlesRoute ? activeRailCls : ''}`}>
                                     <span className="flex items-center gap-2.5 truncate">
                                         <Sparkles size={16} strokeWidth={1.5} className="text-[#10B981] shrink-0" />
                                         {!collapsed && <span className="truncate">{isEn ? 'My Quizzes' : 'Mes Quiz'}</span>}
@@ -204,13 +223,13 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                                         </span>
                                     )}
                                 </Link>
-                                <Link href="/analysis" data-testid="sidebar-pillar-studio" className={itemCls}>
+                                <Link href="/analysis" data-testid="sidebar-pillar-studio" className={`${itemCls} ${isStudioRoute ? activeRailCls : ''}`}>
                                     <span className="flex items-center gap-2.5 truncate">
                                         <BarChart2 size={16} strokeWidth={1.5} className="text-[#D4AF37] shrink-0" />
                                         {!collapsed && <span className="truncate">{isEn ? 'Analysis Studio' : 'Studio d’Analyse'}</span>}
                                     </span>
                                 </Link>
-                                <Link href="/academy" data-testid="sidebar-pillar-academy" className={itemCls}>
+                                <Link href="/academy" data-testid="sidebar-pillar-academy" className={`${itemCls} ${isAcademyRoute ? activeRailCls : ''}`}>
                                     <span className="flex items-center gap-2.5 truncate">
                                         <GraduationCap size={16} strokeWidth={1.5} className="text-[#38BDF8] shrink-0" />
                                         {!collapsed && <span className="truncate">{isEn ? 'Academy' : 'Académie'}</span>}
@@ -223,7 +242,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     {/* BLOC 3 : CIRCUIT MONDIAL */}
                     <div className="flex flex-col gap-1">
                         {!collapsed && <span className={sectionLabelCls}>{isEn ? 'Tour' : 'Circuit'}</span>}
-                        <Link href="/tournaments" data-testid="sidebar-pillar-tournaments" className={itemCls}>
+                        <Link href="/tournaments" data-testid="sidebar-pillar-tournaments" className={`${itemCls} ${isTournamentsRoute ? activeRailCls : ''}`}>
                             <span className="flex items-center gap-2.5 truncate">
                                 <IconWorldTourLive size={15} className="text-[#D4AF37] shrink-0" />
                                 {!collapsed && <span className="truncate">{isEn ? 'Map: Tournaments & Clubs' : 'Carte : Tournois & Clubs'}</span>}
@@ -232,17 +251,20 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     </div>
                 </div>
 
-                {/* Pied de barre latérale (Zéro doublon Inviter des amis) */}
+                {/* Pied de barre latérale */}
                 <div className="flex flex-col gap-1 w-full pt-3 border-t border-white/[0.06]">
-                    {onOpenPassport && (
-                        <button type="button" data-testid="sidebar-passport-btn" onClick={onOpenPassport} className={itemCls}>
-                            <span className="flex items-center gap-2.5">
-                                <IconLuxuryCrown size={15} className="text-[#D4AF37]" />
-                                {!collapsed && <span>{isEn ? 'My Profile' : 'Mon Profil'}</span>}
-                            </span>
-                        </button>
-                    )}
-                    <button type="button" onClick={onOpenSettings} className={itemCls}>
+                    <button
+                        type="button"
+                        data-testid="sidebar-passport-btn"
+                        onClick={() => (onOpenPassport ? onOpenPassport() : window.location.assign('/progression'))}
+                        className={itemCls}
+                    >
+                        <span className="flex items-center gap-2.5">
+                            <IconLuxuryCrown size={15} className="text-[#D4AF37]" />
+                            {!collapsed && <span>{isEn ? 'My Profile' : 'Mon Profil'}</span>}
+                        </span>
+                    </button>
+                    <button type="button" onClick={() => onOpenSettings?.()} className={itemCls}>
                         <span className="flex items-center gap-2.5">
                             <IconHorologyGear size={15} className="text-zinc-400" />
                             {!collapsed && <span>{isEn ? 'Settings' : 'Réglages'}</span>}
@@ -257,13 +279,17 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                 </div>
             </aside>
 
-            <BeginnerInteractiveGuideModal
-                isOpen={isGuideOpen}
-                onClose={() => setIsGuideOpen(false)}
-                onStartGuidedMatch={() => { if (typeof window !== 'undefined') window.location.assign('/play?gate=beginner&start=guided'); }}
-                onOpenQuizzes={() => { if (typeof window !== 'undefined') window.location.assign('/puzzles?mode=beginner-academy'); }}
-            />
-            <BeginnerOpeningMovesExplorer isOpen={isOpeningExplorerOpen} onClose={() => setIsOpeningExplorerOpen(false)} />
+            {isGuideOpen && (
+                <BeginnerInteractiveGuideModal
+                    isOpen={isGuideOpen}
+                    onClose={() => setIsGuideOpen(false)}
+                    onStartGuidedMatch={() => { if (typeof window !== 'undefined') window.location.assign('/play?gate=beginner&start=guided'); }}
+                    onOpenQuizzes={() => { if (typeof window !== 'undefined') window.location.assign('/puzzles?mode=beginner-academy'); }}
+                />
+            )}
+            {isOpeningExplorerOpen && (
+                <BeginnerOpeningMovesExplorer isOpen={isOpeningExplorerOpen} onClose={() => setIsOpeningExplorerOpen(false)} />
+            )}
         </>
     );
 };

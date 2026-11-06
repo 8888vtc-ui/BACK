@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from '../../i18n';
 import type { PlayerTierGate } from '../../hooks/usePlayerTierGate';
 
 interface PlayerTierGateSwitchProps {
@@ -9,10 +10,14 @@ interface PlayerTierGateSwitchProps {
     readonly compact?: boolean;
 }
 
-const GATES: ReadonlyArray<{ readonly id: PlayerTierGate; readonly label: string; readonly badge: string }> = [
-    { id: 'BEGINNER', label: 'Débutant', badge: 'Découverte' },
-    { id: 'INTERMEDIATE', label: 'Intermédiaire', badge: 'Club' },
-    { id: 'EXPERT', label: 'Expert / Pro', badge: '3-Ply' },
+const GATES: ReadonlyArray<{
+    readonly id: PlayerTierGate;
+    readonly labelFr: string;
+    readonly labelEn: string;
+}> = [
+    { id: 'BEGINNER', labelFr: 'Débutant', labelEn: 'Beginner' },
+    { id: 'INTERMEDIATE', labelFr: 'Intermédiaire', labelEn: 'Intermediate' },
+    { id: 'EXPERT', labelFr: 'Expert / Pro', labelEn: 'Expert / Pro' },
 ];
 
 export const PlayerTierGateSwitch: React.FC<PlayerTierGateSwitchProps> = React.memo(({
@@ -20,11 +25,14 @@ export const PlayerTierGateSwitch: React.FC<PlayerTierGateSwitchProps> = React.m
     onSelectGate,
     compact = false,
 }) => {
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
+
     return (
         <div
             data-testid="player-tier-gate-switch"
             role="group"
-            aria-label="Sélection du niveau de jeu"
+            aria-label={isEn ? 'Select player level' : 'Sélection du niveau de jeu'}
             className={`inline-flex items-center rounded-xl border border-white/10 bg-black/60 p-0.5 backdrop-blur-md shadow-inner ${
                 compact ? 'gap-0.5' : 'gap-1'
             }`}
@@ -44,7 +52,7 @@ export const PlayerTierGateSwitch: React.FC<PlayerTierGateSwitchProps> = React.m
                                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.04] border border-transparent'
                         }`}
                     >
-                        <span>{g.label}</span>
+                        <span>{isEn ? g.labelEn : g.labelFr}</span>
                     </button>
                 );
             })}
@@ -52,4 +60,3 @@ export const PlayerTierGateSwitch: React.FC<PlayerTierGateSwitchProps> = React.m
     );
 });
 PlayerTierGateSwitch.displayName = 'PlayerTierGateSwitch';
-

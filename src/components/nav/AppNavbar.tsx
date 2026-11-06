@@ -59,13 +59,13 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
 
     const navItems = useMemo<ReadonlyArray<NavItem>>(
         () => [
-            { id: 'play', label: ui.navbar.play, icon: '🎲', href: '/', testId: 'nav-tab-play' },
-            { id: 'tournaments', label: ui.navbar.tournaments, icon: '🌍', href: '/tournaments', testId: 'nav-tab-tournaments' },
-            { id: 'puzzles', label: ui.navbar.puzzles, icon: '🧩', href: '/puzzles', moduleId: 'puzzles', testId: 'nav-tab-puzzles' },
-            { id: 'drills', label: ui.navbar.drills, icon: '🎯', href: '/puzzles?filter=personal-blunders', moduleId: 'drills', testId: 'nav-tab-drills' },
-            { id: 'openings', label: ui.navbar.openings, icon: '📖', href: '/academy', moduleId: 'openings', testId: 'nav-tab-openings' },
-            { id: 'progression', label: ui.navbar.progression, icon: '📊', href: '/progression', moduleId: 'stats', testId: 'nav-tab-progression' },
-            { id: 'academy', label: ui.navbar.academy, icon: '🏛️', href: '/academy', testId: 'nav-tab-academy' },
+            { id: 'play', label: ui.navbar.play, icon: '', href: '/', testId: 'nav-tab-play' },
+            { id: 'tournaments', label: ui.navbar.tournaments, icon: '', href: '/tournaments', testId: 'nav-tab-tournaments' },
+            { id: 'puzzles', label: ui.navbar.puzzles, icon: '', href: '/puzzles', moduleId: 'puzzles', testId: 'nav-tab-puzzles' },
+            { id: 'drills', label: ui.navbar.drills, icon: '', href: '/puzzles?filter=personal-blunders', moduleId: 'drills', testId: 'nav-tab-drills' },
+            { id: 'openings', label: ui.navbar.openings, icon: '', href: '/academy', moduleId: 'openings', testId: 'nav-tab-openings' },
+            { id: 'progression', label: ui.navbar.progression, icon: '', href: '/progression', moduleId: 'stats', testId: 'nav-tab-progression' },
+            { id: 'academy', label: ui.navbar.academy, icon: '', href: '/academy', testId: 'nav-tab-academy' },
         ],
         [ui.navbar],
     );
@@ -107,7 +107,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                 </a>
             </div>
 
-            <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 sm:gap-3 px-3 sm:px-8 overflow-hidden">
+            <div className="w-full flex h-14 items-center justify-between gap-2 sm:gap-3 px-4 sm:px-6">
                 {/* Gauche : Burger mobile + Marque épurée 2026 */}
                 <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                     <button
@@ -151,14 +151,6 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             </span>
                         </div>
                     </Link>
-                    {activeTab !== 'play' && tierGate !== 'BEGINNER' && (
-                        <span
-                            data-testid="app-version-badge"
-                            className="rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold tracking-tight shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] border-[#10B981]/35 bg-gradient-to-r from-[#0F2922]/90 via-[#0B0E14] to-[#D4AF37]/15 text-[#34D399]"
-                        >
-                            v3.1 • 3-Ply • Open Sage
-                        </span>
-                    )}
                 </div>
 
                 {/* Centre : Sélecteur 3 Portes visible + Liens sr-only */}
@@ -177,25 +169,14 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                                 onClick={(e) => handleItemClick(item, e)}
                                 className={isActive ? 'font-bold' : ''}
                             >
-                                <span aria-hidden="true">{item.icon}</span>
                                 <span>{item.label}</span>
                             </Link>
                         );
                     })}
                 </div>
 
-                {/* Droite : Pont d'acquisition Time-to-Fun < 3s + Statut Joueur/Invité + Elo + Bouton Installer l'App + Bouton Connexion */}
-                <div className="flex items-center gap-2 shrink-0">
-                    {activeTab !== 'play' && (
-                        <Link
-                            href="/?matchLength=7&tournament=Coach%20IA"
-                            data-testid="navbar-play-coach-cta"
-                            className="inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#D4AF37] via-[#f7d77e] to-[#b88924] px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#050505] shadow-[0_2px_14px_rgba(212,175,55,0.38)] transition hover:brightness-105 active:scale-95"
-                        >
-                            <span className="hidden 2xl:inline">🎲 JOUER CONTRE LE COACH IA</span>
-                            <span className="inline 2xl:hidden">🎲 Jouer</span>
-                        </Link>
-                    )}
+                {/* Droite : Capital 10 000 PTS + Installer l'App + FR | EN + Joueur Invité */}
+                <div className="flex items-center gap-2 shrink-0 whitespace-nowrap">
                     {statusBadge}
                     {/* Capital 10 000 PTS & Badges adaptatifs de niveau */}
                     <NavbarPointsAndBadges tierGate={tierGate} showStats={!statusBadge} />
@@ -213,7 +194,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                                 <polyline points="7 10 12 15 17 10" />
                                 <line x1="12" y1="15" x2="12" y2="3" />
                             </svg>
-                            <span className="whitespace-nowrap">{ui.pwa.installApp}</span>
+                            <span className="whitespace-nowrap">{locale === 'en' ? 'Install App' : "Installer l'App"}</span>
                         </button>
                     )}
                     {/* Bouton Rapide Toggle FR / EN */}
