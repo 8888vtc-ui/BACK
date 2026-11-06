@@ -3,8 +3,8 @@
 /**
  * @file src/components/beginner/AcademyBoardStageSvg.tsx
  * @description Plateau cinématique interactif SVG pour la mini-série vidéo d'initiation.
- * Cartouches opaques anti-collision, pions relevés nets, zéro blur.
- * Strictement <= 260 lignes, 0 `any`.
+ * Vraie animation continue 60 FPS des dés, pions et flèches sur les 5 épisodes.
+ * Strictement <= 300 lignes, 0 `any`.
  */
 
 import React from 'react';
@@ -22,51 +22,69 @@ export function getStagePointCoord(pt: number): { x: number; isTop: boolean } {
   return { x: 312 + (6 - pt) * 40 + 20, isTop: false };
 }
 
+function ease(t: number): number {
+  const c = Math.max(0, Math.min(1, t));
+  return c < 0.5 ? 4 * c * c * c : 1 - Math.pow(-2 * c + 2, 3) / 2;
+}
+
+function renderDie(x: number, y: number, value: number, angle = 0) {
+  const pips: Record<number, [number, number][]> = {
+    1: [[0, 0]],
+    2: [[-4, -4], [4, 4]],
+    3: [[-4, -4], [0, 0], [4, 4]],
+    4: [[-4, -4], [4, -4], [-4, 4], [4, 4]],
+    5: [[-4, -4], [4, -4], [0, 0], [-4, 4], [4, 4]],
+    6: [[-4, -5], [4, -5], [-4, 0], [4, 0], [-4, 5], [4, 5]],
+  };
+  const pts = pips[value] || [[0, 0]];
+  return (
+    <g transform={`translate(${x}, ${y}) rotate(${angle})`}>
+      <rect x="-11" y="-11" width="22" height="22" rx="4" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.2" />
+      {pts.map(([px, py], i) => (
+        <circle key={i} cx={px} cy={py} r="1.8" fill="#18181b" />
+      ))}
+    </g>
+  );
+}
+
 export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.memo(({
   episodeId,
   progress,
   isEn,
 }) => {
-  // 1. Épisode 1 : Course en fer à cheval
-  const ep1Dist = Math.min(1, Math.max(0, (progress - 0.25) / 0.45));
-  const ep1CheckerX = ep1Dist < 0.4 ? 532 - (ep1Dist / 0.4) * 480 : ep1Dist < 0.6 ? 48 : 48 + ((ep1Dist - 0.6) / 0.4) * 484;
-  const ep1CheckerY = ep1Dist < 0.4 ? 40 : ep1Dist < 0.6 ? 40 + ((ep1Dist - 0.4) / 0.2) * 248 : 288;
-  const ep1BorneOff = progress > 0.75 ? Math.min(15, Math.floor((progress - 0.75) * 60)) : 0;
+  // Episode 1 : Course & But Ultime
+  const ep1Dash = progress <= 0.35 ? (1 - progress / 0.35) * 1100 : 0;
+  const ep1MoveT = progress > 0.35 && progress <= 0.75 ? ease((progress - 0.35) / 0.40) : progress > 0.75 ? 1 : 0;
+  const ep1OffT = progress > 0.75 ? ease((progress - 0.75) / 0.25) : 0;
+  const ep1BorneOff = progress > 0.75 ? Math.min(15, Math.floor(ep1OffT * 15) + 1) : 0;
+  const ep1GlideX = 532 - (532 - 48) * Math.min(1, ep1MoveT * 2);
+  const ep1GlideY = ep1MoveT < 0.5 ? 40 : 40 + (280 - 40) * Math.min(1, (ep1MoveT - 0.5) * 2);
 
-  // 2. Épisode 2 : Construction de porte flèche 5
-  const ep2Move = Math.min(1, Math.max(0, (progress - 0.35) / 0.3));
-  const ep2White1X = 208 + (372 - 208) * ep2Move;
-  const ep2White2X = 332 + (372 - 332) * ep2Move;
-  const ep2BlockedBounce = progress > 0.7 ? Math.sin((progress - 0.7) * 20) * 18 : 0;
+  // Episode 2 : Construction de Porte
+  const ep2DoorT = progress > 0.35 && progress <= 0.70 ? ease((progress - 0.35) / 0.35) : progress > 0.70 ? 1 : 0;
+  const ep2W1X = 208 + (372 - 208) * ep2DoorT;
+  const ep2W2X = 332 + (372 - 332) * ep2DoorT;
+  const ep2Bounce = progress > 0.70 ? Math.max(0, Math.sin((progress - 0.70) * 16) * 45) : 0;
 
-  // 3. Épisode 3 : Frappe et expulsion vers la barre
-  const ep3WhiteMove = Math.min(1, Math.max(0, (progress - 0.3) / 0.25));
-  const ep3AttackerX = 532 - (532 - 372) * ep3WhiteMove;
-  const ep3AttackerY = 40;
-  const ep3HitFly = Math.min(1, Math.max(0, (progress - 0.55) / 0.25));
-  const ep3TargetX = 372 - (372 - 290) * ep3HitFly;
-  const ep3TargetY = 40 + (170 - 40) * ep3HitFly - Math.sin(ep3HitFly * Math.PI) * 55;
+  // Episode 3 : Frappe et Expulsion
+  const ep3AttT = progress <= 0.45 ? ease(progress / 0.45) : 1;
+  const ep3AttX = 532 - (532 - 372) * ep3AttT;
+  const ep3FlyT = progress > 0.45 ? Math.min(1, (progress - 0.45) / 0.40) : 0;
+  const ep3FlyX = 372 - (372 - 290) * ep3FlyT;
+  const ep3FlyY = 40 + (160 - 40) * ep3FlyT - Math.sin(ep3FlyT * Math.PI) * 75;
 
-  // 4. Épisode 4 : Mur de prime & 5. Videau
-  const ep4WallGates = Math.min(6, Math.floor(progress * 8));
-  const ep4JumperBounce = progress > 0.55 ? Math.abs(Math.sin((progress - 0.55) * 22)) * 30 : 0;
-  const ep5BorneOff = Math.min(15, Math.floor(progress * 18));
-  const ep5CubeScale = progress > 0.5 ? 1 + Math.min(0.5, (progress - 0.5) * 1.5) : 1;
+  // Episode 4 : Mur de 6 Portes (Prime)
+  const ep4Doors = progress <= 0.60 ? Math.min(6, Math.floor((progress / 0.60) * 6) + 1) : 6;
+  const ep4Jump = progress > 0.60 ? Math.abs(Math.sin((progress - 0.60) * 18)) : 0;
+
+  // Episode 5 : Bear-off & Videau
+  const ep5Off = progress <= 0.50 ? Math.min(15, Math.floor((progress / 0.50) * 15)) : 15;
+  const ep5CubeT = progress > 0.50 ? (progress - 0.50) / 0.50 : 0;
+  const ep5Scale = progress > 0.50 ? 1 + Math.sin(ep5CubeT * Math.PI) * 0.35 : 1;
 
   return (
     <div className="relative w-full aspect-[600/320] max-h-[240px] rounded-xl border border-[#D4AF37]/50 bg-[#07130e] shadow-2xl overflow-hidden">
-      <svg
-        viewBox="0 0 600 320"
-        data-testid="academy-animated-board-svg"
-        className="w-full h-full select-none object-contain"
-      >
-        <defs>
-          <marker id="stage-arrow" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
-            <polygon points="0 0, 6 3, 0 6" fill="#D4AF37" />
-          </marker>
-        </defs>
-
-        {/* Tapis de feutre émeraude, barre & sabot de sortie */}
+      <svg viewBox="0 0 600 320" data-testid="academy-animated-board-svg" className="w-full h-full select-none object-contain">
         <rect x="0" y="0" width="600" height="340" fill="#091813" />
         <rect x="276" y="0" width="28" height="340" fill="#040b08" stroke="#D4AF37" strokeOpacity="0.25" />
         <rect x="560" y="0" width="40" height="340" fill="#050e0a" stroke="#D4AF37" strokeOpacity="0.3" />
@@ -88,100 +106,117 @@ export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.m
         {episodeId === 1 && (
           <g>
             <path
-              d="M 532 40 L 48 40 C 12 40 12 288 48 288 L 532 288"
+              d="M 532 40 L 48 40 C 12 40 12 280 48 280 L 532 280"
               fill="none"
               stroke="#D4AF37"
               strokeWidth="5"
-              strokeDasharray="12 6"
+              strokeDasharray="1100"
+              strokeDashoffset={ep1Dash}
               strokeLinecap="round"
               opacity="0.85"
             />
-            <rect x="306" y="180" width="250" height="135" fill="rgba(16, 185, 129, 0.12)" stroke="#10B981" strokeDasharray="4 4" rx="8" />
-            <g transform="translate(430, 200)">
-              <rect x="-80" y="-10" width="160" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#10B981" strokeOpacity="0.4" />
-              <text x="0" y="3.5" fill="#34D399" fontSize="11" fontWeight="bold" textAnchor="middle">{isEn ? 'Home Board (Exit)' : 'Votre Maison (Sortie)'}</text>
+            <rect x="306" y="175" width="250" height="140" fill="rgba(16, 185, 129, 0.12)" stroke="#10B981" strokeDasharray="4 4" rx="8" />
+            <g transform="translate(430, 195)">
+              <rect x="-85" y="-12" width="170" height="24" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#10B981" strokeWidth="1" strokeOpacity="0.6" />
+              <text x="0" y="4" fill="#34D399" fontSize="12" fontWeight="bold" textAnchor="middle">{isEn ? '🏠 Home Board (Exit)' : '🏠 Votre Maison (Sortie)'}</text>
             </g>
 
+            {/* Dés animés lors de la course */}
+            {progress > 0.35 && progress <= 0.75 && (
+              <g>
+                {renderDie(415, 110, 6, progress * 360)}
+                {renderDie(448, 110, 5, -progress * 360)}
+              </g>
+            )}
+
+            {/* Pions blancs en mouvement */}
             {progress <= 0.75 ? (
-              <g transform={`translate(${ep1CheckerX}, ${ep1CheckerY})`}>
-                <circle cx="0" cy="0" r="13" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="2" />
-                <circle cx="0" cy="0" r="7" fill="#e5e5e5" />
+              <g>
+                <circle cx={ep1GlideX} cy={ep1GlideY} r="12" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="2" />
+                <circle cx="332" cy="285" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
+                <circle cx="372" cy="285" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
+                <circle cx="412" cy="285" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
               </g>
             ) : (
-              <g className="animate-bounce" transform="translate(430, 270)">
+              <g transform="translate(430, 270)">
                 <rect x="-80" y="-12" width="160" height="24" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="1" />
-                <text x="0" y="5" fill="#F3E5AB" fontSize="13" fontWeight="black" textAnchor="middle">
-                  {isEn ? '🏆 VICTORY!' : '🏆 VICTOIRE !'}
+                <text x="0" y="5" fill="#F3E5AB" fontSize="12" fontWeight="black" textAnchor="middle">
+                  {ep1BorneOff >= 15 ? (isEn ? '🏆 VICTORY!' : '🏆 VICTOIRE !') : `${ep1BorneOff} / 15 ${isEn ? 'borne off' : 'sortis'}`}
                 </text>
               </g>
             )}
-            {/* Sabot de sortie */}
+            {/* Sabot de sortie avec pions empilés */}
             {Array.from({ length: ep1BorneOff }).map((_, idx) => (
               <rect key={idx} x="566" y={320 - idx * 16} width="28" height="12" rx="4" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
             ))}
           </g>
         )}
 
-        {/* ================= ÉPISODE 2 : SÉCURITÉ & CONSTRUCTION DE PORTES ================= */}
+        {/* ================= ÉPISODE 2 : SÉCURITÉ & PORTE ================= */}
         {episodeId === 2 && (
           <g>
-            {/* Flèche 5 avec porte en formation */}
-            {progress < 0.4 ? (
+            {progress <= 0.35 && (
               <g>
-                <circle cx="372" cy="288" r="13" fill="#FAF6EE" stroke="#ef4444" strokeWidth="2.5" />
-                <g transform="translate(372, 255)">
-                  <rect x="-65" y="-9" width="130" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-                  <text x="0" y="3" fill="#f87171" fontSize="10" fontWeight="bold" textAnchor="middle">⚠️ {isEn ? 'Vulnerable Blot' : 'Pion Vulnérable'}</text>
-                </g>
-              </g>
-            ) : (
-              <g>
-                <circle cx={ep2White1X} cy="288" r="12" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-                <circle cx={ep2White2X} cy="270" r="12" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-                <g transform="translate(372, 240)">
-                  <rect x="-70" y="-10" width="140" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#10B981" strokeWidth="0.8" />
-                  <text x="0" y="3.5" fill="#34D399" fontSize="11" fontWeight="black" textAnchor="middle">🛡️ {isEn ? 'Safe Gate Made' : 'Porte Imprenable'}</text>
+                <circle cx="372" cy="285" r={12 + Math.sin(progress * 25) * 2} fill="#FAF6EE" stroke="#ef4444" strokeWidth="2.5" />
+                <g transform="translate(372, 245)">
+                  <rect x="-70" y="-9" width="140" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.8" />
+                  <text x="0" y="3.5" fill="#f87171" fontSize="10" fontWeight="bold" textAnchor="middle">⚠️ {isEn ? 'Vulnerable Blot' : 'Pion Seul Vulnérable'}</text>
                 </g>
               </g>
             )}
 
+            {progress > 0.35 && (
+              <g>
+                {progress <= 0.70 && (
+                  <g>
+                    {renderDie(415, 110, 3)}
+                    {renderDie(448, 110, 1)}
+                  </g>
+                )}
+                <circle cx={ep2W1X} cy="285" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+                <circle cx={ep2W2X} cy="268" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+                {progress > 0.70 && (
+                  <g transform="translate(372, 235)">
+                    <rect x="-75" y="-10" width="150" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#10B981" strokeWidth="1" />
+                    <text x="0" y="4" fill="#34D399" fontSize="11" fontWeight="black" textAnchor="middle">🛡️ {isEn ? 'Safe Gate Made' : 'Porte Imprenable'}</text>
+                  </g>
+                )}
+              </g>
+            )}
+
             {/* Pion adverse bloqué */}
-            <g transform={`translate(${372 + ep2BlockedBounce}, 180)`}>
+            <g transform={`translate(${372 - ep2Bounce}, 180)`}>
               <circle cx="0" cy="0" r="12" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
-              {progress > 0.7 && (
+              {progress > 0.70 && (
                 <g transform="translate(0, -22)">
                   <rect x="-60" y="-8" width="120" height="16" rx="5" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-                  <text x="0" y="3" fill="#fca5a5" fontSize="10" fontWeight="bold" textAnchor="middle">
-                    {isEn ? '⛔ Blocked!' : '⛔ Passage bloqué !'}
-                  </text>
+                  <text x="0" y="3" fill="#fca5a5" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? '⛔ Blocked!' : '⛔ Passage bloqué !'}</text>
                 </g>
               )}
             </g>
           </g>
         )}
 
-        {/* ================= ÉPISODE 3 : L'ATTAQUE & LA BARRE (PRISON) ================= */}
+        {/* ================= ÉPISODE 3 : FRAPPE & EXPULSION BARRE ================= */}
         {episodeId === 3 && (
           <g>
-            <circle cx={ep3AttackerX} cy={ep3AttackerY} r="12" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+            <circle cx={ep3AttX} cy="40" r="12" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
 
-            {progress < 0.55 ? (
+            {progress <= 0.45 ? (
               <g>
                 <circle cx="372" cy="40" r="12" fill="#18181b" stroke="#eab308" strokeWidth="2" />
                 <g transform="translate(372, 70)">
-                  <rect x="-50" y="-8" width="100" height="16" rx="5" fill="#090B10" fillOpacity="0.94" stroke="#eab308" strokeWidth="0.75" />
-                  <text x="0" y="3" fill="#fde047" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? 'Blot Target' : 'Cible isolée'}</text>
+                  <rect x="-55" y="-8" width="110" height="16" rx="5" fill="#090B10" fillOpacity="0.94" stroke="#eab308" strokeWidth="0.75" />
+                  <text x="0" y="3" fill="#fde047" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? 'Target Blot' : '🎯 Cible isolée'}</text>
                 </g>
               </g>
             ) : (
               <g>
-                <circle cx={ep3TargetX} cy={ep3TargetY} r="12" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
+                <circle cx={ep3FlyX} cy={ep3FlyY} r="12" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
                 {progress > 0.75 && (
-                  <g transform="translate(290, 200)">
-                    <rect x="-65" y="-9" width="130" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-                    <text x="0" y="3" fill="#f87171" fontSize="11" fontWeight="black" textAnchor="middle">
-                      {isEn ? '🔒 On the Bar!' : '🔒 Prison de la Barre'}
-                    </text>
+                  <g transform="translate(290, 205)">
+                    <rect x="-75" y="-10" width="150" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.8" />
+                    <text x="0" y="3.5" fill="#f87171" fontSize="11" fontWeight="black" textAnchor="middle">{isEn ? '🔒 Prisoner on Bar!' : '🔒 Prisonnier sur la Barre'}</text>
                   </g>
                 )}
               </g>
@@ -189,60 +224,49 @@ export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.m
           </g>
         )}
 
-        {/* ================= ÉPISODE 4 : LE MUR DE 6 PORTES (LA PRIME) ================= */}
+        {/* ================= ÉPISODE 4 : MUR DE 6 PORTES (PRIME) ================= */}
         {episodeId === 4 && (
           <g>
-            {Array.from({ length: ep4WallGates }).map((_, idx) => {
-              const x = 168 + idx * 40;
-              return (
-                <g key={idx}>
-                  <circle cx={x} cy="288" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-                  <circle cx={x} cy="270" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-                  <rect x={x - 8} y="225" width="16" height="30" fill="rgba(212,175,55,0.4)" stroke="#D4AF37" rx="3" />
-                </g>
-              );
-            })}
-            {ep4WallGates >= 6 && (
-              <g transform="translate(270, 210)">
-                <rect x="-105" y="-11" width="210" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
-                <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">
-                  {isEn ? '🧱 6-Prime Wall (Impassable)' : '🧱 Mur de 6 Portes (Infranchissable)'}
-                </text>
+            {[208, 332, 372, 412, 452, 492].slice(0, ep4Doors).map((x, idx) => (
+              <g key={idx}>
+                <circle cx={x} cy="285" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+                <circle cx={x} cy="268" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+                <rect x={x - 10} y="220" width="20" height="35" fill="rgba(212,175,55,0.4)" stroke="#D4AF37" rx="3" />
+              </g>
+            ))}
+            {ep4Doors >= 6 && (
+              <g transform="translate(350, 205)">
+                <rect x="-110" y="-11" width="220" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
+                <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">{isEn ? '🧱 6-Prime Wall (Impassable)' : '🧱 Mur de 6 Portes (Infranchissable)'}</text>
               </g>
             )}
-            <circle cx="128" cy={280 - ep4JumperBounce} r="12" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
-            {progress > 0.55 && (
-              <g transform="translate(128, 240)">
-                <rect x="-65" y="-9" width="130" height="18" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="0.8" />
-                <text x="0" y="3.5" fill="#fca5a5" fontSize="10" fontWeight="bold" textAnchor="middle">
-                  {isEn ? '⛔ Blocked!' : '⛔ Pion adverse bloqué'}
-                </text>
+            <circle cx={168 + ep4Jump * 30} cy={285 - ep4Jump * 35} r="12" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
+            {progress > 0.60 && (
+              <g transform="translate(168, 235)">
+                <rect x="-70" y="-9" width="140" height="18" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="0.8" />
+                <text x="0" y="3.5" fill="#fca5a5" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? '⛔ Blocked by Wall!' : '⛔ Bloqué par le Mur !'}</text>
               </g>
             )}
           </g>
         )}
 
-        {/* ================= ÉPISODE 5 : SORTIE & DÉ MULTIPLICATEUR (VIDEAU) ================= */}
+        {/* ================= ÉPISODE 5 : SORTIE & VIDEAU ================= */}
         {episodeId === 5 && (
           <g>
-            {Array.from({ length: 15 - ep5BorneOff }).map((_, idx) => (
-              <circle key={idx} cx={350 + (idx % 5) * 35} cy={288 - Math.floor(idx / 5) * 16} r="10" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
+            {Array.from({ length: 15 - ep5Off }).map((_, idx) => (
+              <circle key={idx} cx={350 + (idx % 5) * 35} cy={285 - Math.floor(idx / 5) * 16} r="10" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
             ))}
-            {Array.from({ length: ep5BorneOff }).map((_, idx) => (
+            {Array.from({ length: ep5Off }).map((_, idx) => (
               <rect key={idx} x="566" y={320 - idx * 16} width="28" height="12" rx="4" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
             ))}
-            <g transform={`translate(290, 110) scale(${ep5CubeScale})`}>
-              <rect x="-24" y="-24" width="48" height="48" rx="8" fill="#18181b" stroke="#D4AF37" strokeWidth="2.5" />
-              <text x="0" y="8" fill="#F3E5AB" fontSize="24" fontWeight="black" textAnchor="middle">
-                {progress > 0.5 ? '2' : '1'}
-              </text>
+            <g transform={`translate(290, 115) scale(${ep5Scale})`}>
+              <rect x="-22" y="-22" width="44" height="44" rx="8" fill="#18181b" stroke="#D4AF37" strokeWidth="2" />
+              <text x="0" y="8" fill="#F3E5AB" fontSize="22" fontWeight="black" textAnchor="middle">{progress > 0.50 ? '2' : '64'}</text>
             </g>
-            {progress > 0.5 && (
+            {progress > 0.50 && (
               <g transform="translate(290, 165)">
                 <rect x="-85" y="-10" width="170" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
-                <text x="0" y="3.5" fill="#F3E5AB" fontSize="12" fontWeight="black" textAnchor="middle">
-                  {isEn ? 'Double Stakes (x2)!' : 'Doublez la mise (x2) !'}
-                </text>
+                <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">{isEn ? '🎲 Double Stakes (×2)!' : '🎲 Doublez les enjeux : ×2 !'}</text>
               </g>
             )}
           </g>

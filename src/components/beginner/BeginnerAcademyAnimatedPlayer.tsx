@@ -53,18 +53,48 @@ export function BeginnerAcademyAnimatedPlayer({
   const animFrameRef = useRef<number | null>(null);
   const lastTimestampRef = useRef<number | null>(null);
 
-  // Synthèse vocale Web Speech API
+  // Sélection intelligente de la meilleure voix humaine (non-nasale / Natural)
+  const getBestNaturalVoice = useCallback((forEn: boolean): SpeechSynthesisVoice | null => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices || voices.length === 0) return null;
+    const pfx = forEn ? 'en' : 'fr';
+    const nat = voices.find(v => v.lang.startsWith(pfx) && (v.name.includes('Natural') || v.name.includes('Online')));
+    if (nat) return nat;
+    const goog = voices.find(v => v.lang.startsWith(pfx) && v.name.toLowerCase().includes('google'));
+    if (goog) return goog;
+    const prem = voices.find(v => v.lang.startsWith(pfx) && (v.name.includes('Thomas') || v.name.includes('Amélie') || v.name.includes('Samantha') || v.name.includes('Ava')));
+    return prem || voices.find(v => v.lang.startsWith(pfx)) || voices[0] || null;
+  }, []);
+
+  // Synthèse vocale Web Speech API avec prosodie MasterClass chaleureuse
   const speakCurrentCue = useCallback((text: string) => {
     if (!voiceEnabled || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = isEn ? 'en-US' : 'fr-FR';
-    utt.rate = 1.0;
-    utt.pitch = 1.05;
-    window.speechSynthesis.speak(utt);
-  }, [voiceEnabled, isEn]);
+    try {
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = isEn ? 'en-US' : 'fr-FR';
+      const bestVoice = getBestNaturalVoice(isEn);
+      if (bestVoice) utt.voice = bestVoice;
+      utt.rate = 0.96;
+      utt.pitch = 0.94;
+      window.speechSynthesis.speak(utt);
+    } catch {}
+  }, [voiceEnabled, isEn, getBestNaturalVoice]);
 
-  // Boucle de rendu fluide 60fps (requestAnimationFrame)
+  // Écouteur de chargement des voix système Chromium/Edge
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const onVoices = () => {};
+    window.speechSynthesis.onvoiceschanged = onVoices;
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, []);
+
+  // Boucle de rendu fluide 60fps (requestAnimationFrame) avec boucle continue
   useEffect(() => {
     if (!isPlaying) {
       lastTimestampRef.current = null;
@@ -82,10 +112,10 @@ export function BeginnerAcademyAnimatedPlayer({
       setCurrentTime(prev => {
         const next = prev + delta;
         if (next >= totalDuration) {
-          setIsPlaying(false);
           setCompletedEpisodes(done => (done.includes(episode.id) ? done : [...done, episode.id]));
           onEpisodeCompleted?.(episode.id);
-          return totalDuration;
+          lastSpokenCueIdRef.current = null;
+          return 0; // Boucle continue 60 FPS sans coupure
         }
         return next;
       });
@@ -110,35 +140,25 @@ export function BeginnerAcademyAnimatedPlayer({
   }, [isPlaying, activeCue, isEn, speakCurrentCue]);
 
   const handlePlayToggle = () => {
-    if (currentTime >= totalDuration) {
-      setCurrentTime(0);
-      lastSpokenCueIdRef.current = null;
-    }
+    if (currentTime >= totalDuration) { setCurrentTime(0); lastSpokenCueIdRef.current = null; }
     setIsPlaying(prev => !prev);
   };
 
   const handleReset = () => {
-    setIsPlaying(false);
-    setCurrentTime(0);
-    lastSpokenCueIdRef.current = null;
+    setIsPlaying(false); setCurrentTime(0); lastSpokenCueIdRef.current = null;
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
   };
 
   const handleSelectEpisode = (id: number) => {
-    handleReset();
-    setActiveEpisodeId(id);
-    setIsPlaying(true);
+    handleReset(); setActiveEpisodeId(id); setIsPlaying(true);
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = parseFloat(e.target.value);
-    setCurrentTime(newTime);
-    lastSpokenCueIdRef.current = null;
+    setCurrentTime(parseFloat(e.target.value)); lastSpokenCueIdRef.current = null;
   };
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
+    const mins = Math.floor(seconds / 60); const secs = Math.floor(seconds % 60);
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
@@ -158,17 +178,16 @@ export function BeginnerAcademyAnimatedPlayer({
               type="button"
               data-testid={`academy-episode-tab-${ep.id}`}
               onClick={() => handleSelectEpisode(ep.id)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 isActive
-                  ? 'bg-amber-400 text-black shadow-lg shadow-amber-400/20 ring-1 ring-amber-300'
+                  ? 'bg-white/[0.08] text-white border border-[#D4AF37]/60 shadow-sm ring-1 ring-[#D4AF37]/30'
                   : isDone
                   ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
                   : 'bg-white/5 text-neutral-400 hover:text-white hover:bg-white/10'
               }`}
             >
-              {isDone ? <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> : <span>#{ep.id}</span>}
-              <span>{isEn ? `Ep. ${ep.id}` : `Ép. ${ep.id}`}</span>
-              <span className="text-[10px] opacity-70">({ep.durationLabel})</span>
+              {isDone && <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />}
+              <span>{isEn ? `Ep. ${ep.id}` : `Ép. ${ep.id}`} ({ep.durationLabel})</span>
             </button>
           );
         })}
@@ -194,10 +213,12 @@ export function BeginnerAcademyAnimatedPlayer({
           className={`self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
             voiceEnabled ? 'bg-amber-400/10 text-amber-300 border border-amber-400/30' : 'bg-white/5 text-neutral-400 border border-white/10'
           }`}
-          title={voiceEnabled ? 'Voix activée' : 'Voix coupée'}
+          title={voiceEnabled ? 'Audio & Voix actifs' : 'Mode Muet actif'}
         >
           {voiceEnabled ? <Volume2 className="w-3.5 h-3.5 text-amber-400" /> : <VolumeX className="w-3.5 h-3.5" />}
-          <span>{voiceEnabled ? 'Voix FR/EN On' : 'Muet'}</span>
+          <span>{voiceEnabled
+            ? (isEn ? '🔊 Audio & Voice On' : '🔊 Audio & Voix Actifs')
+            : (isEn ? '🔇 Mute (Subtitles only)' : '🔇 Mode Muet (Sous-titres seuls)')}</span>
         </button>
       </div>
 
