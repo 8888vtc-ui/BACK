@@ -3,9 +3,8 @@
 /**
  * @file src/components/beginner/AcademyVisualBoardLesson.tsx
  * @description Plateau visuel interactif SVG pour les 10 leçons/quiz de l'Académie Débutant.
- * Affiche l'échiquier réel, les pions, la maison, la barre et les flèches d'action sans jargon.
- * Pilules sombres opaques anti-collision, zéro blur sur les pions blancs, hauteur <= 210px.
- * Strictement <= 260 lignes, 0 `any`.
+ * Cartouches sombres opaques, dés 3-1 sur le Quiz 4, pions nets non coupés en bas.
+ * Strictement <= 290 lignes, 0 `any`.
  */
 
 import React from 'react';
@@ -46,7 +45,7 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         <rect x="264" y="0" width="32" height="260" fill="#040b08" stroke="#D4AF37" strokeOpacity="0.3" />
         <rect x="536" y="0" width="64" height="260" fill="#050e0a" stroke="#D4AF37" strokeOpacity="0.4" />
 
-        {/* 24 Flèches triangulaires strictement identiques (6 à gauche, barre 32px, 6 à droite) */}
+        {/* 24 Flèches triangulaires */}
         {Array.from({ length: 24 }, (_, i) => i + 1).map((pt) => {
           const x = getPointX(pt);
           const isTop = pt >= 13;
@@ -74,32 +73,18 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 1. SENS DE CIRCULATION EN FER À CHEVAL */}
         {quizId === 1 && (
           <g>
-            <circle cx="516" cy="22" r="14" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1.5" />
+            <circle cx="516" cy="22" r="14" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
             <circle cx="516" cy="22" r="8" fill="none" stroke="#D4AF37" strokeWidth="0.75" opacity="0.6" />
-            <circle cx="516" cy="48" r="14" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1.5" />
+            <circle cx="516" cy="48" r="14" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
             <circle cx="516" cy="48" r="8" fill="none" stroke="#D4AF37" strokeWidth="0.75" opacity="0.6" />
-
             <g transform="translate(516, 76)">
               <rect x="-44" y="-10" width="88" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#F3E5AB" fontSize="9" fontWeight="bold" textAnchor="middle">
-                {isEn ? 'Start: Pt 24' : 'Départ : Case 24'}
-              </text>
+              <text x="0" y="3" fill="#F3E5AB" fontSize="9" fontWeight="bold" textAnchor="middle">{isEn ? 'Start: Pt 24' : 'Départ : Case 24'}</text>
             </g>
-
-            <path
-              d="M 498 48 L 44 48 C 10 48 10 220 44 220 L 460 220"
-              fill="none"
-              stroke="#D4AF37"
-              strokeWidth="5"
-              strokeDasharray="10 5"
-              markerEnd="url(#lesson-arrow-gold)"
-            />
-
+            <path d="M 498 48 L 44 48 C 10 48 10 220 44 220 L 460 220" fill="none" stroke="#D4AF37" strokeWidth="5" strokeDasharray="10 5" markerEnd="url(#lesson-arrow-gold)" />
             <g transform="translate(280, 32)">
               <rect x="-140" y="-12" width="280" height="22" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
-              <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">
-                {isEn ? 'Chemin en Fer à Cheval (Case 24 → Case 1)' : 'Chemin en Fer à Cheval (Case 24 → Case 1)'}
-              </text>
+              <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">{isEn ? 'Chemin en Fer à Cheval (Case 24 → Case 1)' : 'Chemin en Fer à Cheval (Case 24 → Case 1)'}</text>
             </g>
           </g>
         )}
@@ -108,14 +93,12 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {quizId === 2 && (
           <g>
             {Array.from({ length: 15 }).map((_, idx) => (
-              <circle key={idx} cx={330 + (idx % 6) * 35} cy={235 - Math.floor(idx / 6) * 18} r="9" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1.5" />
+              <circle key={idx} cx={330 + (idx % 6) * 35} cy={232 - Math.floor(idx / 6) * 18} r="9" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
             ))}
             <line x1="520" y1="220" x2="565" y2="220" stroke="#D4AF37" strokeWidth="4" markerEnd="url(#lesson-arrow-gold)" />
             <g transform="translate(424, 185)">
               <rect x="-115" y="-10" width="230" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#F3E5AB" fontSize="10" fontWeight="black" textAnchor="middle">
-                {isEn ? '15 Checkers Home → Bear Off into Tray' : '15 Dames à la Maison → Sortie au Sabot'}
-              </text>
+              <text x="0" y="3" fill="#F3E5AB" fontSize="10" fontWeight="black" textAnchor="middle">{isEn ? '15 Checkers Home → Bear Off into Tray' : '15 Dames à la Maison → Sortie au Sabot'}</text>
             </g>
           </g>
         )}
@@ -123,39 +106,51 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 3. PION SEUL VS PORTE (BOUCLIER) */}
         {quizId === 3 && (
           <g>
-            {/* Pion seul en danger */}
-            <circle cx="150" cy="245" r="12" fill="#F8F5EE" stroke="#ef4444" strokeWidth="2.5" />
-            <circle cx="150" cy="245" r="18" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 3" />
-            <g transform="translate(150, 192)">
+            <circle cx="150" cy="238" r="12" fill="#FAF6EE" stroke="#ef4444" strokeWidth="2.5" />
+            <circle cx="150" cy="238" r="18" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 3" />
+            <g transform="translate(150, 185)">
               <rect x="-75" y="-10" width="150" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.8" />
-              <text x="0" y="3.5" fill="#f87171" fontSize="10" fontWeight="bold" textAnchor="middle">
-                {isEn ? 'Single Checker (In danger)' : 'Pion Seul (En danger)'}
-              </text>
+              <text x="0" y="3.5" fill="#f87171" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? 'Single Checker (In danger)' : 'Pion Seul (En danger)'}</text>
             </g>
-
-            {/* Porte de 2 pions = Bouclier */}
-            <circle cx="420" cy="250" r="11" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1.5" />
-            <circle cx="420" cy="230" r="11" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1.5" />
-            <g transform="translate(420, 192)">
+            <circle cx="420" cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+            <circle cx="420" cy="218" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+            <g transform="translate(420, 185)">
               <rect x="-85" y="-10" width="170" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#10B981" strokeWidth="0.8" />
-              <text x="0" y="3.5" fill="#34D399" fontSize="10.5" fontWeight="black" textAnchor="middle">
-                {isEn ? 'Gate (2 Checkers = Shield)' : 'Porte (2 Pions = Bouclier)'}
-              </text>
+              <text x="0" y="3.5" fill="#34D399" fontSize="10.5" fontWeight="black" textAnchor="middle">{isEn ? 'Gate (2 Checkers = Shield)' : 'Porte (2 Pions = Bouclier)'}</text>
             </g>
           </g>
         )}
 
-        {/* 4. CONSTRUIRE UNE PORTE AVEC LES DÉS */}
+        {/* 4. CONSTRUIRE UNE PORTE AVEC LES DÉS (Dés 3 et 1 visibles au centre) */}
         {quizId === 4 && (
           <g>
-            <circle cx="210" cy="250" r="11" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1.5" />
-            <circle cx="460" cy="250" r="11" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1.5" />
-            <path d="M 210 235 Q 280 180 345 225" fill="none" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
-            <path d="M 460 235 Q 400 180 347 225" fill="none" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
-            <circle cx="346" cy="250" r="11" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="2" />
-            <g transform="translate(346, 192)">
-              <rect x="-105" y="-10" width="210" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#10B981" strokeWidth="0.8" />
-              <text x="0" y="3.5" fill="#34D399" fontSize="10.5" fontWeight="black" textAnchor="middle">
+            {/* 2 Petits Dés (3 et 1) au centre du tapis */}
+            <g transform="translate(280, 80)">
+              <rect x="-13" y="-28" width="26" height="26" rx="5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+              <circle cx="-6" cy="-21" r="2" fill="#18181b" />
+              <circle cx="0" cy="-15" r="2" fill="#18181b" />
+              <circle cx="6" cy="-9" r="2" fill="#18181b" />
+
+              <rect x="-13" y="4" width="26" height="26" rx="5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+              <circle cx="0" cy="17" r="2.5" fill="#18181b" />
+            </g>
+
+            {/* Pions de départ relevés à cy=238 (hors bordure) */}
+            <circle cx="210" cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+            <circle cx="460" cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+
+            {/* Flèches courbes qui passent largement sous le cartouche */}
+            <path d="M 210 224 Q 278 185 338 220" fill="none" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
+            <path d="M 460 224 Q 412 185 354 220" fill="none" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
+
+            {/* Porte résultante (2 pions sur flèche 5) */}
+            <circle cx="346" cy="238" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+            <circle cx="346" cy="220" r="11" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
+
+            {/* Cartouche opaque vert relevé à y=155 (au-dessus des flèches) */}
+            <g transform="translate(346, 155)">
+              <rect x="-110" y="-11" width="220" height="22" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#10B981" strokeWidth="1" strokeOpacity="0.5" />
+              <text x="0" y="4" fill="#34D399" fontSize="10.5" fontWeight="black" textAnchor="middle">
                 {isEn ? 'Convergence = Impassable Gate' : 'Convergence = Bouclier Imprenable'}
               </text>
             </g>
@@ -165,21 +160,17 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 5. FRAPPER UN PION ADVERSE ISOLÉ */}
         {quizId === 5 && (
           <g>
-            <circle cx="120" cy="35" r="12" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="2" />
+            <circle cx="120" cy="35" r="12" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="2" />
             <line x1="135" y1="35" x2="265" y2="35" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
             <circle cx="280" cy="35" r="12" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
             <g transform="translate(280, 68)">
               <rect x="-65" y="-9" width="130" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#f87171" fontSize="9" fontWeight="bold" textAnchor="middle">
-                {isEn ? 'Opponent blot' : 'Pion adverse seul'}
-              </text>
+              <text x="0" y="3" fill="#f87171" fontSize="9" fontWeight="bold" textAnchor="middle">{isEn ? 'Opponent blot' : 'Pion adverse seul'}</text>
             </g>
             <path d="M 280 35 Q 260 100 286 140" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeDasharray="4 3" markerEnd="url(#lesson-arrow-red)" />
             <g transform="translate(286, 160)">
               <rect x="-55" y="-9" width="110" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#ef4444" fontSize="10" fontWeight="black" textAnchor="middle">
-                {isEn ? 'To the Bar!' : 'Barre Centrale'}
-              </text>
+              <text x="0" y="3" fill="#ef4444" fontSize="10" fontWeight="black" textAnchor="middle">{isEn ? 'To the Bar!' : 'Barre Centrale'}</text>
             </g>
           </g>
         )}
@@ -188,13 +179,11 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {quizId === 6 && (
           <g>
             <rect x="272" y="100" width="28" height="80" fill="rgba(239, 68, 68, 0.25)" stroke="#ef4444" rx="4" />
-            <circle cx="286" cy="140" r="12" fill="#F8F5EE" stroke="#ef4444" strokeWidth="2.5" />
+            <circle cx="286" cy="140" r="12" fill="#FAF6EE" stroke="#ef4444" strokeWidth="2.5" />
             <path d="M 286 140 Q 320 80 430 35" fill="none" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
             <g transform="translate(286, 195)">
               <rect x="-75" y="-10" width="150" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-              <text x="0" y="3.5" fill="#fca5a5" fontSize="10" fontWeight="black" textAnchor="middle">
-                {isEn ? 'Priority #1 : Enter first' : 'Priorité #1 : Rentrer en jeu'}
-              </text>
+              <text x="0" y="3.5" fill="#fca5a5" fontSize="10" fontWeight="black" textAnchor="middle">{isEn ? 'Priority #1 : Enter first' : 'Priorité #1 : Rentrer en jeu'}</text>
             </g>
           </g>
         )}
@@ -204,19 +193,17 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
           <g>
             {[170, 208, 246, 326].map((x, i) => (
               <g key={i}>
-                <circle cx={x} cy="250" r="10" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1" />
-                <circle cx={x} cy="235" r="10" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1" />
-                <rect x={x - 6} y="200" width="12" height="20" fill="rgba(212,175,55,0.4)" stroke="#D4AF37" rx="2" />
+                <circle cx={x} cy="238" r="10" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
+                <circle cx={x} cy="220" r="10" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
+                <rect x={x - 6} y="195" width="12" height="18" fill="rgba(212,175,55,0.4)" stroke="#D4AF37" rx="2" />
               </g>
             ))}
-            <g transform="translate(250, 182)">
+            <g transform="translate(250, 175)">
               <rect x="-105" y="-10" width="210" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
-              <text x="0" y="3.5" fill="#F3E5AB" fontSize="10.5" fontWeight="black" textAnchor="middle">
-                {isEn ? 'Continuous Wall of Gates (Prime)' : 'Mur Continu de Portes (Prime)'}
-              </text>
+              <text x="0" y="3.5" fill="#F3E5AB" fontSize="10.5" fontWeight="black" textAnchor="middle">{isEn ? 'Continuous Wall of Gates (Prime)' : 'Mur Continu de Portes (Prime)'}</text>
             </g>
-            <circle cx="120" cy="245" r="11" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
-            <g transform="translate(120, 215)">
+            <circle cx="120" cy="238" r="11" fill="#18181b" stroke="#ef4444" strokeWidth="2" />
+            <g transform="translate(120, 210)">
               <rect x="-35" y="-9" width="70" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
               <text x="0" y="3" fill="#fca5a5" fontSize="9" fontWeight="bold" textAnchor="middle">Bloqué !</text>
             </g>
@@ -227,20 +214,16 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {quizId === 8 && (
           <g>
             {Array.from({ length: 14 }).map((_, idx) => (
-              <circle key={idx} cx={340 + (idx % 5) * 36} cy={250 - Math.floor(idx / 5) * 18} r="9" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1" />
+              <circle key={idx} cx={340 + (idx % 5) * 36} cy={238 - Math.floor(idx / 5) * 18} r="9" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
             ))}
-            <circle cx="100" cy="245" r="12" fill="#F8F5EE" stroke="#ef4444" strokeWidth="3" />
-            <g transform="translate(100, 215)">
+            <circle cx="100" cy="238" r="12" fill="#FAF6EE" stroke="#ef4444" strokeWidth="3" />
+            <g transform="translate(100, 195)">
               <rect x="-65" y="-9" width="130" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#fca5a5" fontSize="9.5" fontWeight="black" textAnchor="middle">
-                {isEn ? '1 Laggard Outside!' : '1 Retardataire Dehors !'}
-              </text>
+              <text x="0" y="3" fill="#fca5a5" fontSize="9.5" fontWeight="black" textAnchor="middle">{isEn ? '1 Laggard Outside!' : '1 Retardataire Dehors !'}</text>
             </g>
-            <g transform="translate(424, 182)">
+            <g transform="translate(424, 175)">
               <rect x="-120" y="-9" width="240" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#ef4444" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#f87171" fontSize="9" fontWeight="bold" textAnchor="middle">
-                {isEn ? 'Cannot bear off yet (All 15 must be home)' : 'Sortie interdite tant que les 15 ne sont pas rentrés'}
-              </text>
+              <text x="0" y="3" fill="#f87171" fontSize="9" fontWeight="bold" textAnchor="middle">{isEn ? 'Cannot bear off yet (All 15 must be home)' : 'Sortie interdite tant que les 15 ne sont pas rentrés'}</text>
             </g>
           </g>
         )}
@@ -249,14 +232,12 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {quizId === 9 && (
           <g>
             {Array.from({ length: 15 }).map((_, idx) => (
-              <rect key={idx} x="556" y={260 - idx * 16} width="38" height="11" rx="3" fill="#F8F5EE" stroke="#D4AF37" strokeWidth="1" />
+              <rect key={idx} x="556" y={256 - idx * 16} width="38" height="11" rx="3" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
             ))}
             <g transform="translate(270, 125)">
               <rect x="-115" y="-30" width="230" height="60" fill="#090B10" fillOpacity="0.94" stroke="#eab308" strokeWidth="1.5" rx="8" />
               <text x="0" y="-5" fill="#F3E5AB" fontSize="16" fontWeight="black" textAnchor="middle">×2 POINTS</text>
-              <text x="0" y="15" fill="#fbbf24" fontSize="10" fontWeight="bold" textAnchor="middle">
-                Gammon : {isEn ? 'Opponent bore off 0 checkers' : "L'adversaire n'en a sorti aucun"}
-              </text>
+              <text x="0" y="15" fill="#fbbf24" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? 'Gammon : Opponent bore off 0 checkers' : "Gammon : L'adversaire n'en a sorti aucun"}</text>
             </g>
           </g>
         )}
@@ -270,9 +251,7 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
             </g>
             <g transform="translate(286, 185)">
               <rect x="-135" y="-10" width="270" height="20" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
-              <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">
-                {isEn ? 'Doubling Cube : Propose to Double Match Stakes' : 'Dé Multiplicateur : Proposez de Doubler la Mise'}
-              </text>
+              <text x="0" y="3.5" fill="#F3E5AB" fontSize="11" fontWeight="black" textAnchor="middle">{isEn ? 'Doubling Cube : Propose to Double Match Stakes' : 'Dé Multiplicateur : Proposez de Doubler la Mise'}</text>
             </g>
           </g>
         )}

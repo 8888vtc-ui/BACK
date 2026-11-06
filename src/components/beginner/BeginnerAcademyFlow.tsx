@@ -171,7 +171,7 @@ export function BeginnerAcademyFlow({
                       <span className="font-semibold text-white leading-tight truncate">{lang === 'fr' ? opt.labelFr : opt.labelEn}</span>
                       {selectedOptionId && opt.isCorrect && <span className="text-[#D4AF37] font-bold text-[11px] shrink-0 ml-2">➔ Flèche Dorée</span>}
                     </div>
-                    {selectedOptionId && <span className="text-[11px] mt-0.5 text-neutral-200 leading-tight">{lang === 'fr' ? opt.explanationFr : opt.explanationEn}</span>}
+                    {(isSelected || (selectedOptionId && opt.isCorrect)) && <span className="text-[11px] mt-0.5 text-neutral-200 leading-tight">{lang === 'fr' ? opt.explanationFr : opt.explanationEn}</span>}
                   </div>
                 </button>
               );

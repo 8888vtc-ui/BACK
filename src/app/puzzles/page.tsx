@@ -7,12 +7,13 @@ import AppNavbar from '../../components/nav/AppNavbar';
 import { LobbyLeftSidebar } from '../../components/lobby/LobbySidebarAndWidgets';
 
 export interface PuzzlesPageProps {
-    searchParams?: Promise<{ mode?: string; filter?: string; concept?: string; type?: string }>;
+    searchParams?: Promise<{ mode?: string; filter?: string; concept?: string; type?: string; gate?: string }>;
 }
 
 export async function generateMetadata({ searchParams }: PuzzlesPageProps): Promise<Metadata> {
     const resolvedParams = searchParams ? await searchParams : undefined;
-    if (resolvedParams?.mode === 'beginner-academy') {
+    const isBeginner = resolvedParams?.mode === 'beginner-academy' || resolvedParams?.gate === 'beginner' || resolvedParams?.filter === 'beginner';
+    if (isBeginner) {
         return {
             title: "Académie d'Initiation — Backgammon Tour",
             description: "10 leçons et quiz interactifs sur l'échiquier réel pour maîtriser les bases du Backgammon.",
@@ -38,7 +39,7 @@ export async function generateMetadata({ searchParams }: PuzzlesPageProps): Prom
 
 export default async function PuzzlesPage({ searchParams }: PuzzlesPageProps) {
     const resolvedParams = searchParams ? await searchParams : undefined;
-    const isBeginnerAcademy = resolvedParams?.mode === 'beginner-academy';
+    const isBeginnerAcademy = resolvedParams?.mode === 'beginner-academy' || resolvedParams?.gate === 'beginner';
     const initialMode =
         resolvedParams?.filter === 'personal-blunders' || resolvedParams?.mode === 'personal_blunders'
             ? 'personal_blunders'

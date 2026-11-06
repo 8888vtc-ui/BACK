@@ -119,27 +119,27 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
       },
     ],
   },
-  // QUIZ 4 (Réponse A)
+  // QUIZ 4 (Réponse B)
   {
     id: 4, linkedEpisodeId: 2, pointsReward: 200, dice: [3, 1], boardHighlights: {},
     titleFr: "Quiz 4/10 : Construire une Porte avec les Dés",
     titleEn: "Quiz 4/10: Building a Gate with Dice",
-    questionFr: "Regardez les flèches dorées sur le plateau : pourquoi ce déplacement est-il le meilleur ?",
-    questionEn: "Look at the golden arrows on the board: why is this move the best?",
+    questionFr: "Pourquoi ce déplacement simultané de deux pions est-il le meilleur coup\u00A0?",
+    questionEn: "Why is this simultaneous two-checker move the optimal play?",
     options: [
       {
-        id: "A", isCorrect: true,
-        labelFr: "Parce qu'il réunit deux pions ensemble pour créer un bouclier imprenable",
-        labelEn: "Because it brings two checkers together to create an impassable shield",
-        explanationFr: "Exact ! Réunir 2 pions crée une nouvelle Porte sécurisée que l'adversaire ne peut attaquer.",
-        explanationEn: "Exact! Combining 2 checkers makes a safe Gate that the opponent cannot attack.",
-      },
-      {
-        id: "B", isCorrect: false,
+        id: "A", isCorrect: false,
         labelFr: "Parce qu'il sépare deux pions pour les rendre plus vulnérables",
         labelEn: "Because it splits two checkers to make them more vulnerable",
         explanationFr: "Séparer ses pions augmente le danger au lieu de vous protéger.",
         explanationEn: "Splitting checkers increases danger instead of protecting you.",
+      },
+      {
+        id: "B", isCorrect: true,
+        labelFr: "Parce qu'il réunit deux pions ensemble pour créer un bouclier imprenable",
+        labelEn: "Because it brings two checkers together to create an impassable shield",
+        explanationFr: "Exact ! Réunir 2 pions crée une nouvelle Porte sécurisée que l'adversaire ne peut attaquer.",
+        explanationEn: "Exact! Combining 2 checkers makes a safe Gate that the opponent cannot attack.",
       },
       {
         id: "C", isCorrect: false,
