@@ -35,6 +35,24 @@ export interface AnalysisControlPanelProps {
     readonly coachExplanation?: string;
 }
 
+export function formatCubeAdvice(rec?: string): string {
+    if (!rec) return 'Pas de Double (Garder le Videau à 1)';
+    const upper = rec.toUpperCase();
+    if (upper.includes('NO DOUBLE') || upper.includes('NO_DOUBLE')) {
+        return 'Pas de Double (Garder le Videau à 1)';
+    }
+    if (upper.includes('DOUBLE') && upper.includes('TAKE')) {
+        return 'Doubler maintenant (×2) / Prendre';
+    }
+    if (upper.includes('DOUBLE') && upper.includes('PASS')) {
+        return 'Doubler maintenant (×2) / Passer';
+    }
+    if (upper.includes('TOO GOOD')) {
+        return 'Trop beau pour doubler (Jouer le gammon)';
+    }
+    return rec;
+}
+
 const DIE_FACES: ReadonlyArray<string> = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
 export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
@@ -207,7 +225,7 @@ export const AnalysisControlPanel: React.FC<AnalysisControlPanelProps> = ({
                     {/* Conseil Videau 3-Ply */}
                     <div data-testid="cube-decision-box" className="p-2 rounded-xl border border-sky-400/30 bg-sky-950/40 text-xs flex items-center justify-between">
                         <span className="font-bold text-sky-300 uppercase">Conseil Videau 3-Ply :</span>
-                        <span className="font-mono font-bold text-white">{cubeRecommendation}</span>
+                        <span className="font-mono font-bold text-white">{formatCubeAdvice(cubeRecommendation)}</span>
                     </div>
 
                     {/* 4. Explication du Coach */}

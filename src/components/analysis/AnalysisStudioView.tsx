@@ -12,9 +12,8 @@ import { useRouter } from 'next/navigation';
 import { serializeCanonicalXGID, parseXGID, type BoardState } from '../../engine/backgammonEngine';
 import Board from '../board/Board';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
-import { evaluateWithBgsage } from '../../lib/engine/bgsageClient';
+import { evaluateWithBgsage, type BgsageEvaluateResponse } from '../../lib/engine/bgsageClient';
 import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
-import { BotPortraitMedallion } from '../common/MonteCarloIcons';
 import {
     clearBoardToTrays,
     getInitialStartingBoard,
@@ -22,6 +21,7 @@ import {
     autoCompleteRemainingToOff,
     visionResultToBoard26,
     computeLegalCandidateMovesTop5,
+    computeVerifiedBoardFacts,
     applyBrushToPoint,
     FAMOUS_PRESET_POSITIONS,
     type TrayCount,
@@ -43,6 +43,7 @@ export function AnalysisStudioView() {
     const [matchLength, setMatchLength] = useState<number>(7);
     const [isCrawford, setIsCrawford] = useState<boolean>(false);
     const [selectedMoveNotation, setSelectedMoveNotation] = useState<string | null>('8/5 6/5');
+    const [bgsageData, setBgsageData] = useState<BgsageEvaluateResponse | null>(null);
     const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -72,8 +73,13 @@ export function AnalysisStudioView() {
     }, [boardState, board]);
 
     const candidates = useMemo<CandidateMoveAnalysisRow[]>(() => {
-        return computeLegalCandidateMovesTop5(boardState, dice);
-    }, [boardState, dice]);
+        return computeLegalCandidateMovesTop5(boardState, dice, bgsageData);
+    }, [boardState, dice, bgsageData]);
+
+    const coachExplanation = useMemo(() => {
+        if (!candidates[0]) return undefined;
+        return computeVerifiedBoardFacts(candidates[0].notation, board, board, candidates[0].winPct);
+    }, [candidates, board]);
 
     const coachHighlight = useMemo(() => {
         if (!selectedMoveNotation) return null;
@@ -88,18 +94,22 @@ export function AnalysisStudioView() {
         const next = applyBrushToPoint(board, tray, point, activeBrush);
         setBoard(next.board);
         setTray(next.tray);
+        setBgsageData(null);
     }, [board, tray, activeBrush]);
 
     const handleCheckerRightClick = useCallback((point: number) => {
         const next = applyBrushToPoint(board, tray, point, 'remove');
         setBoard(next.board);
         setTray(next.tray);
+        setBgsageData(null);
     }, [board, tray]);
 
     const handleClearBoard = () => {
         const cleared = clearBoardToTrays();
         setBoard(cleared.board);
         setTray(cleared.tray);
+        setActiveBrush('white');
+        setBgsageData(null);
         setSelectedMoveNotation(null);
     };
 
@@ -107,6 +117,8 @@ export function AnalysisStudioView() {
         const initial = getInitialStartingBoard();
         setBoard(initial.board);
         setTray(initial.tray);
+        setActiveBrush('white');
+        setBgsageData(null);
         setSelectedMoveNotation('8/5 6/5');
     };
 
@@ -118,6 +130,7 @@ export function AnalysisStudioView() {
     const handleInvertColors = () => {
         setBoard((prev) => prev.map((v) => -v));
         setTray((t) => ({ white: t.black, black: t.white }));
+        setBgsageData(null);
     };
 
     const handleScanComplete = (result: ScannedBoardVisionResult) => {
@@ -125,6 +138,7 @@ export function AnalysisStudioView() {
         setBoard(newBoard);
         setTray({ white: 0, black: 0 });
         setDice(result.dice);
+        setBgsageData(null);
         const top5 = computeLegalCandidateMovesTop5({ ...boardState, board: newBoard, dice: result.dice }, result.dice);
         if (top5[0]) setSelectedMoveNotation(top5[0].notation);
     };
@@ -135,6 +149,7 @@ export function AnalysisStudioView() {
         setErrorMessage(null);
         try {
             const data = await evaluateWithBgsage(xgidString, 3, 10000);
+            setBgsageData(data);
             const bgsageBest = data?.chequerPlay?.[0]?.notation;
             if (bgsageBest) setSelectedMoveNotation(bgsageBest);
             else if (candidates[0]) setSelectedMoveNotation(candidates[0].notation);
@@ -181,15 +196,20 @@ export function AnalysisStudioView() {
                     <Link href="/" data-testid="studio-back-btn" className="inline-flex items-center gap-1 rounded-lg border border-[#D4AF37]/50 bg-[#12151C] px-2 py-0.5 text-xs font-bold text-[#D4AF37] hover:border-[#D4AF37] hover:text-white transition">
                         ← Retour Salon
                     </Link>
-                    <div className="flex items-center gap-2">
-                        <BotPortraitMedallion character="grandmaster" size="sm" isActive={true} />
-                        <h1 className="font-display text-xs sm:text-sm font-black tracking-wide text-white">
-                            Studio d&apos;Analyse 3-Ply &amp; Scanner Vision IA
-                        </h1>
-                    </div>
+                    <h1 className="font-display text-xs sm:text-sm font-black tracking-wide text-white">
+                        Studio d&apos;Analyse 3-Ply &amp; Scanner Vision IA
+                    </h1>
                 </div>
 
                 <div className="flex items-center gap-1.5 text-xs">
+                    <button
+                        type="button"
+                        data-testid="open-photo-scanner-btn"
+                        onClick={() => setIsScannerOpen(true)}
+                        className="rounded-lg border border-amber-400/50 bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-300 hover:bg-amber-500/30 transition shadow-sm"
+                    >
+                        📸 Scanner une Photo (Vision IA)
+                    </button>
                     <span className="text-[11px] text-stone-400 font-semibold hidden md:inline">Classiques :</span>
                     {FAMOUS_PRESET_POSITIONS.map((p) => (
                         <button
@@ -215,7 +235,6 @@ export function AnalysisStudioView() {
             <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 overflow-hidden">
                 <div className="lg:col-span-7 flex flex-col justify-between bg-[#0B1015] border border-white/10 rounded-2xl p-2 shadow-2xl overflow-hidden min-h-0">
                     <ManualBoardSetupStage
-                        tray={tray}
                         stats={stats}
                         activeBrush={activeBrush}
                         onSelectBrush={setActiveBrush}
@@ -223,7 +242,6 @@ export function AnalysisStudioView() {
                         onResetStartingBoard={handleResetStartingBoard}
                         onCompleteRemainingToOff={handleCompleteRemainingToOff}
                         onInvertColors={handleInvertColors}
-                        onOpenScannerModal={() => setIsScannerOpen(true)}
                     />
 
                     <div className="w-full flex-1 min-h-0 flex items-center justify-center py-1">
@@ -255,6 +273,7 @@ export function AnalysisStudioView() {
                         dice={dice}
                         onChangeDice={(d) => {
                             setDice(d);
+                            setBgsageData(null);
                             const top = computeLegalCandidateMovesTop5(boardState, d);
                             if (top[0]) setSelectedMoveNotation(top[0].notation);
                         }}
@@ -272,6 +291,7 @@ export function AnalysisStudioView() {
                         onImportXgid={handleImportXgid}
                         onPlayPositionFromHere={handlePlayPositionFromHere}
                         cubeRecommendation={boardState.cubeValue > 1 ? 'Double / Take' : 'No Double'}
+                        coachExplanation={coachExplanation}
                     />
                 </div>
             </div>

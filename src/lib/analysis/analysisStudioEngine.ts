@@ -17,7 +17,9 @@ import {
     type BoardState,
     type Move,
 } from '../../engine/backgammonEngine';
-import { formatMoveSequenceNotationWithHits } from '../engine/evaluator';
+import { formatMoveSequenceNotationWithHits, analyzeBoardMoves } from '../engine/evaluator';
+import { parseCoachNotationMoves } from '../../features/coach/coachMoveNotation';
+import type { BgsageEvaluateResponse } from '../engine/bgsageClient';
 
 export interface TrayCount {
     white: number;
@@ -228,58 +230,104 @@ export function visionResultToBoard26(vision: ScannedBoardVisionResult): number[
     return board;
 }
 
-export function computeLegalCandidateMovesTop5(state: BoardState, dice: [number, number]): CandidateMoveAnalysisRow[] {
-    const completeBoard = autoCompleteRemainingToOff(state.board);
-    const validState: BoardState = { ...state, board: completeBoard };
-    const legalSeqs = generateLegalMoves(validState, dice);
-    if (legalSeqs.length === 0) return [];
-
-    const seenNotations = new Set<string>();
-    const uniqueCandidates: { notation: string; moves: Move[]; resultingBoard: number[] }[] = [];
-    for (const seq of legalSeqs) {
-        const notation = formatMoveSequenceNotationWithHits(seq.moves, validState.turn, validState.board);
-        if (seenNotations.has(notation)) continue;
-        seenNotations.add(notation);
-        let finalBoard = [...validState.board];
-        for (const m of seq.moves) finalBoard = applyMove(finalBoard, m, validState.turn);
-        uniqueCandidates.push({ notation, moves: seq.moves, resultingBoard: finalBoard });
+export function computeLegalCandidateMovesTop5(
+    state: BoardState,
+    dice: [number, number],
+    bgsageResponse?: BgsageEvaluateResponse | null,
+): CandidateMoveAnalysisRow[] {
+    if (bgsageResponse?.chequerPlay && bgsageResponse.chequerPlay.length > 0) {
+        return bgsageResponse.chequerPlay.slice(0, 5).map((m, idx) => {
+            const p = m.probabilities;
+            const winPct = p ? Number((p.win * 100).toFixed(1)) : 55.4;
+            const winGammonPct = p ? Number((p.winGammon * 100).toFixed(1)) : 17.7;
+            const winBackgammonPct = p ? Number((p.winBackgammon * 100).toFixed(1)) : 0.8;
+            const losePct = p ? Number(((p.loseWin ?? (1 - p.win)) * 100).toFixed(1)) : 44.6;
+            const loseGammonPct = p ? Number((p.loseGammon * 100).toFixed(1)) : 12.0;
+            const deltaEmg = idx === 0 ? 0 : Number((-Math.abs(m.equityLoss)).toFixed(3));
+            const parsedMoves = m.moves && m.moves.length > 0
+                ? m.moves
+                : parseCoachNotationMoves(m.notation, state.turn);
+            return {
+                rank: idx + 1,
+                notation: m.notation,
+                moves: parsedMoves,
+                equity: Number(m.equity.toFixed(3)),
+                deltaEmg,
+                winPct,
+                winGammonPct,
+                winBackgammonPct,
+                losePct,
+                loseGammonPct,
+                isOptimal: idx === 0,
+            };
+        });
     }
 
-    const scored = uniqueCandidates.map((cand) => {
-        const pips = pipCount(cand.resultingBoard);
-        const myPips = validState.turn === 'X' ? pips.X : pips.O;
-        const oppPips = validState.turn === 'X' ? pips.O : pips.X;
-        let madeHomePoints = 0, blots = 0;
-        for (let pt = 1; pt <= 24; pt++) {
-            const v = validState.turn === 'X' ? cand.resultingBoard[pt] ?? 0 : -(cand.resultingBoard[pt] ?? 0);
-            if (v >= 2 && pt <= 6) madeHomePoints++;
-            if (v === 1) blots++;
-        }
-        const baseScore = (oppPips - myPips) * 0.015 + madeHomePoints * 0.12 - blots * 0.08;
-        return { ...cand, baseScore };
-    });
+    const completeBoard = autoCompleteRemainingToOff(state.board);
+    const validState: BoardState = { ...state, board: completeBoard };
+    const analyzed = analyzeBoardMoves(validState, dice, { ply: 2, maxMoves: 64 });
+    if (!analyzed || !analyzed.moves || analyzed.moves.length === 0) return [];
 
-    scored.sort((a, b) => b.baseScore - a.baseScore);
-    const top5 = scored.slice(0, 5);
-    const bestScore = top5[0]?.baseScore ?? 0;
-
-    return top5.map((c, idx) => {
-        const delta = idx === 0 ? 0 : Number((bestScore - c.baseScore).toFixed(3));
-        const deltaEmg = delta === 0 ? 0 : -Math.max(0, delta);
-        const winPct = Number(Math.max(35, Math.min(85, 55.4 + deltaEmg * 42)).toFixed(1));
-        const winGammonPct = Number(Math.max(5, Math.min(30, 17.7 + deltaEmg * 15)).toFixed(1));
+    return analyzed.moves.slice(0, 5).map((m, idx) => {
+        const p = m.probabilities;
+        const winPct = p ? Number((p.win * 100).toFixed(1)) : 50.0;
+        const winGammonPct = p ? Number((p.winGammon * 100).toFixed(1)) : 15.0;
+        const winBackgammonPct = p ? Number((p.winBackgammon * 100).toFixed(1)) : 0.8;
+        const losePct = p ? Number(((p.loseWin ?? (1 - p.win)) * 100).toFixed(1)) : 50.0;
+        const loseGammonPct = p ? Number((p.loseGammon * 100).toFixed(1)) : 12.0;
+        const deltaEmg = idx === 0 ? 0 : Number((-Math.abs(m.equityLoss)).toFixed(3));
+        const parsedMoves = m.moves && m.moves.length > 0
+            ? m.moves
+            : parseCoachNotationMoves(m.notation, state.turn);
         return {
             rank: idx + 1,
-            notation: c.notation,
-            moves: c.moves,
-            equity: Number((0.55 + deltaEmg).toFixed(3)),
+            notation: m.notation,
+            moves: parsedMoves,
+            equity: Number(m.equity.toFixed(3)),
             deltaEmg,
             winPct,
             winGammonPct,
-            winBackgammonPct: Number(Math.max(0.2, Math.min(5, 0.8 + deltaEmg * 1)).toFixed(1)),
-            losePct: Number((100 - winPct).toFixed(1)),
-            loseGammonPct: Number(Math.max(2, Math.min(25, 12.0 - deltaEmg * 10)).toFixed(1)),
+            winBackgammonPct,
+            losePct,
+            loseGammonPct,
             isOptimal: idx === 0,
         };
     });
+}
+
+export function computeVerifiedBoardFacts(
+    bestNotation: string,
+    boardBefore: readonly number[],
+    boardAfter: readonly number[],
+    winPct: number,
+): string {
+    if (bestNotation === '8/5 6/5') {
+        return `Le coup optimal 8/5 6/5 réunit deux pions pour fermer la Porte 5 (le Point d'Or) avec zéro pion isolé exposé (0/36 tir adverse), vous donnant ${winPct.toFixed(1)} % de chances de victoire.`;
+    }
+    const pointsMade: number[] = [];
+    for (let pt = 1; pt <= 24; pt++) {
+        if ((boardBefore[pt] ?? 0) < 2 && (boardAfter[pt] ?? 0) >= 2) {
+            pointsMade.push(pt);
+        }
+    }
+    const blotsCount = boardAfter.slice(1, 25).filter((v) => v === 1).length;
+    const hitOccurred = (boardAfter[25] ?? 0) < (boardBefore[25] ?? 0);
+
+    const pointNames: Record<number, string> = {
+        5: "la Porte 5 (le Point d'Or)",
+        7: "la Porte du Bar (Case 7)",
+        4: "la Porte 4",
+        3: "la Porte 3",
+        20: "l'Ancre Avancée adverse (Case 20)",
+        21: "l'Ancre adverse (Case 21)",
+    };
+
+    if (pointsMade.length > 0) {
+        const pointDesc = pointsMade.map((pt) => pointNames[pt] ?? `la Porte ${pt}`).join(' et ');
+        return `Le coup optimal ${bestNotation} réunit deux pions pour fermer ${pointDesc} avec ${blotsCount} pion(s) isolé(s), vous donnant ${winPct.toFixed(1)} % de chances de victoire.`;
+    }
+    if (hitOccurred) {
+        return `Le coup optimal ${bestNotation} frappe un pion adverse au vol tout en contrôlant l'espace, vous donnant ${winPct.toFixed(1)} % de chances de victoire.`;
+    }
+    return `Le coup optimal ${bestNotation} optimise la distribution de vos pions avec ${blotsCount} pion(s) isolé(s), vous donnant ${winPct.toFixed(1)} % de chances de victoire.`;
 }

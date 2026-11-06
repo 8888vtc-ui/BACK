@@ -96,10 +96,11 @@ export function computeArrowCoords(
     const fromX = domCenters?.[fromKey] ?? (fromLayout.x + POINT_W / 2);
     const toX = domCenters?.[toKey] ?? (toLayout.x + POINT_W / 2);
 
-    const fromY = fromLayout.top ? TOP_APEX - 40 : BOT_APEX + 40;
-    const toY = toLayout.top ? TOP_APEX - 40 : BOT_APEX + 40;
+    const fromY = fromLayout.top ? TOP_APEX + 16 : BOT_APEX - 16;
+    const toY = toLayout.top ? TOP_APEX + 16 : BOT_APEX - 16;
 
-    const path = computeCurvedArrowPath(fromX, fromY, toX, toY, OPPONENT_ARROW_CURVATURE_PX);
+    const curvature = Math.abs(toX - fromX) > 120 ? 28 : 16;
+    const path = computeCurvedArrowPath(fromX, fromY, toX, toY, curvature);
 
     return { x1: fromX, y1: fromY, x2: toX, y2: toY, path, isHit };
 }
@@ -156,11 +157,11 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
     }, [orientation, played.length, optimal.length, opponent.length]);
 
     const playedArrows = useMemo(
-        () => played.filter((m) => (m.from === 0 ? m.to >= 19 && m.to <= 24 : m.to < m.from || m.to === 0)).map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
+        () => played.filter((m) => m && m.from !== m.to).map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
         [played, orientation, domCenters],
     );
     const optimalArrows = useMemo(
-        () => optimal.filter((m) => (m.from === 0 ? m.to >= 19 && m.to <= 24 : m.to < m.from || m.to === 0)).map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
+        () => optimal.filter((m) => m && m.from !== m.to).map((m) => computeArrowCoords(m.from, m.to, orientation, domCenters)),
         [optimal, orientation, domCenters],
     );
     const opponentArrows = useMemo(
