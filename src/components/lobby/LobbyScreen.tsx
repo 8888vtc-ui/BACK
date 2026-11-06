@@ -192,14 +192,22 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 )}
                                 {tierGate === 'INTERMEDIATE' && (
                                     <IntermediateHomePortal
-                                        onFindOpponent={(len) => onStart({ matchLength: len ?? 5, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset })}
+                                        onFindOpponent={(len) => {
+                                            setMatchLength(len ?? 5);
+                                            if (onOpenModule) onOpenModule('multiplayer');
+                                            else onStart({ matchLength: len ?? 5, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset });
+                                        }}
                                         onInviteFriend={() => onOpenModule?.('private_room')}
                                         onOpenQuizzes={() => onOpenModule?.('puzzles')}
                                     />
                                 )}
                                 {tierGate === 'EXPERT' && (
                                     <ExpertHomePortal
-                                        onStartExpertMatch={(len) => onStart({ matchLength: len, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset })}
+                                        onStartExpertMatch={(len) => {
+                                            setMatchLength(len ?? 7);
+                                            if (onOpenModule) onOpenModule('multiplayer');
+                                            else onStart({ matchLength: len ?? 7, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset });
+                                        }}
                                         onInviteFriend={() => onOpenModule?.('private_room')}
                                         onOpen3PlyQuizzes={() => onOpenModule?.('puzzles')}
                                         onOpenPlayerCard={() => setIsPassportGateOpen(true)}

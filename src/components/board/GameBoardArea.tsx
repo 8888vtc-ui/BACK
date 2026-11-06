@@ -244,6 +244,9 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     coachHistory={coachHistory} selectedCoachHistoryIndex={selectedCoachHistoryIndex} onSelectCoachHistoryIndex={onSelectCoachHistoryIndex}
                     matchContext={matchContext} positionKey={displayState.board.join(',')} gameId={gameId}
                     dice={displayState.dice} board={displayState.board} difficulty={game.difficulty}
+                    isOnlinePvpMatch={isOnlinePvpMatch} challengerProfile={challengerProfile}
+                    onSendQuickChat={onSendQuickChat} scoreX={game.state.scoreX} scoreO={game.state.scoreO}
+                    matchLength={game.state.matchLength} prX={prX} prO={prO}
                 />
             </div>
         </div>

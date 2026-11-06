@@ -32,6 +32,7 @@ import { useI18n } from '../lib/i18n';
 import { readStoredPlayerColor } from '../components/hud/ColorSelector';
 import { getBotRealPr, resetBotRealPr } from '../features/personas/botRealPr';
 import { checkIsPlayerRegistered } from '../hooks/useAuthenticPlayerStats';
+import { usePlayerTierGate } from '../hooks/usePlayerTierGate';
 import type { Player } from '../engine/backgammonEngine';
 
 /** Vues exclusives de l'application (une seule montée à la fois). */
@@ -43,6 +44,7 @@ export default function Home() {
     const { navigateTo, isNavigating } = useSpaNavigation();
     const [isBoardLoading] = useState(false);
     const [playerColor, setPlayerColor] = useState<Player>('X');
+    const { tierGate } = usePlayerTierGate();
     const modals = useGameModals();
 
     const [appScreen, setAppScreen] = useState<AppScreen>('LOBBY');
@@ -204,7 +206,9 @@ export default function Home() {
             const params = new URLSearchParams(window.location.search);
             const modeParam = params.get('mode');
             if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1') {
-                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true; modals.openMatchmaking();
+                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;
+                const matchLen = Number(params.get('match') || (tierGate === 'INTERMEDIATE' ? 5 : 7));
+                void multiplayer.startMatchmaking(matchLen);
             } else if (params.get('start') === 'guided' || window.location.pathname.startsWith('/play') || params.get('from') === 'analysis') {
                 hasAutoStartedRef.current = true;
                 if (params.get('start') === 'guided') { userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch(); }
@@ -230,7 +234,7 @@ export default function Home() {
 
     const handleOpenLobbyModule = useCallback((moduleId: LobbyModuleId) => {
         switch (moduleId) {
-            case 'multiplayer': userInitiatedMultiplayerRef.current = true; modals.openMatchmaking(); break;
+            case 'multiplayer': userInitiatedMultiplayerRef.current = true; void multiplayer.startMatchmaking(tierGate === 'INTERMEDIATE' ? 5 : 7); break;
             case 'private_room': userInitiatedMultiplayerRef.current = true; modals.openPrivateRoomModal(); break;
             case 'openings': modals.openOpeningBook(); break;
             case 'stats': if (latestGameAnalysis) modals.openGameReview(); else navigateTo('/progression'); break;
@@ -239,7 +243,7 @@ export default function Home() {
             case 'import_export': modals.openExportImport(); break;
             case 'tournaments': navigateTo('/tournaments'); break;
         }
-    }, [modals, navigateTo, latestGameAnalysis]);
+    }, [modals, navigateTo, latestGameAnalysis, tierGate, multiplayer]);
 
     const [hoveredCandidate, setHoveredCandidate] = useState<string | null>(null);
     const activeCoachHighlight = useCandidateHighlight({

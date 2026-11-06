@@ -82,7 +82,7 @@ export function resolvePersonaMeta(
         ? (challengerProfile ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName) : (isEn ? 'Online Opponent' : 'Adversaire en ligne'))
         : isGuided ? (isEn ? 'The Professor' : 'Le Professeur') : activePersona.shortName;
     const opponentBadge = isOnlinePvpMatch
-        ? (isEn ? 'Online Opponent' : 'Adversaire en ligne')
+        ? (isEn ? 'Online · Ranked Match' : 'En ligne · Match Classé')
         : isGuided ? (isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE') : activePersona.styleBadge;
     const opponentPhotoUrl = isOnlinePvpMatch
         ? (challengerProfile ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating) : '/avatars/user-avatar-2.jpg')

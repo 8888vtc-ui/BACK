@@ -45,32 +45,30 @@ export const LobbySearchingWaitView: React.FC<LobbySearchingWaitViewProps> = ({
 
     const searchStepLabel =
         elapsedSeconds < 2
-            ? playerRating !== null
-                ? (isEn
-                    ? `Connecting to international lobby (${playerRating} Elo)...`
-                    : `Connexion au salon international (${playerRating} Elo)...`)
-                : (isEn
-                    ? 'Connecting to international friendly lobby (Guest Mode)...'
-                    : 'Connexion au salon amical international (Mode Invité)...')
+            ? (isEn
+                ? `Connecting to club queue (Match ${selectedLength === 0 ? 'Money Game' : `${selectedLength} pts`})...`
+                : 'Vérification des tables disponibles • Cadence 10 min + 8s')
             : elapsedSeconds < 4
               ? (isEn
-                  ? `Checking available tables (${selectedLength === 0 ? 'Money Game' : `${selectedLength} pts`})...`
-                  : `Vérification des tables disponibles (${selectedLength === 0 ? 'Money Game' : `${selectedLength} pts`})...`)
-              : (isEn ? 'Player detected — preparing table...' : 'Joueur détecté — préparation de la table...');
+                  ? 'Scanning active players • Time control 10 min + 8s...'
+                  : 'Balayage de la file d’attente • Cadence 10 min + 8s...')
+              : (isEn ? 'Opponent detected — setting up table...' : 'Joueur détecté — préparation de la table...');
 
     return (
         <div className="py-3 text-center space-y-3.5 animate-fade-in" data-testid="matchmaking-searching">
             {/* 1. Radar de recherche dynamique */}
             <div className="flex flex-col items-center gap-2">
                 <div className="relative mx-auto flex h-16 w-16 items-center justify-center">
-                    <div className="absolute inset-0 rounded-full border border-amber-400/35 animate-ping" />
-                    <div className="relative flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-amber-500/15 text-amber-300">
+                    <div className="absolute inset-0 rounded-full border border-[#D4AF37]/40 animate-ping" />
+                    <div className="relative flex h-12 w-12 items-center justify-center rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/15 text-[#f3d27a]">
                         <Radio className="w-5 h-5" strokeWidth={1.5} />
                     </div>
                 </div>
                 <div className="space-y-0.5">
                     <div className="text-sm sm:text-base font-extrabold text-white">
-                        {isEn ? 'Searching for an opponent...' : 'Recherche d’un adversaire en cours...'}
+                        {isEn
+                            ? `Searching for a Club player (${selectedLength === 0 ? 'Money Game' : `Match ${selectedLength} pts`})...`
+                            : `Recherche d'un joueur de niveau Club (${selectedLength === 0 ? 'Money Game' : `Match ${selectedLength} pts`})...`}
                     </div>
                     <div className="text-xs text-amber-300/95 font-medium">
                         {searchStepLabel}

@@ -238,7 +238,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                         <span className="font-bold text-amber-300">
                             {m.sender === 'player' ? 'Vous : ' : `${persona.shortName} : `}
                         </span>
-                        <span>{m.text}</span>
+                        <span>{m.text.replace(new RegExp(`^${persona.shortName}\\s*:\\s*`, 'i'), '')}</span>
                     </div>
                 ))}
 
@@ -280,7 +280,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
             <div data-testid="coach-idle-session-stats" className="flex items-center justify-between rounded-xl border border-white/10 bg-slate-950 px-3 py-1.5 font-mono text-xs shadow-inner">
                 <span className="text-white font-bold">Vous : PR {prValue.toFixed(1)}</span>
                 <span data-testid="persona-live-pr-badge" className="text-amber-300 font-bold" title="Error Rate temps réel du Bot (plafonné à 10.0)">
-                    Bot : PR {botLivePr === null ? '—' : botLivePr.toFixed(1)}
+                    {persona.shortName} : PR {botLivePr === null ? '—' : botLivePr.toFixed(1)}
                 </span>
                 <span className="text-rose-300 font-bold">{matchStats?.blundersCount ?? 0} blunder{(matchStats?.blundersCount ?? 0) > 1 ? 's' : ''}</span>
             </div>

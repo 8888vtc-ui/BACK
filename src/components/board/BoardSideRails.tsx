@@ -93,7 +93,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             {!isGuided && (
                                 <span className="font-mono text-stone-200 font-bold">
                                     {isOnlinePvpMatch
-                                        ? (playerMeta.isGuest ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical') : `${botElo} Elo`)
+                                        ? (botElo !== '—' ? `${botElo} Elo` : (isEn ? 'Online · Ranked Match' : 'En ligne · Match Classé'))
                                         : (isEn ? 'Opponent' : 'Adversaire')}
                                 </span>
                             )}
@@ -109,7 +109,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <span data-testid="left-rail-mobile-opp-name" title={opponentDisplayName} className="w-full truncate text-center text-xs font-bold text-[#f7f3e8] leading-tight">{opponentDisplayName}</span>
                         {!isGuided && (
                             <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-xs font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">
-                                {isOnlinePvpMatch ? (playerMeta.isGuest ? (isEn ? 'Online' : 'En ligne') : `${botElo} Elo`) : ''}
+                                {isOnlinePvpMatch ? (botElo !== '—' ? `${botElo} Elo` : (isEn ? 'Online · Ranked' : 'En ligne · Classé')) : ''}
                             </span>
                         )}
                     </div>
@@ -138,7 +138,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 {isOnlinePvpMatch ? (
                     <div data-testid="left-rail-online-status" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/25 bg-emerald-950/30 px-2 py-1 text-xs font-medium text-emerald-300/90">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>{playerMeta.isGuest ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical') : (isEn ? 'Online · Ranked Match' : 'En ligne · Match classé')}</span>
+                        <span>{isEn ? 'Online · Ranked Match' : 'En ligne · Match Classé'}</span>
                     </div>
                 ) : (
                     <div data-testid="left-rail-bot-engine-badge" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-[#d4af37]/25 bg-black/45 px-2 py-1 text-xs font-semibold text-[#f3d27a]">
