@@ -74,6 +74,7 @@ export interface GameScreenViewProps {
     onResetGameHistory: () => void;
     gameId: string;
     playerColor?: 'X' | 'O';
+    isOnlineMatch?: boolean;
 }
 
 const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
@@ -87,6 +88,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     onDestinationClick, onPlayMove, onSelectDie, onDiceClick, onDeselect,
     turnsCount, onBackToLobby, latestGameAnalysis, turnsHistory,
     openingEntry, onApplyOpeningMove, onResetGameHistory, gameId, playerColor,
+    isOnlineMatch: propIsOnlineMatch = false,
 }) => {
     const [isCubeSheetOpen, setIsCubeSheetOpen] = useState(false);
     const [isFullFocusMode, setIsFullFocusMode] = useState(false);
@@ -102,9 +104,15 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
         setShowGuidedArrows(true);
     }, [game.dice?.[0], game.dice?.[1], game.state.turn]);
 
+    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const isUrlOnline = urlParams?.get('mode') === 'matchmaking' || urlParams?.get('mode') === 'online' || Boolean(urlParams?.get('room')) || Boolean(urlParams?.get('inviteRoom'));
     const isOnlinePvpMatch =
+        Boolean(propIsOnlineMatch) ||
+        isUrlOnline ||
         isMultiplayerActive ||
-        Boolean(multiplayer.matchInfo?.isClubChallenger) ||
+        multiplayer.status === 'searching' ||
+        multiplayer.status === 'matched' ||
+        Boolean(multiplayer.matchInfo) ||
         Boolean(multiplayer.opponentProfile) ||
         Boolean(multiplayer.privateRoomCode);
     const isGuidedProfessorMode = !isOnlinePvpMatch && (tierGate === 'BEGINNER' || game.difficulty === 'beginner');
@@ -120,25 +128,19 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
         }
         const nextCube = game.state.cubeValue === 1 ? 2 : game.state.cubeValue * 2;
         game.offerDouble();
-        if (isMultiplayerActive) {
-            multiplayer.broadcastDoubleOffered(nextCube);
-        }
+        if (isMultiplayerActive) multiplayer.broadcastDoubleOffered(nextCube);
     }, [isPrematureDouble, game, isMultiplayerActive, multiplayer]);
 
     const handleTakeDouble = useCallback(() => {
         const nextCube = game.state.cubeValue === 1 ? 2 : game.state.cubeValue * 2;
         game.takeDouble();
-        if (isMultiplayerActive) {
-            multiplayer.broadcastDoubleAccepted(nextCube);
-        }
+        if (isMultiplayerActive) multiplayer.broadcastDoubleAccepted(nextCube);
     }, [game, isMultiplayerActive, multiplayer]);
 
     const handlePassDouble = useCallback(() => {
         const winner = game.doublingOfferedBy ?? (playerColor === 'X' ? 'O' : 'X');
         game.passDouble();
-        if (isMultiplayerActive) {
-            multiplayer.broadcastDoublePassed(winner);
-        }
+        if (isMultiplayerActive) multiplayer.broadcastDoublePassed(winner);
     }, [game, isMultiplayerActive, multiplayer, playerColor]);
 
     useEffect(() => {
@@ -254,6 +256,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 onToggleTheme={onToggleTheme}
                 challengerProfile={isOnlinePvpMatch ? multiplayer.opponentProfile : null}
                 onSendQuickChat={isOnlinePvpMatch ? multiplayer.sendQuickChat : undefined}
+                isOnlinePvpMatch={isOnlinePvpMatch}
             />
 
             <GameScreenMobileControls

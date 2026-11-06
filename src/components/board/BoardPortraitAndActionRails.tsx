@@ -32,6 +32,7 @@ export interface BoardLeftPlayerRailProps {
     readonly canUndo?: boolean; readonly onUndo?: () => void;
     readonly autoConfirmEnabled?: boolean; readonly onToggleAutoConfirm?: () => void;
     readonly autoRollEnabled?: boolean; readonly onToggleAutoRoll?: () => void;
+    readonly isOnlinePvpMatch?: boolean;
 }
 
 export const BOARD_SWATCH_OPTIONS: ReadonlyArray<{ readonly id: ThemeName; readonly label: string; readonly bgHex: string; readonly ringClass: string }> = [
@@ -67,15 +68,11 @@ export function resolvePrBadgeClasses(pr: number | null): string {
 }
 
 export function resolvePersonaMeta(
-    difficulty: AIDifficulty,
-    locale: string,
-    prX?: number | null,
-    prO?: number | null,
-    challengerProfile?: PlayerEloProfile | null,
-    isBeginner: boolean = false,
+    difficulty: AIDifficulty, locale: string, prX?: number | null, prO?: number | null,
+    challengerProfile?: PlayerEloProfile | null, isBeginner: boolean = false, isOnlineMatch: boolean = false,
 ) {
     const isEn = locale === 'en';
-    const isOnlinePvpMatch = Boolean(challengerProfile);
+    const isOnlinePvpMatch = Boolean(isOnlineMatch || challengerProfile);
     const isGuided = !isOnlinePvpMatch && Boolean(isBeginner || difficulty === 'beginner');
     const activePersona = getBotPersona(difficulty, locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja');
     const botElo = challengerProfile ? String(challengerProfile.rating) : '—';
@@ -84,9 +81,15 @@ export function resolvePersonaMeta(
     const playerPrLabel = playerPrNum !== null ? playerPrNum.toFixed(1) : '—';
     const opponentPrNum = typeof prO === 'number' && Number.isFinite(prO) ? Math.max(0, prO) : null;
     const opponentPrValue = opponentPrNum !== null ? opponentPrNum.toFixed(1) : '—';
-    const opponentDisplayName = isOnlinePvpMatch && challengerProfile ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName) : isGuided ? (isEn ? 'The Professor' : 'Le Professeur') : activePersona.shortName;
-    const opponentBadge = isOnlinePvpMatch ? (isEn ? 'Online Opponent' : 'Adversaire en ligne') : isGuided ? (isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE') : activePersona.styleBadge;
-    const opponentPhotoUrl = isOnlinePvpMatch && challengerProfile ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating) : isGuided ? '/avatars/einstein-quiz-coach.jpg' : (PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg');
+    const opponentDisplayName = isOnlinePvpMatch
+        ? (challengerProfile ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName) : (isEn ? 'Online Opponent' : 'Adversaire en ligne'))
+        : isGuided ? (isEn ? 'The Professor' : 'Le Professeur') : activePersona.shortName;
+    const opponentBadge = isOnlinePvpMatch
+        ? (isEn ? 'Online Opponent' : 'Adversaire en ligne')
+        : isGuided ? (isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE') : activePersona.styleBadge;
+    const opponentPhotoUrl = isOnlinePvpMatch
+        ? (challengerProfile ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating) : '/avatars/user-avatar-2.jpg')
+        : isGuided ? '/avatars/einstein-quiz-coach.jpg' : (PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg');
     return {
         activePersona, botElo, playerPrNum, playerPrValue, playerPrLabel,
         opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl,
@@ -94,17 +97,17 @@ export function resolvePersonaMeta(
 }
 
 export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.memo(({
-    difficulty = 'expert', locale = 'fr', isXTurn, scoreO, cubeValue, matchLength, turn, opponentClock = '02:36', delaySeconds = 12, prX, prO, challengerProfile, isGuidedMode = false,
+    difficulty = 'expert', locale = 'fr', isXTurn, scoreO, cubeValue, matchLength, turn, opponentClock = '02:36', delaySeconds = 12, prX, prO, challengerProfile, isGuidedMode = false, isOnlinePvpMatch = false,
 }) => {
     const { tierGate } = usePlayerTierGate();
     const stats = useAuthenticPlayerStats();
     const isGuest = !stats.canHavePR;
     const isEn = locale === 'en';
     const isBeginner = tierGate === 'BEGINNER';
-    const isOnlinePvpMatch = Boolean(challengerProfile);
-    const isGuided = !isOnlinePvpMatch && Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
+    const isOnline = Boolean(isOnlinePvpMatch || challengerProfile);
+    const isGuided = !isOnline && Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
     const { activePersona, botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl } = resolvePersonaMeta(
-        difficulty, locale, prX, prO, challengerProfile, isGuided,
+        difficulty, locale, prX, prO, challengerProfile, isGuided, isOnline,
     );
     return (
         <div data-testid="board-portrait-top-hud" className="md:hidden [@media(max-height:500px)]:hidden w-full shrink-0 flex flex-col gap-1 px-1.5 pt-0.5 pb-1 select-none">
@@ -201,6 +204,7 @@ export interface BoardRightActionRailProps {
     readonly canUndo?: boolean; readonly onUndo?: () => void;
     readonly autoConfirmEnabled?: boolean; readonly onToggleAutoConfirm?: () => void;
     readonly autoRollEnabled?: boolean; readonly onToggleAutoRoll?: () => void;
+    readonly isOnlinePvpMatch?: boolean;
 }
 
 export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.memo(({
@@ -268,15 +272,12 @@ export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.m
                         <div className="flex flex-col gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] p-2">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-stone-300">🎨 Tapis de Jeu (3 Couleurs)</span>
                             <div className="grid grid-cols-3 gap-1.5">
-                                {BOARD_SWATCH_OPTIONS.map((sw) => {
-                                    const isSelected = activeTheme === sw.id;
-                                    return (
-                                        <button key={sw.id} type="button" data-testid={`board-theme-swatch-${sw.id}`} onClick={() => setTheme(sw.id)} className={`flex flex-col items-center gap-1 rounded-lg border px-1.5 py-1.5 text-[10px] font-bold transition ${isSelected ? 'border-[#f3c65f] bg-[#d4af37]/20 text-white shadow' : 'border-white/10 bg-black/40 text-stone-300 hover:border-white/30'}`}>
-                                            <span className={`h-4 w-7 rounded border ${sw.ringClass} shadow-inner`} style={{ backgroundColor: sw.bgHex }} />
-                                            <span className="truncate max-w-full">{sw.label}</span>
-                                        </button>
-                                    );
-                                })}
+                                {BOARD_SWATCH_OPTIONS.map((sw) => (
+                                    <button key={sw.id} type="button" data-testid={`board-theme-swatch-${sw.id}`} onClick={() => setTheme(sw.id)} className={`flex flex-col items-center gap-1 rounded-lg border px-1.5 py-1.5 text-[10px] font-bold transition ${activeTheme === sw.id ? 'border-[#f3c65f] bg-[#d4af37]/20 text-white shadow' : 'border-white/10 bg-black/40 text-stone-300 hover:border-white/30'}`}>
+                                        <span className={`h-4 w-7 rounded border ${sw.ringClass} shadow-inner`} style={{ backgroundColor: sw.bgHex }} />
+                                        <span className="truncate max-w-full">{sw.label}</span>
+                                    </button>
+                                ))}
                             </div>
                         </div>
                         <button type="button" onClick={() => { handleFlipDirection(); setIsSettingsOpen(false); }} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-semibold hover:border-[#d4af37]/50 transition">

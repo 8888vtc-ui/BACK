@@ -31,7 +31,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     opponentDice = null, onSendQuickChat, crawford = false, isDMP = false, isGuidedMode = false,
     isBrowserFullscreen = false, isFocusFullBoard = true, onToggleFullscreen, onToggleCoach,
     onBackToLobby, canUndo = false, onUndo, autoConfirmEnabled = false, onToggleAutoConfirm,
-    autoRollEnabled = false, onToggleAutoRoll,
+    autoRollEnabled = false, onToggleAutoRoll, isOnlinePvpMatch: propIsOnlineMatch = false,
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isQuickChatOpen, setIsQuickChatOpen] = useState(false);
@@ -40,7 +40,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     const authenticStats = useAuthenticPlayerStats();
     const isBeginner = tierGate === 'BEGINNER';
     const isEn = locale === 'en';
-    const isOnlinePvpMatch = Boolean(challengerProfile);
+    const isOnlinePvpMatch = Boolean(propIsOnlineMatch || challengerProfile || onSendQuickChat);
     const isGuided = !isOnlinePvpMatch && Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
     const [playerMeta, setPlayerMeta] = useState<{ pseudo: string; avatarUrl: string; countryName: string; isGuest: boolean; careerPr: number | null }>({
         pseudo: isEn ? 'Guest Player' : 'Joueur Invité', avatarUrl: STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg', countryName: 'France', isGuest: true, careerPr: null,
@@ -66,7 +66,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     const {
         botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue,
         opponentDisplayName, opponentBadge, opponentPhotoUrl,
-    } = resolvePersonaMeta(difficulty, locale, effectivePrX, effectivePrO, challengerProfile, isGuided);
+    } = resolvePersonaMeta(difficulty, locale, effectivePrX, effectivePrO, challengerProfile, isGuided, isOnlinePvpMatch);
 
     const handleFlipDirection = () => {
         const next = toggleOrientation(getSavedOrientation());
@@ -88,16 +88,16 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             {challengerProfile?.countryName && <CountryFlagSvg countryName={challengerProfile.countryName} />}
                             <span>{opponentBadge}</span>
                         </span>
-                        <BotPortraitMedallion character={isGuided ? 'beginner' : difficulty} size="lg" isActive={!isXTurn} customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : (challengerProfile ? opponentPhotoUrl : null)} />
+                        <BotPortraitMedallion character={isGuided ? 'beginner' : difficulty} size="lg" isActive={!isXTurn} customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : (isOnlinePvpMatch ? opponentPhotoUrl : null)} />
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
                             {!isGuided && (
                                 <span className="font-mono text-stone-200 font-bold">
-                                    {challengerProfile
+                                    {isOnlinePvpMatch
                                         ? (playerMeta.isGuest ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical') : `${botElo} Elo`)
                                         : (isEn ? 'Opponent' : 'Adversaire')}
                                 </span>
                             )}
-                            {!isGuided && challengerProfile && !playerMeta.isGuest && (
+                            {!isGuided && isOnlinePvpMatch && !playerMeta.isGuest && (
                                 <span className={`inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap ${resolvePrBadgeClasses(opponentPrNum)}`}>
                                     {isEn ? 'Match PR:' : 'PR Match :'} {opponentPrValue}
                                 </span>
@@ -109,7 +109,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <span data-testid="left-rail-mobile-opp-name" title={opponentDisplayName} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">{opponentDisplayName}</span>
                         {!isGuided && (
                             <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">
-                                {challengerProfile ? (playerMeta.isGuest ? (isEn ? 'Online' : 'En ligne') : `${botElo} Elo`) : ''}
+                                {isOnlinePvpMatch ? (playerMeta.isGuest ? (isEn ? 'Online' : 'En ligne') : `${botElo} Elo`) : ''}
                             </span>
                         )}
                     </div>
@@ -128,14 +128,14 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     </div>
 
                     <div className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${turn === 'O' ? 'bg-[#b45309] text-[#fef3c7] ring-1 ring-[#f5dfa0]' : 'bg-[#080605] text-stone-300 border border-white/10'}`}>
-                        {isGuided ? (isEn ? '∞ Your pace' : '∞ À votre rythme') : opponentClock}
+                        {!isOnlinePvpMatch && isGuided ? (isEn ? '∞ Your pace' : '∞ À votre rythme') : opponentClock}
                     </div>
 
-                    {!isBeginner && challengerProfile && !playerMeta.isGuest && (
+                    {!isBeginner && isOnlinePvpMatch && !playerMeta.isGuest && (
                         <span title={`Performance Rating : ${opponentPrValue}`} className="hidden [@media(max-height:540px)]:inline-block w-full text-center rounded border border-[#d4af37]/50 bg-[#d4af37]/15 px-1 py-0.5 font-mono text-[9px] font-black text-[#f3d27a] whitespace-nowrap leading-none">PR {opponentPrValue}</span>
                     )}
                 </div>
-                {challengerProfile ? (
+                {isOnlinePvpMatch ? (
                     <div data-testid="left-rail-online-status" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/25 bg-emerald-950/30 px-2 py-1 text-[10px] font-medium text-emerald-300/90">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                         <span>{playerMeta.isGuest ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical') : (isEn ? 'Online · Ranked Match' : 'En ligne · Match classé')}</span>
@@ -158,7 +158,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     {crawford && <div data-testid="left-rail-crawford-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">Crawford</div>}
                     {isDMP && <div data-testid="left-rail-dmp-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">DMP</div>}
                 </div>
-                {isGuided ? (
+                {!isOnlinePvpMatch && isGuided ? (
                     <div data-testid="left-rail-guided-pace-badge" className="flex flex-col items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-950/40 p-1.5 shadow-inner gap-0.5 shrink-0 w-14 text-center select-none">
                         <span className="text-sm font-black text-emerald-300 leading-none">∞</span>
                         <span className="font-extrabold text-[8px] uppercase tracking-wider text-emerald-300 leading-tight">{isEn ? 'Your pace' : 'À votre rythme'}</span>
@@ -221,7 +221,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
             {/* 3. CARTE BAS (Joueur Humain : Invité vs Inscrit) */}
             <div className="relative flex w-full flex-col items-center gap-1 [@media(max-height:540px)]:!gap-0.5 border-t border-[#d4af37]/20 pt-1.5 [@media(max-height:540px)]:!pt-0.5 [@media(max-height:540px)]:rounded-lg [@media(max-height:540px)]:border [@media(max-height:540px)]:border-[#d4af37]/30 [@media(max-height:540px)]:bg-[#14100c]/90 [@media(max-height:540px)]:p-1 shrink-0">
                 <div className="[@media(max-height:540px)]:hidden flex w-full flex-col items-center gap-1 min-w-0">
-                    {isGuided ? (
+                    {!isOnlinePvpMatch && isGuided ? (
                         <span data-testid="left-rail-guided-player-badge" className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-950/70 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-emerald-300 whitespace-nowrap">
                             {isEn ? 'PLAYER • GUIDED PLAY' : 'JOUEUR • PARTIE GUIDÉE'}
                         </span>

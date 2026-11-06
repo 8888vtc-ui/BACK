@@ -48,6 +48,7 @@ export interface GameBoardAreaProps {
     onToggleTheme?: () => void; challengerProfile?: PlayerEloProfile | null;
     onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
     onOfferDouble?: () => void; onTakeDouble?: () => void; onPassDouble?: () => void; isPrematureDouble?: boolean;
+    isOnlinePvpMatch?: boolean;
 }
 
 const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
@@ -59,6 +60,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     onSelectCoachHistoryIndex, onTriggerCoach, matchStats, matchStatsO, prX, prO, lastMoveFeedback, locale,
     gameId, matchContext, isMatchStarted = true, playerColor = 'X', onBackToLobby, onToggleTheme,
     challengerProfile = null, onSendQuickChat, onOfferDouble, onTakeDouble, onPassDouble, isPrematureDouble = false,
+    isOnlinePvpMatch: propIsOnlineMatch = false,
 }) => {
     const { tierGate } = usePlayerTierGate();
     const isXTurn = game.state.turn === 'X';
@@ -165,7 +167,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
         setPreviewBoardMode('live'); replay.returnToLive(); onReplayMove?.();
     };
 
-    const isOnlinePvpMatch = Boolean(challengerProfile) || Boolean(onSendQuickChat);
+    const isOnlinePvpMatch = Boolean(propIsOnlineMatch || challengerProfile || onSendQuickChat);
     const isGuided = !isOnlinePvpMatch && Boolean(tierGate === 'BEGINNER' || game.difficulty === 'beginner');
 
     return (
@@ -185,7 +187,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     difficulty={game.difficulty} locale={locale} isXTurn={isXTurn} scoreX={game.state.scoreX} scoreO={game.state.scoreO}
                     cubeValue={game.state.cubeValue} matchLength={game.state.matchLength} turn={game.state.turn}
                     playerClock={clock.formattedX} opponentClock={clock.formattedO} delaySeconds={activeDelaySeconds}
-                    prX={prX} prO={prO} challengerProfile={challengerProfile} isGuidedMode={isGuided}
+                    prX={prX} prO={prO} challengerProfile={challengerProfile} isGuidedMode={isGuided} isOnlinePvpMatch={isOnlinePvpMatch}
                 />
 
                 <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 [@media(max-height:500px)]:!gap-1 px-0 sm:px-3 py-0 sm:py-1.5 [@media(max-height:500px)]:!p-0 overflow-hidden">
@@ -210,6 +212,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                         onToggleTheme={onToggleTheme} onBackToLobby={onBackToLobby} canUndo={replay.isLive && game.canUndo}
                         onUndo={replay.isLive ? game.undoMove : NOOP} autoConfirmEnabled={game.autoConfirmTurn}
                         onToggleAutoConfirm={game.toggleAutoConfirmTurn} autoRollEnabled={autoRollEnabled} onToggleAutoRoll={handleToggleAutoRoll}
+                        isOnlinePvpMatch={isOnlinePvpMatch}
                     />
 
                     <div className="flex-1 min-w-0 min-h-0 h-full flex items-center justify-center">

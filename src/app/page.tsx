@@ -82,11 +82,15 @@ export default function Home() {
     const { handleRemoteAction } = useMatchBootstrap(game);
     const multiplayer = useMultiplayerGame(handleRemoteAction);
     const isMultiplayerActive = multiplayer.status === 'connected' || multiplayer.status === 'opponent_disconnected';
-    const isLiveMatch =
+    const isOnlineMatch =
         isMultiplayerActive ||
-        Boolean(multiplayer.matchInfo?.isClubChallenger) ||
+        multiplayer.status === 'searching' ||
+        multiplayer.status === 'matched' ||
+        Boolean(multiplayer.matchInfo) ||
         Boolean(multiplayer.opponentProfile) ||
-        Boolean(multiplayer.privateRoomCode);
+        Boolean(multiplayer.privateRoomCode) ||
+        userInitiatedMultiplayerRef.current;
+    const isLiveMatch = isOnlineMatch;
     const handledMatchRoomIdRef = useRef<string | null>(null);
 
     const {
@@ -184,14 +188,11 @@ export default function Home() {
     });
 
     const handleLobbyStart = useCallback((selection: LobbySelection) => {
-        userInitiatedMultiplayerRef.current = false;
-        multiplayer.leaveMatch();
+        userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch();
         if (selection.playerColor) setPlayerColor(selection.playerColor);
-        game.startNewMatch(selection.matchLength, selection.difficulty);
-        resetGameHistory();
+        game.startNewMatch(selection.matchLength, selection.difficulty); resetGameHistory();
         if (selection.coachEnabled !== isLiveAdviceEnabled) toggleLiveAdvice();
-        setAppScreen('GAME');
-        window.setTimeout(() => { game.rollDice(); }, 160);
+        setAppScreen('GAME'); window.setTimeout(() => { game.rollDice(); }, 160);
         const isEn = locale === 'en';
         const formatLabel = selection.matchLength === 0 ? 'Money Game' : (isEn ? `${selection.matchLength} pts Match` : `Match en ${selection.matchLength} pts`);
         const modeLabel = selection.coachEnabled ? (isEn ? 'Training Mode' : 'Mode Formation') : (isEn ? 'Tournament Mode' : 'Mode Tournoi');
@@ -202,16 +203,17 @@ export default function Home() {
         if (typeof window !== 'undefined' && !hasAutoStartedRef.current) {
             const params = new URLSearchParams(window.location.search);
             const modeParam = params.get('mode');
-            if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1') {
-                hasAutoStartedRef.current = true;
-                userInitiatedMultiplayerRef.current = true;
-                modals.openMatchmaking();
-            } else if (params.get('start') === 'guided' || window.location.pathname.startsWith('/play')) {
+            if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1' || Boolean(params.get('room')) || Boolean(params.get('inviteRoom'))) {
+                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true; modals.openMatchmaking();
+            } else if (params.get('start') === 'guided') {
+                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch();
+                handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
+            } else if (window.location.pathname.startsWith('/play')) {
                 hasAutoStartedRef.current = true;
                 handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
             }
         }
-    }, [handleLobbyStart, modals]);
+    }, [handleLobbyStart, modals, multiplayer]);
 
     const handleBackToLobby = useCallback(() => {
         userInitiatedMultiplayerRef.current = false;
@@ -257,8 +259,7 @@ export default function Home() {
                     isMultiplayerActive={isMultiplayerActive} latestGameAnalysis={latestGameAnalysis}
                     turnsHistory={turnsHistory} openingEntry={openingEntry}
                     onApplyOpeningMove={openingEntry ? () => handleApplyOpeningMove(openingEntry.bestMoves) : () => { }}
-                    onResetGameHistory={resetGameHistory}
-                    locale={locale}
+                    onResetGameHistory={resetGameHistory} locale={locale}
                 />
             </PageTransition>
         );
@@ -292,6 +293,7 @@ export default function Home() {
             latestGameAnalysis={latestGameAnalysis} turnsHistory={turnsHistory} openingEntry={openingEntry}
             onApplyOpeningMove={openingEntry ? () => handleApplyOpeningMove(openingEntry.bestMoves) : () => { }}
             onResetGameHistory={resetGameHistory} gameId={gameIdRef.current} playerColor={playerColor}
+            isOnlineMatch={isOnlineMatch}
         />
     );
 }

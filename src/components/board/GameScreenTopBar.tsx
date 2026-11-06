@@ -68,7 +68,7 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
     return (
         <>
             {/* Barre Raccourci Mode Échiquier Pur & Invitation 1-Clic */}
-            <div className="w-full flex items-center justify-between px-2 py-0.5 z-30 shrink-0 gap-2 whitespace-nowrap">
+            <div className="w-full flex items-center justify-between px-2 py-0.5 z-30 shrink-0 gap-2 whitespace-nowrap overflow-x-auto no-scrollbar">
                 <div className="flex items-center gap-2 shrink-0 whitespace-nowrap">
                     {tierGate === 'BEGINNER' && (
                         <span
@@ -80,7 +80,9 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                                 : (isEn ? 'Beginner Mode • Guided Play' : 'Mode Débutant • Partie Guidée')}
                         </span>
                     )}
-                    <NavbarPointsAndBadges tierGate={tierGate} />
+                    <div className="shrink-0 whitespace-nowrap">
+                        <NavbarPointsAndBadges tierGate={tierGate} />
+                    </div>
                     <button
                         type="button"
                         data-testid="full-focus-board-btn"
@@ -91,12 +93,15 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                                 : 'bg-black/60 text-stone-300 border-white/10 hover:text-white hover:bg-white/10'
                         }`}
                     >
-                        <span>{isFullFocusMode ? (isEn ? 'Exit Fullscreen (Key F)' : 'Quitter Plein Écran (Touche F)') : (isEn ? 'Pure Board Mode (Full Focus · Key F)' : 'Mode Échiquier Pur (Full Focus · Touche F)')}</span>
+                        <span className="shrink-0 whitespace-nowrap">{isFullFocusMode ? (isEn ? 'Exit Fullscreen (Key F)' : 'Quitter Plein Écran (Touche F)') : (isEn ? 'Pure Board Mode (Full Focus · Key F)' : 'Mode Échiquier Pur (Full Focus · Touche F)')}</span>
                     </button>
                 </div>
-                <InstantFriendInviteButton
-                    matchLength={game.state.matchLength}
-                />
+                <div className="shrink-0 whitespace-nowrap">
+                    <InstantFriendInviteButton
+                        matchLength={game.state.matchLength}
+                        className="shrink-0 whitespace-nowrap"
+                    />
+                </div>
             </div>
 
             {/* 1. HUD Compact Mobile */}
