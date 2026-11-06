@@ -32,12 +32,8 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
     >
       <svg viewBox="0 0 600 260" className="w-full h-full object-contain">
         <defs>
-          <marker id="lesson-arrow-gold" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
-            <polygon points="0 0, 6 3, 0 6" fill="#D4AF37" />
-          </marker>
-          <marker id="lesson-arrow-red" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
-            <polygon points="0 0, 6 3, 0 6" fill="#ef4444" />
-          </marker>
+          <marker id="lesson-arrow-gold" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="#D4AF37" /></marker>
+          <marker id="lesson-arrow-red" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="#ef4444" /></marker>
         </defs>
 
         {/* Tapis de feutre émeraude & boiserie symétrique */}
@@ -59,8 +55,8 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
           );
         })}
 
-        {/* Zone Votre Maison (Sortie) uniquement sur les leçons concernées (1, 2, 3, 4) */}
-        {[1, 2, 3, 4].includes(quizId) && (
+        {/* Zone Votre Maison (Sortie) uniquement sur les leçons concernées (1, 3, 4) */}
+        {[1, 3, 4].includes(quizId) && (
           <g>
             <rect x="296" y="140" width="240" height="115" fill="rgba(16, 185, 129, 0.08)" stroke="#10B981" strokeDasharray="4 4" rx="6" />
             <g transform="translate(416, 155)">
@@ -78,9 +74,7 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {quizId === 1 && (
           <g>
             <circle cx="516" cy="22" r="14" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-            <circle cx="516" cy="22" r="8" fill="none" stroke="#D4AF37" strokeWidth="0.75" opacity="0.6" />
             <circle cx="516" cy="48" r="14" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-            <circle cx="516" cy="48" r="8" fill="none" stroke="#D4AF37" strokeWidth="0.75" opacity="0.6" />
             <g transform="translate(516, 76)">
               <rect x="-44" y="-10" width="88" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
               <text x="0" y="3" fill="#F3E5AB" fontSize="9" fontWeight="bold" textAnchor="middle">{isEn ? 'Start: Pt 24' : 'Départ : Case 24'}</text>
@@ -96,14 +90,24 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 2. LE BUT DU JEU (Sortir ses 15 dames) */}
         {quizId === 2 && (
           <g>
-            {Array.from({ length: 15 }).map((_, idx) => (
-              <circle key={idx} cx={330 + (idx % 6) * 35} cy={232 - Math.floor(idx / 6) * 18} r="9" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-            ))}
-            <line x1="520" y1="220" x2="565" y2="220" stroke="#D4AF37" strokeWidth="4" markerEnd="url(#lesson-arrow-gold)" />
-            <g transform="translate(424, 185)">
-              <rect x="-115" y="-10" width="230" height="18" rx="6" fill="#090B10" fillOpacity="0.94" stroke="#D4AF37" strokeWidth="0.75" />
-              <text x="0" y="3" fill="#F3E5AB" fontSize="10" fontWeight="black" textAnchor="middle">{isEn ? '15 Checkers Home → Bear Off into Tray' : '15 Dames à la Maison → Sortie au Sabot'}</text>
+            <rect x="296" y="140" width="240" height="115" fill="rgba(212, 175, 55, 0.05)" stroke="#D4AF37" strokeDasharray="4 4" rx="6" />
+            <g transform="translate(416, 148)">
+              <rect x="-95" y="-11" width="190" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
+              <text x="0" y="3.5" fill="#F3E5AB" fontSize="10.5" fontWeight="black" textAnchor="middle">
+                {isEn ? 'Home Board (Pts 6 to 1) → Exit' : 'Maison (Cases 6 à 1) → Sortie'}
+              </text>
             </g>
+
+            {[316, 356, 396, 436, 476, 516].map((x, colIdx) => (
+              <g key={colIdx}>
+                <circle cx={x} cy="238" r="10" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.2" />
+                <circle cx={x} cy="218" r="10" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.2" />
+              </g>
+            ))}
+
+            <line x1="538" y1="228" x2="578" y2="228" stroke="#D4AF37" strokeWidth="3.5" markerEnd="url(#lesson-arrow-gold)" />
+            <rect x="560" y="246" width="30" height="10" rx="3" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
+            <rect x="560" y="234" width="30" height="10" rx="3" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1" />
           </g>
         )}
 
@@ -131,10 +135,7 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
             {/* 2 Petits Dés (3 et 1) au centre du tapis */}
             <g transform="translate(280, 80)">
               <rect x="-13" y="-28" width="26" height="26" rx="5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
-              <circle cx="-6" cy="-21" r="2" fill="#18181b" />
-              <circle cx="0" cy="-15" r="2" fill="#18181b" />
-              <circle cx="6" cy="-9" r="2" fill="#18181b" />
-
+              <circle cx="-6" cy="-21" r="2" fill="#18181b" /><circle cx="0" cy="-15" r="2" fill="#18181b" /><circle cx="6" cy="-9" r="2" fill="#18181b" />
               <rect x="-13" y="4" width="26" height="26" rx="5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.5" />
               <circle cx="0" cy="17" r="2.5" fill="#18181b" />
             </g>
@@ -231,10 +232,8 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
             <rect x="296" y="140" width="240" height="115" fill="rgba(239, 68, 68, 0.05)" stroke="#ef4444" strokeDasharray="4 4" rx="6" />
 
             {[
-              [316, 238], [316, 218], [316, 198],
-              [356, 238], [356, 218], [356, 198],
-              [396, 238], [396, 218], [396, 198],
-              [436, 238], [436, 218], [436, 198],
+              [316, 238], [316, 218], [316, 198], [356, 238], [356, 218], [356, 198],
+              [396, 238], [396, 218], [396, 198], [436, 238], [436, 218], [436, 198],
               [476, 238], [476, 218],
             ].map(([x, y], idx) => (
               <circle key={idx} cx={x} cy={y} r="10.5" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="1.2" />

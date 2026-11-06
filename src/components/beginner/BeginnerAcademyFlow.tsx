@@ -40,10 +40,26 @@ export function BeginnerAcademyFlow({
           : 'Beginner Academy — Backgammon Tour';
       }
       const saved = localStorage.getItem('bgtour_beginner_academy_progress');
+      let firstUncompleted = -1;
       if (saved) {
         const parsed = JSON.parse(saved) as { scorePoints?: number; completedQuizIds?: number[] };
         if (typeof parsed.scorePoints === 'number') setScorePoints(parsed.scorePoints);
-        if (Array.isArray(parsed.completedQuizIds)) setCompletedQuizIds(parsed.completedQuizIds);
+        const cIds = parsed.completedQuizIds;
+        if (Array.isArray(cIds)) {
+          setCompletedQuizIds(cIds);
+          firstUncompleted = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => !cIds.includes(q.id));
+        }
+      }
+      const savedIdx = localStorage.getItem('bgtour_beginner_academy_quiz_idx');
+      if (savedIdx !== null) {
+        const parsedIdx = parseInt(savedIdx, 10);
+        if (!isNaN(parsedIdx) && parsedIdx >= 0 && parsedIdx < BEGINNER_10_INITIATION_QUIZZES.length) {
+          setActiveQuizIndex(parsedIdx);
+        } else if (firstUncompleted >= 0) {
+          setActiveQuizIndex(firstUncompleted);
+        }
+      } else if (firstUncompleted >= 0) {
+        setActiveQuizIndex(firstUncompleted);
       }
     } catch {}
   }, [lang]);
@@ -64,11 +80,16 @@ export function BeginnerAcademyFlow({
   const selectedOpt = currentQuiz.options.find(o => o.id === selectedOptionId);
   const isSelectedCorrect = Boolean(selectedOpt?.isCorrect);
 
+  const handleSelectQuizIndex = (idx: number) => {
+    setActiveQuizIndex(idx);
+    setSelectedOptionId(null);
+    try { localStorage.setItem('bgtour_beginner_academy_quiz_idx', String(idx)); } catch {}
+  };
+
   const handleLaunchQuizzesForEpisode = (episodeId: number) => {
     const firstQuizForEp = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => q.linkedEpisodeId === episodeId);
     if (firstQuizForEp >= 0) {
-      setActiveQuizIndex(firstQuizForEp);
-      setSelectedOptionId(null);
+      handleSelectQuizIndex(firstQuizForEp);
       setViewState('QUIZ');
     }
   };
@@ -89,7 +110,9 @@ export function BeginnerAcademyFlow({
   const handleNextQuiz = () => {
     setSelectedOptionId(null);
     if (activeQuizIndex < BEGINNER_10_INITIATION_QUIZZES.length - 1) {
-      setActiveQuizIndex(prev => prev + 1);
+      const nextIdx = activeQuizIndex + 1;
+      setActiveQuizIndex(nextIdx);
+      try { localStorage.setItem('bgtour_beginner_academy_quiz_idx', String(nextIdx)); } catch {}
     } else {
       const finalPoints = scorePoints + 2000;
       setScorePoints(finalPoints);
@@ -110,20 +133,10 @@ export function BeginnerAcademyFlow({
         </button>
 
         <div className="flex items-center gap-1 bg-white/[0.04] p-0.5 rounded-xl border border-white/10">
-          <button
-            type="button"
-            data-testid="academy-tab-videos"
-            onClick={() => setViewState('VIDEO')}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition ${viewState === 'VIDEO' ? 'bg-white/[0.12] text-white border border-[#D4AF37]/50 shadow-sm' : 'text-neutral-400 hover:text-white'}`}
-          >
+          <button type="button" data-testid="academy-tab-videos" onClick={() => setViewState('VIDEO')} className={`px-3 py-1 rounded-lg text-xs font-bold transition ${viewState === 'VIDEO' ? 'bg-white/[0.12] text-white border border-[#D4AF37]/50 shadow-sm' : 'text-neutral-400 hover:text-white'}`}>
             {lang === 'fr' ? '5 Vidéos' : '5 Videos'}
           </button>
-          <button
-            type="button"
-            data-testid="academy-tab-quizzes"
-            onClick={() => { setViewState('QUIZ'); setSelectedOptionId(null); }}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition ${viewState === 'QUIZ' || viewState === 'DIPLOMA' ? 'bg-white/[0.12] text-white border border-[#D4AF37]/50 shadow-sm' : 'text-neutral-400 hover:text-white'}`}
-          >
+          <button type="button" data-testid="academy-tab-quizzes" onClick={() => { setViewState('QUIZ'); setSelectedOptionId(null); }} className={`px-3 py-1 rounded-lg text-xs font-bold transition ${viewState === 'QUIZ' || viewState === 'DIPLOMA' ? 'bg-white/[0.12] text-white border border-[#D4AF37]/50 shadow-sm' : 'text-neutral-400 hover:text-white'}`}>
             {lang === 'fr' ? '10 Leçons / Quiz' : '10 Lessons / Quizzes'}
           </button>
         </div>
@@ -145,9 +158,33 @@ export function BeginnerAcademyFlow({
       {/* Vue 2 : Quiz d'initiation — 100% sans scroll */}
       {viewState === 'QUIZ' && (
         <div data-testid="academy-quiz-container" className="w-full max-w-2xl bg-[#0B1015] border border-white/10 rounded-2xl p-2.5 sm:p-3 shadow-2xl flex flex-col justify-between flex-1 min-h-0 overflow-hidden">
-          <div className="flex items-center justify-between shrink-0">
-            <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">{lang === 'fr' ? currentQuiz.titleFr : currentQuiz.titleEn}</span>
-            {selectedOptionId && <span className="text-[11px] text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">+{currentQuiz.pointsReward} PTS</span>}
+          <div className="flex items-center justify-between shrink-0 gap-2">
+            <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider truncate">
+              {lang === 'fr' ? currentQuiz.titleFr : currentQuiz.titleEn}
+            </span>
+            <div className="flex items-center gap-1 shrink-0">
+              {BEGINNER_10_INITIATION_QUIZZES.map((q, idx) => {
+                const isCur = idx === activeQuizIndex;
+                const isPass = completedQuizIds.includes(q.id);
+                return (
+                  <button
+                    key={q.id}
+                    type="button"
+                    onClick={() => handleSelectQuizIndex(idx)}
+                    title={`Quiz ${q.id}/10`}
+                    className={`w-4 h-4 rounded text-[9px] font-bold flex items-center justify-center transition-all ${
+                      isCur
+                        ? 'bg-[#D4AF37] text-black ring-1 ring-amber-300'
+                        : isPass
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
+                        : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:bg-white/[0.08] hover:text-white'
+                    }`}
+                  >
+                    {q.id}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="w-full flex items-center justify-center shrink-0">
@@ -158,12 +195,12 @@ export function BeginnerAcademyFlow({
 
           <div className="flex flex-col gap-1.5 my-0.5 shrink-0">
             {currentQuiz.options.map((opt) => {
-              const isSelected = selectedOptionId === opt.id;
+              const isSel = selectedOptionId === opt.id;
               const btnStyle = !selectedOptionId
                 ? 'bg-white/[0.03] border-white/[0.08] text-zinc-200 hover:border-white/20 hover:bg-white/[0.06]'
                 : opt.isCorrect
                 ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md shadow-emerald-500/10'
-                : isSelected
+                : isSel
                 ? 'bg-rose-500/20 border-rose-500 text-rose-300'
                 : 'bg-white/[0.02] border-white/[0.06] text-zinc-400 opacity-60';
 
@@ -181,7 +218,7 @@ export function BeginnerAcademyFlow({
                       <span className="font-semibold text-white leading-tight truncate">{lang === 'fr' ? opt.labelFr : opt.labelEn}</span>
                       {selectedOptionId && opt.isCorrect && <span className="text-[#D4AF37] font-bold text-[11px] shrink-0 ml-2">➔ Flèche Dorée</span>}
                     </div>
-                    {(isSelected || (selectedOptionId && opt.isCorrect)) && <span className="text-[11px] mt-0.5 text-neutral-200 leading-tight">{lang === 'fr' ? opt.explanationFr : opt.explanationEn}</span>}
+                    {(isSel || (selectedOptionId && opt.isCorrect)) && <span className="text-[11px] mt-0.5 text-neutral-200 leading-tight">{lang === 'fr' ? opt.explanationFr : opt.explanationEn}</span>}
                   </div>
                 </button>
               );
@@ -201,24 +238,12 @@ export function BeginnerAcademyFlow({
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   {!isSelectedCorrect && (
-                    <button
-                      type="button"
-                      data-testid="academy-quiz-retry-btn"
-                      onClick={() => setSelectedOptionId(null)}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] transition-all active:scale-95"
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                      <span>{lang === 'fr' ? 'Réessayer' : 'Retry'}</span>
+                    <button type="button" data-testid="academy-quiz-retry-btn" onClick={() => setSelectedOptionId(null)} className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] transition-all active:scale-95">
+                      <RotateCcw className="w-3 h-3" /><span>{lang === 'fr' ? 'Réessayer' : 'Retry'}</span>
                     </button>
                   )}
-                  <button
-                    type="button"
-                    data-testid="academy-quiz-next-btn"
-                    onClick={handleNextQuiz}
-                    className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] text-black font-black text-[11px] uppercase tracking-wider shadow hover:brightness-105 transition-all active:scale-95"
-                  >
-                    <span>{lang === 'fr' ? 'Question suivante →' : 'Next question →'}</span>
-                    <ArrowRight className="w-3 h-3" />
+                  <button type="button" data-testid="academy-quiz-next-btn" onClick={handleNextQuiz} className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] text-black font-black text-[11px] uppercase tracking-wider shadow hover:brightness-105 transition-all active:scale-95">
+                    <span>{lang === 'fr' ? 'Question suivante →' : 'Next question →'}</span><ArrowRight className="w-3 h-3" />
                   </button>
                 </div>
               </div>
@@ -245,27 +270,14 @@ export function BeginnerAcademyFlow({
           <div className="px-4 py-1.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-bold text-sm">
             +{2000} PTS {lang === 'fr' ? 'Bonus Débloqués !' : 'Bonus Awarded!'}
           </div>
-          <button
-            type="button"
-            data-testid="diploma-launch-guided-match-btn"
-            onClick={handlePlayDirect}
-            className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition"
-          >
+          <button type="button" data-testid="diploma-launch-guided-match-btn" onClick={handlePlayDirect} className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition">
             {lang === 'fr' ? 'Mettre en pratique contre le Bot Doux (Partie Guidée) →' : 'Practice Against Gentle Bot (Guided Match) →'}
           </button>
           <div className="w-full flex flex-col sm:flex-row gap-2 mt-0.5">
-            <button
-              type="button"
-              onClick={() => onRequestSaveAccount ? onRequestSaveAccount() : setIsAccountModalOpen(true)}
-              className="flex-1 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 transition"
-            >
+            <button type="button" onClick={() => onRequestSaveAccount ? onRequestSaveAccount() : setIsAccountModalOpen(true)} className="flex-1 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 transition">
               {lang === 'fr' ? 'Créer mon compte (Sauvegarder)' : 'Save account'}
             </button>
-            <button
-              type="button"
-              onClick={handleBackToLobby}
-              className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs border border-white/10 transition"
-            >
+            <button type="button" onClick={handleBackToLobby} className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs border border-white/10 transition">
               {lang === 'fr' ? 'Retour Accueil' : 'Back to Home'}
             </button>
           </div>
