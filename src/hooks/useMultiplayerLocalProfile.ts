@@ -61,8 +61,8 @@ export function useMultiplayerLocalProfile({
             id: guestId,
             username: isRegistered ? passport!.pseudo : 'Joueur Invité',
             displayName: isRegistered ? passport!.pseudo : 'Joueur Invité',
-            rating: readLocalPlayerElo(),
-            averagePr: isRegistered ? readPublicAveragePr() : undefined,
+            rating: (isRegistered ? readLocalPlayerElo() : null) ?? 1500,
+            averagePr: isRegistered ? (readPublicAveragePr() ?? undefined) : undefined,
             avatarUrl: passport?.avatarUrl || STANDARD_USER_AVATARS[0].url,
             isGuest: !isRegistered,
         };
@@ -76,14 +76,14 @@ export function useMultiplayerLocalProfile({
                 const user = await getCurrentUser();
                 if (user && mounted) {
                     const prof = await getUserProfile(user.id);
-                    const syncedRating = prof?.rating || readLocalPlayerElo();
+                    const syncedRating = prof?.rating || (readLocalPlayerElo() ?? 1500);
                     saveLocalPlayerElo(syncedRating);
                     setLocalProfile({
                         id: user.id,
                         username: prof?.username || passport?.pseudo || user.email?.split('@')[0] || 'Joueur',
                         displayName: prof?.display_name || passport?.pseudo || 'Champion',
                         rating: syncedRating,
-                        averagePr: readPublicAveragePr(),
+                        averagePr: readPublicAveragePr() ?? undefined,
                         avatarUrl: prof?.avatar_url || passport?.avatarUrl || STANDARD_USER_AVATARS[0].url,
                         isGuest: false,
                     });
@@ -123,7 +123,7 @@ export function useMultiplayerLocalProfile({
             setLocalProfile((prev) => ({
                 ...prev,
                 rating: newLocalRating,
-                averagePr: updatedAveragePr,
+                averagePr: updatedAveragePr ?? undefined,
             }));
 
             if (isSupabaseConfigured() && !localProfile.isGuest) {

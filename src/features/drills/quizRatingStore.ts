@@ -12,6 +12,7 @@
 
 import type { PlayerBlunderRecord, DrillValidationResult } from './types';
 import { computeTenthsMetricDelta } from './drillSubAgentsPipeline';
+import { checkIsPlayerRegistered } from '../../hooks/useAuthenticPlayerStats';
 
 export const QUIZ_ER_STORAGE_KEY = 'bg_quiz_er_rating_v1';
 
@@ -43,7 +44,7 @@ export const DEFAULT_ER_STATE: QuizErState = {
 };
 
 export function getQuizErState(): QuizErState {
-    if (typeof window === 'undefined' || !window.localStorage) return DEFAULT_ER_STATE;
+    if (typeof window === 'undefined' || !window.localStorage || !checkIsPlayerRegistered()) return DEFAULT_ER_STATE;
     try {
         const raw = window.localStorage.getItem(QUIZ_ER_STORAGE_KEY);
         if (!raw) return DEFAULT_ER_STATE;
@@ -82,7 +83,7 @@ export function recordQuizErAttempt(
         solvedCount: prev.solvedCount + 1,
         updatedAt: new Date().toISOString(),
     };
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (typeof window !== 'undefined' && window.localStorage && checkIsPlayerRegistered()) {
         try { window.localStorage.setItem(QUIZ_ER_STORAGE_KEY, JSON.stringify(next)); } catch { /* ignore */ }
     }
     return next;

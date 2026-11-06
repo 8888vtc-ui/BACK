@@ -30,9 +30,9 @@ const QuizErStateSchema = z.object({
     updatedAt: z.string(),
 });
 
-function readValidatedErState(): QuizErState {
-    if (typeof window === 'undefined' || !window.localStorage) return DEFAULT_ER_STATE;
-    if (!checkIsPlayerRegistered()) return DEFAULT_ER_STATE;
+export function readValidatedErState(): QuizErState | null {
+    if (typeof window === 'undefined' || !window.localStorage) return null;
+    if (!checkIsPlayerRegistered()) return null;
     try {
         const raw = window.localStorage.getItem(QUIZ_ER_STORAGE_KEY);
         if (!raw) return DEFAULT_ER_STATE;
@@ -58,7 +58,7 @@ export interface UseDrillRatingReturn {
 
 export function useDrillRating(_isErMode?: boolean): UseDrillRatingReturn {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => checkIsPlayerRegistered());
-    const [erState, setErState] = useState<QuizErState>(() => readValidatedErState());
+    const [erState, setErState] = useState<QuizErState | null>(() => readValidatedErState());
 
     useEffect(() => {
         const sync = () => {
@@ -90,7 +90,7 @@ export function useDrillRating(_isErMode?: boolean): UseDrillRatingReturn {
                         ? 10 + safeTier * 3
                         : -Math.max(8, Math.min(22, Math.round(8 + Math.abs(equityLoss) * 45)));
 
-            const current = readValidatedErState();
+            const current = readValidatedErState() ?? DEFAULT_ER_STATE;
             const next: QuizErState = {
                 mode: 'ER',
                 erPrScore: Math.max(0, Math.min(30, Number((current.erPrScore + tenthsDelta).toFixed(1)))),
@@ -114,13 +114,13 @@ export function useDrillRating(_isErMode?: boolean): UseDrillRatingReturn {
 
     return {
         modeLabel: 'ER',
-        erPrScore: isAuthenticated ? erState.erPrScore : null,
-        erPrDelta: isAuthenticated ? erState.lastDeltaTenths : 0,
-        activeMetricScore: isAuthenticated ? erState.erPrScore : null,
-        activeTenthsDelta: isAuthenticated ? erState.lastDeltaTenths : 0,
-        ratingValue: isAuthenticated ? erState.erRating : null,
-        ratingDelta: isAuthenticated ? erState.lastDeltaEr : 0,
-        solvedCount: isAuthenticated ? erState.solvedCount : 0,
+        erPrScore: isAuthenticated && erState ? erState.erPrScore : null,
+        erPrDelta: isAuthenticated && erState ? erState.lastDeltaTenths : 0,
+        activeMetricScore: isAuthenticated && erState ? erState.erPrScore : null,
+        activeTenthsDelta: isAuthenticated && erState ? erState.lastDeltaTenths : 0,
+        ratingValue: isAuthenticated && erState ? erState.erRating : null,
+        ratingDelta: isAuthenticated && erState ? erState.lastDeltaEr : 0,
+        solvedCount: isAuthenticated && erState ? erState.solvedCount : 0,
         recordAttempt,
         recordOutcome: recordAttempt,
     };

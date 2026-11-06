@@ -99,9 +99,11 @@ describe('Elo Rating Engine, Degressive Curve, PR Ceiling & Anti-Cheat', () => {
         expect(blocked.escrowEloPoints).toBe(8);
 
         const q1 = rewardFirstTryQuizOnPublicPr();
-        expect(q1.unlockedEscrowElo).toBe(0);
+        expect(q1).not.toBeNull();
+        expect(q1?.unlockedEscrowElo).toBe(0);
         const q2 = rewardFirstTryQuizOnPublicPr();
-        expect(q2.unlockedEscrowElo).toBe(8);
+        expect(q2).not.toBeNull();
+        expect(q2?.unlockedEscrowElo).toBe(8);
     });
 
     it('applique la règle 2000 vs 1400 : le 2000 ne gagne que +1 pt Elo, et le 1400 qui gagne avec un meilleur PR prend +30 pts Elo', () => {
@@ -122,27 +124,34 @@ describe('Elo Rating Engine, Degressive Curve, PR Ceiling & Anti-Cheat', () => {
     it('applique le multiplicateur de série 1er essai et plafonne la cristallisation à 5 Quizz entre deux parties', () => {
         expect(readPublicAveragePr()).toBe(DEFAULT_INITIAL_PUBLIC_PR);
         const r1 = rewardFirstTryQuizOnPublicPr();
-        expect(r1.newPr).toBeCloseTo(8.35, 2);
+        expect(r1).not.toBeNull();
+        expect(r1?.newPr).toBeCloseTo(8.35, 2);
         const r2 = rewardFirstTryQuizOnPublicPr();
-        expect(r2.newPr).toBeCloseTo(8.20, 2);
+        expect(r2).not.toBeNull();
+        expect(r2?.newPr).toBeCloseTo(8.20, 2);
         const r3 = rewardFirstTryQuizOnPublicPr();
-        expect(r3.newPr).toBeCloseTo(7.95, 2);
+        expect(r3).not.toBeNull();
+        expect(r3?.newPr).toBeCloseTo(7.95, 2);
         const r4 = rewardFirstTryQuizOnPublicPr();
-        expect(r4.newPr).toBeCloseTo(7.70, 2);
+        expect(r4).not.toBeNull();
+        expect(r4?.newPr).toBeCloseTo(7.70, 2);
         const r5 = rewardFirstTryQuizOnPublicPr();
-        expect(r5.newPr).toBeCloseTo(7.35, 2);
-        expect(r5.crystallizationUsed).toBe(5);
-        expect(r5.crystallizationCapped).toBe(false);
+        expect(r5).not.toBeNull();
+        expect(r5?.newPr).toBeCloseTo(7.35, 2);
+        expect(r5?.crystallizationUsed).toBe(5);
+        expect(r5?.crystallizationCapped).toBe(false);
 
         const r6 = rewardFirstTryQuizOnPublicPr();
-        expect(r6.crystallizationCapped).toBe(true);
-        expect(r6.newPr).toBeCloseTo(7.35, 2);
+        expect(r6).not.toBeNull();
+        expect(r6?.crystallizationCapped).toBe(true);
+        expect(r6?.newPr).toBeCloseTo(7.35, 2);
 
         recordMatchIntoPublicAveragePr(7.35);
         breakFirstTryQuizStreak();
         const r7 = rewardFirstTryQuizOnPublicPr();
-        expect(r7.crystallizationCapped).toBe(false);
-        expect(r7.deltaPr).toBeCloseTo(-0.15, 2);
+        expect(r7).not.toBeNull();
+        expect(r7?.crystallizationCapped).toBe(false);
+        expect(r7?.deltaPr).toBeCloseTo(-0.15, 2);
     });
 
     it('bloque la triche / collusion humain-humain en salon privé ou en cas d’abandon avant 6 décisions', () => {

@@ -34,12 +34,18 @@ let inMemoryCrystallizationUsed = 0;
 let inMemoryEscrowElo = 0;
 let inMemoryLocalElo = DEFAULT_INITIAL_ELO;
 
+function isBrowserGuest(): boolean {
+    if (typeof window === 'undefined') return false;
+    return !checkIsPlayerRegistered();
+}
+
 function canPersistInBrowser(): boolean {
     if (typeof window === 'undefined') return false;
     return checkIsPlayerRegistered();
 }
 
-export function readLocalPlayerElo(): number {
+export function readLocalPlayerElo(forceGuest?: boolean): number | null {
+    if (forceGuest || isBrowserGuest()) return null;
     if (!canPersistInBrowser()) return inMemoryLocalElo;
     try {
         const raw = localStorage.getItem(STORAGE_KEY_LOCAL_ELO);
@@ -51,7 +57,8 @@ export function readLocalPlayerElo(): number {
     } catch { return inMemoryLocalElo; }
 }
 
-export function saveLocalPlayerElo(rating: number): number {
+export function saveLocalPlayerElo(rating: number): number | null {
+    if (isBrowserGuest()) return null;
     const safeRating = Math.max(MIN_ELO_RATING, Math.round(rating));
     inMemoryLocalElo = safeRating;
     if (canPersistInBrowser()) {
@@ -125,7 +132,8 @@ export function computeDegressiveEloGain(winnerRating: number, loserRating: numb
     return baseGain;
 }
 
-export function storeEscrowEloPoints(points: number): number {
+export function storeEscrowEloPoints(points: number): number | null {
+    if (isBrowserGuest()) return null;
     const safePoints = Math.max(0, Math.round(points));
     inMemoryEscrowElo = safePoints;
     if (canPersistInBrowser()) {
@@ -134,7 +142,8 @@ export function storeEscrowEloPoints(points: number): number {
     return inMemoryEscrowElo;
 }
 
-export function readEscrowEloPoints(): number {
+export function readEscrowEloPoints(): number | null {
+    if (isBrowserGuest()) return null;
     if (!canPersistInBrowser()) return inMemoryEscrowElo;
     try {
         const raw = localStorage.getItem(STORAGE_KEY_ESCROW_ELO);
@@ -195,7 +204,8 @@ export function calculateMatchElo(
     };
 }
 
-export function readPublicAveragePr(): number {
+export function readPublicAveragePr(forceGuest?: boolean): number | null {
+    if (forceGuest || isBrowserGuest()) return null;
     if (!canPersistInBrowser()) return inMemoryPublicPr;
     try {
         const raw = localStorage.getItem(STORAGE_KEY_PUBLIC_PR);
@@ -207,10 +217,11 @@ export function readPublicAveragePr(): number {
     } catch { return inMemoryPublicPr; }
 }
 
-export function getTargetQuizTierFromPublicPr(publicPr: number = readPublicAveragePr()): 1 | 2 | 3 | 4 {
-    if (publicPr < 3.0) return 4;
-    if (publicPr <= 5.5) return 3;
-    if (publicPr <= 9.0) return 2;
+export function getTargetQuizTierFromPublicPr(publicPr?: number | null): 1 | 2 | 3 | 4 {
+    const safePr = typeof publicPr === 'number' && Number.isFinite(publicPr) ? publicPr : (readPublicAveragePr() ?? DEFAULT_INITIAL_PUBLIC_PR);
+    if (safePr < 3.0) return 4;
+    if (safePr <= 5.5) return 3;
+    if (safePr <= 9.0) return 2;
     return 1;
 }
 
@@ -224,6 +235,7 @@ export function readQuizAddictionState() {
 }
 
 export function breakFirstTryQuizStreak(): void {
+    if (isBrowserGuest()) return;
     inMemoryFirstTryStreak = 0;
     if (canPersistInBrowser()) {
         try { localStorage.setItem(STORAGE_KEY_FIRST_TRY_STREAK, '0'); } catch { /* ignore */ }
@@ -237,7 +249,8 @@ export function getStreakPrReduction(streak: number): number {
 }
 
 export function rewardFirstTryQuizOnPublicPr() {
-    const previousPr = readPublicAveragePr();
+    if (isBrowserGuest()) return null;
+    const previousPr = readPublicAveragePr() ?? DEFAULT_INITIAL_PUBLIC_PR;
     inMemoryFirstTryStreak += 1;
     inMemoryFirstTryCount += 1;
 
@@ -251,10 +264,11 @@ export function rewardFirstTryQuizOnPublicPr() {
 
     let unlockedEscrowElo = 0;
     const currentEscrow = readEscrowEloPoints();
-    if (currentEscrow > 0 && inMemoryFirstTryStreak >= ESCROW_UNLOCK_STREAK_REQUIRED) {
+    if (currentEscrow && currentEscrow > 0 && inMemoryFirstTryStreak >= ESCROW_UNLOCK_STREAK_REQUIRED) {
         unlockedEscrowElo = currentEscrow;
         storeEscrowEloPoints(0);
-        saveLocalPlayerElo(readLocalPlayerElo() + unlockedEscrowElo);
+        const currentElo = readLocalPlayerElo() ?? DEFAULT_INITIAL_ELO;
+        saveLocalPlayerElo(currentElo + unlockedEscrowElo);
     }
 
     let totalFirstTrySolved = inMemoryFirstTryCount;
@@ -277,13 +291,14 @@ export function rewardFirstTryQuizOnPublicPr() {
     };
 }
 
-export function recordMatchIntoPublicAveragePr(matchPr: number): number {
+export function recordMatchIntoPublicAveragePr(matchPr: number): number | null {
+    if (isBrowserGuest()) return null;
     inMemoryCrystallizationUsed = 0;
     if (canPersistInBrowser()) {
         try { localStorage.setItem(STORAGE_KEY_CRYSTALLIZATION_USED, '0'); } catch { /* ignore */ }
     }
     if (!Number.isFinite(matchPr) || matchPr < 0) return readPublicAveragePr();
-    const current = readPublicAveragePr();
+    const current = readPublicAveragePr() ?? DEFAULT_INITIAL_PUBLIC_PR;
     const blended = Number(Math.max(MIN_PUBLIC_AVERAGE_PR, Math.min(25, current * 0.85 + matchPr * 0.15)).toFixed(2));
     inMemoryPublicPr = blended;
     if (canPersistInBrowser()) {

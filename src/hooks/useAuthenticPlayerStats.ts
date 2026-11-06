@@ -43,13 +43,25 @@ export interface AuthenticPlayerStats {
 export function checkIsPlayerRegistered(): boolean {
     if (typeof window === 'undefined' || !window.localStorage) return false;
     try {
+        if (window.localStorage.getItem('bg_is_guest') === 'true') return false;
+        if (window.localStorage.getItem('bg_guest_session') === 'true') return false;
+
         const passport = readPlayerPassport();
         if (passport?.email && passport.email !== 'invite@backgammontour.com' && !/^invit[eé]|^joueur invit[eé]/i.test(passport.pseudo)) {
             return true;
         }
         const userCode = window.localStorage.getItem('bg_user_code');
         if (userCode && userCode !== 'guest_instant' && !userCode.startsWith('guest_')) return true;
-        if (window.localStorage.getItem('bgtour_local_auth_profile_v1')) return true;
+        const localAuth = window.localStorage.getItem('bgtour_local_auth_profile_v1');
+        if (localAuth) {
+            try {
+                const parsed = JSON.parse(localAuth);
+                if (parsed.isGuest === true || parsed.role === 'guest') return false;
+                if (parsed.email && parsed.email !== 'invite@backgammontour.com' && !/^invit[eé]|^joueur invit[eé]/i.test(parsed.displayName || parsed.pseudo || '')) {
+                    return true;
+                }
+            } catch { /* ignore */ }
+        }
         return Boolean(window.localStorage.getItem('sb-access-token') || window.localStorage.getItem('supabase.auth.token'));
     } catch {
         return false;
@@ -58,6 +70,7 @@ export function checkIsPlayerRegistered(): boolean {
 
 export function readRealMatchStatsRecord(): RealMatchStatsRecord | null {
     if (typeof window === 'undefined' || !window.localStorage) return null;
+    if (!checkIsPlayerRegistered()) return null;
     try {
         const raw = window.localStorage.getItem(REAL_MATCH_STATS_KEY);
         if (!raw) return null;
@@ -79,7 +92,8 @@ export function readRealMatchStatsRecord(): RealMatchStatsRecord | null {
     }
 }
 
-export function saveRealMatchStats(stats: Partial<RealMatchStatsRecord>): RealMatchStatsRecord {
+export function saveRealMatchStats(stats: Partial<RealMatchStatsRecord>): RealMatchStatsRecord | null {
+    if (!checkIsPlayerRegistered()) return null;
     const existing = readRealMatchStatsRecord() || {
         gamesPlayed: 0, totalCheckerLoss: 0, totalCheckerDecisions: 0,
         totalCubeLoss: 0, totalCubeDecisions: 0, rating: 1500, updatedAt: new Date().toISOString(),
