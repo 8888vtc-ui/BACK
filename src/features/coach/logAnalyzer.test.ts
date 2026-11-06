@@ -9,7 +9,7 @@ import type { MatchLogEntry } from '../../actions/types';
 import {
     classifyVerdict,
     verdictLabel,
-    analyzeHumanMoveFromLog,
+    analyzeHumanMoveFromLogWithBgsage,
     reconstructBoardFromLog,
     VERDICT_THRESHOLDS,
 } from './logAnalyzer';
@@ -78,18 +78,18 @@ describe('analyzeHumanMoveFromLog — Log-Driven (Règle d\'or n°1 & n°2)', ()
         });
     }
 
-    it('ignore STRICTEMENT les coups de l\'IA (O) — retourne null', () => {
+    it('ignore STRICTEMENT les coups de l\'IA (O) — retourne null', async () => {
         const aiEntry = makeLogEntry('O', [{ from: 1, to: 4 }]);
-        const result = analyzeHumanMoveFromLog({ logEntry: aiEntry, localPlayer: 'X' });
+        const result = await analyzeHumanMoveFromLogWithBgsage({ logEntry: aiEntry, localPlayer: 'X' });
         expect(result).toBeNull();
     });
 
-    it('évalue le coup du joueur X depuis boardBefore et retourne une analyse complète', () => {
+    it('évalue le coup du joueur X depuis boardBefore et retourne une analyse complète', async () => {
         const humanEntry = makeLogEntry('X', [
             { from: 8, to: 5 },
             { from: 6, to: 5 },
         ]);
-        const result = analyzeHumanMoveFromLog({ logEntry: humanEntry, localPlayer: 'X' });
+        const result = await analyzeHumanMoveFromLogWithBgsage({ logEntry: humanEntry, localPlayer: 'X' });
 
         expect(result).not.toBeNull();
         expect(result?.player).toBe('X');
@@ -101,17 +101,17 @@ describe('analyzeHumanMoveFromLog — Log-Driven (Règle d\'or n°1 & n°2)', ()
         expect(result?.playedEquity).toBeDefined();
     });
 
-    it('calcule une perte d\'équité non négative (equityLoss >= 0)', () => {
+    it('calcule une perte d\'équité non négative (equityLoss >= 0)', async () => {
         const humanEntry = makeLogEntry('X', [{ from: 8, to: 5 }]);
-        const result = analyzeHumanMoveFromLog({ logEntry: humanEntry, localPlayer: 'X' });
+        const result = await analyzeHumanMoveFromLogWithBgsage({ logEntry: humanEntry, localPlayer: 'X' });
         if (result) {
             expect(result.equityLoss).toBeGreaterThanOrEqual(0);
         }
     });
 
-    it('respecte la condition stricte localPlayer (X par défaut)', () => {
+    it('respecte la condition stricte localPlayer (X par défaut)', async () => {
         const aiEntry = makeLogEntry('O', [{ from: 1, to: 4 }]);
-        const result = analyzeHumanMoveFromLog({ logEntry: aiEntry });
+        const result = await analyzeHumanMoveFromLogWithBgsage({ logEntry: aiEntry });
         expect(result).toBeNull();
     });
 });
@@ -156,7 +156,7 @@ describe('reconstructBoardFromLog & Audit 3 (Cache LRU + Off-List Blunders)', ()
         expect(reconstructBoardFromLog([], 1)).toEqual(initial);
     });
 
-    it('identifie un coup intermédiaire (24/18 18/13) comme équivalent à 24/13 sans faux blunder', () => {
+    it('identifie un coup intermédiaire (24/18 18/13) comme équivalent à 24/13 sans faux blunder', async () => {
         const initial = createInitialState().board;
         let boardAfter = applyMove(initial, { from: 24, to: 18 }, 'X');
         boardAfter = applyMove(boardAfter, { from: 18, to: 13 }, 'X');
@@ -173,7 +173,7 @@ describe('reconstructBoardFromLog & Audit 3 (Cache LRU + Off-List Blunders)', ()
             boardAfter: Object.freeze([...boardAfter]),
         });
 
-        const analysis = analyzeHumanMoveFromLog({ logEntry: loversLeapEntry });
+        const analysis = await analyzeHumanMoveFromLogWithBgsage({ logEntry: loversLeapEntry });
         expect(analysis).not.toBeNull();
         expect(analysis!.verdict).toBe('optimal');
         expect(analysis!.equityLoss).toBe(0);
@@ -181,7 +181,7 @@ describe('reconstructBoardFromLog & Audit 3 (Cache LRU + Off-List Blunders)', ()
         expect(analysis!.isBlunder).toBe(false);
     });
 
-    it('reconnaît un coup joué dans l\'ordre inverse des dés (8/7 13/7 sur 6-1) comme optimal (0 perte)', () => {
+    it('reconnaît un coup joué dans l\'ordre inverse des dés (8/7 13/7 sur 6-1) comme optimal (0 perte)', async () => {
         const initial = createInitialState().board;
         let boardAfter = applyMove(initial, { from: 8, to: 7 }, 'X');
         boardAfter = applyMove(boardAfter, { from: 13, to: 7 }, 'X');
@@ -198,7 +198,7 @@ describe('reconstructBoardFromLog & Audit 3 (Cache LRU + Off-List Blunders)', ()
             boardAfter: Object.freeze([...boardAfter]),
         });
 
-        const analysis = analyzeHumanMoveFromLog({ logEntry: reverseOrderEntry });
+        const analysis = await analyzeHumanMoveFromLogWithBgsage({ logEntry: reverseOrderEntry });
         expect(analysis).not.toBeNull();
         expect(analysis!.verdict).toBe('optimal');
         expect(analysis!.equityLoss).toBe(0);

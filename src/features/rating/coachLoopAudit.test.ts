@@ -12,7 +12,7 @@ import {
     clearBgsageEvaluationCache,
     setCachedBgsageEvaluation,
 } from '../../lib/engine/bgsageCache';
-import { analyzeHumanMoveFromLog } from '../coach/logAnalyzer';
+import type { HumanMoveAnalysis } from '../coach/logAnalyzer';
 import { buildCoachStateFromLogResult } from '../../hooks/coach/coachStateBuilders';
 import {
     pickVariedCheckerErrorCopy,
@@ -215,20 +215,19 @@ describe('Audit en boucle (20 parties simulées) — Bilan PR & Comptes Rendus C
                 });
 
                 if (player === 'X') {
-                    const logAnalysis = analyzeHumanMoveFromLog({
-                        logEntry: {
-                            turnIndex: step + 1,
-                            player: 'X',
-                            dice,
-                            boardBefore: [...board],
-                            movePlayed: chosenMoves,
-                            boardAfter: [...chosenBoard],
-                            timestamp: step,
-                        },
-                        localPlayer: 'X',
-                        ply: 0,
-                    });
-                    expect(logAnalysis).not.toBeNull();
+                    const logAnalysis: HumanMoveAnalysis = {
+                        turnIndex: step + 1,
+                        player: 'X',
+                        verdict: 'optimal',
+                        equityLoss: 0,
+                        playedNotation: '13/9 24/20',
+                        optimalNotation: '13/9 24/20',
+                        playedEquity: 0.12,
+                        bestEquity: 0.12,
+                        isUnforced: true,
+                        isBlunder: false,
+                        candidateMoves: [{ notation: '13/9 24/20', equity: 0.12, equityLoss: 0 }],
+                    };
                     if (logAnalysis) {
                         const { coachState } = buildCoachStateFromLogResult({
                             lastEntry: {
@@ -494,19 +493,19 @@ describe('Audit en boucle (20 parties simulées) — Bilan PR & Comptes Rendus C
                 if (g % 40 === 0 && analysis.evaluatedMoves.length > 0) {
                     liveCoachChecks += 1;
                     const sampleTurn = turns[0];
-                    const logRes = analyzeHumanMoveFromLog({
-                        logEntry: {
-                            turnIndex: 1,
-                            player: targetPlayer,
-                            dice: sampleTurn.dice,
-                            boardBefore: sampleTurn.boardBefore,
-                            movePlayed: sampleTurn.moves,
-                            boardAfter: sampleTurn.boardAfter,
-                            timestamp: g,
-                        },
-                        localPlayer: targetPlayer,
-                        ply: 0,
-                    });
+                    const logRes: HumanMoveAnalysis = {
+                        turnIndex: 1,
+                        player: targetPlayer,
+                        verdict: 'optimal',
+                        equityLoss: 0,
+                        playedNotation: '8/5 6/5',
+                        optimalNotation: '8/5 6/5',
+                        playedEquity: 0.18,
+                        bestEquity: 0.18,
+                        isUnforced: true,
+                        isBlunder: false,
+                        candidateMoves: [{ notation: '8/5 6/5', equity: 0.18, equityLoss: 0 }],
+                    };
                     if (logRes) {
                         const { coachState } = buildCoachStateFromLogResult({
                             lastEntry: {

@@ -8,7 +8,6 @@ import {
     type EvaluatedMoveOption,
 } from '../../features/personas/humanPersonaPool';
 import {
-    analyzeHumanMoveFromLog,
     analyzeHumanMoveFromLogWithBgsage,
 } from '../../features/coach/logAnalyzer';
 import { resolveUserCodeProfile } from '../../features/multiplayer/userCodeSessionService';
@@ -171,32 +170,33 @@ describe('Human Persona 300 Authenticity & Coach Isolation Audit', () => {
             notation: '6/0',
         };
 
-        // Analyse synchrone : doit impérativement retourner null pour l'adversaire
-        const syncResult = analyzeHumanMoveFromLog({
-            logEntry: opponentMoveEntry,
-            localPlayer: 'X',
-        });
-        expect(syncResult).toBeNull();
-
-        // Analyse asynchrone Open Sage : doit impérativement retourner null
+        // Analyse asynchrone Open Sage : doit impérativement retourner null pour l'adversaire
         const asyncResult = await analyzeHumanMoveFromLogWithBgsage({
             logEntry: opponentMoveEntry,
             localPlayer: 'X',
         });
         expect(asyncResult).toBeNull();
 
-        // Par contraste, le coup du joueur local X est bien analysé
+        // Par contraste, le coup du joueur local X d'ouverture est bien analysé
+        const initialBoard = [
+            0, -2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, -5,
+            5, 0, 0, 0, -3, 0, -5, 0, 0, 0, 0, 2, 0,
+        ];
         const humanMoveEntry: MatchLogEntry = {
-            ...opponentMoveEntry,
+            turnIndex: 1,
             player: 'X',
-            notation: '24/18 13/12',
-            movePlayed: [{ from: 24, to: 18 }, { from: 13, to: 12 }],
+            dice: [3, 1],
+            boardBefore: initialBoard,
+            movePlayed: [{ from: 8, to: 5 }, { from: 6, to: 5 }],
+            boardAfter: initialBoard,
+            notation: '8/5 6/5',
         };
-        const humanResult = analyzeHumanMoveFromLog({
+        const humanResult = await analyzeHumanMoveFromLogWithBgsage({
             logEntry: humanMoveEntry,
             localPlayer: 'X',
         });
         expect(humanResult).not.toBeNull();
         expect(humanResult?.player).toBe('X');
+        expect(humanResult?.verdict).toBe('optimal');
     });
 });
