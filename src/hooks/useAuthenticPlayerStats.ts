@@ -3,10 +3,10 @@
 /**
  * @file src/hooks/useAuthenticPlayerStats.ts
  * @description Source de vérité unique & garantie "Zéro Fake PR / ER" :
- * - État A (Invité) : hasRealPR=false, 0 partie, PR=null, Elo=null.
- * - État B (Inscrit, 0 partie) : hasRealPR=false, PR=null, Elo=1500, "En calibrage".
+ * - État A (Invité) : canHavePR=false, hasRealPR=false, 0 partie, PR=null, Elo=null.
+ * - État B (Inscrit, 0 partie) : canHavePR=true, hasRealPR=false, PR=null, Elo=1500, "En calibrage".
  * - État C (Inscrit, >=1 partie) : calcul 100 % réel au dixième (ΔEMG * 500).
- * Strictement <= 180 lignes, 0 any.
+ * Strictement <= 185 lignes, 0 any.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -27,7 +27,9 @@ export interface RealMatchStatsRecord {
 }
 
 export interface AuthenticPlayerStats {
+    readonly isAuthenticated: boolean;
     readonly isRegistered: boolean;
+    readonly canHavePR: boolean;
     readonly hasRealPR: boolean;
     readonly gamesPlayed: number;
     readonly globalPR: number | null;
@@ -98,21 +100,21 @@ export function saveRealMatchStats(stats: Partial<RealMatchStatsRecord>): RealMa
 }
 
 const GUEST_STATS: AuthenticPlayerStats = {
-    isRegistered: false, hasRealPR: false, gamesPlayed: 0,
-    globalPR: null, checkerPR: null, cubePR: null, eloRating: null,
+    isAuthenticated: false, isRegistered: false, canHavePR: false, hasRealPR: false,
+    gamesPlayed: 0, globalPR: null, checkerPR: null, cubePR: null, eloRating: null,
     pseudo: 'Invité', statusLabel: 'guest',
 };
 
 export function computeAuthenticStats(): AuthenticPlayerStats {
-    const isRegistered = checkIsPlayerRegistered();
-    if (!isRegistered) return GUEST_STATS;
+    const isAuthenticated = checkIsPlayerRegistered();
+    if (!isAuthenticated) return GUEST_STATS;
 
     const passport = readPlayerPassport();
     const pseudo = passport?.pseudo || 'Membre';
     const record = readRealMatchStatsRecord();
     const analyses = getAllGameAnalyses();
 
-    let gamesCount = record?.gamesPlayed ?? analyses.length;
+    const gamesCount = record?.gamesPlayed ?? analyses.length;
     let checkerLoss = record?.totalCheckerLoss ?? 0;
     let checkerDec = record?.totalCheckerDecisions ?? 0;
     let cubeLoss = record?.totalCubeLoss ?? 0;
@@ -132,9 +134,9 @@ export function computeAuthenticStats(): AuthenticPlayerStats {
 
     if (gamesCount === 0 || (checkerDec + cubeDec) === 0) {
         return {
-            isRegistered: true, hasRealPR: false, gamesPlayed: 0,
-            globalPR: null, checkerPR: null, cubePR: null, eloRating: 1500,
-            pseudo, statusLabel: 'calibrating',
+            isAuthenticated: true, isRegistered: true, canHavePR: true, hasRealPR: false,
+            gamesPlayed: 0, globalPR: null, checkerPR: null, cubePR: null,
+            eloRating: 1500, pseudo, statusLabel: 'calibrating',
         };
     }
 
@@ -145,24 +147,15 @@ export function computeAuthenticStats(): AuthenticPlayerStats {
     const cubePR = cubeDec > 0 ? Number(Math.max(0, (cubeLoss / cubeDec) * 500).toFixed(1)) : globalPR;
 
     return {
-        isRegistered: true,
-        hasRealPR: globalPR !== null,
-        gamesPlayed: gamesCount,
-        globalPR, checkerPR, cubePR,
-        eloRating: rating,
-        pseudo,
-        statusLabel: 'calibrated',
+        isAuthenticated: true, isRegistered: true, canHavePR: true, hasRealPR: globalPR !== null,
+        gamesPlayed: gamesCount, globalPR, checkerPR, cubePR, eloRating: rating,
+        pseudo, statusLabel: 'calibrated',
     };
 }
 
-export function useAuthenticPlayerStats(): AuthenticPlayerStats & {
-    refreshStats: () => void;
-} {
+export function useAuthenticPlayerStats(): AuthenticPlayerStats & { refreshStats: () => void } {
     const [stats, setStats] = useState<AuthenticPlayerStats>(GUEST_STATS);
-
-    const refreshStats = useCallback(() => {
-        setStats(computeAuthenticStats());
-    }, []);
+    const refreshStats = useCallback(() => setStats(computeAuthenticStats()), []);
 
     useEffect(() => {
         refreshStats();

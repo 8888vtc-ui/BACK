@@ -18,6 +18,7 @@ import {
 } from './BoardPortraitAndActionRails';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 export {
     BoardPortraitTopHud, BoardPortraitBottomHud, BoardRightActionRail,
@@ -161,14 +162,9 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 </div>
 
                 {isGuided ? (
-                    <div
-                        data-testid="left-rail-guided-pace-badge"
-                        className="flex flex-col items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-950/40 p-1.5 shadow-inner gap-0.5 shrink-0 w-14 text-center select-none"
-                    >
+                    <div data-testid="left-rail-guided-pace-badge" className="flex flex-col items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-950/40 p-1.5 shadow-inner gap-0.5 shrink-0 w-14 text-center select-none">
                         <span className="text-sm font-black text-emerald-300 leading-none">∞</span>
-                        <span className="font-extrabold text-[8px] uppercase tracking-wider text-emerald-300 leading-tight">
-                            À votre rythme
-                        </span>
+                        <span className="font-extrabold text-[8px] uppercase tracking-wider text-emerald-300 leading-tight">À votre rythme</span>
                     </div>
                 ) : (
                     <div data-testid="left-rail-clock-block" className="flex flex-col items-center justify-between rounded-xl border border-[#d4af37]/40 bg-[#080605] p-1 shadow-inner gap-0.5 shrink-0 w-13">
@@ -284,12 +280,15 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 <div className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${turn === 'X' ? 'bg-[#065f46] text-emerald-50 ring-1 ring-emerald-400/70' : 'bg-[#080605] text-stone-300 border border-white/10'}`}>{playerClock}</div>
 
                 {!isBeginner && (
-                    <span
-                        data-testid="left-rail-player-pr"
-                        className={`w-full [@media(min-height:541px)]:w-auto inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap leading-none ${resolvePrBadgeClasses(playerPrNum)}`}
-                    >
-                        PR Match : {playerPrLabel}
-                    </span>
+                    playerMeta.isGuest ? (
+                        <button type="button" data-testid="left-rail-player-pr" onClick={openTermsAndPrPolicyModal} title="Clause CGU §4 : Compte requis pour activer votre PR" className="w-full [@media(min-height:541px)]:w-auto inline-flex items-center justify-center rounded-lg border border-amber-500/35 bg-amber-950/40 px-2 py-0.5 font-mono text-[10px] font-bold tracking-tight text-amber-300 shadow-sm whitespace-nowrap leading-none hover:border-amber-400/60 transition">
+                            {locale === 'en' ? 'PR Locked (Guest)' : 'PR Verrouillé (Invité)'}
+                        </button>
+                    ) : (
+                        <span data-testid="left-rail-player-pr" className={`w-full [@media(min-height:541px)]:w-auto inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap leading-none ${resolvePrBadgeClasses(playerPrNum)}`}>
+                            PR Match : {playerPrLabel}
+                        </span>
+                    )
                 )}
             </div>
         </aside>

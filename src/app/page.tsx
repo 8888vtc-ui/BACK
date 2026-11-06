@@ -120,12 +120,8 @@ export default function Home() {
     }, [botMatchLogLength]);
     const botRealSnapshot = getBotRealPr();
     const measuredBotPr = botRealSnapshot.decisions >= MIN_DECISIONS_FOR_PR ? botRealSnapshot.pr : null;
-    const rawBotPr = matchStatsO.decisionsCount >= MIN_DECISIONS_FOR_PR
-        ? (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500
-        : measuredBotPr;
-    const prO = typeof rawBotPr === 'number' && Number.isFinite(rawBotPr)
-        ? Number(Math.max(0, rawBotPr).toFixed(1))
-        : null;
+    const rawBotPr = matchStatsO.decisionsCount >= MIN_DECISIONS_FOR_PR ? (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500 : measuredBotPr;
+    const prO = typeof rawBotPr === 'number' && Number.isFinite(rawBotPr) ? Number(Math.max(0, rawBotPr).toFixed(1)) : null;
     livePrRef.current = { prX: prX ?? 0, prO };
 
     const {
@@ -211,9 +207,12 @@ export default function Home() {
             if (window.location.pathname.startsWith('/play') || params.get('start') === 'guided') {
                 hasAutoStartedRef.current = true;
                 handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
+            } else if (params.get('mode') === 'matchmaking' || params.get('invite') === '1') {
+                hasAutoStartedRef.current = true;
+                modals.openMatchmaking();
             }
         }
-    }, [handleLobbyStart]);
+    }, [handleLobbyStart, modals]);
 
     const handleBackToLobby = useCallback(() => {
         userInitiatedMultiplayerRef.current = false;
@@ -243,12 +242,11 @@ export default function Home() {
         canDouble: game.canDouble, doublingOfferedBy: game.doublingOfferedBy, opponentStatusMessage: game.opponentStatusMessage,
     });
 
-    const mainAmbianceClass =
-        theme === 'snowie_classic'
-            ? 'bg-[#06110b] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#0e2e1d_0%,#081b11_50%,#030805_100%)] text-slate-100 selection:bg-amber-500'
-            : theme === 'tournament'
-                ? 'bg-[#16070a] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#38121a_0%,#1f090e_50%,#090304_100%)] text-slate-100 selection:bg-amber-600'
-                : 'bg-slate-950 bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#162a4a_0%,#0b1528_50%,#020617_100%)] text-slate-100 selection:bg-amber-500';
+    const mainAmbianceClass = theme === 'snowie_classic'
+        ? 'bg-[#06110b] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#0e2e1d_0%,#081b11_50%,#030805_100%)] text-slate-100 selection:bg-amber-500'
+        : theme === 'tournament'
+            ? 'bg-[#16070a] bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#38121a_0%,#1f090e_50%,#090304_100%)] text-slate-100 selection:bg-amber-600'
+            : 'bg-slate-950 bg-[radial-gradient(ellipse_95%_70%_at_50%_15%,#162a4a_0%,#0b1528_50%,#020617_100%)] text-slate-100 selection:bg-amber-500';
 
     if (appScreen === 'LOBBY') {
         return (

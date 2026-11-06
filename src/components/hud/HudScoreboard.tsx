@@ -8,6 +8,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import type { Player } from '../../engine/backgammonEngine';
 import { getSavedPipCountVisibility, PIP_VISIBILITY_CHANGE_EVENT, setSavedPipCountVisibility } from '../board/PipCountBadge';
 import { formatChameleonPipDisplay, formatNAwayScore, type ChameleonLayer } from '../../features/chameleon/chameleonProfile';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
+import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 export interface HudScoreboardProps {
     matchLength: number; scoreX: number; scoreO: number; turn: Player; crawford?: boolean;
@@ -31,15 +33,9 @@ export function getPRCategoryLabel(pr: number | null | undefined): string {
 }
 
 function prBadgeClass(pr: number | null | undefined): string {
-    if (pr === null || pr === undefined) {
-        return 'border-white/10 bg-slate-900/80 text-slate-400';
-    }
-    if (pr <= 3) {
-        return 'border-emerald-400/70 bg-emerald-500/15 text-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.35)]';
-    }
-    if (pr <= 7) {
-        return 'border-amber-400/70 bg-amber-500/15 text-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.35)]';
-    }
+    if (pr === null || pr === undefined) return 'border-white/10 bg-slate-900/80 text-slate-400';
+    if (pr <= 3) return 'border-emerald-400/70 bg-emerald-500/15 text-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.35)]';
+    if (pr <= 7) return 'border-amber-400/70 bg-amber-500/15 text-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.35)]';
     return 'border-rose-400/70 bg-rose-500/15 text-rose-300 shadow-[0_0_10px_rgba(251,113,133,0.35)]';
 }
 
@@ -48,11 +44,12 @@ interface PlayerCardProps {
     pr?: number | null; pip?: number | null; borneOff?: number; opponentPip?: number | null; epc?: number | null;
     isPureRace?: boolean; pipVisible?: boolean; onTogglePipVisible?: () => void;
     awayScoreLabel?: string | null; onToggleAwayMode?: () => void; chameleonLayer?: ChameleonLayer; testId: string;
+    isGuestLocked?: boolean;
 }
 
 const PlayerCard: React.FC<PlayerCardProps> = ({
     isWhite, name, mobileName, colorLabel, score, isTurn,
-    pr, pip, borneOff = 0, opponentPip, epc, isPureRace, pipVisible = true, onTogglePipVisible, awayScoreLabel = null, onToggleAwayMode, chameleonLayer, testId,
+    pr, pip, borneOff = 0, opponentPip, epc, isPureRace, pipVisible = true, onTogglePipVisible, awayScoreLabel = null, onToggleAwayMode, chameleonLayer, testId, isGuestLocked = false,
 }) => {
     const [forceRevealPip, setForceRevealPip] = useState(false);
     const rawPipTitle = isPureRace && typeof epc === 'number'
@@ -145,13 +142,15 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
                 {awayScoreLabel ?? score}
             </span>
             {chameleonLayer !== 0 && (
-                <span
-                    data-testid={`${testId}-pr`}
-                    title={`Performance Rating (PR) : ${pr !== null && pr !== undefined ? pr.toFixed(2) : '--'} — Niveau : ${prCategory} (plus bas = meilleur)`}
-                    className={`hidden sm:inline-flex ml-1 shrink-0 whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[11px] font-black tabular-nums transition-shadow duration-300 ${prBadgeClass(pr)}`}
-                >
-                    PR {pr !== null && pr !== undefined ? pr.toFixed(2) : '0.00'}
-                </span>
+                isGuestLocked ? (
+                    <button type="button" data-testid={`${testId}-pr`} onClick={openTermsAndPrPolicyModal} title="Clause CGU §4 : Compte requis pour activer votre PR" className="hidden sm:inline-flex ml-1 shrink-0 whitespace-nowrap rounded border border-amber-500/35 bg-amber-950/40 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-300 hover:border-amber-400/60 transition">
+                        PR Verrouillé
+                    </button>
+                ) : (
+                    <span data-testid={`${testId}-pr`} title={`Performance Rating (PR) : ${pr !== null && pr !== undefined ? pr.toFixed(2) : '--'} — Niveau : ${prCategory} (plus bas = meilleur)`} className={`hidden sm:inline-flex ml-1 shrink-0 whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[11px] font-black tabular-nums transition-shadow duration-300 ${prBadgeClass(pr)}`}>
+                        PR {pr !== null && pr !== undefined ? pr.toFixed(2) : '0.00'}
+                    </span>
+                )
             )}
         </div>
     );
@@ -162,6 +161,8 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
     pipX, pipO, borneOffX = 0, borneOffO = 0, epcX, epcO, isPureRace = false, opponentLabel = 'IA',
     playerColor = 'X', cubeValue = 1, cubeOwner = null, chameleonLayer,
 }) => {
+    const stats = useAuthenticPlayerStats();
+    const isGuest = !stats.canHavePR;
     const isXTurn = turn === 'X';
     const isOTurn = turn === 'O' || isAiThinking;
     const humanIsWhite = playerColor === 'X';
@@ -263,7 +264,7 @@ const HudScoreboardComponent: React.FC<HudScoreboardProps> = ({
                 isPureRace={isPureRace} pipVisible={pipVisible} onTogglePipVisible={handleTogglePipVisible}
                 awayScoreLabel={awayMode && matchLength > 0 ? `${Math.max(0, matchLength - scoreX)}a` : null}
                 onToggleAwayMode={matchLength > 0 ? handleToggleAwayMode : undefined}
-                chameleonLayer={chameleonLayer} testId="hud-player-x"
+                chameleonLayer={chameleonLayer} testId="hud-player-x" isGuestLocked={isGuest}
             />
 
             <span className="font-mono text-[11px] font-black tracking-widest text-slate-400">

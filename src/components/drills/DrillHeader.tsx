@@ -12,7 +12,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Flame, Target, GraduationCap, Compass } from 'lucide-react';
+import { Flame, Target, GraduationCap, Compass, Lock } from 'lucide-react';
 import type { BlunderBankStats } from '../../features/drills/types';
 import { roundToHalfStep } from '../../features/drills/adaptiveNPlus1Selector';
 import {
@@ -23,6 +23,7 @@ import {
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import { useTranslation } from '../../i18n';
+import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 export type QuizDrillMode = 'adaptive' | 'pr_math' | 'personal_blunders' | 'speed_60s';
 
@@ -110,30 +111,40 @@ export const DrillHeader: React.FC<DrillHeaderProps> = ({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-1.5 min-w-0" data-testid="quiz-live-rating-badge">
-                    <span className="sr-only">Niveau ER : {liveRatingValue}</span>
-                    <span data-testid="quiz-target-metric-badge" title="ER / PR : Error Rate / Performance Rating officiel (échelle 0.0 à 30.0 — plus bas est meilleur)" className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-2 py-0.5 font-mono text-[11px] font-black text-emerald-200">
-                        {isBeginner
-                            ? `${isEn ? 'Accuracy:' : 'Précision :'} ${Math.max(50, Math.round(100 - (authenticStats.hasRealPR ? authenticStats.globalPR! : erPrScore) * 1.5))} %`
-                            : !authenticStats.isRegistered
-                            ? (isEn ? 'My PR: Uncalibrated (Guest)' : 'Mon PR : Non calibré (Invité)')
-                            : !authenticStats.hasRealPR
-                            ? (isEn ? 'My PR: Calibrating' : 'Mon PR : En calibrage')
-                            : `ER / PR : ${authenticStats.globalPR?.toFixed(1)}`}
-                        <span className="sr-only">ER / PR : {erPrScore.toFixed(1)} Cible ER / PR : ~6.5 (Intermédiaire)</span>
-                    </span>
+                    <button
+                        type="button"
+                        onClick={!authenticStats.canHavePR ? openTermsAndPrPolicyModal : undefined}
+                        data-testid="quiz-target-metric-badge"
+                        title="ER / PR : Error Rate / Performance Rating officiel (réservé aux comptes connectés — Clause CGU §4)"
+                        className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-2 py-0.5 font-mono text-[11px] font-black text-emerald-200"
+                    >
+                        {!authenticStats.canHavePR && <Lock className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />}
+                        <span>
+                            {!authenticStats.canHavePR
+                                ? (isEn ? 'PR Locked (Account required — ToS §4)' : 'PR Verrouillé (Compte requis — Clause CGU §4)')
+                                : isBeginner
+                                ? `${isEn ? 'Accuracy:' : 'Précision :'} ${Math.max(50, Math.round(100 - (authenticStats.hasRealPR ? authenticStats.globalPR! : erPrScore) * 1.5))} %`
+                                : !authenticStats.hasRealPR
+                                ? (isEn ? 'My PR: Calibrating' : 'Mon PR : En calibrage')
+                                : `ER / PR : ${authenticStats.globalPR?.toFixed(1)}`}
+                        </span>
+                    </button>
                     <span data-testid="quiz-nplus1-target-badge" title={targetBadgeText} className="inline-flex items-center gap-1 shrink-0 whitespace-nowrap rounded-lg border border-[#D4AF37]/60 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#D4AF37]">
                         <Target className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} />
-                        <span>{isBeginner ? (isEn ? 'Guided Progression Goal' : 'Objectif Progression Guidée') : targetBadgeText}</span>
-                        <span className="sr-only">
-                            {isPersonal
-                                ? `Issu de ton match • Niveau Quiz : ER / PR ${effectiveQuizTargetEr.toFixed(1)}`
-                                : `Calibrage Quiz : ER / PR ${effectiveQuizTargetEr.toFixed(1)} (Objectif N+1)`}
+                        <span>
+                            {isBeginner
+                                ? (isEn ? 'Guided Progression Goal' : 'Objectif Progression Guidée')
+                                : !authenticStats.canHavePR
+                                ? (isEn ? '3-Ply Certified Training' : 'Entraînement Certifié 3-Ply')
+                                : targetBadgeText}
                         </span>
                     </span>
                     <span data-testid="quiz-elo-rating-badge" className="inline-flex items-center shrink-0 whitespace-nowrap rounded-lg border border-white/15 bg-[#050505] px-2 py-0.5 font-mono text-[11px] font-black text-[#fdf8eb]">
-                        Rating : {liveRatingValue}<span className="sr-only">Rating : {liveRatingValue} Elo</span>
+                        {!authenticStats.canHavePR
+                            ? (isEn ? 'Elo: Account required' : 'Elo : Compte requis')
+                            : `Rating : ${authenticStats.eloRating ?? liveRatingValue}`}
                     </span>
-                    {activeTenthsDelta !== 0 && (
+                    {authenticStats.canHavePR && activeTenthsDelta !== 0 && (
                         <span data-testid="quiz-live-rating-delta" className={`inline-flex items-center shrink-0 whitespace-nowrap rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black transition-all ${isImprovedTenths ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-300' : 'border-rose-400/60 bg-rose-500/20 text-rose-300'}`}>
                             {isImprovedTenths ? `▼ ${activeTenthsDelta.toFixed(1)} (${isEn ? 'Progress' : 'Progression'})` : `▲ +${activeTenthsDelta.toFixed(1)} (${isEn ? 'Mistake' : 'Erreur'})`}
                             <span className="sr-only">{liveRatingDelta > 0 ? `+${liveRatingDelta}` : `${liveRatingDelta}`}</span>

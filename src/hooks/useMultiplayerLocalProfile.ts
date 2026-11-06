@@ -52,14 +52,19 @@ export function useMultiplayerLocalProfile({
         if (typeof window !== 'undefined') localStorage.setItem('bg_guest_id', guestId);
 
         const passport = readPlayerPassport();
+        const isRegistered = Boolean(
+            passport?.email &&
+            passport.email !== 'invite@backgammontour.com' &&
+            !/^invit[eé]|^joueur invit[eé]/i.test(passport.pseudo),
+        );
         return {
             id: guestId,
-            username: passport?.pseudo || `Joueur_${guestId.slice(-4)}`,
-            displayName: passport?.pseudo || `Joueur #${guestId.slice(-4)}`,
+            username: isRegistered ? passport!.pseudo : 'Joueur Invité',
+            displayName: isRegistered ? passport!.pseudo : 'Joueur Invité',
             rating: readLocalPlayerElo(),
-            averagePr: readPublicAveragePr(),
+            averagePr: isRegistered ? readPublicAveragePr() : undefined,
             avatarUrl: passport?.avatarUrl || STANDARD_USER_AVATARS[0].url,
-            isGuest: true,
+            isGuest: !isRegistered,
         };
     });
 

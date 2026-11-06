@@ -10,7 +10,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sparkles, Flame, BarChart2, GraduationCap, ChevronRight, ChevronLeft, Users, Share2, LayoutGrid, Dices, Headphones } from 'lucide-react';
+import { Sparkles, Flame, BarChart2, GraduationCap, ChevronRight, ChevronLeft, Users, Share2, LayoutGrid, Dices, Headphones, Scale } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import type { LobbyModuleId } from './LobbyScreen';
@@ -19,6 +19,7 @@ import { isPersonalMatchBlunder } from '../../features/drills/adaptiveQuizEngine
 import { IconLuxuryCrown, IconWorldTourLive, IconHorologyGear } from '../common/MonteCarloIcons';
 import { BeginnerInteractiveGuideModal } from '../beginner/BeginnerInteractiveGuideModal';
 import { BeginnerOpeningMovesExplorer } from '../beginner/BeginnerOpeningMovesExplorer';
+import { TermsAndPrPolicyModal, openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 export interface LobbyLeftSidebarProps {
     readonly selectedMode?: 'ai' | 'multiplayer' | 'training' | null;
@@ -81,8 +82,9 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
         else if (typeof window !== 'undefined') window.location.assign('/');
     };
     const handleFindPlayerClick = () => {
-        if (onSelectMultiplayerMode) onSelectMultiplayerMode();
-        else if (onFindOpponent) onFindOpponent();
+        onSelectMultiplayerMode?.();
+        if (onFindOpponent) onFindOpponent();
+        else if (onOpenModule) onOpenModule('multiplayer');
         else if (typeof window !== 'undefined') window.location.assign('/?mode=matchmaking&match=5');
     };
     const handleInviteClick = () => {
@@ -252,44 +254,29 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                 </div>
 
                 {/* Pied de barre latérale */}
-                <div className="flex flex-col gap-1 w-full pt-3 border-t border-white/[0.06]">
-                    <button
-                        type="button"
-                        data-testid="sidebar-passport-btn"
-                        onClick={() => (onOpenPassport ? onOpenPassport() : window.location.assign('/progression'))}
-                        className={itemCls}
-                    >
-                        <span className="flex items-center gap-2.5">
-                            <IconLuxuryCrown size={15} className="text-[#D4AF37]" />
-                            {!collapsed && <span>{isEn ? 'My Profile' : 'Mon Profil'}</span>}
-                        </span>
+                <div className="flex flex-col gap-0.5 w-full pt-2.5 border-t border-white/[0.06]">
+                    <button type="button" data-testid="sidebar-passport-btn" onClick={() => (onOpenPassport ? onOpenPassport() : window.location.assign('/progression'))} className={itemCls}>
+                        <span className="flex items-center gap-2.5"><IconLuxuryCrown size={15} className="text-[#D4AF37]" />{!collapsed && <span>{isEn ? 'My Profile' : 'Mon Profil'}</span>}</span>
                     </button>
-                    <button type="button" onClick={() => onOpenSettings?.()} className={itemCls}>
-                        <span className="flex items-center gap-2.5">
-                            <IconHorologyGear size={15} className="text-zinc-400" />
-                            {!collapsed && <span>{isEn ? 'Settings' : 'Réglages'}</span>}
-                        </span>
+                    <button type="button" data-testid="sidebar-settings-btn" onClick={() => (onOpenSettings ? onOpenSettings() : openTermsAndPrPolicyModal())} className={itemCls}>
+                        <span className="flex items-center gap-2.5"><IconHorologyGear size={15} className="text-zinc-400" />{!collapsed && <span>{isEn ? 'Settings' : 'Réglages'}</span>}</span>
+                    </button>
+                    <button type="button" data-testid="sidebar-terms-pr-policy-btn" onClick={openTermsAndPrPolicyModal} className={itemCls}>
+                        <span className="flex items-center gap-2.5"><Scale size={14} strokeWidth={1.5} className="text-[#D4AF37]" />{!collapsed && <span className="truncate">{isEn ? 'ToS & PR Policy' : 'CGU & Règlement PR'}</span>}</span>
                     </button>
                     <button type="button" data-testid="sidebar-collapse-toggle" onClick={() => setCollapsed((v) => !v)} className={itemCls}>
-                        <span className="flex items-center gap-2.5">
-                            {collapsed ? <ChevronRight size={14} className="text-[#D4AF37]" /> : <ChevronLeft size={14} className="text-[#D4AF37]" />}
-                            {!collapsed && <span>{isEn ? 'Collapse' : 'Réduire'}</span>}
-                        </span>
+                        <span className="flex items-center gap-2.5">{collapsed ? <ChevronRight size={14} className="text-[#D4AF37]" /> : <ChevronLeft size={14} className="text-[#D4AF37]" />}{!collapsed && <span>{isEn ? 'Collapse' : 'Réduire'}</span>}</span>
                     </button>
                 </div>
             </aside>
 
             {isGuideOpen && (
-                <BeginnerInteractiveGuideModal
-                    isOpen={isGuideOpen}
-                    onClose={() => setIsGuideOpen(false)}
-                    onStartGuidedMatch={() => { if (typeof window !== 'undefined') window.location.assign('/play?gate=beginner&start=guided'); }}
-                    onOpenQuizzes={() => { if (typeof window !== 'undefined') window.location.assign('/puzzles?mode=beginner-academy'); }}
-                />
+                <BeginnerInteractiveGuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} onStartGuidedMatch={() => { if (typeof window !== 'undefined') window.location.assign('/play?gate=beginner&start=guided'); }} onOpenQuizzes={() => { if (typeof window !== 'undefined') window.location.assign('/puzzles?mode=beginner-academy'); }} />
             )}
             {isOpeningExplorerOpen && (
                 <BeginnerOpeningMovesExplorer isOpen={isOpeningExplorerOpen} onClose={() => setIsOpeningExplorerOpen(false)} />
             )}
+            <TermsAndPrPolicyModal onOpenSignIn={onOpenPassport} />
         </>
     );
 };

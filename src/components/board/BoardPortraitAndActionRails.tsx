@@ -12,13 +12,10 @@ import { getBotPersona } from '../../features/personas/botPersonas';
 import { resolveNaturalChallengerAvatarUrl } from '../../features/personas/humanPersonaSeeds';
 import { useBoardTheme, type ThemeName } from '../../hooks/useBoardTheme';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
+import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 import { toggleOrientation, getSavedOrientation, saveOrientation } from './boardOrientation';
-import {
-    BotPortraitMedallion,
-    IconAstrolabeCoach,
-    IconHorologyGear,
-    PERSONA_PHOTO_BY_ID,
-} from '../common/MonteCarloIcons';
+import { BotPortraitMedallion, IconAstrolabeCoach, IconHorologyGear, PERSONA_PHOTO_BY_ID } from '../common/MonteCarloIcons';
 import { CountryFlagSvg } from '../common/CountryFlagSvg';
 
 export interface BoardLeftPlayerRailProps {
@@ -100,6 +97,8 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
     difficulty = 'expert', locale = 'fr', isXTurn, scoreO, cubeValue, matchLength, turn, opponentClock = '02:36', delaySeconds = 12, prX, prO, challengerProfile, isGuidedMode = false,
 }) => {
     const { tierGate } = usePlayerTierGate();
+    const stats = useAuthenticPlayerStats();
+    const isGuest = !stats.canHavePR;
     const isBeginner = tierGate === 'BEGINNER';
     const isGuided = Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
     const { activePersona, botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl } = resolvePersonaMeta(
@@ -112,10 +111,18 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                     <BotPortraitMedallion character="player" size="md" isActive={isXTurn} />
                     <div className="min-w-0 flex flex-col">
                         <span className="truncate font-display text-sm italic font-bold text-[#f7f3e8] leading-tight">Vous</span>
-                        <span className="truncate text-[10px] font-semibold text-emerald-300/90">Grand Cercle</span>
+                        <span className="truncate text-[10px] font-semibold text-emerald-300/90">{isGuest ? 'Invité' : 'Grand Cercle'}</span>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
-                            {!isBeginner && <span className="text-stone-300">1500</span>}
-                            {!isBeginner && <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(playerPrNum)}`}>PR {playerPrLabel}</span>}
+                            {!isBeginner && !isGuest && <span className="text-stone-300">{stats.eloRating ?? 1500}</span>}
+                            {!isBeginner && (
+                                isGuest ? (
+                                    <button type="button" onClick={openTermsAndPrPolicyModal} className="rounded-md border border-amber-500/35 bg-amber-950/40 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-300">
+                                        PR Verrouillé
+                                    </button>
+                                ) : (
+                                    <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(playerPrNum)}`}>PR {playerPrLabel}</span>
+                                )
+                            )}
                         </div>
                     </div>
                 </div>
@@ -189,18 +196,12 @@ export const BoardPortraitBottomHud: React.FC<Pick<BoardLeftPlayerRailProps, 'sc
 BoardPortraitBottomHud.displayName = 'BoardPortraitBottomHud';
 
 export interface BoardRightActionRailProps {
-    readonly isBrowserFullscreen: boolean;
-    readonly isFocusFullBoard: boolean;
-    readonly onToggleFullscreen: () => void;
-    readonly onToggleCoach: () => void;
-    readonly onToggleTheme?: () => void;
-    readonly onBackToLobby?: () => void;
-    readonly canUndo?: boolean;
-    readonly onUndo?: () => void;
-    readonly autoConfirmEnabled?: boolean;
-    readonly onToggleAutoConfirm?: () => void;
-    readonly autoRollEnabled?: boolean;
-    readonly onToggleAutoRoll?: () => void;
+    readonly isBrowserFullscreen: boolean; readonly isFocusFullBoard: boolean;
+    readonly onToggleFullscreen: () => void; readonly onToggleCoach: () => void;
+    readonly onToggleTheme?: () => void; readonly onBackToLobby?: () => void;
+    readonly canUndo?: boolean; readonly onUndo?: () => void;
+    readonly autoConfirmEnabled?: boolean; readonly onToggleAutoConfirm?: () => void;
+    readonly autoRollEnabled?: boolean; readonly onToggleAutoRoll?: () => void;
 }
 
 export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.memo(({

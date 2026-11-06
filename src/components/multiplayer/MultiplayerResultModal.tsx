@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { Trophy, Swords, Lock, Shield, RotateCcw, Search, Target, BarChart3 } from 'lucide-react';
 import type {
     PlayerEloProfile,
     MultiplayerMatchInfo,
@@ -9,6 +10,7 @@ import type {
 import type { CompleteGameAnalysis } from '../../features/rating/types';
 import { getEloTier } from '../../features/multiplayer/elo';
 import { useBoardTheme, getModalThemeClasses, type ThemeName } from '../../hooks/useBoardTheme';
+import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 export interface MultiplayerResultModalProps {
     isOpen: boolean;
@@ -28,6 +30,7 @@ export interface MultiplayerResultModalProps {
 export default function MultiplayerResultModal({
     isOpen,
     matchInfo,
+    localProfile,
     opponentProfile,
     eloResult,
     latestGameAnalysis,
@@ -57,6 +60,7 @@ export default function MultiplayerResultModal({
     const isLocalX = matchInfo.localRole === 'X';
     const localDelta = isLocalX ? eloResult.deltaX : eloResult.deltaO;
     const isWinner = localDelta > 0;
+    const isGuest = Boolean(localProfile.isGuest);
 
     const oldRating = isLocalX
         ? eloResult.playerXNewRating - eloResult.deltaX
@@ -73,8 +77,12 @@ export default function MultiplayerResultModal({
             data-testid="multiplayer-result-modal"
         >
             <div className="relative w-full max-w-md max-h-[90dvh] overflow-y-auto overflow-x-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-[#17110b]/98 via-[#0d121d]/98 to-[#070a10]/98 p-5 sm:p-6 shadow-2xl text-center transition-all text-[#fdf8eb]">
-                <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-3xl border border-white/10 bg-white/5 text-4xl shadow-inner">
-                    {isWinner ? '🏆' : '⚔️'}
+                <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#D4AF37]/35 bg-[#D4AF37]/10 shadow-inner">
+                    {isWinner ? (
+                        <Trophy className="w-8 h-8 text-[#D4AF37]" strokeWidth={1.5} />
+                    ) : (
+                        <Swords className="w-8 h-8 text-stone-300" strokeWidth={1.5} />
+                    )}
                 </div>
 
                 <h2
@@ -91,74 +99,97 @@ export default function MultiplayerResultModal({
                     Match contre <span className="font-semibold text-white">{opponentProfile.displayName}</span> ({matchInfo.matchLength} pts)
                 </p>
 
-                <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-                        Évolution Classement Elo
-                    </div>
-
-                    <div className="flex items-center justify-center gap-3 my-2">
-                        <span className="text-sm font-mono text-slate-400">{oldRating}</span>
-                        <span className="text-slate-500">→</span>
-                        <span className="text-2xl font-extrabold font-mono text-white">{newRating}</span>
-
-                        <span
-                            className={`rounded-full px-2.5 py-0.5 text-xs font-bold font-mono ${
-                                localDelta >= 0
-                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                                    : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
-                            }`}
+                {isGuest ? (
+                    <div className="mb-6 rounded-2xl border border-amber-500/35 bg-amber-950/30 p-4 space-y-2.5 text-center">
+                        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300">
+                            <Lock className="w-3.5 h-3.5" strokeWidth={1.5} />
+                            <span>PR Verrouillé (Compte requis — Clause CGU §4)</span>
+                        </div>
+                        <p className="text-[11px] text-stone-300 leading-relaxed">
+                            Les sessions Invité sont réservées à la découverte : aucun PR ni classement Elo n&apos;est attribué sans compte personnel.
+                        </p>
+                        <button
+                            type="button"
+                            data-testid="multiplayer-result-guest-activate-pr-btn"
+                            onClick={openTermsAndPrPolicyModal}
+                            className="w-full rounded-xl border border-[#D4AF37]/50 bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 px-3 py-2 text-xs font-bold text-[#F3E5AB] transition"
                         >
-                            {localDelta >= 0 ? `+${localDelta}` : localDelta} Elo
-                        </span>
+                            Créer mon compte / Me connecter pour activer et sauvegarder mon PR →
+                        </button>
                     </div>
-
-                    <div className="mt-3 flex items-center justify-center gap-2 text-xs">
-                        <span>{tier.badge}</span>
-                        <span className={`font-semibold ${tier.colorClass}`}>{tier.title}</span>
-                    </div>
-
-                    {eloResult.prBlockedGain && (eloResult.escrowEloPoints ?? 0) > 0 && (
-                        <div className="mt-2.5 rounded-xl border border-amber-400/40 bg-amber-950/50 px-3 py-1.5 text-[11px] font-semibold text-amber-200">
-                            🔒 +{eloResult.escrowEloPoints} Elo en séquestre (PR adverse meilleur) — réussissez 2 Quizz au 1er essai pour les débloquer !
+                ) : (
+                    <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                            Évolution Classement Elo
                         </div>
-                    )}
-                    {!isWinner && eloResult.prShieldActivated && (
-                        <div className="mt-2.5 rounded-xl border border-emerald-400/40 bg-emerald-950/50 px-3 py-1.5 text-[11px] font-semibold text-emerald-200">
-                            🛡️ Bouclier de Maîtrise PR activé : vous avez mieux joué que votre adversaire (0 Elo perdu) !
-                        </div>
-                    )}
 
-                    {latestGameAnalysis && (
-                        <div className="mt-3 rounded-xl border border-amber-400/30 bg-black/40 px-3 py-2 text-[11px] text-slate-200">
-                            <span className="font-bold text-amber-300">
-                                📋 Compte-Rendu Live : PR {latestGameAnalysis.performanceRating.toFixed(2)}
-                            </span>
-                            {' · '}
-                            <span>
-                                {latestGameAnalysis.breakdown.blunder + latestGameAnalysis.breakdown.howler + latestGameAnalysis.breakdown.doubtful} erreur(s) ajoutée(s) dans vos derniers Blunders
+                        <div className="flex items-center justify-center gap-3 my-2">
+                            <span className="text-sm font-mono text-slate-400">{oldRating}</span>
+                            <span className="text-slate-500">→</span>
+                            <span className="text-2xl font-extrabold font-mono text-white">{newRating}</span>
+
+                            <span
+                                className={`rounded-full px-2.5 py-0.5 text-xs font-bold font-mono ${
+                                    localDelta >= 0
+                                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                                        : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                                }`}
+                            >
+                                {localDelta >= 0 ? `+${localDelta}` : localDelta} Elo
                             </span>
                         </div>
-                    )}
-                </div>
+
+                        <div className="mt-3 flex items-center justify-center gap-2 text-xs">
+                            <span className={`font-semibold ${tier.colorClass}`}>{tier.title}</span>
+                        </div>
+
+                        {eloResult.prBlockedGain && (eloResult.escrowEloPoints ?? 0) > 0 && (
+                            <div className="mt-2.5 inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-400/40 bg-amber-950/50 px-3 py-1.5 text-[11px] font-semibold text-amber-200">
+                                <Lock className="w-3.5 h-3.5 shrink-0" strokeWidth={1.5} />
+                                <span>+{eloResult.escrowEloPoints} Elo en séquestre (PR adverse meilleur) — réussissez 2 Quiz au 1er essai pour les débloquer !</span>
+                            </div>
+                        )}
+                        {!isWinner && eloResult.prShieldActivated && (
+                            <div className="mt-2.5 inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-400/40 bg-emerald-950/50 px-3 py-1.5 text-[11px] font-semibold text-emerald-200">
+                                <Shield className="w-3.5 h-3.5 shrink-0" strokeWidth={1.5} />
+                                <span>Bouclier de Maîtrise PR activé : vous avez mieux joué que votre adversaire (0 Elo perdu) !</span>
+                            </div>
+                        )}
+
+                        {latestGameAnalysis && (
+                            <div className="mt-3 rounded-xl border border-amber-400/30 bg-black/40 px-3 py-2 text-[11px] text-slate-200">
+                                <span className="font-bold text-amber-300">
+                                    Compte-Rendu Live : PR {latestGameAnalysis.performanceRating.toFixed(2)}
+                                </span>
+                                {' · '}
+                                <span>
+                                    {latestGameAnalysis.breakdown.blunder + latestGameAnalysis.breakdown.howler + latestGameAnalysis.breakdown.doubtful} erreur(s) ajoutée(s) dans vos derniers Blunders
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <div className="space-y-2.5">
                     <button
                         type="button"
                         onClick={onRematch}
-                        className="w-full rounded-xl border border-[#f3c65f] bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] py-3 text-sm font-black uppercase tracking-wider text-[#1c1004] shadow-[0_4px_14px_rgba(212,175,55,0.3)] hover:brightness-105 transition-all"
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] py-3 text-sm font-bold uppercase tracking-wider text-black shadow-lg hover:brightness-105 transition-all"
                         data-testid="rematch-button"
                     >
-                        ⚡ Proposer une Revanche ({matchInfo.matchLength} pts)
+                        <RotateCcw className="w-4 h-4 text-black" strokeWidth={1.75} />
+                        <span>Proposer une Revanche ({matchInfo.matchLength} pts)</span>
                     </button>
 
                     {onFindNewOpponent && (
                         <button
                             type="button"
                             onClick={onFindNewOpponent}
-                            className="w-full rounded-xl border border-emerald-400/40 bg-emerald-950/50 py-2.5 text-xs font-extrabold text-emerald-200 hover:border-emerald-300 hover:bg-emerald-900/50 transition-colors"
+                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-950/50 py-2.5 text-xs font-extrabold text-emerald-200 hover:border-emerald-300 hover:bg-emerald-900/50 transition-colors"
                             data-testid="find-new-opponent-button"
                         >
-                            🔍 Trouver un nouvel adversaire
+                            <Search className="w-4 h-4" strokeWidth={1.5} />
+                            <span>Trouver un nouvel adversaire</span>
                         </button>
                     )}
 
@@ -166,10 +197,11 @@ export default function MultiplayerResultModal({
                         <button
                             type="button"
                             onClick={onTrainBlunders}
-                            className="w-full rounded-xl border border-amber-400/50 bg-amber-950/60 py-2.5 text-xs font-extrabold text-amber-200 hover:border-amber-300 hover:bg-amber-900/60 transition-colors"
+                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-amber-400/50 bg-amber-950/60 py-2.5 text-xs font-extrabold text-amber-200 hover:border-amber-300 hover:bg-amber-900/60 transition-colors"
                             data-testid="multiplayer-train-blunders-btn"
                         >
-                            🎯 Comprendre &amp; S&apos;entraîner sur mes Blunders
+                            <Target className="w-4 h-4" strokeWidth={1.5} />
+                            <span>Comprendre &amp; S&apos;entraîner sur mes Blunders</span>
                         </button>
                     )}
 
@@ -177,10 +209,11 @@ export default function MultiplayerResultModal({
                         <button
                             type="button"
                             onClick={onOpenReview}
-                            className="w-full rounded-xl border border-white/10 bg-[#26160c] py-2.5 text-xs font-bold text-[#fce8b2] hover:border-[#f3c65f] transition-colors"
+                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#26160c] py-2.5 text-xs font-bold text-[#fce8b2] hover:border-[#f3c65f] transition-colors"
                             data-testid="multiplayer-open-review-btn"
                         >
-                            📊 Compte-Rendu Complet &amp; Courbe PR
+                            <BarChart3 className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
+                            <span>Compte-Rendu Complet &amp; Courbe PR</span>
                         </button>
                     )}
 

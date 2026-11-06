@@ -55,7 +55,7 @@ const UserAccountMenuComponent: React.FC<UserAccountMenuProps> = ({
     try { router = useRouter(); } catch { router = null; }
 
     const isControlled = propUser !== undefined || propLoading !== undefined;
-    const [internalStatus, setInternalStatus] = useState<AuthStatus>('loading');
+    const [internalStatus, setInternalStatus] = useState<AuthStatus>('anonymous');
     const [internalUser, setInternalUser] = useState<User | null>(null);
     const [internalProfile, setInternalProfile] = useState<Profile | null>(null);
     const [localPassport, setLocalPassport] = useState<PlayerPassport | null>(() => readPlayerPassport());

@@ -10,6 +10,8 @@ import React from 'react';
 import type { DecisionCountersSummary } from './postMatchReportHelpers';
 import { BotPortraitMedallion } from '../common/MonteCarloIcons';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
+import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 export interface PostMatchHeaderProps {
     winner: 'X' | 'O' | null;
@@ -44,6 +46,8 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
 }) => {
     const isEn = Boolean(locale && locale !== 'fr');
     const { tierGate } = usePlayerTierGate();
+    const stats = useAuthenticPlayerStats();
+    const isGuest = !stats.canHavePR;
     const isBeginner = tierGate === 'BEGINNER';
     const [showPrSplit, setShowPrSplit] = React.useState(false);
     const isPlayerWinner = winner === 'X';
@@ -136,19 +140,23 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                     data-testid="post-match-pr-player"
                     role="button"
                     tabIndex={0}
-                    onClick={() => setShowPrSplit((v) => !v)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowPrSplit((v) => !v); } }}
-                    title={isBeginner ? undefined : "Toucher pour ventiler PR-Positional vs PR-Cube"}
+                    onClick={() => (isGuest ? openTermsAndPrPolicyModal() : setShowPrSplit((v) => !v))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (isGuest) openTermsAndPrPolicyModal(); else setShowPrSplit((v) => !v); } }}
+                    title={isGuest ? 'Clause CGU §4 : Compte requis pour activer votre PR' : isBeginner ? undefined : 'Toucher pour ventiler PR-Positional vs PR-Cube'}
                     className="flex flex-col items-center justify-center rounded-xl border border-[#d4af37]/15 bg-[#120e0a]/90 p-2 cursor-pointer transition hover:border-[#d4af37]/40 text-center"
                 >
                     <span className="sr-only">Votre Précision</span>
-                    <span className="text-xl font-mono font-black text-emerald-400">
-                        {isBeginner ? `${(accuracyPercent ?? 85).toFixed(0)}%` : playerPr.toFixed(2)}
+                    <span className={`font-mono font-black ${isGuest ? 'text-xs sm:text-sm text-amber-300' : 'text-xl text-emerald-400'}`}>
+                        {isGuest
+                            ? (isEn ? 'PR Locked (Account required — ToS §4)' : 'PR Verrouillé (Compte requis — Clause CGU §4)')
+                            : isBeginner
+                            ? `${(accuracyPercent ?? 85).toFixed(0)}%`
+                            : playerPr.toFixed(2)}
                     </span>
                     <span className="truncate text-xs font-semibold text-stone-300">
-                        {isBeginner ? (isEn ? 'Good moves' : 'Bons coups') : playerCategory}
+                        {isGuest ? (isEn ? 'Guest Session' : 'Session Invité') : isBeginner ? (isEn ? 'Good moves' : 'Bons coups') : playerCategory}
                     </span>
-                    {showPrSplit && (
+                    {!isGuest && showPrSplit && (
                         <div data-testid="post-match-pr-split" className="mt-1.5 flex flex-wrap items-center justify-center gap-1.5 border-t border-[#d4af37]/15 pt-1 font-mono text-[10px] text-amber-200">
                             <span>Dames : <strong>{(checkerPr ?? playerPr).toFixed(2)}</strong></span>
                             <span>·</span>
@@ -197,8 +205,21 @@ const PostMatchHeaderComponent: React.FC<PostMatchHeaderProps> = ({
                 </div>
             </div>
 
-            {/* Bloc 3 — Performance (Masqué en mode Débutant pour zéro intimidation) */}
-            {!isBeginner && (
+            {isGuest && (
+                <button
+                    type="button"
+                    data-testid="post-match-guest-activate-pr-btn"
+                    onClick={openTermsAndPrPolicyModal}
+                    className="w-full rounded-xl border border-[#D4AF37]/50 bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 px-3 py-2 text-xs font-bold text-[#F3E5AB] transition"
+                >
+                    {isEn
+                        ? 'Create my account / Sign in to activate and save my PR →'
+                        : 'Créer mon compte / Me connecter pour activer et sauvegarder mon PR →'}
+                </button>
+            )}
+
+            {/* Bloc 3 — Performance (Masqué en mode Débutant ou Invité) */}
+            {!isBeginner && !isGuest && (
                 <div className="rounded-2xl border border-[#d4af37]/20 bg-[#18130e] p-3 space-y-2 shadow-md">
                     <div className="grid grid-cols-3 items-center text-center">
                         <span className="font-mono text-sm font-black text-emerald-400">{playerPr.toFixed(2)}</span>

@@ -2,6 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Lock } from 'lucide-react';
+import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
+import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 export interface ProgressionHeroStatsProps {
     performanceRating: number;
@@ -35,6 +38,9 @@ export const ProgressionHeroStats: React.FC<ProgressionHeroStatsProps> = ({
     winRate,
     onBackToGame,
 }) => {
+    const authStats = useAuthenticPlayerStats();
+    const isGuest = !authStats.canHavePR;
+    const isCalibrating = authStats.canHavePR && totalGamesPlayed === 0;
     return (
         <div className="space-y-6">
             {/* Barre de navigation / Retour */}
@@ -89,16 +95,28 @@ export const ProgressionHeroStats: React.FC<ProgressionHeroStatsProps> = ({
                     <p className="text-xs font-bold text-[#f3c65f] uppercase tracking-wider">
                         Performance Rating (PR)
                     </p>
-                    <div className="mt-3 flex items-baseline gap-3">
-                        <span className="text-4xl font-extrabold font-mono text-[#fdf8eb] tracking-tight" data-testid="stats-pr-value">
-                            {performanceRating}
+                    <div className="mt-3 flex flex-wrap items-baseline gap-3">
+                        <span className="text-3xl sm:text-4xl font-extrabold font-mono text-[#fdf8eb] tracking-tight" data-testid="stats-pr-value">
+                            {isGuest ? '—' : isCalibrating ? 'En calibrage' : performanceRating}
                         </span>
-                        <span
-                            className={`rounded-full border px-2.5 py-0.5 text-xs font-bold shadow-md ${PR_BADGE_COLORS[prCategory] || PR_BADGE_COLORS['Intermédiaire']}`}
-                            data-testid="stats-pr-category"
-                        >
-                            {prCategory}
-                        </span>
+                        {isGuest ? (
+                            <button
+                                type="button"
+                                data-testid="stats-pr-category"
+                                onClick={openTermsAndPrPolicyModal}
+                                className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-950/60 px-2.5 py-0.5 text-xs font-bold text-amber-300 hover:border-amber-400 transition"
+                            >
+                                <Lock className="w-3 h-3" strokeWidth={1.5} />
+                                <span>PR Verrouillé (Compte requis — Clause CGU §4)</span>
+                            </button>
+                        ) : (
+                            <span
+                                className={`rounded-full border px-2.5 py-0.5 text-xs font-bold shadow-md ${PR_BADGE_COLORS[prCategory] || PR_BADGE_COLORS['Intermédiaire']}`}
+                                data-testid="stats-pr-category"
+                            >
+                                {isCalibrating ? '1re partie requise' : prCategory}
+                            </span>
+                        )}
                     </div>
                     <p className="mt-3 text-xs text-[#a5b0c4] leading-relaxed">
                         Échelle de référence du Backgammon de compétition. Plus le score est proche de 0, plus votre jeu approche la perfection mathématique.

@@ -31,6 +31,7 @@ import MatchImportExportModal from './MatchImportExportModal';
 import KnowledgeBaseModal from '../knowledge/KnowledgeBaseModal';
 import DiceAuditModal from '../dice/DiceAuditModal';
 import SubscriptionModal from '../subscription/SubscriptionModal';
+import { TermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 import { toast } from '../toast/ToastContext';
 
 export interface GameModalsContainerProps {
@@ -274,6 +275,9 @@ const GameModalsContainerComponent: React.FC<GameModalsContainerProps> = ({
                 onClose={modals.closeSubscriptionModal}
                 locale={locale}
             />
+
+            {/* 9. Modal CGU & Règlement Officiel du PR (Article 4) — monté ici uniquement sur l'écran de jeu où la Sidebar est absente */}
+            {onBackToLobby && <TermsAndPrPolicyModal />}
         </>
     );
 };

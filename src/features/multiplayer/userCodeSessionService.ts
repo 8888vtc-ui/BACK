@@ -160,7 +160,7 @@ export function getActiveUserProfile(
     if (prof) return prof;
   }
 
-  // Profil Invité instantané par défaut (Rating 1500)
+  // Profil Invité instantané par défaut (Aucun PR attribué en session Invité — Clause CGU §4)
   return {
     id: 'guest_instant',
     userCode: 'guest_instant',
@@ -168,7 +168,7 @@ export function getActiveUserProfile(
     displayName: 'Joueur Invité',
     rating: 1500,
     baseRating: 1500,
-    averagePr: 6.3,
+    averagePr: undefined,
     avatarUrl: '/avatars/user-avatar-1.jpg',
     countryFlag: '🇫🇷',
     countryName: 'France',

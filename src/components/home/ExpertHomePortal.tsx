@@ -9,9 +9,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Trophy, EyeOff, Eye, Swords, Share2, Activity, FlaskConical, Flame, Target, Crown } from 'lucide-react';
+import { Trophy, EyeOff, Eye, Swords, Share2, Activity, FlaskConical, Flame, Target, Crown, Lock } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
+import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 interface ExpertHomePortalProps {
   readonly onStartExpertMatch: (length: number) => void;
@@ -33,32 +34,28 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
   const [matchLength, setMatchLength] = useState<number>(7);
   const [isPipsHidden, setIsPipsHidden] = useState<boolean>(false);
 
-  const isGuest = !stats.isRegistered;
-  const isCalibrating = stats.isRegistered && stats.gamesPlayed === 0;
+  const isGuest = !stats.canHavePR;
+  const isCalibrating = stats.canHavePR && stats.gamesPlayed === 0;
 
-  const globalVal = isGuest ? '—' : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.globalPR?.toFixed(1) ?? '6.3');
-  const checkerVal = isGuest ? '—' : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.checkerPR?.toFixed(1) ?? '4.2');
-  const cubeVal = isGuest ? '—' : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.cubePR?.toFixed(1) ?? '8.1');
+  const globalVal = isGuest ? '—' : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.globalPR?.toFixed(1) ?? '—');
+  const checkerVal = isGuest ? '—' : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.checkerPR?.toFixed(1) ?? '—');
+  const cubeVal = isGuest ? '—' : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.cubePR?.toFixed(1) ?? '—');
 
-  const globalSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '1st match required' : '1re partie requise') : `${stats.gamesPlayed} ${stats.gamesPlayed > 1 ? (isEn ? 'analyzed matches' : 'parties analysées') : (isEn ? 'analyzed match' : 'partie analysée')}`;
-  const checkerSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.checkerPR! < 5.0 ? (isEn ? 'Master Level (< 5.0)' : 'Niveau Master (< 5.0)') : (isEn ? 'Checker accuracy' : 'Précision pions'));
-  const cubeSub = isGuest ? (isEn ? 'Registered members only' : 'Réservé aux membres inscrits') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.cubePR! > 7.0 ? (isEn ? 'Priority study area' : 'Axe de travail prioritaire') : (isEn ? 'Cube accuracy' : 'Précision videau'));
+  const globalSub = isGuest ? (isEn ? 'Account required (ToS §4)' : 'Compte requis (Clause CGU §4)') : isCalibrating ? (isEn ? '1st match required' : '1re partie requise') : `${stats.gamesPlayed} ${stats.gamesPlayed > 1 ? (isEn ? 'analyzed matches' : 'parties analysées') : (isEn ? 'analyzed match' : 'partie analysée')}`;
+  const checkerSub = isGuest ? (isEn ? 'Account required (ToS §4)' : 'Compte requis (Clause CGU §4)') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.checkerPR !== null && stats.checkerPR < 5.0 ? (isEn ? 'Master Level (< 5.0)' : 'Niveau Master (< 5.0)') : (isEn ? 'Checker accuracy' : 'Précision pions'));
+  const cubeSub = isGuest ? (isEn ? 'Account required (ToS §4)' : 'Compte requis (Clause CGU §4)') : isCalibrating ? (isEn ? '0 decision analyzed' : '0 décision analysée') : (stats.cubePR !== null && stats.cubePR > 7.0 ? (isEn ? 'Priority study area' : 'Axe de travail prioritaire') : (isEn ? 'Cube accuracy' : 'Précision videau'));
 
-  const handleLaunchMatch = () => {
-    onStartExpertMatch(matchLength);
-  };
+  const handleLaunchMatch = () => onStartExpertMatch(matchLength);
 
   return (
     <div data-testid="expert-home-portal" className="flex flex-col gap-3 w-full max-w-5xl mx-auto py-1">
       {/* En-tête Cockpit Pro avec Télémétrie Officielle */}
       <div className="rounded-2xl border border-white/[0.08] bg-[#0B0E14]/90 p-3.5 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5">
         <div className="flex flex-col gap-0.5 max-w-xl">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4AF37]">
-              <Crown className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
-              <span>COCKPIT EXPERT / PRO • OPEN SAGE 3-PLY (0.55 PR)</span>
-            </span>
-          </div>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-[#D4AF37]">
+            <Crown className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
+            <span>COCKPIT EXPERT / PRO • OPEN SAGE 3-PLY (0.55 PR)</span>
+          </span>
           <h2 className="text-base sm:text-lg font-black text-[#f7f3e8]">
             {isEn ? 'World Championship Telemetry & Tournament Conditions' : 'Télémétrie de Championnat du Monde & Conditions Tournoi'}
           </h2>
@@ -69,22 +66,35 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
           </p>
         </div>
 
-        {/* Cartouche Télémétrie Joueur Officielle : ER/PR : 6.3 | ERA : 5.8 | RATING : 1500 */}
+        {/* Cartouche Télémétrie Joueur Officielle (Zéro PR/Elo pour les Invités — Clause CGU §4) */}
         <div className="flex items-center gap-3 sm:gap-4 bg-black/60 border border-white/10 px-3.5 py-2 rounded-xl shrink-0 font-mono tabular-nums self-stretch sm:self-auto justify-around sm:justify-start">
           <div className="flex flex-col items-center">
             <span className="text-[10px] text-stone-400">ER / PR</span>
-            <span data-testid="expert-er-pr" className="text-xs sm:text-sm font-bold text-amber-300">{stats.globalPR?.toFixed(1) ?? '6.3'}</span>
-          </div>
-          <div className="h-6 w-px bg-white/10" />
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] text-stone-400">ERA</span>
-            <span data-testid="expert-era" className="text-xs sm:text-sm font-bold text-emerald-400">5.8</span>
+            <span data-testid="expert-er-pr" className="text-xs sm:text-sm font-bold text-amber-300">
+              {isGuest ? (isEn ? 'Locked' : 'Verrouillé') : isCalibrating ? (isEn ? 'Calibrating' : 'En calibrage') : (stats.globalPR?.toFixed(1) ?? '—')}
+            </span>
           </div>
           <div className="h-6 w-px bg-white/10" />
           <div className="flex flex-col items-center">
             <span className="text-[10px] text-stone-400">RATING</span>
-            <span data-testid="expert-rating" className="text-xs sm:text-sm font-black text-amber-300">{stats.eloRating ?? 1500}</span>
+            <span data-testid="expert-rating" className="text-xs sm:text-sm font-black text-amber-300">
+              {isGuest ? '—' : `${stats.eloRating ?? 1500} Elo`}
+            </span>
           </div>
+          {isGuest && (
+            <>
+              <div className="h-6 w-px bg-white/10" />
+              <button
+                type="button"
+                data-testid="expert-open-terms-btn"
+                onClick={openTermsAndPrPolicyModal}
+                className="inline-flex items-center gap-1 text-[10px] font-bold text-[#D4AF37] hover:underline"
+              >
+                <Lock className="w-3 h-3" strokeWidth={1.5} />
+                <span>{isEn ? 'ToS §4' : 'Clause CGU §4'}</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -110,7 +120,6 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             </p>
           </div>
 
-          {/* Bouton Masquer Pips */}
           <button
             type="button"
             data-testid="expert-hide-pips-btn"
@@ -124,12 +133,8 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             {isPipsHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
             <span>
               {isEn
-                ? isPipsHidden
-                  ? 'Pip Count Hidden (Pro Tourney)'
-                  : 'Hide Pip Count (Tournament)'
-                : isPipsHidden
-                ? 'Pip Count Masqué (Pro Tournoi)'
-                : 'Conditions Tournoi (Masquer Pip Count)'}
+                ? (isPipsHidden ? 'Pip Count Hidden (Pro Tourney)' : 'Hide Pip Count (Tournament)')
+                : (isPipsHidden ? 'Pip Count Masqué (Pro Tournoi)' : 'Conditions Tournoi (Masquer Pip Count)')}
             </span>
           </button>
         </div>
@@ -143,7 +148,7 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             { len: 9, label: '9 pts', testId: 'expert-format-9' },
             { len: 11, label: '11 pts', testId: 'expert-format-11' },
             { len: 21, label: '21 pts', testId: 'expert-format-21' },
-            { len: 0, label: isEn ? 'Money Game' : 'Money Game', testId: 'expert-format-money' },
+            { len: 0, label: 'Money Game', testId: 'expert-format-money' },
           ].map((fmt) => {
             const isSelected = matchLength === fmt.len;
             return (
@@ -173,11 +178,7 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-black shadow-lg hover:brightness-105 active:scale-95 transition"
           >
             <Swords className="w-4 h-4 text-black" strokeWidth={1.75} />
-            <span>
-              {isEn
-                ? 'FIND AN OPPONENT (OFFICIAL MATCH) →'
-                : 'TROUVER UN ADVERSAIRE (MATCH OFFICIEL) →'}
-            </span>
+            <span>{isEn ? 'FIND AN OPPONENT (OFFICIAL MATCH) →' : 'TROUVER UN ADVERSAIRE (MATCH OFFICIEL) →'}</span>
           </button>
           <button
             type="button"
@@ -186,18 +187,13 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-4 py-2.5 text-xs sm:text-sm font-bold text-stone-200 hover:bg-white/10 hover:text-white active:scale-95 transition"
           >
             <Share2 className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
-            <span>
-              {isEn ? 'Invite Opponent (1-Click Link)' : 'Inviter un Adversaire (Lien 1-Clic)'}
-            </span>
+            <span>{isEn ? 'Invite Opponent (1-Click Link)' : 'Inviter un Adversaire (Lien 1-Clic)'}</span>
           </button>
         </div>
       </div>
 
       {/* CARTE 2 : BILAN DE PERFORMANCE OFFICIEL (PIONS VS VIDEAU) & OUTILS PRO */}
-      <div
-        data-testid="decomposed-pr-panel"
-        className="rounded-2xl border border-white/[0.08] bg-[#0B0E14]/90 p-4 shadow-xl text-white flex flex-col gap-2.5"
-      >
+      <div data-testid="decomposed-pr-panel" className="rounded-2xl border border-white/[0.08] bg-[#0B0E14]/90 p-4 shadow-xl text-white flex flex-col gap-2.5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/10 pb-2">
           <div className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#D4AF37]/20 text-[#f3d27a]">
@@ -217,7 +213,6 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
           </span>
         </div>
 
-        {/* 3 indicateurs officiels selon le statut réel du joueur */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3">
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-2 sm:p-2.5 text-center flex flex-col items-center">
             <span className="text-[11px] font-mono text-stone-400">{isEn ? 'OVERALL ER / PR' : 'ER / PR GLOBAL'}</span>
@@ -257,7 +252,6 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
           </button>
         )}
 
-        {/* 3 boutons d'accès direct aux outils Pro (1 seule icône Lucide vectorielle, 0 emoji) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
           <Link
             href="/analysis"
