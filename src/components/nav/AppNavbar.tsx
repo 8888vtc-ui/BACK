@@ -190,9 +190,10 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                         <Link
                             href="/?matchLength=7&tournament=Coach%20IA"
                             data-testid="navbar-play-coach-cta"
-                            className="inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#D4AF37] via-[#f7d77e] to-[#b88924] px-3 py-1.5 text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#050505] shadow-[0_2px_14px_rgba(212,175,55,0.38)] transition hover:brightness-105 active:scale-95"
+                            className="inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#D4AF37] via-[#f7d77e] to-[#b88924] px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#050505] shadow-[0_2px_14px_rgba(212,175,55,0.38)] transition hover:brightness-105 active:scale-95"
                         >
-                            <span>🎲 JOUER CONTRE LE COACH IA</span>
+                            <span className="hidden 2xl:inline">🎲 JOUER CONTRE LE COACH IA</span>
+                            <span className="inline 2xl:hidden">🎲 Jouer</span>
                         </Link>
                     )}
                     {statusBadge}

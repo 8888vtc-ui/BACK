@@ -9,6 +9,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Building2, Trophy } from 'lucide-react';
 import type { WorldBackgammonVenue } from '../../features/tournaments/worldBackgammonVenues';
 import type { TournamentRecord } from '../../features/tournaments/tournamentTypes';
 import { formatTournamentDateFr } from '../../features/tournaments/tournamentEngine';
@@ -28,7 +29,7 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
         return (
             <aside
                 data-testid="venue-detail-empty-panel"
-                className="h-full min-h-[520px] rounded-2xl border border-white/10 bg-[#070b13] p-6 flex flex-col items-center justify-center text-center text-slate-400 shadow-2xl"
+                className="h-full min-h-[460px] rounded-2xl border border-white/10 bg-[#070b13] p-6 flex flex-col items-center justify-center text-center text-slate-400 shadow-2xl"
             >
                 <span className="text-4xl mb-3" aria-hidden="true">🗺️</span>
                 <h3 className="font-serif text-base font-bold text-white mb-1">Sélectionnez un Lieu ou Tournoi</h3>
@@ -43,19 +44,19 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
         return (
             <aside
                 data-testid="tournament-detail-panel"
-                className="h-full min-h-[520px] rounded-2xl border border-[#D4AF37]/50 bg-gradient-to-b from-[#0b1320] via-[#070b13] to-[#070b13] p-4 sm:p-5 flex flex-col justify-between shadow-2xl"
+                className="h-full min-h-[460px] rounded-2xl border border-[#D4AF37]/50 bg-gradient-to-b from-[#0b1320] via-[#070b13] to-[#070b13] p-4 sm:p-5 flex flex-col justify-between shadow-2xl"
             >
                 <div className="flex flex-col gap-3">
                     <div className="flex items-start justify-between gap-2 border-b border-white/10 pb-3">
-                        <div className="flex items-center gap-2">
-                            <span className="rounded-md border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 font-mono text-xs font-black uppercase text-amber-300">
-                                {tournament.countryCode}
+                        <div className="flex items-center gap-2.5">
+                            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#D4AF37] shrink-0">
+                                <Trophy size={18} className="text-[#D4AF37]" />
                             </span>
                             <div>
                                 <span className="inline-block rounded border border-[#D4AF37]/50 bg-[#D4AF37]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#D4AF37]">
                                     🏆 Tournoi {tournament.tier.toUpperCase()} • {tournament.federation}
                                 </span>
-                                <h3 className="mt-1 font-serif text-base font-bold text-white leading-snug">{tournament.name}</h3>
+                                <h3 className="mt-0.5 font-serif text-base font-bold text-white leading-snug">{tournament.name}</h3>
                             </div>
                         </div>
                         {onClose && (
@@ -130,19 +131,19 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
     return (
         <aside
             data-testid="club-detail-panel"
-            className="h-full min-h-[520px] rounded-2xl border border-emerald-500/50 bg-gradient-to-b from-[#0b1b16] via-[#070b13] to-[#070b13] p-4 sm:p-5 flex flex-col justify-between shadow-2xl"
+            className="h-full min-h-[460px] rounded-2xl border border-emerald-500/50 bg-gradient-to-b from-[#0b1b16] via-[#070b13] to-[#070b13] p-4 sm:p-5 flex flex-col justify-between shadow-2xl"
         >
             <div className="flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-2 border-b border-white/10 pb-3">
-                    <div className="flex items-center gap-2">
-                        <span className="rounded-md border border-emerald-400/40 bg-emerald-400/10 px-2 py-0.5 font-mono text-xs font-black uppercase text-emerald-300">
-                            {venue.countryCode}
+                    <div className="flex items-center gap-2.5">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-[#D4AF37] shrink-0">
+                            <Building2 size={18} className="text-[#D4AF37]" />
                         </span>
                         <div>
                             <span className="inline-block rounded border border-emerald-400/50 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
                                 🏛️ Club &amp; Salon • {venue.federation}
                             </span>
-                            <h3 className="mt-1 font-serif text-base font-bold text-white leading-snug">{venue.name}</h3>
+                            <h3 className="mt-0.5 font-serif text-base font-bold text-white leading-snug">{venue.name}</h3>
                         </div>
                     </div>
                     {onClose && (

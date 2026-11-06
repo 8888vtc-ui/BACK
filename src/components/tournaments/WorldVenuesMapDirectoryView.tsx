@@ -188,6 +188,7 @@ export const WorldVenuesMapDirectoryView: React.FC<WorldVenuesMapDirectoryViewPr
                             onSelectVenue={handleSelectVenue}
                             onSelectTournament={handleSelectTournament}
                             onResetPreset={() => handleSelectPreset('world')}
+                            onSelectPreset={handleSelectPreset}
                         />
                     </div>
                 </div>
@@ -201,50 +202,48 @@ export const WorldVenuesMapDirectoryView: React.FC<WorldVenuesMapDirectoryViewPr
                 </div>
             </div>
 
-            {/* SECTION BAS : TOURNOIS SUR LA CARTE AVEC DATES EN FRANÇAIS LISIBLES */}
+            {/* SECTION BAS : BANDE HORIZONTALE COMPACTE DES TOURNOIS EN BAS */}
             {tournamentsChecked && tournaments.length > 0 && (
-                <section className="flex flex-col gap-3" data-testid="map-tournaments-section">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                        <h3 className="font-serif text-sm sm:text-base font-bold text-amber-300">
-                            🏆 Tournois sur la Carte ({tournaments.length})
+                <section className="flex flex-col gap-1.5" data-testid="map-tournaments-section">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-1 px-1">
+                        <h3 className="font-serif text-xs sm:text-sm font-bold text-amber-300 flex items-center gap-1.5">
+                            <span>🏆</span>
+                            <span>Tournois sur la Carte ({tournaments.length})</span>
                         </h3>
-                        <span className="text-xs text-slate-400">Cliquez sur un tournoi pour le localiser ou vous entraîner</span>
+                        <span className="text-[11px] text-slate-400">Cliquez sur un tournoi pour le localiser ou vous entraîner</span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        {tournaments.slice(0, 6).map((t) => (
-                            <div
-                                key={t.id}
-                                onClick={() => handleSelectTournament(t.id)}
-                                data-testid={`tournament-card-summary-${t.slug}`}
-                                className="rounded-xl border border-[#d4af37]/30 bg-[#0b101b] p-3.5 hover:border-[#d4af37] transition cursor-pointer flex flex-col justify-between gap-2"
-                            >
-                                <div>
+                    <div className="flex items-stretch gap-2.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-amber-500/30">
+                        {tournaments.map((t) => {
+                            const isSelected = selectedTournamentId === t.id;
+                            return (
+                                <div
+                                    key={t.id}
+                                    onClick={() => handleSelectTournament(t.id)}
+                                    data-testid={`tournament-card-summary-${t.slug}`}
+                                    className={`h-[76px] min-w-[240px] max-w-[280px] rounded-xl border p-2.5 transition cursor-pointer flex flex-col justify-between shrink-0 ${
+                                        isSelected
+                                            ? 'border-[#d4af37] bg-[#d4af37]/15 shadow-md shadow-[#d4af37]/20'
+                                            : 'border-[#d4af37]/30 bg-[#0b101b] hover:border-[#d4af37]'
+                                    }`}
+                                >
                                     <div className="flex items-center justify-between text-[10px] text-amber-300 font-bold uppercase">
-                                        <span>{t.federation} • {t.tier}</span>
-                                        <span className="text-amber-200">{formatTournamentDateFr(t.startDate)}</span>
+                                        <span className="truncate">{t.federation} • {t.tier}</span>
+                                        <span className="text-amber-200 shrink-0 ml-1.5">{formatTournamentDateFr(t.startDate)}</span>
                                     </div>
-                                    <h4 className="mt-1 font-serif text-sm font-bold text-white">{t.name}</h4>
-                                    <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                                        <span className="rounded border border-white/15 bg-white/5 px-1 font-mono text-[10px] text-amber-300 font-bold">
-                                            {t.countryCode}
-                                        </span>
-                                        <span>{t.city}, {t.countryName}</span>
+                                    <h4 className="font-serif text-xs font-bold text-white truncate">{t.name}</h4>
+                                    <div className="flex items-center justify-between text-[10px] text-slate-400">
+                                        <span className="truncate">{t.city}, {t.countryCode}</span>
+                                        <span className="text-emerald-400 font-semibold shrink-0 ml-1.5">Match en {t.matchLengthMain} pts</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-between pt-2 border-t border-white/5 text-[11px]">
-                                    <Link href={`/tournaments/${t.slug}`} className="text-amber-300 font-semibold hover:underline">
-                                        Fiche Tournoi →
-                                    </Link>
-                                    <span className="text-emerald-400 font-semibold">Match en {t.matchLengthMain} pts</span>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </section>
             )}
 
-            {/* SECTION BAS : ANNUAIRE DES CLUBS & SALONS PHYSIQUES */}
-            {clubsChecked && venues.length > 0 && (
+            {/* SECTION BAS : ANNUAIRE DES CLUBS (ACTIF QUAND TOURNOIS MASQUÉS) */}
+            {clubsChecked && venues.length > 0 && !tournamentsChecked && (
                 <section className="flex flex-col gap-3" data-testid="map-venues-section">
                     <div className="flex items-center justify-between border-b border-white/10 pb-2">
                         <h3 className="font-serif text-sm sm:text-base font-bold text-emerald-300">
