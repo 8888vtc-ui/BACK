@@ -118,8 +118,28 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
             setTimeout(() => setPrematureDoubleWarning(false), 6000);
             return;
         }
+        const nextCube = game.state.cubeValue === 1 ? 2 : game.state.cubeValue * 2;
         game.offerDouble();
-    }, [isPrematureDouble, game]);
+        if (isMultiplayerActive) {
+            multiplayer.broadcastDoubleOffered(nextCube);
+        }
+    }, [isPrematureDouble, game, isMultiplayerActive, multiplayer]);
+
+    const handleTakeDouble = useCallback(() => {
+        const nextCube = game.state.cubeValue === 1 ? 2 : game.state.cubeValue * 2;
+        game.takeDouble();
+        if (isMultiplayerActive) {
+            multiplayer.broadcastDoubleAccepted(nextCube);
+        }
+    }, [game, isMultiplayerActive, multiplayer]);
+
+    const handlePassDouble = useCallback(() => {
+        const winner = game.doublingOfferedBy ?? (playerColor === 'X' ? 'O' : 'X');
+        game.passDouble();
+        if (isMultiplayerActive) {
+            multiplayer.broadcastDoublePassed(winner);
+        }
+    }, [game, isMultiplayerActive, multiplayer, playerColor]);
 
     useEffect(() => {
         if (!isGuidedProfessorMode || isOnlinePvpMatch || !game.dice || game.state.turn !== 'X') return;
@@ -220,7 +240,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 theme={theme} game={game} activeDie={activeDie} isBoardLoading={isBoardLoading}
                 activeCoachHighlight={!isOnlinePvpMatch && showGuidedArrows ? coachHighlight : null} onCheckerClick={onCheckerClick}
                 onCheckerRightClick={onCheckerRightClick} onDestinationClick={onDestinationClick}
-                onOfferDouble={handleOfferDouble} isPrematureDouble={isPrematureDouble}
+                onOfferDouble={handleOfferDouble} onTakeDouble={handleTakeDouble} onPassDouble={handlePassDouble} isPrematureDouble={isPrematureDouble}
                 onPlayMove={onPlayMove} onSelectDie={onSelectDie} onDiceClick={onDiceClick}
                 onDeselect={onDeselect} coach={coach} isAnalyzing={isAnalyzing}
                 onDismissCoach={onDismissCoach} onReplayMove={onReplayMove}

@@ -9,6 +9,7 @@ import type {
 } from '../../features/multiplayer/types';
 import type { MatchClockState } from '../../features/multiplayer/clockManager';
 import { formatClockTime } from '../../features/multiplayer/clockManager';
+import { useTranslation } from '../../i18n';
 
 export interface MultiplayerBannerProps {
     status: MatchmakingState;
@@ -25,12 +26,20 @@ export interface MultiplayerBannerProps {
     onResign: () => void;
 }
 
-const QUICK_MESSAGES: Record<string, string> = {
-    gg: '👏 Bien joué !',
+const QUICK_MESSAGES_FR: Record<string, string> = {
+    gg: '👏 Bonne partie !',
     nice_move: '🎯 Joli coup !',
     unlucky: '🎲 Pas de chance...',
     thinking: '🤔 Je réfléchis...',
     thanks: '🙏 Merci pour la partie !',
+};
+
+const QUICK_MESSAGES_EN: Record<string, string> = {
+    gg: '👏 Good game!',
+    nice_move: '🎯 Nice move!',
+    unlucky: '🎲 Tough luck...',
+    thinking: '🤔 Thinking...',
+    thanks: '🙏 Thanks for the game!',
 };
 
 export default function MultiplayerBanner({
@@ -47,6 +56,8 @@ export default function MultiplayerBanner({
     onSendQuickChat,
     onResign,
 }: MultiplayerBannerProps) {
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
     const [showChatMenu, setShowChatMenu] = useState(false);
     const [showResignConfirm, setShowResignConfirm] = useState(false);
 
@@ -93,8 +104,8 @@ export default function MultiplayerBanner({
             {quickChatMessage && (
                 <div className="mb-2 text-center animate-bounce">
                     <span className="inline-block rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold text-amber-300 shadow-md">
-                        {quickChatMessage.player === matchInfo.localRole ? 'Vous' : opponentProfile.displayName} :{' '}
-                        {QUICK_MESSAGES[quickChatMessage.messageId] || quickChatMessage.messageId}
+                        {quickChatMessage.player === matchInfo.localRole ? (isEn ? 'You' : 'Vous') : opponentProfile.displayName} :{' '}
+                        {(isEn ? QUICK_MESSAGES_EN : QUICK_MESSAGES_FR)[quickChatMessage.messageId] || quickChatMessage.messageId}
                     </span>
                 </div>
             )}
@@ -232,13 +243,13 @@ export default function MultiplayerBanner({
                             <div className="absolute right-0 bottom-full mb-2 z-20 w-44 rounded-xl border border-white/10 bg-slate-900 p-1.5 shadow-xl space-y-1">
                                 {(
                                     [
-                                        ['gg', '👏 Bien joué !'],
-                                        ['nice_move', '🎯 Joli coup !'],
-                                        ['unlucky', '🎲 Pas de chance...'],
-                                        ['thinking', '🤔 Je réfléchis...'],
-                                        ['thanks', '🙏 Merci !'],
+                                        'gg',
+                                        'nice_move',
+                                        'unlucky',
+                                        'thinking',
+                                        'thanks',
                                     ] as const
-                                ).map(([key, label]) => (
+                                ).map((key) => (
                                     <button
                                         key={key}
                                         type="button"
@@ -248,7 +259,7 @@ export default function MultiplayerBanner({
                                         }}
                                         className="w-full rounded-lg px-2 py-1 text-left text-xs text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
                                     >
-                                        {label}
+                                        {(isEn ? QUICK_MESSAGES_EN : QUICK_MESSAGES_FR)[key]}
                                     </button>
                                 ))}
                             </div>
@@ -267,23 +278,8 @@ export default function MultiplayerBanner({
                     ) : (
                         <div className="flex items-center gap-1.5 animate-fade-in">
                             <span className="text-xs text-rose-400">Confirmer ?</span>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setShowResignConfirm(false);
-                                    onResign();
-                                }}
-                                className="rounded bg-rose-600 px-2.5 py-1 text-xs font-bold text-white hover:bg-rose-500"
-                            >
-                                Oui
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowResignConfirm(false)}
-                                className="rounded border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-300 hover:bg-white/10"
-                            >
-                                Non
-                            </button>
+                            <button type="button" onClick={() => { setShowResignConfirm(false); onResign(); }} className="rounded bg-rose-600 px-2.5 py-1 text-xs font-bold text-white hover:bg-rose-500">Oui</button>
+                            <button type="button" onClick={() => setShowResignConfirm(false)} className="rounded border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-300 hover:bg-white/10">Non</button>
                         </div>
                     )}
                 </div>

@@ -108,3 +108,4 @@ export async function concludeGameRoomInternal(
         deltaRatingO: glicko2Result.playerO.ratingDelta,
     };
 }
+

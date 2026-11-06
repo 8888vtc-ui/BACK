@@ -230,6 +230,7 @@ const BoardComponent: React.FC<BoardProps> = ({
                         autoConfirmEnabled={autoConfirmEnabled}
                         autoConfirmMode={autoConfirmMode}
                         isPrematureDouble={isPrematureDouble}
+                        playerColor={swapColors ? 'O' : 'X'}
                     />
                 )}
 

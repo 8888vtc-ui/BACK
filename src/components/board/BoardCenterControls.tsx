@@ -35,6 +35,7 @@ export interface BoardCenterControlsProps {
     readonly gameSpeed?: GameSpeed;
     readonly onCycleGameSpeed?: () => void;
     readonly isPrematureDouble?: boolean;
+    readonly playerColor?: 'X' | 'O';
 }
 
 const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
@@ -59,11 +60,14 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
     gameSpeed = 'tournament',
     onCycleGameSpeed,
     isPrematureDouble = false,
+    playerColor = 'X',
 }) => {
     const isWaitingRoll = gamePhase === 'HUMAN_WAITING_ROLL';
     const isMoving = gamePhase === 'HUMAN_MOVING';
     const isReadyToCommit = gamePhase === 'HUMAN_READY_TO_COMMIT';
-    const isOpponentOfferingDouble = doublingOfferedBy === 'O';
+    const opponentColor = playerColor === 'X' ? 'O' : 'X';
+    const isOpponentOfferingDouble = doublingOfferedBy !== null && doublingOfferedBy === opponentColor;
+    const isLocalOfferingDouble = doublingOfferedBy !== null && doublingOfferedBy === playerColor;
     const nextCubeValue = cubeValue === 1 ? 2 : cubeValue * 2;
 
     const resolvedMode: AutoConfirmMode =
@@ -128,7 +132,7 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
         isOpponentOfferingDouble, canDouble, onRoll, onConfirm, onUndo, onOfferDouble, onTakeDouble, onPassDouble,
     ]);
 
-    if (!isWaitingRoll && !isMoving && !isReadyToCommit && !isOpponentOfferingDouble) return null;
+    if (!isWaitingRoll && !isMoving && !isReadyToCommit && !isOpponentOfferingDouble && !isLocalOfferingDouble) return null;
 
     const showUndo = hasDice && canUndo && !isWaitingRoll && !isAutoActive;
     const showConfirm = isReadyToCommit && canConfirm && !isAutoActive;
@@ -136,8 +140,20 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
     return (
         <div
             data-testid="board-center-controls"
-            className={`absolute ${isOpponentOfferingDouble ? 'left-1/2 flex' : 'left-[77%] sm:left-[76%] hidden md:flex [@media(max-height:500px)]:flex'} top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex-col items-center gap-1 pointer-events-none max-h-[34px] max-w-[40%] justify-center`}
+            className={`absolute ${isOpponentOfferingDouble || isLocalOfferingDouble ? 'left-1/2 flex' : 'left-[77%] sm:left-[76%] hidden md:flex [@media(max-height:500px)]:flex'} top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex-col items-center gap-1 pointer-events-none max-h-[34px] max-w-[90%] justify-center`}
         >
+            {isLocalOfferingDouble && (
+                <div
+                    data-testid="center-cube-waiting"
+                    className="pointer-events-auto flex items-center gap-2 rounded-full border border-amber-500/40 bg-slate-950/95 h-[32px] max-h-[34px] px-3.5 py-0.5 shadow-[0_10px_24px_rgba(0,0,0,0.85)] backdrop-blur-md animate-pulse"
+                >
+                    <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+                    <span className="font-sans text-[10px] sm:text-[11px] font-bold text-amber-200 whitespace-nowrap">
+                        Videau proposé (×{nextCubeValue}) — En attente de réponse...
+                    </span>
+                </div>
+            )}
+
             {isOpponentOfferingDouble && onTakeDouble && onPassDouble && (
                 <div
                     data-testid="center-cube-decision"
@@ -150,7 +166,7 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                         type="button"
                         data-testid="center-take-double-button"
                         onClick={(e) => { e.stopPropagation(); onTakeDouble(); }}
-                        className="hidden md:inline-flex [@media(max-height:500px)]:inline-flex items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-600 h-[24px] px-2.5 py-0 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-md transition hover:bg-emerald-500 active:scale-95 whitespace-nowrap touch-manipulation"
+                        className="inline-flex items-center justify-center rounded-full border border-emerald-400/60 bg-emerald-600 h-[24px] px-2.5 py-0 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-md transition hover:bg-emerald-500 active:scale-95 whitespace-nowrap touch-manipulation"
                     >
                         ✓ Prendre (×{nextCubeValue})
                     </button>
@@ -158,14 +174,14 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                         type="button"
                         data-testid="center-pass-double-button"
                         onClick={(e) => { e.stopPropagation(); onPassDouble(); }}
-                        className="hidden md:inline-flex [@media(max-height:500px)]:inline-flex items-center justify-center rounded-full border border-rose-500/60 bg-rose-950 h-[24px] px-2.5 py-0 text-[10px] font-extrabold uppercase tracking-wider text-rose-100 shadow-md transition hover:bg-rose-900 active:scale-95 whitespace-nowrap touch-manipulation"
+                        className="inline-flex items-center justify-center rounded-full border border-rose-500/60 bg-rose-950 h-[24px] px-2.5 py-0 text-[10px] font-extrabold uppercase tracking-wider text-rose-100 shadow-md transition hover:bg-rose-900 active:scale-95 whitespace-nowrap touch-manipulation"
                     >
                         ✕ Passer
                     </button>
                 </div>
             )}
 
-            {isWaitingRoll && !isOpponentOfferingDouble && (
+            {isWaitingRoll && !isOpponentOfferingDouble && !isLocalOfferingDouble && (
                 <div className="pointer-events-auto flex flex-col items-center gap-1 max-h-[34px] justify-center">
                     <div className="flex flex-nowrap items-center justify-center gap-1 sm:gap-1.5 max-h-[34px]">
                         <button
