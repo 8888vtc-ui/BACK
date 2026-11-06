@@ -24,7 +24,7 @@ import { getPendingPersonalBlundersCount, PERSONAL_BLUNDERS_UPDATED_EVENT } from
 import { IconLuxuryCrown, IconWorldTourLive, IconHorologyGear } from '../common/MonteCarloIcons';
 import { BeginnerInteractiveGuideModal } from '../beginner/BeginnerInteractiveGuideModal';
 import { BeginnerOpeningMovesExplorer } from '../beginner/BeginnerOpeningMovesExplorer';
-import { TermsAndPrPolicyModal, openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
+import { openTermsAndPrPolicyModal } from '../legal/TermsAndPrPolicyModal';
 
 export interface LobbyLeftSidebarProps {
     readonly selectedMode?: 'ai' | 'multiplayer' | 'training' | null;
@@ -250,7 +250,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
                     <button type="button" data-testid="sidebar-passport-btn" onClick={() => (onOpenPassport ? onOpenPassport() : window.location.assign('/progression'))} className={itemCls}>
                         <span className="flex items-center gap-2.5"><IconLuxuryCrown size={15} className="text-[#D4AF37]" />{!collapsed && <span>{isEn ? 'My Profile' : 'Mon Profil'}</span>}</span>
                     </button>
-                    <button type="button" data-testid="sidebar-settings-btn" onClick={() => (onOpenSettings ? onOpenSettings() : openTermsAndPrPolicyModal())} className={itemCls}>
+                    <button type="button" data-testid="sidebar-settings-btn" onClick={() => openTermsAndPrPolicyModal()} className={itemCls}>
                         <span className="flex items-center gap-2.5"><IconHorologyGear size={15} className="text-zinc-400" />{!collapsed && <span>{isEn ? 'Settings' : 'Réglages'}</span>}</span>
                     </button>
                     <button type="button" data-testid="sidebar-terms-pr-policy-btn" onClick={openTermsAndPrPolicyModal} className={itemCls}>
@@ -268,7 +268,6 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
             {isOpeningExplorerOpen && (
                 <BeginnerOpeningMovesExplorer isOpen={isOpeningExplorerOpen} onClose={() => setIsOpeningExplorerOpen(false)} />
             )}
-            <TermsAndPrPolicyModal onOpenSignIn={onOpenPassport} />
         </>
     );
 };

@@ -115,6 +115,7 @@ export const PersonalBlundersGuestLockView: React.FC<PersonalBlundersGuestLockVi
 
                     <button
                         type="button"
+                        data-testid="guest-lock-open-terms-btn"
                         onClick={openTermsAndPrPolicyModal}
                         className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-black/50 px-2.5 py-1.5 text-[11px] font-bold text-zinc-300 hover:border-[#D4AF37]/50 hover:text-[#D4AF37] transition shrink-0"
                     >

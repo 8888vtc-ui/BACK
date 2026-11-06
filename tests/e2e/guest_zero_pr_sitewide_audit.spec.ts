@@ -190,4 +190,63 @@ test.describe('Sitewide Audit: Zero PR/Elo for Guests & Official Terms Clause 4'
     await expect(playerName).toHaveText('Guest Player');
     await expect(playerPrBadge).toBeHidden();
   });
+
+  test('4. Clause CGU §4 Modal: Accessible in 1-click from Réglages in left sidebar & GuestFeatureLockView with FR | EN toggle', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/?lang=fr');
+    await page.evaluate(() => {
+      window.localStorage.clear();
+      window.localStorage.setItem('bgtour_locale', 'fr');
+      window.localStorage.setItem('bg_locale', 'fr');
+    });
+    await page.goto('/?lang=fr');
+    await page.waitForLoadState('domcontentloaded');
+
+    // 1. Open from "Réglages" in left sidebar
+    const sidebarSettingsBtn = page.getByTestId('sidebar-settings-btn');
+    await expect(sidebarSettingsBtn).toBeVisible({ timeout: 15000 });
+    const termsModal = page.getByTestId('terms-and-pr-policy-modal');
+    await expect(async () => {
+      await sidebarSettingsBtn.click();
+      await expect(termsModal).toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 15000 });
+
+    // Verify Article 4 in French
+    await expect(termsModal).toContainText('Article 4 — Attribution et Intégrité du Performance Rating');
+    await expect(termsModal).toContainText('4.1 Exclusion stricte des sessions Invité');
+    await expect(termsModal).toContainText('Un Joueur Invité peut uniquement jouer des parties');
+    await expect(termsModal).toContainText("L'attribution d'un PR, d'un Elo, l'accès aux Quiz et l'historique des Blunders exigent un compte connecté");
+
+    // 2. Toggle FR | EN
+    const localeToggleBtn = page.getByTestId('terms-modal-locale-toggle');
+    await expect(localeToggleBtn).toBeVisible();
+    await localeToggleBtn.click();
+
+    // Verify Section 4 in English
+    await expect(termsModal).toContainText('Section 4 — Attribution & Integrity of Performance Rating');
+    await expect(termsModal).toContainText('4.1 Strict Exclusion of Guest Sessions');
+    await expect(termsModal).toContainText('A Guest Player can only play games');
+    await expect(termsModal).toContainText('Holding a PR, an Elo rating, Quiz access, and Blunder history strictly require a connected account');
+
+    // Close modal
+    await page.getByTestId('close-terms-modal-btn').click();
+    await expect(termsModal).toBeHidden();
+
+    // 3. Open from GuestFeatureLockView on /puzzles
+    await page.goto('/puzzles?lang=fr');
+    const lockView = page.getByTestId('guest-feature-lock-view');
+    await expect(lockView).toBeVisible({ timeout: 15000 });
+
+    const openTermsBtn = page.getByTestId('guest-lock-open-terms-btn');
+    await expect(openTermsBtn).toBeVisible();
+    await expect(async () => {
+      await openTermsBtn.click();
+      await expect(termsModal).toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 15000 });
+
+    // Modal opens directly in 1 click from GuestFeatureLockView
+    await expect(termsModal).toContainText('Article 4 — Attribution et Intégrité du Performance Rating');
+    await page.getByTestId('terms-modal-understood-btn').click();
+    await expect(termsModal).toBeHidden();
+  });
 });

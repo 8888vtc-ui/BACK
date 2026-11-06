@@ -8,6 +8,7 @@ import ErrorBoundary from '../common/ErrorBoundary';
 import { AnnouncerProvider } from '../common/LiveAnnouncer';
 import { BoardThemeProvider } from '../../hooks/useBoardTheme';
 import { runMobileCacheAndSwPurge } from '../../lib/storage/dbCleanMigration';
+import TermsAndPrPolicyModal from '../legal/TermsAndPrPolicyModal';
 
 // Purge mobile cache, SW & db_clean_v3 : exécutée dès le chargement du module côté client.
 if (typeof window !== 'undefined') {
@@ -23,6 +24,7 @@ export default function AppProviders({ children }: { children: React.ReactNode }
                         <ToastProvider listenNetworkEvents={true}>
                             {children}
                             <ToastContainer />
+                            <TermsAndPrPolicyModal />
                         </ToastProvider>
                     </AnnouncerProvider>
                 </I18nProvider>
