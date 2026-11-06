@@ -334,7 +334,7 @@ function isBlocked(board: number[], point: number, player: Player): boolean {
     return player === 'X' ? v <= -2 : v >= 2;
 }
 
-function isAllInHome(board: number[], player: Player): boolean {
+export function isAllInHome(board: number[], player: Player): boolean {
     if (player === 'X') {
         if (board[X_BAR] > 0) return false;
         for (let p = 7; p <= 24; p++) if (board[p] > 0) return false;
@@ -345,12 +345,12 @@ function isAllInHome(board: number[], player: Player): boolean {
     return true;
 }
 
-function isHighestOccupied(board: number[], point: number): boolean {
+export function isHighestOccupied(board: number[], point: number): boolean {
     for (let p = point + 1; p <= 24; p++) if (board[p] > 0) return false;
     return true;
 }
 
-function isLowestOccupied(board: number[], point: number): boolean {
+export function isLowestOccupied(board: number[], point: number): boolean {
     for (let p = 1; p < point; p++) if (board[p] < 0) return false;
     return true;
 }

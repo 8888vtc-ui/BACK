@@ -112,6 +112,37 @@ export function isLegalOverRollBearOff(
 }
 
 /**
+ * Vérifie si la sortie d'un pion depuis la flèche `from` avec le dé `dieValue`
+ * est strictement légale selon les règles officielles WBGF :
+ * 1. Tous les pions restants du joueur sont dans son jan intérieur et aucun sur la barre (`canPlayerBearOff`).
+ * 2. La flèche source `from` contient au moins un pion du joueur.
+ * 3. Si `dieValue === distance` (correspondance exacte) : coup légal.
+ * 4. Si `dieValue > distance` (sur-dé / over-die) : légal UNIQUEMENT si toutes les cases
+ *    plus éloignées de la sortie que `from` sont vides (`isLegalOverRollBearOff`).
+ * 5. Si `dieValue < distance` : impossible de sortir directement avec ce dé.
+ */
+export function isLegalBearOffMove(
+    board: readonly number[],
+    player: Player,
+    from: number,
+    dieValue: number,
+): boolean {
+    if (!canPlayerBearOff(board, player)) return false;
+    const distance = getInnerBoardDistance(from, player);
+    if (distance < 1 || distance > 6) return false;
+
+    const count = board[from] ?? 0;
+    const hasChecker = player === 'X' ? count > 0 : count < 0;
+    if (!hasChecker) return false;
+
+    if (dieValue === distance) return true;
+    if (dieValue > distance) {
+        return isLegalOverRollBearOff(board, player, from, dieValue);
+    }
+    return false;
+}
+
+/**
  * Sélectionne de manière 100 % déterministe la flèche source pour sortir un pion vers `offPoint`
  * à partir d'une table de cibles d'un dé :
  * 1. Correspondance exacte (`distance === dieValue`) en priorité absolue.
