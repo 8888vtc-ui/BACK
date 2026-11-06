@@ -29,49 +29,35 @@ export function BeginnerAcademyFlow({
   useEffect(() => {
     try {
       if (typeof window !== 'undefined') {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('tab') === 'quiz' || params.get('step') === 'quiz' || params.get('mode') === 'beginner-academy') {
-          setViewState('QUIZ');
-        }
+        const p = new URLSearchParams(window.location.search);
+        if (p.get('tab') === 'quiz' || p.get('step') === 'quiz' || p.get('mode') === 'beginner-academy') setViewState('QUIZ');
       }
-      if (typeof document !== 'undefined') {
-        document.title = lang === 'fr'
-          ? "Académie d'Initiation — Backgammon Tour"
-          : 'Beginner Academy — Backgammon Tour';
-      }
+      let loaded: number[] = [];
+      const v1 = localStorage.getItem('bgtour_beginner_completed_quizzes_v1');
+      if (v1) { try { const parsed = JSON.parse(v1); if (Array.isArray(parsed)) loaded = parsed.map(Number).filter(n => !isNaN(n)); } catch {} }
       const saved = localStorage.getItem('bgtour_beginner_academy_progress');
-      let firstUncompleted = -1;
-      let loadedCompletedIds: number[] = [];
       if (saved) {
-        const parsed = JSON.parse(saved) as { scorePoints?: number; completedQuizIds?: number[] };
-        if (typeof parsed.scorePoints === 'number') setScorePoints(parsed.scorePoints);
-        if (Array.isArray(parsed.completedQuizIds)) {
-          loadedCompletedIds = parsed.completedQuizIds;
-          setCompletedQuizIds(loadedCompletedIds);
-          firstUncompleted = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => !loadedCompletedIds.includes(q.id));
-        }
+        try {
+          const parsed = JSON.parse(saved) as { scorePoints?: number; completedQuizIds?: number[] };
+          if (typeof parsed.scorePoints === 'number') setScorePoints(parsed.scorePoints);
+          if (loaded.length === 0 && Array.isArray(parsed.completedQuizIds)) loaded = parsed.completedQuizIds.map(Number).filter(n => !isNaN(n));
+        } catch {}
       }
+      if (loaded.length > 0) setCompletedQuizIds(loaded);
+      if (loaded.length >= BEGINNER_10_INITIATION_QUIZZES.length) { setViewState('DIPLOMA'); return; }
+
+      const firstUncompleted = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => !loaded.includes(q.id));
       const savedIdx = localStorage.getItem('bgtour_beginner_academy_quiz_idx');
-      if (firstUncompleted >= 0) {
-        if (savedIdx !== null) {
-          const parsedIdx = parseInt(savedIdx, 10);
-          const targetQuiz = BEGINNER_10_INITIATION_QUIZZES[parsedIdx];
-          if (targetQuiz && !loadedCompletedIds.includes(targetQuiz.id)) {
-            setActiveQuizIndex(parsedIdx);
-          } else {
-            setActiveQuizIndex(firstUncompleted);
-          }
-        } else {
-          setActiveQuizIndex(firstUncompleted);
-        }
-      } else if (savedIdx !== null) {
+      if (savedIdx !== null) {
         const parsedIdx = parseInt(savedIdx, 10);
-        if (!isNaN(parsedIdx) && parsedIdx >= 0 && parsedIdx < BEGINNER_10_INITIATION_QUIZZES.length) {
-          setActiveQuizIndex(parsedIdx);
-        }
+        const targetQuiz = BEGINNER_10_INITIATION_QUIZZES[parsedIdx];
+        if (targetQuiz && !loaded.includes(targetQuiz.id)) setActiveQuizIndex(parsedIdx);
+        else if (firstUncompleted >= 0) setActiveQuizIndex(firstUncompleted);
+      } else if (firstUncompleted >= 0) {
+        setActiveQuizIndex(firstUncompleted);
       }
     } catch {}
-  }, [lang]);
+  }, []);
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -82,7 +68,10 @@ export function BeginnerAcademyFlow({
   }, [lang, viewState, activeQuizIndex]);
 
   const saveProgress = (points: number, quizIds: number[]) => {
-    try { localStorage.setItem('bgtour_beginner_academy_progress', JSON.stringify({ scorePoints: points, completedQuizIds: quizIds })); } catch {}
+    try {
+      localStorage.setItem('bgtour_beginner_completed_quizzes_v1', JSON.stringify(quizIds));
+      localStorage.setItem('bgtour_beginner_academy_progress', JSON.stringify({ scorePoints: points, completedQuizIds: quizIds }));
+    } catch {}
   };
 
   const currentQuiz: BeginnerInitiationQuiz = BEGINNER_10_INITIATION_QUIZZES[activeQuizIndex] || BEGINNER_10_INITIATION_QUIZZES[0];
@@ -90,8 +79,7 @@ export function BeginnerAcademyFlow({
   const isSelectedCorrect = Boolean(selectedOpt?.isCorrect);
 
   const handleSelectQuizIndex = (idx: number) => {
-    setActiveQuizIndex(idx);
-    setSelectedOptionId(null);
+    setActiveQuizIndex(idx); setSelectedOptionId(null);
     try { localStorage.setItem('bgtour_beginner_academy_quiz_idx', String(idx)); } catch {}
   };
 
@@ -113,16 +101,29 @@ export function BeginnerAcademyFlow({
 
   const handleNextQuiz = () => {
     setSelectedOptionId(null);
-    if (activeQuizIndex < BEGINNER_10_INITIATION_QUIZZES.length - 1) {
-      const nextIdx = activeQuizIndex + 1;
-      setActiveQuizIndex(nextIdx);
-      try { localStorage.setItem('bgtour_beginner_academy_quiz_idx', String(nextIdx)); } catch {}
-    } else {
-      const finalPoints = scorePoints + 2000;
+    if (completedQuizIds.length >= BEGINNER_10_INITIATION_QUIZZES.length) {
+      const finalPoints = scorePoints >= 2000 ? scorePoints : scorePoints + 2000;
       setScorePoints(finalPoints);
       saveProgress(finalPoints, completedQuizIds);
       setViewState('DIPLOMA');
+      return;
     }
+    const nextUncompletedAfter = BEGINNER_10_INITIATION_QUIZZES.findIndex(
+      (q, idx) => idx > activeQuizIndex && !completedQuizIds.includes(q.id)
+    );
+    if (nextUncompletedAfter >= 0) {
+      handleSelectQuizIndex(nextUncompletedAfter);
+      return;
+    }
+    const anyUncompleted = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => !completedQuizIds.includes(q.id));
+    if (anyUncompleted >= 0) {
+      handleSelectQuizIndex(anyUncompleted);
+      return;
+    }
+    const finalPoints = scorePoints >= 2000 ? scorePoints : scorePoints + 2000;
+    setScorePoints(finalPoints);
+    saveProgress(finalPoints, completedQuizIds);
+    setViewState('DIPLOMA');
   };
 
   const handleBackToLobby = () => (onBackToLobby ? onBackToLobby() : typeof window !== 'undefined' ? window.location.assign('/') : undefined);
@@ -179,7 +180,7 @@ export function BeginnerAcademyFlow({
                     title={`Quiz ${q.id}/10`}
                     className={`w-6 h-6 rounded-md text-[11px] font-mono font-bold flex items-center justify-center transition-all ${
                       isCur
-                        ? 'bg-[#D4AF37] text-black font-extrabold shadow-sm'
+                        ? 'bg-[#D4AF37] text-black font-extrabold shadow-sm ring-1 ring-amber-300'
                         : isPass
                         ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
                         : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:text-white hover:bg-white/[0.08]'
@@ -189,6 +190,19 @@ export function BeginnerAcademyFlow({
                   </button>
                 );
               })}
+              <button
+                type="button"
+                data-testid="academy-nav-diploma-btn"
+                onClick={() => setViewState('DIPLOMA')}
+                title={lang === 'fr' ? "Voir le Diplôme d'Initié" : 'View Initiate Diploma'}
+                className={`ml-1 px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-0.5 transition-all ${
+                  completedQuizIds.length >= 10
+                    ? 'bg-amber-400 text-black font-extrabold shadow-sm hover:bg-amber-300'
+                    : 'bg-amber-400/10 border border-amber-400/30 text-amber-300 hover:bg-amber-400/20'
+                }`}
+              >
+                🎓 {lang === 'fr' ? 'Diplôme' : 'Diploma'}
+              </button>
             </div>
           </div>
 
@@ -201,13 +215,7 @@ export function BeginnerAcademyFlow({
           <div className="flex flex-col gap-1.5 my-0.5 shrink-0">
             {currentQuiz.options.map((opt) => {
               const isSel = selectedOptionId === opt.id;
-              const btnStyle = !selectedOptionId
-                ? 'bg-white/[0.03] border-white/[0.08] text-zinc-200 hover:border-white/20 hover:bg-white/[0.06]'
-                : opt.isCorrect
-                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md shadow-emerald-500/10'
-                : isSel
-                ? 'bg-rose-500/20 border-rose-500 text-rose-300'
-                : 'bg-white/[0.02] border-white/[0.06] text-zinc-400 opacity-60';
+              const btnStyle = !selectedOptionId ? 'bg-white/[0.03] border-white/[0.08] text-zinc-200 hover:border-white/20 hover:bg-white/[0.06]' : opt.isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md shadow-emerald-500/10' : isSel ? 'bg-rose-500/20 border-rose-500 text-rose-300' : 'bg-white/[0.02] border-white/[0.06] text-zinc-400 opacity-60';
 
               return (
                 <button
@@ -267,14 +275,10 @@ export function BeginnerAcademyFlow({
             <span className="text-amber-400 text-xs font-bold uppercase tracking-widest">{lang === 'fr' ? 'Félicitations' : 'Congratulations'}</span>
             <h2 className="text-lg sm:text-xl font-black text-white mt-0.5">{lang === 'fr' ? "Diplôme d'Initié au Cercle Backgammon" : 'Backgammon Circle Initiate Diploma'}</h2>
             <p className="text-xs text-neutral-300 mt-0.5 max-w-md">
-              {lang === 'fr'
-                ? 'Vous maîtrisez le but du jeu, la sécurité, la barre, le bear-off et le videau. Vous êtes fin prêt à jouer !'
-                : 'You have mastered the game rules, points, bar safety, bear-off, and the doubling cube. You are ready!'}
+              {lang === 'fr' ? 'Vous maîtrisez le but du jeu, la sécurité, la barre, le bear-off et le videau. Vous êtes fin prêt à jouer !' : 'You have mastered rules, points, bar safety, bear-off, and the cube. Ready to play!'}
             </p>
           </div>
-          <div className="px-4 py-1.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-bold text-sm">
-            +{2000} PTS {lang === 'fr' ? 'Bonus Débloqués !' : 'Bonus Awarded!'}
-          </div>
+          <div className="px-4 py-1.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-bold text-sm">+{2000} PTS {lang === 'fr' ? 'Bonus Débloqués !' : 'Bonus Awarded!'}</div>
           <button type="button" data-testid="diploma-launch-guided-match-btn" onClick={handlePlayDirect} className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition">
             {lang === 'fr' ? 'Mettre en pratique contre le Bot Doux (Partie Guidée) →' : 'Practice Against Gentle Bot (Guided Match) →'}
           </button>
