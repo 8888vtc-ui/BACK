@@ -28,9 +28,9 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
   return (
     <div
       data-testid="academy-visual-board-lesson"
-      className="relative w-full aspect-[600/280] min-h-[220px] rounded-xl border border-amber-400/30 bg-[#07130e] shadow-2xl overflow-hidden select-none"
+      className="relative w-full aspect-[600/260] max-h-[220px] rounded-xl border border-amber-400/30 bg-[#07130e] shadow-2xl overflow-hidden select-none"
     >
-      <svg viewBox="0 0 600 280" className="w-full h-full">
+      <svg viewBox="0 0 600 260" className="w-full h-full object-contain">
         <defs>
           <marker id="lesson-arrow-gold" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
             <polygon points="0 0, 6 3, 0 6" fill="#D4AF37" />
@@ -45,9 +45,9 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         </defs>
 
         {/* Tapis de feutre émeraude & boiserie symétrique */}
-        <rect x="0" y="0" width="600" height="280" fill="#091813" />
-        <rect x="264" y="0" width="32" height="280" fill="#040b08" stroke="#D4AF37" strokeOpacity="0.3" />
-        <rect x="536" y="0" width="64" height="280" fill="#050e0a" stroke="#D4AF37" strokeOpacity="0.4" />
+        <rect x="0" y="0" width="600" height="260" fill="#091813" />
+        <rect x="264" y="0" width="32" height="260" fill="#040b08" stroke="#D4AF37" strokeOpacity="0.3" />
+        <rect x="536" y="0" width="64" height="260" fill="#050e0a" stroke="#D4AF37" strokeOpacity="0.4" />
 
         {/* 24 Flèches triangulaires strictement identiques (6 à gauche, barre 32px, 6 à droite) */}
         {Array.from({ length: 24 }, (_, i) => i + 1).map((pt) => {
@@ -56,7 +56,7 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
           return (
             <polygon
               key={pt}
-              points={`${x - 19},${isTop ? 0 : 280} ${x + 19},${isTop ? 0 : 280} ${x},${isTop ? 110 : 170}`}
+              points={`${x - 19},${isTop ? 0 : 260} ${x + 19},${isTop ? 0 : 260} ${x},${isTop ? 100 : 160}`}
               fill={pt % 2 === 1 ? '#42200f' : '#b28647'}
               opacity={pt <= 6 ? '0.9' : '0.6'}
             />
@@ -64,10 +64,13 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         })}
 
         {/* Zone Votre Maison (Sortie) toujours visible en bas à droite (cases 1 à 6) */}
-        <rect x="296" y="145" width="240" height="130" fill="rgba(16, 185, 129, 0.08)" stroke="#10B981" strokeDasharray="4 4" rx="6" />
-        <text x="416" y="165" fill="#34D399" fontSize="11" fontWeight="bold" textAnchor="middle">
-          {isEn ? 'Your Home Board (Cases 1 to 6)' : 'Votre Maison (Cases 1 à 6)'}
-        </text>
+        <rect x="296" y="140" width="240" height="115" fill="rgba(16, 185, 129, 0.08)" stroke="#10B981" strokeDasharray="4 4" rx="6" />
+        <g transform="translate(416, 155)">
+          <rect x="-85" y="-10" width="170" height="18" rx="5" fill="#090B10" fillOpacity="0.88" stroke="#10B981" strokeWidth="0.75" />
+          <text x="0" y="3" fill="#34D399" fontSize="10" fontWeight="bold" textAnchor="middle">
+            {isEn ? 'Your Home Board (Cases 1 to 6)' : 'Votre Maison (Cases 1 à 6)'}
+          </text>
+        </g>
 
         {/* ================= SCÉNARIOS VISUELS 1 À 10 ================= */}
 
@@ -113,12 +116,15 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {quizId === 2 && (
           <g>
             {Array.from({ length: 15 }).map((_, idx) => (
-              <circle key={idx} cx={330 + (idx % 6) * 35} cy={250 - Math.floor(idx / 6) * 20} r="10" fill="#ffffff" stroke="#D4AF37" strokeWidth="1.5" />
+              <circle key={idx} cx={330 + (idx % 6) * 35} cy={235 - Math.floor(idx / 6) * 18} r="9" fill="#ffffff" stroke="#D4AF37" strokeWidth="1.5" />
             ))}
-            <line x1="520" y1="240" x2="565" y2="240" stroke="#D4AF37" strokeWidth="4" markerEnd="url(#lesson-arrow-gold)" filter="url(#lesson-gold-glow)" />
-            <text x="424" y="190" fill="#F3E5AB" fontSize="12" fontWeight="black" textAnchor="middle">
-              {isEn ? '15 Checkers Home -> Bear Off into Tray' : '15 Dames à la Maison -> Sortie au Sabot'}
-            </text>
+            <line x1="520" y1="220" x2="565" y2="220" stroke="#D4AF37" strokeWidth="4" markerEnd="url(#lesson-arrow-gold)" filter="url(#lesson-gold-glow)" />
+            <g transform="translate(424, 185)">
+              <rect x="-115" y="-10" width="230" height="18" rx="5" fill="#090B10" fillOpacity="0.88" stroke="#D4AF37" strokeWidth="0.75" />
+              <text x="0" y="3" fill="#F3E5AB" fontSize="10" fontWeight="black" textAnchor="middle">
+                {isEn ? '15 Checkers Home → Bear Off into Tray' : '15 Dames à la Maison → Sortie au Sabot'}
+              </text>
+            </g>
           </g>
         )}
 

@@ -55,11 +55,11 @@ export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.m
   const ep5CubeScale = progress > 0.5 ? 1 + Math.min(0.5, (progress - 0.5) * 1.5) : 1;
 
   return (
-    <div className="relative w-full aspect-[600/340] min-h-[240px] sm:min-h-[300px] rounded-xl border border-[#D4AF37]/50 bg-[#07130e] shadow-2xl overflow-hidden">
+    <div className="relative w-full aspect-[600/320] max-h-[240px] rounded-xl border border-[#D4AF37]/50 bg-[#07130e] shadow-2xl overflow-hidden">
       <svg
-        viewBox="0 0 600 340"
+        viewBox="0 0 600 320"
         data-testid="academy-animated-board-svg"
-        className="w-full h-full select-none"
+        className="w-full h-full select-none object-contain"
       >
         <defs>
           <marker id="stage-arrow" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
