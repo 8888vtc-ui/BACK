@@ -84,7 +84,7 @@ export function getPrLevel(pr: number): PrLevel {
     if (pr <= 13.0) {
         return {
             label: 'Intermédiaire',
-            icon: '🎯',
+            icon: '',
             badgeClass: 'border-amber-500/60 bg-amber-500/15 text-amber-300',
             barClass: 'bg-amber-400',
             max: 13.0,
@@ -135,7 +135,7 @@ const CoachPrDashboardComponent: React.FC<CoachPrDashboardProps> = ({
         },
         {
             key: 'good',
-            icon: '👍',
+            icon: '',
             label: 'Bons',
             className: 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300',
         },
@@ -269,8 +269,8 @@ const CoachPrDashboardComponent: React.FC<CoachPrDashboardProps> = ({
                         {counters.blunder === 0
                             ? '🏆 Exécution Pro en cours : 0 Blunder'
                             : counters.blunder === 1
-                              ? '🎯 Palier Bon Joueur : 1 seul Blunder (visez 0 de plus !)'
-                              : `⚡ Cap Manche : ${counters.blunder} Blunders — verrouillez vos portes & le Videau`}
+                              ? 'Palier Bon Joueur : 1 seul Blunder (visez 0 de plus !)'
+                              : `Cap Manche : ${counters.blunder} Blunders — verrouillez vos portes & le Videau`}
                     </span>
                     <span className="font-mono text-[10px] font-bold text-indigo-300">
                         {counters.blunder === 0 && counters.inaccuracy > 0

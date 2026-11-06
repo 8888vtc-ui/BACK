@@ -55,7 +55,7 @@ describe('MobileThumbDock & BoardActions — Ergonomie Mobile-First Thumb-Dock',
         expect(badge.className).toContain('animate-pulse');
 
         const coachBtn = getByTestId('thumb-dock-coach-btn');
-        expect(coachBtn.textContent).toContain('🔥');
+        expect(coachBtn.textContent).toContain('Coach');
     });
 
     it('affiche les boutons Prendre / Passer lors d’un videau adverse (RESPOND_DOUBLE)', () => {

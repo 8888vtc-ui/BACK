@@ -179,7 +179,7 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                 </div>
                 <div className="flex items-center gap-2.5">
                     <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a1109]/90 px-3 py-1.5" title="Série de victoires quotidiennes consécutives" data-testid="puzzle-streak-badge">
-                        <span className="text-base">🔥</span>
+                        
                         <div className="flex items-center gap-1.5 text-xs">
                             <span className="font-bold text-[#f3c65f] uppercase tracking-wider">Série en cours</span>
                             <span className="font-mono font-extrabold text-[#fdf8eb]">{stats.currentStreak} {stats.currentStreak > 1 ? 'jours' : 'jour'}</span>
@@ -228,7 +228,7 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                         <button type="button" onClick={handleReset} disabled={playedMoves.length === 0} className="rounded-xl border border-white/10 bg-[#150c07] px-3 py-1.5 text-xs font-bold text-[#fdf8eb] hover:border-white/25 disabled:opacity-40 disabled:cursor-not-allowed transition" data-testid="puzzle-reset-button">🔄 Réinitialiser</button>
-                        <button type="button" onClick={() => setShowHint(!showHint)} className="rounded-xl border border-white/10 bg-[#1a1109] px-3 py-1.5 text-xs font-bold text-[#f3c65f] hover:border-white/25 transition" data-testid="puzzle-hint-button">💡 {showHint ? 'Masquer l’indice' : 'Indice'}</button>
+                        <button type="button" onClick={() => setShowHint(!showHint)} className="rounded-xl border border-white/10 bg-[#1a1109] px-3 py-1.5 text-xs font-bold text-[#f3c65f] hover:border-white/25 transition" data-testid="puzzle-hint-button">{showHint ? 'Masquer l’indice' : 'Indice'}</button>
                         <button type="button" onClick={handleRevealSolution} className="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-xs font-semibold text-[#e2d2b5] hover:border-white/25 hover:text-white transition" data-testid="puzzle-solution-button">👁️ Voir la solution</button>
                         <button type="button" onClick={handleVerify} className="rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#c69214] px-4 py-1.5 text-xs sm:text-sm font-black uppercase tracking-wider text-[#1a0f08] shadow-md transition hover:brightness-105 active:scale-95" data-testid="puzzle-verify-button">✦ Valider ma réponse</button>
                     </div>
@@ -236,14 +236,14 @@ export default function DailyPuzzleView({ initialPuzzleId, onClose }: DailyPuzzl
 
                 {showHint && (
                     <div className="rounded-xl border border-white/10 bg-[#180c06]/90 p-3 text-xs text-[#fdf8eb]" data-testid="puzzle-hint-box">
-                        <span className="font-bold text-[#f3c65f]">💡 Indice tactique :</span> {puzzle.hint}
+                        <span className="font-bold text-[#f3c65f]">Indice tactique :</span> {puzzle.hint}
                     </div>
                 )}
 
                 {showSolution && (
                     <div className="rounded-xl border border-white/10 bg-[#180c06]/95 p-3 text-xs text-[#e2d2b5] space-y-1.5" data-testid="puzzle-solution-box">
                         <div className="flex items-center gap-2 font-extrabold text-[#f3c65f]">
-                            <span>🎯 Solution certifiée Monte-Carlo :</span>
+                            <span>Solution certifiée Monte-Carlo :</span>
                             <span className="rounded border border-white/10 bg-black/50 px-2 py-0.5 font-mono text-[#fdf8eb]">{puzzle.optimalNotation}</span>
                         </div>
                         <p>{puzzle.explanation}</p>

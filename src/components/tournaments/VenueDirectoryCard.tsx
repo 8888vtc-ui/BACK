@@ -62,7 +62,7 @@ export const VenueDirectoryCard: React.FC<VenueDirectoryCardProps> = React.memo(
                 {venue.playerBenefitsFr && venue.playerBenefitsFr.length > 0 && (
                     <div className="mt-3">
                         <div className="text-[11px] uppercase font-bold text-[#d4af37] mb-1.5">
-                            ✨ Pourquoi jouer ici — Avantages du lieu
+                            Pourquoi jouer ici — Avantages du lieu
                         </div>
                         <ul className="flex flex-col gap-1 text-xs text-slate-300">
                             {venue.playerBenefitsFr.map((benefit) => (

@@ -127,10 +127,10 @@ export const DailyPuzzleBoard: React.FC<DailyPuzzleBoardProps> = ({
                         className="rounded-xl border border-white/10 bg-[#1a1109] px-2.5 sm:px-3 py-1.5 text-xs font-extrabold text-[#f3c65f] hover:border-white/25 disabled:opacity-45 disabled:cursor-not-allowed transition touch-manipulation"
                     >
                         {hintLevel === 0
-                            ? '💡 Indice 1 : Plan (-25% XP)'
+                            ? 'Indice 1 : Plan (-25% XP)'
                             : hintLevel === 1
-                              ? '✨ Indice 2 : Pions (-50% XP)'
-                              : '💡 Indices dévoilés (-50% XP)'}
+                              ? 'Indice 2 : Pions (-50% XP)'
+                              : 'Indices dévoilés (-50% XP)'}
                     </button>
 
                     {puzzle.decisionType === 'cube' && (
@@ -178,13 +178,13 @@ export const DailyPuzzleBoard: React.FC<DailyPuzzleBoardProps> = ({
             {hintLevel >= 1 && (
                 <div data-testid="daily-puzzle-hint-panel" className="rounded-2xl border border-white/10 bg-[#180c06]/95 p-3.5 shadow-lg space-y-2">
                     <div data-testid="daily-puzzle-hint-1" className="flex flex-wrap items-center gap-2 text-xs text-[#fdf8eb]">
-                        <span className="rounded border border-white/10 bg-[#d4af37]/20 px-2 py-0.5 font-mono text-xs font-extrabold text-[#f3c65f]">💡 INDICE 1 (-25% XP) · PLAN DE JEU</span>
+                        <span className="rounded border border-white/10 bg-[#d4af37]/20 px-2 py-0.5 font-mono text-xs font-extrabold text-[#f3c65f]">INDICE 1 (-25% XP) · PLAN DE JEU</span>
                         <span className="font-semibold text-[#fdf8eb]">{puzzle.gamePlanHint}</span>
                     </div>
 
                     {hintLevel >= 2 && (
                         <div data-testid="daily-puzzle-hint-2" className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-2 text-xs text-[#fdf8eb]">
-                            <span className="rounded border border-white/10 bg-amber-500/25 px-2 py-0.5 font-mono text-xs font-extrabold text-[#f3c65f]">✨ INDICE 2 (-50% XP) · PIONS SOURCES</span>
+                            <span className="rounded border border-white/10 bg-amber-500/25 px-2 py-0.5 font-mono text-xs font-extrabold text-[#f3c65f]">INDICE 2 (-50% XP) · PIONS SOURCES</span>
                             <span>Pions sources du meilleur coup mis en surbrillance :</span>
                             {Array.from(highlightedHintSources).map((pt) => (
                                 <span key={pt} data-testid={`hint-source-badge-${pt}`} className="rounded-lg border border-[#f3c65f] bg-[#3b1c0c] px-2.5 py-0.5 font-mono text-xs font-black text-[#fff3c4]">

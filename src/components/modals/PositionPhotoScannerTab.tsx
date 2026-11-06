@@ -196,12 +196,12 @@ const PositionPhotoScannerTabComponent: React.FC<PositionPhotoScannerTabProps> =
                             onClick={() => void handleRunVisionScan()}
                             className="rounded-xl border border-emerald-400/80 bg-emerald-600/30 px-2.5 py-1.5 text-xs font-extrabold text-emerald-100"
                         >
-                            {isScanning ? '⏳ Analyse IA…' : '✨ Scanner'}
+                            {isScanning ? '⏳ Analyse IA…' : 'Scanner'}
                         </button>
                     )}
                 </div>
                 {scanError && <div data-testid="photo-scan-error" className="rounded-xl border border-rose-500/45 bg-rose-950/50 px-2.5 py-1 text-xs text-rose-200">⚠️ {scanError}</div>}
-                {scanWarnings.map((w, i) => <div key={i} className="rounded-xl border border-amber-400/45 bg-amber-950/40 px-2.5 py-1 text-xs text-amber-200">💡 {w}</div>)}
+                {scanWarnings.map((w, i) => <div key={i} className="rounded-xl border border-amber-400/45 bg-amber-950/40 px-2.5 py-1 text-xs text-amber-200">{w}</div>)}
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-1 rounded-2xl border border-white/10 bg-[#0d121c] px-2 py-1.5 text-xs">
@@ -212,7 +212,7 @@ const PositionPhotoScannerTabComponent: React.FC<PositionPhotoScannerTabProps> =
                 </div>
                 <div className="flex items-center gap-1">
                     <button type="button" data-testid="editor-invert-sides-btn" onClick={() => { setBoard((b) => invertEditorBoardSides(b)); setVerdict(null); }} className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-amber-200 hover:text-white" title="Inverser les couleurs Blanc et Noir">⇄ Inverser</button>
-                    <button type="button" data-testid="editor-clear-board-btn" onClick={() => { setBoard(createEmptyEditorBoard()); setVerdict(null); }} className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-slate-300">🗑 Vider</button>
+                    <button type="button" data-testid="editor-clear-board-btn" onClick={() => { setBoard(createEmptyEditorBoard()); setVerdict(null); }} className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-slate-300">Vider</button>
                     <button type="button" data-testid="editor-reset-initial-btn" onClick={() => { setBoard(createInitialEditorBoard()); setVerdict(null); }} className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-slate-300">🔄 Départ</button>
                 </div>
             </div>
@@ -248,7 +248,7 @@ const PositionPhotoScannerTabComponent: React.FC<PositionPhotoScannerTabProps> =
 
             <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
                 <code data-testid="editor-live-xgid" className="flex-1 min-w-[140px] truncate rounded-xl border border-white/10 bg-black/60 px-2.5 py-1.5 font-mono text-[11px] text-amber-200/90">{liveXgid}</code>
-                <button type="button" data-testid="editor-instant-eval-btn" onClick={() => setVerdict(evaluateScannedPositionInstant(builtState))} className="rounded-xl border border-emerald-400/70 bg-emerald-500/20 px-3 py-2 text-xs font-extrabold text-emerald-200 hover:bg-emerald-500/30 transition">⚡ Verdict Instantané</button>
+                <button type="button" data-testid="editor-instant-eval-btn" onClick={() => setVerdict(evaluateScannedPositionInstant(builtState))} className="rounded-xl border border-emerald-400/70 bg-emerald-500/20 px-3 py-2 text-xs font-extrabold text-emerald-200 hover:bg-emerald-500/30 transition">Verdict Instantané</button>
                 <button type="button" data-testid="apply-scanned-position-btn" onClick={() => onApplyState(builtState)} className="rounded-xl border border-amber-400 bg-gradient-to-r from-amber-500 to-yellow-500 px-3.5 py-2 text-xs font-black text-black shadow-lg hover:brightness-110 transition">🎓 Jouer cette position</button>
             </div>
         </div>

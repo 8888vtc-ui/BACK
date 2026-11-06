@@ -52,7 +52,7 @@ export const DiceAuditSeedsSection: React.FC<DiceAuditSeedsSectionProps> = ({
             <div className="rounded-xl border border-white/10 bg-[#0c0603] p-2.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#f3c65f]">
-                        🔑 Phase 3 (Reveal) — serverSeed révélée (256 bits)
+                        Phase 3 (Reveal) — serverSeed révélée (256 bits)
                     </span>
                     <span
                         data-testid="dice-audit-hash-match-badge"

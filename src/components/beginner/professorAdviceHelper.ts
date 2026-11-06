@@ -91,30 +91,30 @@ function formatAdviceTextWithPhysicalTruth(
     }
     if (closedPoint !== null) {
         return isEn
-            ? `💡 Professor Tip (Dice ${diceLabel}): Follow the two golden arrows on the board to unite your two checkers on the same point and create an unbreachable Shield (Gate)!`
-            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Suis les deux flèches dorées sur le plateau pour réunir tes deux pions sur la même pointe et créer un Bouclier (Porte) infranchissable !`;
+            ? `Professor Tip (Dice ${diceLabel}): Follow the two golden arrows on the board to unite your two checkers on the same point and create an unbreachable Shield (Gate)!`
+            : `Conseil du Professeur (Dés ${diceLabel}) : Suis les deux flèches dorées sur le plateau pour réunir tes deux pions sur la même pointe et créer un Bouclier (Porte) infranchissable !`;
     }
 
     // Cas 2 — Le coup frappe réellement un pion adverse
     const hitO = Math.abs(boardAfterBest[O_BAR] ?? 0) > Math.abs(boardBefore[O_BAR] ?? 0) || bestNotation.includes('*');
     if (hitO) {
         return isEn
-            ? `💡 Professor Tip (Dice ${diceLabel}): Follow the golden arrow to hit the opponent's exposed blot and send it to the center bar!`
-            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Suis la flèche dorée pour frapper le pion adverse isolé et l'envoyer en prison sur la Barre centrale !`;
+            ? `Professor Tip (Dice ${diceLabel}): Follow the golden arrow to hit the opponent's exposed blot and send it to the center bar!`
+            : `Conseil du Professeur (Dés ${diceLabel}) : Suis la flèche dorée pour frapper le pion adverse isolé et l'envoyer en prison sur la Barre centrale !`;
     }
 
     // Cas 3 — Le coup libère un pion arrière du camp adverse (départ en Case 24, en haut à droite)
     const escapesBackChecker = (boardBefore[24] ?? 0) > (boardAfterBest[24] ?? 0) || bestNotation.includes('24/');
     if (escapesBackChecker) {
         return isEn
-            ? `💡 Professor Tip (Dice ${diceLabel}): Follow the long golden arrow in the top right to free your back checker and bring it toward your side.`
-            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Suis la longue flèche dorée en haut à droite pour libérer ton pion arrière et le ramener vers ton camp.`;
+            ? `Professor Tip (Dice ${diceLabel}): Follow the long golden arrow in the top right to free your back checker and bring it toward your side.`
+            : `Conseil du Professeur (Dés ${diceLabel}) : Suis la longue flèche dorée en haut à droite pour libérer ton pion arrière et le ramener vers ton camp.`;
     }
 
     // Cas 4 — Avancée et regroupement vers la maison
     return isEn
-        ? `💡 Professor Tip (Dice ${diceLabel}): Follow the golden arrows on the board to advance your checkers safely toward your Home (bottom right).`
-        : `💡 Conseil du Professeur (Dés ${diceLabel}) : Suis les flèches dorées sur le plateau pour faire avancer tes pions en sécurité vers ta Maison (en bas à droite).`;
+        ? `Professor Tip (Dice ${diceLabel}): Follow the golden arrows on the board to advance your checkers safely toward your Home (bottom right).`
+        : `Conseil du Professeur (Dés ${diceLabel}) : Suis les flèches dorées sur le plateau pour faire avancer tes pions en sécurité vers ta Maison (en bas à droite).`;
 }
 
 export function getFeedbackAdvice(feedback: LastMoveFeedback, lang: 'fr' | 'en' = 'fr'): string {
@@ -123,24 +123,24 @@ export function getFeedbackAdvice(feedback: LastMoveFeedback, lang: 'fr' | 'en' 
 
     if (absLoss <= 0.020 || feedback.verdict === 'optimal') {
         return isEn
-            ? '✅ Excellent move! Your checkers are well coordinated and secure.'
-            : '✅ Excellent coup ! Tes pions sont bien coordonnés et en sécurité.';
+            ? 'Excellent move! Your checkers are well coordinated and secure.'
+            : 'Excellent coup ! Tes pions sont bien coordonnés et en sécurité.';
     }
 
     const lossPct = Math.max(1, Math.round(absLoss * 50));
     return isEn
-        ? `💡 Professor Tip: Your move costs ~${lossPct}% winning chances compared to ${feedback.optimalMove}. Click '↺ Undo / Retry move' to test the best play!`
-        : `💡 Conseil du Professeur : Ton coup perd ~${lossPct} % de chances de gagner par rapport à ${feedback.optimalMove}. Clique sur « ↺ Rejouer le coup » pour tester le meilleur coup !`;
+        ? `Professor Tip: Your move costs ~${lossPct}% winning chances compared to ${feedback.optimalMove}. Click '↺ Undo / Retry move' to test the best play!`
+        : `Conseil du Professeur : Ton coup perd ~${lossPct} % de chances de gagner par rapport à ${feedback.optimalMove}. Clique sur « ↺ Rejouer le coup » pour tester le meilleur coup !`;
 }
 
 export function getBotMoveExplanation(lastBotNotation: string, lang: 'fr' | 'en' = 'fr'): string {
     const isEn = lang === 'en';
     if (lastBotNotation.includes('*')) {
         return isEn
-            ? `👀 What your opponent did: They played ${lastBotNotation} to hit your blot. It's your turn: click Roll Dice!`
-            : `👀 Ce qu'a fait ton adversaire : Il a joué ${lastBotNotation} pour frapper ton pion. C'est à toi : clique sur Lancer les dés !`;
+            ? `What your opponent did: They played ${lastBotNotation} to hit your blot. It's your turn: click Roll Dice!`
+            : `Ce qu'a fait ton adversaire : Il a joué ${lastBotNotation} pour frapper ton pion. C'est à toi : clique sur Lancer les dés !`;
     }
     return isEn
-        ? `👀 What your opponent did: They played ${lastBotNotation} to advance checkers. It's your turn: click Roll Dice!`
-        : `👀 Ce qu'a fait ton adversaire : Il a joué ${lastBotNotation} pour avancer ses pions. C'est à toi : clique sur Lancer les dés !`;
+        ? `What your opponent did: They played ${lastBotNotation} to advance checkers. It's your turn: click Roll Dice!`
+        : `Ce qu'a fait ton adversaire : Il a joué ${lastBotNotation} pour avancer ses pions. C'est à toi : clique sur Lancer les dés !`;
 }

@@ -73,7 +73,7 @@ describe('DailyPuzzleScreen & Composants (/daily-puzzle)', () => {
                 verdict={{
                     code: 'BEST',
                     badgeLabel: 'BEST',
-                    badgeEmoji: '🟢',
+                    badgeEmoji: '' as unknown as NonNullable<Parameters<typeof DailyPuzzleDebrief>[0]['verdict']>['badgeEmoji'],
                     deltaEquity: 0,
                     playerEquity: 0.6,
                     bestEquity: 0.6,

@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Section des 3 volets pédagogiques du Coach IA (🎯 Diagnostic, 💡 Concept Clé, 🚀 Plan) (< 300 lignes, 0 any).
+ * Section des 3 volets pédagogiques du Coach IA (1. Diagnostic, 2. Concept Clé, 3. Plan) (< 300 lignes, 0 any).
  */
 
 import React from 'react';
@@ -54,31 +54,31 @@ export const CoachThreePillarsSection: React.FC<CoachThreePillarsSectionProps> =
                         data-testid="gemini-coach-source-badge"
                         className="rounded-full border border-white/10 bg-[#140b06] px-2.5 py-0.5 text-[10px] font-bold text-[#f3c65f]"
                     >
-                        {synthesisSource === 'llm' ? '✨ Grand-Maître IA' : '⚜ Coach Monte-Carlo'}
+                        {synthesisSource === 'llm' ? 'Grand-Maître IA' : 'Coach Monte-Carlo'}
                     </span>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
-                {/* Volet 1 : 🎯 Le Diagnostic */}
+                {/* Volet 1 : Le Diagnostic */}
                 <div
                     data-testid="coach-pillar-diagnostic"
                     className="rounded-xl border border-white/10 bg-rose-950/20 p-3 space-y-1"
                 >
                     <h4 className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-rose-300">
-                        <span aria-hidden="true">🎯</span>
+                        
                         <span>{isEn ? '1. The Diagnostic' : '1. Le Diagnostic'}</span>
                     </h4>
                     <p className="text-xs leading-relaxed text-[#fdf8eb]/90">{aiSynthesis.diagnostic}</p>
                 </div>
 
-                {/* Volet 2 : 💡 Le Concept Clé */}
+                {/* Volet 2 : Le Concept Clé */}
                 <div
                     data-testid="coach-pillar-key-concept"
                     className="rounded-xl border border-white/10 bg-[#26160c]/60 p-3 space-y-1"
                 >
                     <h4 className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-[#f3c65f]">
-                        <span aria-hidden="true">💡</span>
+                        
                         <span>
                             {isEn ? '2. Key Concept: ' : '2. Le Concept Clé : '}
                             {aiSynthesis.keyConcept?.title}
@@ -115,7 +115,7 @@ export const CoachThreePillarsSection: React.FC<CoachThreePillarsSectionProps> =
                             data-testid="coach-pillar-start-drills-btn"
                             className="mt-1 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-emerald-400/50 bg-emerald-600/30 px-2.5 py-1 text-[11px] font-bold text-emerald-200 transition hover:bg-emerald-600/50"
                         >
-                            <span>🎯</span>
+                            
                             <span>{isEn ? 'Launch Personalized Drills' : 'Lancer cet entraînement'}</span>
                         </button>
                     )}

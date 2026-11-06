@@ -57,12 +57,12 @@ function formatEmotionalVerdict(loss: number, shots: number, level: ExperienceMo
     const isBrilliant = evaluateBrilliantMoveCriteria({ equityLossEmg: loss, directShotsConceded: shots, level });
     if (loss <= 0.015) {
         return isBrilliant || shots > 0
-            ? { badge: isEn ? '✨ Brilliant Move (!!) · Bold play validated by 3-ply' : '✨ Coup Brillant (!!) · Audace validée par le 3-ply', toneCls: 'border-cyan-400/50 bg-cyan-950/40 text-cyan-200' }
-            : { badge: isEn ? '🎯 Master Move (!) · Best play on the board' : '🎯 Coup de Maître (!) · Meilleur coup du plateau', toneCls: 'border-emerald-400/50 bg-emerald-950/40 text-emerald-200' };
+            ? { badge: isEn ? 'Brilliant Move (!!) · Bold play validated by 3-ply' : 'Coup Brillant (!!) · Audace validée par le 3-ply', toneCls: 'border-cyan-400/50 bg-cyan-950/40 text-cyan-200' }
+            : { badge: isEn ? 'Master Move (!) · Best play on the board' : 'Coup de Maître (!) · Meilleur coup du plateau', toneCls: 'border-emerald-400/50 bg-emerald-950/40 text-emerald-200' };
     }
-    if (loss <= 0.045) return { badge: level === 'fun' ? (isEn ? `⚡ Stronger Option (?!) · -${winPct}% win chance` : `⚡ Option plus forte (?!) · -${winPct}% de chances de gain`) : `🤔 Imprécision mineure (?!) · ΔEMG -${loss.toFixed(3)}`, toneCls: 'border-amber-400/40 bg-amber-950/30 text-amber-200' };
+    if (loss <= 0.045) return { badge: level === 'fun' ? (isEn ? `Stronger Option (?!) · -${winPct}% win chance` : `Option plus forte (?!) · -${winPct}% de chances de gain`) : `🤔 Imprécision mineure (?!) · ΔEMG -${loss.toFixed(3)}`, toneCls: 'border-amber-400/40 bg-amber-950/30 text-amber-200' };
     if (loss <= 0.085) return { badge: level === 'fun' ? (isEn ? `⚠️ Risky Line (?) · -${winPct}% win chance` : `⚠️ Ligne risquée (?) · -${winPct}% de chances de gain`) : `⚠️ Erreur (?) · ΔEMG -${loss.toFixed(3)} (~-${winPct}% MWC)`, toneCls: 'border-orange-500/50 bg-orange-950/40 text-orange-200' };
-    return { badge: level === 'fun' ? (isEn ? `🎯 Key Turning Point (??) · -${winPct}% win chance` : `🎯 Tournant décisif (??) · -${winPct}% de chances de gain`) : `🚨 Blunder (??) · ΔEMG -${loss.toFixed(3)} (~-${winPct}% MWC)`, toneCls: 'border-rose-500/60 bg-rose-950/50 text-rose-200' };
+    return { badge: level === 'fun' ? (isEn ? `Key Turning Point (??) · -${winPct}% win chance` : `Tournant décisif (??) · -${winPct}% de chances de gain`) : `🚨 Blunder (??) · ΔEMG -${loss.toFixed(3)} (~-${winPct}% MWC)`, toneCls: 'border-rose-500/60 bg-rose-950/50 text-rose-200' };
 }
 
 const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
@@ -128,7 +128,7 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
     const zareSummary = pedagogicalExplanation?.zare_luck_vs_skill || advice;
     const michyProverb = pedagogicalExplanation?.michy_proverb;
     const modeTabs: Array<{ id: DiagnosticViewMode; label: string; activeCls: string; testId: string }> = [
-        { id: 'flash', label: isEn ? '⚡ Coach AI' : '⚡ Coach IA', activeCls: 'bg-indigo-600 text-white shadow-sm', testId: 'coach-mode-flash-btn' },
+        { id: 'flash', label: isEn ? 'Coach AI' : 'Coach IA', activeCls: 'bg-indigo-600 text-white shadow-sm', testId: 'coach-mode-flash-btn' },
         { id: 'socratic', label: isEn ? '❓ 3 Hints' : '❓ 3 Indices', activeCls: 'bg-amber-600 text-white shadow-sm', testId: 'coach-mode-socratic-btn' },
         { id: 'zare', label: isEn ? '⚖️ Skill vs Luck' : '⚖️ Niveau vs Dés', activeCls: 'bg-emerald-600 text-white shadow-sm', testId: 'coach-mode-zare-btn' },
     ];
@@ -146,7 +146,7 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
                 <div className="inline-flex rounded-lg border border-amber-500/40 bg-slate-900/90 p-0.5">
                     {(['fun', 'pro'] as const).map((lvl) => (
                         <button key={lvl} type="button" data-testid={`coach-level-${lvl}-btn`} aria-pressed={levelMode === lvl} onClick={() => handleLevelChange(lvl)} className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition ${levelMode === lvl ? 'bg-[#f3c65f] text-slate-950' : 'text-slate-400 hover:text-white'}`}>
-                            {lvl === 'fun' ? (isEn ? '⚡ Intuitive' : '⚡ Intuitif') : '🏆 Pro'}
+                            {lvl === 'fun' ? (isEn ? 'Intuitive' : 'Intuitif') : '🏆 Pro'}
                         </button>
                     ))}
                 </div>
@@ -217,11 +217,11 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
                         <button type="button" data-testid="coach-cta-retry-btn" onClick={() => onRetryMove?.()} className="rounded-full border border-amber-500/40 bg-slate-950/70 px-2.5 py-1 text-[10px] font-bold text-amber-300 hover:bg-amber-950/50 transition">{biLevelMicroCopy.ctaPills[2]}</button>
                     </div>
                     {activeVisualCta === 'danger' && <div data-testid="coach-cta-danger-detail" className="rounded-lg border border-rose-500/40 bg-rose-950/40 p-2 text-[11px] leading-relaxed text-rose-100">⚠️ <strong>{isEn ? 'Danger on the board:' : 'Danger sur le plateau :'}</strong> {whyFailed || biLevelMicroCopy.dangerDetail}</div>}
-                    {activeVisualCta === 'idea' && <div data-testid="coach-cta-idea-detail" className="rounded-lg border border-emerald-500/40 bg-emerald-950/40 p-2 text-[11px] leading-relaxed text-emerald-100">💡 <strong>{isEn ? 'Master move applied on board:' : 'Coup du Maître joué sur le plateau :'}</strong> {whyOptimal || biLevelMicroCopy.ideaDetail}</div>}
+                    {activeVisualCta === 'idea' && <div data-testid="coach-cta-idea-detail" className="rounded-lg border border-emerald-500/40 bg-emerald-950/40 p-2 text-[11px] leading-relaxed text-emerald-100"><strong>{isEn ? 'Master move applied on board:' : 'Coup du Maître joué sur le plateau :'}</strong> {whyOptimal || biLevelMicroCopy.ideaDetail}</div>}
                 </div>
             )}
 
-            {mode === 'flash' && levelMode === 'pro' && pedagogicalExplanation?.headline && <p data-testid="coach-sweller-headline" className="text-xs font-extrabold tracking-wide text-amber-100">⚡ {pedagogicalExplanation.headline}</p>}
+            {mode === 'flash' && levelMode === 'pro' && pedagogicalExplanation?.headline && <p data-testid="coach-sweller-headline" className="text-xs font-extrabold tracking-wide text-amber-100">{pedagogicalExplanation.headline}</p>}
 
             {mode === 'socratic' && (
                 <div data-testid="coach-socratic-panel" className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-950/20 p-2.5">
@@ -272,7 +272,7 @@ const CoachDiagnosticBoxComponent: React.FC<CoachDiagnosticBoxProps> = ({
                             <div className="mt-1.5 whitespace-pre-line text-[11px] leading-relaxed text-slate-300">{explanation}{isStreaming && <span className="ml-1 inline-block animate-pulse font-mono font-bold text-indigo-400">▋</span>}</div>
                         </details>
                     )}
-                    {advice && <div className="rounded-md border border-amber-500/30 bg-amber-950/20 p-2 text-[11px] leading-relaxed text-amber-200">💡 <span className="font-semibold text-amber-100">{isEn ? 'Advice' : 'Conseil'} :</span> {advice}</div>}
+                    {advice && <div className="rounded-md border border-amber-500/30 bg-amber-950/20 p-2 text-[11px] leading-relaxed text-amber-200"><span className="font-semibold text-amber-100">{isEn ? 'Advice' : 'Conseil'} :</span> {advice}</div>}
                 </>
             )}
         </section>

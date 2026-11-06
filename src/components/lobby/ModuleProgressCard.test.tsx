@@ -18,19 +18,19 @@ describe('ModuleProgressCard', () => {
                 testId="lobby-module-puzzles"
                 icon="🧩"
                 title="Puzzles quotidiens"
-                liveMetricLabel="4/10 résolus · Série 3j 🔥"
+                liveMetricLabel="4/10 résolus · Série 3j"
                 progressPct={40}
                 actionBadge="Continuer"
-                highlightBadge="🔥 3j"
+                highlightBadge="3j"
                 onSelect={onSelect}
             />,
         );
 
         expect(screen.getByTestId('lobby-module-puzzles')).toBeDefined();
         expect(screen.getByText('Puzzles quotidiens')).toBeDefined();
-        expect(screen.getByText('4/10 résolus · Série 3j 🔥')).toBeDefined();
+        expect(screen.getByText('4/10 résolus · Série 3j')).toBeDefined();
         expect(screen.getByText('Continuer')).toBeDefined();
-        expect(screen.getByText('🔥 3j')).toBeDefined();
+        expect(screen.getByText('3j')).toBeDefined();
         expect(screen.getByText('40%')).toBeDefined();
 
         const progressBar = screen.getByTestId('lobby-module-puzzles-progress-bar');

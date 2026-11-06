@@ -200,7 +200,7 @@ export default function ProgressionDashboard({ onBackToGame }: ProgressionDashbo
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                         <h2 className="text-sm sm:text-base font-black text-[#fdf8eb]">
-                            🎯 Niveau &amp; Maîtrise sur les 9 Techniques (Quizz Adaptatif Multi-Ply)
+                            Niveau &amp; Maîtrise sur les 9 Techniques (Quizz Adaptatif Multi-Ply)
                         </h2>
                         <p className="text-xs text-[#a5b0c4]">
                             Niveau Global : <strong className="text-[#f3c65f]">{adaptiveProfile.overallLevel.toFixed(1)} / 4.0</strong> · Maîtrise Moyenne : <strong className="text-emerald-300">{adaptiveProfile.overallMastery}%</strong> · Quizz uniques résolus : <strong className="text-white">{adaptiveProfile.seenQuizIds.length}</strong>

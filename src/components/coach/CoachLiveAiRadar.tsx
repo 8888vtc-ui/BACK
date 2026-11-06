@@ -207,7 +207,7 @@ const CoachLiveAiRadarComponent: React.FC<CoachLiveAiRadarProps> = ({
                     className="flex items-center justify-between gap-2 rounded-lg border border-emerald-500/50 bg-emerald-950/50 px-2.5 py-2 text-[11px] text-emerald-100"
                 >
                     <span>
-                        🎯{' '}
+                        
                         {isEn
                             ? `Blunder detected (-${Math.abs(equityLoss ?? 0).toFixed(3)} Eq). Want to take back this turn and find the Master move?`
                             : `Gaffe détectée (-${Math.abs(equityLoss ?? 0).toFixed(3)} Eq). Voulez-vous reprendre ce tour contre l'IA ?`}

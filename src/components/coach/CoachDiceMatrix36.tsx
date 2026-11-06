@@ -5,7 +5,7 @@
  *
  * Rôle :
  *   Visualise géométriquement les 36 combinaisons de dés (d1, d2) de l'IA au prochain tour :
- *     - 🟢 Sûr (aucune frappe possible)
+ *     - Sûr (aucune frappe possible)
  *     - 🔴 Tir direct (1 dé atteint un blot)
  *     - 🟠 Tir indirect (somme des 2 dés atteint un blot via relais légal)
  */
@@ -62,7 +62,7 @@ const CoachDiceMatrix36Component: React.FC<CoachDiceMatrix36Props> = ({
                         data-testid="matrix-safe-count"
                         className="rounded bg-emerald-950/80 border border-emerald-500/40 px-1.5 py-0.5 text-emerald-300 font-bold"
                     >
-                        🟢 {matrix.safeRollsCount}/36
+                        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1.5" />{matrix.safeRollsCount}/36
                     </span>
                     <span
                         data-testid="matrix-direct-count"

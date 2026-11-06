@@ -158,7 +158,7 @@ export default function ReviewBoardPreview({
                                     : 'border-amber-500/50 bg-amber-950/40 text-amber-300 hover:bg-amber-900/50'
                             }`}
                         >
-                            🎯 {isDrillMode ? 'Quitter le Quiz' : 'Blunder Training'}
+                            {isDrillMode ? 'Quitter le Quiz' : 'Blunder Training'}
                         </button>
                     )}
 
@@ -193,7 +193,7 @@ export default function ReviewBoardPreview({
                 >
                     <div className="text-xs">
                         <p className="font-bold text-amber-300">
-                            🎯 Blunder Training — Trouvez le coup optimal avec [{turn.dice[0]}-{turn.dice[1]}] :
+                            Blunder Training — Trouvez le coup optimal avec [{turn.dice[0]}-{turn.dice[1]}] :
                         </p>
                         {selectedGuess && (
                             <p

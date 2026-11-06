@@ -7,6 +7,7 @@
  */
 
 import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import { isCubeDecisionNotation, type CoachState, type LastMoveFeedback } from '../../hooks/coach/coachTypes';
 
 export type ChameleonCoachLayer = 'L0' | 'L1' | 'L2';
@@ -28,9 +29,9 @@ interface ChatMessage {
 }
 
 const QUICK_PROMPTS: ReadonlyArray<{ id: string; label: string; prompt: string }> = [
-    { id: 'best-move', label: '🎯 Meilleur coup ?', prompt: 'Quel est le meilleur coup dans cette position et pourquoi ?' },
-    { id: 'cube-plan', label: '🎲 Doubler ?', prompt: 'Dois-je proposer le videau selon la règle de Woolsey ?' },
-    { id: 'strategy', label: '📐 Plan 36 dés ?', prompt: 'Quel est mon plan sur les 36 prochains lancers (Course vs Barricade) ?' },
+    { id: 'best-move', label: 'Meilleur coup ?', prompt: 'Quel est le meilleur coup dans cette position et pourquoi ?' },
+    { id: 'cube-plan', label: 'Doubler ?', prompt: 'Dois-je proposer le videau selon la règle de Woolsey ?' },
+    { id: 'strategy', label: 'Plan 36 dés ?', prompt: 'Quel est mon plan sur les 36 prochains lancers (Course vs Barricade) ?' },
 ];
 
 function formatMwcPercent(equityLoss: number): string {
@@ -52,7 +53,7 @@ function buildTeslaThreeSecondLines(
 
     if (isOptimal) {
         return {
-            line1: isCube ? '✅ Décision de Videau Optimale' : '✅ Coup Optimal — Vous jouez comme un Grand-Maître',
+            line1: isCube ? 'Décision de Videau Optimale' : 'Coup Optimal — Vous jouez comme un Grand-Maître',
             line2: coach?.summary ?? (layer === 'L0' ? 'Votre mur est solide et aucun pion isolé n’est laissé en danger direct.' : `Exécution parfaite (${bestMove}) : maximale sur les 36 lancers adverses.`),
             line3: coach?.whyOptimal ?? (layer === 'L2' ? 'Perte 0.000 EMG · ΔMWC 0.0 % · Priorité : maintenir les spares sur les points 5 et 7.' : 'Plan suivant : verrouillez le point 5 (Point d’Or) dès le prochain jet.'),
             isOptimal: true,
@@ -61,7 +62,7 @@ function buildTeslaThreeSecondLines(
 
     if (isCube) {
         return {
-            line1: layer === 'L0' ? '⚠️ Attention : mauvais timing sur le Videau (×2)' : layer === 'L1' ? `🎲 Erreur de Videau (${formatMwcPercent(loss)})` : `🔬 Videau · ΔMWC ${formatMwcPercent(loss)} · ΔEMG -${loss.toFixed(3)}`,
+            line1: layer === 'L0' ? 'Attention : mauvais timing sur le Videau (×2)' : layer === 'L1' ? `Erreur de Videau (${formatMwcPercent(loss)})` : `Videau · ΔMWC ${formatMwcPercent(loss)} · ΔEMG -${loss.toFixed(3)}`,
             line2: coach?.whyFailed ?? lastMoveFeedback?.errorAdvice ?? `Décision jouée : ${playedMove} (hors fenêtre de marché Janowski).`,
             line3: coach?.whyOptimal ?? `Action recommandée : ${bestMove} (vérifiez le Take Point à 21,5 %–25 %).`,
             isOptimal: false,
@@ -70,7 +71,7 @@ function buildTeslaThreeSecondLines(
 
     if (layer === 'L0') {
         return {
-            line1: `⚠️ Attention : ce choix (${playedMove}) perd du terrain`,
+            line1: `Attention : ce choix (${playedMove}) perd du terrain`,
             line2: coach?.whyFailed ?? lastMoveFeedback?.errorAdvice ?? `Jouer ${playedMove} laisse une ouverture directe à votre adversaire.`,
             line3: coach?.whyOptimal ?? `Idée gagnante : ${bestMove} consolide vos portes et prépare la suite.`,
             isOptimal: false,
@@ -79,7 +80,7 @@ function buildTeslaThreeSecondLines(
 
     if (layer === 'L1') {
         return {
-            line1: `🎯 ${verdict === 'blunder' ? 'Erreur coûteuse' : 'Imprécision'} (${formatMwcPercent(loss)})`,
+            line1: `${verdict === 'blunder' ? 'Erreur coûteuse' : 'Imprécision'} (${formatMwcPercent(loss)})`,
             line2: coach?.whyFailed ?? lastMoveFeedback?.errorAdvice ?? `Avec ${playedMove}, vous cédez l’initiative tactique.`,
             line3: coach?.whyOptimal ?? `Le coup recommandé ${bestMove} maximise vos bons dés au tour suivant.`,
             isOptimal: false,
@@ -87,7 +88,7 @@ function buildTeslaThreeSecondLines(
     }
 
     return {
-        line1: `🔬 ΔMWC ${formatMwcPercent(loss)} · ΔEMG -${loss.toFixed(3)}`,
+        line1: `ΔMWC ${formatMwcPercent(loss)} · ΔEMG -${loss.toFixed(3)}`,
         line2: coach?.whyFailed ?? `Joué : ${playedMove} — Duplication sous-optimale face aux 21 paires adverses.`,
         line3: coach?.whyOptimal ?? `Optimal 3-Ply : ${bestMove} — Maximise la couverture C36 et réduit les tirs H36.`,
         isOptimal: false,
@@ -159,11 +160,11 @@ export const FloatingAiCoachWidget: React.FC<FloatingAiCoachWidgetProps> = ({
                                     <p className="text-[11px] font-medium text-emerald-300">{isAnalyzing ? 'Calcul sur 36 lancers…' : 'Zéro jargon · Lookahead 36 dés'}</p>
                                 </div>
                             </div>
-                            <button type="button" data-testid="floating-ai-coach-close" aria-label="Fermer le chat Coach IA" onClick={() => setIsOpen(false)} className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition">✕</button>
+                            <button type="button" data-testid="floating-ai-coach-close" aria-label="Fermer le chat Coach IA" onClick={() => setIsOpen(false)} className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition"><X size={14} strokeWidth={1.5} /></button>
                         </div>
 
                         <div className="grid grid-cols-3 gap-1 rounded-xl bg-black/40 p-1 border border-white/5">
-                            {([{ id: 'L0', label: '🌱 Simple' }, { id: 'L1', label: '🏆 Club' }, { id: 'L2', label: '🔬 Pro' }] as const).map((item) => (
+                            {([{ id: 'L0', label: 'Simple' }, { id: 'L1', label: 'Club' }, { id: 'L2', label: 'Pro' }] as const).map((item) => (
                                 <button key={item.id} type="button" data-testid={`coach-layer-${item.id}`} onClick={() => setLayer(item.id)} className={`rounded-lg py-1 text-[11px] font-extrabold transition ${layer === item.id ? 'bg-emerald-400 text-slate-950 shadow' : 'text-slate-300 hover:text-white'}`}>
                                     {item.label}
                                 </button>
@@ -177,7 +178,7 @@ export const FloatingAiCoachWidget: React.FC<FloatingAiCoachWidgetProps> = ({
                         <p className="text-[11px] leading-snug font-semibold text-emerald-300">{tesla.line3}</p>
                         <div className="flex items-center gap-2 pt-1">
                             {onReplayMove && !tesla.isOptimal && (
-                                <button type="button" onClick={onReplayMove} className="rounded-lg bg-amber-400 px-2.5 py-1 text-[11px] font-black text-slate-950 hover:bg-amber-300 transition">↺ Rejouer ce coup</button>
+                                <button type="button" onClick={onReplayMove} className="rounded-lg bg-amber-400 px-2.5 py-1 text-[11px] font-black text-slate-950 hover:bg-amber-300 transition">Rejouer ce coup</button>
                             )}
                             {onOpenFullCoach && (
                                 <button type="button" onClick={onOpenFullCoach} className="rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:bg-white/10 transition">📊 Voir les 36 dés</button>

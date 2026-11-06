@@ -64,7 +64,7 @@ export const SubscriptionPlanCards: React.FC<SubscriptionPlanCardsProps> = ({
                     {isEn ? STRIPE_PLANS.coach_yearly.annualSavingsLabelEn : STRIPE_PLANS.coach_yearly.annualSavingsLabelFr}
                 </p>
                 <p className="mt-0.5 text-[11px] font-semibold text-emerald-300">
-                    ✨ {isEn ? 'Includes 7-day free trial' : 'Inclut 7 jours d’essai gratuit (0,00 € aujourd’hui)'}
+                    {isEn ? 'Includes 7-day free trial' : 'Inclut 7 jours d’essai gratuit (0,00 € aujourd’hui)'}
                 </p>
             </div>
 

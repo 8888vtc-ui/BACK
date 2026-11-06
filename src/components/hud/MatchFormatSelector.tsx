@@ -25,8 +25,8 @@ const FORMATS: Array<{
     desc: string;
 }> = [
         { value: 0, label: 'Money Game', short: 'Money', icon: '💰', desc: "Partie d'argent — le videau reste actif en permanence." },
-        { value: 3, label: 'Match 3 pts', short: '3', icon: '⚡', desc: 'Match court — premier à 3 points.' },
-        { value: 5, label: 'Match 5 pts', short: '5', icon: '🎯', desc: 'Match rapide — premier à 5 points.' },
+        { value: 3, label: 'Match 3 pts', short: '3', icon: '', desc: 'Match court — premier à 3 points.' },
+        { value: 5, label: 'Match 5 pts', short: '5', icon: '', desc: 'Match rapide — premier à 5 points.' },
         { value: 7, label: 'Match 7 pts', short: '7', icon: '🏆', desc: 'Match standard — premier à 7 points.' },
         { value: 9, label: 'Match 9 pts', short: '9', icon: '👑', desc: 'Match long — premier à 9 points.' },
     ];

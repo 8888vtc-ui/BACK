@@ -12,6 +12,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '../../lib/supabase/types';
@@ -118,9 +119,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                         data-testid="navbar-mobile-burger"
                         className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-slate-900/90 text-slate-200 transition hover:border-white/25 hover:text-white lg:hidden"
                     >
-                        <span aria-hidden="true" className="text-base leading-none">
-                            {isMobileMenuOpen ? '✕' : '☰'}
-                        </span>
+                        {isMobileMenuOpen ? <X className="w-4 h-4 text-slate-200" strokeWidth={1.5} /> : <Menu className="w-4 h-4 text-slate-200" strokeWidth={1.5} />}
                     </button>
 
                     <Link

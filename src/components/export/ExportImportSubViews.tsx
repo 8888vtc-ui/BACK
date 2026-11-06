@@ -188,7 +188,7 @@ export const ImportTabView: React.FC<ImportTabViewProps> = ({
                 className="rounded-xl border border-[#fef08a]/80 bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#1c1004] transition shadow-md flex items-center gap-1.5"
                 data-testid="apply-import-btn"
             >
-                <span>⚡</span>
+                
                 <span>Charger sur le plateau</span>
             </button>
         </div>

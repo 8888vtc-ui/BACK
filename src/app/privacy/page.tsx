@@ -82,7 +82,7 @@ export default function PrivacyGdprPage() {
                         4. Votre Droit à l’Effacement en 1 Clic (Art. 17 RGPD — Droit à l’Oubli)
                     </h2>
                     <p className="text-xs sm:text-sm text-stone-200 leading-relaxed">
-                        Vous pouvez à tout moment supprimer intégralement votre Passeport Joueur, votre profil et l’historique de vos parties en <strong>1 seul clic</strong> directement depuis votre menu utilisateur en haut à droite de l’écran via le bouton <strong>« 🗑️ Supprimer mes données (RGPD) »</strong> ou ci-dessous.
+                        Vous pouvez à tout moment supprimer intégralement votre Passeport Joueur, votre profil et l’historique de vos parties en <strong>1 seul clic</strong> directement depuis votre menu utilisateur en haut à droite de l’écran via le bouton <strong>« Supprimer mes données (RGPD) »</strong> ou ci-dessous.
                     </p>
                 </section>
 

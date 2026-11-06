@@ -70,7 +70,7 @@ describe('MultiplayerLobbyModal', () => {
         expect(html).not.toContain('PR 6.3');
         expect(html).not.toContain('Compétiteur');
         expect(html).not.toContain('Classé Elo');
-        expect(html).not.toMatch(/[🎯♟️⚡🔑]/u);
+        expect(html).not.toMatch(/[\u{1F3AF}\u{265F}\u{26A1}\u{1F511}]/u);
     });
 
     it('clarifie les 2 actions principales ("Matchmaking Rapide" vs "Salon Privé par Code"), sans onglet Classement ni texte < 10px', () => {

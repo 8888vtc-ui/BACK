@@ -4,11 +4,11 @@
  * Barre High-Dopamine & Rivaux IA (« Dopamine Juice Banner », < 210 lignes, 0 any).
  *
  * Réunit les 4 mécaniques d'addiction saine et de tension dramatique contre l'IA :
- *   1. 🎭 Rival IA Incarné (Boss Ladder) avec avatar, PR cible et réplique réactive en direct.
- *   2. ✨ Badge « Coup Brillant !! » (seul coup optimal avec écart >= 0.060 Eq) & « Combo de Maître xN ».
- *   3. 🎰 Tension Dramatique du Videau (« High Stakes Cube » x2, x4, x8 ou Quitte ou Double).
- *   4. 👻 Défi « Ghost Match / Balle de Match » (retour 1-clic sur la pire gaffe pour inverser le match)
- *      & « 🔥 Revanche » immédiate zéro-friction.
+ *   1. Rival IA Incarné (Boss Ladder) avec avatar, PR cible et réplique réactive en direct.
+ *   2. Badge « Coup Brillant !! » (seul coup optimal avec écart >= 0.060 Eq) & « Combo de Maître xN ».
+ *   3. Tension Dramatique du Videau (« High Stakes Cube » x2, x4, x8 ou Quitte ou Double).
+ *   4. Défi « Ghost Match / Balle de Match » (retour 1-clic sur la pire gaffe pour inverser le match)
+ *      & « Revanche » immédiate zéro-friction.
  */
 
 import React, { useMemo } from 'react';
@@ -134,7 +134,7 @@ const DopamineJuiceBannerComponent: React.FC<DopamineJuiceBannerProps> = ({
                                 : 'border-emerald-500/50 bg-emerald-950/75 text-emerald-200'
                         }`}
                     >
-                        <span aria-hidden="true">{metrics.optimalStreak >= 3 ? '🔥' : '⚡'}</span>
+                        <span aria-hidden="true">{metrics.optimalStreak >= 3 ? '★' : '✦'}</span>
                         <span>
                             {metrics.optimalStreak >= 3
                                 ? isEn
@@ -204,7 +204,7 @@ const DopamineJuiceBannerComponent: React.FC<DopamineJuiceBannerProps> = ({
                         }
                         className="inline-flex items-center gap-1 rounded-lg border border-[#d4af37]/55 bg-[#261409] px-2 py-0.5 text-[10px] font-bold text-[#f7e5b7] hover:border-[#f3c65f] hover:text-white transition active:scale-95"
                     >
-                        <span aria-hidden="true">🔥</span>
+                        
                         <span className="hidden sm:inline">{isEn ? 'Rematch' : 'Revanche'}</span>
                     </button>
                 )}

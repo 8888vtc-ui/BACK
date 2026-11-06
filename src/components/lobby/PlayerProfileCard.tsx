@@ -85,7 +85,7 @@ const PlayerProfileCardComponent: React.FC<PlayerProfileCardProps> = ({
                             className="inline-flex items-center gap-1.5 rounded-md border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-2 py-0.5 text-[11px] font-semibold text-[#F3E5AB]"
                         >
                             <Flame size={12} strokeWidth={1.5} aria-hidden="true" className="text-[#D4AF37]" />
-                            <span>{`🔥 Série ${puzzleStreak}j`}</span>
+                            <span>{`Série ${puzzleStreak}j`}</span>
                         </div>
                     )}
                 </div>

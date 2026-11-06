@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { RotateCcw, GraduationCap, Volume2, BookOpen, ShieldAlert, Award, Eye, EyeOff } from 'lucide-react';
+import { RotateCcw, GraduationCap, Volume2, BookOpen, ShieldAlert, Award, Eye, EyeOff, X } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
 import { pipCount, type BoardState } from '../../engine/backgammonEngine';
@@ -84,20 +84,20 @@ export function LiveProfessorCoachOverlay({
   const getProfessorPrompt = (): string => {
     if (prematureDoubleWarning) {
       return lang === 'fr'
-        ? "🎓 Pas encore ! On ne propose de doubler les points (×2) que lorsqu'on a pris un net avantage dans la partie. Continue d'abord en cliquant sur Lancer les dés !"
-        : "🎓 Not yet! You should only offer to double points (×2) when you have built a clear advantage in the game. Continue by clicking Roll Dice first!";
+        ? "Pas encore ! On ne propose de doubler les points (×2) que lorsqu'on a pris un net avantage dans la partie. Continue d'abord en cliquant sur Lancer les dés !"
+        : "Not yet! You should only offer to double points (×2) when you have built a clear advantage in the game. Continue by clicking Roll Dice first!";
     }
 
     if (activeTurn === 'X' && (!dice || (dice[0] === 0 && dice[1] === 0))) {
       const hasCheckerOnBar = Boolean(boardState && boardState.board[0] > 0);
       if (hasCheckerOnBar) {
         return lang === 'fr'
-          ? "🎓 Le Professeur : Tu as un pion sur la barre centrale ! Clique sur Lancer les dés : ta priorité absolue sera de le faire rentrer dans le camp adverse (Cases 24 à 19)."
-          : "🎓 The Professor: You have a checker on the central bar! Click Roll Dice: your absolute priority will be to enter it into the opponent's home board (Points 24 to 19).";
+          ? "Le Professeur : Tu as un pion sur la barre centrale ! Clique sur Lancer les dés : ta priorité absolue sera de le faire rentrer dans le camp adverse (Cases 24 à 19)."
+          : "The Professor: You have a checker on the central bar! Click Roll Dice: your absolute priority will be to enter it into the opponent's home board (Points 24 to 19).";
       }
       return lang === 'fr'
-        ? "🎓 Le Professeur : C'est à ton tour ! Clique sur Lancer les dés au centre du plateau pour découvrir tes options de déplacement."
-        : "🎓 The Professor: It's your turn! Click Roll Dice in the center of the board to see your movement options.";
+        ? "Le Professeur : C'est à ton tour ! Clique sur Lancer les dés au centre du plateau pour découvrir tes options de déplacement."
+        : "The Professor: It's your turn! Click Roll Dice in the center of the board to see your movement options.";
     }
 
     if (lastMoveFeedback && activeTurn === 'X' && !dice) return getFeedbackAdvice(lastMoveFeedback, lang);
@@ -107,12 +107,12 @@ export function LiveProfessorCoachOverlay({
 
     if (activeBestNotation) {
       return lang === 'fr'
-        ? `💡 Conseil du Professeur : Joue ${activeBestNotation} pour faire avancer tes pions vers ta maison.`
-        : `💡 Professor Tip: Play ${activeBestNotation} to advance your checkers toward your home board.`;
+        ? `Conseil du Professeur : Joue ${activeBestNotation} pour faire avancer tes pions vers ta maison.`
+        : `Professor Tip: Play ${activeBestNotation} to advance your checkers toward your home board.`;
     }
     return lang === 'fr'
-      ? "🎓 Le Professeur : C'est à ton tour ! Clique sur Lancer les dés au centre du plateau."
-      : "🎓 The Professor: It's your turn! Click Roll Dice in the center of the board.";
+      ? "Le Professeur : C'est à ton tour ! Clique sur Lancer les dés au centre du plateau."
+      : "The Professor: It's your turn! Click Roll Dice in the center of the board.";
   };
 
   const getRaceCompassText = (): string => {
@@ -124,18 +124,18 @@ export function LiveProfessorCoachOverlay({
     if (playerPips > opponentPips) {
       const retard = playerPips - opponentPips;
       return lang === 'fr'
-        ? `🛡️ Course : Tu as ${retard} cases de retard (${playerPips} contre ${opponentPips}). Garde une défense solide et guette un pion adverse isolé à frapper !`
-        : `🛡️ Race: You are ${retard} steps behind (${playerPips} vs ${opponentPips}). Stay solid and look for an exposed blot to hit!`;
+        ? `Course : Tu as ${retard} cases de retard (${playerPips} contre ${opponentPips}). Garde une défense solide et guette un pion adverse isolé à frapper !`
+        : `Race: You are ${retard} steps behind (${playerPips} vs ${opponentPips}). Stay solid and look for an exposed blot to hit!`;
     }
     if (playerPips < opponentPips) {
       const avance = opponentPips - playerPips;
       return lang === 'fr'
-        ? `🏃 Course : Tu es en avance de ${avance} cases (${playerPips} contre ${opponentPips}) ! Ramène tes dames vers la sortie sans prendre de risque.`
-        : `🏃 Race: You lead by ${avance} steps (${playerPips} vs ${opponentPips})! Bring your checkers home safely without taking risks.`;
+        ? `Course : Tu es en avance de ${avance} cases (${playerPips} contre ${opponentPips}) ! Ramène tes dames vers la sortie sans prendre de risque.`
+        : `Race: You lead by ${avance} steps (${playerPips} vs ${opponentPips})! Bring your checkers home safely without taking risks.`;
     }
     return lang === 'fr'
-      ? `⚖️ Course serrée (${playerPips} cases partout) : Construis tes portes et protège tes pions isolés.`
-      : `⚖️ Tight race (${playerPips} steps each): Build gates and protect your single blots.`;
+      ? `Course serrée (${playerPips} cases partout) : Construis tes portes et protège tes pions isolés.`
+      : `Tight race (${playerPips} steps each): Build gates and protect your single blots.`;
   };
 
   const handleSpeakPrompt = () => {
@@ -171,7 +171,7 @@ export function LiveProfessorCoachOverlay({
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/30 to-amber-600/30 border border-[#D4AF37]/60 text-[#f3d27a] font-bold text-xs shadow-sm animate-pulse"
                   >
                     <Award className="w-3 h-3 text-[#D4AF37]" />
-                    <span>{lang === 'fr' ? '✨ Coup de Maître ! (+50 PTS)' : '✨ Master Move! (+50 PTS)'}</span>
+                    <span>{lang === 'fr' ? 'Coup de Maître ! (+50 PTS)' : 'Master Move! (+50 PTS)'}</span>
                   </span>
                 )}
               </div>
@@ -235,7 +235,7 @@ export function LiveProfessorCoachOverlay({
               className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition disabled:opacity-40"
             >
               <RotateCcw className="w-3.5 h-3.5 text-amber-300" />
-              <span>↺ {lang === 'fr' ? 'Rejouer le coup' : 'Undo / Retry move'}</span>
+              <span>{lang === 'fr' ? 'Rejouer le coup' : 'Undo / Retry move'}</span>
             </button>
           </div>
         </div>
@@ -265,20 +265,18 @@ export function LiveProfessorCoachOverlay({
                 <span>
                   {currentNotice === 'BAR_PRIORITY'
                     ? (lang === 'fr'
-                        ? '🚨 Règle d’or : Vous avez une dame sur la barre ! Elle doit impérativement rentrer (cases 24 à 19) avant de bouger tout autre pion.'
-                        : '🚨 Golden Rule: You have a checker on the bar! It must re-enter (points 24 to 19) before any other move.')
+                        ? 'Règle d’or : Vous avez une dame sur la barre ! Elle doit impérativement rentrer (cases 24 à 19) avant de bouger tout autre pion.'
+                        : 'Golden Rule: You have a checker on the bar! It must re-enter (points 24 to 19) before any other move.')
                     : (lang === 'fr'
-                        ? '🛡️ Case bloquée : Cette flèche est protégée par 2 dames adverses ou plus (porte faite). Vous ne pouvez pas vous y arrêter.'
-                        : '🛡️ Blocked point: This point is secured by 2+ opponent checkers. You cannot land here.')}
+                        ? 'Case bloquée : Cette flèche est protégée par 2 dames adverses ou plus (porte faite). Vous ne pouvez pas vous y arrêter.'
+                        : 'Blocked point: This point is secured by 2+ opponent checkers. You cannot land here.')}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setActiveNotice(null)}
                 className="text-stone-400 hover:text-white text-xs px-1"
-              >
-                ✕
-              </button>
+              ><X className="w-3.5 h-3.5" strokeWidth={1.5} /></button>
             </div>
           )}
         </div>

@@ -26,7 +26,7 @@ describe('LearningModulesGrid', () => {
         averagePR: 3.5,
         eloRating: 1720,
         unlockedBadges: [
-            { id: 'streak', icon: '🔥', label: 'Série 4j' },
+            { id: 'streak', icon: '', label: 'Série 4j' },
             { id: 'theorist', icon: '📖', label: 'Maître des Ouvertures' },
         ],
     };
@@ -40,7 +40,7 @@ describe('LearningModulesGrid', () => {
 
         // Trophées et badges
         expect(screen.getByTestId('academy-unlocked-badges')).toBeDefined();
-        expect(screen.getByText('🔥 Série 4j')).toBeDefined();
+        expect(screen.getAllByText(/Série 4j/).length).toBeGreaterThan(0);
         expect(screen.getByText('📖 Maître des Ouvertures')).toBeDefined();
 
         // 4 modules

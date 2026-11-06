@@ -69,7 +69,7 @@ export default function ConceptsHeatmap({ cells, tacticalCells = [] }: ConceptsH
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
                 <div>
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
-                        <span>🔥</span>
+                        <span className="text-amber-500 font-bold text-xs">MAX</span>
                         <span>Blunder Heatmap — Phases × Thèmes Tactiques</span>
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-300 mt-0.5">

@@ -143,8 +143,8 @@ const CoachDeepAnalysisSectionComponent: React.FC<CoachDeepAnalysisSectionProps>
                         <span>
                             {quotaState.canRunDeepAnalysis
                                 ? isEn
-                                    ? '✨ Run Deep Analysis (Free 1/1)'
-                                    : "✨ Lancer l'Analyse Profonde (1/1)"
+                                    ? 'Run Deep Analysis (Free 1/1)'
+                                    : "Lancer l'Analyse Profonde (1/1)"
                                 : isEn
                                   ? '🔒 Unlock Deep Analysis'
                                   : "🔒 Débloquer l'Analyse Profonde"}
@@ -215,7 +215,7 @@ const CoachDeepAnalysisSectionComponent: React.FC<CoachDeepAnalysisSectionProps>
                             {pldM && (
                                 <div className="rounded border border-rose-500/30 bg-rose-950/25 p-1.5">
                                     <div className="font-sans font-bold text-rose-300">
-                                        🎯 {playedMove ?? (isEn ? 'Played' : 'Joué')}
+                                        {playedMove ?? (isEn ? 'Played' : 'Joué')}
                                     </div>
                                     <div>
                                         W {(pldM.winProb * 100).toFixed(1)}% · G {(pldM.winGammonProb * 100).toFixed(1)}% · OppG{' '}

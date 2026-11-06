@@ -109,7 +109,7 @@ export const DailyPuzzleDebrief: React.FC<DailyPuzzleDebriefProps> = ({
                 className="rounded-xl border border-white/10 bg-[#150b06]/95 p-4 space-y-2.5"
             >
                 <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-[#f3c65f]">
-                    <span>✨ Synthèse Coach Grand-Maître Monte-Carlo</span>
+                    <span>Synthèse Coach Grand-Maître Monte-Carlo</span>
                 </div>
                 <p className="text-xs sm:text-sm leading-relaxed text-[#fdf8eb]">
                     {puzzle.geminiExplanation}

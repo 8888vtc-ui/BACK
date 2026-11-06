@@ -186,7 +186,7 @@ const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ to
                         data-testid="detail-train-btn"
                         className="flex-1 min-w-[240px] flex items-center justify-center gap-2 rounded-xl border border-amber-500/60 bg-gradient-to-r from-amber-600/40 to-yellow-600/30 px-5 py-3 text-sm font-bold text-amber-200 shadow-[0_0_15px_rgba(234,179,8,0.2)] hover:brightness-110 transition"
                     >
-                        <span>🎯</span> S'entraîner aux conditions du tournoi ({tournament.matchLengthMain} pts)
+                        S'entraîner aux conditions du tournoi ({tournament.matchLengthMain} pts)
                     </Link>
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -221,7 +221,7 @@ const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ to
                 {relatedTournaments.length > 0 && (
                     <section className="mt-2 flex flex-col gap-3">
                         <h3 className="font-serif text-base font-bold text-white flex items-center gap-2">
-                            <span>🏛️</span> Autres Tournois du Même Circuit
+                            <span>Autres Tournois du Même Circuit</span>
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {relatedTournaments.map((rel) => {

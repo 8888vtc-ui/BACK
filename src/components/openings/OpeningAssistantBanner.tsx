@@ -95,7 +95,7 @@ export function OpeningAssistantBanner({
                         className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 rounded-xl border border-[#fef08a]/80 bg-gradient-to-b from-[#fff5cf] via-[#f0c75e] to-[#b87e14] px-4 py-2.5 text-xs sm:text-sm font-black uppercase tracking-wider text-[#1c1004] shadow-md hover:brightness-105 active:scale-95 transition-all"
                         title="Jouer automatiquement ce coup sur le plateau"
                     >
-                        <span>⚡</span>
+                        
                         <span>Jouer {opening.bestMoveNotation}</span>
                     </button>
 
@@ -159,7 +159,7 @@ export function OpeningAssistantBanner({
 
                     <div className="rounded-xl border border-white/10 bg-amber-500/10 p-3.5 space-y-1">
                         <div className="font-bold text-[#f3c65f] flex items-center gap-1">
-                            <span>💡</span>
+                            
                             <span>Principe Clé</span>
                         </div>
                         <p className="text-amber-100 font-medium leading-relaxed">{opening.keyRule}</p>

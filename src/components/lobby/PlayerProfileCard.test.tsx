@@ -37,7 +37,7 @@ describe('PlayerProfileCard', () => {
         expect(screen.getByText('1850')).toBeDefined();
         expect(screen.getByText('3.40')).toBeDefined();
         expect(screen.getByText('🏆 Maître')).toBeDefined();
-        expect(screen.getByText('🔥 Série 5j')).toBeDefined();
+        expect(screen.getByText('Série 5j')).toBeDefined();
         expect(screen.getByText('(70%)')).toBeDefined();
 
         const reviewBtn = screen.getByTestId('player-profile-review-btn');

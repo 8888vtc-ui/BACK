@@ -64,26 +64,26 @@ export function getTierStyle(tier: DecisionTier, isEn: boolean): TierStyle {
     switch (tier) {
         case 'optimal':
             return {
-                icon: '🟢', label: isEn ? 'OPTIMAL MOVE' : 'COUP OPTIMAL',
-                subtitle: isEn ? '🎯 Master move! Exactly the champion’s choice.' : '🎯 Coup de Maître ! Exactement le choix du champion.',
+                icon: '', label: isEn ? 'OPTIMAL MOVE' : 'COUP OPTIMAL',
+                subtitle: isEn ? 'Master move! Exactly the champion’s choice.' : 'Coup de Maître ! Exactement le choix du champion.',
                 bannerClass: 'border-emerald-500/60 bg-emerald-950/50', textClass: 'text-emerald-300', playedClass: 'border-emerald-800/60 bg-emerald-950/25',
             };
         case 'good':
             return {
-                icon: '👍', label: isEn ? 'GOOD MOVE' : 'BON COUP',
+                icon: '', label: isEn ? 'GOOD MOVE' : 'BON COUP',
                 subtitle: isEn ? '👏 Very solid! Your position stays healthy.' : '👏 Très solide ! Votre position reste saine.',
                 bannerClass: 'border-emerald-500/50 bg-emerald-950/40', textClass: 'text-emerald-200', playedClass: 'border-emerald-800/50 bg-emerald-950/20',
             };
         case 'inaccuracy':
             return {
                 icon: '🟡', label: isEn ? 'INACCURACY' : 'IMPRÉCISION',
-                subtitle: isEn ? '💡 Small room for improvement: check the green arrows.' : '💡 Petite piste de progrès : observez les flèches vertes.',
+                subtitle: isEn ? 'Small room for improvement: check the green arrows.' : 'Petite piste de progrès : observez les flèches vertes.',
                 bannerClass: 'border-amber-500/60 bg-amber-950/50', textClass: 'text-amber-300', playedClass: 'border-amber-800/60 bg-amber-950/25',
             };
         default:
             return {
                 icon: '🔴', label: isEn ? 'MAJOR BLUNDER' : 'BLUNDER MAJEUR',
-                subtitle: isEn ? '⚡ Match turning point! Tap Replay below to try again.' : '⚡ Tournant du match ! Rejouez ce tour pour trouver la parade.',
+                subtitle: isEn ? 'Match turning point! Tap Replay below to try again.' : 'Tournant du match ! Rejouez ce tour pour trouver la parade.',
                 bannerClass: 'border-rose-500/60 bg-rose-950/50', textClass: 'text-rose-300', playedClass: 'border-rose-800/60 bg-rose-950/25',
             };
     }
@@ -192,7 +192,7 @@ export function CoachMoveComparisonCard({
                     {playedMove && (
                         <div className={`rounded-xl border p-2.5 space-y-1 ${style.playedClass}`} data-testid="coach-played-move-card">
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">
-                                <span aria-hidden="true">{isError ? '❌' : '🎯'}</span><span>{isEn ? 'Your move' : 'Votre coup joué'}</span>
+                                <span aria-hidden="true">{isError ? '❌' : '✓'}</span><span>{isEn ? 'Your move' : 'Votre coup joué'}</span>
                             </span>
                             <div className="break-words font-mono text-sm sm:text-base font-black leading-snug text-white" title={playedMove}>{playedMove}</div>
                             {whyFailed && <p className="border-t border-slate-700/50 pt-1 text-[10px] leading-snug text-slate-300">{whyFailed}</p>}

@@ -23,7 +23,7 @@ const LEVELS: Array<{
             name: 'Novice',
             ply: '0-ply',
             badge: 'Style Intuitif',
-            icon: '🟢',
+            icon: '',
             tooltip: 'Arthur « Le Mauvais Joueur » (1420 Elo · PR 12.5) : style humain intuitif, privilégie l\'attaque directe.',
             activeClass: 'border-emerald-500/80 bg-emerald-950/60 text-emerald-200 shadow-emerald-500/20',
         },

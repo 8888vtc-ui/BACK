@@ -4,7 +4,7 @@
  * Bulle de réaction incarnée du Bot sur le plateau Plein Écran (`BoardLivePersonaBubble.tsx`).
  * Applique l'orchestration « Façon Elon Musk » (`resolveMuskBotOrchestration`) :
  * - Silence absolu pendant que le joueur réfléchit (`isPlayerThinking === true`).
- * - Affiche uniquement les moments forts : Salutation d'ouverture, Huge Joker (`⚡ Karma Swap !`)
+ * - Affiche uniquement les moments forts : Salutation d'ouverture, Huge Joker (`Karma Swap !`)
  *   ou Alerte Tuteur sur Blunder (`↩️ Reprendre`).
  * Strictement < 120 lignes, 0 any.
  */
@@ -192,7 +192,7 @@ const BoardLivePersonaBubbleComponent: React.FC<BoardLivePersonaBubbleProps> = (
                     onClick={onOpenCoach}
                     className="shrink-0 rounded-lg border border-emerald-400/70 bg-emerald-500/20 px-2 py-1 text-[11px] font-bold text-emerald-200 hover:bg-emerald-500/30 transition"
                 >
-                    ⚡ Karma Swap !
+                    Karma Swap !
                 </button>
             )}
             <button

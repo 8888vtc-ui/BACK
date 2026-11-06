@@ -91,7 +91,7 @@ export const AutoConfirmControl: React.FC<AutoConfirmControlProps> = ({
                         : 'border-[#d4af37]/35 bg-[#140b06]/90 text-amber-100/70 hover:border-[#f3c65f]/60 hover:text-amber-100'
                 }`}
             >
-                ⚡ Auto{autoConfirmMode ? ` · ${meta.badge}` : ''}
+                Auto{autoConfirmMode ? ` · ${meta.badge}` : ''}
             </button>
             {(onSelectAutoConfirmMode || onCycleAutoConfirmMode) && (
                 <button

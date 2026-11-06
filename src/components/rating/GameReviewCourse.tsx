@@ -110,7 +110,7 @@ export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourse
                 >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="text-xs font-extrabold uppercase tracking-wider text-rose-300">
-                            ⚡ Galaxy Mistake Review ({mistakeIdx + 1}/{mistakes.length}) — Coup #{activeMistake.moveNumber} [{activeMistake.dice[0]}-{activeMistake.dice[1]}]
+                            Galaxy Mistake Review ({mistakeIdx + 1}/{mistakes.length}) — Coup #{activeMistake.moveNumber} [{activeMistake.dice[0]}-{activeMistake.dice[1]}]
                         </span>
                         <div className="flex items-center gap-1.5">
                             <button
@@ -180,7 +180,7 @@ export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourse
                     {course.diagnostic && (
                         <div className="rounded-xl border border-rose-500/40 bg-rose-950/20 p-3 text-xs text-rose-100">
                             <p className="font-bold uppercase tracking-wider text-rose-300">
-                                🎯 {language === 'en' ? 'The Diagnostic' : 'Le Diagnostic'}
+                                {language === 'en' ? 'The Diagnostic' : 'Le Diagnostic'}
                             </p>
                             <p className="mt-1 leading-relaxed">{course.diagnostic}</p>
                         </div>
@@ -188,7 +188,7 @@ export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourse
                     {course.keyConcept && (
                         <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-3 text-xs text-amber-100">
                             <p className="font-bold uppercase tracking-wider text-amber-300">
-                                💡 {course.keyConcept.title}
+                                {course.keyConcept.title}
                             </p>
                             <p className="mt-1 leading-relaxed">{course.keyConcept.explanation}</p>
                         </div>
@@ -267,7 +267,7 @@ export function GameReviewCourse({ analysis, language = 'fr' }: GameReviewCourse
                     data-testid="train-weaknesses-btn"
                     className="rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-950 shadow-md hover:from-amber-300 hover:to-amber-400 transition"
                 >
-                    🎯 {language === 'en' ? 'Train on my weak points' : "S'entraîner sur mes points faibles"}
+                    {language === 'en' ? 'Train on my weak points' : "S'entraîner sur mes points faibles"}
                 </Link>
 
                 <button

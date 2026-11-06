@@ -162,7 +162,7 @@ export const GameReviewMovesTable: React.FC<GameReviewMovesTableProps> = ({
                                                         data-testid={`drill-row-btn-${m.moveNumber}`}
                                                         className="rounded-lg border border-amber-500/40 bg-amber-950/40 hover:bg-amber-900/60 px-2 py-1 text-[11px] font-bold text-amber-300 transition"
                                                     >
-                                                        🎯 Drill
+                                                        Drill
                                                     </button>
                                                 )}
                                                 <button

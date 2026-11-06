@@ -127,7 +127,7 @@ const MoveTimelineBarComponent: React.FC<MoveTimelineBarProps> = ({
                             : 'border border-amber-300 bg-amber-400 text-slate-950 hover:bg-amber-300 shadow-sm'
                     }`}
                 >
-                    <span aria-hidden="true">{isLive ? '🟢' : '⏩'}</span>
+                    <span aria-hidden="true">{isLive ? 'LIVE' : '⏩'}</span>
                     <span>Direct</span>
                 </button>
             </div>
@@ -166,7 +166,7 @@ const MoveTimelineBarComponent: React.FC<MoveTimelineBarProps> = ({
                 </div>
             ) : (
                 <div className="hidden lg:flex items-center gap-2 text-[10px] text-slate-400">
-                    <span>🟢 Flèches Vertes : Optimal Monte-Carlo</span>
+                    <span>Flèches Vertes : Optimal Monte-Carlo</span>
                     <span>·</span>
                     <span>🔴 Flèches Rouges : Coup joué (si erreur)</span>
                 </div>

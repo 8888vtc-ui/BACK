@@ -109,7 +109,7 @@ export function RecurringErrorsCard({ limit = 5, onStartDrill }: RecurringErrors
                 className="rounded-2xl border border-slate-700/80 bg-slate-900/90 p-5 shadow-xl text-center"
             >
                 <p className="text-sm text-slate-400">
-                    ✨ Aucune erreur récurrente détectée pour le moment. Continue à jouer !
+                    Aucune erreur récurrente détectée pour le moment. Continue à jouer !
                 </p>
             </div>
         );
@@ -172,7 +172,7 @@ export function RecurringErrorsCard({ limit = 5, onStartDrill }: RecurringErrors
                         data-testid="recurring-errors-train-btn"
                         className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-950 shadow-md hover:from-amber-300 hover:to-amber-400 transition"
                     >
-                        <span>🎯</span>
+                        
                         <span>S&apos;entraîner sur mes points faibles</span>
                     </button>
                 ) : (
@@ -181,7 +181,7 @@ export function RecurringErrorsCard({ limit = 5, onStartDrill }: RecurringErrors
                         data-testid="recurring-errors-train-btn"
                         className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-950 shadow-md hover:from-amber-300 hover:to-amber-400 transition"
                     >
-                        <span>🎯</span>
+                        
                         <span>S&apos;entraîner sur mes points faibles</span>
                     </a>
                 )}

@@ -55,7 +55,7 @@ export const KnowledgeConceptDetail: React.FC<KnowledgeConceptDetailProps> = ({
 
                 <div className="rounded-2xl bg-gradient-to-br from-blue-950/40 via-indigo-950/30 to-purple-950/40 border border-white/10 p-4 space-y-2 shadow-inner">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
-                        <span>💡</span> {isEn ? 'Key Takeaway' : 'À Retenir Absolument'}
+                        {isEn ? 'Key Takeaway' : 'À Retenir Absolument'}
                     </h3>
                     <p className="text-sm font-semibold text-white leading-relaxed">
                         {isEn ? concept.keyTakeaway.en : concept.keyTakeaway.fr}
@@ -99,7 +99,7 @@ export const KnowledgeConceptDetail: React.FC<KnowledgeConceptDetailProps> = ({
                 {concept.practicalExamples.length > 0 && (
                     <div className="space-y-3">
                         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                            <span>🎯</span> {isEn ? 'Practical Examples & Key Positions' : 'Exemples Pratiques & Positions Types'}
+                            {isEn ? 'Practical Examples & Key Positions' : 'Exemples Pratiques & Positions Types'}
                         </h3>
                         <div className="space-y-3">
                             {concept.practicalExamples.map((ex, idx) => (

@@ -78,7 +78,7 @@ describe('CoachDiagnosticBox', () => {
         expect(screen.getByTestId('coach-emotional-verdict').textContent).toContain('Blunder (??)');
     });
 
-    it('décerne le badge dopaminergique ✨ Coup Brillant (!!) pour un coup audacieux validé par le 3-ply (0.000 EMG loss avec risque pris)', () => {
+    it('décerne le badge dopaminergique Coup Brillant (!!) pour un coup audacieux validé par le 3-ply (0.000 EMG loss avec risque pris)', () => {
         render(
             <CoachDiagnosticBox
                 summary="Coup audacieux"
@@ -92,7 +92,7 @@ describe('CoachDiagnosticBox', () => {
                 }}
             />,
         );
-        expect(screen.getByTestId('coach-emotional-verdict').textContent).toContain('✨ Coup Brillant (!!)');
+        expect(screen.getByTestId('coach-emotional-verdict').textContent).toContain('Coup Brillant (!!)');
     });
 
     it('affiche les puces Zéro-Jargon (< 3 s) et les 3 boutons capsules 2 mots (Voir danger, Voir idée, Réessayer) en mode Débutant', () => {

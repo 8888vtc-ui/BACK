@@ -124,7 +124,7 @@ export default function ConceptsErrorSummary({
                     href="/drills"
                     className="flex items-center gap-1.5 rounded-xl border border-amber-500/60 bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition shadow-sm"
                 >
-                    <span>🎯</span>
+                    
                     <span>Accéder aux Drills</span>
                 </Link>
             </div>
@@ -164,7 +164,7 @@ export default function ConceptsErrorSummary({
                             <div className="space-y-3 pt-2 border-t border-slate-800/80">
                                 {/* Règle d'or de recommandation */}
                                 <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 flex items-start gap-2 text-xs text-amber-100">
-                                    <span className="text-sm shrink-0">💡</span>
+                                    
                                     <span className="leading-snug">{group.recommendation}</span>
                                 </div>
 

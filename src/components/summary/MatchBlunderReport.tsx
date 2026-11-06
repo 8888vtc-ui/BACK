@@ -164,7 +164,7 @@ const MatchBlunderReportComponent: React.FC<MatchBlunderReportProps> = ({
                     >
                         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2">
                             <div className="flex items-center gap-2">
-                                <span aria-hidden="true" className="text-base">🔍</span>
+                                
                                 <h3 className="font-serif text-xs font-black uppercase tracking-wider text-[#fce8b2] sm:text-sm">
                                     {isEn ? `Key Moments & Blunders (${blunders.length})` : `Moments Clés & Gaffes (${blunders.length})`}
                                 </h3>
@@ -193,7 +193,7 @@ const MatchBlunderReportComponent: React.FC<MatchBlunderReportProps> = ({
                                 data-testid="match-report-zero-blunders"
                                 className="rounded-xl border border-emerald-600/40 bg-emerald-950/30 p-4 text-center text-xs text-emerald-200"
                             >
-                                🟢 {isEn
+                                {isEn
                                     ? 'Zero inaccuracies or blunders (ΔEq < 0.020 on every turn). Grandmaster precision!'
                                     : 'Aucune imprécision ni gaffe majeure (ΔEq < 0.020 sur chaque tour). Précision de Grand-Maître !'}
                             </div>

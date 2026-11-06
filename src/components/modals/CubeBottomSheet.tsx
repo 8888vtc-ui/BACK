@@ -97,8 +97,8 @@ const CubeBottomSheetComponent: React.FC<CubeBottomSheetProps> = ({
                         className="mt-2.5 rounded-xl border border-white/10 bg-slate-900 px-3 py-1.5 text-[11px] leading-snug text-slate-200"
                     >
                         {isIncomingOffer
-                            ? '💡 Astuce des pros : si vous avez au moins 1 chance sur 4 (25 %) de gagner, acceptez le défi !'
-                            : '💡 Astuce des pros : doublez dès que vous êtes net favori, sans attendre que la victoire soit certaine.'}
+                            ? 'Astuce des pros : si vous avez au moins 1 chance sur 4 (25 %) de gagner, acceptez le défi !'
+                            : 'Astuce des pros : doublez dès que vous êtes net favori, sans attendre que la victoire soit certaine.'}
                     </p>
                 )}
 

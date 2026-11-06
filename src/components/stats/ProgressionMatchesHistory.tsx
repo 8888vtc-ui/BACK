@@ -88,7 +88,7 @@ export const ProgressionMatchesHistory: React.FC<ProgressionMatchesHistoryProps>
                                 className="rounded-xl border border-white/10 bg-white/5 hover:border-white/25 hover:bg-white/10 px-3 py-1.5 text-xs font-semibold text-blue-200 transition shadow-sm"
                                 data-testid={`review-game-btn-${item.id}`}
                             >
-                                🔍 Détails
+                                Détails
                             </button>
                         </div>
                     </div>

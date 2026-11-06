@@ -139,7 +139,7 @@ export const OpeningDetailView: React.FC<OpeningDetailViewProps> = ({
 
             {/* Boîte Principe Clé */}
             <div className="rounded-xl border border-white/10 bg-gradient-to-r from-[#24160b]/90 to-[#0e131f]/80 p-4 flex items-start gap-3">
-                <span className="text-xl [filter:sepia(0.95)_saturate(2.5)_hue-rotate(5deg)]">💡</span>
+                
                 <div>
                     <div className="text-xs sm:text-sm font-extrabold text-[#f3c65f] uppercase tracking-wide">
                         Principe Fondamental

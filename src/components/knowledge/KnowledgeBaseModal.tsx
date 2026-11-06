@@ -27,10 +27,10 @@ export interface KnowledgeBaseModalProps {
 
 const CATEGORIES: { id: TheoryCategory | 'all'; labelFr: string; labelEn: string; icon: string }[] = [
     { id: 'all', labelFr: 'Tout explorer', labelEn: 'All Topics', icon: '🌐' },
-    { id: 'fundamentals', labelFr: 'Fondamentaux (Magriel)', labelEn: 'Fundamentals (Magriel)', icon: '🏛️' },
+    { id: 'fundamentals', labelFr: 'Fondamentaux (Magriel)', labelEn: 'Fundamentals (Magriel)', icon: '' },
     { id: 'game-plans', labelFr: '5 Plans de Jeu', labelEn: '5 Game Plans', icon: '🗺️' },
     { id: 'cube-theory', labelFr: 'Théorie du Videau', labelEn: 'Cube Theory', icon: '🎲' },
-    { id: 'race-bearoff', labelFr: 'Course & EPC (Trice)', labelEn: 'Race & EPC (Trice)', icon: '⚡' },
+    { id: 'race-bearoff', labelFr: 'Course & EPC (Trice)', labelEn: 'Race & EPC (Trice)', icon: '' },
     { id: 'match-play', labelFr: 'Match Play & MET', labelEn: 'Match Play & MET', icon: '📊' },
     { id: 'openings', labelFr: 'Ouvertures', labelEn: 'Openings', icon: '📖' },
     { id: 'rules-of-thumb', labelFr: "Règles d'or GM (Mochy)", labelEn: 'GM Rules of Thumb', icon: '🏆' },
@@ -179,7 +179,7 @@ export function KnowledgeBaseModal({
                                 data-testid="kb-search-input"
                                 className="w-full rounded-xl bg-slate-900/90 border border-white/10 px-4 py-2 pl-10 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
-                            <span className="absolute left-3 top-2.5 text-slate-400 text-sm">🔍</span>
+                            
                             {searchQuery && (
                                 <button
                                     onClick={() => setSearchQuery('')}
@@ -222,7 +222,7 @@ export function KnowledgeBaseModal({
                     <div className="w-full sm:w-2/5 md:w-1/3 max-h-[36vh] sm:max-h-full border-b sm:border-b-0 sm:border-r border-white/10 overflow-y-auto bg-slate-950/30 p-3 space-y-2">
                         {filteredConcepts.length === 0 ? (
                             <div className="p-8 text-center text-slate-400 text-sm">
-                                🔍 {isEn ? 'No concept matching your query.' : 'Aucun concept ne correspond à votre recherche.'}
+                                {isEn ? 'No concept matching your query.' : 'Aucun concept ne correspond à votre recherche.'}
                             </div>
                         ) : (
                             filteredConcepts.map((concept) => {

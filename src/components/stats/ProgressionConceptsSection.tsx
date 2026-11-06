@@ -22,7 +22,7 @@ export const ProgressionConceptsSection: React.FC<ProgressionConceptsSectionProp
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className="text-lg font-bold text-[#fdf8eb] flex items-center gap-2">
-                            <span>🎯</span>
+                            
                             <span>Concepts Stratégiques à Travailler en Priorité</span>
                         </h2>
                         <p className="text-xs text-[#a5b0c4]">
@@ -89,7 +89,7 @@ export const ProgressionConceptsSection: React.FC<ProgressionConceptsSectionProp
                             </div>
 
                             <div className="mt-5 rounded-xl border border-white/10 bg-[#180c06]/80 p-3 text-xs text-[#e2d2b5] leading-relaxed">
-                                💡 <span className="font-bold text-[#f3c65f]">Conseil du Coach :</span> {concept.recommendation}
+                                <span className="font-bold text-[#f3c65f]">Conseil du Coach :</span> {concept.recommendation}
                             </div>
 
                             <div className="mt-3">
@@ -98,7 +98,7 @@ export const ProgressionConceptsSection: React.FC<ProgressionConceptsSectionProp
                                     className="w-full flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 py-2 text-xs font-bold text-[#f3c65f] hover:border-white/25 hover:text-[#fdf8eb] transition shadow-sm"
                                     data-testid={`drill-concept-btn-${concept.id}`}
                                 >
-                                    <span>🎯</span>
+                                    
                                     <span>Rejouer les blunders en Drill</span>
                                 </Link>
                             </div>
@@ -180,7 +180,7 @@ export const ProgressionConceptsSection: React.FC<ProgressionConceptsSectionProp
                 <section className="rounded-2xl border border-white/10 bg-[#0d121d]/90 p-5 shadow-xl space-y-4">
                     <div className="border-b border-white/10 pb-3">
                         <h2 className="text-base font-bold text-white flex items-center gap-2">
-                            <span>🔍</span>
+                            
                             <span>Dernières Erreurs Clés Analysées par le Coach</span>
                         </h2>
                         <p className="text-xs text-slate-300 mt-0.5">
@@ -219,7 +219,7 @@ export const ProgressionConceptsSection: React.FC<ProgressionConceptsSectionProp
 
                                 {exp.advice && (
                                     <div className="rounded-md bg-amber-950/30 border border-white/10 p-2 text-amber-200 text-xs">
-                                        💡 {exp.advice}
+                                        {exp.advice}
                                     </div>
                                 )}
                             </div>

@@ -8,7 +8,7 @@
  *     1. `PostMatchHeader` — résultat + comparatif PR + bilan des paliers ;
  *     2. Barre d'actions principale — immédiatement accessible sans scroller ;
  *     3. `MatchBlunderReport` — bannière PR/Accuracy %, carrousel/accordéon de `MiniBoardDiagram` avec flèches comparatives,
- *        voix du Coach, mode puzzle « Rejouer ce coup », et rapport Gemini en 3 volets (🎯 Diagnostic, 💡 Concept Clé, 🚀 Plan) ;
+ *        voix du Coach, mode puzzle « Rejouer ce coup », et rapport Gemini en 3 volets (1. Diagnostic, 2. Concept Clé, 3. Plan) ;
  *     4. Persistance IndexedDB + Supabase (déclenchée une seule fois au montage).
  *
  *   Propose les actions : Manche Suivante / Rejouer, Bilan & Courbe PR, Entraîner mes Blunders, Retour au Lobby.
@@ -231,7 +231,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                             data-testid="open-game-review-btn"
                             className="inline-flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-[#1c223a] px-3 py-2.5 text-xs font-extrabold text-slate-100 transition hover:bg-[#252d4d] active:scale-95"
                         >
-                            <span aria-hidden="true">🔍</span>
+                            
                             <span>{isEn ? 'Review' : 'Revue'}</span>
                         </button>
                     )}
@@ -255,7 +255,7 @@ const PostMatchTrainingReportComponent: React.FC<PostMatchTrainingReportProps> =
                                 type="button" onClick={onTrainBlunders} data-testid="post-match-train-blunders-btn"
                                 className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 text-[11px] font-bold text-amber-300 transition hover:bg-amber-400/20"
                             >
-                                <span aria-hidden="true">🎯</span>
+                                
                                 <span>{isEn ? 'Train my blunders' : 'Corriger mes erreurs en Drill'}</span>
                             </button>
                         )}

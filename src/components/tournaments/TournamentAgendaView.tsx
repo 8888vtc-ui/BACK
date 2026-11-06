@@ -211,7 +211,7 @@ const TournamentAgendaViewComponent: React.FC<TournamentAgendaViewProps> = ({
                                                         href={trainHref}
                                                         className="rounded border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-[11px] font-semibold text-amber-200 transition hover:border-amber-400"
                                                     >
-                                                        🎯 {t.matchLengthMain} pts
+                                                        {t.matchLengthMain} pts
                                                     </Link>
                                                 </div>
                                             </div>

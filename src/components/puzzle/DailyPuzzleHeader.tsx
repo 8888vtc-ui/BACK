@@ -111,7 +111,7 @@ export const DailyPuzzleHeader: React.FC<DailyPuzzleHeaderProps> = ({
                         className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a1109]/90 px-3 py-1.5"
                     >
                         <span className="text-base" aria-hidden="true">
-                            🔥
+                            
                         </span>
                         <div>
                             <div className="text-xs font-bold uppercase tracking-wider text-[#f3c65f]">
@@ -188,7 +188,7 @@ export const DailyPuzzleHeader: React.FC<DailyPuzzleHeaderProps> = ({
                         data-testid="daily-puzzle-match-score"
                         className="rounded-xl border border-white/10 bg-black/40 px-2.5 py-1 font-mono text-xs font-bold text-[#fdf8eb]"
                     >
-                        🎯 {matchScoreLabel}
+                        {matchScoreLabel}
                     </span>
 
                     <span

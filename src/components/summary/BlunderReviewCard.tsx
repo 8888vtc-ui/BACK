@@ -141,7 +141,7 @@ export const BlunderReviewCard: React.FC<BlunderReviewCardProps> = ({
                 </div>
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/30 px-3 py-2">
                     <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-300">
-                        🟢 {isEn ? 'Engine optimal (solid green/gold)' : 'Optimal moteur (vert/or plein)'}
+                        {isEn ? 'Engine optimal (solid green/gold)' : 'Optimal moteur (vert/or plein)'}
                     </span>
                     <span className="mt-0.5 block font-mono text-xs font-black text-emerald-100">
                         {hideOptimal
@@ -161,7 +161,7 @@ export const BlunderReviewCard: React.FC<BlunderReviewCardProps> = ({
                 >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                         <p className="text-xs font-bold text-[#f3c65f]">
-                            🎯{' '}
+                            
                             {isEn
                                 ? `Interactive Replay — Choose or click the best move with [${blunder.dice[0]}-${blunder.dice[1]}]:`
                                 : `Mode Puzzle Interactif — Choisissez ou cliquez le coup optimal avec [${blunder.dice[0]}-${blunder.dice[1]}] :`}
@@ -208,13 +208,13 @@ export const BlunderReviewCard: React.FC<BlunderReviewCardProps> = ({
             <div className="rounded-xl border border-white/10 bg-[#140b06]/85 p-2.5 space-y-1.5">
                 {blunder.diagnostic && (
                     <p className="text-xs leading-relaxed text-[#fdf8eb]">
-                        <strong className="text-[#f3c65f]">🎯 {isEn ? 'Diagnostic:' : 'Diagnostic :'}</strong>{' '}
+                        <strong className="text-[#f3c65f]">{isEn ? 'Diagnostic:' : 'Diagnostic :'}</strong>{' '}
                         {blunder.diagnostic}
                     </p>
                 )}
                 {blunder.keyConcept && (
                     <p className="text-xs leading-relaxed text-[#e8dcc6]/85">
-                        <strong className="text-emerald-300">💡 {isEn ? 'Key Concept:' : 'Concept Clé :'}</strong>{' '}
+                        <strong className="text-emerald-300">{isEn ? 'Key Concept:' : 'Concept Clé :'}</strong>{' '}
                         {blunder.keyConcept}
                     </p>
                 )}
@@ -230,7 +230,7 @@ export const BlunderReviewCard: React.FC<BlunderReviewCardProps> = ({
                                 : 'border-white/15 bg-[#2a180c] text-[#fce8b2] hover:border-[#f3c65f] hover:bg-[#382010]'
                         }`}
                     >
-                        <span aria-hidden="true">🎯</span>
+                        
                         <span>
                             {isReplaying
                                 ? isEn

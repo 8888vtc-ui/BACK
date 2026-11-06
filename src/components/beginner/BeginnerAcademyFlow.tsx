@@ -193,7 +193,7 @@ export function BeginnerAcademyFlow({
               {isSelectedCorrect ? <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> : <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />}
               <span>{isSelectedCorrect
                 ? (lang === 'fr' ? '✅ Coup optimal ! Vos pions sont en parfaite sécurité.' : '✅ Optimal play! Checkers safe.')
-                : (lang === 'fr' ? '💡 Conseil du Professeur : Coup imprudent. Cliquez sur « Réessayer » sans stress !' : '💡 Tip: Risky move. Click "Retry"!')}</span>
+                : (lang === 'fr' ? 'Conseil du Professeur : Coup imprudent. Cliquez sur « Réessayer » sans stress !' : 'Tip: Risky move. Click "Retry"!')}</span>
             </div>
           )}
 

@@ -9,7 +9,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Building2, Trophy, MapPin, Clock, CreditCard, ExternalLink, Dices, Calendar, Award, Globe } from 'lucide-react';
+import { Building2, Trophy, MapPin, Clock, CreditCard, ExternalLink, Dices, Calendar, Award, Globe, X } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { getTournamentsDict } from '../../lib/i18n/tournamentsDict';
 import type { WorldBackgammonVenue } from '../../features/tournaments/worldBackgammonVenues';
@@ -71,9 +71,7 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
                                 data-testid="close-detail-panel-btn"
                                 className="rounded-lg border border-white/10 px-2 py-1 text-xs text-slate-400 hover:text-white"
                                 aria-label="Close"
-                            >
-                                ✕
-                            </button>
+                            ><X size={14} strokeWidth={1.5} /></button>
                         )}
                     </div>
 
@@ -173,9 +171,7 @@ export const VenueOrTournamentDetailPanel: React.FC<VenueOrTournamentDetailPanel
                             data-testid="close-detail-panel-btn"
                             className="rounded-lg border border-white/10 px-2 py-1 text-xs text-slate-400 hover:text-white"
                             aria-label="Close"
-                        >
-                            ✕
-                        </button>
+                        ><X size={14} strokeWidth={1.5} /></button>
                     )}
                 </div>
 

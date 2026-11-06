@@ -26,7 +26,7 @@ export interface VenueDetailViewProps {
 }
 
 const CATEGORY_STYLES: Readonly<Record<VenueCategory, { badge: string; cls: string }>> = {
-    prestige_palace: { badge: '🏛️ Palace & Cercle de Prestige', cls: 'border-yellow-500/50 bg-yellow-500/20 text-yellow-300' },
+    prestige_palace: { badge: 'Palace & Cercle de Prestige', cls: 'border-yellow-500/50 bg-yellow-500/20 text-yellow-300' },
     federation_club: { badge: '🏆 Club Fédéral Officiel', cls: 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' },
     social_lounge: { badge: '🍸 Lounge & Rooftop', cls: 'border-sky-500/50 bg-sky-500/20 text-sky-300' },
     traditional_cafe: { badge: '☕ Café Traditionnel', cls: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
@@ -98,7 +98,7 @@ const VenueDetailViewComponent: React.FC<VenueDetailViewProps> = ({ venue: initi
                 <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="rounded-2xl border border-white/10 bg-[#0b101b] p-6 shadow-xl flex flex-col gap-4">
                         <h2 className="font-serif text-base font-bold text-[#d4af37] border-b border-white/10 pb-2">
-                            ✨ Pourquoi jouer ici — Les avantages de cet établissement
+                            Pourquoi jouer ici — Les avantages de cet établissement
                         </h2>
                         <ul className="flex flex-col gap-2.5 text-xs text-slate-300">
                             {venue.playerBenefitsFr.map((benefit) => (
@@ -169,7 +169,7 @@ const VenueDetailViewComponent: React.FC<VenueDetailViewProps> = ({ venue: initi
                 {relatedVenues.length > 0 && (
                     <section className="mt-2 flex flex-col gap-3">
                         <h3 className="font-serif text-base font-bold text-white flex items-center gap-2">
-                            <span>🏛️</span> Autres Clubs & Lieux dans la Région
+                            <span>Autres Clubs & Lieux dans la Région</span>
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {relatedVenues.map((rel) => {

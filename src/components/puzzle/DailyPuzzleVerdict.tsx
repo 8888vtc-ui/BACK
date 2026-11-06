@@ -163,7 +163,7 @@ export const DailyPuzzleVerdict: React.FC<DailyPuzzleVerdictProps> = ({
                             onClick={onRetry}
                             className="rounded-xl border border-[#f3c65f] bg-[#361c0b] px-3.5 py-1.5 text-xs font-extrabold text-[#fff3c4] hover:brightness-110 transition"
                         >
-                            🔍 Chercher la nuance supérieure (#1)
+                            Chercher la nuance supérieure (#1)
                         </button>
                     )}
 

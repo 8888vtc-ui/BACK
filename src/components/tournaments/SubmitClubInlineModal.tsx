@@ -68,7 +68,7 @@ export const SubmitClubInlineModal: React.FC<SubmitClubInlineModalProps> = ({
         <form onSubmit={(e) => void handleSubmit(e)} data-testid="submit-club-modal" className="rounded-2xl border border-emerald-400/50 bg-[#0b1320] p-4 sm:p-5 shadow-2xl flex flex-col gap-3.5 mb-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <div>
-                    <h4 className="font-serif text-base font-bold text-white">🏛️ Référencer un Club ou Salon de Backgammon</h4>
+                    <h4 className="font-serif text-base font-bold text-white">Référencer un Club ou Salon de Backgammon</h4>
                     <p className="text-xs text-slate-400">Ajout immédiat sur la carte du monde et dans l’annuaire des joueurs.</p>
                 </div>
                 <button type="button" onClick={onClose} className="rounded-lg border border-white/10 px-2.5 py-1 text-xs text-slate-400 hover:text-white">✕ Fermer</button>
@@ -91,7 +91,7 @@ export const SubmitClubInlineModal: React.FC<SubmitClubInlineModalProps> = ({
                 </select>
                 <select value={clubCategory} onChange={(e) => setClubCategory(e.target.value as VenueCategory)} className={inputCls}>
                     <option value="federation_club">🏆 Club Fédéral / Asso</option><option value="social_lounge">🍸 Lounge &amp; Soirée</option>
-                    <option value="traditional_cafe">☕ Café Traditionnel</option><option value="prestige_palace">🏛️ Cercle &amp; Palace</option>
+                    <option value="traditional_cafe">☕ Café Traditionnel</option><option value="prestige_palace">Cercle &amp; Palace</option>
                 </select>
                 <input type="text" placeholder="Fédération (FFB, WBGF, Libre)" value={clubFederation} onChange={(e) => setClubFederation(e.target.value)} className={`${inputCls} col-span-2 sm:col-span-1`} />
             </div>

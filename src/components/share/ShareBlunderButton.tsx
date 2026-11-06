@@ -144,7 +144,7 @@ const ShareBlunderButtonComponent: React.FC<ShareBlunderButtonProps> = ({
                 title={isEn ? 'Share HD Quiz (1200x630)' : 'Partager ce Quiz (HD 1200x630)'}
                 className={`flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-slate-900 text-slate-200 transition hover:border-amber-400/50 hover:text-white active:scale-95 disabled:opacity-50 ${className}`}
             >
-                <span className="text-sm">{isGenerating ? '⏳' : '📸'}</span>
+                <span className="text-sm">{isGenerating ? '⏳' : ''}</span>
             </button>
         );
     }
@@ -158,7 +158,7 @@ const ShareBlunderButtonComponent: React.FC<ShareBlunderButtonProps> = ({
                 data-testid="share-blunder-btn"
                 className="inline-flex min-h-[36px] items-center justify-center gap-2 rounded-xl border border-white/10 bg-slate-900 px-3 py-1.5 text-xs font-bold text-slate-200 shadow-sm transition hover:border-amber-400/50 hover:text-white active:scale-95 disabled:opacity-50"
             >
-                <span className="text-sm">{isGenerating ? '⏳' : '📸'}</span>
+                <span className="text-sm">{isGenerating ? '⏳' : ''}</span>
                 <span>
                     {isGenerating
                         ? (isEn ? 'Generating HD…' : 'Génération HD…')

@@ -6,6 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { Flag } from 'lucide-react';
 import type { AIDifficulty } from '../../engine/aiHeuristics';
 import type { MatchStats } from '../../hooks/useCoach';
 import {
@@ -141,7 +142,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                                 mode === mKey ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'
                             }`}
                         >
-                            {mKey === 'fun' ? '🎭 S’amuser' : '🏆 Pro EMG'}
+                            {mKey === 'fun' ? 'S’amuser' : 'Pro EMG'}
                         </button>
                     ))}
                 </div>
@@ -182,7 +183,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                         <div>
                             <div className="font-sans text-xs font-bold text-white">{persona.name}</div>
                             <div className="text-[10px] font-semibold text-amber-300">{persona.styleBadge}</div>
-                            <div className="text-[10px] text-slate-400">🎯 {persona.skillTaught}</div>
+                            <div className="text-[10px] text-slate-400">{persona.skillTaught}</div>
                         </div>
                     </div>
 
@@ -194,7 +195,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                             className="rounded-lg border border-white/10 bg-slate-900 px-1.5 py-1 text-[10px] font-semibold text-slate-300 hover:border-white/25"
                             title="Mettre le personnage en muet"
                         >
-                            {isMuted ? '🔇 Muet' : '🔊 Actif'}
+                            {isMuted ? 'Muet' : 'Actif'}
                         </button>
                         <button
                             type="button"
@@ -203,20 +204,20 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                             className="rounded-lg border border-white/10 bg-slate-900 px-1.5 py-1 text-[10px] font-semibold text-slate-300 hover:border-rose-400/50 hover:text-rose-300"
                             title="Signaler un message (Conformité App Store 1.2)"
                         >
-                            🚩
+                            <Flag size={12} strokeWidth={1.5} className="text-rose-400" />
                         </button>
                     </div>
                 </div>
                 {reportedNotice && (
                     <p className="mt-1.5 rounded bg-emerald-950/70 px-2 py-1 text-[10px] text-emerald-200">
-                        ✓ Signalement enregistré (Conformité App Store Section 1.2).
+                        Signalement enregistré (Conformité App Store Section 1.2).
                     </p>
                 )}
             </div>
 
             {silentTutorLuckNote && (
                 <div data-testid="coach-silent-tutor-bot-luck" className="rounded-xl border border-cyan-500/40 bg-cyan-950/35 px-2.5 py-1.5 text-[11px] font-semibold text-cyan-200">
-                    🛡️ {silentTutorLuckNote}
+                    {silentTutorLuckNote}
                 </div>
             )}
 
@@ -247,7 +248,7 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
                         onClick={onReplayMove}
                         className="mt-1 w-full rounded-lg border border-amber-400/60 bg-amber-500/20 px-2.5 py-1.5 text-[11px] font-bold text-amber-200 hover:bg-amber-500/30 transition"
                     >
-                        ↩️ Reprendre mon coup (Tuteur Préventif)
+                        Reprendre mon coup (Tuteur Préventif)
                     </button>
                 )}
             </div>
@@ -255,9 +256,9 @@ const BotPersonaChatCardComponent: React.FC<BotPersonaChatCardProps> = ({
             {/* 5. Réponses rapides & saisie libre */}
             <div className="flex flex-wrap gap-1">
                 {[
-                    ['💡 Un conseil ?', 'Que me conseilles-tu pour jouer ?'],
-                    ['🎲 Dés truqués ?', 'Ces dés sont-ils truqués ?'],
-                    ['💎 Videau ?', 'Quand doubler au Videau ?'],
+                    ['Un conseil ?', 'Que me conseilles-tu pour jouer ?'],
+                    ['Dés truqués ?', 'Ces dés sont-ils truqués ?'],
+                    ['Videau ?', 'Quand doubler au Videau ?'],
                 ].map(([label, prompt]) => (
                     <button key={label} type="button" onClick={() => handleSendMessage(prompt)} className="rounded-full border border-white/10 bg-slate-950 px-2 py-0.5 text-[10px] font-semibold text-slate-300 hover:border-amber-400/50 hover:text-white">
                         {label}

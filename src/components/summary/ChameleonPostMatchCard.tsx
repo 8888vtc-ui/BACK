@@ -198,7 +198,7 @@ const ChameleonPostMatchCardComponent: React.FC<ChameleonPostMatchCardProps> = (
                     </div>
 
                     <p className="text-xs text-[#fce8b2]">
-                        💡 <strong>Loi de Woolsey :</strong> « En cas de doute, doublez » — {cubeGauge.clubRecommendationFr}
+                        <strong>Loi de Woolsey :</strong> « En cas de doute, doublez » — {cubeGauge.clubRecommendationFr}
                     </p>
                 </div>
             )}

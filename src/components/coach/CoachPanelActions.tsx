@@ -57,7 +57,7 @@ const CoachPanelActionsComponent: React.FC<CoachPanelActionsProps> = ({
                 <div className="flex items-center justify-between px-1 text-[10px] font-semibold">
                     {explanationSource === 'cache' && (
                         <span className="inline-flex items-center gap-1 text-emerald-400" data-testid="coach-source-cache">
-                            <span aria-hidden="true">⚡</span> {labels.sourceCache}
+                            {labels.sourceCache}
                         </span>
                     )}
                     {explanationSource === 'rule-based' && (

@@ -60,7 +60,7 @@ export default function Home() {
         autoOpponent: true,
         locale,
         onGameOver: (result) => {
-            const title = result.winType === 'backgammon' ? '👑 BACKGAMMON (3x) !' : result.winType === 'gammon' ? '🎉 GAMMON (2x) !' : result.winType === 'pass' ? '🏳️ Abandon de videau' : '⚡ Victoire simple (1x) !';
+            const title = result.winType === 'backgammon' ? '👑 BACKGAMMON (3x) !' : result.winType === 'gammon' ? '🎉 GAMMON (2x) !' : result.winType === 'pass' ? '🏳️ Abandon de videau' : 'Victoire simple (1x) !';
             const ptsLabel = result.pointsWon > 1 ? `+${result.pointsWon} pts` : '+1 pt';
             const summaryText = result.winner === 'X' ? `Vous remportez la manche (${ptsLabel}) !` : `L'adversaire remporte la manche (${ptsLabel}).`;
             toast.success(summaryText, title);

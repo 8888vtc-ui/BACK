@@ -45,13 +45,13 @@ export default function PricingPage() {
                         href="/drills"
                         className="rounded-xl border border-[#f3c65f]/40 bg-[#140b06]/85 px-3.5 py-2 font-bold text-[#f3c65f] transition hover:border-[#f3c65f] hover:text-white"
                     >
-                        🎯 Quizz Adaptatif (9 Compétences)
+                        Quizz Adaptatif (9 Compétences)
                     </Link>
                     <Link
                         href="/academy"
                         className="rounded-xl border border-white/10 bg-[#140b06]/85 px-3.5 py-2 font-bold text-[#e8dcc6] transition hover:border-white/25 hover:text-white"
                     >
-                        🏛️ Gammon Academy
+                        Gammon Academy
                     </Link>
                 </div>
             </div>

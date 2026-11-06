@@ -84,7 +84,7 @@ export function IntermediateClubTrainingHub() {
               <span className="font-bold">
                 {raceAnswer === 'AHEAD'
                   ? (isEn ? '✅ Excellent calculation! ' : '✅ Calcul parfait ! ')
-                  : (isEn ? '💡 Révélation exacte : ' : '💡 Révélation exacte : ')}
+                  : (isEn ? 'Révélation exacte : ' : 'Révélation exacte : ')}
               </span>
               <span>
                 {isEn

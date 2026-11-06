@@ -216,7 +216,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                 <div className="space-y-1.5">
                     <div className="flex items-start gap-1.5">
                         <span className="text-xs font-extrabold text-[#f3c65f] uppercase tracking-wide">
-                            {isBeginner ? '💡 Astuce du Professeur :' : 'Type :'}
+                            {isBeginner ? 'Astuce du Professeur :' : 'Type :'}
                         </span>
                         <span className="text-xs font-black text-white">
                             {isBeginner ? `Attention (tu perds ~${errorDetails.mwcLossPct}% de chances)` : errorDetails.patternName}
@@ -278,7 +278,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                             }}
                             className="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition flex items-center justify-center gap-1"
                         >
-                            <span>💡</span>
+                            
                             <span>Coach IA</span>
                         </button>
                     )}

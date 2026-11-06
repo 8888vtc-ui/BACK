@@ -32,7 +32,7 @@ export const ConciergeSupportSection: React.FC = () => {
 
     const handleGdprErase = async () => {
         await eraseAllPlayerGdprData();
-        setQuickActionDone('🗑️ Toutes vos données locales et votre profil ont été intégralement effacés (Art. 17 RGPD).');
+        setQuickActionDone('Toutes vos données locales et votre profil ont été intégralement effacés (Art. 17 RGPD).');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -103,7 +103,7 @@ export const ConciergeSupportSection: React.FC = () => {
                     onClick={() => void handleGdprErase()}
                     className="flex flex-col justify-between rounded-xl border border-rose-500/30 bg-rose-950/20 p-3 text-left hover:border-rose-400 transition"
                 >
-                    <span className="text-xs font-extrabold text-rose-300">🗑️ Supprimer mes données (RGPD)</span>
+                    <span className="text-xs font-extrabold text-rose-300">Supprimer mes données (RGPD)</span>
                     <span className="mt-1 text-[11px] text-stone-400">Effacement immédiat en 1 clic</span>
                 </button>
             </div>
@@ -161,7 +161,7 @@ export const ConciergeSupportSection: React.FC = () => {
                             >
                                 <option value="bug">🐞 Signaler un bug technique</option>
                                 <option value="account">👤 Compte &amp; Abonnement VIP</option>
-                                <option value="suggestion">💡 Suggestion d&apos;amélioration</option>
+                                <option value="suggestion">Suggestion d&apos;amélioration</option>
                             </select>
                         </div>
                     </div>

@@ -216,7 +216,7 @@ export const GameOverOverlay: React.FC<GameOverOverlayProps> = ({
                             onClick={onOpenAnalysis}
                             className="flex-1 rounded-xl border border-white/10 bg-[#1c223a] py-3 px-3 text-xs font-extrabold text-slate-200 hover:bg-[#252d4d] transition"
                         >
-                            🔍 Revue
+                            Revue
                         </button>
                     )}
                     {isMatchOver ? (

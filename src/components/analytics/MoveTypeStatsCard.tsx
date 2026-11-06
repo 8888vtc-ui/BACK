@@ -18,7 +18,7 @@ export default function MoveTypeStatsCard({ metrics }: MoveTypeStatsCardProps) {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
                 <div>
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
-                        <span>🎯</span>
+                        
                         <span>Taux d'Erreur &amp; Maîtrise par Type de Coup</span>
                     </h3>
                     <p className="text-xs text-slate-400 mt-0.5">

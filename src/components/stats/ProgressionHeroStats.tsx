@@ -62,7 +62,7 @@ export const ProgressionHeroStats: React.FC<ProgressionHeroStatsProps> = ({
                         href="/drills"
                         className="rounded-xl border border-[#f3c65f] bg-gradient-to-r from-[#d4af37] via-[#f8d778] to-[#c69214] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#1a0f08] hover:brightness-105 transition shadow-md flex items-center gap-1.5"
                     >
-                        <span>🎯</span>
+                        
                         <span>Drills de Blunders</span>
                     </Link>
 

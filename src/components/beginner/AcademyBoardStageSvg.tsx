@@ -103,7 +103,7 @@ export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.m
               opacity="0.85"
             />
             <rect x="306" y="180" width="250" height="155" fill="rgba(16, 185, 129, 0.12)" stroke="#10B981" strokeDasharray="4 4" rx="8" />
-            <text x="430" y="200" fill="#34D399" fontSize="11" fontWeight="bold" textAnchor="middle">🏠 {isEn ? 'Home Board (Exit)' : 'Votre Maison (Sortie)'}</text>
+            <text x="430" y="200" fill="#34D399" fontSize="11" fontWeight="bold" textAnchor="middle">{isEn ? 'Home Board (Exit)' : 'Votre Maison (Sortie)'}</text>
 
             {progress <= 0.75 ? (
               <g transform={`translate(${ep1CheckerX}, ${ep1CheckerY})`}>
@@ -164,7 +164,7 @@ export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.m
             {progress < 0.55 ? (
               <g>
                 <circle cx="372" cy="40" r="12" fill="#18181b" stroke="#eab308" strokeWidth="2" />
-                <text x="372" y="70" fill="#fde047" fontSize="10" fontWeight="bold" textAnchor="middle">🎯 {isEn ? 'Blot Target' : 'Cible isolée'}</text>
+                <text x="372" y="70" fill="#fde047" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? 'Blot Target' : 'Cible isolée'}</text>
               </g>
             ) : (
               <g>
@@ -221,7 +221,7 @@ export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.m
             </g>
             {progress > 0.5 && (
               <text x="290" y="165" fill="#F3E5AB" fontSize="12" fontWeight="black" textAnchor="middle">
-                {isEn ? '⚡ Double Stakes (x2)!' : '⚡ Doublez la mise (x2) !'}
+                {isEn ? 'Double Stakes (x2)!' : 'Doublez la mise (x2) !'}
               </text>
             )}
           </g>

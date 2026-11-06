@@ -169,7 +169,7 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
 
             {/* Règle Mémotechnique Dorée */}
             <div className="text-xs text-stone-300 bg-white/[0.02] p-2 rounded-lg border border-white/5 font-medium">
-              💡 {isEn
+              {isEn
                 ? 'On the first move, creating a two-checker shield is always the top priority!'
                 : 'Au premier coup, créer un bouclier à deux pions est toujours la priorité absolue !'}
             </div>

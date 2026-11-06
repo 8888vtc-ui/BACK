@@ -47,7 +47,7 @@ export const ConceptsHeatmapDetailCard: React.FC<ConceptsHeatmapDetailCardProps>
                     href="/drills"
                     className="rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 px-3 py-1.5 text-xs font-black text-slate-950 shadow-md hover:from-amber-400 hover:to-yellow-400 transition shrink-0"
                 >
-                    🎯 Entraîner en Drill
+                    Entraîner en Drill
                 </a>
             </div>
         </div>

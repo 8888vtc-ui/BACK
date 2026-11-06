@@ -59,7 +59,7 @@ const MobilePortraitCoachBannerComponent: React.FC<MobilePortraitCoachBannerProp
             }
           : coach
             ? {
-                  icon: '🟢',
+                  icon: '',
                   label: 'Coup Optimal',
                   pillClass: 'border-emerald-400/70 bg-emerald-950/80 text-emerald-200',
               }

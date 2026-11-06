@@ -104,7 +104,7 @@ const CubeDecisionModalComponent: React.FC<CubeDecisionModalProps> = ({
                 {/* En-tête & Score actuel du match */}
                 <div className="w-full flex items-center justify-between border-b border-white/10 pb-3">
                     <div className="flex items-center gap-2">
-                        <span aria-hidden="true" className="text-lg">⚡</span>
+                        
                         <h2
                             id="cube-decision-modal-title"
                             className="text-sm sm:text-base font-black uppercase tracking-wider text-amber-200"

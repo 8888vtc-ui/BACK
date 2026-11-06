@@ -13,6 +13,7 @@ import { AUTO_CONFIRM_MODE_LABELS, SPEED_LABELS } from '../board/BoardActions';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { soundEngine } from '../../lib/sound/soundEngine';
 import { useI18n } from '../../i18n';
+import { Settings, X, Eye, Zap, Volume2, VolumeX, Sparkles, Share2, RotateCcw } from 'lucide-react';
 
 export interface HudSettingsMenuProps {
     isOpen: boolean;
@@ -123,10 +124,10 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
             {/* En-tête épuré */}
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                    <span className="text-sm" aria-hidden="true">⚙️</span>
+                    <Settings className="w-3.5 h-3.5 text-slate-300" strokeWidth={1.5} />
                     <span className="text-xs font-bold uppercase tracking-wider text-white">Réglages</span>
                 </div>
-                <button type="button" onClick={onClose} aria-label="Fermer les paramètres" className="h-7 w-7 rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:border-white/25 flex items-center justify-center text-xs transition">✕</button>
+                <button type="button" onClick={onClose} aria-label="Fermer les paramètres" className="h-7 w-7 rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:border-white/25 flex items-center justify-center text-xs transition"><X className="w-3.5 h-3.5" strokeWidth={1.5} /></button>
             </div>
 
             {/* SECTION 1 : THÈME & PLATEAU */}
@@ -164,7 +165,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                         onClick={() => { const next = !pipVisible; setPipVisible(next); setSavedPipCountVisibility(next); }}
                         className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 transition"
                     >
-                        <span>👁 Pips</span>
+                        <span className="flex items-center gap-1"><Eye className="w-3 h-3" strokeWidth={1.5} /> Pips</span>
                         <span className="font-mono text-[11px] font-bold text-amber-300">{pipVisible ? 'Visible' : 'OTB'}</span>
                     </button>
                 </div>
@@ -178,7 +179,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                     }}
                     className="flex items-center justify-between w-full rounded-xl border border-[#f3c65f]/40 bg-[#f3c65f]/10 px-3 py-2 text-xs font-bold text-white hover:border-[#f3c65f] transition"
                 >
-                    <span>⚡ Validation automatique</span>
+                    <span className="flex items-center gap-1"><Zap className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} /> Validation automatique</span>
                     <span className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-black ${
                         effectiveAutoMode === 'always' || effectiveAutoMode === 'always_except_cube'
                             ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50'
@@ -194,7 +195,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                         title={AUTO_CONFIRM_MODE_LABELS[effectiveAutoMode].description}
                         className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 transition"
                     >
-                        <span>⚡ Mode</span>
+                        <span className="flex items-center gap-1"><Zap className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.5} /> Mode</span>
                         <span className="font-mono text-[11px] font-bold text-amber-300">{AUTO_CONFIRM_MODE_LABELS[effectiveAutoMode].badge}</span>
                     </button>
                     <button
@@ -223,7 +224,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                         className="flex items-center gap-1.5 text-xs font-bold text-slate-100 hover:text-amber-300 transition shrink-0"
                         title={isSoundMuted ? 'Activer le son' : 'Couper le son'} aria-label={isSoundMuted ? 'Activer le son' : 'Couper le son'}
                     >
-                        <span>{isSoundMuted ? '🔇' : '🔊'}</span>
+                        {isSoundMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-400" strokeWidth={1.5} /> : <Volume2 className="w-3.5 h-3.5 text-amber-300" strokeWidth={1.5} />}
                         <span>{isSoundMuted ? 'Muet' : `${volumePct}%`}</span>
                     </button>
                     <input
@@ -239,10 +240,10 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Alertes Coach &amp; Outils</span>
                 <div className="grid grid-cols-4 gap-1" role="group" aria-label="Seuil d'alerte du Coach">
                     {([
-                        { id: 'all' as const, label: '🟢 Tous', title: 'Coach continu sur tous les coups (PR 1–5)' },
-                        { id: 'error' as const, label: '🟡 Impréc.', title: 'Alerter dès une imprécision (> 0.020)' },
-                        { id: 'blunder' as const, label: '🔴 Blunder', title: 'Alerter uniquement sur un blunder (> 0.080)' },
-                        { id: 'silent' as const, label: '🔇 Muet', title: 'Mode silencieux (aucune alerte automatique)' },
+                        { id: 'all' as const, label: 'Tous', title: 'Coach continu sur tous les coups (PR 1–5)' },
+                        { id: 'error' as const, label: 'Impréc.', title: 'Alerter dès une imprécision (> 0.020)' },
+                        { id: 'blunder' as const, label: 'Blunder', title: 'Alerter uniquement sur un blunder (> 0.080)' },
+                        { id: 'silent' as const, label: 'Muet', title: 'Mode silencieux (aucune alerte automatique)' },
                     ]).map((lvl) => (
                         <button
                             key={lvl.id} type="button" title={lvl.title} data-testid={`coach-threshold-${lvl.id}`} aria-pressed={notificationLevel === lvl.id}
@@ -262,7 +263,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                         title="Demander une analyse Coach Monte-Carlo 3-Ply sur la position courante"
                         className="flex items-center justify-between w-full rounded-xl border border-[#f3c65f]/50 bg-[#f3c65f]/10 px-3 py-2 text-xs font-bold text-white hover:border-[#f3c65f] transition"
                     >
-                        <span>🎓 Analyser avec le Coach IA</span><span className="font-mono text-[11px] font-extrabold text-amber-300">3-PLY</span>
+                        <span>Analyser avec le Coach IA</span><span className="font-mono text-[11px] font-extrabold text-amber-300">3-PLY</span>
                     </button>
                 )}
                 {onOpenExportImport && (
@@ -271,7 +272,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                         title="Exporter, importer ou partager la position (XGID) ou le match (SGF)"
                         className="flex items-center justify-between w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-semibold text-slate-200 hover:border-white/25 hover:text-white transition"
                     >
-                        <span>💾 Partager / XGID</span><span className="text-[11px] text-amber-300 font-mono">XG / SGF</span>
+                        <span>Partager / XGID</span><span className="text-[11px] text-amber-300 font-mono">XG / SGF</span>
                     </button>
                 )}
             </div>
@@ -281,7 +282,7 @@ const HudSettingsMenuComponent: React.FC<HudSettingsMenuProps> = ({
                 <div className="flex flex-col gap-1.5 pt-2 border-t border-white/10">
                     <div className="flex items-center justify-between">
                         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Concéder la manche</span>
-                        {onResetGame && <button type="button" onClick={() => { onClose(); onResetGame(); }} className="text-[11px] font-semibold text-slate-400 hover:text-amber-200 transition" title="Réinitialiser le match">↺ Reset</button>}
+                        {onResetGame && <button type="button" onClick={() => { onClose(); onResetGame(); }} className="text-[11px] font-semibold text-slate-400 hover:text-amber-200 transition" title="Réinitialiser le match">Reset</button>}
                     </div>
                     <div className="grid grid-cols-3 gap-1.5">
                         <button type="button" data-testid="resign-simple-btn" onClick={() => handleResignClick(1)} className="whitespace-nowrap rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-bold text-slate-200 hover:border-[#f3c65f] transition" title="Concéder (1x)">1× Simple</button>

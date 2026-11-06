@@ -173,7 +173,7 @@ export default function GameReviewModal({
                         <span>📈</span><span>Courbe &amp; Synthèse</span>
                     </button>
                     <button type="button" role="tab" aria-selected={activeTab === 'step_by_step'} onClick={() => { setDrillModeActive(false); setActiveTab('step_by_step'); }} className={tabBtnClass('step_by_step')} data-testid="tab-step-by-step">
-                        <span>♟️</span><span>Coup par Coup</span>
+                        <span>Coup par Coup</span>
                         <span className="rounded-full bg-slate-950/60 px-1.5 py-0.2 text-[10px] text-amber-300">#{selectedIndex + 1}</span>
                     </button>
                     <button type="button" role="tab" aria-selected={activeTab === 'concepts'} onClick={() => setActiveTab('concepts')} className={tabBtnClass('concepts')} data-testid="tab-concepts">
@@ -248,7 +248,7 @@ export default function GameReviewModal({
                         onClick={() => { setSelectedIndex(mistakeIndices[0] ?? 0); setDrillModeActive(true); setActiveTab('step_by_step'); }}
                         className="rounded-xl border border-amber-400/50 bg-amber-400/15 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-amber-400/25 transition shadow-sm flex items-center gap-1.5"
                     >
-                        <span>🎯</span><span>Rejouer mes erreurs en Drill</span>
+                        <span>Rejouer mes erreurs en Drill</span>
                     </button>
                     <div className="flex items-center gap-2">
                         <button

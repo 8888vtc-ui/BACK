@@ -4,6 +4,10 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import GameModalsContainer, { type GameModalsContainerProps } from './GameModalsContainer';
 import { createInitialState } from '../../engine/backgammonEngine';
 
+vi.mock('../../hooks/useAuthenticPlayerStats', () => ({
+    useAuthenticPlayerStats: () => ({ canHavePR: true, rating: 1500, gamesPlayed: 5 }),
+}));
+
 function buildDummyProps(): GameModalsContainerProps {
     const dummyGame = {
         state: createInitialState(7),

@@ -192,7 +192,7 @@ const TournamentCardComponent: React.FC<TournamentCardProps> = ({
                     href={`/?matchLength=${tournament.matchLengthMain}&tournament=${encodeURIComponent(tournament.name)}`}
                     className="flex items-center justify-center gap-1 rounded-lg border border-amber-500/40 bg-gradient-to-r from-amber-600/30 to-yellow-600/20 px-2.5 py-1.5 text-xs font-bold text-amber-200 transition hover:border-amber-400 hover:from-amber-600/40"
                 >
-                    <span>🎯</span> S'entraîner aux conditions ({tournament.matchLengthMain} pts)
+                    S'entraîner aux conditions ({tournament.matchLengthMain} pts)
                 </Link>
 
                 <div className="grid grid-cols-2 gap-2 text-center">

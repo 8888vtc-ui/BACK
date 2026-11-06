@@ -141,7 +141,7 @@ const TournamentResultsArchiveViewComponent: React.FC<TournamentResultsArchiveVi
                                         data-testid={`replay-final-${item.id}`}
                                         className="w-full flex items-center justify-center gap-2 rounded-xl border border-amber-500/50 bg-gradient-to-r from-amber-600/30 to-yellow-600/20 px-3.5 py-2 text-xs font-bold text-amber-200 transition hover:border-amber-400 hover:from-amber-600/40"
                                     >
-                                        <span>🎯</span> Jouer le Format de cette Finale ({item.matchLength} pts)
+                                        <span>Jouer le Format de cette Finale</span> ({item.matchLength} pts)
                                     </Link>
                                 </div>
                             </article>

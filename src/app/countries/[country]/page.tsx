@@ -172,7 +172,7 @@ export default async function CountryStrategicPage({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <section className="rounded-2xl border border-white/10 bg-[#120e09]/90 p-5 space-y-2">
                         <h2 className="text-base font-black text-[#f3c65f]">
-                            🏛️ {entry.culturalHookTitle}
+                            {entry.culturalHookTitle}
                         </h2>
                         <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
                             {entry.culturalHookBody}
