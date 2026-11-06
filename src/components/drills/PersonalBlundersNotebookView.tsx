@@ -224,10 +224,10 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                                     </div>
                                 )}
 
-                                <div className="grid grid-cols-1 gap-2">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     <div data-testid="comparative-played-move-card" className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-2.5 text-xs space-y-1">
                                         <div className="flex items-center justify-between font-mono text-[11px] font-black text-rose-300">
-                                            <span>{isEn ? `Your Match Move: ${activeBlunder.playerPlayedMove}` : `Ton Coup en Match : ${activeBlunder.playerPlayedMove}`}</span>
+                                            <span>{isEn ? `❌ Your Match Move: ${activeBlunder.playerPlayedMove}` : `❌ Ton Coup en Match : ${activeBlunder.playerPlayedMove}`}</span>
                                             <span>{activeBlunder.playerWinProbPct.toFixed(1)}% {isEn ? 'win' : 'victoire'} ({activeBlunder.deltaEmg.toFixed(3)} EMG)</span>
                                         </div>
                                         <p className="text-rose-100 leading-snug">
@@ -238,7 +238,7 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
 
                                     <div data-testid="comparative-optimal-move-card" className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-2.5 text-xs space-y-1">
                                         <div className="flex items-center justify-between font-mono text-[11px] font-black text-emerald-300">
-                                            <span>{isEn ? `3-Ply Solution: ${activeBlunder.optimalMove}` : `La Solution 3-Ply : ${activeBlunder.optimalMove}`}</span>
+                                            <span>{isEn ? `✅ 3-Ply Solution: ${activeBlunder.optimalMove}` : `✅ La Solution 3-Ply : ${activeBlunder.optimalMove}`}</span>
                                             <span>{activeBlunder.optimalWinProbPct.toFixed(1)}% {isEn ? 'win' : 'victoire'} (0.000 EMG)</span>
                                         </div>
                                         <p className="text-emerald-100 leading-snug">

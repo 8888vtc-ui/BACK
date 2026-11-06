@@ -50,8 +50,8 @@ export const PersonalBlundersEmptyConnected: React.FC<PersonalBlundersEmptyConne
                     <Sparkles className="w-4 h-4 text-black" />
                     <span>
                         {isEn
-                            ? 'Load 3 Match Blunder Examples (Connected Demo)'
-                            : 'Charger 3 exemples de Blunders de Matchs (Démo Compte Connecté)'}
+                            ? 'Load 3 Match Blunder Examples (Connected Account)'
+                            : 'Charger 3 Blunders de Matchs (Exemples Compte Connecté)'}
                     </span>
                 </button>
                 <Link
@@ -178,7 +178,11 @@ export const PersonalBlundersNotebookHeader: React.FC<PersonalBlundersNotebookHe
                     </span>
                     <span className="text-zinc-600">•</span>
                     <span data-testid="blunder-match-score-turn" className="font-mono text-[11px] font-semibold text-[#D4AF37]">
-                        {activeBlunder.matchFormatLabel} (Score : {activeBlunder.scoreBeforeMove.player} - {activeBlunder.scoreBeforeMove.opponent}) • {isEn ? `Turn #${activeBlunder.turnNumber}` : `Tour #${activeBlunder.turnNumber}`} • {isEn ? `Dice:` : `Dés tirés :`} {activeBlunder.dice[0]}-{activeBlunder.dice[1]}
+                        {activeBlunder.matchFormatLabel} (Score : {activeBlunder.scoreBeforeMove.player} - {activeBlunder.scoreBeforeMove.opponent}) • {isEn ? `Turn #${activeBlunder.turnNumber}` : `Tour #${activeBlunder.turnNumber}`}
+                    </span>
+                    <span className="text-zinc-600">•</span>
+                    <span data-testid="blunder-match-loss-pct" className="font-mono text-[11px] font-bold text-rose-400">
+                        {isEn ? `Loss: -${activeBlunder.winProbLossPct.toFixed(1)}% win chances` : `Perte : -${activeBlunder.winProbLossPct.toFixed(1)}% de chances de victoire`}
                     </span>
                 </div>
 
