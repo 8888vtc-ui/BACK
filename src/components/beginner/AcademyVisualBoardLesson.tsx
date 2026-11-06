@@ -91,10 +91,10 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {quizId === 2 && (
           <g>
             <rect x="296" y="140" width="240" height="115" fill="rgba(212, 175, 55, 0.05)" stroke="#D4AF37" strokeDasharray="4 4" rx="6" />
-            <g transform="translate(416, 148)">
+            <g transform="translate(416, 140)">
               <rect x="-95" y="-11" width="190" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
               <text x="0" y="3.5" fill="#F3E5AB" fontSize="10.5" fontWeight="black" textAnchor="middle">
-                {isEn ? 'Home Board (Pts 6 to 1) → Exit' : 'Maison (Cases 6 à 1) → Sortie'}
+                {isEn ? 'Home Board (Points 1 to 6) → Exit' : 'Maison (Cases 1 à 6) → Sortie'}
               </text>
             </g>
 

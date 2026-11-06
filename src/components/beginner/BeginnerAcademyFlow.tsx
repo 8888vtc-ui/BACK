@@ -41,25 +41,34 @@ export function BeginnerAcademyFlow({
       }
       const saved = localStorage.getItem('bgtour_beginner_academy_progress');
       let firstUncompleted = -1;
+      let loadedCompletedIds: number[] = [];
       if (saved) {
         const parsed = JSON.parse(saved) as { scorePoints?: number; completedQuizIds?: number[] };
         if (typeof parsed.scorePoints === 'number') setScorePoints(parsed.scorePoints);
-        const cIds = parsed.completedQuizIds;
-        if (Array.isArray(cIds)) {
-          setCompletedQuizIds(cIds);
-          firstUncompleted = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => !cIds.includes(q.id));
+        if (Array.isArray(parsed.completedQuizIds)) {
+          loadedCompletedIds = parsed.completedQuizIds;
+          setCompletedQuizIds(loadedCompletedIds);
+          firstUncompleted = BEGINNER_10_INITIATION_QUIZZES.findIndex(q => !loadedCompletedIds.includes(q.id));
         }
       }
       const savedIdx = localStorage.getItem('bgtour_beginner_academy_quiz_idx');
-      if (savedIdx !== null) {
+      if (firstUncompleted >= 0) {
+        if (savedIdx !== null) {
+          const parsedIdx = parseInt(savedIdx, 10);
+          const targetQuiz = BEGINNER_10_INITIATION_QUIZZES[parsedIdx];
+          if (targetQuiz && !loadedCompletedIds.includes(targetQuiz.id)) {
+            setActiveQuizIndex(parsedIdx);
+          } else {
+            setActiveQuizIndex(firstUncompleted);
+          }
+        } else {
+          setActiveQuizIndex(firstUncompleted);
+        }
+      } else if (savedIdx !== null) {
         const parsedIdx = parseInt(savedIdx, 10);
         if (!isNaN(parsedIdx) && parsedIdx >= 0 && parsedIdx < BEGINNER_10_INITIATION_QUIZZES.length) {
           setActiveQuizIndex(parsedIdx);
-        } else if (firstUncompleted >= 0) {
-          setActiveQuizIndex(firstUncompleted);
         }
-      } else if (firstUncompleted >= 0) {
-        setActiveQuizIndex(firstUncompleted);
       }
     } catch {}
   }, [lang]);
@@ -172,12 +181,12 @@ export function BeginnerAcademyFlow({
                     type="button"
                     onClick={() => handleSelectQuizIndex(idx)}
                     title={`Quiz ${q.id}/10`}
-                    className={`w-4 h-4 rounded text-[9px] font-bold flex items-center justify-center transition-all ${
+                    className={`w-6 h-6 rounded-md text-[11px] font-mono font-bold flex items-center justify-center transition-all ${
                       isCur
-                        ? 'bg-[#D4AF37] text-black ring-1 ring-amber-300'
+                        ? 'bg-[#D4AF37] text-black font-extrabold shadow-sm'
                         : isPass
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
-                        : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:bg-white/[0.08] hover:text-white'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
+                        : 'bg-white/[0.04] text-zinc-400 border border-white/10 hover:text-white hover:bg-white/[0.08]'
                     }`}
                   >
                     {q.id}

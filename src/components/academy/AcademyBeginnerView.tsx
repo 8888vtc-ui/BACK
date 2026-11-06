@@ -57,7 +57,7 @@ const RULES: readonly RuleItem[] = [
   },
   {
     id: 4, quizId: 2,
-    labelFr: '4. Sortir ses 15 Dames', labelEn: '4. Bear Off 15 Checkers',
+    labelFr: '4. Sortir ses Pions', labelEn: '4. Bear Off Checkers',
     descFr: 'Quand les 15 pions sont à la Maison, le premier qui les sort gagne !',
     descEn: 'When all 15 checkers are home, the first to bear off wins the game!',
   },
