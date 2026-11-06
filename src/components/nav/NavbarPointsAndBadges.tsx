@@ -19,12 +19,14 @@ interface NavbarPointsAndBadgesProps {
     readonly tierGate: PlayerTierGate;
     readonly userElo?: number;
     readonly averagePr?: number | null;
+    readonly showStats?: boolean;
 }
 
 export const NavbarPointsAndBadges: React.FC<NavbarPointsAndBadgesProps> = React.memo(({
     tierGate,
     userElo = 1500,
     averagePr = 6.3,
+    showStats = true,
 }) => {
     const [points, setPoints] = useState<number>(INITIAL_CIRCLE_POINTS);
 
@@ -55,7 +57,7 @@ export const NavbarPointsAndBadges: React.FC<NavbarPointsAndBadgesProps> = React
 
     return (
         <div data-testid="navbar-stats-container" className="flex items-center gap-1.5 sm:gap-2 shrink-0 whitespace-nowrap">
-            {!isBeginner && (
+            {showStats && !isBeginner && (
                 <div className="hidden lg:flex items-center gap-1.5 font-mono text-xs">
                     <span
                         data-testid="navbar-erpr-badge"

@@ -63,8 +63,8 @@ const EXPERT_DRILLS: ExpertDrill[] = [
     id: 3,
     type: 'CUBE_DECISION',
     scoreContext: 'Money Game avec Videau à 1',
-    titleFr: 'Quiz Expert #3 : Décision de Videau Adaptatif (ERA)',
-    titleEn: 'Expert Quiz #3: Adaptive Cube Decision (ERA)',
+    titleFr: 'Quiz Expert #3 : Décision de Videau en Tournoi',
+    titleEn: 'Expert Quiz #3: Tournament Cube Decision',
     questionFr: 'Fenêtre de videau ouverte. Quelle est la décision théorique et adaptative ?',
     questionEn: 'Cube window open. What is the theoretical and adaptive decision?',
     choices: [

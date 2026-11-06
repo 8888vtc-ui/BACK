@@ -34,6 +34,7 @@ test.describe('Zone 2 — Audit & Verrouillage de la Sidebar Gauche (LobbySideba
 
         await expect(page.locator('[data-testid="sidebar-play-group-toggle"]')).toBeVisible();
         await expect(page.locator('[data-testid="sidebar-pillar-studio"]')).toBeVisible();
+        await page.click('[data-testid="sidebar-play-group-toggle"]');
         await expect(page.locator('[data-testid="sidebar-submenu-find-opponent"]')).toBeVisible();
         await expect(page.locator('[data-testid="sidebar-submenu-ai"]')).toBeVisible();
 

@@ -7,7 +7,7 @@
  * Affiche exclusivement :
  * - DÉBUTANT : AcademyBeginnerView (100% visuel, 2 studios sur plateau)
  * - INTERMÉDIAIRE : AcademyIntermediateView (Ateliers Club Videau, Course 5s et Tirs sur 36)
- * - EXPERT : AcademyExpertView (Théorie Cap 6.0 / ERA, MET Kazaross-XG2 et concepts filtrés)
+ * - EXPERT : AcademyExpertView (Théorie Cap 6.0, MET Kazaross-XG2 et concepts filtrés)
  * Strictement <= 60 lignes, 0 `any`.
  */
 

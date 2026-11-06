@@ -5,10 +5,10 @@ import { Volume2, Trophy, Sparkles, Scale, ShieldCheck } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 
 export const CAP_6_TEXT_FR =
-  "Selon la norme historique de Snowie et XG, dès qu'un joueur descend à 6 ou 7 d'Error Rate, il joue déjà à un très haut niveau. Sur un match, l'écart technique pur entre un joueur à 6.0 et un Champion du Monde devient si fin que le résultat dépend énormément du hasard des dés ! Comment reprendre alors l'avantage sur le hasard ? Grâce à l'Error Rate Adaptatif (ERA) : en s'adaptant au profil réel de l'adversaire en face de soi ! Face à un joueur plus faible, on refuse de laisser le hasard décider dans une simple course : on solidifie son jeu ou on joue le Backgame pour provoquer ses erreurs. Et sur le Videau, on s'adapte à sa psychologie (doubler un peu plus tôt s'il refuse trop vite, ou attendre le moment idéal s'il prend trop tard).";
+  "Selon la norme historique de Snowie et XG, dès qu'un joueur descend à 6 ou 7 d'Error Rate, il joue déjà à un très haut niveau. Sur un match, l'écart technique pur entre un joueur à 6.0 et un Champion du Monde devient si fin que le résultat dépend énormément du hasard des dés ! Comment reprendre alors l'avantage sur le hasard ? Grâce à la psychologie du videau : en s'adaptant au profil réel de l'adversaire en face de soi ! Face à un joueur plus faible, on refuse de laisser le hasard décider dans une simple course : on solidifie son jeu ou on joue le Backgame pour provoquer ses erreurs. Et sur le Videau, on s'adapte à ses tendances (doubler un peu plus tôt s'il refuse trop vite, ou attendre le moment idéal s'il prend trop tard).";
 
 export const CAP_6_TEXT_EN =
-  "According to the historical Snowie and XG standard, once a player reaches an Error Rate of 6 or 7, they are already playing at a very high level. In a match, the pure technical gap between a 6.0 player and a World Champion becomes so narrow that dice luck plays a massive role in the outcome! So how do you tilt the odds back in your favor? Through Adaptive Error Rate (ERA): by adapting to the real opponent across from you! Against a weaker player, you refuse to let pure dice luck decide a simple race: you solidify your structure or steer into a Backgame to induce their mistakes. And on the Doubling Cube, you exploit their tendencies (doubling slightly earlier if they drop too easily, or waiting if they take too late).";
+  "According to the historical Snowie and XG standard, once a player reaches an Error Rate of 6 or 7, they are already playing at a very high level. In a match, the pure technical gap between a 6.0 player and a World Champion becomes so narrow that dice luck plays a massive role in the outcome! So how do you tilt the odds back in your favor? Through cube psychology: by adapting to the real opponent across from you! Against a weaker player, you refuse to let pure dice luck decide a simple race: you solidify your structure or steer into a Backgame to induce their mistakes. And on the Doubling Cube, you exploit their tendencies (doubling slightly earlier if they drop too easily, or waiting if they take too late).";
 
 export function Cap6ErrorRateLegendCard() {
   const { locale } = useTranslation();
@@ -39,12 +39,12 @@ export function Cap6ErrorRateLegendCard() {
               <span className="rounded bg-[#D4AF37]/25 border border-[#D4AF37]/40 text-[#f3d27a] px-2 py-0.5 text-[10px] font-mono font-black">
                 NORME SNOWIE & XG
               </span>
-              <span className="text-xs text-emerald-400 font-bold">Cap Mythique & ERA</span>
+              <span className="text-xs text-emerald-400 font-bold">Cap Mythique & Psychologie</span>
             </div>
             <h3 className="text-sm sm:text-base font-black text-[#fdf8eb] mt-0.5">
               {isEn
-                ? 'The Mythic 6.0 Error Rate Threshold (Snowie / XG) & Adaptive Error Rate (ERA)'
-                : 'La Frontière Mythique du 6.0 d’Error Rate (Norme Snowie / XG) & L’Error Rate Adaptatif (ERA)'}
+                ? 'The Mythic 6.0 Error Rate Threshold (Snowie / XG) & Doubling Psychology'
+                : 'La Frontière Mythique du 6.0 d’Error Rate (Norme Snowie / XG) & Psychologie du Videau'}
             </h3>
           </div>
         </div>
@@ -99,8 +99,8 @@ export function Cap6ErrorRateLegendCard() {
           </span>
           <p className="text-[11px] text-stone-200 leading-snug">
             {isEn
-              ? 'Technical gap shrinks, dice luck dominates: victory is decided by ERA adaptive play.'
-              : 'L’écart technique devient minime, les dés dominent : l’ERA fait la décision.'}
+              ? 'Technical gap shrinks, dice luck dominates: victory is decided by cube psychology.'
+              : 'L’écart technique devient minime, les dés dominent : la psychologie du videau fait la décision.'}
           </p>
         </div>
       </div>
@@ -111,8 +111,8 @@ export function Cap6ErrorRateLegendCard() {
           <Sparkles className="w-4 h-4 text-[#D4AF37]" />
           <span>
             {isEn
-              ? 'Why Everything Changes at 6.0 / 7.0 Error Rate (Luck & ERA):'
-              : 'Pourquoi tout change dès qu’on atteint 6.0 ou 7.0 d’Error Rate (Le Hasard & L’ERA) :'}
+              ? 'Why Everything Changes at 6.0 / 7.0 Error Rate (Luck & Cube):'
+              : 'Pourquoi tout change dès qu’on atteint 6.0 ou 7.0 d’Error Rate (Le Hasard & Le Videau) :'}
           </span>
         </div>
         <p className="text-xs text-stone-200 leading-relaxed font-medium">

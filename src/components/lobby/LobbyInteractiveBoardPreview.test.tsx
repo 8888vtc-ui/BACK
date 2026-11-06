@@ -26,7 +26,7 @@ describe('LobbyInteractiveBoardPreview', () => {
         expect(screen.getByTestId('lobby-preview-recap')).toBeDefined();
         expect(screen.getByTestId('lobby-preview-match-format').textContent).toContain('Match en 7 pts');
         expect(screen.getByTestId('lobby-preview-clock').textContent).toContain('Normal');
-        expect(screen.getByTestId('lobby-preview-opponent').textContent).toContain('Marcus');
+        expect(screen.getByTestId('lobby-preview-opponent').textContent).toContain('Compétiteur');
         expect(screen.getByTestId('lobby-preview-coach').textContent).toContain('Coach IA');
 
         const toggleBtn = screen.getByTestId('lobby-preview-toggle-color');
@@ -48,6 +48,6 @@ describe('LobbyInteractiveBoardPreview', () => {
 
         expect(screen.getByTestId('lobby-preview-match-format').textContent).toContain('Partie Simple (Money)');
         expect(screen.getByTestId('lobby-preview-coach').textContent).toContain('Sans aide');
-        expect(screen.getByTestId('lobby-preview-opponent').textContent).toContain('Arthur');
+        expect(screen.getByTestId('lobby-preview-opponent').textContent).toContain('Le Professeur');
     });
 });

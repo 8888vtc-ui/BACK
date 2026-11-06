@@ -4,9 +4,9 @@
  * @file src/components/lobby/LobbyInteractiveBoardPreview.tsx
  * @description Grand Plateau de Tournoi Cercle Monte-Carlo (Haute-Horlogerie & Tactile).
  * Affiche la malle d'ébénisterie en position de départ réglementaire (15 dames ivoire / 15 dames ébène),
- * le videau en laiton [64], les dés aux arêtes biseautées et les 3 feutrines d'orfèvrerie.
+ * le videau en laiton [1], les dés aux arêtes biseautées et les feutrines d'orfèvrerie.
  *
- * Contraintes : < 240 lignes, 0 `any`, zéro micro-texte < 11px.
+ * Contraintes : <= 300 lignes, 0 any, zéro micro-texte < 11px.
  */
 
 import React, { useState } from 'react';
@@ -130,10 +130,10 @@ const BOTTOM_POINTS: ReadonlyArray<PointData> = [
 ];
 
 const BOT_TITLES: Record<AIDifficulty, { name: string; elo: number; style: string }> = {
-    beginner: { name: 'Arthur', elo: 1420, style: 'Initié · Blitz spontané' },
-    intermediate: { name: 'Elena', elo: 1680, style: 'Stratège · Holding Game' },
-    expert: { name: 'Marcus', elo: 1950, style: 'Maître · Videau agressif' },
-    grandmaster: { name: 'Spinoza', elo: 2150, style: 'Grand-Maître · Open Sage 3-Ply' },
+    beginner: { name: '🎓 Le Professeur', elo: 1200, style: 'Initiation Guidée (PR 18–25)' },
+    intermediate: { name: '🎲 Joueur de Club', elo: 1550, style: 'Niveau Intermédiaire (PR 8–12)' },
+    expert: { name: '♟️ Compétiteur', elo: 1850, style: 'Niveau Tournoi (PR 4.5–7)' },
+    grandmaster: { name: '👑 Grand-Maître 3-Ply', elo: 2200, style: 'Open Sage Pur (PR < 2.5)' },
 };
 
 const CLOCK_TITLES: Record<LobbyClockPreset, { title: string; detail: string }> = {
@@ -162,67 +162,60 @@ export const LobbyInteractiveBoardPreview: React.FC<LobbyInteractiveBoardPreview
         const isWhite = (playerColor === 'X' && point.isGroupA) || (playerColor === 'O' && !point.isGroupA);
         const fill = isWhite ? '#fdfcf7' : palette.checkerDark;
         const stroke = isWhite ? '#d4af37' : palette.checkerDarkRing;
+        const maxVisual = Math.min(point.count, 5);
+        const r = 13.5;
+        const dia = r * 2 - 2;
 
-        return Array.from({ length: point.count }).map((_, c) => {
-            const cy = isTop ? 12 + 13 + c * 23 : 368 - 13 - c * 23;
+        return Array.from({ length: maxVisual }).map((_, idx) => {
+            const yc = isTop ? 18 + r + idx * dia : 362 - r - idx * dia;
             return (
-                <g key={`chk-${point.pointNumber}-${c}`}>
-                    <circle cx={xc} cy={cy} r="12" fill={fill} stroke={stroke} strokeWidth="1.6" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.5))" />
-                    <circle cx={xc} cy={cy} r="6.5" fill="none" stroke={stroke} strokeWidth="0.8" opacity="0.45" />
+                <g key={`${point.pointNumber}-${idx}`}>
+                    <circle cx={xc} cy={yc} r={r} fill={fill} stroke={stroke} strokeWidth="1.8" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.45))" />
+                    <circle cx={xc} cy={yc} r={r - 4} fill="none" stroke={stroke} strokeWidth="0.8" opacity="0.6" />
+                    {idx === 4 && point.count > 5 && (
+                        <text x={xc} y={yc + 4} textAnchor="middle" fill={isWhite ? '#0f172a' : '#f8fafc'} fontSize="11" fontWeight="900" fontFamily="sans-serif">
+                            {point.count}
+                        </text>
+                    )}
                 </g>
             );
         });
     };
 
     return (
-        <div data-testid="lobby-board-preview" className="flex flex-col gap-3 w-full">
-            {/* 1. Sélecteur de Feutrine & Cuir d'Ébénisterie */}
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-[#0e1322] px-3.5 py-2">
+        <div data-testid="lobby-interactive-board-preview" className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#080d19]/90 p-4 shadow-xl">
+            {/* 1. Sélecteur de Palettes Cercle Monte-Carlo */}
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
                 <div className="flex items-center gap-1.5">
-                    <span className="text-amber-400 font-bold text-xs">◆</span>
-                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-200">
-                        Habillage Monte-Carlo : <span className="text-[#f3c65f]">{palette.name}</span>
-                    </span>
+                    <span className="text-xs font-bold text-amber-300">◆ Habillage Monte-Carlo :</span>
+                    <span className="text-xs font-extrabold text-white">{palette.name}</span>
                 </div>
-                <div className="flex flex-wrap items-center gap-1.5">
-                    {MONTE_CARLO_PALETTES.map((p) => {
-                        const active = p.id === palette.id;
-                        return (
-                            <button
-                                key={p.id}
-                                type="button"
-                                data-testid={`preview-theme-${p.id}`}
-                                onClick={() => setSelectedPalette(p.id)}
-                                title={p.subtitle}
-                                className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-bold transition ${
-                                    active
-                                        ? 'border-[#f3c65f] bg-[#f3c65f]/20 text-[#fdf8eb] shadow-sm'
-                                        : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'
-                                }`}
-                            >
-                                <span className={`h-2.5 w-2.5 rounded-full ${p.swatch} ring-1 ring-white/30`} />
-                                <span>{p.name.split(' ')[0]}</span>
-                            </button>
-                        );
-                    })}
+                <div className="flex items-center gap-1.5">
+                    {MONTE_CARLO_PALETTES.map((pal) => (
+                        <button
+                            key={pal.id}
+                            type="button"
+                            data-testid={`lobby-theme-btn-${pal.id}`}
+                            aria-label={pal.name}
+                            onClick={() => setSelectedPalette(pal.id)}
+                            className={`flex items-center gap-1.5 rounded-lg border px-2 py-1 text-[11px] font-bold transition ${selectedPalette === pal.id ? 'border-[#f3c65f] bg-[#f3c65f]/20 text-amber-200' : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'}`}
+                        >
+                            <span className={`h-2.5 w-2.5 rounded-full ${pal.swatch}`} />
+                            <span className="hidden sm:inline">{pal.name.split(' ')[0]}</span>
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* 2. Plateau Grand Format SVG Haute Fidélité */}
-            <div className="relative overflow-hidden rounded-2xl border-2 border-[#3d271d] bg-[#080b14] p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.85)]">
-                <svg viewBox="0 0 600 380" className="w-full h-auto select-none" role="img" aria-label="Aperçu du plateau de jeu">
-                    {/* Cadre en Noyer & Chanfrein Or */}
-                    <rect x="0" y="0" width="600" height="380" rx="14" fill="#140d09" stroke="#b45309" strokeWidth="1.5" />
-                    <rect x="2" y="2" width="596" height="376" rx="12" fill="none" stroke="rgba(243,198,95,0.3)" strokeWidth="1" />
-
-                    {/* Jan Intérieur & Extérieur */}
+            {/* 2. Plateau SVG Haute Fidélité */}
+            <div data-testid="lobby-board-preview" className="relative aspect-[600/380] w-full overflow-hidden rounded-xl border-2 border-[#3d2716] shadow-2xl bg-[#1b130e]">
+                <svg viewBox="0 0 600 380" className="h-full w-full select-none" role="img" aria-label="Plateau de backgammon">
+                    <rect x="0" y="0" width="600" height="380" fill="#24170e" />
+                    <rect x="10" y="6" width="580" height="368" rx="8" fill="#120c07" stroke="#4a321d" strokeWidth="2" />
                     <rect x="14" y="10" width="264" height="360" rx="6" fill={palette.feltBg} />
                     <rect x="322" y="10" width="264" height="360" rx="6" fill={palette.feltBg} />
+                    <rect x="278" y="10" width="44" height="360" fill="#1d130a" stroke="#3d2716" strokeWidth="1.5" />
 
-                    {/* Barre Centrale en Palissandre & Laiton */}
-                    <rect x="280" y="10" width="40" height="360" rx="2" fill="#0d0906" stroke="#3d271d" strokeWidth="1" />
-
-                    {/* Flèches Hautes */}
                     {TOP_POINTS.map((pt, i) => {
                         const x0 = i < 6 ? 18 + i * 43.5 : 326 + (i - 6) * 43.5;
                         const xc = x0 + 21.75;
@@ -236,7 +229,6 @@ export const LobbyInteractiveBoardPreview: React.FC<LobbyInteractiveBoardPreview
                         );
                     })}
 
-                    {/* Flèches Basses */}
                     {BOTTOM_POINTS.map((pt, i) => {
                         const x0 = i < 6 ? 18 + i * 43.5 : 326 + (i - 6) * 43.5;
                         const xc = x0 + 21.75;
@@ -250,10 +242,10 @@ export const LobbyInteractiveBoardPreview: React.FC<LobbyInteractiveBoardPreview
                         );
                     })}
 
-                    {/* Pips Opposant (167) / Videau [64] / Pips Joueur (167) */}
+                    {/* Pips Opposant (167) / Videau [1] / Pips Joueur (167) */}
                     <text x="300" y="102" textAnchor="middle" fill="#cbd5e1" fontSize="12" fontWeight="bold" fontFamily="monospace">167</text>
                     <rect x="284" y="174" width="32" height="32" rx="6" fill={palette.cubeBg} stroke="#f3c65f" strokeWidth="1.5" />
-                    <text x="300" y="195" textAnchor="middle" fill={palette.cubeText} fontSize="13" fontWeight="900" fontFamily="sans-serif">64</text>
+                    <text x="300" y="195" textAnchor="middle" fill={palette.cubeText} fontSize="13" fontWeight="900" fontFamily="sans-serif">1</text>
                     <text x="300" y="288" textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="bold" fontFamily="monospace">167</text>
 
                     {/* Dés d'Ivoire à gauche */}
@@ -304,6 +296,5 @@ export const LobbyInteractiveBoardPreview: React.FC<LobbyInteractiveBoardPreview
         </div>
     );
 });
-
 LobbyInteractiveBoardPreview.displayName = 'LobbyInteractiveBoardPreview';
 export default LobbyInteractiveBoardPreview;

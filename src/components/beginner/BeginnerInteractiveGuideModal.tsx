@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { X, Volume2, VolumeX, ArrowLeft, ArrowRight, Sparkles, BookOpen, Play } from 'lucide-react';
 import { BEGINNER_MASTER_GUIDE_CHAPTERS } from '../../data/beginnerMasterGuideBilingual';
 import { useTranslation } from '../../i18n';
-import { Cap6ErrorRateLegendCard } from '../common/Cap6ErrorRateLegendCard';
 
 export interface BeginnerInteractiveGuideModalProps {
   isOpen: boolean;
@@ -222,8 +221,8 @@ export function BeginnerInteractiveGuideModal({
           <div data-testid="guide-era-explanation" className="rounded-xl border border-white/10 bg-white/[0.02] p-2 text-[11px] text-stone-400">
             <span>
               {lang === 'fr'
-                ? "💡 Note Débutant : Concentrez-vous sur les 6 règles de base. L'analyse avancée et l'ERA (Error Rate Adaptatif) sont explorés dans la Porte Intermédiaire !"
-                : "💡 Beginner Note: Focus on the 6 basic rules. Advanced analytics and ERA (Adaptive Error Rate) are explored in Intermediate Mode!"}
+                ? "💡 Note Débutant : Concentrez-vous sur les 6 règles de base. L'analyse avancée et le perfectionnement tactique sont explorés dans la Porte Intermédiaire !"
+                : "💡 Beginner Note: Focus on the 6 basic rules. Advanced analytics and tactical mastery are explored in Intermediate Mode!"}
             </span>
           </div>
 
@@ -231,9 +230,6 @@ export function BeginnerInteractiveGuideModal({
           <div className="rounded-xl border border-[#D4AF37]/40 bg-gradient-to-r from-[#18130a] to-[#0d0b07] p-3 text-xs sm:text-sm font-bold text-[#F3E5AB]">
             💡 {lang === 'fr' ? chapter.keyTakeawayFr : chapter.keyTakeawayEn}
           </div>
-
-          {/* Encart du Cap Historique 6.0 ER & ERA */}
-          <Cap6ErrorRateLegendCard />
         </div>
 
         {/* Barre inférieure de navigation */}

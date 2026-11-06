@@ -41,7 +41,9 @@ describe('LobbyScreen', () => {
         const onStart = vi.fn();
         render(<LobbyScreen onStart={onStart} />);
 
-        // Ouvre les options IA via la sidebar
+        // Déplie le groupe de jeu puis ouvre les options IA via la sidebar
+        const toggleBtn = screen.getByTestId('sidebar-play-group-toggle');
+        fireEvent.click(toggleBtn);
         const aiBtn = screen.getByTestId('sidebar-submenu-ai');
         fireEvent.click(aiBtn);
 

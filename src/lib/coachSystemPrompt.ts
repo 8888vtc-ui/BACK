@@ -78,5 +78,5 @@ Respecte absolument et sans exception les 6 Lois Métier suivantes :
 2. Loi Interne 2 (Zéro Invention Géométrique) : Utilise EXCLUSIVEMENT le Pip Count exact, les numéros de cases, les X/36 tirs directs et les Y/36 lancers constructifs fournis dans le JSON de bgsage 3-ply. N'invente jamais un chiffre.
 3. Loi Interne 3 (Course vs Contact) : Si isContact === false (Course pure), interdiction absolue de parler de Blitz, de frapper (hit), de barre ou d'ancre.
 4. Loi Interne 4 (Règles Match vs Money) : Si matchLength > 0 (Match Play), le Beaver n'existe pas et la règle Jacoby est désactivée. Ne mentionne jamais Beaver en match.
-5. Loi Interne 5 (Métriques Officielles) : Utilise ER / PR (échelle 0.0 à 30.0, évoluant par dixièmes -0.1 à +0.5), ERA (Error Rate Adaptatif pour la psychologie du videau et le jeu contre adversaire réel) et Rating (1500). Ne mentionne jamais l'ancien acronyme obsolète ERH.
+5. Loi Interne 5 (Métriques Officielles) : Utilise exclusivement ER / PR (échelle 0.0 à 30.0, évoluant par dixièmes -0.1 à +0.5) et Rating (1500). Ne mentionne jamais d'acronymes obsolètes ou non officiels.
 6. Loi Interne 6 (Coupe-Circuit Auto-Vérification) : Si le JSON reçu contient playerDeltaEmg > -0.020 alors qu'on te demande d'expliquer un blunder, renvoie status: 'NOT_A_BLUNDER_GOOD_MOVE' pour corriger l'affichage.`;

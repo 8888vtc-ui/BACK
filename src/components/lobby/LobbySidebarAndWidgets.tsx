@@ -55,7 +55,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
     const [collapsed, setCollapsed] = useState(false);
-    const [playGroupExpanded, setPlayGroupExpanded] = useState(true);
+    const [playGroupExpanded, setPlayGroupExpanded] = useState(false);
     const [blunderCount, setBlunderCount] = useState<number>(0);
 
     useEffect(() => {

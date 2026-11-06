@@ -30,8 +30,8 @@ const LEVEL_BADGE_MAP: Readonly<Record<PlayerExperienceTier, { readonly fr: stri
         en: 'Club Division • Doubling Cube & Tactics',
     },
     expert: {
-        fr: 'Division Expert / Pro • Analyse 3-Ply & ERA',
-        en: 'Expert / Pro Division • 3-Ply Analysis & ERA',
+        fr: 'Division Expert / Pro • Analyse 3-Ply & Précision Tournoi',
+        en: 'Expert / Pro Division • 3-Ply Analysis & Tournament Accuracy',
     },
 };
 

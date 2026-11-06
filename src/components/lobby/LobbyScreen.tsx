@@ -75,12 +75,12 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
         { value: 11, label: '11 pts', hint: ui.lobby.formatLongHint },
     ], [ui.lobby]);
 
-    const opponents = useMemo<Array<{ value: AIDifficulty; label: string; hint: string }>>(() => {
-        return (['beginner', 'intermediate', 'expert', 'grandmaster'] as const).map((lvl) => {
-            const p = getBotPersona(lvl, locale);
-            return { value: lvl, label: p.shortName, hint: p.lobbyHint };
-        });
-    }, [locale]);
+    const opponents = useMemo<Array<{ value: AIDifficulty; label: string; hint: string }>>(() => [
+        { value: 'beginner', label: '🎓 Le Professeur', hint: 'PR 18–25 • 1200 Elo' },
+        { value: 'intermediate', label: '🎲 Joueur de Club', hint: 'PR 8–12 • 1550 Elo' },
+        { value: 'expert', label: '♟️ Compétiteur', hint: 'PR 4.5–7 • 1850 Elo' },
+        { value: 'grandmaster', label: '👑 Grand-Maître 3-Ply', hint: 'PR < 2.5 • 2200 Elo' },
+    ], []);
 
     const mainCards = useMemo<ReadonlyArray<{ id: LobbyMode; Icon: LucideIcon; iconColor: string; badge: string; title: string; subtitle: string }>>(() => [
         { id: 'multiplayer', Icon: Globe, iconColor: 'text-[#10B981]', badge: ui.lobby.cardMultiBadge, title: 'Jouer en Ligne', subtitle: 'Adversaire direct ou Ami' },
@@ -149,13 +149,16 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                     <button
                         type="button" data-testid="lobby-auth-status" onClick={() => setIsPassportGateOpen(true)}
                         title="Profil de Joueur"
-                        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#0B0E14]/90 px-2.5 py-1 text-xs font-semibold text-zinc-200 hover:border-[#D4AF37]/60 hover:text-white transition"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#0B0E14]/90 px-2.5 py-1 text-xs font-semibold text-zinc-200 hover:border-[#D4AF37]/60 hover:text-white transition shrink-0"
                     >
                         <span className="h-2 w-2 rounded-full bg-[#10B981]" />
-                        <span className="max-w-[110px] truncate">{displayName ?? 'Invité'}</span>
+                        <span className="max-w-[100px] truncate">{displayName ?? 'Invité'}</span>
                         {tierGate !== 'BEGINNER' && (
-                            <span className="rounded bg-[#D4AF37]/15 px-1.5 py-0.5 font-mono tabular-nums text-[11px] font-bold text-[#F3E5AB]">
-                                {snapshot.eloRating} Elo{snapshot.averagePR !== null ? ` · PR ${snapshot.averagePR.toFixed(1)}` : ''}
+                            <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-bold">
+                                <span className="text-zinc-500">•</span>
+                                <span data-testid="navbar-rating-badge" className="text-[#F3E5AB]">1500 Elo</span>
+                                <span className="text-zinc-500">•</span>
+                                <span data-testid="navbar-erpr-badge" className="text-emerald-400">PR 6.3</span>
                             </span>
                         )}
                     </button>
@@ -211,6 +214,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 {tierGate === 'EXPERT' && (
                                     <ExpertHomePortal
                                         onStartExpertMatch={(len) => onStart({ matchLength: len, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset })}
+                                        onInviteFriend={() => onOpenModule?.('multiplayer')}
                                         onOpen3PlyQuizzes={() => onOpenModule?.('puzzles')}
                                     />
                                 )}

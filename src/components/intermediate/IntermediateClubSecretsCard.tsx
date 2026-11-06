@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Volume2, Sparkles, Shield, Dices, EyeOff, Eye, Compass, Trophy } from 'lucide-react';
 import { useTranslation } from '../../i18n';
-import { Cap6ErrorRateLegendCard } from '../common/Cap6ErrorRateLegendCard';
 
 export interface IntermediateClubSecretsCardProps {
   onToggleHidePips?: () => void;
@@ -35,12 +35,12 @@ export function IntermediateClubSecretsCard({
       pointsFr: [
         'Doubler trop tard : Attendre que la position soit gagnée à 100 % permet à l’adversaire de refuser (Pass) et de vous priver du 2e point.',
         'Prendre trop tard : Accepter un videau avec moins de 22 % à 25 % de chances est un suicide mathématique.',
-        'Astuce ERA (Error Rate Adaptatif) : Face à un joueur timoré, envoyez le videau un coup plus tôt. Face à un joueur qui prend tout, ne doublez que pour le punir !',
+        'Astuce Psychologie du Videau : Face à un joueur timoré, envoyez le videau un coup plus tôt. Face à un joueur qui prend tout, ne doublez que pour le punir !',
       ],
       pointsEn: [
         'Doubling too late: Waiting until you are 100% winning allows the opponent to drop (Pass), denying your 2nd point.',
         'Taking too late: Accepting a cube with under 22% to 25% winning chances is statistical suicide.',
-        'ERA Tip (Adaptive Error Rate): Against a timid opponent, double one roll earlier. Against a reckless taker, double strictly to punish them!',
+        'Cube Psychology Tip: Against a timid opponent, double one roll earlier. Against a reckless taker, double strictly to punish them!',
       ],
       audioFr: 'La maîtrise du videau : Ne doublez pas trop tard quand l’adversaire va refuser. Ne prenez pas en dessous de vingt-deux pour cent. Adaptez votre videau au profil adverse.',
       audioEn: 'Mastering the cube: Do not double too late when opponent will drop. Do not take below 22 percent. Adapt your cube to opponent profile.',
@@ -131,30 +131,6 @@ export function IntermediateClubSecretsCard({
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-center">
-          {onToggleHidePips && (
-            <button
-              type="button"
-              data-testid="hide-pips-toggle-btn"
-              onClick={onToggleHidePips}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition ${
-                isPipsHidden
-                  ? 'bg-amber-500/20 border-amber-400 text-amber-300'
-                  : 'bg-white/5 border-white/10 text-stone-300 hover:bg-white/10'
-              }`}
-            >
-              {isPipsHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              <span>
-                {lang === 'fr'
-                  ? isPipsHidden
-                    ? 'Pips masqués (Mode Tournoi ON)'
-                    : 'Masquer les Pips (Entraînement Tournoi)'
-                  : isPipsHidden
-                  ? 'Pips hidden (Tournament ON)'
-                  : 'Hide Pips (Tournament Training)'}
-              </span>
-            </button>
-          )}
-
           <button
             type="button"
             data-testid="club-secrets-voice-btn"
@@ -168,7 +144,7 @@ export function IntermediateClubSecretsCard({
       </div>
 
       {/* 4 Onglets Clairs */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 my-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 my-2.5">
         {(
           [
             { id: 1, labelFr: '1. Le Videau', labelEn: '1. Doubling Cube', icon: Sparkles },
@@ -184,7 +160,7 @@ export function IntermediateClubSecretsCard({
               type="button"
               data-testid={`club-key-tab-${t.id}`}
               onClick={() => setActiveTab(t.id)}
-              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl border text-xs font-bold transition active:scale-95 ${
+              className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl border text-xs font-bold transition active:scale-95 ${
                 isSel
                   ? 'bg-gradient-to-r from-[#D4AF37] to-[#b88924] border-[#F3E5AB] text-slate-950 font-black shadow-md'
                   : 'bg-white/[0.04] border-white/10 text-stone-300 hover:bg-white/10 hover:text-white'
@@ -197,33 +173,57 @@ export function IntermediateClubSecretsCard({
         })}
       </div>
 
-      {/* Contenu de la Clé sélectionnée */}
-      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 space-y-2.5">
-        <div>
-          <h4 className="text-xs sm:text-sm font-black text-amber-200">
-            {lang === 'fr' ? current.titleFr : current.titleEn}
-          </h4>
-          <p className="text-[11px] text-stone-400 mt-0.5">
-            {lang === 'fr' ? current.summaryFr : current.summaryEn}
-          </p>
+      {/* Contenu de la Clé sélectionnée avec bouton direct vers exercice */}
+      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 sm:p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex-1 min-w-0 space-y-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h4 className="text-xs sm:text-sm font-black text-amber-200">
+                {lang === 'fr' ? current.titleFr : current.titleEn}
+              </h4>
+              <p className="text-[11px] text-stone-400 mt-0.5">
+                {lang === 'fr' ? current.summaryFr : current.summaryEn}
+              </p>
+            </div>
+            {/* Dans l'onglet 2, bouton switch Masquer les Pips */}
+            {activeTab === 2 && onToggleHidePips && (
+              <button
+                type="button"
+                data-testid="hide-pips-tab-toggle-btn"
+                onClick={onToggleHidePips}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-bold transition shrink-0 ${
+                  isPipsHidden ? 'bg-amber-500/20 border-amber-400 text-amber-300' : 'bg-white/5 border-white/10 text-stone-300 hover:bg-white/10'
+                }`}
+              >
+                {isPipsHidden ? <EyeOff size={13} /> : <Eye size={13} />}
+                <span>{lang === 'fr' ? (isPipsHidden ? 'Pips : Masqués' : 'Masquer les Pips') : (isPipsHidden ? 'Pips: Hidden' : 'Hide Pips')}</span>
+              </button>
+            )}
+          </div>
+
+          <ul className="space-y-1">
+            {(lang === 'fr' ? current.pointsFr : current.pointsEn).map((pt, idx) => (
+              <li
+                key={idx}
+                className="flex items-start gap-1.5 text-xs text-stone-200 bg-white/[0.02] border border-white/5 px-2.5 py-1.5 rounded-lg leading-snug"
+              >
+                <span className="text-[#D4AF37] font-bold shrink-0">•</span>
+                <span>{pt}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <ul className="space-y-1.5">
-          {(lang === 'fr' ? current.pointsFr : current.pointsEn).map((pt, idx) => (
-            <li
-              key={idx}
-              className="flex items-start gap-2 text-xs text-stone-200 bg-white/[0.02] border border-white/5 p-2 rounded-lg"
-            >
-              <span className="text-[#D4AF37] font-bold shrink-0">•</span>
-              <span>{pt}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Cap 6.0 ER & ERA Card */}
-      <div className="mt-3">
-        <Cap6ErrorRateLegendCard />
+        {/* Bouton direct vers l'exercice sur plateau correspondant */}
+        <div className="shrink-0 flex items-center justify-end md:justify-center">
+          <Link
+            href="/puzzles?gate=intermediate"
+            data-testid="club-secrets-practice-btn"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition whitespace-nowrap"
+          >
+            <span>{lang === 'fr' ? "🎲 S'entraîner sur le Plateau →" : '🎲 Practice on Board →'}</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

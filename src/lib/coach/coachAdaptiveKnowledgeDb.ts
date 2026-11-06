@@ -41,7 +41,7 @@ export function normalizeCoachPlayerTier(raw: unknown): CoachPlayerTier {
  */
 export const BEGINNER_FORBIDDEN_TERMS: readonly string[] = [
     'EMG', 'mEMG', 'MWC', 'cubeful', 'cubeless', '3-ply', '2-ply', '1-ply', '0-ply',
-    'PR', 'Error Rate', 'ERA', 'Janowski', 'Kazaross', 'Take Point', 'Gammon Price',
+    'PR', 'Error Rate', 'Janowski', 'Kazaross', 'Take Point', 'Gammon Price',
     'equity', 'équité', 'ply', 'blunder', 'gaffe', 'Rollout', 'bgsage', 'gnubg', 'XGID',
 ] as const;
 
@@ -158,7 +158,7 @@ function sanitizeBeginnerText(rawText: string, locale: 'fr' | 'en', mathContext?
     result = result.replace(/(?<!\p{L})(?:cubeful|cubeless)(?!\p{L})/giu, isFr ? 'au jeu' : 'in the game');
     result = result.replace(/[0-4]-ply/giu, isFr ? 'analyse' : 'analysis');
     result = result.replace(/(?<!\p{L})ply(?!\p{L})/giu, isFr ? 'profondeur' : 'depth');
-    result = result.replace(/(?<!\p{L})(?:PR|Error Rate|ERA)(?!\p{L})/giu, isFr ? 'précision' : 'accuracy');
+    result = result.replace(/(?<!\p{L})(?:PR|Error Rate)(?!\p{L})/giu, isFr ? 'précision' : 'accuracy');
     result = result.replace(/(?<!\p{L})(?:equity|équité)(?!\p{L})/giu, isFr ? 'chances de victoire' : 'winning chances');
     result = result.replace(/(?<!\p{L})(?:blunder|gaffe)(?!\p{L})/giu, isFr ? 'erreur importante' : 'major mistake');
     result = result.replace(/(?<!\p{L})(?:Janowski|Kazaross)(?!\p{L})/giu, isFr ? 'les maîtres' : 'the masters');

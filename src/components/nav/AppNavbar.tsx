@@ -151,7 +151,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                             </span>
                         </div>
                     </Link>
-                    {tierGate !== 'BEGINNER' && (
+                    {activeTab !== 'play' && tierGate !== 'BEGINNER' && (
                         <span
                             data-testid="app-version-badge"
                             className="rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-semibold tracking-tight shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] border-[#10B981]/35 bg-gradient-to-r from-[#0F2922]/90 via-[#0B0E14] to-[#D4AF37]/15 text-[#34D399]"
@@ -197,7 +197,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     )}
                     {statusBadge}
                     {/* Capital 10 000 PTS & Badges adaptatifs de niveau */}
-                    <NavbarPointsAndBadges tierGate={tierGate} />
+                    <NavbarPointsAndBadges tierGate={tierGate} showStats={!statusBadge} />
 
                     {!isInstalled && canInstall && (
                         <button
@@ -222,7 +222,7 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                         data-testid="navbar-locale-toggle-btn"
                         title={locale === 'fr' ? 'Switch to English' : 'Passer en Français'}
                         aria-label={locale === 'fr' ? 'Switch to English' : 'Passer en Français'}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900/90 px-2.5 py-1 font-mono text-xs sm:text-sm font-bold tracking-wider text-stone-200 transition hover:border-[#D4AF37]/50 hover:text-[#D4AF37] active:scale-95"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900/90 px-2.5 py-1 font-mono text-xs sm:text-sm font-bold tracking-wider text-stone-200 transition hover:border-[#D4AF37]/50 hover:text-[#D4AF37] active:scale-95 shrink-0"
                     >
                         <span className={locale === 'fr' ? 'text-[#D4AF37] font-black' : 'text-stone-400'}>FR</span>
                         <span className="text-stone-600">|</span>

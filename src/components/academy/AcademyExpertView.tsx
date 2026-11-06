@@ -67,12 +67,12 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
         </h2>
         <p className="text-xs sm:text-sm text-neutral-300 max-w-2xl mx-auto">
           {isEn
-            ? 'The Cap 6.0 Law (Snowie/XG), Adaptive Error Rate (ERA), Kazaross-XG2 Match Equity, and Keith Count.'
-            : 'La Loi du Cap 6.0 (Norme Snowie/XG), l’Error Rate Adaptatif (ERA), l’Équité MET Kazaross-XG2 et la Course de Keith.'}
+            ? 'The Cap 6.0 Law (Snowie/XG), Kazaross-XG2 Match Equity, and Keith Count.'
+            : 'La Loi du Cap 6.0 (Norme Snowie/XG), l’Équité MET Kazaross-XG2 et la Course de Keith.'}
         </p>
       </div>
 
-      {/* 1. SYNTHÈSE SCIENTIFIQUE : LA LOI DU CAP 6.0 & L'ERA */}
+      {/* 1. SYNTHÈSE SCIENTIFIQUE : LA LOI DU CAP 6.0 & PRÉCISION DE HAUT NIVEAU */}
       <section
         data-testid="expert-cap6-era-card"
         className="rounded-2xl border border-amber-400/30 bg-gradient-to-br from-[#121924] via-[#090D14] to-[#14120A] p-5 sm:p-6 shadow-2xl space-y-4"
@@ -83,8 +83,8 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
         </div>
         <h3 className="text-lg sm:text-xl font-bold text-white font-serif">
           {isEn
-            ? 'The Cap 6.0 Law & Adaptive Error Rate (ERA)'
-            : 'La Loi du Cap 6.0 & L\'Error Rate Adaptatif (ERA)'}
+            ? 'The Cap 6.0 Law & High-Level Accuracy'
+            : 'La Loi du Cap 6.0 & La Précision de Haut Niveau'}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm text-neutral-200">
           <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
@@ -99,7 +99,7 @@ export const AcademyExpertView: React.FC<AcademyExpertViewProps> = React.memo(({
           </div>
           <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
             <h4 className="font-bold text-amber-300">
-              {isEn ? '2. Adaptive Exploitation (ERA)' : '2. L\'Exploitation Adaptative (ERA)'}
+              {isEn ? '2. Cube Psychology & Exploitation' : '2. Psychologie & Exploitation du Videau'}
             </h4>
             <p className="text-xs leading-relaxed text-neutral-300">
               {isEn
