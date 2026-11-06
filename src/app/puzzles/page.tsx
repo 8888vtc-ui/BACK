@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import BlunderDrillView from '../../components/drills/BlunderDrillView';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
 import { BeginnerAcademyFlow } from '../../components/beginner/BeginnerAcademyFlow';
@@ -14,7 +15,18 @@ export interface PuzzlesPageProps {
 
 export async function generateMetadata({ searchParams }: PuzzlesPageProps): Promise<Metadata> {
     const resolvedParams = searchParams ? await searchParams : undefined;
-    const isBeginner = resolvedParams?.mode === 'beginner-academy' || resolvedParams?.gate === 'beginner' || resolvedParams?.filter === 'beginner';
+    let cookieGate: string | undefined;
+    try {
+        const cookieStore = await cookies();
+        cookieGate = cookieStore.get('bgtour_player_gate')?.value?.toLowerCase();
+    } catch {}
+    const gateLower = resolvedParams?.gate?.toLowerCase();
+    const isBeginner =
+        resolvedParams?.mode === 'beginner-academy' ||
+        gateLower === 'beginner' ||
+        resolvedParams?.filter === 'beginner' ||
+        cookieGate === 'beginner';
+
     if (isBeginner) {
         return {
             title: "Académie d'Initiation — Backgammon Tour",
@@ -41,7 +53,17 @@ export async function generateMetadata({ searchParams }: PuzzlesPageProps): Prom
 
 export default async function PuzzlesPage({ searchParams }: PuzzlesPageProps) {
     const resolvedParams = searchParams ? await searchParams : undefined;
-    const isBeginnerAcademy = resolvedParams?.mode === 'beginner-academy' || resolvedParams?.gate === 'beginner';
+    let cookieGate: string | undefined;
+    try {
+        const cookieStore = await cookies();
+        cookieGate = cookieStore.get('bgtour_player_gate')?.value?.toLowerCase();
+    } catch {}
+    const gateLower = resolvedParams?.gate?.toLowerCase();
+    const isBeginnerAcademy =
+        resolvedParams?.mode === 'beginner-academy' ||
+        gateLower === 'beginner' ||
+        (cookieGate === 'beginner' && resolvedParams?.filter !== 'personal-blunders');
+
     const initialMode =
         resolvedParams?.filter === 'personal-blunders' || resolvedParams?.mode === 'personal_blunders'
             ? 'personal_blunders'

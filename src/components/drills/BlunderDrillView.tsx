@@ -6,8 +6,9 @@
  * Loi 1 : Tout Joueur Invité (`!authenticStats.isAuthenticated`) est bloqué en amont par `PersonalBlundersGuestLockView`.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
+import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import PersonalBlundersGuestLockView from './PersonalBlundersGuestLockView';
 import BlunderDrillActiveSession from './BlunderDrillActiveSession';
 import type { QuizDrillMode } from './DrillHeader';
@@ -20,6 +21,14 @@ export interface BlunderDrillViewProps {
 
 export default function BlunderDrillView(props: BlunderDrillViewProps) {
     const authenticStats = useAuthenticPlayerStats();
+    const { tierGate } = usePlayerTierGate();
+
+    useEffect(() => {
+        if (tierGate === 'BEGINNER' && typeof document !== 'undefined') {
+            document.title = "Académie d'Initiation — Backgammon Tour";
+        }
+    }, [tierGate]);
+
     if (!authenticStats.isAuthenticated) {
         return <PersonalBlundersGuestLockView featureMode="quizzes" onUnlockedSuccess={authenticStats.refreshStats} />;
     }

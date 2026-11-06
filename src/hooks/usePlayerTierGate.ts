@@ -47,6 +47,11 @@ export function usePlayerTierGate() {
         const saved = getSavedPlayerTierGate();
         setTierGateState(saved);
         setIsHydrated(true);
+        try {
+            if (typeof document !== 'undefined') {
+                document.cookie = `bgtour_player_gate=${saved}; path=/; max-age=31536000; SameSite=Lax`;
+            }
+        } catch {}
 
         const onStorage = (e: StorageEvent) => {
             if (e.key === PLAYER_TIER_GATE_STORAGE_KEY && e.newValue) {
@@ -73,6 +78,9 @@ export function usePlayerTierGate() {
         setTierGateState(nextGate);
         try {
             localStorage.setItem(PLAYER_TIER_GATE_STORAGE_KEY, nextGate);
+            if (typeof document !== 'undefined') {
+                document.cookie = `bgtour_player_gate=${nextGate}; path=/; max-age=31536000; SameSite=Lax`;
+            }
             if (typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent<PlayerTierGate>('bgtour-player-gate-change', { detail: nextGate }));
             }
