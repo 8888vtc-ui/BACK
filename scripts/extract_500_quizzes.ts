@@ -85,7 +85,7 @@ function main() {
         "/**",
         " * @file src/features/drills/bgsage3PlyFactorySeed.ts",
         " * @description 500 quiz 3-ply certifiés Open Sage (100 par palier DEBUTANT/CLUB/INTER/EXPERT/MASTER).",
-        " * Strictement <= 320 lignes, 0 any, 0 ERH, 0 ouverture.",
+        " * Strictement <= 320 lignes, 0 any, 0 PR invente, 0 ouverture.",
         " */",
         "",
         "import type { HarvestedSeedInput } from './benchmarkBlunders';",

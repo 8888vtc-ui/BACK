@@ -20,8 +20,13 @@ import {
     type ConcludeGameRoomParams,
     type ConcludedRoomResult,
 } from './roomConcludeService';
+import {
+    pushRoomAction as pushRoomActionInternal,
+    fetchRoomActions as fetchRoomActionsInternal,
+    type PushActionParams,
+} from './roomActionService';
 
-export type { ConcludeGameRoomParams, ConcludedRoomResult };
+export type { ConcludeGameRoomParams, ConcludedRoomResult, PushActionParams };
 
 export interface CreateRoomParams {
     host: PlayerEloProfile;
@@ -35,28 +40,6 @@ export interface JoinRoomParams {
     guest: PlayerEloProfile;
 }
 
-export interface PushActionParams {
-    roomId: string;
-    player: 'X' | 'O';
-    actionType:
-    | 'ROLL_DICE'
-    | 'MOVE_CHECKER'
-    | 'OFFER_DOUBLE'
-    | 'ACCEPT_DOUBLE'
-    | 'PASS_DOUBLE'
-    | 'END_TURN'
-    | 'RESIGN'
-    | 'TIMEOUT'
-    | 'SYNC_SNAPSHOT';
-    boardAfter: number[];
-    dice?: [number, number] | null;
-    moveFrom?: number | null;
-    moveTo?: number | null;
-    moveNotation?: string | null;
-    cubeValue?: number | null;
-    timeSpentMs?: number;
-}
-
 export interface RoomSubscriptionCallbacks {
     onRoomStateChange: (room: GameRoomRecord) => void;
     onActionReceived: (action: RoomActionRecord) => void;
@@ -65,7 +48,6 @@ export interface RoomSubscriptionCallbacks {
 
 // Registre Mock en mémoire pour tests & mode hors-ligne
 const mockRoomsRegistry = new Map<string, GameRoomRecord>();
-const mockActionsRegistry = new Map<string, RoomActionRecord[]>();
 
 interface MockSubscriber {
     roomId: string;
@@ -135,32 +117,16 @@ export async function createGameRoom(params: CreateRoomParams): Promise<GameRoom
         board: initialBoard,
         score_x: 0,
         score_o: 0,
-        turn: 'X',
-        dice: null,
-        used_dice: [false, false],
-        cube_value: 1,
-        cube_owner: null,
-        doubling_offered_by: null,
-        is_crawford: false,
-        time_control_type: 'per_turn',
-        time_limit_seconds: timeLimitSeconds,
-        clock_x_ms: timeLimitSeconds * 1000,
-        clock_o_ms: timeLimitSeconds * 1000,
-        last_turn_started_at: now,
-        sequence_number: 0,
-        winner: null,
-        win_type: null,
-        points_won: 0,
-        elo_delta_x: null,
-        elo_delta_o: null,
-        created_at: now,
-        updated_at: now,
+        turn: 'X', dice: null, used_dice: [false, false], cube_value: 1, cube_owner: null,
+        doubling_offered_by: null, is_crawford: false, time_control_type: 'per_turn',
+        time_limit_seconds: timeLimitSeconds, clock_x_ms: timeLimitSeconds * 1000, clock_o_ms: timeLimitSeconds * 1000,
+        last_turn_started_at: now, sequence_number: 0, winner: null, win_type: null,
+        points_won: 0, elo_delta_x: null, elo_delta_o: null, created_at: now, updated_at: now,
     };
 
     if (!isSupabaseConfigured()) {
         mockRoomsRegistry.set(newRoom.id, newRoom);
         mockRoomsRegistry.set(code.toUpperCase(), newRoom);
-        mockActionsRegistry.set(newRoom.id, []);
         crossTabChannel?.postMessage(newRoom);
         return newRoom;
     }
@@ -225,7 +191,7 @@ export async function joinGameRoomByCode(params: JoinRoomParams): Promise<GameRo
             player_o_id: guest.isGuest ? null : guest.id,
             player_o_name: guest.displayName,
             player_o_rating: guest.rating,
-            status: 'in_progress',
+            status: 'in_progress' as const,
             updated_at: new Date().toISOString(),
         };
 
@@ -236,73 +202,56 @@ export async function joinGameRoomByCode(params: JoinRoomParams): Promise<GameRo
         return updatedRoom;
     }
 
-    // 1. Chercher la salle correspondante
+    // 1. Chercher la salle correspondante la plus récente
     const { data: foundRoom, error: findError } = await supabase
         .from('game_rooms')
         .select('*')
         .eq('code', cleanCode)
         .in('status', ['waiting', 'ready'])
-        .single();
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
     if (findError || !foundRoom) {
         throw new Error(`Aucune salle active trouvée pour le code "${cleanCode}".`);
     }
 
     // 2. Mettre à jour avec les informations de l'invité
-    const { data: updatedRoom, error: updateError } = await supabase
-        .from('game_rooms')
-        .update({
-            guest_id: guest.isGuest ? null : guest.id,
-            guest_guest_token: guest.isGuest ? guest.id : null,
-            player_o_id: guest.isGuest ? null : guest.id,
-            player_o_name: guest.displayName,
-            player_o_rating: guest.rating,
-            status: 'in_progress',
-            updated_at: new Date().toISOString(),
-        })
-        .eq('id', foundRoom.id)
-        .select('*')
-        .single();
+    const updatePayload = {
+        guest_id: guest.isGuest ? null : guest.id,
+        guest_guest_token: guest.isGuest ? guest.id : null,
+        player_o_id: guest.isGuest ? null : guest.id,
+        player_o_name: guest.displayName,
+        player_o_rating: guest.rating,
+        status: 'in_progress' as const,
+        updated_at: new Date().toISOString(),
+    };
 
-    if (updateError || !updatedRoom) {
-        throw new Error(`Impossible de rejoindre la salle : ${updateError?.message}`);
-    }
+    const { data: updatedRows, error: updateError } = await supabase
+        .from('game_rooms').update(updatePayload).eq('id', foundRoom.id).select('*');
+    if (updateError) throw new Error(`Impossible de rejoindre la salle : ${updateError.message}`);
 
+    const updatedRoom: GameRoomRecord = (updatedRows && updatedRows[0])
+        ? (updatedRows[0] as GameRoomRecord)
+        : ({ ...foundRoom, ...updatePayload } as GameRoomRecord);
+
+    mockRoomsRegistry.set(foundRoom.id, updatedRoom);
+    mockRoomsRegistry.set(cleanCode, updatedRoom);
+    notifyMockSubscribers(updatedRoom);
+    crossTabChannel?.postMessage(updatedRoom);
+    supabase.channel(`realtime_room_${foundRoom.id}`).send({
+        type: 'broadcast',
+        event: 'room_state',
+        payload: updatedRoom,
+    }).catch(() => {});
     return updatedRoom;
 }
 
 /**
- * Enregistre une action de jeu dans room_actions.
+ * Enregistre une action de jeu dans room_actions (délégué à roomActionService.ts).
  */
 export async function pushRoomAction(params: PushActionParams): Promise<RoomActionRecord> {
-    const {
-        roomId, player, actionType, boardAfter, dice = null,
-        moveFrom = null, moveTo = null, moveNotation = null,
-        cubeValue = null, timeSpentMs = 0,
-    } = params;
-
-    if (!isSupabaseConfigured()) {
-        const actions = mockActionsRegistry.get(roomId) || [];
-        const nextSeq = actions.length + 1;
-        const newAction: RoomActionRecord = {
-            id: `act_${Date.now()}_${nextSeq}`,
-            room_id: roomId,
-            sequence_number: nextSeq,
-            player,
-            action_type: actionType,
-            dice: dice ? [dice[0], dice[1]] : null,
-            move_from: moveFrom,
-            move_to: moveTo,
-            move_notation: moveNotation,
-            cube_value: cubeValue,
-            board_after: boardAfter,
-            time_spent_ms: timeSpentMs,
-            created_at: new Date().toISOString(),
-        };
-
-        actions.push(newAction);
-        mockActionsRegistry.set(roomId, actions);
-
+    return pushRoomActionInternal(params, (roomId, boardAfter, nextSeq) => {
         const room = mockRoomsRegistry.get(roomId);
         if (room) {
             const updated: GameRoomRecord = {
@@ -314,32 +263,14 @@ export async function pushRoomAction(params: PushActionParams): Promise<RoomActi
             mockRoomsRegistry.set(roomId, updated);
             notifyMockSubscribers(updated);
         }
+    });
+}
 
-        return newAction;
-    }
-
-    const { data, error } = await supabase
-        .from('room_actions')
-        .insert({
-            room_id: roomId,
-            player,
-            action_type: actionType,
-            dice: dice ? [dice[0], dice[1]] : null,
-            move_from: moveFrom,
-            move_to: moveTo,
-            move_notation: moveNotation,
-            cube_value: cubeValue,
-            board_after: boardAfter,
-            time_spent_ms: timeSpentMs,
-        })
-        .select('*')
-        .single();
-
-    if (error || !data) {
-        throw new Error(`Échec d'enregistrement de l'action de jeu : ${error?.message}`);
-    }
-
-    return data;
+/**
+ * Récupère l'historique des actions d'une salle par ordre chronologique.
+ */
+export async function fetchRoomActions(roomId: string): Promise<RoomActionRecord[]> {
+    return fetchRoomActionsInternal(roomId);
 }
 
 /**
@@ -372,16 +303,15 @@ export function subscribeToGameRoom(
     localUserId: string,
     callbacks: RoomSubscriptionCallbacks,
 ): { unsubscribe: () => void } {
+    const subEntry: MockSubscriber = { roomId, localUserId, callbacks };
+    mockSubscribers.add(subEntry);
+
+    const existingRoom = mockRoomsRegistry.get(roomId);
+    if (existingRoom && existingRoom.status === 'in_progress') {
+        setTimeout(() => callbacks.onRoomStateChange(existingRoom), 10);
+    }
+
     if (!isSupabaseConfigured() || typeof window === 'undefined') {
-        const subEntry: MockSubscriber = { roomId, localUserId, callbacks };
-        mockSubscribers.add(subEntry);
-
-        // Si la salle existe déjà avec un adversaire connecté, notifier immédiatement
-        const existingRoom = mockRoomsRegistry.get(roomId);
-        if (existingRoom && existingRoom.status === 'in_progress') {
-            setTimeout(() => callbacks.onRoomStateChange(existingRoom), 10);
-        }
-
         return {
             unsubscribe: () => {
                 mockSubscribers.delete(subEntry);
@@ -405,6 +335,11 @@ export function subscribeToGameRoom(
             if (updatedRoom) callbacks.onRoomStateChange(updatedRoom);
         },
     );
+
+    channel.on('broadcast', { event: 'room_state' }, (payload) => {
+        const updatedRoom = payload.payload as GameRoomRecord;
+        if (updatedRoom) callbacks.onRoomStateChange(updatedRoom);
+    });
 
     channel.on(
         'postgres_changes',
@@ -431,6 +366,7 @@ export function subscribeToGameRoom(
 
     return {
         unsubscribe: () => {
+            mockSubscribers.delete(subEntry);
             supabase.removeChannel(channel).catch(() => { });
         },
     };

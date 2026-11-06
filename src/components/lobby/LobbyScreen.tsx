@@ -35,7 +35,7 @@ import { BeginnerHomePortal } from '../home/BeginnerHomePortal';
 import { IntermediateHomePortal } from '../home/IntermediateHomePortal';
 import { ExpertHomePortal } from '../home/ExpertHomePortal';
 
-export type LobbyModuleId = 'multiplayer' | 'openings' | 'stats' | 'drills' | 'puzzles' | 'import_export' | 'tournaments';
+export type LobbyModuleId = 'multiplayer' | 'openings' | 'stats' | 'drills' | 'puzzles' | 'import_export' | 'tournaments' | 'private_room';
 type LobbyMode = 'ai' | 'multiplayer' | 'training';
 
 export interface LobbySelection {
@@ -191,14 +191,14 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 {tierGate === 'INTERMEDIATE' && (
                                     <IntermediateHomePortal
                                         onFindOpponent={(len) => onStart({ matchLength: len ?? 5, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset })}
-                                        onInviteFriend={() => onOpenModule?.('multiplayer')}
+                                        onInviteFriend={() => onOpenModule?.('private_room')}
                                         onOpenQuizzes={() => onOpenModule?.('puzzles')}
                                     />
                                 )}
                                 {tierGate === 'EXPERT' && (
                                     <ExpertHomePortal
                                         onStartExpertMatch={(len) => onStart({ matchLength: len, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset })}
-                                        onInviteFriend={() => onOpenModule?.('multiplayer')}
+                                        onInviteFriend={() => onOpenModule?.('private_room')}
                                         onOpen3PlyQuizzes={() => onOpenModule?.('puzzles')}
                                         onOpenPlayerCard={() => setIsPassportGateOpen(true)}
                                     />

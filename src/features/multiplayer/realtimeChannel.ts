@@ -17,12 +17,7 @@ import type {
     MultiplayerRole,
 } from './types';
 
-export type ChannelConnectionStatus =
-    | 'SUBSCRIBED'
-    | 'RECONNECTING'
-    | 'CLOSED'
-    | 'TIMED_OUT'
-    | 'CHANNEL_ERROR';
+export type ChannelConnectionStatus = 'SUBSCRIBED' | 'RECONNECTING' | 'CLOSED' | 'TIMED_OUT' | 'CHANNEL_ERROR';
 
 export interface RealtimeChannelCallbacks {
     onActionReceived: (action: RealtimeBroadcastAction) => void;
@@ -33,6 +28,7 @@ export interface RealtimeChannelCallbacks {
 
 export class MultiplayerRealtimeManager {
     private channel: RealtimeChannel | null = null;
+    private localBc: BroadcastChannel | null = null;
     private roomId: string;
     private localUser: PresenceUserInfo;
     private callbacks: RealtimeChannelCallbacks;
@@ -59,17 +55,21 @@ export class MultiplayerRealtimeManager {
         this.roomId = roomId;
         this.localUser = localUser;
         this.callbacks = callbacks;
+        if (typeof globalThis !== 'undefined' && typeof globalThis.BroadcastChannel !== 'undefined') {
+            try {
+                this.localBc = new globalThis.BroadcastChannel(`bg_realtime_${roomId}`);
+                this.localBc.onmessage = (event: MessageEvent<RealtimeBroadcastAction>) => {
+                    const action = event.data;
+                    if (action && action.player !== this.localUser.role && !this.isDestroyed) {
+                        this.resetOpponentActivityTimer();
+                        this.callbacks.onActionReceived(action);
+                    }
+                };
+            } catch { /* ignore */ }
+        }
     }
 
-    /**
-     * Retourne l'état courant de la connexion et de la file de résilience.
-     */
-    public getConnectionState(): {
-        isConnected: boolean;
-        isReconnecting: boolean;
-        reconnectAttempts: number;
-        pendingActionsCount: number;
-    } {
+    public getConnectionState() {
         return {
             isConnected: this.isConnected,
             isReconnecting: this.isReconnecting,
@@ -234,6 +234,7 @@ export class MultiplayerRealtimeManager {
         }
 
         try {
+            this.localBc?.postMessage(action);
             await this.channel.send({
                 type: 'broadcast',
                 event: 'game_action',
@@ -273,6 +274,11 @@ export class MultiplayerRealtimeManager {
         this.clearReconnectTimer();
         this.unregisterOnlineListener();
 
+        if (this.localBc) {
+            this.localBc.close();
+            this.localBc = null;
+        }
+
         if (this.channel) {
             supabase.removeChannel(this.channel).catch(() => {});
             this.channel = null;
@@ -303,10 +309,7 @@ export class MultiplayerRealtimeManager {
     }
 
     private clearHeartbeat(): void {
-        if (this.heartbeatTimer) {
-            clearInterval(this.heartbeatTimer);
-            this.heartbeatTimer = null;
-        }
+        if (this.heartbeatTimer) { clearInterval(this.heartbeatTimer); this.heartbeatTimer = null; }
     }
 
     private resetOpponentActivityTimer(): void {
@@ -316,8 +319,6 @@ export class MultiplayerRealtimeManager {
     private startOpponentDisconnectCountdown(): void {
         this.clearOpponentTimeout();
         this.callbacks.onOpponentPresenceChange(false);
-
-        // Si l'adversaire n'est pas réapparu après 45s, il est considéré forfait
         this.opponentTimeoutTimer = setTimeout(() => {
             if (!this.isDestroyed) {
                 this.callbacks.onOpponentPresenceChange(false);
@@ -327,17 +328,11 @@ export class MultiplayerRealtimeManager {
     }
 
     private clearOpponentTimeout(): void {
-        if (this.opponentTimeoutTimer) {
-            clearTimeout(this.opponentTimeoutTimer);
-            this.opponentTimeoutTimer = null;
-        }
+        if (this.opponentTimeoutTimer) { clearTimeout(this.opponentTimeoutTimer); this.opponentTimeoutTimer = null; }
     }
 
     private clearReconnectTimer(): void {
-        if (this.reconnectTimer) {
-            clearTimeout(this.reconnectTimer);
-            this.reconnectTimer = null;
-        }
+        if (this.reconnectTimer) { clearTimeout(this.reconnectTimer); this.reconnectTimer = null; }
     }
 
     private registerOnlineListener(): void {

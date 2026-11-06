@@ -218,6 +218,7 @@ export default function Home() {
     const handleOpenLobbyModule = useCallback((moduleId: LobbyModuleId) => {
         switch (moduleId) {
             case 'multiplayer': userInitiatedMultiplayerRef.current = true; modals.openMatchmaking(); break;
+            case 'private_room': userInitiatedMultiplayerRef.current = true; modals.openPrivateRoomModal(); break;
             case 'openings': modals.openOpeningBook(); break;
             case 'stats': if (latestGameAnalysis) modals.openGameReview(); else navigateTo('/progression'); break;
             case 'drills': navigateTo('/drills'); break;

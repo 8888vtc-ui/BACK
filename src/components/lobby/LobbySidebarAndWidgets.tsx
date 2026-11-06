@@ -92,7 +92,7 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
         else if (typeof window !== 'undefined') window.location.assign('/?mode=matchmaking&match=5');
     };
     const handleInviteClick = () => {
-        if (onOpenModule) onOpenModule('multiplayer');
+        if (onOpenModule) onOpenModule('private_room');
         else if (typeof window !== 'undefined') window.location.assign('/?invite=1');
     };
 
