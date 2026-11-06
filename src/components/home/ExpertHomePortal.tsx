@@ -236,7 +236,7 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             type="button"
             data-testid="expert-create-card-cta"
             onClick={onOpenPlayerCard}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-[#D4AF37]/50 bg-gradient-to-r from-[#D4AF37]/20 via-[#f5d98b]/20 to-[#b88924]/20 hover:bg-[#D4AF37]/30 px-4 py-2 text-xs sm:text-sm font-bold text-[#F3E5AB] transition active:scale-95"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-[#D4AF37]/50 bg-white/10 hover:bg-white/15 px-4 py-2 text-xs sm:text-sm font-bold text-[#D4AF37] transition active:scale-95"
           >
             <span>{isEn ? 'Create my Player Card (5s) to activate my PR & Elo →' : 'Créer ma Carte de Joueur (5s) pour activer mon PR & Elo →'}</span>
           </button>
@@ -273,7 +273,7 @@ export const ExpertHomePortal: React.FC<ExpertHomePortalProps> = React.memo(({
             type="button"
             data-testid="expert-competition-quizzes-btn"
             onClick={onOpen3PlyQuizzes}
-            className="flex items-center justify-center gap-1.5 rounded-xl border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-3 py-2 text-xs font-bold text-[#F3E5AB] hover:bg-[#D4AF37]/20 transition active:scale-95"
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-[#D4AF37]/40 bg-white/[0.04] hover:bg-white/10 px-3 py-2 text-xs font-bold text-[#D4AF37] transition active:scale-95"
           >
             <Target className="w-4 h-4 text-emerald-400" strokeWidth={1.5} />
             <span>{isEn ? 'Competition Quizzes (N+1) →' : 'Quiz Compétition (Objectif N+1) →'}</span>

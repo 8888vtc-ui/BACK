@@ -108,7 +108,7 @@ export function IntermediateClubSecretsCard({
   return (
     <div
       data-testid="intermediate-club-secrets-card"
-      className="w-full bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-4 text-white"
+      className="w-full bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-3 sm:p-3.5 text-white"
     >
       {/* Header avec switcher vocal */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/10 pb-2.5">

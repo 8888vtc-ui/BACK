@@ -27,7 +27,7 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
   };
 
   return (
-    <div data-testid="intermediate-home-portal" className="flex flex-col gap-3 w-full max-w-5xl mx-auto py-1 px-1">
+    <div data-testid="intermediate-home-portal" className="flex flex-col gap-2.5 w-full max-w-5xl mx-auto py-1 px-1">
       {/* En-tête Club Compact */}
       <div className="flex flex-col gap-0.5 text-center sm:text-left px-1">
         <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#D4AF37]">
@@ -45,7 +45,7 @@ export const IntermediateHomePortal: React.FC<IntermediateHomePortalProps> = Rea
       </div>
 
       {/* BLOC 1 — LANCEMENT DE PARTIE IMMÉDIAT (PRIORITÉ N°1 DU JOUEUR DE CLUB) */}
-      <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-4 flex flex-col gap-2.5">
+      <div className="bg-[#0B0E14]/90 border border-white/[0.08] rounded-2xl shadow-xl p-3.5 sm:p-4 flex flex-col gap-2.5">
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 whitespace-nowrap min-w-0">
