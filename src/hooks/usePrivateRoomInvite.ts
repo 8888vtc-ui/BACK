@@ -55,7 +55,7 @@ export function extractTournamentTrainingFromUrl(searchOrUrl: string): {
             ? searchOrUrl.slice(searchOrUrl.indexOf('?') + 1)
             : searchOrUrl;
         const params = new URLSearchParams(queryString);
-        const rawLength = params.get('matchLength');
+        const rawLength = params.get('matchLength') ?? params.get('match');
         if (!rawLength) return null;
         const parsed = Number.parseInt(rawLength, 10);
         if (!Number.isFinite(parsed) || parsed < 1 || parsed > 25) return null;
@@ -74,7 +74,7 @@ export function cleanUrlRoomParams(): void {
     try {
         const url = new URL(window.location.href);
         let changed = false;
-        for (const key of ['inviteRoom', 'join', 'room', 'code', 'matchLength', 'tournament', 'userCode']) {
+        for (const key of ['inviteRoom', 'join', 'room', 'code', 'matchLength', 'match', 'tournament', 'userCode']) {
             if (url.searchParams.has(key)) {
                 url.searchParams.delete(key);
                 changed = true;

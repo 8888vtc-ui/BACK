@@ -80,7 +80,7 @@ describe('PrivateRoomModal', () => {
         fireEvent.click(copyLinkButton);
 
         await waitFor(() => {
-            expect(writeTextMock).toHaveBeenCalledWith(expect.stringContaining('/?join=BG-9999'));
+            expect(writeTextMock).toHaveBeenCalledWith(expect.stringContaining('room=BG-9999'));
         });
     });
 
@@ -129,7 +129,7 @@ describe('PrivateRoomModal', () => {
         await waitFor(() => {
             expect(shareMock).toHaveBeenCalledWith(expect.objectContaining({
                 title: expect.stringContaining('Backgammon'),
-                url: expect.stringContaining('/?join=BG-4A92'),
+                url: expect.stringContaining('room=BG-4A92'),
             }));
         });
     });

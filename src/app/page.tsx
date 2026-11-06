@@ -136,6 +136,7 @@ export default function Home() {
             handledMatchRoomIdRef.current = multiplayer.matchInfo.roomId;
             userInitiatedMultiplayerRef.current = false;
             const matchLen = multiplayer.matchInfo.matchLength;
+            if (multiplayer.matchInfo.localRole) setPlayerColor(multiplayer.matchInfo.localRole);
             const opp = multiplayer.opponentProfile;
             const isEn = locale === 'en';
             const isGuestLocal = Boolean(multiplayer.localProfile.isGuest);
@@ -158,6 +159,16 @@ export default function Home() {
             toast.success(isEn ? `Match vs ${opp?.displayName} (${matchMetaLabel}) — ${lenText}.` : `Match contre ${opp?.displayName} (${matchMetaLabel}) en ${lenText}.`, isEn ? 'Online Match' : 'Partie Multijoueur');
         }
     }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, multiplayer.localProfile.isGuest, locale, modals, game, resetGameHistory]);
+
+    const lastBroadcastDiceRef = useRef<string | null>(null);
+    useEffect(() => {
+        if (!isMultiplayerActive || !game.dice || game.state.turn !== playerColor) return;
+        const diceKey = `${game.state.turn}:${game.dice[0]}-${game.dice[1]}:${game.matchLog.length}`;
+        if (lastBroadcastDiceRef.current !== diceKey) {
+            lastBroadcastDiceRef.current = diceKey;
+            multiplayer.broadcastDiceRolled(game.dice);
+        }
+    }, [isMultiplayerActive, game.dice, game.state.turn, playerColor, game.matchLog.length, multiplayer]);
 
     usePrivateRoomInvite({
         onAutoJoinRoom: useCallback((code: string) => { userInitiatedMultiplayerRef.current = true; modals.openPrivateRoomModal(code); }, [modals]),

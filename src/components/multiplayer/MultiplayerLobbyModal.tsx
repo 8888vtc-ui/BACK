@@ -76,8 +76,8 @@ export default function MultiplayerLobbyModal({
 
     if (!isOpen) return null;
 
-    const isGuest = !stats.canHavePR || localProfile.isGuest;
-    const displayName = isGuest ? (isEn ? 'Guest Player' : 'Joueur Invité') : (stats.pseudo || localProfile.displayName);
+    const isGuest = localProfile.isGuest !== undefined ? localProfile.isGuest : !stats.canHavePR;
+    const displayName = isGuest ? (isEn ? 'Guest Player' : 'Joueur Invité') : (localProfile.displayName || stats.pseudo || (isEn ? 'Player' : 'Joueur'));
     const isMatched =
         (status === 'matched' || (status === 'connecting' && opponentProfile)) &&
         Boolean(opponentProfile && matchInfo);

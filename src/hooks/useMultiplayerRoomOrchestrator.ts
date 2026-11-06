@@ -235,20 +235,36 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [localProfile]);
 
+    const privateRoomSubRef = useRef<{ unsubscribe: () => void } | null>(null);
+
     const createPrivateRoom = useCallback(async (matchLength = 7): Promise<string> => {
         setStatus('searching'); setEloResult(null); setQuickChatMessage(null); setDisconnectCountdown(null);
+        if (privateRoomSubRef.current) {
+            privateRoomSubRef.current.unsubscribe();
+            privateRoomSubRef.current = null;
+        }
         const room = await createGameRoom({ host: localProfile, matchLength, roomType: 'private_code' });
         setPrivateRoomCode(room.code);
         const sub = subscribeToGameRoom(room.id, localProfile.id, {
             onRoomStateChange: (u) => {
-                if (u.status === 'in_progress' && u.player_o_id) {
+                const opponentPresent = Boolean(u.status === 'in_progress' && (u.player_o_id || u.guest_guest_token || u.guest_id || (u.player_o_name && u.player_o_name !== 'En attente...')));
+                if (opponentPresent) {
                     sub.unsubscribe();
-                    const opp = { id: u.player_o_id, username: u.player_o_name, displayName: u.player_o_name, rating: u.player_o_rating };
+                    privateRoomSubRef.current = null;
+                    const oppId = u.player_o_id || u.guest_guest_token || u.guest_id || 'guest_o';
+                    const opp: PlayerEloProfile = {
+                        id: oppId,
+                        username: u.player_o_name,
+                        displayName: u.player_o_name,
+                        rating: u.player_o_rating,
+                        isGuest: !u.player_o_id,
+                    };
                     initMatchedRoom(createMultiplayerMatchInfo(u.id, localProfile, opp, matchLength, localProfile.id), opp);
                 }
             },
             onActionReceived: () => {}, onPresenceChange: () => {},
         });
+        privateRoomSubRef.current = sub;
         return room.code;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [localProfile]);
@@ -256,12 +272,23 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
     const joinPrivateRoom = useCallback(async (code: string): Promise<void> => {
         setStatus('connecting'); setEloResult(null); setQuickChatMessage(null);
         const room = await joinGameRoomByCode({ code, guest: localProfile });
-        const opp = { id: room.player_x_id || room.host_id || 'host', username: room.player_x_name, displayName: room.player_x_name, rating: room.player_x_rating };
+        const hostId = room.player_x_id || room.host_guest_token || room.host_id || 'host_x';
+        const opp: PlayerEloProfile = {
+            id: hostId,
+            username: room.player_x_name,
+            displayName: room.player_x_name,
+            rating: room.player_x_rating,
+            isGuest: !room.player_x_id,
+        };
         initMatchedRoom(createMultiplayerMatchInfo(room.id, opp, localProfile, room.match_length, localProfile.id), opp);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [localProfile]);
 
     const cancelMatchmaking = useCallback(() => {
+        if (privateRoomSubRef.current) {
+            privateRoomSubRef.current.unsubscribe();
+            privateRoomSubRef.current = null;
+        }
         if (realtimeRef.current) { realtimeRef.current.disconnect(); realtimeRef.current = null; }
         clearActiveSession(); setRecoverableSession(null); setClockState(null); setStatus('idle');
         setMatchInfo(null); setOpponentProfile(null); setPrivateRoomCode(null); setDisconnectCountdown(null);

@@ -21,8 +21,8 @@ export const LobbyMatchedVersus: React.FC<LobbyMatchedVersusProps> = ({
     const { locale } = useTranslation();
     const isEn = locale === 'en';
     const stats = useAuthenticPlayerStats();
-    const isGuest = !stats.canHavePR || localProfile.isGuest;
-    const localName = isGuest ? (isEn ? 'Guest Player' : 'Joueur Invité') : (stats.pseudo || localProfile.displayName);
+    const isGuest = localProfile.isGuest !== undefined ? localProfile.isGuest : !stats.canHavePR;
+    const localName = isGuest ? (isEn ? 'Guest Player' : 'Joueur Invité') : (localProfile.displayName || stats.pseudo || (isEn ? 'Player' : 'Joueur'));
 
     return (
         <div className="py-6 space-y-6 animate-fade-in text-center" data-testid="lobby-matched-view">

@@ -6,7 +6,8 @@
  * - Rejoindre un salon par code
  * - Enregistrement atomique des coups avec trigger de séquençage
  * - Souscription Realtime hybride (Postgres Changes CDC + Presence + Broadcast)
- * - Fallback in-memory résilient pour le mode hors-ligne et les tests
+ * - Fallback in-memory & BroadcastChannel résilient pour tests, hors-ligne et multi-onglets
+ * Conforme à SCALABILITY.md (< 400 lignes, 0 any).
  */
 
 import { supabase, isSupabaseConfigured } from '../../lib/supabase/client';
@@ -14,8 +15,13 @@ import type { GameRoomRecord, RoomActionRecord } from '../../lib/supabase/types'
 import type { PlayerEloProfile } from './types';
 import { generateRoomCode } from './realtimeSchema';
 import { createInitialState } from '../../engine/backgammonEngine';
-import { calculateMultiplayerGlicko2Rating } from './galaxyRating';
-import type { HeadToHeadCompositeResult } from '../../lib/rating/glicko2Composite';
+import {
+    concludeGameRoomInternal,
+    type ConcludeGameRoomParams,
+    type ConcludedRoomResult,
+} from './roomConcludeService';
+
+export type { ConcludeGameRoomParams, ConcludedRoomResult };
 
 export interface CreateRoomParams {
     host: PlayerEloProfile;
@@ -60,6 +66,44 @@ export interface RoomSubscriptionCallbacks {
 // Registre Mock en mémoire pour tests & mode hors-ligne
 const mockRoomsRegistry = new Map<string, GameRoomRecord>();
 const mockActionsRegistry = new Map<string, RoomActionRecord[]>();
+
+interface MockSubscriber {
+    roomId: string;
+    localUserId: string;
+    callbacks: RoomSubscriptionCallbacks;
+}
+
+const mockSubscribers = new Set<MockSubscriber>();
+
+function getBroadcastChannel(name: string): BroadcastChannel | null {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.BroadcastChannel !== 'undefined') {
+        try {
+            return new globalThis.BroadcastChannel(name);
+        } catch {
+            return null;
+        }
+    }
+    return null;
+}
+
+const crossTabChannel = getBroadcastChannel('bg_rooms_sync');
+if (crossTabChannel) {
+    crossTabChannel.onmessage = (event: MessageEvent<GameRoomRecord>) => {
+        const room = event.data;
+        if (!room || !room.id) return;
+        mockRoomsRegistry.set(room.id, room);
+        if (room.code) mockRoomsRegistry.set(room.code.toUpperCase(), room);
+        notifyMockSubscribers(room);
+    };
+}
+
+function notifyMockSubscribers(room: GameRoomRecord): void {
+    for (const sub of mockSubscribers) {
+        if (sub.roomId === room.id) {
+            sub.callbacks.onRoomStateChange(room);
+        }
+    }
+}
 
 let roomCounter = 0;
 
@@ -117,6 +161,7 @@ export async function createGameRoom(params: CreateRoomParams): Promise<GameRoom
         mockRoomsRegistry.set(newRoom.id, newRoom);
         mockRoomsRegistry.set(code.toUpperCase(), newRoom);
         mockActionsRegistry.set(newRoom.id, []);
+        crossTabChannel?.postMessage(newRoom);
         return newRoom;
     }
 
@@ -148,18 +193,12 @@ export async function createGameRoom(params: CreateRoomParams): Promise<GameRoom
             .single();
 
         if (error || !data) {
-            throw new Error(
-                `Impossible de créer la salle : ${error?.message ?? 'réponse vide de Supabase.'}`,
-            );
+            throw new Error(`Impossible de créer la salle : ${error?.message ?? 'réponse vide de Supabase.'}`);
         }
 
         return data;
     } catch (err) {
-        // Aucun repli silencieux : l'échec d'insertion Supabase doit remonter à l'appelant.
-        // Le joueur ne doit jamais croire qu'il est connecté alors que la salle n'existe pas.
-        throw new Error(
-            `Impossible de créer la salle : ${err instanceof Error ? err.message : 'erreur inconnue.'}`,
-        );
+        throw new Error(`Impossible de créer la salle : ${err instanceof Error ? err.message : 'erreur inconnue.'}`);
     }
 }
 
@@ -192,6 +231,8 @@ export async function joinGameRoomByCode(params: JoinRoomParams): Promise<GameRo
 
         mockRoomsRegistry.set(room.id, updatedRoom);
         mockRoomsRegistry.set(cleanCode, updatedRoom);
+        notifyMockSubscribers(updatedRoom);
+        crossTabChannel?.postMessage(updatedRoom);
         return updatedRoom;
     }
 
@@ -232,20 +273,12 @@ export async function joinGameRoomByCode(params: JoinRoomParams): Promise<GameRo
 
 /**
  * Enregistre une action de jeu dans room_actions.
- * Le trigger Postgres incrémente le sequence_number et met à jour game_rooms.board.
  */
 export async function pushRoomAction(params: PushActionParams): Promise<RoomActionRecord> {
     const {
-        roomId,
-        player,
-        actionType,
-        boardAfter,
-        dice = null,
-        moveFrom = null,
-        moveTo = null,
-        moveNotation = null,
-        cubeValue = null,
-        timeSpentMs = 0,
+        roomId, player, actionType, boardAfter, dice = null,
+        moveFrom = null, moveTo = null, moveNotation = null,
+        cubeValue = null, timeSpentMs = 0,
     } = params;
 
     if (!isSupabaseConfigured()) {
@@ -272,12 +305,14 @@ export async function pushRoomAction(params: PushActionParams): Promise<RoomActi
 
         const room = mockRoomsRegistry.get(roomId);
         if (room) {
-            mockRoomsRegistry.set(roomId, {
+            const updated: GameRoomRecord = {
                 ...room,
                 board: boardAfter,
                 sequence_number: nextSeq,
                 updated_at: new Date().toISOString(),
-            });
+            };
+            mockRoomsRegistry.set(roomId, updated);
+            notifyMockSubscribers(updated);
         }
 
         return newAction;
@@ -338,7 +373,20 @@ export function subscribeToGameRoom(
     callbacks: RoomSubscriptionCallbacks,
 ): { unsubscribe: () => void } {
     if (!isSupabaseConfigured() || typeof window === 'undefined') {
-        return { unsubscribe: () => { } };
+        const subEntry: MockSubscriber = { roomId, localUserId, callbacks };
+        mockSubscribers.add(subEntry);
+
+        // Si la salle existe déjà avec un adversaire connecté, notifier immédiatement
+        const existingRoom = mockRoomsRegistry.get(roomId);
+        if (existingRoom && existingRoom.status === 'in_progress') {
+            setTimeout(() => callbacks.onRoomStateChange(existingRoom), 10);
+        }
+
+        return {
+            unsubscribe: () => {
+                mockSubscribers.delete(subEntry);
+            },
+        };
     }
 
     const channelName = `realtime_room_${roomId}`;
@@ -349,41 +397,24 @@ export function subscribeToGameRoom(
         },
     });
 
-    // 1. Écoute des mutations CDC sur game_rooms (état dénormalisé)
     channel.on(
         'postgres_changes',
-        {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'game_rooms',
-            filter: `id=eq.${roomId}`,
-        },
+        { event: 'UPDATE', schema: 'public', table: 'game_rooms', filter: `id=eq.${roomId}` },
         (payload) => {
             const updatedRoom = payload.new as GameRoomRecord;
-            if (updatedRoom) {
-                callbacks.onRoomStateChange(updatedRoom);
-            }
+            if (updatedRoom) callbacks.onRoomStateChange(updatedRoom);
         },
     );
 
-    // 2. Écoute des insertions de coups dans room_actions
     channel.on(
         'postgres_changes',
-        {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'room_actions',
-            filter: `room_id=eq.${roomId}`,
-        },
+        { event: 'INSERT', schema: 'public', table: 'room_actions', filter: `room_id=eq.${roomId}` },
         (payload) => {
             const newAction = payload.new as RoomActionRecord;
-            if (newAction) {
-                callbacks.onActionReceived(newAction);
-            }
+            if (newAction) callbacks.onActionReceived(newAction);
         },
     );
 
-    // 3. Suivi de présence (en ligne / déconnecté)
     channel.on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
         let opponentPresent = false;
@@ -405,104 +436,18 @@ export function subscribeToGameRoom(
     };
 }
 
-export interface ConcludeGameRoomParams {
-    roomId: string;
-    winner: 'X' | 'O';
-    playerXPR: number;
-    playerOPR: number;
-}
-
-export interface ConcludedRoomResult {
-    room: GameRoomRecord;
-    glicko2Result: HeadToHeadCompositeResult;
-    deltaRatingX: number;
-    deltaRatingO: number;
-}
-
 /**
- * Clôture un match multijoueur : calcule la mise à jour Glicko-2 Composite
- * (pondérée par la longueur w(L) = L/(L+4) et l'écart de PR Open Sage),
- * marque le salon comme terminé et persiste les nouveaux classements.
+ * Clôture un match multijoueur (délégué à roomConcludeService.ts).
  */
 export async function concludeGameRoom(
     params: ConcludeGameRoomParams,
 ): Promise<ConcludedRoomResult> {
-    const room = await getGameRoom(params.roomId);
-    if (!room) {
-        throw new Error(`Salle "${params.roomId}" introuvable.`);
-    }
-
-    const glicko2Result = calculateMultiplayerGlicko2Rating({
-        playerXRating: room.player_x_rating,
-        playerORating: room.player_o_rating,
-        winner: params.winner,
-        playerXPR: params.playerXPR,
-        playerOPR: params.playerOPR,
-        matchLength: room.match_length || 7,
-    });
-
-    const newRatingX = Math.round(glicko2Result.playerX.rating);
-    const newRatingO = Math.round(glicko2Result.playerO.rating);
-    const now = new Date().toISOString();
-
-    if (!isSupabaseConfigured()) {
-        const updatedRoom: GameRoomRecord = {
-            ...room,
-            status: 'completed',
-            winner: params.winner,
-            player_x_rating: newRatingX,
-            player_o_rating: newRatingO,
-            updated_at: now,
-        };
-        mockRoomsRegistry.set(room.id, updatedRoom);
-        if (room.code) {
-            mockRoomsRegistry.set(room.code, updatedRoom);
-        }
-
-        return {
-            room: updatedRoom,
-            glicko2Result,
-            deltaRatingX: glicko2Result.playerX.ratingDelta,
-            deltaRatingO: glicko2Result.playerO.ratingDelta,
-        };
-    }
-
-    // Persistance dans Supabase
-    const { data: updatedRoom, error: updateError } = await supabase
-        .from('game_rooms')
-        .update({
-            status: 'completed',
-            winner: params.winner,
-            player_x_rating: newRatingX,
-            player_o_rating: newRatingO,
-            updated_at: now,
-        })
-        .eq('id', params.roomId)
-        .select('*')
-        .single();
-
-    if (updateError || !updatedRoom) {
-        throw new Error(`Impossible de clôturer la salle : ${updateError?.message}`);
-    }
-
-    // Mise à jour des profils si les joueurs sont authentifiés
-    if (room.player_x_id) {
-        await supabase
-            .from('profiles')
-            .update({ rating: newRatingX, updated_at: now })
-            .eq('id', room.player_x_id);
-    }
-    if (room.player_o_id) {
-        await supabase
-            .from('profiles')
-            .update({ rating: newRatingO, updated_at: now })
-            .eq('id', room.player_o_id);
-    }
-
-    return {
-        room: updatedRoom as GameRoomRecord,
-        glicko2Result,
-        deltaRatingX: glicko2Result.playerX.ratingDelta,
-        deltaRatingO: glicko2Result.playerO.ratingDelta,
-    };
+    return concludeGameRoomInternal(
+        params,
+        getGameRoom,
+        (roomId, updated) => {
+            mockRoomsRegistry.set(roomId, updated);
+            if (updated.code) mockRoomsRegistry.set(updated.code, updated);
+        },
+    );
 }

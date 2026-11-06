@@ -12,6 +12,7 @@ import GameModalsContainer from '../modals/GameModalsContainer';
 import { GameScreenTopBar } from './GameScreenTopBar';
 import { GameScreenMobileControls } from './GameScreenMobileControls';
 import { GameScreenAntiTiltBanner } from './GameScreenAntiTiltBanner';
+import { PrivateRoomWaitingBar } from './PrivateRoomWaitingBar';
 import { LiveProfessorCoachOverlay } from '../beginner/LiveProfessorCoachOverlay';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { useCoachQuota } from '../../hooks/useCoachQuota';
@@ -184,6 +185,16 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 notificationLevel={notificationLevel} onChangeNotificationLevel={onChangeNotificationLevel}
                 quotaBadge={quotaBadge} isVip={quota.isVip}
             />
+
+            {Boolean(multiplayer.privateRoomCode && !multiplayer.opponentProfile && multiplayer.status === 'searching') && (
+                <div className="w-full px-2 pt-1">
+                    <PrivateRoomWaitingBar
+                        roomCode={multiplayer.privateRoomCode!}
+                        matchLength={game.state.matchLength}
+                        onCancel={multiplayer.cancelMatchmaking}
+                    />
+                </div>
+            )}
 
             {isGuidedProfessorMode && !isOnlinePvpMatch && (
                 <LiveProfessorCoachOverlay

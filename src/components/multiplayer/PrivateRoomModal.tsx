@@ -30,9 +30,12 @@ const MATCH_FORMATS: ReadonlyArray<{ pts: number; label: string; sub: string }> 
     { pts: 11, label: '11 pts', sub: 'Master' },
 ];
 
-export function buildPrivateRoomInviteUrl(roomCode: string): string {
-    if (typeof window === 'undefined') return `https://backgammontour.com/?join=${roomCode}`;
-    return `${window.location.origin}/?join=${encodeURIComponent(roomCode)}`;
+export function buildPrivateRoomInviteUrl(roomCode: string, matchLength: number = 7): string {
+    const origin = typeof window !== 'undefined' && window.location?.origin
+        ? window.location.origin
+        : 'https://backgammontour.com';
+    const matchParam = matchLength && matchLength > 0 ? `&match=${matchLength}` : '';
+    return `${origin}/play?room=${encodeURIComponent(roomCode.trim().toUpperCase())}${matchParam}`;
 }
 
 export const PrivateRoomModal: React.FC<PrivateRoomModalProps> = ({

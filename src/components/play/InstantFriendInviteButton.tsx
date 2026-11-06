@@ -23,7 +23,7 @@ export function buildInstantInviteUrl(roomCode: string, matchLength: number = 5)
   const origin = typeof window !== 'undefined' && window.location?.origin
     ? window.location.origin
     : 'https://backgammontour.com';
-  return `${origin}/play?inviteRoom=${encodeURIComponent(roomCode.toLowerCase())}&match=${matchLength}`;
+  return `${origin}/play?room=${encodeURIComponent(roomCode.trim().toUpperCase())}&match=${matchLength}`;
 }
 
 export const InstantFriendInviteButton: React.FC<InstantFriendInviteButtonProps> = ({
@@ -41,8 +41,7 @@ export const InstantFriendInviteButton: React.FC<InstantFriendInviteButtonProps>
   const [selectedLength, setSelectedLength] = useState<number>(matchLength);
 
   const handleOpenModal = useCallback(() => {
-    const rawCode = generateRoomCode();
-    const code = rawCode.toLowerCase().startsWith('bg_') ? rawCode.toLowerCase() : `bg_${rawCode.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 6)}`;
+    const code = generateRoomCode();
     setCurrentCode(code);
     setCopied(false);
     setIsOpen(true);
