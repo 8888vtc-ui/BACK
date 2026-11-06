@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { RotateCcw, GraduationCap, Volume2, BookOpen, ShieldAlert, Award, Compass, Eye, EyeOff } from 'lucide-react';
+import { RotateCcw, GraduationCap, Volume2, BookOpen, ShieldAlert, Award, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
 import { pipCount, type BoardState } from '../../engine/backgammonEngine';
@@ -22,8 +22,10 @@ export interface LiveProfessorCoachOverlayProps {
   lastBotNotation?: string | null;
   activeTurn?: 'X' | 'O';
   boardState?: BoardState;
-  onToggleRecommendArrow?: (bestNotation: string) => void;
+  onToggleRecommendArrow?: () => void;
+  onHoverNotation?: (notation: string | null) => void;
   isShowingRecommendArrow?: boolean;
+  prematureDoubleWarning?: boolean;
 }
 
 export function LiveProfessorCoachOverlay({
@@ -39,7 +41,9 @@ export function LiveProfessorCoachOverlay({
   activeTurn = 'X',
   boardState,
   onToggleRecommendArrow,
-  isShowingRecommendArrow = false,
+  onHoverNotation,
+  isShowingRecommendArrow = true,
+  prematureDoubleWarning = false,
 }: LiveProfessorCoachOverlayProps) {
   const { locale } = useTranslation();
   const lang = locale === 'en' ? 'en' : 'fr';
@@ -55,18 +59,14 @@ export function LiveProfessorCoachOverlay({
 
   const activeBestNotation = proactive?.bestNotation ?? optimalMove ?? '';
 
-  // Affichage automatique des flèches dorées (#D4AF37) dès le lancer de dés
+  // Transmission automatique de la notation optimale au composant parent
   useEffect(() => {
     if (activeTurn === 'X' && dice && (dice[0] > 0 || dice[1] > 0) && activeBestNotation) {
-      if (!isShowingRecommendArrow) {
-        onToggleRecommendArrow?.(activeBestNotation);
-      }
-    } else if (!dice || activeTurn !== 'X') {
-      if (isShowingRecommendArrow) {
-        onToggleRecommendArrow?.('');
-      }
+      onHoverNotation?.(activeBestNotation);
+    } else {
+      onHoverNotation?.(null);
     }
-  }, [activeTurn, dice, activeBestNotation, isShowingRecommendArrow, onToggleRecommendArrow]);
+  }, [activeTurn, dice?.[0], dice?.[1], activeBestNotation, onHoverNotation]);
 
   // Badge Coup de Maître : affiché 3 secondes max, disparaît dès le lancer de dés
   useEffect(() => {
@@ -79,6 +79,12 @@ export function LiveProfessorCoachOverlay({
   }, [isMasterMove, dice]);
 
   const getProfessorPrompt = (): string => {
+    if (prematureDoubleWarning) {
+      return lang === 'fr'
+        ? "🎓 Pas encore ! On ne propose de doubler les points (×2) que lorsqu'on a pris un net avantage dans la partie. Continue d'abord en cliquant sur Lancer les dés !"
+        : "🎓 Not yet! You should only offer to double points (×2) when you have built a clear advantage in the game. Continue by clicking Roll Dice first!";
+    }
+
     if (activeTurn === 'X' && (!dice || (dice[0] === 0 && dice[1] === 0))) {
       const hasCheckerOnBar = Boolean(boardState && boardState.board[0] > 0);
       if (hasCheckerOnBar) {
@@ -137,12 +143,6 @@ export function LiveProfessorCoachOverlay({
     window.speechSynthesis.speak(utt);
   };
 
-  const handleToggleArrow = () => {
-    if (activeBestNotation) {
-      onToggleRecommendArrow?.(activeBestNotation);
-    }
-  };
-
   const currentNotice = activeNotice ?? antiFrustrationNotice;
 
   return (
@@ -180,13 +180,13 @@ export function LiveProfessorCoachOverlay({
 
           {/* Boutons d'interaction épurés */}
           <div className="flex flex-wrap items-center gap-1.5 shrink-0 self-end sm:self-center">
-            {/* Bouton d'Aide Visuelle : Flèche dorée sur le plateau */}
+            {/* Bouton d'Aide Visuelle : Toggle flèches dorées sur le plateau */}
             {activeBestNotation && dice && (dice[0] > 0 || dice[1] > 0) && (
               <button
                 type="button"
                 data-testid="professor-show-arrow-btn"
-                onClick={handleToggleArrow}
-                title={lang === 'fr' ? 'Voir le tracé du coup sur le plateau' : 'Show move arrow on board'}
+                onClick={onToggleRecommendArrow}
+                aria-label={isShowingRecommendArrow ? 'Masquer les flèches' : 'Afficher les flèches'}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition border ${
                   isShowingRecommendArrow
                     ? 'bg-[#D4AF37] text-slate-950 border-[#D4AF37] shadow-lg'
@@ -196,8 +196,8 @@ export function LiveProfessorCoachOverlay({
                 {isShowingRecommendArrow ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 <span>
                   {isShowingRecommendArrow
-                    ? (lang === 'fr' ? 'Masquer le coup' : 'Hide move')
-                    : (lang === 'fr' ? 'Voir le coup conseillé' : 'Show recommended move')}
+                    ? (lang === 'fr' ? '👁️ Masquer les flèches' : '👁️ Hide arrows')
+                    : (lang === 'fr' ? '👁️ Afficher les flèches' : '👁️ Show arrows')}
                 </span>
               </button>
             )}
@@ -206,7 +206,7 @@ export function LiveProfessorCoachOverlay({
               type="button"
               data-testid="professor-voice-btn"
               onClick={handleSpeakPrompt}
-              title={lang === 'fr' ? 'Écouter le Professeur' : 'Listen to Professor'}
+              aria-label={lang === 'fr' ? 'Écouter le Professeur' : 'Listen to Professor'}
               className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-amber-300 border border-white/10 transition"
             >
               <Volume2 className="w-3.5 h-3.5" />
@@ -237,23 +237,8 @@ export function LiveProfessorCoachOverlay({
           </div>
         </div>
 
-        {/* Ligne 2 : Boussole Pédagogique */}
+        {/* Ligne 2 : Indicateur de Course dynamique épuré */}
         <div className="flex flex-col gap-1.5 pt-1.5 border-t border-[#D4AF37]/20">
-          <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-400">
-            <span className="flex items-center gap-1">
-              <Compass className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>
-                {lang === 'fr'
-                  ? 'Sens de marche : Case 24 (Adverse) ➔ Case 1 (Votre Maison)'
-                  : 'Direction: Point 24 (Opponent) ➔ Point 1 (Your Home Board)'}
-              </span>
-            </span>
-            <span className="text-stone-400 font-mono text-[10px]">
-              {lang === 'fr' ? 'Sortie des dames en Case 1' : 'Bear off at Point 1'}
-            </span>
-          </div>
-
-          {/* Indicateur de Course dynamique */}
           <div className="flex items-center justify-between text-[11px] text-stone-300 bg-black/30 px-2 py-1 rounded-md border border-white/5">
             <span className="font-medium text-[#f3d27a]">
               {getRaceCompassText()}

@@ -5,7 +5,7 @@
  * Strictement <= 260 lignes, 0 `any` (LOI 5).
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import GameBoardArea from './GameBoardArea';
 import CoachMobileDrawer from '../coach/CoachMobileDrawer';
 import GameModalsContainer from '../modals/GameModalsContainer';
@@ -16,6 +16,7 @@ import { LiveProfessorCoachOverlay } from '../beginner/LiveProfessorCoachOverlay
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { useCoachQuota } from '../../hooks/useCoachQuota';
 import { useTiltDetector } from '../../hooks/useTiltDetector';
+import { pipCount } from '../../engine/backgammonEngine';
 import type { ThemeName, CoachHighlight } from './boardThemes';
 import type { UseBackgammonGameReturn } from '../../hooks/useBackgammonGame';
 import type { useGameModals } from '../../hooks/useGameModals';
@@ -88,11 +89,29 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
 }) => {
     const [isCubeSheetOpen, setIsCubeSheetOpen] = useState(false);
     const [isFullFocusMode, setIsFullFocusMode] = useState(false);
+    const [prematureDoubleWarning, setPrematureDoubleWarning] = useState(false);
+    const [showGuidedArrows, setShowGuidedArrows] = useState(true);
     const { tierGate } = usePlayerTierGate();
     const quota = useCoachQuota({ locale });
     const tilt = useTiltDetector({ windowSize: 6 });
     const lastRecordedFeedbackRef = useRef<LastMoveFeedback | null>(null);
     const lastAutoCoachRollKey = useRef<string>('');
+
+    useEffect(() => {
+        setShowGuidedArrows(true);
+    }, [game.dice?.[0], game.dice?.[1], game.state.turn]);
+
+    const pips = useMemo(() => pipCount(game.state.board), [game.state.board]);
+    const isPrematureDouble = tierGate === 'BEGINNER' && (pips.X >= pips.O - 10);
+
+    const handleOfferDouble = useCallback(() => {
+        if (isPrematureDouble) {
+            setPrematureDoubleWarning(true);
+            setTimeout(() => setPrematureDoubleWarning(false), 6000);
+            return;
+        }
+        game.offerDouble();
+    }, [isPrematureDouble, game]);
 
     useEffect(() => {
         if (tierGate !== 'BEGINNER' || isMultiplayerActive || !game.dice || game.state.turn !== 'X') return;
@@ -167,22 +186,22 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                     optimalMove={coach?.optimalMove}
                     whyOptimal={coach?.whyOptimal}
                     activeTurn={game.state.turn}
+                    prematureDoubleWarning={prematureDoubleWarning}
                     lastBotNotation={
                         game.matchLog.length > 0 && game.matchLog[game.matchLog.length - 1].player === 'O'
                             ? game.matchLog[game.matchLog.length - 1].notation
                             : null
                     }
-                    onToggleRecommendArrow={(notation) => {
-                        onCandidateHover(hoveredCandidate === notation ? null : notation);
-                    }}
-                    isShowingRecommendArrow={Boolean(hoveredCandidate)}
+                    onToggleRecommendArrow={() => setShowGuidedArrows((prev) => !prev)}
+                    isShowingRecommendArrow={showGuidedArrows}
                 />
             )}
 
             <GameBoardArea
                 theme={theme} game={game} activeDie={activeDie} isBoardLoading={isBoardLoading}
-                activeCoachHighlight={coachHighlight} onCheckerClick={onCheckerClick}
+                activeCoachHighlight={showGuidedArrows ? coachHighlight : null} onCheckerClick={onCheckerClick}
                 onCheckerRightClick={onCheckerRightClick} onDestinationClick={onDestinationClick}
+                onOfferDouble={handleOfferDouble} isPrematureDouble={isPrematureDouble}
                 onPlayMove={onPlayMove} onSelectDie={onSelectDie} onDiceClick={onDiceClick}
                 onDeselect={onDeselect} coach={coach} isAnalyzing={isAnalyzing}
                 onDismissCoach={onDismissCoach} onReplayMove={onReplayMove}

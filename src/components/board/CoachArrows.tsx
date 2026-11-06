@@ -225,17 +225,7 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
                     />
                     {a.isHit && (
                         <g data-testid={`opponent-hit-cross-${i}`}>
-                            <text
-                                x={a.x2}
-                                y={a.y2}
-                                textAnchor="middle"
-                                dominantBaseline="central"
-                                fill="#EF4444"
-                                fontSize="16"
-                                fontWeight="900"
-                            >
-                                ✕
-                            </text>
+                            <text x={a.x2} y={a.y2} textAnchor="middle" dominantBaseline="central" fill="#EF4444" fontSize="16" fontWeight="900">✕</text>
                         </g>
                     )}
                 </g>
@@ -243,53 +233,46 @@ const CoachArrowsComponent: React.FC<CoachArrowsProps> = ({
 
             {playedArrows.map((a, i) => (
                 <g key={`played-${i}`} data-testid={`coach-played-arrow-${i}`} filter="url(#glow-red)">
-                    <circle
-                        data-testid={`coach-ghost-checker-played-${i}`}
-                        cx={a.x2}
-                        cy={a.y2}
-                        r="14"
-                        fill="rgba(239, 68, 68, 0.18)"
-                        stroke="#ef4444"
-                        strokeWidth="1.75"
-                        strokeDasharray="4 3"
-                    />
-                    <path
-                        d={a.path}
-                        fill="none"
-                        stroke="#ef4444"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeDasharray="8 5"
-                        markerEnd="url(#arrowhead-red)"
-                        opacity="0.95"
-                    />
+                    <circle data-testid={`coach-ghost-checker-played-${i}`} cx={a.x2} cy={a.y2} r="14" fill="rgba(239, 68, 68, 0.18)" stroke="#ef4444" strokeWidth="1.75" strokeDasharray="4 3" />
+                    <path d={a.path} fill="none" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" strokeDasharray="8 5" markerEnd="url(#arrowhead-red)" opacity="0.95" />
                     <circle cx={a.x1} cy={a.y1} r="4" fill="#ef4444" opacity="0.95" />
                 </g>
             ))}
 
-            {optimalArrows.map((a, i) => (
-                <g key={`optimal-${i}`} data-testid={`coach-optimal-arrow-${i}`} filter={isBeginner ? "url(#glow-gold)" : "url(#glow-green)"}>
-                    <circle
-                        data-testid={`coach-ghost-checker-optimal-${i}`}
-                        cx={a.x2}
-                        cy={a.y2}
-                        r="15"
-                        fill={isBeginner ? "rgba(212, 175, 55, 0.28)" : "rgba(34, 197, 94, 0.24)"}
-                        stroke={isBeginner ? "#D4AF37" : "#22c55e"}
-                        strokeWidth="2"
-                    />
-                    <path
-                        d={a.path}
-                        fill="none"
-                        stroke={isBeginner ? "#D4AF37" : "#22c55e"}
-                        strokeWidth="3.25"
-                        strokeLinecap="round"
-                        markerEnd={isBeginner ? "url(#arrowhead-gold)" : "url(#arrowhead-green)"}
-                        opacity="0.98"
-                    />
-                    <circle cx={a.x1} cy={a.y1} r="4.5" fill={isBeginner ? "#D4AF37" : "#22c55e"} opacity="0.98" />
-                </g>
-            ))}
+            {optimalArrows.map((a, i) => {
+                const isSharedTarget = optimalArrows.length >= 2 &&
+                    optimalArrows.some((o, oi) => oi !== i && Math.hypot(o.x2 - a.x2, o.y2 - a.y2) < 5);
+                const targetIcon = a.isHit ? '⚡' : isSharedTarget ? '🛡️' : null;
+
+                return (
+                    <g key={`optimal-${i}`} data-testid={`coach-optimal-arrow-${i}`} filter={isBeginner ? "url(#glow-gold)" : "url(#glow-green)"}>
+                        <circle
+                            data-testid={`coach-ghost-checker-optimal-${i}`}
+                            cx={a.x2} cy={a.y2} r="15"
+                            fill={isBeginner ? "rgba(212, 175, 55, 0.28)" : "rgba(34, 197, 94, 0.24)"}
+                            stroke={isBeginner ? "#D4AF37" : "#22c55e"} strokeWidth="2"
+                        />
+                        {isBeginner && (
+                            <circle
+                                data-testid={`coach-optimal-target-halo-${i}`}
+                                cx={a.x2} cy={a.y2} r="19" fill="none" stroke="#D4AF37" strokeWidth="2"
+                                strokeDasharray="4 2" className="animate-pulse"
+                            />
+                        )}
+                        {isBeginner && targetIcon && (
+                            <g data-testid={`coach-optimal-target-icon-${i}`}>
+                                <circle cx={a.x2} cy={a.y2} r="9" fill="#0c141d" stroke="#D4AF37" strokeWidth="1.5" />
+                                <text x={a.x2} y={a.y2 + 0.5} textAnchor="middle" dominantBaseline="central" fontSize="10">{targetIcon}</text>
+                            </g>
+                        )}
+                        <path
+                            d={a.path} fill="none" stroke={isBeginner ? "#D4AF37" : "#22c55e"} strokeWidth="3.25"
+                            strokeLinecap="round" markerEnd={isBeginner ? "url(#arrowhead-gold)" : "url(#arrowhead-green)"} opacity="0.98"
+                        />
+                        <circle cx={a.x1} cy={a.y1} r="4.5" fill={isBeginner ? "#D4AF37" : "#22c55e"} opacity="0.98" />
+                    </g>
+                );
+            })}
         </svg>
     );
 };

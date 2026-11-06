@@ -12,14 +12,9 @@ import { toggleOrientation, getSavedOrientation, saveOrientation } from './board
 import { BotPortraitMedallion, IconHorologyGear } from '../common/MonteCarloIcons';
 import { CountryFlagSvg } from '../common/CountryFlagSvg';
 import {
-    BoardPortraitTopHud,
-    BoardPortraitBottomHud,
-    BoardRightActionRail,
-    BOARD_SWATCH_OPTIONS,
-    resolvePersonaMeta,
-    resolvePrBadgeClasses,
-    type BoardLeftPlayerRailProps,
-    type BoardRightActionRailProps,
+    BoardPortraitTopHud, BoardPortraitBottomHud, BoardRightActionRail,
+    BOARD_SWATCH_OPTIONS, resolvePersonaMeta, resolvePrBadgeClasses,
+    type BoardLeftPlayerRailProps, type BoardRightActionRailProps,
 } from './BoardPortraitAndActionRails';
 import { useBoardTheme } from '../../hooks/useBoardTheme';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
@@ -131,7 +126,9 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <div data-testid="left-rail-score-o" title="Points de l'adversaire" className="flex h-11 w-10 [@media(max-height:540px)]:!h-6 [@media(max-height:540px)]:!w-7 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-md border-2 border-[#d4af37]/65 bg-gradient-to-b from-[#1a1510] to-[#090705] font-display text-xl [@media(max-height:540px)]:!text-sm font-black tabular-nums text-[#f7f3e8] shadow-inner">{scoreO}</div>
                     </div>
 
-                    <div className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${turn === 'O' ? 'bg-[#b45309] text-[#fef3c7] ring-1 ring-[#f5dfa0]' : 'bg-[#080605] text-stone-300 border border-white/10'}`}>{opponentClock}</div>
+                    <div className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${turn === 'O' ? 'bg-[#b45309] text-[#fef3c7] ring-1 ring-[#f5dfa0]' : 'bg-[#080605] text-stone-300 border border-white/10'}`}>
+                        {isGuided ? '∞ À votre rythme' : opponentClock}
+                    </div>
 
                     {!isBeginner && challengerProfile && (
                         <span title={`Performance Rating : ${opponentPrValue}`} className="hidden [@media(max-height:540px)]:inline-block w-full text-center rounded border border-[#d4af37]/50 bg-[#d4af37]/15 px-1 py-0.5 font-mono text-[9px] font-black text-[#f3d27a] whitespace-nowrap leading-none">PR {opponentPrValue}</span>
@@ -159,23 +156,27 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     <div className="mt-0.5 font-display text-xs italic font-bold text-[#f7f3e8] leading-tight whitespace-nowrap">
                         Match <span className="font-mono not-italic font-extrabold text-[#d4af37]">{matchLength > 0 ? `${matchLength} pts` : 'Libre'}</span>
                     </div>
-                    {crawford && (
-                        <div data-testid="left-rail-crawford-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">
-                            🛡️ Crawford
-                        </div>
-                    )}
-                    {isDMP && (
-                        <div data-testid="left-rail-dmp-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">
-                            ⚔️ DMP
-                        </div>
-                    )}
+                    {crawford && <div data-testid="left-rail-crawford-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">🛡️ Crawford</div>}
+                    {isDMP && <div data-testid="left-rail-dmp-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-[9px] font-bold text-amber-300 uppercase tracking-wider">⚔️ DMP</div>}
                 </div>
 
-                <div data-testid="left-rail-clock-block" className="flex flex-col items-center justify-between rounded-xl border border-[#d4af37]/40 bg-[#080605] p-1 shadow-inner gap-0.5 shrink-0 w-13">
-                    <div data-testid="left-rail-clock-opp" className={`w-full rounded-md py-0.5 px-1 text-center font-mono text-[10px] font-bold tabular-nums transition-all ${turn === 'O' ? 'bg-[#b45309] text-[#fef3c7] ring-1 ring-[#f5dfa0]' : 'bg-[#16120e] text-stone-400'}`}>{opponentClock}</div>
-                    <div data-testid="left-rail-bronstein-delay" className="flex h-4 w-8 items-center justify-center rounded border border-[#d4af37]/50 bg-[#14100c] font-mono text-[9px] font-bold tabular-nums text-[#f3d27a]">+{delaySeconds}s</div>
-                    <div data-testid="left-rail-clock-player" className={`w-full rounded-md py-0.5 px-1 text-center font-mono text-[10px] font-bold tabular-nums transition-all ${turn === 'X' ? 'bg-[#065f46] text-emerald-50 ring-1 ring-emerald-400/70' : 'bg-[#16120e] text-stone-400'}`}>{playerClock}</div>
-                </div>
+                {isGuided ? (
+                    <div
+                        data-testid="left-rail-guided-pace-badge"
+                        className="flex flex-col items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-950/40 p-1.5 shadow-inner gap-0.5 shrink-0 w-14 text-center select-none"
+                    >
+                        <span className="text-sm font-black text-emerald-300 leading-none">∞</span>
+                        <span className="font-extrabold text-[8px] uppercase tracking-wider text-emerald-300 leading-tight">
+                            À votre rythme
+                        </span>
+                    </div>
+                ) : (
+                    <div data-testid="left-rail-clock-block" className="flex flex-col items-center justify-between rounded-xl border border-[#d4af37]/40 bg-[#080605] p-1 shadow-inner gap-0.5 shrink-0 w-13">
+                        <div data-testid="left-rail-clock-opp" className={`w-full rounded-md py-0.5 px-1 text-center font-mono text-[10px] font-bold tabular-nums transition-all ${turn === 'O' ? 'bg-[#b45309] text-[#fef3c7] ring-1 ring-[#f5dfa0]' : 'bg-[#16120e] text-stone-400'}`}>{opponentClock}</div>
+                        <div data-testid="left-rail-bronstein-delay" className="flex h-4 w-8 items-center justify-center rounded border border-[#d4af37]/50 bg-[#14100c] font-mono text-[9px] font-bold tabular-nums text-[#f3d27a]">+{delaySeconds}s</div>
+                        <div data-testid="left-rail-clock-player" className={`w-full rounded-md py-0.5 px-1 text-center font-mono text-[10px] font-bold tabular-nums transition-all ${turn === 'X' ? 'bg-[#065f46] text-emerald-50 ring-1 ring-emerald-400/70' : 'bg-[#16120e] text-stone-400'}`}>{playerClock}</div>
+                    </div>
+                )}
             </div>
 
             {/* Barre Centrale Mobile Paysage */}

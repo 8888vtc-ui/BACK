@@ -74,6 +74,8 @@ export interface GameBoardAreaProps {
     onToggleTheme?: () => void;
     challengerProfile?: PlayerEloProfile | null;
     onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
+    onOfferDouble?: () => void;
+    isPrematureDouble?: boolean;
 }
 
 const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
@@ -85,6 +87,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     onSelectCoachHistoryIndex, onTriggerCoach, matchStats, matchStatsO, prX, prO, lastMoveFeedback, locale,
     gameId, matchContext, isMatchStarted = true, playerColor = 'X', onBackToLobby, onToggleTheme,
     challengerProfile = null, onSendQuickChat,
+    onOfferDouble, isPrematureDouble = false,
 }) => {
     const { tierGate } = usePlayerTierGate();
     const isXTurn = game.state.turn === 'X';
@@ -334,7 +337,8 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                                 coachHighlight={displayCoachHighlight}
                                 opponentHighlight={!replay.isLive && replay.selectedTurn?.player === 'O' && replayViewPhase === 'before' ? [...replay.selectedTurn.moves] : game.opponentHighlight}
                                 canDouble={replay.isLive && game.canDouble} doublingOfferedBy={game.doublingOfferedBy}
-                                onOfferDouble={replay.isLive ? game.offerDouble : NOOP} onTakeDouble={replay.isLive ? game.takeDouble : NOOP} onPassDouble={replay.isLive ? game.passDouble : NOOP}
+                                onOfferDouble={replay.isLive ? (onOfferDouble ?? game.offerDouble) : NOOP} onTakeDouble={replay.isLive ? game.takeDouble : NOOP} onPassDouble={replay.isLive ? game.passDouble : NOOP}
+                                isPrematureDouble={isPrematureDouble}
                                 theme={theme} isLoading={isBoardLoading} gamePhase={replay.isLive ? (game.gamePhase ?? 'AI_TURN_SHOWING_ARROWS') : 'REPLAY_VIEW'}
                                 onRoll={replay.isLive ? () => { if (previewBoardMode !== 'live') setPreviewBoardMode('live'); if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null); game.rollDice(); } : replay.returnToLive}
                                 onConfirm={replay.isLive ? () => game.commitHumanMove() : replay.returnToLive}

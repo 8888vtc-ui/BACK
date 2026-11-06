@@ -35,9 +35,11 @@ export function getProactiveAdvice(
         const opening = getOpeningForScore(dice[0], dice[1], 'NORMAL');
         if (opening) {
             const bestNotation = opening.bestMoveNotation;
-            const text = lang === 'en'
-                ? `💡 Professor Tip (Dice ${dice[0]}-${dice[1]}): Play ${bestNotation} to secure an advanced anchor and control the tempo.`
-                : `💡 Conseil du Professeur (Dés ${dice[0]}-${dice[1]}) : Joue ${bestNotation} pour ancrer tes pions et prendre l'initiative.`;
+            let boardAfterBest = [...state.board];
+            for (const mv of opening.bestMoves) {
+                boardAfterBest = applyMove(boardAfterBest, mv, 'X');
+            }
+            const text = formatAdviceTextWithPhysicalTruth(state.board, boardAfterBest, bestNotation, dice, lang);
             return { bestNotation, text };
         }
     }
@@ -53,30 +55,11 @@ export function getProactiveAdvice(
                 boardAfterBest = applyMove(boardAfterBest, mv, 'X');
             }
 
-            const legals = generateLegalMoves(state, dice);
-            const legalMovesCount = legals.length;
-            const dHigh = Math.max(dice[0], dice[1]);
-            const sourcePointsForHighDie = new Set<number>();
-            for (const seq of legals) {
-                for (const mv of seq.moves) {
-                    if (
-                        mv.from - mv.to === dHigh ||
-                        (mv.from === 0 && 25 - mv.to === dHigh) ||
-                        (mv.to === 0 && mv.from <= dHigh)
-                    ) {
-                        sourcePointsForHighDie.add(mv.from);
-                    }
-                }
-            }
-            const isForcedHighDie = sourcePointsForHighDie.size === 1;
-
             const text = formatAdviceTextWithPhysicalTruth(
                 state.board,
                 boardAfterBest,
                 bestNotation,
                 dice,
-                legalMovesCount,
-                isForcedHighDie,
                 lang,
             );
             return { bestNotation, text };
@@ -93,30 +76,12 @@ function formatAdviceTextWithPhysicalTruth(
     boardAfterBest: readonly number[],
     bestNotation: string,
     dice: [number, number],
-    legalMovesCount: number,
-    isForcedHighDie: boolean,
     lang: 'fr' | 'en',
 ): string {
     const isEn = lang === 'en';
     const diceLabel = `${dice[0]}-${dice[1]}`;
-    const dHigh = Math.max(dice[0], dice[1]);
 
-    // Cas A — Coup forcé (1 seul coup légal ou le dé fort n'est jouable que depuis une seule case)
-    if (legalMovesCount <= 1 || isForcedHighDie) {
-        return isEn
-            ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation}. Moving with the ${dHigh} is forced: advance toward your home board and consolidate your checkers.`
-            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation}. Le déplacement avec le ${dHigh} est forcé : avance au maximum vers ton camp et resserre tes pions dans ta maison.`;
-    }
-
-    // Cas C — Le coup frappe réellement un pion adverse
-    const hitO = Math.abs(boardAfterBest[O_BAR] ?? 0) > Math.abs(boardBefore[O_BAR] ?? 0) || bestNotation.includes('*');
-    if (hitO) {
-        return isEn
-            ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation} to hit the opponent's exposed blot and send it to the center bar!`
-            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation} pour frapper le pion adverse isolé et l'envoyer sur la barre centrale !`;
-    }
-
-    // Cas B — Le coup ferme réellement une nouvelle porte (boardBefore[p] < 2 && boardAfterBest[p] >= 2)
+    // Cas 1 — Le coup ferme réellement une nouvelle porte (bouclier)
     let closedPoint: number | null = null;
     for (let p = 1; p <= 24; p++) {
         if ((boardBefore[p] ?? 0) < 2 && (boardAfterBest[p] ?? 0) >= 2) {
@@ -126,23 +91,30 @@ function formatAdviceTextWithPhysicalTruth(
     }
     if (closedPoint !== null) {
         return isEn
-            ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation} to secure Point ${closedPoint} with at least 2 checkers and build a solid gate.`
-            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation} pour fermer la Case ${closedPoint} avec au moins 2 pions et créer une porte solide.`;
+            ? `💡 Professor Tip (Dice ${diceLabel}): Follow the two golden arrows on the board to unite your two checkers on the same point and create an unbreachable Shield (Gate)!`
+            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Suis les deux flèches dorées sur le plateau pour réunir tes deux pions sur la même pointe et créer un Bouclier (Porte) infranchissable !`;
     }
 
-    // Cas D — Le coup réduit réellement le nombre de pions isolés
-    const blotsBefore = boardBefore.slice(1, 25).filter((v) => v === 1).length;
-    const blotsAfter = boardAfterBest.slice(1, 25).filter((v) => v === 1).length;
-    if (blotsAfter < blotsBefore) {
+    // Cas 2 — Le coup frappe réellement un pion adverse
+    const hitO = Math.abs(boardAfterBest[O_BAR] ?? 0) > Math.abs(boardBefore[O_BAR] ?? 0) || bestNotation.includes('*');
+    if (hitO) {
         return isEn
-            ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation} to bring your exposed blot to safety with another checker.`
-            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation} pour mettre ton pion isolé en sécurité avec un autre pion.`;
+            ? `💡 Professor Tip (Dice ${diceLabel}): Follow the golden arrow to hit the opponent's exposed blot and send it to the center bar!`
+            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Suis la flèche dorée pour frapper le pion adverse isolé et l'envoyer en prison sur la Barre centrale !`;
     }
 
-    // Cas E — Sinon (Course / Sortie / Regroupement)
+    // Cas 3 — Le coup libère un pion arrière du camp adverse (départ en Case 24, en haut à droite)
+    const escapesBackChecker = (boardBefore[24] ?? 0) > (boardAfterBest[24] ?? 0) || bestNotation.includes('24/');
+    if (escapesBackChecker) {
+        return isEn
+            ? `💡 Professor Tip (Dice ${diceLabel}): Follow the long golden arrow in the top right to free your back checker and bring it toward your side.`
+            : `💡 Conseil du Professeur (Dés ${diceLabel}) : Suis la longue flèche dorée en haut à droite pour libérer ton pion arrière et le ramener vers ton camp.`;
+    }
+
+    // Cas 4 — Avancée et regroupement vers la maison
     return isEn
-        ? `💡 Professor Tip (Dice ${diceLabel}): Play ${bestNotation} to advance your checkers and prepare bearing them off at Point 1.`
-        : `💡 Conseil du Professeur (Dés ${diceLabel}) : Joue ${bestNotation} pour faire avancer tes pions et préparer leur sortie en Case 1.`;
+        ? `💡 Professor Tip (Dice ${diceLabel}): Follow the golden arrows on the board to advance your checkers safely toward your Home (bottom right).`
+        : `💡 Conseil du Professeur (Dés ${diceLabel}) : Suis les flèches dorées sur le plateau pour faire avancer tes pions en sécurité vers ta Maison (en bas à droite).`;
 }
 
 export function getFeedbackAdvice(feedback: LastMoveFeedback, lang: 'fr' | 'en' = 'fr'): string {

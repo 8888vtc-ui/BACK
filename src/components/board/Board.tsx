@@ -34,10 +34,7 @@ import { useBoardDragAndDrop } from './useBoardDragAndDrop';
 import { useBoardFlightSound } from './useBoardFlightSound';
 import { useBoardInteractionsHandlers } from './useBoardInteractionsHandlers';
 import { getBoardRegionAriaLabel } from './boardAria';
-import {
-    computeRemainingSequences,
-    type SubMove,
-} from '../../engine/smartClickResolver';
+import { computeRemainingSequences, type SubMove } from '../../engine/smartClickResolver';
 
 export { BoardQuadrantRow };
 export type { BoardProps } from './boardTypes';
@@ -49,10 +46,8 @@ const BoardComponent: React.FC<BoardProps> = ({
     coachHighlight = null, opponentHighlight = null, canDouble = false, doublingOfferedBy = null,
     onOfferDouble, onTakeDouble, onPassDouble, theme, isLoading = false,
     gamePhase = 'HUMAN_WAITING_ROLL', onRoll, onConfirm, onUndo,
-    canUndo = false, canConfirm = false, autoConfirmEnabled = false,
-    autoConfirmMode,
-    isMatchStarted = true, swapColors = false, gameSpeed,
-    showPipCount = false,
+    canUndo = false, canConfirm = false, autoConfirmEnabled = false, autoConfirmMode,
+    isMatchStarted = true, swapColors = false, gameSpeed, showPipCount = false, isPrematureDouble = false,
 }) => {
     const { t } = useI18n();
     const player: Player = state.turn;
@@ -233,6 +228,7 @@ const BoardComponent: React.FC<BoardProps> = ({
                         onTakeDouble={onTakeDouble} onPassDouble={onPassDouble}
                         autoConfirmEnabled={autoConfirmEnabled}
                         autoConfirmMode={autoConfirmMode}
+                        isPrematureDouble={isPrematureDouble}
                     />
                 )}
 

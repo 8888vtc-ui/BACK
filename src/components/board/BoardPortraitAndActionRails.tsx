@@ -52,13 +52,8 @@ const LEGACY_JARGON_NAME_MAP: Readonly<Record<string, string>> = {
 };
 
 function sanitizeChallengerName(raw: string): string {
-    const stripped = raw
-        .replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, '')
-        .replace(/^[A-Z]{2}\s+(?=[A-Za-zÀ-ÿ])/u, '')
-        .trim();
-    if (LEGACY_JARGON_NAME_MAP[stripped]) {
-        return LEGACY_JARGON_NAME_MAP[stripped];
-    }
+    const stripped = raw.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, '').replace(/^[A-Z]{2}\s+(?=[A-Za-zÀ-ÿ])/u, '').trim();
+    if (LEGACY_JARGON_NAME_MAP[stripped]) return LEGACY_JARGON_NAME_MAP[stripped];
     if (/^[a-zA-ZÀ-ÿ]+_[a-zA-Z0-9]+$/.test(stripped)) {
         const [first, second] = stripped.split('_');
         const cap = first.charAt(0).toUpperCase() + first.slice(1);
@@ -69,15 +64,9 @@ function sanitizeChallengerName(raw: string): string {
 }
 
 export function resolvePrBadgeClasses(pr: number | null): string {
-    if (pr === null || !Number.isFinite(pr)) {
-        return 'border-white/10 bg-white/[0.03] text-zinc-400 font-normal';
-    }
-    if (pr <= 4.5) {
-        return 'border-emerald-400/50 bg-emerald-950/70 text-emerald-300';
-    }
-    if (pr <= 8.5) {
-        return 'border-[#d4af37]/50 bg-[#d4af37]/15 text-[#f3d27a]';
-    }
+    if (pr === null || !Number.isFinite(pr)) return 'border-white/10 bg-white/[0.03] text-zinc-400 font-normal';
+    if (pr <= 4.5) return 'border-emerald-400/50 bg-emerald-950/70 text-emerald-300';
+    if (pr <= 8.5) return 'border-[#d4af37]/50 bg-[#d4af37]/15 text-[#f3d27a]';
     return 'border-amber-500/40 bg-amber-950/60 text-amber-300';
 }
 
@@ -157,8 +146,14 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
             <div className="flex items-center justify-between px-1">
                 <div className="flex h-7 min-w-[34px] items-center justify-center rounded-lg border border-[#d4af37]/60 bg-[#14100c] px-2 font-display text-base font-bold tabular-nums text-[#f7f3e8] shadow">{scoreO}</div>
                 <div className="flex items-center overflow-hidden rounded-lg border border-[#d4af37]/40 bg-[#080605] font-mono text-[11px] font-bold tabular-nums shadow">
-                    <span className="bg-[#14100c] px-1.5 py-0.5 text-[#f3d27a] border-r border-[#d4af37]/30">+{delaySeconds}s</span>
-                    <span className={`px-2 py-0.5 ${turn === 'O' ? 'bg-[#b45309] text-[#fef3c7]' : 'text-stone-400'}`}>{opponentClock}</span>
+                    {isGuided ? (
+                        <span className="px-2 py-0.5 text-emerald-300 font-extrabold text-[10px]">∞ À votre rythme</span>
+                    ) : (
+                        <>
+                            <span className="bg-[#14100c] px-1.5 py-0.5 text-[#f3d27a] border-r border-[#d4af37]/30">+{delaySeconds}s</span>
+                            <span className={`px-2 py-0.5 ${turn === 'O' ? 'bg-[#b45309] text-[#fef3c7]' : 'text-stone-400'}`}>{opponentClock}</span>
+                        </>
+                    )}
                 </div>
                 <div className="h-6 rounded-md border border-[#d4af37]/25 bg-[#0d0a08]/90 px-2 flex items-center justify-center text-[10px] font-semibold text-[#f3d27a] truncate max-w-[140px]">
                     {challengerProfile ? '● Connecté' : `« ${activePersona.skillTaught} »`}
@@ -169,18 +164,28 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
 });
 BoardPortraitTopHud.displayName = 'BoardPortraitTopHud';
 
-export const BoardPortraitBottomHud: React.FC<Pick<BoardLeftPlayerRailProps, 'scoreX' | 'turn' | 'playerClock' | 'delaySeconds'>> = React.memo(({
-    scoreX, turn, playerClock = '02:14', delaySeconds = 12,
-}) => (
-    <div data-testid="board-portrait-bottom-hud" className="md:hidden [@media(max-height:500px)]:hidden w-full shrink-0 flex items-center justify-between px-2.5 py-1 select-none">
-        <div className="flex h-7 min-w-[34px] items-center justify-center rounded-lg border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] px-2 font-display text-base font-bold tabular-nums text-[#0b0907] shadow">{scoreX}</div>
-        <div className="flex items-center overflow-hidden rounded-lg border border-[#d4af37]/40 bg-[#080605] font-mono text-[11px] font-bold tabular-nums shadow">
-            <span className="bg-[#14100c] px-1.5 py-0.5 text-[#f3d27a] border-r border-[#d4af37]/30">+{delaySeconds}s</span>
-            <span className={`px-2 py-0.5 ${turn === 'X' ? 'bg-[#065f46] text-emerald-50' : 'text-stone-400'}`}>{playerClock}</span>
+export const BoardPortraitBottomHud: React.FC<Pick<BoardLeftPlayerRailProps, 'scoreX' | 'turn' | 'playerClock' | 'delaySeconds' | 'isGuidedMode'>> = React.memo(({
+    scoreX, turn, playerClock = '02:14', delaySeconds = 12, isGuidedMode = false,
+}) => {
+    const { tierGate } = usePlayerTierGate();
+    const isGuided = isGuidedMode || tierGate === 'BEGINNER';
+    return (
+        <div data-testid="board-portrait-bottom-hud" className="md:hidden [@media(max-height:500px)]:hidden w-full shrink-0 flex items-center justify-between px-2.5 py-1 select-none">
+            <div className="flex h-7 min-w-[34px] items-center justify-center rounded-lg border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] px-2 font-display text-base font-bold tabular-nums text-[#0b0907] shadow">{scoreX}</div>
+            <div className="flex items-center overflow-hidden rounded-lg border border-[#d4af37]/40 bg-[#080605] font-mono text-[11px] font-bold tabular-nums shadow">
+                {isGuided ? (
+                    <span className="px-2 py-0.5 text-emerald-300 font-extrabold text-[10px]">∞ À votre rythme</span>
+                ) : (
+                    <>
+                        <span className="bg-[#14100c] px-1.5 py-0.5 text-[#f3d27a] border-r border-[#d4af37]/30">+{delaySeconds}s</span>
+                        <span className={`px-2 py-0.5 ${turn === 'X' ? 'bg-[#065f46] text-emerald-50' : 'text-stone-400'}`}>{playerClock}</span>
+                    </>
+                )}
+            </div>
+            <div className="h-6 w-12 rounded-md border border-[#d4af37]/20 bg-[#0d0a08]/80 flex items-center justify-center text-[10px] font-mono text-[#f3d27a]">Vous</div>
         </div>
-        <div className="h-6 w-12 rounded-md border border-[#d4af37]/20 bg-[#0d0a08]/80 flex items-center justify-center text-[10px] font-mono text-[#f3d27a]">Vous</div>
-    </div>
-));
+    );
+});
 BoardPortraitBottomHud.displayName = 'BoardPortraitBottomHud';
 
 export interface BoardRightActionRailProps {

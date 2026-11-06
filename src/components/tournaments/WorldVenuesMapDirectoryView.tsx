@@ -122,12 +122,17 @@ export const WorldVenuesMapDirectoryView: React.FC<WorldVenuesMapDirectoryViewPr
         return tournaments.find((t) => t.id === selectedTournamentId) ?? null;
     }, [tournaments, selectedTournamentId]);
 
+    const handleClubCreated = useCallback((newClub: WorldBackgammonVenue) => {
+        setSelectedVenueId(newClub.id);
+        onClubCreated?.(newClub);
+    }, [onClubCreated]);
+
     return (
         <div className="flex flex-col gap-5" data-testid="world-venues-map-directory">
             <SubmitClubInlineModal
                 isOpen={isModalOpen}
                 onClose={closeModal}
-                onClubCreated={onClubCreated}
+                onClubCreated={handleClubCreated}
             />
 
             {/* Layout Côte-à-Côte : 8 colonnes Carte à gauche + 4 colonnes Fiche Détail à droite */}
@@ -242,8 +247,8 @@ export const WorldVenuesMapDirectoryView: React.FC<WorldVenuesMapDirectoryViewPr
                 </section>
             )}
 
-            {/* SECTION BAS : ANNUAIRE DES CLUBS (ACTIF QUAND TOURNOIS MASQUÉS) */}
-            {clubsChecked && venues.length > 0 && !tournamentsChecked && (
+            {/* SECTION BAS : ANNUAIRE DES CLUBS */}
+            {clubsChecked && venues.length > 0 && (
                 <section className="flex flex-col gap-3" data-testid="map-venues-section">
                     <div className="flex items-center justify-between border-b border-white/10 pb-2">
                         <h3 className="font-serif text-sm sm:text-base font-bold text-emerald-300">

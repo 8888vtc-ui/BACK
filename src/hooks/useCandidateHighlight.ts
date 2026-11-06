@@ -23,18 +23,24 @@ export function useCandidateHighlight({
     hoveredCandidate,
 }: UseCandidateHighlightParams) {
     return useMemo(() => {
-        if (openingEntry && isOpeningHighlightActive) {
-            return { optimal: openingEntry.bestMoves, played: [] };
+        if (hoveredCandidate === '__HIDE__') {
+            return null;
         }
-        if (!coach) return null;
 
-        // Prévisualisation d'un candidat : on dessine ses flèches à partir de sa notation absolue.
+        // Prévisualisation d'un candidat ou recommandation du Professeur (mode guidé / débutant) :
         if (hoveredCandidate) {
             const parsedMoves = parseCoachNotationMoves(hoveredCandidate, 'X');
             if (parsedMoves.length > 0) {
                 return { optimal: parsedMoves, played: coachHighlight?.played ?? [] };
             }
         }
+
+        if (openingEntry && isOpeningHighlightActive) {
+            return { optimal: openingEntry.bestMoves, played: [] };
+        }
+
+        if (!coach) return null;
+
         return coachHighlight;
     }, [openingEntry, isOpeningHighlightActive, coach, coachHighlight, hoveredCandidate]);
 }

@@ -34,6 +34,7 @@ export interface BoardCenterControlsProps {
     readonly onCycleAutoConfirmMode?: () => void;
     readonly gameSpeed?: GameSpeed;
     readonly onCycleGameSpeed?: () => void;
+    readonly isPrematureDouble?: boolean;
 }
 
 const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
@@ -57,6 +58,7 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
     onCycleAutoConfirmMode,
     gameSpeed = 'tournament',
     onCycleGameSpeed,
+    isPrematureDouble = false,
 }) => {
     const isWaitingRoll = gamePhase === 'HUMAN_WAITING_ROLL';
     const isMoving = gamePhase === 'HUMAN_MOVING';
@@ -183,8 +185,10 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                                 type="button"
                                 data-testid="center-double-button"
                                 onClick={(e) => { e.stopPropagation(); onOfferDouble(); }}
-                                title={`Proposer le videau (×${nextCubeValue})`}
-                                className="group inline-flex items-center justify-center gap-1 rounded-full border border-white/15 bg-slate-900 h-[30px] sm:h-[32px] max-h-[34px] [@media(max-height:500px)]:!h-[28px] [@media(max-height:500px)]:!max-h-[30px] px-2 sm:px-2.5 [@media(max-height:500px)]:!px-2 py-0.5 font-sans text-[10px] sm:text-[11px] [@media(max-height:500px)]:!text-[10px] font-black uppercase tracking-wider text-slate-100 shadow-lg transition-all duration-150 hover:scale-[1.02] hover:border-amber-400/50 hover:text-white active:scale-95 whitespace-nowrap touch-manipulation leading-none"
+                                aria-label={`Proposer le videau (×${nextCubeValue})`}
+                                className={`group inline-flex items-center justify-center gap-1 rounded-full border border-white/15 bg-slate-900 h-[30px] sm:h-[32px] max-h-[34px] [@media(max-height:500px)]:!h-[28px] [@media(max-height:500px)]:!max-h-[30px] px-2 sm:px-2.5 [@media(max-height:500px)]:!px-2 py-0.5 font-sans text-[10px] sm:text-[11px] [@media(max-height:500px)]:!text-[10px] font-black uppercase tracking-wider text-slate-100 shadow-lg transition-all duration-150 hover:scale-[1.02] hover:border-amber-400/50 hover:text-white active:scale-95 whitespace-nowrap touch-manipulation leading-none ${
+                                    isPrematureDouble ? 'opacity-50 hover:opacity-75' : ''
+                                }`}
                             >
                                 <span className="rounded-full bg-amber-400 px-1.5 py-0.2 font-mono text-[9px] sm:text-[10px] font-black text-slate-950 shadow-sm">
                                     ×{nextCubeValue}
@@ -213,7 +217,6 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
                                     type="button"
                                     data-testid="cycle-game-speed-btn"
                                     data-speed={gameSpeed}
-                                    title={`${SPEED_LABELS[gameSpeed].title} (cliquer pour changer)`}
                                     aria-label={`Cadence du Bot : ${SPEED_LABELS[gameSpeed].label}`}
                                     onClick={(e) => { e.stopPropagation(); void impactLight(); onCycleGameSpeed(); }}
                                     className="rounded-full border border-white/10 bg-slate-950/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-200 shadow-md backdrop-blur-sm transition whitespace-nowrap hover:border-amber-400/50 hover:text-white active:scale-95 touch-manipulation"

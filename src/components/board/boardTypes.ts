@@ -58,6 +58,8 @@ export interface BoardProps {
     onToggleAutoConfirm?: () => void;
     /** Mode étendu d'auto-validation (`never` | `forced_only` | `always_except_cube` | `always`). */
     autoConfirmMode?: AutoConfirmMode;
+    /** En mode débutant : double prématuré bloqué avec avertissement bienveillant du Professeur. */
+    isPrematureDouble?: boolean;
     /** Sélection directe d'un mode d'auto-validation. */
     onSelectAutoConfirmMode?: (mode: AutoConfirmMode) => void;
     /** Rotation rapide entre les 4 modes d'auto-validation. */

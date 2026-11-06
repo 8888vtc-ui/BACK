@@ -14,41 +14,28 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import AppNavbar from '../nav/AppNavbar';
+import TournamentCard from './TournamentCard';
 import TournamentAgendaView from './TournamentAgendaView';
 import TournamentResultsArchiveView from './TournamentResultsArchiveView';
 import WorldVenuesMapDirectoryView from './WorldVenuesMapDirectoryView';
 import SubmitTournamentModal from './SubmitTournamentModal';
 import type {
-    TournamentRecord,
-    TournamentTier,
-    TournamentRegion,
-    TournamentFederation,
-    TournamentSortField,
-    TournamentSubmissionInput,
+    TournamentRecord, TournamentTier, TournamentRegion, TournamentFederation,
+    TournamentSortField, TournamentSubmissionInput,
 } from '../../features/tournaments/tournamentTypes';
 import {
-    filterTournaments,
-    sortTournaments,
-    groupTournamentsByMonth,
-    generateTournamentIcs,
-    generateMultiTournamentIcs,
+    filterTournaments, sortTournaments, groupTournamentsByMonth,
+    generateTournamentIcs, generateMultiTournamentIcs,
 } from '../../features/tournaments/tournamentEngine';
 import {
-    WORLD_TOURNAMENT_RESULTS_ARCHIVE,
-    filterTournamentResults,
+    WORLD_TOURNAMENT_RESULTS_ARCHIVE, filterTournamentResults,
 } from '../../features/tournaments/worldTournamentsResults';
 import {
-    WORLD_BACKGAMMON_VENUES,
-    filterWorldVenues,
-    type WorldBackgammonVenue,
+    WORLD_BACKGAMMON_VENUES, filterWorldVenues, type WorldBackgammonVenue,
 } from '../../features/tournaments/worldBackgammonVenues';
 import {
-    fetchWorldTournaments,
-    loadBookmarkedTournamentIds,
-    toggleTournamentBookmark,
-    submitNewTournament,
-    triggerIcsDownload,
-    getAllWorldVenues,
+    fetchWorldTournaments, loadBookmarkedTournamentIds, toggleTournamentBookmark,
+    submitNewTournament, triggerIcsDownload, getAllWorldVenues,
 } from '../../lib/supabase/tournamentService';
 
 export interface TournamentWorldHubViewProps {
@@ -215,7 +202,36 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
                 </div>
 
                 {/* Contenu selon viewMode */}
-                {viewMode === 'grid' || viewMode === 'venues' ? (
+                {viewMode === 'grid' ? (
+                    <div className="flex flex-col gap-6">
+                        <WorldVenuesMapDirectoryView
+                            venues={filteredVenues}
+                            tournaments={sortedTournaments}
+                            searchQuery={searchQuery}
+                            onSearchQueryChange={setSearchQuery}
+                            showClubs={showMapClubs}
+                            showTournaments={showMapTournaments}
+                            onToggleClubs={() => setShowMapClubs((prev) => !prev)}
+                            onToggleTournaments={() => setShowMapTournaments((prev) => !prev)}
+                            isSubmitClubOpen={isSubmitClubModalOpen}
+                            onOpenSubmitClub={() => setIsSubmitClubModalOpen(true)}
+                            onCloseSubmitClub={() => setIsSubmitClubModalOpen(false)}
+                            onClubCreated={handleClubCreated}
+                            onRegionPresetSelect={(region) => setSelectedRegion(region)}
+                        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {sortedTournaments.map((t) => (
+                                <TournamentCard
+                                    key={t.id}
+                                    tournament={t}
+                                    isBookmarked={bookmarkedIds.has(t.id)}
+                                    onToggleBookmark={handleToggleBookmark}
+                                    onExportIcs={handleExportSingleIcs}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                ) : viewMode === 'venues' ? (
                     <WorldVenuesMapDirectoryView
                         venues={filteredVenues}
                         tournaments={sortedTournaments}
