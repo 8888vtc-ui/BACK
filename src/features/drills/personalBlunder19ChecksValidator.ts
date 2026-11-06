@@ -146,7 +146,7 @@ export function validateSinglePersonalBlunderQuiz14Checks(quiz: PersonalBlunder3
     if (!check12Pass) failedReasons.push('Contrôle #12 échoué');
 
     const check13Pass = Number.isInteger(quiz.quizTargetER * 2) && !JSON.stringify(quiz).toLowerCase().includes('"erh"');
-    results.push({ id: 13, name: 'Contrôle #13 (quizTargetER par pas de 0.5 & 0 trace d’ERH)', passed: check13Pass, detail: `quizTargetER=${quiz.quizTargetER.toFixed(1)}` });
+    results.push({ id: 13, name: 'Contrôle #13 (quizTargetER par pas de 0.5 & 0 trace d’PR_ONLY)', passed: check13Pass, detail: `quizTargetER=${quiz.quizTargetER.toFixed(1)}` });
     if (!check13Pass) failedReasons.push('Contrôle #13 échoué');
 
     const expectedBadge = `🔥 Issu de ton match • Niveau Quiz : ER / PR ${quiz.quizTargetER.toFixed(1)}`;

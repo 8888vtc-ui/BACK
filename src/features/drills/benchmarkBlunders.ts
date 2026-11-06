@@ -191,7 +191,7 @@ function buildHarvestedBlunder(seed: HarvestedSeedInput, _idx: number): PlayerBl
 
 // =====================================================================================
 // BANQUE DE QUIZ — 100 % VALIDÉE PAR GNU BACKGAMMON 3-PLY CUBEFUL (purge db_clean_v3, 2026-11-02)
-// Les anciennes banques non vérifiées (BT-Core 5000, BT-ERH, multi-ply 0/1/2-ply, positions
+// Les anciennes banques non vérifiées (BT-Core 5000, BT-PR_ONLY, multi-ply 0/1/2-ply, positions
 // « benchmark » écrites à la main) ont été supprimées. Seules 2 sources restent :
 //   1. GNUBG_3PLY_CERTIFIED_POSITIONS (scripts/verify_3ply_with_gnubg.ts)
 //   2. GNUBG_3PLY_QUIZ_BANK          (scripts/generate_50k_3ply_quizzes.ts → build_gnubg_quiz_bank.ts)

@@ -26,7 +26,7 @@ describe('bgsage3PlyQuizFactoryCore — Sas Coupe-Circuit 14 Contrôles (14/14 P
         }
     });
 
-    it('calcule quizTargetER en pas de 0.5 exacts sur les 5 tranches (DEBUTANT à MASTER) avec gap12 >= 0.008 et Zéro ERH', () => {
+    it('calcule quizTargetER en pas de 0.5 exacts sur les 5 tranches (DEBUTANT à MASTER) avec gap12 >= 0.008 et Zéro PR_ONLY', () => {
         const deb = computeQuizTargetERAndBracket({ gap12Emg: 0.095, is3PlyTrapVs0Ply: false, is1PlyTrapVs3Ply: false });
         expect(deb.targetBracket).toBe('DEBUTANT');
         expect((deb.quizTargetER * 2) % 1).toBe(0);

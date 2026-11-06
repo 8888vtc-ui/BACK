@@ -151,7 +151,7 @@ describe('BlunderDrillView Component (Parcours Adaptatif & Carnet de Blunders Pe
         authenticateMockMember();
         const { unmount } = render(<BlunderDrillView initialConceptId={b0.conceptId} initialMode="pr_math" />);
         expect(screen.getByTestId('drill-mode-title').textContent).toContain('Quiz ER / PR');
-        expect(screen.getByTestId('drill-mode-title').textContent).not.toContain('ERH');
+        expect(screen.getByTestId('drill-mode-title').textContent).not.toContain('PR_ONLY');
 
         const initialErBadge = screen.getByTestId('quiz-live-rating-badge');
         expect(initialErBadge.textContent).toContain('Niveau ER : 1500');

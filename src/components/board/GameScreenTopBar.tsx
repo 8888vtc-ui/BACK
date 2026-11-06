@@ -22,6 +22,7 @@ export interface GameScreenTopBarProps {
     readonly onToggleTheme: () => void;
     readonly game: UseBackgammonGameReturn;
     readonly isMultiplayerActive: boolean;
+    readonly isOnlinePvpMatch?: boolean;
     readonly multiplayer: ReturnType<typeof useMultiplayerGame>;
     readonly modals: ReturnType<typeof useGameModals>;
     readonly onTriggerCoach: () => void;
@@ -45,6 +46,7 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
     onToggleTheme,
     game,
     isMultiplayerActive,
+    isOnlinePvpMatch = false,
     multiplayer,
     modals,
     onTriggerCoach,
@@ -66,14 +68,16 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
     return (
         <>
             {/* Barre Raccourci Mode Échiquier Pur & Invitation 1-Clic */}
-            <div className="w-full flex items-center justify-between px-2 py-0.5 z-30 shrink-0 gap-2">
-                <div className="flex items-center gap-2">
+            <div className="w-full flex items-center justify-between px-2 py-0.5 z-30 shrink-0 gap-2 whitespace-nowrap">
+                <div className="flex items-center gap-2 shrink-0 whitespace-nowrap">
                     {tierGate === 'BEGINNER' && (
                         <span
                             data-testid="app-version-badge"
-                            className="rounded-full border border-[#D4AF37]/45 bg-[#D4AF37]/15 px-2.5 py-0.5 font-mono text-[11px] font-semibold tracking-tight text-[#f3d27a] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                            className="shrink-0 whitespace-nowrap rounded-full border border-[#D4AF37]/45 bg-[#D4AF37]/15 px-2.5 py-0.5 font-mono text-[11px] font-semibold tracking-tight text-[#f3d27a] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                         >
-                            {isEn ? 'Beginner Mode • Guided Play' : 'Mode Débutant • Partie Guidée'}
+                            {isOnlinePvpMatch
+                                ? (isEn ? 'Beginner Mode' : 'Mode Débutant')
+                                : (isEn ? 'Beginner Mode • Guided Play' : 'Mode Débutant • Partie Guidée')}
                         </span>
                     )}
                     <NavbarPointsAndBadges tierGate={tierGate} />
@@ -81,7 +85,7 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                         type="button"
                         data-testid="full-focus-board-btn"
                         onClick={onToggleFullFocusMode}
-                        className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs sm:text-sm font-bold transition ${
+                        className={`hidden sm:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 px-3 py-1 rounded-lg border text-xs sm:text-sm font-bold transition ${
                             isFullFocusMode
                                 ? 'bg-[#D4AF37] text-slate-950 border-[#F3E5AB] font-black shadow-md'
                                 : 'bg-black/60 text-stone-300 border-white/10 hover:text-white hover:bg-white/10'

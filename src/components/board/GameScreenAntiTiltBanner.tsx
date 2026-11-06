@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from '../../i18n';
 import type { useMultiplayerGame } from '../../hooks/useMultiplayerGame';
 import type { useTiltDetector } from '../../hooks/useTiltDetector';
 
@@ -13,6 +14,9 @@ export const GameScreenAntiTiltBanner: React.FC<GameScreenAntiTiltBannerProps> =
     tilt,
     multiplayer,
 }) => {
+    const { locale } = useTranslation();
+    const isEn = locale === 'en';
+
     if (!tilt.showTiltAlert && !multiplayer.quickChatMessage) {
         return null;
     }
@@ -20,7 +24,7 @@ export const GameScreenAntiTiltBanner: React.FC<GameScreenAntiTiltBannerProps> =
     return (
         <div
             data-testid="active-antitilt-swapdice-bar"
-            className="fixed top-2 left-24 z-40 flex flex-wrap items-center gap-2 rounded-xl border border-[#d4af37]/40 bg-[#0d0a08]/95 px-2.5 py-1 text-xs text-[#f7f3e8] shadow-2xl backdrop-blur-md"
+            className="fixed top-12 left-1/2 -translate-x-1/2 z-40 flex flex-wrap items-center gap-2 rounded-xl border border-[#d4af37]/40 bg-[#0d0a08]/95 px-2.5 py-1 text-xs text-[#f7f3e8] shadow-2xl backdrop-blur-md whitespace-nowrap"
         >
             {multiplayer.quickChatMessage && (
                 <div
@@ -29,25 +33,25 @@ export const GameScreenAntiTiltBanner: React.FC<GameScreenAntiTiltBannerProps> =
                 >
                     <span>
                         {multiplayer.quickChatMessage.player === (multiplayer.matchInfo?.localRole ?? 'X')
-                            ? 'Vous :'
-                            : `${multiplayer.opponentProfile?.displayName ?? 'Adversaire'} :`}
+                            ? (isEn ? 'You:' : 'Vous :')
+                            : `${multiplayer.opponentProfile?.displayName ?? (isEn ? 'Opponent' : 'Adversaire')}:`}
                     </span>
                     <span>
                         {multiplayer.quickChatMessage.messageId === 'gg'
-                            ? '👋 Bonne partie !'
+                            ? (isEn ? 'Good game!' : 'Bonne partie !')
                             : multiplayer.quickChatMessage.messageId === 'nice_move'
-                              ? '👏 Bien joué !'
+                              ? (isEn ? 'Well played!' : 'Bien joué !')
                               : multiplayer.quickChatMessage.messageId === 'unlucky'
-                                ? '😅 Pas de chance !'
+                                ? (isEn ? 'Tough luck!' : 'Pas de chance !')
                                 : multiplayer.quickChatMessage.messageId === 'thinking'
-                                  ? '🤔 Je réfléchis...'
-                                  : '🙏 Merci !'}
+                                  ? (isEn ? 'Thinking...' : 'Je réfléchis...')
+                                  : (isEn ? 'Thanks!' : 'Merci !')}
                     </span>
                 </div>
             )}
             {tilt.showTiltAlert && (
                 <div className="flex items-center gap-1.5 text-amber-300 font-semibold">
-                    <span>🧘 Pause Anti-Tilt : respirez 5s avant de jouer</span>
+                    <span>{isEn ? 'Anti-Tilt Pause: take 5s before playing' : 'Pause Anti-Tilt : respirez 5s avant de jouer'}</span>
                     <button
                         type="button"
                         onClick={tilt.dismissTiltAlert}
@@ -60,4 +64,5 @@ export const GameScreenAntiTiltBanner: React.FC<GameScreenAntiTiltBannerProps> =
         </div>
     );
 };
+
 

@@ -1,7 +1,7 @@
 /**
  * Moteur de Parcours Adaptatif « Zéro Sous-Menu » & Anti-Doublon (`adaptiveQuizEngine.ts`).
  * Unifié avec `src/lib/blunders/personalBlunderStore.ts` pour les Blunders Personnels.
- * Strictement <= 385 lignes, 0 any, 0 ERH.
+ * Strictement <= 385 lignes, 0 any, 0 PR_ONLY.
  */
 
 import type { PlayerBlunderRecord, DrillTier } from './types';

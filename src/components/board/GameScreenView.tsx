@@ -101,8 +101,15 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
         setShowGuidedArrows(true);
     }, [game.dice?.[0], game.dice?.[1], game.state.turn]);
 
+    const isOnlinePvpMatch =
+        isMultiplayerActive ||
+        Boolean(multiplayer.matchInfo?.isClubChallenger) ||
+        Boolean(multiplayer.opponentProfile) ||
+        Boolean(multiplayer.privateRoomCode);
+    const isGuidedProfessorMode = !isOnlinePvpMatch && (tierGate === 'BEGINNER' || game.difficulty === 'beginner');
+
     const pips = useMemo(() => pipCount(game.state.board), [game.state.board]);
-    const isPrematureDouble = tierGate === 'BEGINNER' && (pips.X >= pips.O - 10);
+    const isPrematureDouble = isGuidedProfessorMode && (pips.X >= pips.O - 10);
 
     const handleOfferDouble = useCallback(() => {
         if (isPrematureDouble) {
@@ -114,14 +121,14 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     }, [isPrematureDouble, game]);
 
     useEffect(() => {
-        if (tierGate !== 'BEGINNER' || isMultiplayerActive || !game.dice || game.state.turn !== 'X') return;
+        if (!isGuidedProfessorMode || isOnlinePvpMatch || !game.dice || game.state.turn !== 'X') return;
         const rollKey = `${game.state.turn}:${game.dice[0]}-${game.dice[1]}:${game.matchLog.length}`;
         if (lastAutoCoachRollKey.current === rollKey) return;
         lastAutoCoachRollKey.current = rollKey;
         if (!coachHighlight && !isAnalyzing) {
             onTriggerCoach();
         }
-    }, [tierGate, isMultiplayerActive, game.dice, game.state.turn, game.matchLog.length, coachHighlight, isAnalyzing, onTriggerCoach]);
+    }, [isGuidedProfessorMode, isOnlinePvpMatch, game.dice, game.state.turn, game.matchLog.length, coachHighlight, isAnalyzing, onTriggerCoach]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -170,14 +177,15 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 isFullFocusMode={isFullFocusMode}
                 onToggleFullFocusMode={() => setIsFullFocusMode((prev) => !prev)}
                 t={t} theme={theme} onToggleTheme={onToggleTheme} game={game}
-                isMultiplayerActive={isMultiplayerActive} multiplayer={multiplayer} modals={modals}
+                isMultiplayerActive={isMultiplayerActive} isOnlinePvpMatch={isOnlinePvpMatch}
+                multiplayer={multiplayer} modals={modals}
                 onTriggerCoach={onTriggerCoach} turnsCount={turnsCount} prX={prX} prO={prO}
-                onBackToLobby={onBackToLobby} playerColor={playerColor} lastMoveFeedback={lastMoveFeedback}
+                onBackToLobby={onBackToLobby} playerColor={playerColor} lastMoveFeedback={isOnlinePvpMatch ? null : lastMoveFeedback}
                 notificationLevel={notificationLevel} onChangeNotificationLevel={onChangeNotificationLevel}
                 quotaBadge={quotaBadge} isVip={quota.isVip}
             />
 
-            {tierGate === 'BEGINNER' && !isMultiplayerActive && (
+            {isGuidedProfessorMode && !isOnlinePvpMatch && (
                 <LiveProfessorCoachOverlay
                     dice={game.dice} canUndo={game.canUndo} onUndoMove={game.undoMove}
                     onAskProfessorHint={() => { onTriggerCoach(); modals.openMobileDrawer(); }}
@@ -199,7 +207,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
 
             <GameBoardArea
                 theme={theme} game={game} activeDie={activeDie} isBoardLoading={isBoardLoading}
-                activeCoachHighlight={showGuidedArrows ? coachHighlight : null} onCheckerClick={onCheckerClick}
+                activeCoachHighlight={!isOnlinePvpMatch && showGuidedArrows ? coachHighlight : null} onCheckerClick={onCheckerClick}
                 onCheckerRightClick={onCheckerRightClick} onDestinationClick={onDestinationClick}
                 onOfferDouble={handleOfferDouble} isPrematureDouble={isPrematureDouble}
                 onPlayMove={onPlayMove} onSelectDie={onSelectDie} onDiceClick={onDiceClick}
@@ -208,16 +216,13 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 onOpenKnowledgeConcept={modals.openKnowledgeBase} onBlunderClick={modals.openGameCourse}
                 onCandidateHover={onCandidateHover} turnsHistory={turnsHistory}
                 onTriggerCoach={onTriggerCoach} matchStats={matchStats} matchStatsO={matchStatsO}
-                prX={prX} prO={prO} lastMoveFeedback={lastMoveFeedback} locale={locale}
+                prX={prX} prO={prO} lastMoveFeedback={isOnlinePvpMatch ? null : lastMoveFeedback} locale={locale}
                 gameId={gameId} matchContext={matchContext} isMatchStarted playerColor={playerColor}
                 coachHistory={coachHistory} selectedCoachHistoryIndex={selectedCoachHistoryIndex}
                 onSelectCoachHistoryIndex={onSelectCoachHistoryIndex} onBackToLobby={onBackToLobby}
                 onToggleTheme={onToggleTheme}
-                challengerProfile={multiplayer.matchInfo?.isClubChallenger ? multiplayer.opponentProfile : null}
-                onSendQuickChat={
-                    isMultiplayerActive || Boolean(multiplayer.matchInfo?.isClubChallenger)
-                        ? multiplayer.sendQuickChat : undefined
-                }
+                challengerProfile={isOnlinePvpMatch ? multiplayer.opponentProfile : null}
+                onSendQuickChat={isOnlinePvpMatch ? multiplayer.sendQuickChat : undefined}
             />
 
             <GameScreenMobileControls

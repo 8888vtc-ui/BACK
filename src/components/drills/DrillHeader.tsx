@@ -6,7 +6,7 @@
  * - Affiche clairement : `Quiz ER / PR` (ou `Mes Erreurs` en mode erreurs personnelles).
  * - Affiche le compteur d'essais `Essais : 2/2` ("Active Recall / 2e Chance") sans emoji système.
  * - Affiche nos 2 indicateurs officiels : `ER / PR` et `Rating` (verrouillés avec cadenas en mode Invité).
- * - Strictement <= 200 lignes, 0 any, 0 ERH, 0 emoji.
+ * - Strictement <= 200 lignes, 0 any, 0 PR_ONLY, 0 emoji.
  */
 
 import React from 'react';

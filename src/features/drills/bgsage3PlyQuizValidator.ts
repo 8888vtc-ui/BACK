@@ -160,7 +160,7 @@ export function validateSingleQuizStrict(quiz: Certified3PlyQuiz): void {
         throw new Error(`CHECK_9_REJECTED (Geometric coach text mismatch or 0/36 constructive text on ${quiz.id})`);
     }
 
-    // Contrôle #10 — Validation du quizTargetER (0.5..25.0 par pas de 0.5), Format [0,3,5,7,9,11,21] & Zéro ERH
+    // Contrôle #10 — Validation du quizTargetER (0.5..25.0 par pas de 0.5), Format [0,3,5,7,9,11,21] & Zéro PR_ONLY
     const allowedMatchLengths: readonly number[] = [0, 3, 5, 7, 9, 11, 21];
     const hasErhField =
         (quiz as { erh?: unknown }).erh !== undefined ||
@@ -174,7 +174,7 @@ export function validateSingleQuizStrict(quiz: Certified3PlyQuiz): void {
         !allowedMatchLengths.includes(quiz.matchLength) ||
         hasErhField
     ) {
-        throw new Error(`CHECK_10_REJECTED (Invalid quizTargetER=${quiz.quizTargetER}, matchLength=${quiz.matchLength}, or ERH present)`);
+        throw new Error(`CHECK_10_REJECTED (Invalid quizTargetER=${quiz.quizTargetER}, matchLength=${quiz.matchLength}, or PR_ONLY present)`);
     }
 
     // Contrôle #14 — Affichage UI du Niveau du Quiz & Orientation Canonique (Sans Spoiler avant clic)

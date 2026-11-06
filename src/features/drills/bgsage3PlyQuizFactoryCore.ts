@@ -1,7 +1,7 @@
 /**
  * @file src/features/drills/bgsage3PlyQuizFactoryCore.ts
  * @description Cœur de l'usine à Quiz `ER / PR` certifiés 100 % `3-ply` (`bgsage` vs `gnubg`) :
- * 1. Suppression totale de l'`ERH` : uniquement `ER / PR` (ΔEMG * 500, 0.0–30.0) + `Rating` (1500).
+ * 1. Suppression totale de l'`PR_ONLY` : uniquement `ER / PR` (ΔEMG * 500, 0.0–30.0) + `Rating` (1500).
  * 2. Notation numérique exacte `quizTargetER` (0.5 à 25.0 par pas de 0.5) sur 5 tranches (`DEBUTANT`, `CLUB`, `INTERMEDIAIRE`, `EXPERT`, `MASTER`) pour ciblage N+1 (`ER_joueur - 0.5`).
  * 3. Objectif `TARGET_MAX_QUIZZES = 50000` : 80 % `CHECKER_PLAY` (40 000) + 20 % `CUBE_DECISION` (10 000).
  * 4. Formats de compétition complets `[0, 3, 5, 7, 9, 11, 21]` avec table Kazaross-XG2 (`buildMatchContext`).

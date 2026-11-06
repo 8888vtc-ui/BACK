@@ -75,7 +75,8 @@ export function resolvePersonaMeta(
     isBeginner: boolean = false,
 ) {
     const isEn = locale === 'en';
-    const isGuided = Boolean(isBeginner || difficulty === 'beginner');
+    const isOnlinePvpMatch = Boolean(challengerProfile);
+    const isGuided = !isOnlinePvpMatch && Boolean(isBeginner || difficulty === 'beginner');
     const activePersona = getBotPersona(difficulty, locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja');
     const botElo = challengerProfile ? String(challengerProfile.rating) : '—';
     const playerPrNum = typeof prX === 'number' && Number.isFinite(prX) ? Math.max(0, prX) : null;
@@ -83,9 +84,9 @@ export function resolvePersonaMeta(
     const playerPrLabel = playerPrNum !== null ? playerPrNum.toFixed(1) : '—';
     const opponentPrNum = typeof prO === 'number' && Number.isFinite(prO) ? Math.max(0, prO) : null;
     const opponentPrValue = opponentPrNum !== null ? opponentPrNum.toFixed(1) : '—';
-    const opponentDisplayName = isGuided ? (isEn ? 'The Professor' : 'Le Professeur') : challengerProfile ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName) : activePersona.shortName;
-    const opponentBadge = isGuided ? (isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE') : challengerProfile ? 'En Ligne · Classé' : activePersona.styleBadge;
-    const opponentPhotoUrl = isGuided ? '/avatars/einstein-quiz-coach.jpg' : challengerProfile ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating) : (PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg');
+    const opponentDisplayName = isOnlinePvpMatch && challengerProfile ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName) : isGuided ? (isEn ? 'The Professor' : 'Le Professeur') : activePersona.shortName;
+    const opponentBadge = isOnlinePvpMatch ? (isEn ? 'Online Opponent' : 'Adversaire en ligne') : isGuided ? (isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE') : activePersona.styleBadge;
+    const opponentPhotoUrl = isOnlinePvpMatch && challengerProfile ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating) : isGuided ? '/avatars/einstein-quiz-coach.jpg' : (PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg');
     return {
         activePersona, botElo, playerPrNum, playerPrValue, playerPrLabel,
         opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl,
@@ -98,8 +99,10 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
     const { tierGate } = usePlayerTierGate();
     const stats = useAuthenticPlayerStats();
     const isGuest = !stats.canHavePR;
+    const isEn = locale === 'en';
     const isBeginner = tierGate === 'BEGINNER';
-    const isGuided = Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
+    const isOnlinePvpMatch = Boolean(challengerProfile);
+    const isGuided = !isOnlinePvpMatch && Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
     const { activePersona, botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl } = resolvePersonaMeta(
         difficulty, locale, prX, prO, challengerProfile, isGuided,
     );
@@ -109,8 +112,8 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                     <BotPortraitMedallion character="player" size="md" isActive={isXTurn} />
                     <div className="min-w-0 flex flex-col">
-                        <span className="truncate font-display text-sm italic font-bold text-[#f7f3e8] leading-tight">Vous</span>
-                        <span className="truncate text-[10px] font-semibold text-emerald-300/90">{isGuest ? 'Invité' : 'Grand Cercle'}</span>
+                        <span className="truncate font-display text-sm italic font-bold text-[#f7f3e8] leading-tight">{isEn ? 'You' : 'Vous'}</span>
+                        <span className="truncate text-[10px] font-semibold text-emerald-300/90">{isGuest ? (isEn ? 'Guest' : 'Invité') : (isEn ? 'Grand Circle' : 'Grand Cercle')}</span>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
                             {!isBeginner && !isGuest && <span className="text-stone-300">{stats.eloRating ?? 1500}</span>}
                             {!isBeginner && !isGuest && (
@@ -121,8 +124,8 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                 </div>
 
                 <div className="shrink-0 flex flex-col items-center justify-center rounded-xl border border-[#d4af37]/35 bg-[#16110c] px-2 py-1 text-center shadow-inner">
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#f3d27a]">{matchLength > 0 ? `${matchLength} pts` : 'Libre'} · ×{cubeValue}</span>
-                    <span className="text-[10px] font-black tracking-widest text-amber-400">⚔ VS</span>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#f3d27a]">{matchLength > 0 ? `${matchLength} pts` : (isEn ? 'Money' : 'Libre')} · ×{cubeValue}</span>
+                    <span className="text-[10px] font-black tracking-widest text-amber-400">VS</span>
                 </div>
 
                 <div className="flex items-center justify-end gap-2 min-w-0 flex-1 text-right">
@@ -133,9 +136,12 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                             <span className="truncate">{opponentBadge}</span>
                         </span>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
-                            {!isGuided && challengerProfile && <span className="text-stone-300">{botElo}</span>}
-                            {!isGuided && challengerProfile && (
+                            {!isGuided && challengerProfile && !isGuest && <span className="text-stone-300">{botElo}</span>}
+                            {!isGuided && challengerProfile && !isGuest && (
                                 <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(opponentPrNum)}`}>PR {opponentPrValue}</span>
+                            )}
+                            {!isGuided && challengerProfile && isGuest && (
+                                <span className="text-emerald-300/90 font-sans font-semibold">{isEn ? 'Online · Casual Match' : 'En ligne · Match Amical'}</span>
                             )}
                         </div>
                     </div>
@@ -147,7 +153,7 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                 <div className="flex h-7 min-w-[34px] items-center justify-center rounded-lg border border-[#d4af37]/60 bg-[#14100c] px-2 font-display text-base font-bold tabular-nums text-[#f7f3e8] shadow">{scoreO}</div>
                 <div className="flex items-center overflow-hidden rounded-lg border border-[#d4af37]/40 bg-[#080605] font-mono text-[11px] font-bold tabular-nums shadow">
                     {isGuided ? (
-                        <span className="px-2 py-0.5 text-emerald-300 font-extrabold text-[10px]">∞ À votre rythme</span>
+                        <span className="px-2 py-0.5 text-emerald-300 font-extrabold text-[10px]">{isEn ? '∞ Your pace' : '∞ À votre rythme'}</span>
                     ) : (
                         <>
                             <span className="bg-[#14100c] px-1.5 py-0.5 text-[#f3d27a] border-r border-[#d4af37]/30">+{delaySeconds}s</span>
@@ -156,7 +162,7 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                     )}
                 </div>
                 <div className="h-6 rounded-md border border-[#d4af37]/25 bg-[#0d0a08]/90 px-2 flex items-center justify-center text-[10px] font-semibold text-[#f3d27a] truncate max-w-[140px]">
-                    {challengerProfile ? '● Connecté' : `« ${activePersona.skillTaught} »`}
+                    {challengerProfile ? (isEn ? '● Online' : '● En ligne') : `« ${activePersona.skillTaught} »`}
                 </div>
             </div>
         </div>
@@ -164,17 +170,17 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
 });
 BoardPortraitTopHud.displayName = 'BoardPortraitTopHud';
 
-export const BoardPortraitBottomHud: React.FC<Pick<BoardLeftPlayerRailProps, 'scoreX' | 'turn' | 'playerClock' | 'delaySeconds' | 'isGuidedMode'>> = React.memo(({
-    scoreX, turn, playerClock = '02:14', delaySeconds = 12, isGuidedMode = false,
+export const BoardPortraitBottomHud: React.FC<Pick<BoardLeftPlayerRailProps, 'scoreX' | 'turn' | 'playerClock' | 'delaySeconds' | 'isGuidedMode' | 'locale'>> = React.memo(({
+    scoreX, turn, playerClock = '02:14', delaySeconds = 12, isGuidedMode = false, locale = 'fr',
 }) => {
-    const { tierGate } = usePlayerTierGate();
-    const isGuided = isGuidedMode || tierGate === 'BEGINNER';
+    const isEn = locale === 'en';
+    const isGuided = Boolean(isGuidedMode);
     return (
         <div data-testid="board-portrait-bottom-hud" className="md:hidden [@media(max-height:500px)]:hidden w-full shrink-0 flex items-center justify-between px-2.5 py-1 select-none">
             <div className="flex h-7 min-w-[34px] items-center justify-center rounded-lg border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] px-2 font-display text-base font-bold tabular-nums text-[#0b0907] shadow">{scoreX}</div>
             <div className="flex items-center overflow-hidden rounded-lg border border-[#d4af37]/40 bg-[#080605] font-mono text-[11px] font-bold tabular-nums shadow">
                 {isGuided ? (
-                    <span className="px-2 py-0.5 text-emerald-300 font-extrabold text-[10px]">∞ À votre rythme</span>
+                    <span className="px-2 py-0.5 text-emerald-300 font-extrabold text-[10px]">{isEn ? '∞ Your pace' : '∞ À votre rythme'}</span>
                 ) : (
                     <>
                         <span className="bg-[#14100c] px-1.5 py-0.5 text-[#f3d27a] border-r border-[#d4af37]/30">+{delaySeconds}s</span>
@@ -182,7 +188,7 @@ export const BoardPortraitBottomHud: React.FC<Pick<BoardLeftPlayerRailProps, 'sc
                     </>
                 )}
             </div>
-            <div className="h-6 w-12 rounded-md border border-[#d4af37]/20 bg-[#0d0a08]/80 flex items-center justify-center text-[10px] font-mono text-[#f3d27a]">Vous</div>
+            <div className="h-6 w-12 rounded-md border border-[#d4af37]/20 bg-[#0d0a08]/80 flex items-center justify-center text-[10px] font-mono text-[#f3d27a]">{isEn ? 'You' : 'Vous'}</div>
         </div>
     );
 });

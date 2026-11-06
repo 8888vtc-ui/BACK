@@ -1,7 +1,7 @@
 /**
  * @file src/features/drills/personalBlunderPipeline.ts
  * @description Orchestration des sous-agents pour la transformation des erreurs personnelles en quiz 3-ply certifiés.
- * Strictement <= 380 lignes, 0 any, 0 ERH.
+ * Strictement <= 380 lignes, 0 any, 0 PR_ONLY.
  */
 
 import { parseXGID } from '../../engine/backgammonEngine';

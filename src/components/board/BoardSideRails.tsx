@@ -38,7 +38,8 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
     const { tierGate } = usePlayerTierGate();
     const isBeginner = tierGate === 'BEGINNER';
     const isEn = locale === 'en';
-    const isGuided = Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
+    const isOnlinePvpMatch = Boolean(challengerProfile);
+    const isGuided = !isOnlinePvpMatch && Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
     const [playerMeta, setPlayerMeta] = useState<{ pseudo: string; avatarUrl: string; countryName: string; isGuest: boolean; careerPr: number | null }>({
         pseudo: isEn ? 'Guest Player' : 'Joueur Invité', avatarUrl: STANDARD_USER_AVATARS[4]?.url ?? '/avatars/user-avatar-5.jpg', countryName: 'France', isGuest: true, careerPr: null,
     });
@@ -94,10 +95,12 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
                             {!isGuided && (
                                 <span className="font-mono text-stone-200 font-bold">
-                                    {challengerProfile ? `${botElo} Elo` : (isEn ? 'Opponent' : 'Adversaire')}
+                                    {challengerProfile
+                                        ? (playerMeta.isGuest ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical') : `${botElo} Elo`)
+                                        : (isEn ? 'Opponent' : 'Adversaire')}
                                 </span>
                             )}
-                            {!isGuided && challengerProfile && (
+                            {!isGuided && challengerProfile && !playerMeta.isGuest && (
                                 <span className={`inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap ${resolvePrBadgeClasses(opponentPrNum)}`}>
                                     {isEn ? 'Match PR:' : 'PR Match :'} {opponentPrValue}
                                 </span>
@@ -109,7 +112,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <span data-testid="left-rail-mobile-opp-name" title={opponentDisplayName} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">{opponentDisplayName}</span>
                         {!isGuided && (
                             <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-[8.5px] font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">
-                                {challengerProfile ? `${botElo} Elo` : ''}
+                                {challengerProfile ? (playerMeta.isGuest ? (isEn ? 'Online' : 'En ligne') : `${botElo} Elo`) : ''}
                             </span>
                         )}
                     </div>
@@ -117,28 +120,28 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     <div className="relative z-10 flex items-center justify-between w-full [@media(min-height:541px)]:w-auto gap-1">
                         <div className="hidden [@media(max-height:540px)]:relative [@media(max-height:540px)]:inline-flex shrink-0">
                             <img src={opponentPhotoUrl} alt={opponentDisplayName} className="h-5 w-5 rounded-full object-cover border border-[#18130f] ring-1 ring-[#d4af37] shadow" />
-                            <span title="Pions Noirs (O)" className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#1A1D24] border border-[#d4af37]" />
+                            <span title={isEn ? 'Black Checkers (O)' : 'Pions Noirs (O)'} className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#1A1D24] border border-[#d4af37]" />
                         </div>
                         {opponentDice && (
-                            <span data-testid="left-rail-opp-mini-dice" title={`Dernier jet adverse : ${opponentDice[0]}-${opponentDice[1]}`} className="hidden [@media(max-height:540px)]:inline-flex items-center justify-center h-4 px-1 rounded bg-[#1A1D24] border border-[#d4af37]/60 font-mono text-[8.5px] font-black text-[#f3d27a] tabular-nums whitespace-nowrap">
+                            <span data-testid="left-rail-opp-mini-dice" title={`${isEn ? 'Last opponent roll:' : 'Dernier jet adverse :'} ${opponentDice[0]}-${opponentDice[1]}`} className="hidden [@media(max-height:540px)]:inline-flex items-center justify-center h-4 px-1 rounded bg-[#1A1D24] border border-[#d4af37]/60 font-mono text-[8.5px] font-black text-[#f3d27a] tabular-nums whitespace-nowrap">
                                 {opponentDice[0]}-{opponentDice[1]}
                             </span>
                         )}
-                        <div data-testid="left-rail-score-o" title="Points de l'adversaire" className="flex h-11 w-10 [@media(max-height:540px)]:!h-6 [@media(max-height:540px)]:!w-7 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-md border-2 border-[#d4af37]/65 bg-gradient-to-b from-[#1a1510] to-[#090705] font-display text-xl [@media(max-height:540px)]:!text-sm font-black tabular-nums text-[#f7f3e8] shadow-inner">{scoreO}</div>
+                        <div data-testid="left-rail-score-o" title={isEn ? 'Opponent score' : "Points de l'adversaire"} className="flex h-11 w-10 [@media(max-height:540px)]:!h-6 [@media(max-height:540px)]:!w-7 shrink-0 items-center justify-center rounded-xl [@media(max-height:540px)]:!rounded-md border-2 border-[#d4af37]/65 bg-gradient-to-b from-[#1a1510] to-[#090705] font-display text-xl [@media(max-height:540px)]:!text-sm font-black tabular-nums text-[#f7f3e8] shadow-inner">{scoreO}</div>
                     </div>
 
                     <div className={`hidden [@media(max-height:540px)]:flex w-full items-center justify-center rounded py-0.5 px-1 font-mono text-[10px] font-extrabold tabular-nums whitespace-nowrap leading-none ${turn === 'O' ? 'bg-[#b45309] text-[#fef3c7] ring-1 ring-[#f5dfa0]' : 'bg-[#080605] text-stone-300 border border-white/10'}`}>
-                        {isGuided ? '∞ À votre rythme' : opponentClock}
+                        {isGuided ? (isEn ? '∞ Your pace' : '∞ À votre rythme') : opponentClock}
                     </div>
 
-                    {!isBeginner && challengerProfile && (
+                    {!isBeginner && challengerProfile && !playerMeta.isGuest && (
                         <span title={`Performance Rating : ${opponentPrValue}`} className="hidden [@media(max-height:540px)]:inline-block w-full text-center rounded border border-[#d4af37]/50 bg-[#d4af37]/15 px-1 py-0.5 font-mono text-[9px] font-black text-[#f3d27a] whitespace-nowrap leading-none">PR {opponentPrValue}</span>
                     )}
                 </div>
                 {challengerProfile ? (
                     <div data-testid="left-rail-online-status" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/25 bg-emerald-950/30 px-2 py-1 text-[10px] font-medium text-emerald-300/90">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>{isEn ? 'Online · Ranked Match' : 'Connecté · Match classé'}</span>
+                        <span>{playerMeta.isGuest ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical') : (isEn ? 'Online · Ranked Match' : 'En ligne · Match classé')}</span>
                     </div>
                 ) : (
                     <div data-testid="left-rail-bot-engine-badge" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-[#d4af37]/25 bg-black/45 px-2 py-1 text-[10px] font-semibold text-[#f3d27a]">
@@ -226,11 +229,11 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 <div className="[@media(max-height:540px)]:hidden flex w-full flex-col items-center gap-1 min-w-0">
                     {isGuided ? (
                         <span data-testid="left-rail-guided-player-badge" className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-950/70 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-emerald-300 whitespace-nowrap">
-                            {locale === 'en' ? 'PLAYER • GUIDED PLAY' : 'JOUEUR • PARTIE GUIDÉE'}
+                            {isEn ? 'PLAYER • GUIDED PLAY' : 'JOUEUR • PARTIE GUIDÉE'}
                         </span>
                     ) : playerMeta.isGuest ? (
                         <span data-testid="left-rail-guest-badge" className="inline-flex items-center gap-1 rounded-full border border-stone-500/40 bg-stone-900/70 px-2.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-stone-300 whitespace-nowrap">
-                            {locale === 'en' ? 'Guest · Free Play' : 'Invité · Salon Libre'}
+                            {isOnlinePvpMatch ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical') : (isEn ? 'Guest · Free Play' : 'Invité · Salon Libre')}
                         </span>
                     ) : (
                         <div className="flex items-center gap-1.5 text-[11px] font-semibold tabular-nums whitespace-nowrap">
@@ -238,7 +241,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             <span className="font-mono text-stone-200 font-bold">1500 Elo</span>
                             {playerMeta.careerPr !== null && (
                                 <span data-testid="left-rail-career-pr" className="font-mono text-[10px] font-bold text-[#f3d27a]">
-                                    · PR Moy. {playerMeta.careerPr.toFixed(1)}
+                                    · {isEn ? 'Avg PR' : 'PR Moy.'} {playerMeta.careerPr.toFixed(1)}
                                 </span>
                             )}
                         </div>
@@ -247,7 +250,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <BotPortraitMedallion character="player" size="lg" isActive={isXTurn} customPhotoUrl={playerMeta.avatarUrl} />
                         <div className="flex flex-col items-center gap-1">
                             <div data-testid="left-rail-score-x" className="flex h-11 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] font-display text-xl font-black tabular-nums text-[#0b0907] shadow-[0_4px_14px_rgba(212,175,55,0.28)]">{scoreX}</div>
-                            <button type="button" data-testid="left-rail-quick-chat-toggle" onClick={() => setIsQuickChatOpen((v) => !v)} title="Réactions rapides" aria-label="Ouvrir les réactions rapides" aria-expanded={isQuickChatOpen} className="flex h-6 w-10 items-center justify-center rounded-md border border-[#d4af37]/40 bg-[#1a140e] text-[10px] font-bold text-[#f3d27a] hover:border-[#d4af37] active:scale-95 transition shrink-0">Chat</button>
+                            <button type="button" data-testid="left-rail-quick-chat-toggle" onClick={() => setIsQuickChatOpen((v) => !v)} title={isEn ? 'Quick reactions' : 'Réactions rapides'} aria-label={isEn ? 'Open quick reactions' : 'Ouvrir les réactions rapides'} aria-expanded={isQuickChatOpen} className="flex h-6 w-10 items-center justify-center rounded-md border border-[#d4af37]/40 bg-[#1a140e] text-[10px] font-bold text-[#f3d27a] hover:border-[#d4af37] active:scale-95 transition shrink-0">Chat</button>
                         </div>
                     </div>
                     <span data-testid="left-rail-player-name" className="w-full text-center font-display text-sm md:text-base italic font-black text-[#f7f3e8] leading-tight whitespace-nowrap">
@@ -257,25 +260,25 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                 <div className="hidden [@media(max-height:540px)]:flex w-full flex-col items-center leading-none gap-0.5">
                     <span data-testid="left-rail-mobile-player-name" title={playerMeta.pseudo} className="w-full truncate text-center text-[9.5px] font-bold text-[#f7f3e8] leading-tight">
-                        {isGuided ? (locale === 'en' ? 'You (Student)' : 'Vous (Élève)') : playerMeta.pseudo}
+                        {isGuided ? (isEn ? 'You (Student)' : 'Vous (Élève)') : playerMeta.pseudo}
                     </span>
                     {!isGuided && (
                         <span data-testid="left-rail-mobile-player-elo" className="font-mono text-[8.5px] font-bold text-emerald-300/90 tabular-nums whitespace-nowrap">
-                            {playerMeta.isGuest ? 'Invité' : '1500 Elo'}
+                            {playerMeta.isGuest ? (isEn ? 'Guest' : 'Invité') : '1500 Elo'}
                         </span>
                     )}
                     <div className="flex w-full items-center justify-between gap-1">
                         <div className="relative inline-flex shrink-0">
                             <img src={playerMeta.avatarUrl} alt={playerMeta.pseudo} className="h-5 w-5 rounded-full object-cover border border-[#f7f3e8] ring-1 ring-[#d4af37] shadow" />
-                            <span title="Pions Blancs (X)" className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#f7f3e8] border border-[#3b2307]" />
+                            <span title={isEn ? 'White Checkers (X)' : 'Pions Blancs (X)'} className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#f7f3e8] border border-[#3b2307]" />
                         </div>
                         <div className="flex h-6 w-7 shrink-0 items-center justify-center rounded-md border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] font-display text-sm font-black tabular-nums text-[#0b0907]">{scoreX}</div>
                     </div>
                 </div>
 
                 {isQuickChatOpen && (
-                    <div data-testid="left-rail-quick-chat-popover" role="group" aria-label="Messages rapides" className="absolute left-full ml-1.5 bottom-1 z-50 flex items-center gap-1 rounded-xl border border-[#d4af37]/55 bg-[#120e0a]/98 px-2 py-1 shadow-[0_12px_28px_rgba(0,0,0,0.95)] backdrop-blur-md">
-                        {([{ id: 'gg' as const, label: 'GG' }, { id: 'nice_move' as const, label: 'Bien joué' }, { id: 'unlucky' as const, label: 'Pas de chance' }, { id: 'thanks' as const, label: 'Merci' }]).map((chat) => (
+                    <div data-testid="left-rail-quick-chat-popover" role="group" aria-label={isEn ? 'Quick messages' : 'Messages rapides'} className="absolute left-full ml-1.5 bottom-1 z-50 flex items-center gap-1 rounded-xl border border-[#d4af37]/55 bg-[#120e0a]/98 px-2 py-1 shadow-[0_12px_28px_rgba(0,0,0,0.95)] backdrop-blur-md">
+                        {([{ id: 'gg' as const, label: 'GG' }, { id: 'nice_move' as const, label: isEn ? 'Well played' : 'Bien joué' }, { id: 'unlucky' as const, label: isEn ? 'Tough luck' : 'Pas de chance' }, { id: 'thanks' as const, label: isEn ? 'Thanks' : 'Merci' }]).map((chat) => (
                             <button key={chat.id} type="button" data-testid={`quick-chat-btn-${chat.id}`} onClick={() => { onSendQuickChat?.(chat.id); setIsQuickChatOpen(false); }} className="rounded-lg border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-[#f7f3e8] hover:border-[#f3c65f]/50 hover:bg-white/10 transition active:scale-95 whitespace-nowrap">{chat.label}</button>
                         ))}
                     </div>
@@ -285,7 +288,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
 
                 {!isBeginner && !playerMeta.isGuest && (
                     <span data-testid="left-rail-player-pr" className={`w-full inline-flex items-center justify-center rounded-lg border px-2 py-0.5 font-mono text-[11px] font-black tracking-tight shadow-sm whitespace-nowrap leading-none ${resolvePrBadgeClasses(playerPrNum)}`}>
-                        PR Match : {playerPrLabel}
+                        {isEn ? 'Match PR:' : 'PR Match :'} {playerPrLabel}
                     </span>
                 )}
             </div>

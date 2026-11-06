@@ -3,7 +3,7 @@
  * @description Purge navigateur `quiz_and_accounts_v3_clean` / `db_clean_v3` (2026-11-02).
  *
  * Supprime du localStorage toutes les données construites sur les anciens quiz / puzzles non vérifiés
- * et les anciens comptes/bots locaux (banque de blunders, profils adaptatifs, ER/ERH de quiz,
+ * et les anciens comptes/bots locaux (banque de blunders, profils adaptatifs, ER/PR_ONLY de quiz,
  * statistiques, file FSRS des puzzles, anciens profils de bots locaux).
  * S'exécute automatiquement dès que la clé de version diffère de `quiz_and_accounts_v3_clean`.
  */

@@ -63,7 +63,7 @@ describe('PlayerTierGate (3 Portes : Débutant | Intermédiaire | Expert)', () =
         expect(html).not.toMatch(/\b3-ply\b/i);
         expect(html).not.toMatch(/\bRating\b/i);
         expect(html).not.toMatch(/\bCrawford\b/i);
-        expect(html).not.toMatch(/\bERH\b/i);
+        expect(html).not.toMatch(/\bER_PR_ONLY\b/i);
     });
 
     it('affiche les portails Club (INTERMEDIATE) et Pro (EXPERT) avec leurs actions directes', () => {

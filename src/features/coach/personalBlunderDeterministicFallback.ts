@@ -2,7 +2,7 @@
  * @file personalBlunderDeterministicFallback.ts
  * @description Secours déterministe instantané (0 ms), cache serveur LRU et orchestrateur cascade Gemini
  * pour le coach personnel de blunder.
- * Respecte strictement les règles : zéro any, zéro ERH, architecture Tesla 3-secondes (18-25 mots).
+ * Respecte strictement les règles : zéro any, zéro PR_ONLY, architecture Tesla 3-secondes (18-25 mots).
  */
 
 import { GEMINI_LITE_INTERNAL_SYSTEM_PROMPT, evaluateMoveBlunderGate } from '../../lib/coachSystemPrompt';

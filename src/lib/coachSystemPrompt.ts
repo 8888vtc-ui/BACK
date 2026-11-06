@@ -2,7 +2,7 @@
  * @file src/lib/coachSystemPrompt.ts
  * @description Barrière Mathématique Pré-Appel (classifyMoveByDeltaEmg, evaluateMoveBlunderGate)
  * et barrière cognitive `GEMINI_LITE_INTERNAL_SYSTEM_PROMPT` avec les 6 Lois Métier.
- * Strictement <= 220 lignes, 0 any, 0 ERH.
+ * Strictement <= 220 lignes, 0 any, 0 PR_ONLY.
  */
 
 export type MoveCategory = 'OPTIMAL' | 'NEAR_OPTIMAL_GOOD_MOVE' | 'INACCURACY' | 'BLUNDER';

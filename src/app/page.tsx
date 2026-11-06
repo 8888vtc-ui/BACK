@@ -81,7 +81,12 @@ export default function Home() {
     const { handleRemoteAction } = useMatchBootstrap(game);
     const multiplayer = useMultiplayerGame(handleRemoteAction);
     const isMultiplayerActive = multiplayer.status === 'connected' || multiplayer.status === 'opponent_disconnected';
-    const isLiveMatch = isMultiplayerActive || Boolean(multiplayer.matchInfo?.isClubChallenger);
+    const isLiveMatch =
+        isMultiplayerActive ||
+        Boolean(multiplayer.matchInfo?.isClubChallenger) ||
+        Boolean(multiplayer.opponentProfile) ||
+        Boolean(multiplayer.privateRoomCode);
+    const handledMatchRoomIdRef = useRef<string | null>(null);
 
     const {
         gameIdRef, turnsHistory, turnsHistoryRef, currentTurnMovesRef, turnBoardBeforeRef,
@@ -101,115 +106,95 @@ export default function Home() {
     const handleTriggerCoach = useCallback(() => {
         if (isLiveMatch) {
             toast.info(
-                '🔒 Mode Match Live (Zéro IA en direct)',
-                'Pour garantir la fluidité et l’équité, l’analyse IA s’effectue au Compte-Rendu de fin de match et dans vos derniers Blunders.',
+                locale === 'en' ? 'Live Match Mode (Zero Live AI)' : 'Mode Match Live (Zéro IA en direct)',
+                locale === 'en'
+                    ? 'For fairness, AI analysis is performed in the Post-Match Report and Personal Blunders.'
+                    : 'Pour garantir la fluidité et l’équité, l’analyse IA s’effectue au Compte-Rendu de fin de match et dans vos derniers Blunders.',
             );
             return;
         }
         void rawTriggerCoach();
-    }, [isLiveMatch, rawTriggerCoach]);
+    }, [isLiveMatch, locale, rawTriggerCoach]);
 
-    // Calcul en temps réel du PR de la partie en cours dès 2 décisions analysées (sans plafond artificiel figé à 30)
     const MIN_DECISIONS_FOR_PR = 2;
-    const prX = matchStatsX.decisionsCount >= MIN_DECISIONS_FOR_PR
-        ? Number(Math.max(0, (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500).toFixed(1))
-        : null;
+    const prX = matchStatsX.decisionsCount >= MIN_DECISIONS_FOR_PR ? Number(Math.max(0, (matchStatsX.totalEquityLoss / matchStatsX.decisionsCount) * 500).toFixed(1)) : null;
     const botMatchLogLength = game.matchLog.length;
-    useEffect(() => {
-        if (botMatchLogLength === 0) resetBotRealPr();
-    }, [botMatchLogLength]);
+    useEffect(() => { if (botMatchLogLength === 0) resetBotRealPr(); }, [botMatchLogLength]);
     const botRealSnapshot = getBotRealPr();
     const measuredBotPr = botRealSnapshot.decisions >= MIN_DECISIONS_FOR_PR ? botRealSnapshot.pr : null;
     const rawBotPr = matchStatsO.decisionsCount >= MIN_DECISIONS_FOR_PR ? (matchStatsO.totalEquityLoss / matchStatsO.decisionsCount) * 500 : measuredBotPr;
     const prO = typeof rawBotPr === 'number' && Number.isFinite(rawBotPr) ? Number(Math.max(0, rawBotPr).toFixed(1)) : null;
     livePrRef.current = { prX: prX ?? 0, prO };
 
-    const {
-        activeDie, preferredDie, handlePlayMove, handleSelectDie,
-        handleCheckerClick, handleCheckerRightClick,
-        handleDestinationClick, handleDeselect, handleSwapDice,
-    } = useCheckerInteractions({ game, isMultiplayerActive, multiplayer, currentTurnMovesRef });
-
-    const handlePlayMoveWithSound = useCheckerSoundFeedback({
-        board: game.state.board,
-        turn: game.state.turn,
-        onPlayMove: handlePlayMove,
-    });
-
-    const { routedCheckerClick, routedCheckerRightClick, routedDiceClick } = usePlatformControlsRouter({
-        game, onPlayMoveWithSound: handlePlayMoveWithSound, handleSwapDice, preferredDie, activeDie,
-    });
-
-    const {
-        openingEntry, isOpeningHighlightActive, handleApplyOpeningMove,
-        isLiveAdviceEnabled, toggleLiveAdvice,
-    } = useOpeningAssistant({
-        game, isMultiplayerActive, multiplayer, currentTurnMovesRef,
-        historyLength: turnsHistoryRef.current.length,
-        isLiveAdviceEnabled: isLiveMatch ? false : undefined,
-    });
+    const { activeDie, preferredDie, handlePlayMove, handleSelectDie, handleCheckerClick, handleCheckerRightClick, handleDestinationClick, handleDeselect, handleSwapDice } = useCheckerInteractions({ game, isMultiplayerActive, multiplayer, currentTurnMovesRef });
+    const handlePlayMoveWithSound = useCheckerSoundFeedback({ board: game.state.board, turn: game.state.turn, onPlayMove: handlePlayMove });
+    const { routedCheckerClick, routedCheckerRightClick, routedDiceClick } = usePlatformControlsRouter({ game, onPlayMoveWithSound: handlePlayMoveWithSound, handleSwapDice, preferredDie, activeDie });
+    const { openingEntry, isOpeningHighlightActive, handleApplyOpeningMove, isLiveAdviceEnabled, toggleLiveAdvice } = useOpeningAssistant({ game, isMultiplayerActive, multiplayer, currentTurnMovesRef, historyLength: turnsHistoryRef.current.length, isLiveAdviceEnabled: isLiveMatch ? false : undefined });
 
     useEffect(() => {
-        if (userInitiatedMultiplayerRef.current && multiplayer.status === 'matched' && multiplayer.matchInfo) {
+        if (multiplayer.status === 'matched' && multiplayer.matchInfo && handledMatchRoomIdRef.current !== multiplayer.matchInfo.roomId) {
+            handledMatchRoomIdRef.current = multiplayer.matchInfo.roomId;
             userInitiatedMultiplayerRef.current = false;
             const matchLen = multiplayer.matchInfo.matchLength;
             const opp = multiplayer.opponentProfile;
+            const isEn = locale === 'en';
+            const isGuestLocal = Boolean(multiplayer.localProfile.isGuest);
+            const matchMetaLabel = isGuestLocal
+                ? (isEn ? 'Online · Casual Match' : 'En ligne · Match Amical')
+                : `${opp?.rating ?? 1500} Elo`;
+            const lenText = matchLen === 0 ? 'Money Game' : `${matchLen} pts`;
             if (multiplayer.matchInfo.isClubChallenger && opp) {
+                const challengerDiff = opp.clubBotDifficulty && opp.clubBotDifficulty !== 'beginner' ? opp.clubBotDifficulty : 'intermediate';
                 window.setTimeout(() => {
-                    game.startNewMatch(matchLen, opp.clubBotDifficulty ?? 'intermediate');
-                    resetGameHistory();
-                    modals.closeMatchmaking();
-                    modals.closePrivateRoomModal();
+                    game.startNewMatch(matchLen, challengerDiff);
+                    resetGameHistory(); modals.closeMatchmaking(); modals.closePrivateRoomModal();
                     setAppScreen('GAME');
                     window.setTimeout(() => { game.rollDice(); }, 180);
-                    toast.success(`Match contre ${opp.displayName} (${opp.rating} Elo) en ${matchLen === 0 ? 'Money Game' : `${matchLen} pts`}.`, 'Adversaire Trouvé');
+                    toast.success(isEn ? `Match vs ${opp.displayName} (${matchMetaLabel}) — ${lenText}.` : `Match contre ${opp.displayName} (${matchMetaLabel}) en ${lenText}.`, isEn ? 'Opponent Found' : 'Adversaire Trouvé');
                 }, 1350);
                 return;
             }
-            game.resetMatch();
-            modals.closeMatchmaking();
-            modals.closePrivateRoomModal();
-            setAppScreen('GAME');
-            toast.success(`Match contre ${opp?.displayName} en ${matchLen} pts.`, 'Partie Multijoueur');
+            game.resetMatch(); modals.closeMatchmaking(); modals.closePrivateRoomModal(); setAppScreen('GAME');
+            toast.success(isEn ? `Match vs ${opp?.displayName} (${matchMetaLabel}) — ${lenText}.` : `Match contre ${opp?.displayName} (${matchMetaLabel}) en ${lenText}.`, isEn ? 'Online Match' : 'Partie Multijoueur');
         }
-    }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, modals, game, resetGameHistory]);
+    }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, multiplayer.localProfile.isGuest, locale, modals, game, resetGameHistory]);
 
     usePrivateRoomInvite({
-        onAutoJoinRoom: useCallback((code: string) => {
-            userInitiatedMultiplayerRef.current = true;
-            modals.openPrivateRoomModal(code);
-        }, [modals]),
+        onAutoJoinRoom: useCallback((code: string) => { userInitiatedMultiplayerRef.current = true; modals.openPrivateRoomModal(code); }, [modals]),
         onAutoStartTournamentMatch: useCallback((len: number, tourneyName: string | null) => {
-            userInitiatedMultiplayerRef.current = false;
-            game.startNewMatch(len, 'expert');
-            resetGameHistory();
-            setAppScreen('GAME');
+            userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch();
+            game.startNewMatch(len, 'expert'); resetGameHistory(); setAppScreen('GAME');
             window.setTimeout(() => { game.rollDice(); }, 160);
             toast.success(tourneyName ? `${tourneyName} (${len} pts)` : `Match de tournoi en ${len} pts`, 'Entraînement Tournoi');
-        }, [game, resetGameHistory]),
+        }, [game, multiplayer, resetGameHistory]),
     });
 
     const handleLobbyStart = useCallback((selection: LobbySelection) => {
         userInitiatedMultiplayerRef.current = false;
+        multiplayer.leaveMatch();
         if (selection.playerColor) setPlayerColor(selection.playerColor);
         game.startNewMatch(selection.matchLength, selection.difficulty);
         resetGameHistory();
         if (selection.coachEnabled !== isLiveAdviceEnabled) toggleLiveAdvice();
         setAppScreen('GAME');
         window.setTimeout(() => { game.rollDice(); }, 160);
-        const formatLabel = selection.matchLength === 0 ? 'Money Game' : `Match en ${selection.matchLength} pts`;
-        toast.success(`${formatLabel} — ${selection.coachEnabled ? 'Mode Formation' : 'Mode Tournoi'}.`, 'Match lancé');
-    }, [game, resetGameHistory, isLiveAdviceEnabled, toggleLiveAdvice]);
+        const isEn = locale === 'en';
+        const formatLabel = selection.matchLength === 0 ? 'Money Game' : (isEn ? `${selection.matchLength} pts Match` : `Match en ${selection.matchLength} pts`);
+        const modeLabel = selection.coachEnabled ? (isEn ? 'Training Mode' : 'Mode Formation') : (isEn ? 'Tournament Mode' : 'Mode Tournoi');
+        toast.success(`${formatLabel} — ${modeLabel}.`, isEn ? 'Match Started' : 'Match lancé');
+    }, [game, multiplayer, locale, resetGameHistory, isLiveAdviceEnabled, toggleLiveAdvice]);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !hasAutoStartedRef.current) {
             const params = new URLSearchParams(window.location.search);
-            if (window.location.pathname.startsWith('/play') || params.get('start') === 'guided') {
+            const modeParam = params.get('mode');
+            if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1') {
+                hasAutoStartedRef.current = true;
+                userInitiatedMultiplayerRef.current = true;
+                modals.openMatchmaking();
+            } else if (params.get('start') === 'guided' || window.location.pathname.startsWith('/play')) {
                 hasAutoStartedRef.current = true;
                 handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
-            } else if (params.get('mode') === 'matchmaking' || params.get('invite') === '1') {
-                hasAutoStartedRef.current = true;
-                modals.openMatchmaking();
             }
         }
     }, [handleLobbyStart, modals]);

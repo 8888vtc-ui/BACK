@@ -81,17 +81,23 @@ export const LobbyMatchedVersus: React.FC<LobbyMatchedVersusProps> = ({
                             <span>{opponentProfile.countryName} · {isEn ? 'Online' : 'En ligne'}</span>
                         </div>
                     )}
-                    <div className="flex items-center justify-center gap-1.5 text-xs font-mono">
-                        <span className="text-amber-400 font-bold">{opponentProfile.rating} Elo</span>
-                        {typeof opponentProfile.averagePr === 'number' && (
-                            <>
-                                <span className="text-slate-600">•</span>
-                                <span className="rounded border border-amber-400/40 bg-amber-950/60 px-1.5 py-0.2 text-[11px] font-bold text-amber-200">
-                                    PR {opponentProfile.averagePr.toFixed(1)}
-                                </span>
-                            </>
-                        )}
-                    </div>
+                    {isGuest ? (
+                        <div className="inline-flex items-center justify-center gap-1 rounded border border-emerald-500/30 bg-emerald-950/30 px-2 py-0.5 text-[11px] font-semibold text-emerald-300">
+                            <span>{isEn ? 'Online · Casual Match' : 'En ligne · Match Amical'}</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center gap-1.5 text-xs font-mono">
+                            <span className="text-amber-400 font-bold">{opponentProfile.rating} Elo</span>
+                            {typeof opponentProfile.averagePr === 'number' && (
+                                <>
+                                    <span className="text-slate-600">•</span>
+                                    <span className="rounded border border-amber-400/40 bg-amber-950/60 px-1.5 py-0.2 text-[11px] font-bold text-amber-200">
+                                        PR {opponentProfile.averagePr.toFixed(1)}
+                                    </span>
+                                </>
+                            )}
+                        </div>
+                    )}
                     <div className="inline-block rounded-md border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-slate-300">
                         {matchInfo.localRole === 'X' ? (isEn ? 'Black Checkers (O)' : 'Pions Noirs (O)') : (isEn ? 'White Checkers (X)' : 'Pions Blancs (X)')}
                     </div>

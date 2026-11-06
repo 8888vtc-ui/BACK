@@ -2,7 +2,7 @@
  * @file route.ts
  * @description Route API Next.js / Netlify pour le coach personnel de blunder (/api/personal-blunder-quiz)
  * avec cascade de modèles Google Flash-Lite et secours déterministe en 0 ms.
- * Zéro any, zéro ERH.
+ * Zéro any, zéro PR_ONLY.
  */
 
 import { NextResponse } from 'next/server';

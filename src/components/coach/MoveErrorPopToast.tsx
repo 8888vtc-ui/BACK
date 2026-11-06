@@ -29,7 +29,8 @@ export interface MoveErrorPopToastProps {
     readonly isBeginner?: boolean;
 }
 
-const PATTERN_LABELS: Record<ClassicalBlunderPattern, { name: string; advice: string }> = {
+interface PatternLabel { name: string; advice: string; }
+const PATTERN_LABELS: Record<ClassicalBlunderPattern, PatternLabel> = {
     PREMATURE_PRIME_BREAKUP: { name: 'Rupture prématurée de prime', advice: 'Maintenez la prime de 5 ou 6 portes pour asphyxier les dames arrières adverses.' },
     BAR_REENTRY_MISCALCULATION: { name: 'Calcul de rentrée de barre adverse', advice: 'Attention aux tirs directs depuis la barre adverse sur vos pions isolés.' },
     RECKLESS_HIT_EXPOSURE: { name: 'Frappe inconsidérée (Blot exposé)', advice: 'Frapper laisse un blot vulnérable sans couverture immédiate.' },
@@ -138,22 +139,13 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
         }
 
         const mwcLossPct = Math.max(1, Math.round(absLoss * 50));
-
         let computedTitle = isCubeError
             ? isBlunder ? 'BLUNDER DE VIDEAU (CUBE)' : 'IMPRÉCISION DE VIDEAU'
             : isBlunder ? 'GAFFE / BLUNDER MAJEUR' : isError ? 'ERREUR TACTIQUE' : 'IMPRÉCISION';
-        if (isBeginner) {
-            computedTitle = isBlunder ? 'COUP SOUS-OPTIMAL' : 'PETITE IMPRÉCISION';
-        }
+        if (isBeginner) computedTitle = isBlunder ? 'COUP SOUS-OPTIMAL' : 'PETITE IMPRÉCISION';
 
         return {
-            isBlunder,
-            isError,
-            isInaccuracy,
-            absLoss,
-            mwcLossPct,
-            patternName,
-            patternAdvice,
+            isBlunder, isError, isInaccuracy, absLoss, mwcLossPct, patternName, patternAdvice,
             title: computedTitle,
             badgeBg: isBlunder
                 ? 'border-rose-500/80 bg-rose-950/95 text-rose-100 shadow-[0_0_24px_rgba(244,63,94,0.35)]'
