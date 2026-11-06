@@ -155,8 +155,8 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
     id: 5, linkedEpisodeId: 3, pointsReward: 200, dice: [3, 2], boardHighlights: {},
     titleFr: "Quiz 5/10 : Frapper un Pion Adverse Isolé",
     titleEn: "Quiz 5/10: Hitting an Isolated Checker",
-    questionFr: "Que se passe-t-il si votre pion s'arrête sur une pointe où il n'y a qu'UN SEUL pion adverse ?",
-    questionEn: "What happens if your checker lands on a point with only ONE opponent checker?",
+    questionFr: "Que se passe-t-il quand vous arrivez sur une pointe avec 1 seul pion adverse\u00A0?",
+    questionEn: "What happens when you land on a point with a single opponent checker?",
     options: [
       {
         id: "A", isCorrect: false,
@@ -305,34 +305,34 @@ export const BEGINNER_10_INITIATION_QUIZZES: BeginnerInitiationQuiz[] = [
       },
     ],
   },
-  // QUIZ 10 (Réponse A)
+  // QUIZ 10 (Réponse C)
   {
     id: 10, linkedEpisodeId: 5, pointsReward: 200, dice: [0, 0], boardHighlights: { cube: true },
     titleFr: "Quiz 10/10 : Le Dé Multiplicateur (x2)",
     titleEn: "Quiz 10/10: The Doubling Cube (x2)",
-    questionFr: "À quoi sert ce gros dé spécial marqué 2, 4, 8 sur le côté du plateau ?",
+    questionFr: "À quoi sert ce gros dé spécial marqué 2, 4, 8 sur le côté du plateau\u00A0?",
     questionEn: "What is this special large die marked 2, 4, 8 on the side of the board used for?",
     options: [
       {
-        id: "A", isCorrect: true,
-        labelFr: "À proposer de doubler les points de la manche quand votre stratégie vous donne l'avantage !",
-        labelEn: "To propose doubling the game stakes when your strategy gives you the advantage!",
-        explanationFr: "Génie stratégique ! Le Videau permet de doubler la mise de la manche avant de lancer les dés.",
-        explanationEn: "Strategic genius! The Doubling Cube doubles the match stakes before rolling dice.",
-      },
-      {
-        id: "B", isCorrect: false,
+        id: "A", isCorrect: false,
         labelFr: "À relancer les dés gratuitement si votre tirage ne vous plaît pas",
         labelEn: "To re-roll dice for free if you dislike your roll",
         explanationFr: "Le videau ne permet pas de relancer : c'est un multiplicateur d'enjeu.",
         explanationEn: "The cube does not grant re-rolls: it multiplies game points.",
       },
       {
-        id: "C", isCorrect: false,
+        id: "B", isCorrect: false,
         labelFr: "À compter le nombre de tours de jeu écoulés",
         labelEn: "To count the number of elapsed game turns",
         explanationFr: "Ce n'est pas un compte-tours, mais le célèbre dé de doublement (Videau).",
         explanationEn: "It is not a turn counter, but the famous Doubling Cube.",
+      },
+      {
+        id: "C", isCorrect: true,
+        labelFr: "À proposer de doubler les points de la manche quand votre stratégie vous donne l'avantage !",
+        labelEn: "To propose doubling the game stakes when your strategy gives you the advantage!",
+        explanationFr: "Génie stratégique ! Le Videau permet de doubler la mise de la manche avant de lancer les dés.",
+        explanationEn: "Strategic genius! The Doubling Cube doubles the match stakes before rolling dice.",
       },
     ],
   },

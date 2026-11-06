@@ -108,9 +108,9 @@ export const AcademyBoardStageSvg: React.FC<AcademyBoardStageSvgProps> = React.m
                 <circle cx="0" cy="0" r="7" fill="#e5e5e5" />
               </g>
             ) : (
-              <g className="animate-bounce">
-                <text x="578" y="170" fill="#F3E5AB" fontSize="12" fontWeight="black" textAnchor="middle">🏆</text>
-                <text x="430" y="270" fill="#F3E5AB" fontSize="14" fontWeight="black" textAnchor="middle">
+              <g className="animate-bounce" transform="translate(430, 270)">
+                <rect x="-80" y="-12" width="160" height="24" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="1" />
+                <text x="0" y="5" fill="#F3E5AB" fontSize="13" fontWeight="black" textAnchor="middle">
                   {isEn ? '🏆 VICTORY!' : '🏆 VICTOIRE !'}
                 </text>
               </g>
