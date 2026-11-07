@@ -24,6 +24,7 @@ export interface LiveProfessorCoachOverlayProps {
   turnStartBoard?: readonly number[]; activeTurn?: 'X' | 'O'; boardState?: BoardState;
   onToggleRecommendArrow?: () => void; onHoverNotation?: (notation: string | null) => void;
   isShowingRecommendArrow?: boolean; prematureDoubleWarning?: boolean; onReplayMove?: () => void;
+  pendingErrorFeedback?: LastMoveFeedback | null; onContinueAfterError?: () => void;
 }
 
 export function LiveProfessorCoachOverlay({
@@ -31,6 +32,7 @@ export function LiveProfessorCoachOverlay({
   antiFrustrationNotice, isMasterMove = false, optimalMove, lastBotNotation, lastBotDice,
   matchLog, turnStartBoard, activeTurn = 'X', boardState, onToggleRecommendArrow,
   onHoverNotation, isShowingRecommendArrow = true, prematureDoubleWarning = false, onReplayMove,
+  pendingErrorFeedback = null, onContinueAfterError,
 }: LiveProfessorCoachOverlayProps) {
   const { locale: contextLocale } = useTranslation();
   const lang = (propLocale || contextLocale || 'fr') === 'en' ? 'en' : 'fr';
@@ -45,45 +47,40 @@ export function LiveProfessorCoachOverlay({
 
   const lastLogEntry = matchLog && matchLog.length > 0 ? matchLog[matchLog.length - 1] : null;
   const hasRolledDice = Boolean(dice && (dice[0] > 0 || dice[1] > 0));
+  const hasPendingError = Boolean(pendingErrorFeedback);
 
   // Isolation stricte des 3 moments :
-  // MOMENT C : Le joueur humain (X) a lancé ses dés
-  const isMomentC = activeTurn === 'X' && hasRolledDice;
-  // MOMENT A : Le joueur humain (X) vient de valider son coup (dernier coup du log = X)
-  const isMomentA = !isMomentC && (lastLogEntry ? lastLogEntry.player === 'X' : Boolean(lastMoveFeedback));
+  // MOMENT C : Le joueur humain (X) a lancé ses dés (et n'est pas arrêté sur une alerte d'erreur)
+  const isMomentC = !hasPendingError && activeTurn === 'X' && hasRolledDice;
+  // MOMENT A : Le joueur humain (X) vient de valider son coup (ou alerte d'erreur suspendue)
+  const isMomentA = hasPendingError || (!isMomentC && (lastLogEntry ? lastLogEntry.player === 'X' : Boolean(lastMoveFeedback)));
   // MOMENT B : Le Bot (O) vient de jouer son coup et c'est à X de lancer les dés
   const isMomentB = !isMomentC && !isMomentA && (lastLogEntry?.player === 'O' || Boolean(lastBotNotation));
 
   const humanFeedback = useMemo<LastMoveFeedback | null>(() => {
+    if (pendingErrorFeedback) return pendingErrorFeedback;
     if (lastLogEntry && lastLogEntry.player === 'X') {
-      if (lastMoveFeedback && lastMoveFeedback.turnIndex === lastLogEntry.turnIndex) {
-        return lastMoveFeedback;
-      }
+      if (lastMoveFeedback && lastMoveFeedback.turnIndex === lastLogEntry.turnIndex) return lastMoveFeedback;
       return evaluateInstantHumanLogEntry(lastLogEntry, boardState);
     }
     if (!matchLog || matchLog.length === 0) return lastMoveFeedback ?? null;
     return null;
-  }, [lastLogEntry, lastMoveFeedback, boardState, matchLog]);
+  }, [pendingErrorFeedback, lastLogEntry, lastMoveFeedback, boardState, matchLog]);
 
   const isOptimalHumanMove = useMemo(() => {
     if (!humanFeedback) return false;
     return humanFeedback.verdict === 'optimal' || Math.abs(humanFeedback.equityLoss) <= 0.020;
   }, [humanFeedback]);
 
-  // En cas d'erreur au coup précédent de X même après que O ait joué, permettre de cliquer Rejouer
   const prevHumanEntry = useMemo(() => {
     if (!matchLog || matchLog.length === 0) return null;
-    for (let i = matchLog.length - 1; i >= 0; i--) {
-      if (matchLog[i].player === 'X') return matchLog[i];
-    }
+    for (let i = matchLog.length - 1; i >= 0; i--) { if (matchLog[i].player === 'X') return matchLog[i]; }
     return null;
   }, [matchLog]);
 
   const evalBoardState = useMemo<BoardState | undefined>(() => {
     if (!boardState) return undefined;
-    if (turnStartBoard && turnStartBoard.length === 26) {
-      return { ...boardState, board: [...turnStartBoard], turn: 'X' };
-    }
+    if (turnStartBoard && turnStartBoard.length === 26) return { ...boardState, board: [...turnStartBoard], turn: 'X' };
     return boardState;
   }, [boardState, turnStartBoard]);
 
@@ -93,15 +90,12 @@ export function LiveProfessorCoachOverlay({
   );
 
   const safeOptimalMove = optimalMove && /\d/.test(optimalMove) ? optimalMove : '';
-  const activeBestNotation = proactive?.bestNotation || safeOptimalMove;
+  const activeBestNotation = hasPendingError ? (pendingErrorFeedback?.optimalMove ?? '') : (proactive?.bestNotation || safeOptimalMove);
 
   useEffect(() => {
-    if (isShowingRecommendArrow && isMomentC && activeBestNotation) {
-      onHoverNotation?.(activeBestNotation);
-    } else {
-      onHoverNotation?.(null);
-    }
-  }, [isShowingRecommendArrow, isMomentC, dice?.[0], dice?.[1], activeBestNotation, onHoverNotation]);
+    if (isShowingRecommendArrow && (isMomentC || hasPendingError) && activeBestNotation) onHoverNotation?.(activeBestNotation);
+    else onHoverNotation?.(null);
+  }, [isShowingRecommendArrow, isMomentC, hasPendingError, dice?.[0], dice?.[1], activeBestNotation, onHoverNotation]);
 
   useEffect(() => {
     if (isMasterMove && isMomentA) {
@@ -262,11 +256,20 @@ export function LiveProfessorCoachOverlay({
                 {canShowReplayBtn && (
                   <button
                     type="button" data-testid="professor-undo-move-btn"
-                    onClick={() => { if (canUndo && onUndoMove) onUndoMove(); else if (onReplayMove) onReplayMove(); }}
+                    onClick={() => { if (onReplayMove) onReplayMove(); else if (canUndo && onUndoMove) onUndoMove(); }}
                     className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 text-amber-200 font-extrabold text-xs transition"
                   >
                     <RotateCcw className="w-3.5 h-3.5 text-amber-300" />
                     <span>↺ {lang === 'fr' ? 'Rejouer mon coup' : 'Replay move'}</span>
+                  </button>
+                )}
+                {hasPendingError && onContinueAfterError && (
+                  <button
+                    type="button" data-testid="professor-continue-anyway-btn"
+                    onClick={onContinueAfterError}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-zinc-100 font-bold text-xs transition"
+                  >
+                    <span>{lang === 'fr' ? 'Continuer →' : 'Continue →'}</span>
                   </button>
                 )}
               </div>

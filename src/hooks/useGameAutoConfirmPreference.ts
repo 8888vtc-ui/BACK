@@ -33,13 +33,13 @@ export function useGameAutoConfirmPreference({
             return explicitAutoConfirmMode === 'always' || explicitAutoConfirmMode === 'always_except_cube';
         }
         if (explicitAutoConfirm !== undefined) return explicitAutoConfirm;
-        return getSavedAutoConfirmPreference(false);
+        return false;
     });
 
     const [autoConfirmMode, setAutoConfirmModeState] = useState<AutoConfirmMode>(() => {
         if (explicitAutoConfirmMode !== undefined) return explicitAutoConfirmMode;
         if (explicitAutoConfirm !== undefined) return explicitAutoConfirm ? 'always' : 'never';
-        return getSavedAutoConfirmMode(getSavedAutoConfirmPreference(false) ? 'always' : 'never');
+        return 'never';
     });
 
     useEffect(() => {

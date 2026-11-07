@@ -79,20 +79,13 @@ export default function Home() {
     const { gameIdRef, turnsHistory, turnsHistoryRef, currentTurnMovesRef, turnBoardBeforeRef, currentTurnDiceRef, latestGameAnalysis, handleGameOverAnalysis, resetGameHistory } = useGamePersistence({ game, isMultiplayerActive, t });
 
     const { coach, coachHighlight, matchStats, matchStatsX, matchStatsO, lastMoveFeedback, coachHistory, selectedCoachHistoryIndex, selectCoachHistoryIndex, notificationLevel, setNotificationLevel, isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: rawTriggerCoach } = useCoach({
-        game: isLiveMatch ? { ...game, matchLog: [], moveHistory: [] } : game,
+        game,
         challengerProfile: multiplayer.opponentProfile, currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
     });
 
     const handleTriggerCoach = useCallback(() => {
-        if (isLiveMatch) {
-            toast.info(
-                locale === 'en' ? 'Live Match Mode (Zero Live AI)' : 'Mode Match Live (Zéro IA en direct)',
-                locale === 'en' ? 'For fairness, AI analysis is performed in the Post-Match Report and Personal Blunders.' : 'Pour garantir la fluidité et l’équité, l’analyse IA s’effectue au Compte-Rendu de fin de match et dans vos derniers Blunders.',
-            );
-            return;
-        }
         void rawTriggerCoach();
-    }, [isLiveMatch, locale, rawTriggerCoach]);
+    }, [rawTriggerCoach]);
 
     const MIN_DECISIONS_FOR_PR = 2;
     const isRegistered = checkIsPlayerRegistered();

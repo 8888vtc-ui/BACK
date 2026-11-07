@@ -28,6 +28,7 @@ export interface UseOpponentTurnOrchestratorParams {
     readonly phase: GamePhase;
     readonly matchLength: number;
     readonly difficulty: AIDifficulty;
+    readonly matchLogLength?: number;
     readonly options: UseBackgammonGameOptions;
     readonly dispatch: (action: GameAction) => void;
     readonly locale: Locale;
@@ -50,6 +51,7 @@ export function useOpponentTurnOrchestrator({
     phase,
     matchLength,
     difficulty,
+    matchLogLength = 0,
     options,
     dispatch,
     locale,
@@ -80,7 +82,7 @@ export function useOpponentTurnOrchestrator({
         if (opponentTurnInProgressRef.current) return;
 
         const isCustomTestTiming = options.opponentDelayMs !== undefined;
-        const canIADouble = canOpponentDouble(boardState, matchLength);
+        const canIADouble = canOpponentDouble(boardState, matchLength, difficulty, matchLogLength);
 
         if (opponentDelayMs === 0) {
             dispatch({ type: 'PLAY_OPPONENT', dice: forcedOpponentDice });

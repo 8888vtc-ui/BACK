@@ -137,13 +137,13 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
 
     if (!isWaitingRoll && !isMoving && !isReadyToCommit && !isOpponentOfferingDouble && !isLocalOfferingDouble) return null;
 
-    const showUndo = hasDice && canUndo && !isWaitingRoll && !isAutoActive;
-    const showConfirm = isReadyToCommit && canConfirm && !isAutoActive;
+    const showUndo = hasDice && canUndo && !isWaitingRoll;
+    const showConfirm = isReadyToCommit && canConfirm;
 
     return (
         <div
             data-testid="board-center-controls"
-            className={`absolute ${isOpponentOfferingDouble || isLocalOfferingDouble ? 'left-1/2 flex' : 'left-[77%] sm:left-[76%] hidden md:flex [@media(max-height:500px)]:flex'} top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex-col items-center gap-1 pointer-events-none max-h-[34px] max-w-[90%] justify-center`}
+            className={`absolute ${isOpponentOfferingDouble || isLocalOfferingDouble ? 'left-1/2 flex' : (showUndo || showConfirm) ? 'left-[77%] sm:left-[76%] flex' : 'left-[77%] sm:left-[76%] hidden md:flex [@media(max-height:500px)]:flex'} top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex-col items-center gap-1 pointer-events-none max-h-[34px] max-w-[90%] justify-center`}
         >
             {isLocalOfferingDouble && (
                 <div
@@ -250,28 +250,28 @@ const BoardCenterControlsComponent: React.FC<BoardCenterControlsProps> = ({
             )}
 
             {!isWaitingRoll && !isOpponentOfferingDouble && (showUndo || showConfirm) && (
-                <div className="pointer-events-auto flex items-center gap-1 sm:gap-1.5 rounded-full border border-[#d4af37]/35 bg-[#0e0b08]/95 h-[30px] sm:h-[32px] max-h-[34px] px-1.5 py-0.5 shadow-[0_8px_20px_rgba(0,0,0,0.85)] backdrop-blur-md">
+                <div className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-[#d4af37]/50 bg-[#0e0b08]/95 h-[32px] sm:h-[34px] px-2 py-0.5 shadow-[0_8px_20px_rgba(0,0,0,0.85)] backdrop-blur-md">
                     {showUndo && (
                         <button
                             type="button"
                             data-testid="center-undo-button"
-                            title={isEn ? 'Undo last played die (Ctrl+Z)' : 'Annuler le dernier dé joué (Ctrl+Z)'}
+                            title={isEn ? 'Undo move (Ctrl+Z)' : 'Annuler le déplacement (Ctrl+Z)'}
                             onClick={(e) => { e.stopPropagation(); void impactLight(); onUndo(); }}
-                            className="rounded-full border border-[#d4af37]/30 bg-[#18130e] h-[24px] sm:h-[26px] max-h-[28px] px-2.5 py-0 text-xs font-bold uppercase tracking-wider text-[#f7f3e8] shadow-inner transition hover:border-[#d4af37] hover:text-white active:scale-95 flex items-center justify-center whitespace-nowrap touch-manipulation leading-none"
+                            className="rounded-full border border-[#d4af37]/35 bg-[#18130e] h-[26px] sm:h-[28px] px-3 py-0 text-xs font-bold uppercase tracking-wider text-[#f7f3e8] shadow-inner transition hover:border-[#d4af37] hover:text-white active:scale-95 flex items-center justify-center whitespace-nowrap touch-manipulation leading-none"
                         >
-                            {isEn ? '↶ Undo' : '↶ Annuler'}
+                            {isEn ? '↺ Undo' : '↺ Annuler'}
                         </button>
                     )}
                     {showConfirm && (
                         <button
                             type="button"
                             data-testid="center-confirm-button"
-                            title={isEn ? 'Confirm turn (Space / Enter)' : 'Confirmer le tour (Espace / Entrée)'}
+                            title={isEn ? 'Confirm move (Space / Enter)' : 'Valider le coup (Espace / Entrée)'}
                             onClick={(e) => { e.stopPropagation(); void impactMedium(); onConfirm(); }}
                             disabled={!canConfirm}
-                            className="rounded-full border border-amber-300 bg-gradient-to-r from-amber-400 to-amber-500 h-[24px] sm:h-[26px] max-h-[28px] px-3 py-0 text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_12px_rgba(245,158,11,0.35)] transition hover:brightness-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 flex items-center justify-center whitespace-nowrap touch-manipulation leading-none"
+                            className="rounded-full border border-amber-300 bg-gradient-to-r from-[#E5C158] via-[#D4AF37] to-[#B5902B] h-[26px] sm:h-[28px] px-3.5 py-0 text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_4px_12px_rgba(212,175,55,0.45)] transition hover:brightness-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 flex items-center justify-center whitespace-nowrap touch-manipulation leading-none"
                         >
-                            {isEn ? '✓ Confirm' : '✓ Valider'}
+                            {isEn ? '✓ Confirm move' : '✓ Valider le coup'}
                         </button>
                     )}
                 </div>

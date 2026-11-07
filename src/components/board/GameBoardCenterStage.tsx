@@ -72,6 +72,7 @@ export interface GameBoardCenterStageProps {
     readonly playerColor: 'X' | 'O';
     readonly isMatchStarted: boolean;
     readonly returnToLive: () => void;
+    readonly onConfirmTurn?: () => void;
 }
 
 export const GameBoardCenterStage: React.FC<GameBoardCenterStageProps> = React.memo(({
@@ -125,6 +126,7 @@ export const GameBoardCenterStage: React.FC<GameBoardCenterStageProps> = React.m
     playerColor,
     isMatchStarted,
     returnToLive,
+    onConfirmTurn,
 }) => {
     return (
         <div className="relative flex-1 min-h-0 max-h-full w-full max-w-full min-w-0 flex items-center sm:items-stretch justify-center gap-1.5 sm:gap-4 [@media(max-height:500px)]:!gap-1 px-0 sm:px-3 py-0 sm:py-1.5 [@media(max-height:500px)]:!p-0 overflow-hidden">
@@ -217,7 +219,7 @@ export const GameBoardCenterStage: React.FC<GameBoardCenterStageProps> = React.m
                             if (selectedCoachHistoryIndex !== null) onSelectCoachHistoryIndex?.(null);
                             game.rollDice();
                         } : returnToLive}
-                        onConfirm={replayIsLive ? () => game.commitHumanMove() : returnToLive}
+                        onConfirm={replayIsLive ? () => (onConfirmTurn ? onConfirmTurn() : game.commitHumanMove()) : returnToLive}
                         canUndo={replayIsLive && game.canUndo}
                         canConfirm={replayIsLive && game.gamePhase === 'HUMAN_READY_TO_COMMIT' && game.canUndo}
                         autoConfirmEnabled={game.autoConfirmTurn}

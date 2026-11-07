@@ -141,7 +141,18 @@ export function evaluateInstantHumanLogEntry(
         const matchedCand = analysis.moves.find(
             (m) => m.board && m.board.slice(0, 26).join(',') === entry.boardAfter.slice(0, 26).join(','),
         );
-        const equityLoss = sameBoard || sameNotation ? 0 : Math.abs(matchedCand?.equityLoss ?? 0.045);
+        let equityLoss = sameBoard || sameNotation ? 0 : Math.abs(matchedCand?.equityLoss ?? 0.045);
+        if (!sameBoard && !sameNotation && best?.board) {
+            let playedBlots = 0;
+            let bestBlots = 0;
+            for (let p = 1; p <= 18; p++) {
+                if (entry.boardAfter[p] === 1) playedBlots++;
+                if (best.board[p] === 1) bestBlots++;
+            }
+            if (playedBlots > bestBlots && equityLoss < 0.035) {
+                equityLoss = 0.045 + (playedBlots - bestBlots) * 0.025;
+            }
+        }
         const isOpt = sameBoard || sameNotation || equityLoss <= 0.020;
         return {
             verdict: isOpt ? 'optimal' : equityLoss >= 0.080 ? 'blunder' : 'inaccuracy',
@@ -195,7 +206,26 @@ export function getFeedbackAdvice(feedback: LastMoveFeedback, lang: 'fr' | 'en' 
         }
         return isEn
             ? `✨ BRAVO! Excellent move: you played ${humanMove} and your checkers are safely placed!`
-            : `✨ BRAVO ! Excellent coup : tu as joué ${humanMove} et tes pions sont parfaitement placés !`;
+            : `✨ BRAVO ! Très bon coup : tu as joué ${humanMove} et tes pions sont parfaitement placés !`;
+    }
+
+    const bAfter = feedback.boardAfter;
+    const exposedBlots: number[] = [];
+    if (bAfter && bAfter.length >= 25) {
+        for (let p = 18; p >= 1; p--) {
+            if (bAfter[p] === 1) exposedBlots.push(p);
+        }
+    }
+    if (exposedBlots.length > 0) {
+        const listFr = exposedBlots.length === 1
+            ? `la case ${exposedBlots[0]}`
+            : `les cases ${exposedBlots.slice(0, -1).join(', ')} et ${exposedBlots[exposedBlots.length - 1]}`;
+        const listEn = exposedBlots.length === 1
+            ? `point ${exposedBlots[0]}`
+            : `points ${exposedBlots.slice(0, -1).join(', ')} and ${exposedBlots[exposedBlots.length - 1]}`;
+        return isEn
+            ? `🤔 Ouch! By playing ${humanMove || 'this move'}, you leave isolated checkers in danger on ${listEn}! The best move was ${feedback.optimalMove}. Do you want to fix it?`
+            : `🤔 Oulà ! En jouant ${humanMove || 'ce coup'}, tu laisses des pions tout seuls en danger sur ${listFr} ! Le meilleur coup était ${feedback.optimalMove}. Veux-tu le corriger ?`;
     }
 
     return isEn

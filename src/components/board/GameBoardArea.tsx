@@ -42,6 +42,7 @@ export interface GameBoardAreaProps {
     onToggleTheme?: () => void; challengerProfile?: PlayerEloProfile | null;
     onSendQuickChat?: (id: 'gg' | 'nice_move' | 'unlucky' | 'thanks' | 'thinking') => void;
     onOfferDouble?: () => void; onTakeDouble?: () => void; onPassDouble?: () => void; isPrematureDouble?: boolean;
+    onConfirmTurn?: () => void;
     isOnlinePvpMatch?: boolean;
     isFullFocusMode?: boolean;
     onToggleFullFocusMode?: () => void;
@@ -56,6 +57,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     onSelectCoachHistoryIndex, onTriggerCoach, matchStats, matchStatsO, prX, prO, lastMoveFeedback, locale,
     gameId, matchContext, isMatchStarted = true, playerColor = 'X', onBackToLobby, onToggleTheme,
     challengerProfile = null, onSendQuickChat, onOfferDouble, onTakeDouble, onPassDouble, isPrematureDouble = false,
+    onConfirmTurn,
     isOnlinePvpMatch: propIsOnlineMatch = false,
     isFullFocusMode,
     onToggleFullFocusMode,
@@ -190,7 +192,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-0" style={{ background: 'radial-gradient(ellipse 72% 60% at 50% 45%, rgba(245, 196, 81, 0.10) 0%, rgba(16, 185, 129, 0.04) 42%, rgba(0, 0, 0, 0.55) 100%)' }} />
 
             <div data-testid="board-main-column" className="w-full h-full min-h-0 min-w-0 max-w-full flex flex-col items-center justify-center gap-0 overflow-hidden relative z-10 transition-all duration-200">
-                {!isOnlinePvpMatch && !isGuided && (
+                {!isGuided && (
                     <MoveErrorPopToast
                         feedback={lastMoveFeedback} boardBefore={lastMoveFeedback?.boardBefore ?? displayCoach?.boardBefore}
                         boardAfter={lastMoveFeedback?.boardAfter ?? game.state.board} onReplayMove={handleSyncedReplayMove}
@@ -224,7 +226,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     onOfferDouble={onOfferDouble} onTakeDouble={onTakeDouble} onPassDouble={onPassDouble}
                     isPrematureDouble={isPrematureDouble} theme={theme} isBoardLoading={isBoardLoading}
                     propIsOnlineMatch={propIsOnlineMatch} playerColor={playerColor} isMatchStarted={isMatchStarted}
-                    returnToLive={replay.returnToLive}
+                    returnToLive={replay.returnToLive} onConfirmTurn={onConfirmTurn}
                 />
 
                 <BoardPortraitBottomHud scoreX={game.state.scoreX} turn={game.state.turn} playerClock={clock.formattedX} delaySeconds={activeDelaySeconds} isGuidedMode={isGuided} locale={locale} />

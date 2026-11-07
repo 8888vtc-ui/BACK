@@ -89,6 +89,7 @@ export function useGameTurnOrchestrators({
         phase,
         matchLength,
         difficulty,
+        matchLogLength: state.matchLog?.length ?? 0,
         options,
         dispatch,
         locale,

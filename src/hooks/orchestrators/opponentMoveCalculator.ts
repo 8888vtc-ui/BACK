@@ -26,7 +26,7 @@ export function getOpponentBlunderCap(difficulty: AIDifficulty): number {
     return HUMAN_BLUNDER_CAP_EMG[difficulty] ?? 0.035;
 }
 
-const RETRY_DELAYS_MS = [0, 400];
+const RETRY_DELAYS_MS = [0];
 
 export interface ResolveOpponentMoveParams {
     stateWithDice: BoardState;
@@ -90,7 +90,7 @@ export async function resolveOpponentMoveSequence({
         return pickTestStubMove(currentBoard, rolledDice, legalSeqs, difficulty);
     }
 
-    const timeoutMs = Math.min(Math.max(computeHardDeadlineMs, 1500), 2200);
+    const timeoutMs = Math.min(Math.max(computeHardDeadlineMs, 600), 900);
     for (let attempt = 0; attempt < RETRY_DELAYS_MS.length; attempt++) {
         if (isAborted?.()) return null;
         await wait(RETRY_DELAYS_MS[attempt] ?? 400);
