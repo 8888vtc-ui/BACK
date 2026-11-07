@@ -71,11 +71,7 @@ const BoardComponent: React.FC<BoardProps> = ({
     const { top: TOP_ROW, bottom: BOTTOM_ROW } = useMemo(() => getOrientedRows(orientation), [orientation]);
 
     const handleToggleOrientation = useCallback(() => {
-        setOrientation((prev) => {
-            const next = toggleOrientation(prev);
-            saveOrientation(next);
-            return next;
-        });
+        setOrientation((prev) => { const next = toggleOrientation(prev); saveOrientation(next); return next; });
     }, []);
 
     const pipCounts = useMemo(() => pipCount(board), [board]);
@@ -83,9 +79,7 @@ const BoardComponent: React.FC<BoardProps> = ({
     const bar = useMemo(() => ({ X: Math.max(0, board[X_BAR]), O: Math.max(0, -board[O_BAR]) }), [board]);
     const diceAnimation = useDiceAnimation({
         dice: state.dice,
-        onRollStartSound: () => {
-            sensoryFeedbackController.triggerGranularDiceRoll();
-        },
+        onRollStartSound: () => sensoryFeedbackController.triggerGranularDiceRoll(),
     });
 
     const { flights, hiddenAt, prepareFlipForStep, completeFlight } = useCheckerFlights({

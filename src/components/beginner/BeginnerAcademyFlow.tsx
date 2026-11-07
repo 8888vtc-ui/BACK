@@ -53,9 +53,7 @@ export function BeginnerAcademyFlow({
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      document.title = lang === 'fr'
-        ? "Académie d'Initiation — Backgammon Tour"
-        : 'Beginner Academy — Backgammon Tour';
+      document.title = lang === 'fr' ? "Académie d'Initiation — Backgammon Tour" : 'Beginner Academy — Backgammon Tour';
     }
   }, [lang, viewState, activeQuizIndex]);
 
@@ -97,9 +95,7 @@ export function BeginnerAcademyFlow({
       if (!alreadyCredited) {
         localStorage.setItem('bgtour_beginner_diploma_bonus_credited', 'true');
         const finalPoints = currentPts + 2000;
-        setScorePoints(finalPoints);
-        saveProgress(finalPoints, quizIds);
-        return;
+        setScorePoints(finalPoints); saveProgress(finalPoints, quizIds); return;
       }
     } catch {}
     saveProgress(currentPts, quizIds);
