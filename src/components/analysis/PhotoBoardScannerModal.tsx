@@ -148,9 +148,9 @@ export const PhotoBoardScannerModal: React.FC<PhotoBoardScannerModalProps> = ({
                                 type="button"
                                 data-testid="scanner-open-camera-btn"
                                 onClick={() => cameraInputRef.current?.click()}
-                                className="inline-flex items-center gap-1.5 rounded-xl border border-[#D4AF37]/60 bg-[#D4AF37]/20 px-3 py-1.5 text-xs font-bold text-[#D4AF37] hover:bg-[#D4AF37]/30 transition"
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-bold text-stone-200 hover:border-[#D4AF37]/50 hover:text-white transition"
                             >
-                                <Camera className="w-3.5 h-3.5" strokeWidth={1.5} />
+                                <Camera className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
                                 <span>{isEn ? 'Take a Photo' : 'Prendre une photo'}</span>
                             </button>
                             <button
@@ -266,9 +266,9 @@ export const PhotoBoardScannerModal: React.FC<PhotoBoardScannerModalProps> = ({
                         data-testid="scanner-submit-btn"
                         disabled={!imagePreview || isScanning}
                         onClick={handleRunVisionScan}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-[#D4AF37]/50 bg-[#D4AF37]/20 px-4 py-1.5 text-xs font-bold uppercase text-[#F3E5AB] hover:bg-[#D4AF37]/30 disabled:opacity-50 transition"
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-black shadow-md hover:brightness-105 disabled:opacity-40 transition"
                     >
-                        <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />
+                        <Sparkles className="w-3.5 h-3.5 text-black" strokeWidth={1.75} />
                         <span>{isScanning ? (isEn ? 'AI Scanning...' : 'Reconnaissance IA...') : (isEn ? 'Reconstruct Board' : 'Reconstituer le plateau')}</span>
                     </button>
                 </div>
