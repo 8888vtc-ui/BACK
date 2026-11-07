@@ -128,7 +128,7 @@ const BoardOffTrayComponent: React.FC<BoardOffTrayProps> = ({
             )}
             <span
                 data-testid={offPoint === 0 ? 'home-board-bearoff-badge' : undefined}
-                className="hidden sm:inline [@media(max-height:540px)]:!hidden text-[9px] font-bold uppercase tracking-wider text-amber-200/80 drop-shadow text-center w-full"
+                className="hidden sm:block [@media(max-height:540px)]:!hidden text-[9px] font-bold uppercase tracking-wider text-amber-200/80 drop-shadow text-center w-full"
             >
                 SORTIE
             </span>

@@ -216,35 +216,27 @@ export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.m
 
     useEffect(() => {
         if (!isSettingsOpen) return;
-        const onPointerDown = (e: MouseEvent) => {
-            if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) setIsSettingsOpen(false);
-        };
+        const onPointerDown = (e: MouseEvent) => { if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) setIsSettingsOpen(false); };
         const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsSettingsOpen(false); };
-        document.addEventListener('mousedown', onPointerDown);
-        document.addEventListener('keydown', onKeyDown);
-        return () => {
-            document.removeEventListener('mousedown', onPointerDown);
-            document.removeEventListener('keydown', onKeyDown);
-        };
+        document.addEventListener('mousedown', onPointerDown); document.addEventListener('keydown', onKeyDown);
+        return () => { document.removeEventListener('mousedown', onPointerDown); document.removeEventListener('keydown', onKeyDown); };
     }, [isSettingsOpen]);
 
-    const handleFlipDirection = () => {
-        const next = toggleOrientation(getSavedOrientation());
-        saveOrientation(next);
-    };
+    const handleFlipDirection = () => { saveOrientation(toggleOrientation(getSavedOrientation())); };
+    const handleLeave = onBackToLobby ?? (() => { if (typeof window !== 'undefined') window.location.href = '/'; });
     const btnBase = 'flex h-10 w-10 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border border-[#d4af37]/35 bg-[#120e0a] text-[#f3d27a] shadow-lg transition hover:border-[#d4af37] hover:bg-[#1c1610] active:scale-95';
 
     return (
         <aside aria-label={isEn ? 'Quick table actions' : 'Actions rapides de table'} data-testid="board-right-action-rail" className="relative hidden md:flex [@media(max-height:540px)]:!hidden flex-col items-center justify-center gap-2 w-11 shrink-0 py-2 select-none">
-            {canUndo && onUndo && (
-                <button type="button" data-testid="right-rail-undo-btn" onClick={onUndo} title={isEn ? 'Undo played die (Ctrl+Z)' : 'Annuler le dé joué (Ctrl+Z)'} aria-label={isEn ? 'Undo move' : 'Annuler le coup'} className="flex h-10 w-10 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border border-amber-400/60 bg-amber-500/20 text-amber-200 font-bold text-sm shadow-lg transition hover:border-amber-300 hover:bg-amber-500/30 active:scale-95">↶</button>
-            )}
-            <button type="button" data-testid="board-fullscreen-toggle-btn" onClick={onToggleFullscreen} title={isBrowserFullscreen ? (isEn ? 'Exit fullscreen' : 'Quitter le plein écran') : (isEn ? 'Fullscreen' : 'Plein écran intégral')} aria-label={isEn ? 'Toggle fullscreen' : 'Basculer le plein écran'} className={btnBase}>
+            {/* 1. Plein écran ↗ */}
+            <button type="button" data-testid="board-fullscreen-toggle-btn" onClick={onToggleFullscreen} title={isBrowserFullscreen || isFocusFullBoard ? (isEn ? 'Exit fullscreen' : 'Quitter le plein écran') : (isEn ? 'Fullscreen' : 'Plein écran intégral')} aria-label={isEn ? 'Toggle fullscreen' : 'Basculer le plein écran'} className={`${btnBase} ${isBrowserFullscreen || isFocusFullBoard ? 'border-[#D4AF37] bg-[#D4AF37]/20 text-[#f3d27a]' : ''}`}>
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
             </button>
+            {/* 2. Coach / Flèches 🎓 */}
             <button type="button" data-testid="board-focus-toggle-btn" onClick={onToggleCoach} title={isEn ? 'Toggle Professor Advice & Golden Arrows' : 'Activer / Masquer le Professeur & les flèches dorées'} aria-label={isEn ? 'Toggle Professor Advice' : 'Activer / Masquer le Professeur'} className={`flex h-10 w-10 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border transition active:scale-95 shadow-lg ${!isFocusFullBoard ? 'border-[#f5dfa0] bg-gradient-to-br from-[#d4af37] to-[#9a6f18] text-[#090806]' : 'border-[#d4af37]/35 bg-[#120e0a] text-[#f3d27a] hover:border-[#d4af37]'}`}>
                 <span className="text-base select-none leading-none" aria-hidden="true">🎓</span>
             </button>
+            {/* 3. Paramètres ⚙ */}
             <div ref={settingsRef} className="relative">
                 <button type="button" data-testid="right-rail-settings-btn" onClick={() => setIsSettingsOpen((v) => !v)} title={isEn ? 'Table settings' : 'Paramètres de table'} aria-label={isEn ? 'Table settings' : 'Paramètres de table'} aria-expanded={isSettingsOpen} className={btnBase}>
                     <IconHorologyGear className="text-[#f3d27a]" size={17} />
@@ -287,11 +279,10 @@ export const BoardRightActionRail: React.FC<BoardRightActionRailProps> = React.m
                     </div>
                 )}
             </div>
-            {onBackToLobby && (
-                <button type="button" data-testid="right-rail-leave-btn" onClick={onBackToLobby} title={isEn ? 'Leave table / Back to Lobby' : 'Quitter la table / Retour au Salon'} aria-label={isEn ? 'Back to Lobby' : 'Retour au Salon'} className="flex h-10 w-10 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border border-rose-500/35 bg-[#160b0b] text-rose-300 shadow-lg transition hover:border-rose-400 hover:bg-rose-950/60 active:scale-95">
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
-                </button>
-            )}
+            {/* 4. Quitter ↪ */}
+            <button type="button" data-testid="right-rail-leave-btn" onClick={handleLeave} title={isEn ? 'Leave table / Back to Lobby' : 'Quitter la table / Retour au Salon'} aria-label={isEn ? 'Back to Lobby' : 'Retour au Salon'} className="flex h-10 w-10 [@media(max-height:540px)]:!h-8 [@media(max-height:540px)]:!w-8 items-center justify-center rounded-xl border border-rose-500/35 bg-[#160b0b] text-rose-300 shadow-lg transition hover:border-rose-400 hover:bg-rose-950/60 active:scale-95">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+            </button>
         </aside>
     );
 });

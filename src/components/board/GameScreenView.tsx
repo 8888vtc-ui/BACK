@@ -251,6 +251,7 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                 onSendQuickChat={isOnlinePvpMatch ? multiplayer.sendQuickChat : undefined}
                 isOnlinePvpMatch={isOnlinePvpMatch}
                 isFullFocusMode={isFullFocusMode}
+                onToggleFullFocusMode={handleToggleFullFocusMode}
             />
 
             <GameScreenMobileControls

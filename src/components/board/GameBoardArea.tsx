@@ -44,6 +44,7 @@ export interface GameBoardAreaProps {
     onOfferDouble?: () => void; onTakeDouble?: () => void; onPassDouble?: () => void; isPrematureDouble?: boolean;
     isOnlinePvpMatch?: boolean;
     isFullFocusMode?: boolean;
+    onToggleFullFocusMode?: () => void;
 }
 
 const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
@@ -57,6 +58,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     challengerProfile = null, onSendQuickChat, onOfferDouble, onTakeDouble, onPassDouble, isPrematureDouble = false,
     isOnlinePvpMatch: propIsOnlineMatch = false,
     isFullFocusMode,
+    onToggleFullFocusMode,
 }) => {
     const { tierGate } = usePlayerTierGate();
     const isXTurn = game.state.turn === 'X';
@@ -90,6 +92,10 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
     }, []);
 
     const handleToggleBrowserFullscreen = useCallback(() => {
+        if (onToggleFullFocusMode) {
+            onToggleFullFocusMode();
+            return;
+        }
         if (typeof document === 'undefined') return;
         if (!document.fullscreenElement) {
             setIsFocusFullBoard(true);
@@ -97,7 +103,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
         } else {
             document.exitFullscreen?.().catch(() => {});
         }
-    }, []);
+    }, [onToggleFullFocusMode]);
 
     const effectiveTurns = useMemo<RawGameTurn[]>(() => {
         const log = game.matchLog ?? [];
@@ -194,7 +200,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
                     onOpenCoach={() => { onTriggerCoach(); }} locale={locale}
                     isGuided={isGuided} isXTurn={isXTurn} clock={clock} activeDelaySeconds={activeDelaySeconds}
                     prX={prX} prO={prO} challengerProfile={challengerProfile} onSendQuickChat={onSendQuickChat}
-                    isBrowserFullscreen={isBrowserFullscreen} isFocusFullBoard={true}
+                    isBrowserFullscreen={isBrowserFullscreen} isFocusFullBoard={isFocusFullBoard}
                     onToggleFullscreen={handleToggleBrowserFullscreen} onToggleTheme={onToggleTheme}
                     onBackToLobby={onBackToLobby} replayIsLive={replay.isLive} autoRollEnabled={autoRollEnabled}
                     onToggleAutoRoll={handleToggleAutoRoll} activeDie={activeDie} previewBoardMode={previewBoardMode}
