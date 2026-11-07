@@ -167,15 +167,15 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
           <g>
             <circle cx="120" cy="35" r="12" fill="#FAF6EE" stroke="#D4AF37" strokeWidth="2" />
             <line x1="135" y1="35" x2="265" y2="35" stroke="#D4AF37" strokeWidth="3" markerEnd="url(#lesson-arrow-gold)" />
-            <circle cx="280" cy="35" r="12" fill="#18181B" stroke="#EF4444" strokeWidth="2" />
-            <circle cx="280" cy="35" r="6" fill="none" stroke="#EF4444" strokeWidth="1" opacity="0.6" />
+            {/* Pion adverse : vrai disque plein #18181B bordé de #EF4444 */}
+            <circle cx="280" cy="35" r="12" fill="#18181B" stroke="#EF4444" strokeWidth="2.5" />
             <g transform="translate(360, 35)">
-              <rect x="-65" y="-10" width="130" height="20" rx="5" fill="#090B10" fillOpacity="0.95" stroke="#EF4444" strokeOpacity="0.5" strokeWidth="0.8" />
+              <rect x="-65" y="-10" width="130" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#EF4444" strokeOpacity="0.7" strokeWidth="1" />
               <text x="0" y="3.5" fill="#f87171" fontSize="9.5" fontWeight="bold" textAnchor="middle">{isEn ? 'Opponent blot' : 'Pion adverse seul'}</text>
             </g>
             <path d="M 280 47 Q 240 115 276 155" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeDasharray="4 3" markerEnd="url(#lesson-arrow-red)" />
             <g transform="translate(280, 185)">
-              <rect x="-60" y="-10" width="120" height="20" rx="5" fill="#090B10" fillOpacity="0.95" stroke="#EF4444" strokeOpacity="0.6" strokeWidth="0.8" />
+              <rect x="-60" y="-10" width="120" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#EF4444" strokeOpacity="0.7" strokeWidth="1" />
               <text x="0" y="3.5" fill="#ef4444" fontSize="10" fontWeight="black" textAnchor="middle">{isEn ? 'Central Bar' : 'Barre Centrale'}</text>
             </g>
           </g>
@@ -217,8 +217,8 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
               <rect x="-105" y="-11" width="210" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="0.8" />
               <text x="0" y="3.5" fill="#F3E5AB" fontSize="10.5" fontWeight="black" textAnchor="middle">{isEn ? 'Wall of Gates (Unpassable)' : 'Mur de Portes (Infranchissable)'}</text>
             </g>
-            <circle cx="476" cy="238" r="12" fill="#18181B" stroke="#EF4444" strokeWidth="2" />
-            <circle cx="476" cy="238" r="5" fill="#EF4444" fillOpacity="0.3" />
+            {/* Pion adverse : vrai disque plein #18181B bordé de #EF4444 */}
+            <circle cx="476" cy="238" r="12" fill="#18181B" stroke="#EF4444" strokeWidth="2.5" />
             <g transform="translate(476, 190)">
               <rect x="-65" y="-10" width="130" height="20" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#EF4444" strokeWidth="0.8" />
               <text x="0" y="3.5" fill="#FCA5A5" fontSize="10" fontWeight="bold" textAnchor="middle">{isEn ? 'Opponent checker blocked' : 'Pion adverse bloqué'}</text>
@@ -229,8 +229,6 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
         {/* 8. QUAND A-T-ON LE DROIT DE SORTIR SES PIONS ? */}
         {quizId === 8 && (
           <g>
-            <rect x="296" y="140" width="240" height="115" fill="rgba(239, 68, 68, 0.05)" stroke="#ef4444" strokeDasharray="4 4" rx="6" />
-
             {[
               [316, 238], [316, 218], [316, 198], [356, 238], [356, 218], [356, 198],
               [396, 238], [396, 218], [396, 198], [436, 238], [436, 218], [436, 198],
@@ -244,7 +242,8 @@ export const AcademyVisualBoardLesson: React.FC<AcademyVisualBoardLessonProps> =
               <text x="0" y="4.5" fill="#ef4444" fontSize="10" fontWeight="black" textAnchor="middle">✕ BLOQUÉ</text>
             </g>
 
-            <g transform="translate(416, 160)">
+            {/* Cartouche sans toucher le sommet des pions blancs (y=155 vs y=187.5) */}
+            <g transform="translate(416, 155)">
               <rect x="-105" y="-11" width="210" height="22" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#ef4444" strokeWidth="1" />
               <text x="0" y="3.5" fill="#fca5a5" fontSize="10" fontWeight="black" textAnchor="middle">
                 {isEn ? 'Bear-off blocked (14/15 Home)' : 'Sortie bloquée (14/15 dans la Maison)'}
