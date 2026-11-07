@@ -157,7 +157,7 @@ export function BeginnerAcademyFlow({
 
       {/* Vue 1 : Vidéos */}
       {viewState === 'VIDEO' && (
-        <div className="w-full flex-1 flex flex-col items-center justify-center overflow-y-auto">
+        <div className="w-full flex-1 flex flex-col items-center justify-center overflow-hidden min-h-0">
           <BeginnerVideoSeriesPlayer onEpisodeCompleted={() => {}} onLaunchQuizzes={handleLaunchQuizzesForEpisode} />
         </div>
       )}

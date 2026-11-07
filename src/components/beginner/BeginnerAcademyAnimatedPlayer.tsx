@@ -153,7 +153,7 @@ export function BeginnerAcademyAnimatedPlayer({
   const formatTime = (sec: number) => `${Math.floor(sec / 60).toString().padStart(2, '0')}:${Math.floor(sec % 60).toString().padStart(2, '0')}`;
 
   return (
-    <div data-testid="academy-video-player" className="flex flex-col gap-4 w-full max-w-4xl mx-auto p-4 md:p-6 bg-[#0B1015]/95 border border-amber-400/20 rounded-2xl shadow-2xl backdrop-blur-md">
+    <div data-testid="academy-video-player" className="flex flex-col gap-2.5 sm:gap-3 w-full max-w-4xl mx-auto p-3 sm:p-4 bg-[#0B1015]/95 border border-amber-400/20 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden">
       {/* 1. Onglets propres des 5 épisodes sans doublon */}
       <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 border-b border-white/5">
         {BEGINNER_5_VIDEOS_PLAYLIST.map(ep => {
