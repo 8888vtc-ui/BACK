@@ -76,8 +76,8 @@ export const GameScreenTopBar: React.FC<GameScreenTopBarProps> = ({
                             className="shrink-0 whitespace-nowrap rounded-full border border-[#D4AF37]/45 bg-[#D4AF37]/15 px-2.5 py-0.5 font-mono text-xs font-semibold tracking-tight text-[#f3d27a] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                         >
                             {isOnlinePvpMatch
-                                ? (isEn ? 'Beginner Mode' : 'Mode Débutant')
-                                : (isEn ? 'Beginner Mode • Guided Play' : 'Mode Débutant • Partie Guidée')}
+                                ? (isEn ? 'Monte-Carlo Circle' : 'Cercle Monte-Carlo')
+                                : (isEn ? 'Guidance • Guided Play' : 'Accompagnement • Partie Guidée')}
                         </span>
                     )}
                     <div className="shrink-0 whitespace-nowrap">

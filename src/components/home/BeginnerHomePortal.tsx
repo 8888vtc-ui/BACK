@@ -44,7 +44,7 @@ export const BeginnerHomePortal: React.FC<BeginnerHomePortalProps> = React.memo(
                 <div className="flex flex-col gap-1 text-center sm:text-left px-1">
                     <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-400">
                         <Sparkles className="w-3.5 h-3.5 text-emerald-400" strokeWidth={1.5} />
-                        <span>{isEn ? 'BEGINNER MODE • GUIDED DISCOVERY' : 'MODE DÉBUTANT • DÉCOUVERTE GUIDÉE'}</span>
+                        <span>{isEn ? 'WELCOME TO THE CIRCLE • GUIDANCE & GAME TABLES' : 'BIENVENUE AU CERCLE • ACCOMPAGNEMENT & TABLES DE JEU'}</span>
                     </span>
                     <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
                         {isEn ? 'Learn the rules and play at your own pace' : 'Apprenez les règles et jouez à votre rythme'}

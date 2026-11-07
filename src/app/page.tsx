@@ -30,7 +30,7 @@ import { useCheckerSoundFeedback } from '../hooks/useCheckerSoundFeedback';
 import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
 import { readStoredPlayerColor } from '../components/hud/ColorSelector';
-import { readStoredMatchFormat, storeMatchFormat, storeClockPreset, type MatchClockPreset } from '../components/hud/MatchFormatSelector';
+import { readStoredMatchFormat, storeMatchFormat, readStoredClockPreset, storeClockPreset, syncMatchSetupUrl, type MatchClockPreset } from '../components/hud/MatchFormatSelector';
 import { getBotRealPr, resetBotRealPr } from '../features/personas/botRealPr';
 import { checkIsPlayerRegistered, useAuthenticPlayerStats } from '../hooks/useAuthenticPlayerStats';
 import { usePlayerTierGate } from '../hooks/usePlayerTierGate';
@@ -181,10 +181,6 @@ export default function Home() {
             if (matchParam !== null && matchParam !== '') {
                 storeMatchFormat(Number(matchParam));
             }
-            if (params.get('setup') === 'matchmaking') {
-                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;
-                modals.openMatchmaking(); return;
-            }
             const modeParam = params.get('mode');
             if (params.get('start') === 'guided') {
                 hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch();
@@ -204,13 +200,20 @@ export default function Home() {
             } else if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1' || window.location.pathname.startsWith('/play')) {
                 hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;
                 const matchLen = matchParam !== null && matchParam !== '' ? Number(matchParam) : (readStoredMatchFormat() || (tierGate === 'INTERMEDIATE' ? 5 : 7));
+                syncMatchSetupUrl(matchLen, readStoredClockPreset());
                 void multiplayer.startMatchmaking(matchLen);
+            } else if (params.get('setup') === 'matchmaking') {
+                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;
+                modals.openMatchmaking(); return;
             }
         }
     }, [handleLobbyStart, modals, multiplayer, game, tierGate]);
 
     const handleBackToLobby = useCallback(() => {
         userInitiatedMultiplayerRef.current = false;
+        if (typeof window !== 'undefined') {
+            try { window.history.replaceState({}, '', '/'); } catch { /* ignore */ }
+        }
         setAppScreen('LOBBY');
     }, []);
 

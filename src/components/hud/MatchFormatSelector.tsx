@@ -224,10 +224,12 @@ export function syncMatchSetupUrl(matchLength: number, clockPreset: MatchClockPr
     if (typeof window === 'undefined') return;
     try {
         const url = new URL(window.location.href);
+        url.searchParams.delete('setup');
         url.searchParams.set('mode', 'matchmaking');
         url.searchParams.set('match', String(matchLength));
         url.searchParams.set('clock', clockPreset);
-        window.history.replaceState({}, '', `${url.pathname}?${url.searchParams.toString()}`);
+        const nextPath = url.pathname === '/' ? '/play' : url.pathname;
+        window.history.replaceState({}, '', `${nextPath}?${url.searchParams.toString()}`);
     } catch { /* ignore in test env */ }
 }
 

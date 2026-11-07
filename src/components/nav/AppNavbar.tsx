@@ -21,7 +21,7 @@ import type { LobbyModuleId } from '../lobby/LobbyScreen';
 import { useTranslation } from '../../i18n';
 import usePwaInstall from '../../hooks/usePwaInstall';
 import IosInstallModal from '../pwa/IosInstallModal';
-import { PlayerTierGateSwitch } from '../navigation/PlayerTierGateSwitch';
+import { PlayerTierGateSwitch, ClubOnboardingOverlay, openClubOnboardingModal } from '../navigation/PlayerTierGateSwitch';
 import { usePlayerTierGate, type PlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { NavbarPointsAndBadges } from './NavbarPointsAndBadges';
 
@@ -158,11 +158,9 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     </Link>
                 </div>
 
-                {/* Centre : Sélecteur 3 Portes visible + Liens sr-only */}
-                <div className="hidden md:flex items-center">
-                    <PlayerTierGateSwitch currentGate={tierGate} onSelectGate={setTierGate} compact />
-                </div>
+                {/* Centre : Liens sr-only (Zéro switch Débutant/Intermédiaire/Expert visible dans le Header) */}
                 <div className="sr-only">
+                    <PlayerTierGateSwitch currentGate={tierGate} onSelectGate={setTierGate} compact />
                     {navItems.map((item) => {
                         const isActive = activeTab === item.id;
                         return (
@@ -219,16 +217,24 @@ const AppNavbarComponent: React.FC<AppNavbarProps> = ({
                     <UserAccountMenu
                         tierGate={tierGate}
                         onNavigateModule={onOpenModule}
-                        onOpenSettings={onOpenSettings}
+                        onOpenSettings={() => {
+                            openClubOnboardingModal('experience');
+                            onOpenSettings?.();
+                        }}
                         onUserResolved={onUserResolved}
                     />
                 </div>
             </div>
 
-            {/* Sur Mobile (< md) : Sélecteur 3 Portes directement accessible dans le Header supérieur */}
-            <div className="flex md:hidden w-full items-center justify-center py-1 px-2 border-t border-white/[0.06] bg-slate-950/90">
-                <PlayerTierGateSwitch currentGate={tierGate} onSelectGate={setTierGate} compact />
-            </div>
+            <ClubOnboardingOverlay
+                currentGate={tierGate}
+                onSelectGate={setTierGate}
+                onContinueAsGuest={() => {}}
+                onOpenAuthModal={() => {
+                    const authTrigger = typeof document !== 'undefined' ? document.querySelector<HTMLButtonElement>('[data-testid="auth-login-trigger"]') : null;
+                    authTrigger?.click();
+                }}
+            />
 
             {/* Tiroir de navigation Mobile */}
             {isMobileMenuOpen && (
