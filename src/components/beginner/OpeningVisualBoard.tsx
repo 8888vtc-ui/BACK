@@ -74,7 +74,7 @@ export const OpeningVisualBoard: React.FC<OpeningVisualBoardProps> = React.memo(
         </span>
       </div>
 
-      <div className="relative w-full aspect-[500/270] max-h-[290px] rounded-xl border border-[#D4AF37]/40 bg-[#0a1410] shadow-2xl overflow-hidden">
+      <div className="relative w-full aspect-[500/270] max-h-[240px] rounded-xl border border-[#D4AF37]/40 bg-[#0a1410] shadow-2xl overflow-hidden">
         <svg viewBox="0 0 500 270" className="w-full h-full select-none">
           <defs>
             <marker id="gold-arrow-head" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
@@ -160,8 +160,8 @@ export const OpeningVisualBoard: React.FC<OpeningVisualBoardProps> = React.memo(
             const y = isTop ? 115 : 155;
             return (
               <g key={`gate-${pt}`} className="animate-bounce">
-                <circle cx={x} cy={y} r="10" fill="#18181b" stroke="#D4AF37" strokeWidth="1.5" />
-                <text x={x} y={y + 3.5} textAnchor="middle" fontSize="10" fill="#D4AF37" fontWeight="bold">✦</text>
+                <rect x={x - 24} y={y - 9} width="48" height="18" rx="6" fill="#090B10" fillOpacity="0.95" stroke="#D4AF37" strokeWidth="1.2" />
+                <text x={x} y={y + 3.5} textAnchor="middle" fontSize="10" fill="#D4AF37" fontWeight="bold">✦ {isEn ? 'Gate' : 'Porte'}</text>
               </g>
             );
           })}

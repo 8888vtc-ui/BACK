@@ -84,9 +84,9 @@ export function BeginnerInteractiveGuideModal({
   return (
     <div
       data-testid="beginner-interactive-guide-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-hidden"
     >
-      <div className="relative w-full max-w-3xl max-h-[90dvh] flex flex-col justify-between rounded-2xl border border-[#D4AF37]/40 bg-[#0B1015] p-5 sm:p-7 text-white shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-3xl max-h-[94dvh] flex flex-col justify-between rounded-2xl border border-[#D4AF37]/40 bg-[#0B1015] p-4 sm:p-6 text-white shadow-2xl overflow-hidden">
         {/* En-tête Modal */}
         <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3 shrink-0">
           <div className="flex items-center gap-2">

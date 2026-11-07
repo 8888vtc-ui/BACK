@@ -73,9 +73,9 @@ export const BeginnerOpeningMovesExplorer: React.FC<BeginnerOpeningMovesExplorer
   return (
     <div
       data-testid="beginner-opening-explorer-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-hidden"
     >
-      <div className="relative w-full max-w-4xl max-h-[94dvh] flex flex-col rounded-2xl border border-[#D4AF37]/50 bg-[#0c1017] p-3 sm:p-5 text-white shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-4xl max-h-[95dvh] flex flex-col rounded-2xl border border-[#D4AF37]/50 bg-[#0c1017] p-3 sm:p-5 text-white shadow-2xl overflow-hidden">
         {/* En-tête */}
         <div className="flex items-center justify-between border-b border-white/10 pb-2.5 shrink-0">
           <div className="flex items-center gap-2">
