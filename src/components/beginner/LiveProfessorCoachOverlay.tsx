@@ -16,12 +16,14 @@ export interface LiveProfessorCoachOverlayProps {
   optimalMove?: string | null; whyOptimal?: string | null; lastBotNotation?: string | null;
   activeTurn?: 'X' | 'O'; boardState?: BoardState; onToggleRecommendArrow?: () => void;
   onHoverNotation?: (notation: string | null) => void; isShowingRecommendArrow?: boolean; prematureDoubleWarning?: boolean;
+  onReplayMove?: () => void;
 }
 
 export function LiveProfessorCoachOverlay({
   locale: propLocale, dice, canUndo = true, onUndoMove, lastMoveFeedback,
   antiFrustrationNotice, isMasterMove = false, optimalMove, lastBotNotation, activeTurn = 'X',
   boardState, onToggleRecommendArrow, onHoverNotation, isShowingRecommendArrow = true, prematureDoubleWarning = false,
+  onReplayMove,
 }: LiveProfessorCoachOverlayProps) {
   const { locale: contextLocale } = useTranslation();
   const lang = (propLocale || contextLocale || 'fr') === 'en' ? 'en' : 'fr';
@@ -198,8 +200,16 @@ export function LiveProfessorCoachOverlay({
                   <BookOpen className="w-3 h-3 text-[#D4AF37]" />
                   <span>{lang === 'fr' ? 'Guide' : 'Guide'}</span>
                 </button>
-                {canUndo && (
-                  <button type="button" data-testid="professor-undo-move-btn" onClick={onUndoMove} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition">
+                {(canUndo || (onReplayMove && lastMoveFeedback && !isOptimalFeedback)) && (
+                  <button
+                    type="button"
+                    data-testid="professor-undo-move-btn"
+                    onClick={() => {
+                      if (canUndo && onUndoMove) onUndoMove();
+                      else if (onReplayMove) onReplayMove();
+                    }}
+                    className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition"
+                  >
                     <RotateCcw className="w-3 h-3 text-amber-300" />
                     <span>↺ {lang === 'fr' ? 'Rejouer' : 'Retry'}</span>
                   </button>

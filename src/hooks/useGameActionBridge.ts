@@ -108,9 +108,11 @@ export function useGameActionBridge({
     }, [boardState.board, state.matchLog?.length, state.difficulty, gameSpeedRef, gameResult, dispatch]);
 
     const undoMove = useCallback(() => {
+        clearOpponentTimers();
         clearHumanTimers();
+        opponentTurnInProgressRef.current = false;
         dispatch({ type: 'UNDO_MOVE' });
-    }, [clearHumanTimers, dispatch]);
+    }, [clearOpponentTimers, clearHumanTimers, opponentTurnInProgressRef, dispatch]);
 
     const rewindToLogTurn = useCallback((turnIndex?: number) => {
         clearOpponentTimers();

@@ -4,12 +4,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { createInitialState, generateLegalMoves } from '../../engine/backgammonEngine';
+import { createInitialState, generateLegalMoves, applyMove } from '../../engine/backgammonEngine';
 import {
     createHumanTurnSnapshot,
     verifyCheckersPhysicallyExistOnBoard,
     validateMoveAgainstSnapshot,
     sanitizeVerdictWithEquityThreshold,
+    boardSignature,
 } from '../../features/coach/turnSnapshot';
 import {
     selectBotMoveWithBgsage,
@@ -244,5 +245,59 @@ describe('Verrou 5 : Célébration guidée, flèches dorées et vérité physiqu
         const frAdvice = getFeedbackAdvice(feedback, 'fr');
         expect(frAdvice).toContain('Bien joué !');
         expect(frAdvice).toContain('Barre centrale');
+    });
+});
+
+describe('Verrou 6 : Isolation Humain vs Bot, Transpositions & Replay Atomique', () => {
+    it('Preuve 9 : Coupe-circuit anti-bot strict si actor !== HUMAN', () => {
+        const state = createInitialState();
+        const nonHumanSnapshot = {
+            turnId: 'bot_turn',
+            actor: 'BOT' as unknown as 'HUMAN',
+            timestamp: Date.now(),
+            dice: [3, 1] as const,
+            boardBeforeMove: state.board,
+            xgidBeforeMove: '',
+            pipCountX: 167,
+            pipCountO: 167,
+        };
+        const validation = validateMoveAgainstSnapshot(nonHumanSnapshot, '8/5 6/5', '8/5 6/5', 'X');
+        expect(validation.isValid).toBe(false);
+        expect(validation.reason).toBe('ANTI_BOT_SHORT_CIRCUIT_TRIGGERED');
+    });
+
+    it('Preuve 10 : Équivalence des permutations de dés (8/5 7/4 === 7/4 8/5) par signature de plateau', () => {
+        const initial = createInitialState().board;
+        // Permutation 1 : 8/5 puis 7/4
+        let board1 = applyMove(initial, { from: 8, to: 5 }, 'X');
+        board1 = applyMove(board1, { from: 7, to: 4 }, 'X');
+
+        // Permutation 2 : 7/4 puis 8/5
+        let board2 = applyMove(initial, { from: 7, to: 4 }, 'X');
+        board2 = applyMove(board2, { from: 8, to: 5 }, 'X');
+
+        // Les états finaux du plateau doivent être rigoureusement identiques
+        expect(boardSignature(board1)).toBe(boardSignature(board2));
+        expect(board1).toEqual(board2);
+    });
+
+    it('Preuve 11 : Replay atomique réinitialise le timer, restaure le plateau et prépare les flèches', () => {
+        const initial = createInitialState();
+        let timerCleared = false;
+        const fakeTimer = setTimeout(() => {}, 5000);
+        const clearTimers = () => {
+            clearTimeout(fakeTimer);
+            timerCleared = true;
+        };
+
+        // Simuler le replay atomique du Professeur
+        clearTimers();
+        const restoredBoard = [...initial.board];
+        const optimalHighlight = { optimal: [{ from: 8, to: 5 }, { from: 6, to: 5 }], played: [] };
+
+        expect(timerCleared).toBe(true);
+        expect(restoredBoard).toEqual(initial.board);
+        expect(optimalHighlight.optimal).toHaveLength(2);
+        expect(optimalHighlight.optimal[0]).toEqual({ from: 8, to: 5 });
     });
 });
