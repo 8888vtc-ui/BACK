@@ -66,5 +66,16 @@ describe('BeginnerAcademyFlow Component', () => {
     fireEvent.click(reviewBtn);
     expect(screen.getByTestId('academy-quiz-container')).toBeDefined();
   });
+
+  it('affiche les 5 épisodes sans doublon et permet de basculer le son WebAudio', () => {
+    render(<BeginnerAcademyFlow />);
+    for (let ep = 1; ep <= 5; ep++) {
+      expect(screen.getByTestId(`academy-episode-tab-${ep}`)).toBeDefined();
+    }
+    const soundToggle = screen.getByTestId('academy-sound-toggle-btn');
+    expect(soundToggle.textContent).toContain('Effets Sonores : ON');
+    fireEvent.click(soundToggle);
+    expect(soundToggle.textContent).toContain('Effets Sonores : OFF');
+  });
 });
 

@@ -192,16 +192,17 @@ export function BeginnerAcademyAnimatedPlayer({
 
         <button
           type="button"
+          data-testid="academy-sound-toggle-btn"
           onClick={() => setSoundEnabled(v => !v)}
           className={`self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
             soundEnabled ? 'bg-amber-400/10 text-amber-300 border border-amber-400/30' : 'bg-white/5 text-neutral-400 border border-white/10'
           }`}
-          title={soundEnabled ? 'Effets sonores actifs' : 'Mode muet'}
+          title={soundEnabled ? (isEn ? 'Sound effects enabled' : 'Effets sonores actifs') : (isEn ? 'Sound effects muted' : 'Effets sonores désactivés')}
         >
           {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-amber-400" /> : <VolumeX className="w-3.5 h-3.5" />}
           <span>{soundEnabled
-            ? (isEn ? '🔊 Sound Effects (Board & Dice) : ON' : '🔊 Effets Sonores (Tapis & Dés) : ON')
-            : (isEn ? '🔇 Sound Effects : OFF' : '🔇 Effets Sonores : OFF')}</span>
+            ? (isEn ? '🔊 Sound Effects: ON' : '🔊 Effets Sonores : ON')
+            : (isEn ? '🔇 Sound Effects: OFF' : '🔇 Effets Sonores : OFF')}</span>
         </button>
       </div>
 
