@@ -3,6 +3,7 @@ import type { AIDifficulty } from '../../engine/aiHeuristics';
 import { selectBotMoveWithBgsage } from '../../lib/engine/bgsageClient';
 import { findOpeningBookSequenceForOpponent, isInitialBoardPosition } from '../../features/openings';
 import { recordBotMoveEquityLoss } from '../../features/personas/botRealPr';
+import { computePersonaBiasDelta } from '../../features/personas/botPersonas';
 import {
     computeHumanThinkingDelay,
     resolveMoveThinkingContext,
@@ -10,12 +11,6 @@ import {
     type HumanThinkingDelay,
 } from '../../features/personas/humanPersonaPool';
 
-/**
- * Calcule le délai de réflexion humain pour l'adversaire selon la complexité du coup :
- * - Coup forcé ou ouverture évidente (ex: 24/13 sur 6-5) : 400–800 ms.
- * - Course simple : 1000–2200 ms.
- * - Position de contact complexe : 1500–3500 ms (sans jamais dépasser 4000 ms).
- */
 export function computeOpponentThinkingDelay(params: {
     readonly legalMoveCount: number;
     readonly isContact: boolean;
@@ -27,27 +22,11 @@ export function computeOpponentThinkingDelay(params: {
     return computeHumanThinkingDelay(context, params.uniformFn);
 }
 
-/**
- * Retourne le plafond strict DeltaMax (EMG) pour la sélection de coup bgsage de l'adversaire.
- * Garantit qu'aucun adversaire de club ne joue jamais un coup absurde (Règle Métier).
- */
 export function getOpponentBlunderCap(difficulty: AIDifficulty): number {
     return HUMAN_BLUNDER_CAP_EMG[difficulty] ?? 0.035;
 }
 
-/**
- * Sélection du coup du bot — OPEN SAGE UNIQUEMENT (décision du 2026-11-01).
- *
- * L'audit `scripts/audit_bots_vs_gnubg.ts` (référence GNU Backgammon 3-ply, 50 positions) a montré que
- * les moteurs locaux (BT-Core, BT-PR_ONLY, heuristiques, ancien repli local) ne sont PAS exploitables :
- * ~40 % de coups identiques à GNUBG, quel que soit le niveau affiché. Ils ont été retirés du chemin de jeu.
- *
- * Si Open Sage ne répond pas, on réessaie et on affiche un message ; on ne joue JAMAIS un coup local
- * de remplacement (Règle 2 : zéro repli silencieux).
- */
-
-/** Délais entre deux tentatives Open Sage (ms). Au-delà, on réessaie toutes les 8 s. */
-const RETRY_DELAYS_MS = [0, 1500, 3000, 5000, 8000];
+const RETRY_DELAYS_MS = [0, 400];
 
 export interface ResolveOpponentMoveParams {
     stateWithDice: BoardState;
@@ -57,9 +36,7 @@ export interface ResolveOpponentMoveParams {
     difficulty: AIDifficulty;
     computeHardDeadlineMs: number;
     isCustomTestTiming: boolean;
-    /** Appelé quand Open Sage n'a pas répondu et qu'une nouvelle tentative va être faite. */
     onEngineRetry?: (attempt: number) => void;
-    /** Permet d'arrêter les tentatives si le tour est annulé (nouvelle partie, abandon...). */
     isAborted?: () => boolean;
 }
 
@@ -79,10 +56,6 @@ export function pickOpeningBook(
     return null;
 }
 
-/**
- * Coup déterministe RÉSERVÉ AUX TESTS UNITAIRES synchrones (`isCustomTestTiming`).
- * Ce n'est pas un bot : il joue le livre d'ouverture, sinon la première séquence légale.
- */
 export function pickTestStubMove(
     board: number[],
     rolledDice: [number, number],
@@ -110,7 +83,6 @@ export async function resolveOpponentMoveSequence({
     if (legalSeqs.length === 0) return null;
     if (legalSeqs.length === 1) return legalSeqs[0];
 
-    // Coup du livre d'ouverture : non mesuré par Open Sage, donc exclu du PR (aucune valeur supposée).
     const book = pickOpeningBook(currentBoard, rolledDice, legalSeqs, difficulty);
     if (book) return book;
 
@@ -118,10 +90,10 @@ export async function resolveOpponentMoveSequence({
         return pickTestStubMove(currentBoard, rolledDice, legalSeqs, difficulty);
     }
 
-    const timeoutMs = Math.max(computeHardDeadlineMs, 4500);
-    for (let attempt = 0; ; attempt++) {
+    const timeoutMs = Math.min(Math.max(computeHardDeadlineMs, 1500), 2200);
+    for (let attempt = 0; attempt < RETRY_DELAYS_MS.length; attempt++) {
         if (isAborted?.()) return null;
-        await wait(RETRY_DELAYS_MS[Math.min(attempt, RETRY_DELAYS_MS.length - 1)] ?? 8000);
+        await wait(RETRY_DELAYS_MS[attempt] ?? 400);
         if (isAborted?.()) return null;
         try {
             const choice = await selectBotMoveWithBgsage(stateWithDice, legalSeqs, difficulty, timeoutMs);
@@ -130,8 +102,20 @@ export async function resolveOpponentMoveSequence({
                 return choice.sequence;
             }
         } catch {
-            // Open Sage injoignable : nouvelle tentative ci-dessous
+            // Nouvel essai rapide
         }
         onEngineRetry?.(attempt + 1);
     }
+
+    // Repli tactique déterministe anti-interruption de partie (si Cloud Run ne répond pas après 2 essais)
+    let bestFallback = legalSeqs[0];
+    let bestScore = -Infinity;
+    for (const seq of legalSeqs) {
+        const score = computePersonaBiasDelta(currentBoard, seq.board, difficulty);
+        if (score > bestScore) {
+            bestScore = score;
+            bestFallback = seq;
+        }
+    }
+    return bestFallback;
 }

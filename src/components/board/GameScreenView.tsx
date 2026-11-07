@@ -127,14 +127,6 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
     }, [game, isMultiplayerActive, multiplayer, playerColor]);
 
     useEffect(() => {
-        if (!isGuidedProfessorMode || isOnlinePvpMatch || !game.dice || game.state.turn !== 'X') return;
-        const rollKey = `${game.state.turn}:${game.dice[0]}-${game.dice[1]}:${game.matchLog.length}`;
-        if (lastAutoCoachRollKey.current === rollKey) return;
-        lastAutoCoachRollKey.current = rollKey;
-        if (!coachHighlight && !isAnalyzing) onTriggerCoach();
-    }, [isGuidedProfessorMode, isOnlinePvpMatch, game.dice, game.state.turn, game.matchLog.length, coachHighlight, isAnalyzing, onTriggerCoach]);
-
-    useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const target = e.target as HTMLElement | null;
             if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable || (typeof target.closest === 'function' && target.closest('input, textarea, select, [contenteditable="true"]')))) return;
@@ -216,6 +208,8 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                     onAskProfessorHint={() => { onTriggerCoach(); modals.openMobileDrawer(); }}
                     lastMoveFeedback={lastMoveFeedback}
                     boardState={game.state}
+                    turnStartBoard={game.moveHistory.length > 0 ? game.moveHistory[0]?.board : game.state.board}
+                    matchLog={game.matchLog}
                     optimalMove={coach?.optimalMove}
                     whyOptimal={coach?.whyOptimal}
                     activeTurn={game.state.turn}
@@ -224,6 +218,11 @@ const GameScreenViewComponent: React.FC<GameScreenViewProps> = ({
                         game.matchLog.length > 0 && game.matchLog[game.matchLog.length - 1].player === 'O'
                             ? game.matchLog[game.matchLog.length - 1].notation
                             : null
+                    }
+                    lastBotDice={
+                        game.matchLog.length > 0 && game.matchLog[game.matchLog.length - 1].player === 'O'
+                            ? game.matchLog[game.matchLog.length - 1].dice
+                            : game.lastOpponentDice
                     }
                     onToggleRecommendArrow={() => setShowGuidedArrows((prev) => !prev)}
                     isShowingRecommendArrow={showGuidedArrows}

@@ -164,6 +164,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
         if (replay.isLive) {
             if (!game.dice || (game.dice[0] === 0 && game.dice[1] === 0) || game.gamePhase !== 'HUMAN_MOVING' || game.state.turn !== 'X') return null;
             if (previewBoardMode === 'before' || selectedCoachHistoryIndex !== null) return activeCoachHighlight;
+            if (activeCoachHighlight && activeCoachHighlight.played.length === 0 && activeCoachHighlight.optimal.length > 0) return activeCoachHighlight;
             if (displayCoach?.boardBefore && displayCoach.boardBefore.length === 26 && displayCoach.boardBefore.join(',') !== game.state.board.join(',')) return null;
             return activeCoachHighlight;
         }
@@ -189,7 +190,7 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-0" style={{ background: 'radial-gradient(ellipse 72% 60% at 50% 45%, rgba(245, 196, 81, 0.10) 0%, rgba(16, 185, 129, 0.04) 42%, rgba(0, 0, 0, 0.55) 100%)' }} />
 
             <div data-testid="board-main-column" className="w-full h-full min-h-0 min-w-0 max-w-full flex flex-col items-center justify-center gap-0 overflow-hidden relative z-10 transition-all duration-200">
-                {!isOnlinePvpMatch && (
+                {!isOnlinePvpMatch && !isGuided && (
                     <MoveErrorPopToast
                         feedback={lastMoveFeedback} boardBefore={lastMoveFeedback?.boardBefore ?? displayCoach?.boardBefore}
                         boardAfter={lastMoveFeedback?.boardAfter ?? game.state.board} onReplayMove={handleSyncedReplayMove}

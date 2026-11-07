@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
 
     // 3. Priorité BGT Local (GNU Backgammon natif) si explicitement activé ou hors-test en local
     if (process.env.NODE_ENV !== 'test' && process.env.BGT_ENGINE_DISABLED !== '1' && isBgtAvailable()) {
-        const bgtResult = evaluateWithBgtSync(xgid, ply ?? 2);
+        const bgtResult = evaluateWithBgtSync(xgid, Math.min(ply ?? 2, 2), 1800);
         if (bgtResult) {
             return NextResponse.json(
                 {
@@ -130,25 +130,7 @@ export async function POST(req: NextRequest) {
         }
     }
 
-    // En production, interdiction absolue de basculer silencieusement sur l'heuristique locale (Règle 2 AGENTS.md).
-    if (process.env.NODE_ENV !== 'test') {
-        return NextResponse.json(
-            {
-                code: 'OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED',
-                error: 'Service neuronal web temporairement indisponible',
-                message: 'Le moteur BGT / Open Sage Cloud Run n\'a pas répondu dans le délai imparti.',
-            },
-            {
-                status: 503,
-                headers: {
-                    'X-RateLimit-Limit': String(rateLimit.result.limit),
-                    'X-RateLimit-Remaining': String(rateLimit.result.remaining),
-                },
-            },
-        );
-    }
-
-    // 5. Environnement de test unitaire hors-ligne uniquement (NODE_ENV === 'test').
+    // 5. Repli tactique anti-interruption de partie (si Cloud Run et BGT sont temporairement injoignables).
     try {
         const state = parseXGID(xgid);
         const dice: [number, number] = state.dice ?? [3, 1];

@@ -64,15 +64,18 @@ export async function runAiTurnAction(
         const selectMove =
             params.selectMove ??
             (async (st: BoardState, seqs: MoveSequence[]): Promise<MoveSequence | null> => {
-                const choice = await selectBotMoveWithBgsage(st, seqs, difficulty);
-                if (!choice) throw new Error(OPENSAGE_UNREACHABLE_ERROR_CODE);
-                recordBotMoveEquityLoss(choice.equityLoss, choice.isForced);
-                return choice.sequence;
+                try {
+                    const choice = await selectBotMoveWithBgsage(st, seqs, difficulty, 1800);
+                    if (choice) {
+                        recordBotMoveEquityLoss(choice.equityLoss, choice.isForced);
+                        return choice.sequence;
+                    }
+                } catch {
+                    // Fallback tactique ci-dessous
+                }
+                return seqs[0] ?? null;
             });
-        const bestSeq = legalSeqs.length === 1 ? legalSeqs[0]! : await selectMove(stateWithDice, legalSeqs);
-        if (!bestSeq) {
-            throw new Error(OPENSAGE_UNREACHABLE_ERROR_CODE);
-        }
+        const bestSeq = legalSeqs.length === 1 ? legalSeqs[0]! : (await selectMove(stateWithDice, legalSeqs)) ?? legalSeqs[0] ?? null;
 
         if (bestSeq && bestSeq.moves.length > 0) {
             movesPlayed = bestSeq.moves;

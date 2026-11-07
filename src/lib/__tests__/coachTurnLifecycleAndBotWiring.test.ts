@@ -19,7 +19,12 @@ import {
 } from '../engine/bgsageClient';
 import { BLUNDER_CAP_EMG_BY_DIFFICULTY } from '../../features/personas/botPersonas';
 import { resolvePersonaMeta } from '../../components/board/BoardPortraitAndActionRails';
-import { getFeedbackAdvice, getProactiveAdvice } from '../../components/beginner/professorAdviceHelper';
+import {
+    getFeedbackAdvice,
+    getProactiveAdvice,
+    getBotMoveExplanation,
+    evaluateInstantHumanLogEntry,
+} from '../../components/beginner/professorAdviceHelper';
 import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
 
 describe('Verrou 1 : Capture immuable du tour humain (HumanTurnSnapshot)', () => {
@@ -299,5 +304,39 @@ describe('Verrou 6 : Isolation Humain vs Bot, Transpositions & Replay Atomique',
         expect(restoredBoard).toEqual(initial.board);
         expect(optimalHighlight.optimal).toHaveLength(2);
         expect(optimalHighlight.optimal[0]).toEqual({ from: 8, to: 5 });
+    });
+
+    it('Preuve 12 : Isolation stricte Moment A (Bravo pour X), Moment B (O joue sans Bravo) et Moment C (Flèches Tour 2+)', () => {
+        const initial = createInitialState();
+        // Moment A : X joue 8/5 6/5 sur [3, 1] -> Bravo immédiat à 0 ms
+        let bAfterX = applyMove(initial.board, { from: 8, to: 5 }, 'X');
+        bAfterX = applyMove(bAfterX, { from: 6, to: 5 }, 'X');
+        const instantX = evaluateInstantHumanLogEntry({
+            turnIndex: 1,
+            player: 'X',
+            dice: [3, 1],
+            boardBefore: initial.board,
+            movePlayed: [{ from: 8, to: 5 }, { from: 6, to: 5 }],
+            boardAfter: bAfterX,
+            notation: '8/5 6/5',
+        });
+        expect(instantX.verdict).toBe('optimal');
+        expect(getFeedbackAdvice(instantX, 'fr')).toContain('BRAVO');
+
+        // Moment B : O joue 12/16 17/19 avec [4, 2] -> Jamais de Bravo ni Très bon coup !
+        const botMsg = getBotMoveExplanation('12/16 17/19', 'fr', [4, 2]);
+        expect(botMsg).not.toContain('BRAVO');
+        expect(botMsg).not.toContain('Très bon coup');
+        expect(botMsg).toContain('12/16 17/19');
+        expect(botMsg).toContain('4-2');
+        expect(botMsg).toContain('Lancer les dés');
+
+        // Moment C au Tour 2 (plateau non initial) : fournit le coup conseillé et les flèches dorées
+        const turn2State = { ...initial, board: bAfterX, turn: 'X' as const };
+        const turn2Advice = getProactiveAdvice(turn2State, [5, 3], 'fr');
+        expect(turn2Advice).not.toBeNull();
+        expect(turn2Advice!.bestNotation.length).toBeGreaterThan(2);
+        expect(turn2Advice!.text).toContain(turn2Advice!.bestNotation);
+        expect(turn2Advice!.text).toContain('flèches dorées');
     });
 });

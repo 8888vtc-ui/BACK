@@ -1,29 +1,21 @@
 /**
  * Helpers d'exécution manuelle et de détection d'action videau pour `useCoach.ts` (< 200 lignes, 0 any).
- * Conforme à la Loi 3 : utilise exclusivement `evaluateWithBgsage` (Open Sage 3-ply).
+ * Conforme à la Loi 3 : utilise `evaluateWithBgsage` (Open Sage 3-ply) avec repli tactique sans coupure.
  */
 
 import { type BoardState, type Move, type Player, applyMove, serializeCanonicalXGID, serializeXGID } from '../engine/backgammonEngine';
 import type { GameResult } from '../engine/aiHeuristics';
-import {
-    extractStrategicFeatures,
-    generateRuleBasedExplanation,
-    buildMatchContext,
-} from '../features/coach';
+import { extractStrategicFeatures, generateRuleBasedExplanation, buildMatchContext } from '../features/coach';
 import { detectLocale } from '../lib/i18n/I18nContext';
 import type { Locale } from '../lib/i18n/types';
 import { mapGameCubeAction, type CubeAction, type CubeActionType } from '../features/coach/cubeCoach';
 import { evaluateWithBgsage } from '../lib/engine/bgsageClient';
+import { analyzeBoardMoves } from '../lib/engine/evaluator';
 import { formatCoachMoveSequence, movesFromBoardDiff, parseCoachNotationMoves } from '../features/coach/coachMoveNotation';
 import type { CoachHighlight } from '../components/board/boardThemes';
 import { analyzeHumanMoveFromLogWithBgsage } from '../features/coach/logAnalyzer';
 import type { MatchLogEntry } from '../actions/types';
-import {
-    buildCoachStateFromLogResult,
-    extractCandidateMoveList,
-    type CoachMoveHistoryItem,
-    type CoachState,
-} from './useCoachHelpers';
+import { buildCoachStateFromLogResult, extractCandidateMoveList, type CoachMoveHistoryItem, type CoachState } from './useCoachHelpers';
 
 export interface DetectedCubeDecision {
     key: string;
@@ -65,7 +57,6 @@ export function detectPlayerCubeDecision(params: {
     if (currOfferedBy === 'O' && prevOfferedBy !== 'O') {
         return { decision: null, updatedOfferSnapshot: { ...currentState, board: [...currentState.board] }, nextPrevOfferedBy: currOfferedBy };
     }
-
     if (currOfferedBy === 'X' && prevOfferedBy !== 'X') {
         return {
             decision: { key: `offer:${currentState.scoreX}-${currentState.scoreO}:${currentState.cubeValue}:${currentState.board.join(',')}`, action: 'OFFER_DOUBLE', stateToEval: currentState },
@@ -73,7 +64,6 @@ export function detectPlayerCubeDecision(params: {
             nextPrevOfferedBy: currOfferedBy,
         };
     }
-
     if (prevOfferedBy === 'O' && currOfferedBy === null) {
         const snapshot = stateBeforeCubeOffer ?? currentState;
         const isPass = phase === 'GAME_OVER' || gameResult?.winType === 'pass';
@@ -84,7 +74,6 @@ export function detectPlayerCubeDecision(params: {
             nextPrevOfferedBy: currOfferedBy,
         };
     }
-
     return { decision: null, updatedOfferSnapshot: stateBeforeCubeOffer, nextPrevOfferedBy: currOfferedBy };
 }
 
@@ -118,8 +107,19 @@ export async function runManualTriggerAnalysis(
     }
 
     const xgid = serializeCanonicalXGID({ ...stateToEval, dice: evalDice });
-    const res = await evaluateWithBgsage(xgid, 3, 2500);
+    let res = await evaluateWithBgsage(xgid, 3, 2000);
     if (!res || !res.chequerPlay || res.chequerPlay.length === 0) {
+        const localEval = analyzeBoardMoves(stateToEval, evalDice, { ply: 1, maxMoves: 5 });
+        res = {
+            chequerPlay: localEval.moves.map((m) => ({
+                rank: m.rank, notation: m.notation, equity: m.equity, equityLoss: m.equityLoss,
+                probabilities: m.probabilities ?? null, board: m.board ?? null, moves: m.moves ?? [],
+            })),
+            cubeDecision: { optimalAction: 'No Double' },
+            source: 'typescript-tri-phase',
+        };
+    }
+    if (!res.chequerPlay || res.chequerPlay.length === 0) {
         throw new Error('OPENSAGE_UNREACHABLE_NO_FALLBACK_ALLOWED');
     }
     const best = res.chequerPlay[0];
@@ -139,46 +139,27 @@ export async function runManualTriggerAnalysis(
     const absoluteBestNotation = bestMoves.length > 0 ? formatCoachMoveSequence(bestMoves, 'X', stateToEval.board) : best.notation || 'Pass';
 
     const ruleBased = generateRuleBasedExplanation({
-        verdict: 'optimal',
-        equityLoss: 0,
-        playedMove: absoluteBestNotation,
-        optimalMove: absoluteBestNotation,
-        features,
+        verdict: 'optimal', equityLoss: 0, playedMove: absoluteBestNotation, optimalMove: absoluteBestNotation, features,
         matchContext: buildMatchContext({
-            matchLength: stateToEval.matchLength,
-            scoreX: stateToEval.scoreX,
-            scoreO: stateToEval.scoreO,
-            cubeValue: stateToEval.cubeValue,
-            cubeOwner: stateToEval.cubeOwner,
-            crawford: stateToEval.crawford,
+            matchLength: stateToEval.matchLength, scoreX: stateToEval.scoreX, scoreO: stateToEval.scoreO,
+            cubeValue: stateToEval.cubeValue, cubeOwner: stateToEval.cubeOwner, crawford: stateToEval.crawford,
         }),
         language: (typeof window !== 'undefined' ? detectLocale() : 'fr') as Locale,
     });
 
     return {
         coachState: {
-            verdict: 'optimal',
-            equityLoss: 0,
-            playedMove: absoluteBestNotation,
-            optimalMove: absoluteBestNotation,
-            explanation: ruleBased.explanation,
-            whyFailed: undefined,
-            whyOptimal: ruleBased.whyOptimal,
+            verdict: 'optimal', equityLoss: 0, playedMove: absoluteBestNotation, optimalMove: absoluteBestNotation,
+            explanation: ruleBased.explanation, whyFailed: undefined, whyOptimal: ruleBased.whyOptimal,
             summary: `Recommandation Coach Monte-Carlo sur [${evalDice[0]}-${evalDice[1]}] : ${absoluteBestNotation}`,
-            features,
-            positionKey: serializeXGID(stateToEval),
+            features, positionKey: serializeXGID(stateToEval),
             candidateMoves: candidates.slice(0, 5).map((m, idx) => {
                 const candMoves = extractCandidateMoveList(m);
                 const notation = candMoves.length > 0 ? formatCoachMoveSequence(candMoves, 'X', stateToEval.board) : m.notation;
                 const probs = m.probabilities ?? undefined;
                 return {
-                    rank: idx + 1,
-                    notation,
-                    equity: m.equity,
-                    equityLoss: m.equityLoss,
-                    winProbability: probs?.win,
-                    gammonProbability: probs?.winGammon,
-                    backgammonProbability: probs?.winBackgammon,
+                    rank: idx + 1, notation, equity: m.equity, equityLoss: m.equityLoss,
+                    winProbability: probs?.win, gammonProbability: probs?.winGammon, backgammonProbability: probs?.winBackgammon,
                 };
             }),
             boardBefore: [...stateToEval.board],

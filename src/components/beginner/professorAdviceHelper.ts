@@ -1,6 +1,6 @@
 /**
  * @file src/components/beginner/professorAdviceHelper.ts
- * @description Générateur déterministe d'explications bilingues sans jargon pour le Professeur Débutant (< 150 lignes, 0 any).
+ * @description Générateur déterministe d'explications bilingues sans jargon pour le Professeur Débutant (< 220 lignes, 0 any).
  * Invariant strict : Vérité physique garantie (Coup forcé, Porte fermée, Frappe, Réduction de blots, Course).
  */
 
@@ -9,12 +9,12 @@ import {
     generateLegalMoves,
     O_BAR,
     type BoardState,
-    type Move,
 } from '../../engine/backgammonEngine';
 import { analyzeBoardMoves } from '../../lib/engine/evaluator';
-import { formatCoachMoveSequence } from '../../features/coach/coachMoveNotation';
+import { formatCoachMoveSequence, normalizeCoachNotation } from '../../features/coach/coachMoveNotation';
 import { getOpeningForScore, isInitialBoardPosition } from '../../features/openings/openingDatabase';
 import type { LastMoveFeedback } from '../../hooks/useCoachHelpers';
+import type { MatchLogEntry } from '../../actions/types';
 
 export interface ProactiveAdvice {
     readonly bestNotation: string;
@@ -34,7 +34,7 @@ export function getProactiveAdvice(
     if (isInitialBoardPosition(state.board) && dice[0] !== dice[1]) {
         const opening = getOpeningForScore(dice[0], dice[1], 'NORMAL');
         if (opening) {
-            const bestNotation = opening.bestMoveNotation;
+            const bestNotation = opening.bestMoveNotation || formatCoachMoveSequence(opening.bestMoves, 'X', state.board);
             let boardAfterBest = [...state.board];
             for (const mv of opening.bestMoves) {
                 boardAfterBest = applyMove(boardAfterBest, mv, 'X');
@@ -46,8 +46,8 @@ export function getProactiveAdvice(
 
     // 2. Évaluation rapide 1-ply des coups légaux et détection de vérité physique
     try {
-        const analysis = analyzeBoardMoves(state, dice, { ply: 1, maxMoves: 4 });
-        const moves = analysis.bestMove?.moves;
+        const analysis = analyzeBoardMoves(state, dice, { ply: 1, maxMoves: 6 });
+        const moves = analysis.bestMove?.moves ?? generateLegalMoves(state, dice)[0]?.moves;
         if (moves && moves.length > 0) {
             const bestNotation = formatCoachMoveSequence(moves, 'X', state.board);
             let boardAfterBest = [...state.board];
@@ -91,35 +91,83 @@ function formatAdviceTextWithPhysicalTruth(
     }
     if (closedPoint !== null) {
         return isEn
-            ? `Professor Tip (Dice ${diceLabel}): Follow the two golden arrows on the board to unite your two checkers on the same point and create an unbreachable Shield (Gate)!`
-            : `Conseil du Professeur (Dés ${diceLabel}) : Suis les deux flèches dorées sur le plateau pour réunir tes deux pions sur la même pointe et créer un Bouclier (Porte) infranchissable !`;
+            ? `🎯 Dice ${diceLabel}: Play ${bestNotation} (follow the golden arrows on the board) to unite your checkers on point ${closedPoint} and create an unbreachable Shield (Gate)!`
+            : `🎯 Dé ${diceLabel} : joue ${bestNotation} (suis les flèches dorées sur le plateau) pour réunir tes deux pions sur la case ${closedPoint} et créer un Bouclier (Porte) infranchissable !`;
     }
 
     // Cas 2 — Le coup frappe réellement un pion adverse
     const hitO = Math.abs(boardAfterBest[O_BAR] ?? 0) > Math.abs(boardBefore[O_BAR] ?? 0) || bestNotation.includes('*');
     if (hitO) {
         return isEn
-            ? `Professor Tip (Dice ${diceLabel}): Follow the golden arrow to hit the opponent's exposed blot and send it to the center bar!`
-            : `Conseil du Professeur (Dés ${diceLabel}) : Suis la flèche dorée pour frapper le pion adverse isolé et l'envoyer en prison sur la Barre centrale !`;
+            ? `🎯 Dice ${diceLabel}: Play ${bestNotation} (follow the golden arrows on the board) to hit the opponent's exposed blot and send it to the center bar!`
+            : `🎯 Dé ${diceLabel} : joue ${bestNotation} (suis les flèches dorées sur le plateau) pour frapper le pion adverse isolé et l'envoyer sur la Barre centrale !`;
     }
 
-    // Cas 3 — Le coup libère un pion arrière du camp adverse (départ en Case 24, en haut à droite)
+    // Cas 3 — Le coup libère un pion arrière du camp adverse (départ en Case 24)
     const escapesBackChecker = (boardBefore[24] ?? 0) > (boardAfterBest[24] ?? 0) || bestNotation.includes('24/');
     if (escapesBackChecker) {
         return isEn
-            ? `Professor Tip (Dice ${diceLabel}): Follow the long golden arrow in the top right to free your back checker and bring it toward your side.`
-            : `Conseil du Professeur (Dés ${diceLabel}) : Suis la longue flèche dorée en haut à droite pour libérer ton pion arrière et le ramener vers ton camp.`;
+            ? `🎯 Dice ${diceLabel}: Play ${bestNotation} (follow the golden arrows in the top right) to free your back checker and bring it toward your side!`
+            : `🎯 Dé ${diceLabel} : joue ${bestNotation} (suis les flèches dorées en haut à droite) pour libérer ton pion arrière et le ramener vers ton camp !`;
     }
 
     // Cas 4 — Avancée et regroupement vers la maison
     return isEn
-        ? `Professor Tip (Dice ${diceLabel}): Follow the golden arrows on the board to advance your checkers safely toward your Home (bottom right).`
-        : `Conseil du Professeur (Dés ${diceLabel}) : Suis les flèches dorées sur le plateau pour faire avancer tes pions en sécurité vers ta Maison (en bas à droite).`;
+        ? `🎯 Dice ${diceLabel}: Play ${bestNotation} (follow the golden arrows on the board) to advance your checkers safely toward your Home (bottom right)!`
+        : `🎯 Dé ${diceLabel} : joue ${bestNotation} (suis les flèches dorées sur le plateau) pour faire avancer tes pions en sécurité vers ta Maison !`;
+}
+
+export function evaluateInstantHumanLogEntry(
+    entry: MatchLogEntry,
+    baseState?: BoardState,
+): LastMoveFeedback {
+    const dice: [number, number] = [entry.dice[0], entry.dice[1]];
+    const playedMove = entry.notation || formatCoachMoveSequence(entry.movePlayed, 'X', entry.boardBefore);
+    try {
+        const evalState: BoardState = {
+            ...(baseState ?? {
+                board: [...entry.boardBefore], turn: 'X', dice, cubeValue: 1, cubeOwner: null,
+                matchLength: 3, scoreX: 0, scoreO: 0, crawford: false, doubled: false, resigned: 0,
+            }),
+            board: [...entry.boardBefore],
+            turn: 'X',
+            dice,
+        };
+        const analysis = analyzeBoardMoves(evalState, dice, { ply: 1, maxMoves: 12 });
+        const best = analysis.bestMove;
+        const optimalMove = best?.moves ? formatCoachMoveSequence(best.moves, 'X', entry.boardBefore) : playedMove;
+        const sameBoard = best?.board && best.board.slice(0, 26).join(',') === entry.boardAfter.slice(0, 26).join(',');
+        const sameNotation = normalizeCoachNotation(playedMove) === normalizeCoachNotation(optimalMove);
+        const matchedCand = analysis.moves.find(
+            (m) => m.board && m.board.slice(0, 26).join(',') === entry.boardAfter.slice(0, 26).join(','),
+        );
+        const equityLoss = sameBoard || sameNotation ? 0 : Math.abs(matchedCand?.equityLoss ?? 0.045);
+        const isOpt = sameBoard || sameNotation || equityLoss <= 0.020;
+        return {
+            verdict: isOpt ? 'optimal' : equityLoss >= 0.080 ? 'blunder' : 'inaccuracy',
+            equityLoss,
+            playedMove,
+            optimalMove,
+            turnIndex: entry.turnIndex,
+            decisionType: 'checker',
+            boardBefore: entry.boardBefore,
+            boardAfter: entry.boardAfter,
+            dice,
+            timestamp: entry.timestamp ?? Date.now(),
+        };
+    } catch {
+        return {
+            verdict: 'optimal', equityLoss: 0, playedMove, optimalMove: playedMove,
+            turnIndex: entry.turnIndex, decisionType: 'checker',
+            boardBefore: entry.boardBefore, boardAfter: entry.boardAfter, dice, timestamp: Date.now(),
+        };
+    }
 }
 
 export function getFeedbackAdvice(feedback: LastMoveFeedback, lang: 'fr' | 'en' = 'fr'): string {
     const isEn = lang === 'en';
     const absLoss = Math.abs(feedback.equityLoss);
+    const humanMove = feedback.playedMove || '';
 
     if (absLoss <= 0.020 || feedback.verdict === 'optimal') {
         const bBefore = feedback.boardBefore;
@@ -134,36 +182,42 @@ export function getFeedbackAdvice(feedback: LastMoveFeedback, lang: 'fr' | 'en' 
             }
             if (closedPoint !== null) {
                 return isEn
-                    ? `Superb! You united your checkers on point ${closedPoint}: this Gate is now an impenetrable shield!`
-                    : `Superbe ! Tu as réuni tes deux pions sur la case ${closedPoint} : cette Porte est maintenant un bouclier imprenable !`;
+                    ? `✨ BRAVO! Superb! By playing ${humanMove}, you united your checkers on point ${closedPoint}: this Gate is now an impenetrable shield!`
+                    : `✨ BRAVO ! Superbe ! En jouant ${humanMove}, tu as réuni tes deux pions sur la case ${closedPoint} : cette Porte est maintenant un bouclier imprenable !`;
             }
 
             const hit = Math.abs(bAfter[O_BAR] ?? 0) > Math.abs(bBefore[O_BAR] ?? 0) || (feedback.playedMove?.includes('*') ?? false);
             if (hit) {
                 return isEn
-                    ? "Well played! You hit the opponent's checker and sent it to the central Bar!"
-                    : "Bien joué ! Tu as envoyé le pion adverse sur la Barre centrale !";
+                    ? `✨ BRAVO! Well played! With ${humanMove}, you hit the opponent's checker and sent it to the central Bar!`
+                    : `✨ BRAVO ! Bien joué ! Avec ${humanMove}, tu as envoyé le pion adverse sur la Barre centrale !`;
             }
         }
         return isEn
-            ? 'Great move! Your checkers advance toward your Home without leaving an exposed target.'
-            : 'Très bon coup ! Tes pions avancent vers ta Maison sans laisser de cible isolée.';
+            ? `✨ BRAVO! Excellent move: you played ${humanMove} and your checkers are safely placed!`
+            : `✨ BRAVO ! Excellent coup : tu as joué ${humanMove} et tes pions sont parfaitement placés !`;
     }
 
-    const lossPct = Math.max(1, Math.round(absLoss * 50));
     return isEn
-        ? `Professor Tip: Your move costs ~${lossPct}% winning chances compared to ${feedback.optimalMove}. Click '↺ Undo / Retry move' to test the best play!`
-        : `Conseil du Professeur : Ton coup perd ~${lossPct} % de chances de gagner par rapport à ${feedback.optimalMove}. Clique sur « ↺ Rejouer le coup » pour tester le meilleur coup !`;
+        ? `🤔 Careful! By playing ${humanMove || 'that move'}, you leave a weakness. The best move was ${feedback.optimalMove}. Click '↺ Replay my move'!`
+        : `🤔 Attention ! En jouant ${humanMove || 'ce coup'}, tu laisses une faiblesse. Le meilleur coup était ${feedback.optimalMove}. Clique sur « ↺ Rejouer mon coup » !`;
 }
 
-export function getBotMoveExplanation(lastBotNotation: string, lang: 'fr' | 'en' = 'fr'): string {
+export function getBotMoveExplanation(
+    lastBotNotation: string,
+    lang: 'fr' | 'en' = 'fr',
+    botDice?: readonly [number, number] | null,
+): string {
     const isEn = lang === 'en';
+    const diceStr = botDice && botDice[0] > 0 ? `${botDice[0]}-${botDice[1]}` : '';
+    const withDiceFr = diceStr ? ` avec mon ${diceStr}` : '';
+    const withDiceEn = diceStr ? ` with my ${diceStr}` : '';
     if (lastBotNotation.includes('*')) {
         return isEn
-            ? `What your opponent did: They played ${lastBotNotation} to hit your blot. It's your turn: click Roll Dice!`
-            : `Ce qu'a fait ton adversaire : Il a joué ${lastBotNotation} pour frapper ton pion. C'est à toi : clique sur Lancer les dés !`;
+            ? `👀 I played ${lastBotNotation}${withDiceEn} (hit!). Your turn: click "Roll Dice" in the center of the board!`
+            : `👀 J'ai joué ${lastBotNotation}${withDiceFr} (frappe !). À ton tour : clique sur « Lancer les dés » au centre du plateau !`;
     }
     return isEn
-        ? `What your opponent did: They played ${lastBotNotation} to advance checkers. It's your turn: click Roll Dice!`
-        : `Ce qu'a fait ton adversaire : Il a joué ${lastBotNotation} pour avancer ses pions. C'est à toi : clique sur Lancer les dés !`;
+        ? `👀 I played ${lastBotNotation}${withDiceEn}. Your turn: click "Roll Dice" in the center of the board!`
+        : `👀 J'ai joué ${lastBotNotation}${withDiceFr}. À ton tour : clique sur « Lancer les dés » au centre du plateau !`;
 }
