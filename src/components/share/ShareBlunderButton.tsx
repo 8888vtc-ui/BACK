@@ -38,8 +38,8 @@ const ShareBlunderButtonComponent: React.FC<ShareBlunderButtonProps> = ({
             const generator = new KarmaClipEngine();
             const payload: KarmaClipPayload = {
                 matchSeed: `${data.dice[0]}${data.dice[1]}X`,
-                botName: 'Maxime « Le Mauvais Joueur »',
-                botTrashTalk: 'Encore un double miraculeux ? Les dés sont truqués !',
+                botName: 'Adversaire en ligne',
+                botTrashTalk: 'Quel retournement de situation magistral sur ce lancer !',
                 originalBotRoll: [6, 6],
                 swappedPlayerRoll: [data.dice[0], data.dice[1]],
                 cubeValue: data.cubeValue ?? 2,

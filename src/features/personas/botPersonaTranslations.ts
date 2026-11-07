@@ -2,8 +2,7 @@
  * @file botPersonaTranslations.ts
  * @module features/personas/botPersonaTranslations
  * @description Dictionnaire multilingue (FR, EN, ES, PT, DE, AR, JA) des 4 Personas de Bots :
- * Maxime / Arthur (« Le Mauvais Joueur »), Sofia / Elena (« La Riviera »),
- * Victor / Marcus (« L’Homme d’Affaires »), Viktor / Spinoza (« L’Intellectuel »).
+ * Personas de jeu et dialogues multilingues.
  * Strictement 0 any, ≤ 380 lignes.
  */
 
@@ -244,15 +243,15 @@ export const PERSONA_TEXTS_BY_DIFFICULTY: Record<
   },
   intermediate: {
     fr: {
-      name: 'Sofia « La Joueuse Riviera »',
-      shortName: 'Sofia « La Riviera »',
-      archetypeTitle: 'Charme Monte-Carlo & Jeu de Pièges',
-      lobbyHint: 'Sofia · Pièges & Holding Monte-Carlo',
+      name: 'Sofia « Joueuse de Club »',
+      shortName: 'Sofia',
+      archetypeTitle: 'Style Club & Jeu de Pièges',
+      lobbyHint: 'Sofia · Pièges & Holding',
       styleBadge: 'Holding Game',
       skillTaught: 'Déjouer les pions appâts & gérer une ancre',
       dialogues: {
         opening: {
-          fun: 'Bonsoir ! Une partie sous les lustres de Monte-Carlo ? Promis, mes pions isolés sont... presque tous innocents.',
+          fun: 'Bonsoir ! Prêt pour une belle partie de Backgammon ? Mes pions isolés attendent de voir ton plan de jeu.',
           pro: 'Voyons comment tu gères ton timing face à une ancre haute et des pions appâts calculés.',
         },
         playerDoubleRoll: {
@@ -274,15 +273,15 @@ export const PERSONA_TEXTS_BY_DIFFICULTY: Record<
       },
     },
     en: {
-      name: 'Elena "The Riviera Shark"',
-      shortName: 'Elena "The Riviera"',
-      archetypeTitle: 'Monte-Carlo Charm & Trap Play',
-      lobbyHint: 'Elena · Traps & Monte-Carlo Holding',
+      name: 'Elena "The Club Strategist"',
+      shortName: 'Elena',
+      archetypeTitle: 'Club Charm & Trap Play',
+      lobbyHint: 'Elena · Traps & Club Holding',
       styleBadge: 'Holding Game & Baits',
       skillTaught: 'Outsmart bait checkers & anchor play',
       dialogues: {
         opening: {
-          fun: 'Good evening! A match under Monte-Carlo chandeliers? I promise my lone blots are... mostly innocent.',
+          fun: 'Good evening! Ready for a great backgammon game? My isolated checkers await your game plan.',
           pro: 'Let us see how you handle timing against a high anchor and calculated bait checkers.',
         },
         playerDoubleRoll: {
@@ -304,15 +303,15 @@ export const PERSONA_TEXTS_BY_DIFFICULTY: Record<
       },
     },
     es: {
-      name: 'Elena «La Jugadora Riviera»',
-      shortName: 'Elena «La Riviera»',
-      archetypeTitle: 'Encanto de Montecarlo y Trampas',
-      lobbyHint: 'Elena · Trampas y Holding Montecarlo',
+      name: 'Elena «La Jugadora de Club»',
+      shortName: 'Elena',
+      archetypeTitle: 'Estilo Club y Trampas',
+      lobbyHint: 'Elena · Trampas y Holding',
       styleBadge: 'Holding Game y Cebos',
       skillTaught: 'Desactivar fichas cebo y juego de ancla',
       dialogues: {
         opening: {
-          fun: '¡Buenas noches! ¿Una partida bajo las luces de Montecarlo? Mis fichas sueltas son casi todas inocentes...',
+          fun: '¡Buenas noches! ¿Preparado para una buena partida? Mis fichas esperan ver tu plan.',
           pro: 'Veamos cómo gestionas tu timing contra un ancla alta y fichas cebo.',
         },
         playerDoubleRoll: {
@@ -334,15 +333,15 @@ export const PERSONA_TEXTS_BY_DIFFICULTY: Record<
       },
     },
     pt: {
-      name: 'Sofia «A Jogadora Riviera»',
-      shortName: 'Sofia «A Riviera»',
-      archetypeTitle: 'Charme de Monte Carlo e Armadilhas',
-      lobbyHint: 'Sofia · Armadilhas e Holding Monte Carlo',
+      name: 'Sofia «A Jogadora de Clube»',
+      shortName: 'Sofia',
+      archetypeTitle: 'Estilo de Clube e Armadilhas',
+      lobbyHint: 'Sofia · Armadilhas e Holding',
       styleBadge: 'Holding Game e Iscas',
       skillTaught: 'Neutralizar iscas e gerenciar âncoras',
       dialogues: {
         opening: {
-          fun: 'Boa noite! Sob os lustres de Monte Carlo? Prometo que minhas peças isoladas são quase inocentes...',
+          fun: 'Boa noite! Pronto para uma bela partida? Minhas peças isoladas esperam seu plano.',
           pro: 'Vamos ver como você gerencia seu tempo contra uma âncora alta e peças-isca.',
         },
         playerDoubleRoll: {
@@ -364,15 +363,15 @@ export const PERSONA_TEXTS_BY_DIFFICULTY: Record<
       },
     },
     de: {
-      name: 'Elena „Der Riviera-Hai“',
-      shortName: 'Elena „Riviera“',
-      archetypeTitle: 'Monte-Carlo-Charme & Fallenstellerin',
-      lobbyHint: 'Elena · Fallen & Monte-Carlo-Holding',
+      name: 'Elena „Club-Strategin“',
+      shortName: 'Elena',
+      archetypeTitle: 'Club-Charme & Fallenstellerin',
+      lobbyHint: 'Elena · Fallen & Holding',
       styleBadge: 'Holding Game & Köder',
       skillTaught: 'Ködersteine enttarnen & Ankerspiel',
       dialogues: {
         opening: {
-          fun: 'Guten Abend! Eine Partie unter den Kronleuchtern von Monte-Carlo? Meine Blots sind... fast harmlos.',
+          fun: 'Guten Abend! Bereit für eine schöne Partie Backgammon? Meine Blots sind gespannt auf deinen Plan.',
           pro: 'Mal sehen, wie du dein Timing gegen einen hohen Anker und kalkulierte Köder managst.',
         },
         playerDoubleRoll: {

@@ -131,9 +131,8 @@ export interface BotPortraitMedallionProps {
 }
 
 /**
- * Médaillon Octogonal Haute-Horlogerie à ouverture panoramique 92 % sertissant les VRAIES photographies
- * de portraits Monte-Carlo (Maxime Le Mauvais Joueur, Sofia La Riviera, Victor L'Homme d'Affaires,
- * Viktor L'Intellectuel, Lord Mittens) + Blason Royal ou Portrait Membre pour le joueur et adversaire en ligne.
+ * Médaillon Octogonal Haute-Horlogerie à ouverture panoramique 92 % sertissant les photographies
+ * de portraits officiels + Blason Royal ou Portrait Membre pour le joueur et adversaire en ligne.
  */
 export const BotPortraitMedallion: React.FC<BotPortraitMedallionProps> = React.memo(({
     character,

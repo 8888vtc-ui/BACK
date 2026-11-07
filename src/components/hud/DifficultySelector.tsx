@@ -24,7 +24,7 @@ const LEVELS: Array<{
             ply: '0-ply',
             badge: 'Style Intuitif',
             icon: '',
-            tooltip: 'Arthur « Le Mauvais Joueur » (1420 Elo · PR 12.5) : style humain intuitif, privilégie l\'attaque directe.',
+            tooltip: 'Le Professeur (1200 Elo · PR 18–25) : style humain intuitif, privilégie l\'apprentissage guidé.',
             activeClass: 'border-emerald-500/80 bg-emerald-950/60 text-emerald-200 shadow-emerald-500/20',
         },
         {
@@ -33,7 +33,7 @@ const LEVELS: Array<{
             ply: '1-ply',
             badge: 'Style Club',
             icon: '🟡',
-            tooltip: 'Elena « La Riviera » (1680 Elo · PR 7.5) : jeu de structure réaliste sans erreur absurde.',
+            tooltip: 'Joueur de Club (1550 Elo · PR 8–12) : jeu de structure réaliste sans erreur absurde.',
             activeClass: 'border-yellow-500/80 bg-yellow-950/60 text-yellow-200 shadow-yellow-500/20',
         },
         {
@@ -42,7 +42,7 @@ const LEVELS: Array<{
             ply: '2-Ply',
             badge: 'Style Tournoi',
             icon: '🔴',
-            tooltip: 'Marcus « L\'Homme d\'Affaires » (1950 Elo · PR 2.5) : maîtrise des primes, du timing et du videau.',
+            tooltip: 'Compétiteur (1850 Elo · PR 4.5–7) : maîtrise des primes, du timing et du videau.',
             activeClass: 'border-rose-500/80 bg-rose-950/60 text-rose-200 shadow-rose-500/20',
         },
         {
