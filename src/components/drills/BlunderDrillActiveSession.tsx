@@ -225,7 +225,7 @@ export function BlunderDrillActiveSession({ initialConceptId, initialMode = 'ada
     }
 
     return (
-        <div className="relative flex h-full max-h-full w-full max-w-[1920px] mx-auto flex-col p-1 sm:p-1.5 [@media(max-height:540px)]:!p-0.5 text-[#fdf8eb] bg-[#050505] overflow-hidden">
+        <div className="relative flex h-full max-h-dvh w-full max-w-[1920px] mx-auto flex-col p-1 sm:p-1.5 [@media(max-height:540px)]:!p-0.5 text-[#fdf8eb] bg-[#050505] overflow-hidden">
             {!currentBlunder ? (
                 <BlunderDrillFinishedCard xp={xp} onResetCycle={handleResetAllMastery} />
             ) : (
@@ -246,7 +246,7 @@ export function BlunderDrillActiveSession({ initialConceptId, initialMode = 'ada
                         canConfirm={canConfirmBoardMove} canUndo={playedMoves.length > 0 && !validationResult}
                         coachHighlight={coachHighlight} theme={theme}
                     />
-                    <div className="flex-1 min-h-0 min-w-0 overflow-hidden flex flex-col [@media(orientation:landscape)]:col-span-4 [@media(orientation:landscape)]:col-start-9 [@media(orientation:landscape)]:row-start-2 lg:col-span-4 lg:col-start-9 lg:row-start-2 [@media(orientation:landscape)]:h-full lg:h-full max-h-[46dvh] [@media(orientation:landscape)]:max-h-full lg:max-h-full shrink-0">
+                    <div className="flex-1 min-h-0 min-w-0 overflow-hidden flex flex-col [@media(orientation:landscape)]:col-span-4 [@media(orientation:landscape)]:col-start-9 [@media(orientation:landscape)]:row-start-2 lg:col-span-4 lg:col-start-9 lg:row-start-2 h-full max-h-full shrink-0">
                         <BlunderDrillFeedbackCard currentBlunder={currentBlunder} currentIndex={quizStepCount} totalBlunders={stats.totalBlunders} showHint={showHint} onToggleHint={() => setShowHint((prev) => !prev)} onResetAttempt={handleResetCurrentAttempt} validationResult={validationResult} attemptsLeft={attemptsLeft} fsrsScheduled={fsrsScheduled} pendingBoardNotation={pendingBoardNotation} canConfirmBoardMove={canConfirmBoardMove} onConfirmBoardMove={handleConfirmBoardMove} onNextBlunder={handleNextBlunder} onSelectQuizChoice={handleSelectQuizChoice} onHoverQuizChoice={setHoveredChoiceNotation} hoveredChoiceNotation={hoveredChoiceNotation} drillMode={drillMode} targetQuizEr={effectiveTargetQuizEr} currentMetricScore={activeMetricScore ?? safeErScore} ratingDelta={ratingDelta} />
                     </div>
                 </div>

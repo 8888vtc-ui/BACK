@@ -137,7 +137,7 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
     }
 
     return (
-        <div data-testid="personal-blunders-notebook-view" className="flex-1 min-h-0 h-full w-full flex flex-col gap-1.5 p-1.5 sm:p-2 bg-[#050505] text-[#fdf8eb] overflow-hidden">
+        <div data-testid="personal-blunders-notebook-view" className="flex-1 min-h-0 h-full max-h-dvh w-full flex flex-col gap-1 p-1 sm:p-1.5 bg-[#050505] text-[#fdf8eb] overflow-hidden">
             <PersonalBlundersNotebookHeader
                 isEn={isEn} blunders={blunders} pendingCount={pendingList.length} resolvedCount={resolvedList.length}
                 statusFilter={statusFilter} activeBlunder={activeBlunder}
@@ -150,8 +150,8 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
             />
 
             {activeBlunder && (
-                <div className="flex-1 min-h-0 w-full grid grid-cols-1 lg:grid-cols-12 gap-1.5 overflow-hidden">
-                    <div className="lg:col-span-8 min-h-0 h-full flex items-center justify-center rounded-xl border border-white/10 bg-[#050505] p-0.5 overflow-hidden">
+                <div className="flex-1 min-h-0 w-full grid grid-cols-1 lg:grid-cols-12 gap-1 sm:gap-1.5 overflow-hidden">
+                    <div className="lg:col-span-8 min-h-0 h-full max-h-[calc(100dvh-120px)] flex items-center justify-center rounded-xl border border-white/10 bg-[#050505] p-0.5 overflow-hidden">
                         <Board
                             state={boardState} gamePhase="HUMAN_MOVING" leftDieTargets={new Map()} rightDieTargets={new Map()}
                             selectedPoint={null} selectedDie={null} usedDice={[false, false]}
@@ -162,16 +162,16 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                         />
                     </div>
 
-                    <div className="lg:col-span-4 min-h-0 h-full flex flex-col justify-between rounded-xl border border-white/10 bg-[#12151C] p-3 gap-2 overflow-y-auto">
-                        <div className="space-y-2">
-                            <div data-testid="personal-blunder-recall-prompt" className="rounded-xl border border-[#D4AF37]/30 bg-[#090B10] p-2.5 text-xs leading-relaxed text-zinc-200">
-                                <div className="font-bold text-[#D4AF37] mb-1">
-                                    {isEn ? `Memory from your match vs ${activeBlunder.opponentName} (Turn #${activeBlunder.turnNumber}):` : `Souvenir de ton match contre ${activeBlunder.opponentName} (Tour #${activeBlunder.turnNumber}) :`}
+                    <div className="lg:col-span-4 min-h-0 h-full flex flex-col justify-between rounded-xl border border-white/10 bg-[#12151C] p-2 sm:p-2.5 gap-1.5 overflow-hidden">
+                        <div className="space-y-1.5 shrink-0">
+                            <div data-testid="personal-blunder-recall-prompt" className="rounded-xl border border-[#D4AF37]/30 bg-[#090B10] p-2 text-xs leading-snug text-zinc-200">
+                                <div className="font-bold text-[#D4AF37] mb-0.5 text-xs">
+                                    {isEn ? `Memory from match vs ${activeBlunder.opponentName} (T#${activeBlunder.turnNumber}):` : `Souvenir du match contre ${activeBlunder.opponentName} (Tour #${activeBlunder.turnNumber}) :`}
                                 </div>
-                                <p>
+                                <p className="text-xs leading-tight line-clamp-2">
                                     {isEn
-                                        ? `In this position, you made a mistake that cost you -${activeBlunder.winProbLossPct.toFixed(1)}% winning chances (${activeBlunder.deltaEmg.toFixed(3)} EMG). Can you find the best move today?`
-                                        : `Dans cette position, tu as commis une erreur qui t'a coûté -${activeBlunder.winProbLossPct.toFixed(1)}% de chances de victoire (${activeBlunder.deltaEmg.toFixed(3)} EMG). Sauras-tu trouver le meilleur coup aujourd'hui ?`}
+                                        ? `Mistake cost -${activeBlunder.winProbLossPct.toFixed(1)}% win chances (${activeBlunder.deltaEmg.toFixed(3)} EMG). Find the best move today:`
+                                        : `Erreur ayant coûté -${activeBlunder.winProbLossPct.toFixed(1)}% de chances de victoire (${activeBlunder.deltaEmg.toFixed(3)} EMG). Trouve le meilleur coup :`}
                                 </p>
                             </div>
 
@@ -179,7 +179,7 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                                 <span>{isEn ? 'Select the optimal 3-ply move:' : 'Cliquez sur le meilleur coup 3-ply :'}</span>
                                 <span className="inline-flex items-center gap-1 font-mono text-xs text-[#D4AF37]">
                                     <Dices className="w-3.5 h-3.5 text-[#D4AF37]" />
-                                    <span>{activeBlunder.dice[0]}-{activeBlunder.dice[1]} (Case 24 ➔ 1)</span>
+                                    <span>{activeBlunder.dice[0]}-{activeBlunder.dice[1]} (24 ➔ 1)</span>
                                 </span>
                             </div>
 
@@ -194,7 +194,7 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                                             key={cand.notation} type="button" data-testid={`quiz-choice-btn-${letter}`}
                                             onMouseEnter={() => setHoveredNotation(cand.notation)} onMouseLeave={() => setHoveredNotation(null)}
                                             onClick={() => handleSelectChoice(cand.notation)}
-                                            className={`flex items-center justify-between gap-1.5 rounded-xl border px-2.5 py-2 font-mono text-xs font-extrabold transition ${
+                                            className={`flex items-center justify-between gap-1.5 rounded-xl border px-2.5 py-1.5 font-mono text-xs font-extrabold transition ${
                                                 showOptimalStyle
                                                     ? 'border-emerald-400 bg-emerald-950/80 text-emerald-200 shadow-[0_0_12px_rgba(16,185,129,0.25)]'
                                                     : showWrongStyle ? 'border-rose-400 bg-rose-950/80 text-rose-200' : 'border-white/15 bg-[#090B10] text-white hover:border-[#D4AF37] hover:text-[#D4AF37]'
@@ -209,23 +209,23 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                         </div>
 
                         {clickedNotation && (
-                            <div className="space-y-2 pt-1 border-t border-white/10" data-testid="personal-blunder-comparative-panel">
+                            <div className="space-y-1 pt-1 border-t border-white/10 flex-1 min-h-0 flex flex-col justify-between overflow-hidden" data-testid="personal-blunder-comparative-panel">
                                 {isWrongNow && (
-                                    <div data-testid="personal-blunder-wrong-alert" className="rounded-xl border border-amber-400/50 bg-amber-950/70 p-2 text-xs text-amber-100">
+                                    <div data-testid="personal-blunder-wrong-alert" className="rounded-xl border border-amber-400/50 bg-amber-950/70 p-1.5 text-xs text-amber-100 shrink-0">
                                         <span className="font-bold text-amber-300">
                                             {clickedNotation.trim() === activeBlunder.playerPlayedMove.trim()
                                                 ? isEn
-                                                    ? `Watch out: ${activeBlunder.playerPlayedMove} is the exact mistake you played in your match against ${activeBlunder.opponentName}! `
-                                                    : `Attention, c'est exactement l'erreur (${activeBlunder.playerPlayedMove}) que tu avais commise pendant ton match contre ${activeBlunder.opponentName} ! `
+                                                    ? `Watch out: ${activeBlunder.playerPlayedMove} is the exact mistake you played vs ${activeBlunder.opponentName}!`
+                                                    : `Attention, c'est exactement l'erreur (${activeBlunder.playerPlayedMove}) commise vs ${activeBlunder.opponentName} !`
                                                 : isEn
-                                                ? `Not quite: ${clickedNotation} is still suboptimal. Click the Gold optimal move (${activeBlunder.optimalMove}) to validate! `
-                                                : `Ce coup (${clickedNotation}) reste sous-optimal. Clique sur le coup optimal (${activeBlunder.optimalMove}) pour valider ta correction ! `}
+                                                ? `Suboptimal: click Gold move (${activeBlunder.optimalMove}) to validate!`
+                                                : `Sous-optimal : clique sur le coup optimal (${activeBlunder.optimalMove}) pour valider !`}
                                         </span>
                                     </div>
                                 )}
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                    <div data-testid="comparative-played-move-card" className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-2.5 text-xs space-y-1">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 flex-1 min-h-0 overflow-y-auto pr-0.5">
+                                    <div data-testid="comparative-played-move-card" className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-2 text-xs space-y-0.5 leading-snug">
                                         <div className="flex items-center justify-between font-mono text-xs font-black text-rose-300">
                                             <span>{isEn ? `❌ Your Match Move: ${activeBlunder.playerPlayedMove}` : `❌ Ton Coup en Match : ${activeBlunder.playerPlayedMove}`}</span>
                                             <span>{activeBlunder.playerWinProbPct.toFixed(1)}% {isEn ? 'win' : 'victoire'} ({activeBlunder.deltaEmg.toFixed(3)} EMG)</span>
@@ -236,7 +236,7 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                                         </p>
                                     </div>
 
-                                    <div data-testid="comparative-optimal-move-card" className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-2.5 text-xs space-y-1">
+                                    <div data-testid="comparative-optimal-move-card" className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-2 text-xs space-y-0.5 leading-snug">
                                         <div className="flex items-center justify-between font-mono text-xs font-black text-emerald-300">
                                             <span>{isEn ? `✅ 3-Ply Solution: ${activeBlunder.optimalMove}` : `✅ La Solution 3-Ply : ${activeBlunder.optimalMove}`}</span>
                                             <span>{activeBlunder.optimalWinProbPct.toFixed(1)}% {isEn ? 'win' : 'victoire'} (0.000 EMG)</span>
@@ -248,19 +248,19 @@ export const PersonalBlundersNotebookView: React.FC<PersonalBlundersNotebookView
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col gap-1.5 pt-1">
+                                <div className="flex flex-col gap-1 pt-1 shrink-0">
                                     <button
                                         type="button" data-testid="next-personal-blunder-btn" onClick={handleNextPendingBlunder}
-                                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-3 py-2 text-xs font-black uppercase tracking-wider text-black shadow-md hover:brightness-105 transition"
+                                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#E5C158] via-[#D4AF37] to-[#B5902B] px-3 py-1.5 text-xs font-black uppercase tracking-wider text-black shadow-md hover:brightness-105 transition"
                                     >
                                         <span>{isEn ? 'NEXT PENDING BLUNDER TO FIX' : 'PASSER AU BLUNDER SUIVANT À CORRIGER'}</span>
                                         <ArrowRight className="w-4 h-4 text-black" />
                                     </button>
                                     <div className="flex items-center gap-1.5">
-                                        <button type="button" onClick={() => setClickedNotation(null)} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-white/15 bg-[#090B10] px-2.5 py-1.5 text-xs font-bold text-zinc-300 hover:text-white transition">
+                                        <button type="button" onClick={() => setClickedNotation(null)} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-white/15 bg-[#090B10] px-2.5 py-1 text-xs font-bold text-zinc-300 hover:text-white transition">
                                             <RotateCcw className="w-3 h-3" /><span>{isEn ? 'Replay Quiz' : 'Rejouer le Quiz'}</span>
                                         </button>
-                                        <button type="button" onClick={() => router.push(`/?xgid=${encodeURIComponent(activeBlunder.xgid)}`)} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-white/15 bg-[#090B10] px-2.5 py-1.5 text-xs font-bold text-emerald-300 hover:border-emerald-400/50 transition">
+                                        <button type="button" onClick={() => router.push(`/?xgid=${encodeURIComponent(activeBlunder.xgid)}`)} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-white/15 bg-[#090B10] px-2.5 py-1 text-xs font-bold text-emerald-300 hover:border-emerald-400/50 transition">
                                             <Play className="w-3 h-3" /><span>{isEn ? 'Play vs Coach' : 'Jouer contre le Coach'}</span>
                                         </button>
                                     </div>
