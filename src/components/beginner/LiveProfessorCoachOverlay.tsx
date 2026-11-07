@@ -46,12 +46,12 @@ export function LiveProfessorCoachOverlay({
   const activeBestNotation = proactive?.bestNotation ?? optimalMove ?? '';
 
   useEffect(() => {
-    if (activeTurn === 'X' && dice && (dice[0] > 0 || dice[1] > 0) && activeBestNotation) {
+    if (isShowingRecommendArrow && activeTurn === 'X' && dice && (dice[0] > 0 || dice[1] > 0) && activeBestNotation) {
       onHoverNotation?.(activeBestNotation);
     } else {
       onHoverNotation?.(null);
     }
-  }, [activeTurn, dice?.[0], dice?.[1], activeBestNotation, onHoverNotation]);
+  }, [isShowingRecommendArrow, activeTurn, dice?.[0], dice?.[1], activeBestNotation, onHoverNotation]);
 
   useEffect(() => {
     if (isMasterMove && (!dice || (dice[0] === 0 && dice[1] === 0))) {
@@ -75,8 +75,8 @@ export function LiveProfessorCoachOverlay({
   const getProfessorPrompt = (): string => {
     if (showOptimalBadge) {
       return lang === 'fr'
-        ? '✨ Bravo ! Excellent coup : ta nouvelle porte protège parfaitement tes pions.'
-        : '✨ Bravo! Excellent move: your new gate secures your checkers perfectly.';
+        ? '✨ Bravo ! Excellent coup : tes pions sont parfaitement protégés !'
+        : '✨ Bravo! Excellent move: your checkers are safely protected!';
     }
     if (prematureDoubleWarning) {
       return lang === 'fr'
@@ -86,8 +86,8 @@ export function LiveProfessorCoachOverlay({
     if (lastMoveFeedback && (!dice || (dice[0] === 0 && dice[1] === 0))) {
       if (!isOptimalFeedback) {
         return lang === 'fr'
-          ? `Hmm, attention ! Ce coup laisse un pion tout seul en danger. Tu aurais pu jouer ${lastMoveFeedback.optimalMove || 'le coup conseillé'}.`
-          : `Hmm, careful! That move leaves a checker isolated in danger. You could have played ${lastMoveFeedback.optimalMove || 'the suggested move'}.`;
+          ? `Hmm, attention ! Ce coup laisse un pion en danger. Clique sur Rejouer pour choisir le coup conseillé ${lastMoveFeedback.optimalMove ? `(${lastMoveFeedback.optimalMove})` : ''}.`
+          : `Hmm, careful! That move leaves a checker in danger. Click Retry to choose the suggested move ${lastMoveFeedback.optimalMove ? `(${lastMoveFeedback.optimalMove})` : ''}.`;
       }
       return getFeedbackAdvice(lastMoveFeedback, lang);
     }
@@ -150,9 +150,9 @@ export function LiveProfessorCoachOverlay({
           </div>
 
           {/* Bulle BD avec queue triangulaire */}
-          <div className={`relative flex-1 bg-[#0B0E14]/95 backdrop-blur-md border ${showOptimalBadge ? 'border-emerald-400/70 shadow-[0_0_20px_rgba(52,211,153,0.35)]' : 'border-[#D4AF37]/45 shadow-xl'} rounded-2xl px-3.5 py-2 text-zinc-100`}>
+          <div className={`relative flex-1 bg-[#0B0E14]/95 backdrop-blur-md border ${showOptimalBadge ? 'border-emerald-400/80 shadow-[0_0_24px_rgba(52,211,153,0.35)] ring-1 ring-[#D4AF37]/60' : 'border-[#D4AF37]/45 shadow-xl'} rounded-2xl px-3.5 py-2 text-zinc-100`}>
             {/* Pointe triangulaire pointant vers la bouche du Professeur */}
-            <div className={`absolute top-4 -left-2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] ${showOptimalBadge ? 'border-r-emerald-400/70' : 'border-r-[#D4AF37]/50'}`} />
+            <div className={`absolute top-4 -left-2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] ${showOptimalBadge ? 'border-r-emerald-400/80' : 'border-r-[#D4AF37]/45'}`} />
             <div className="absolute top-4 -left-[6px] w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-[#0B0E14]" />
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5">

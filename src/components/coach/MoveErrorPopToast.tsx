@@ -169,9 +169,9 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                 </div>
 
                 {/* Bulle BD avec queue triangulaire */}
-                <div className="relative flex-1 bg-[#0B0E14]/95 backdrop-blur-md border border-[#D4AF37]/50 rounded-2xl p-3.5 text-zinc-100 shadow-2xl">
+                <div className="relative flex-1 bg-[#0B0E14]/95 backdrop-blur-md border border-[#D4AF37]/45 rounded-2xl p-3 sm:p-3.5 text-zinc-100 shadow-2xl">
                     {/* Pointe triangulaire de bulle BD */}
-                    <div className="absolute top-4 -left-2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-[#D4AF37]/50" />
+                    <div className="absolute top-4 -left-2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-[#D4AF37]/45" />
                     <div className="absolute top-4 -left-[6px] w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-[#0B0E14]" />
 
                     {/* En-tête : Sévérité + Indicateur de perte + Bouton Fermer */}
@@ -196,11 +196,10 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                             <button
                                 type="button"
                                 onClick={() => feedback && setDismissedFeedback(feedback)}
-                                data-testid="error-toast-close-btn"
-                                aria-label="Fermer l'alerte d'erreur"
-                                className="h-6 px-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-stone-200 flex items-center justify-center text-[11px] font-semibold transition"
+                                aria-label="Fermer"
+                                className="h-6 w-6 rounded-lg bg-white/10 hover:bg-white/20 text-stone-300 flex items-center justify-center text-xs font-semibold transition"
                             >
-                                Continuer ✕
+                                ✕
                             </button>
                         </div>
                     </div>
@@ -243,8 +242,8 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                         )}
                     </div>
 
-                    {/* Actions 1-Tap : Rejouer ce coup & Analyse Coach */}
-                    <div className="mt-2.5 flex items-center gap-2 pt-1.5 border-t border-white/10">
+                    {/* Actions : 2 petits boutons discrets [↺ Rejouer] et [Continuer ×] */}
+                    <div className="mt-2.5 flex items-center justify-end gap-2 pt-1.5 border-t border-white/10">
                         {onReplayMove && (
                             <button
                                 type="button"
@@ -253,12 +252,22 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                                     onReplayMove();
                                     if (feedback) setDismissedFeedback(feedback);
                                 }}
-                                className="flex-1 py-1.5 px-3 rounded-xl bg-gradient-to-r from-[#f3c65f] via-[#f7d77e] to-[#e5b548] text-slate-950 font-black text-xs uppercase tracking-wider shadow hover:brightness-105 active:scale-95 transition flex items-center justify-center gap-1.5"
+                                className="py-1 px-3 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/60 hover:bg-[#D4AF37]/30 text-[#f3d27a] font-bold text-xs transition flex items-center gap-1.5 active:scale-95 shadow-sm"
                             >
                                 <span>↺</span>
-                                <span>Rejouer ce coup</span>
+                                <span>{locale === 'en' ? 'Replay' : 'Rejouer ce coup'}</span>
                             </button>
                         )}
+
+                        <button
+                            type="button"
+                            onClick={() => feedback && setDismissedFeedback(feedback)}
+                            data-testid="error-toast-close-btn"
+                            aria-label="Fermer l'alerte d'erreur"
+                            className="py-1 px-3 rounded-lg bg-white/10 hover:bg-white/15 text-stone-200 border border-white/10 font-semibold text-xs transition flex items-center gap-1 active:scale-95"
+                        >
+                            <span>{locale === 'en' ? 'Continue ×' : 'Continuer ×'}</span>
+                        </button>
 
                         {onOpenCoach && !isBeginner && (
                             <button
@@ -268,7 +277,7 @@ export const MoveErrorPopToast: React.FC<MoveErrorPopToastProps> = React.memo(({
                                     onOpenCoach();
                                     if (feedback) setDismissedFeedback(feedback);
                                 }}
-                                className="py-1.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition flex items-center justify-center gap-1"
+                                className="py-1 px-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs transition"
                             >
                                 <span>Coach IA</span>
                             </button>
