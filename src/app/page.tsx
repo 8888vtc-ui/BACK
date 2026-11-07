@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LobbyView, SummaryView, type LobbyModuleId } from '../components/lobby/AppScreenViews';
+import { checkIsLocalDevEnvironment } from '../components/lobby/LobbyPlayerHubSection';
 import type { LobbySelection } from '../components/lobby/LobbyScreen';
 import GameScreenView from '../components/board/GameScreenView';
 import GameModalsContainer from '../components/modals/GameModalsContainer';
@@ -167,6 +168,13 @@ export default function Home() {
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !hasAutoStartedRef.current) {
+            if (!checkIsLocalDevEnvironment()) {
+                hasAutoStartedRef.current = true;
+                if (window.location.pathname !== '/' || window.location.search.length > 0) {
+                    try { window.history.replaceState({}, '', '/'); } catch { /* ignore */ }
+                }
+                return;
+            }
             const roomCode = extractRoomCodeFromUrl(window.location.search);
             if (roomCode) {
                 hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;

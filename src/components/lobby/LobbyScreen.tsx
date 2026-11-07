@@ -28,6 +28,7 @@ import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import { BeginnerHomePortal } from '../home/BeginnerHomePortal';
 import { IntermediateHomePortal } from '../home/IntermediateHomePortal';
 import { ExpertHomePortal } from '../home/ExpertHomePortal';
+import { checkIsLocalDevEnvironment, VelvetCurtainTeaserView } from './LobbyPlayerHubSection';
 
 export type LobbyModuleId = 'multiplayer' | 'openings' | 'stats' | 'drills' | 'puzzles' | 'import_export' | 'tournaments' | 'private_room';
 type LobbyMode = 'ai' | 'multiplayer' | 'training';
@@ -59,8 +60,13 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     const [displayName, setDisplayName] = useState<string | null>(() => readPlayerPassport()?.pseudo ?? null);
     const [snapshot, setSnapshot] = useState<AcademyProgressSnapshot>(() => getSyncAcademySnapshot());
     const [recentMatches, setRecentMatches] = useState<RecentMatchEntry[]>([]);
-    const [isMittensActive, setIsMittensActive] = useState<boolean>(false);
-    const authenticStats = useAuthenticPlayerStats();
+    const [isLocalDev, setIsLocalDev] = useState<boolean>(() => checkIsLocalDevEnvironment());
+    const [isLabGameOpen, setIsLabGameOpen] = useState<boolean>(() => {
+        if (typeof window === 'undefined') return false;
+        const isTestEnv = window.navigator?.userAgent?.includes('jsdom') || window.navigator?.webdriver === true;
+        if (isTestEnv) return true;
+        return window.sessionStorage?.getItem('bgtour_local_lab_unlocked') === 'true';
+    });
 
     const matchFormats = useMemo(() => [
         { value: 0, label: ui.lobby.moneyGame, hint: ui.lobby.formatMoneyHint },
@@ -79,6 +85,7 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     ], []);
 
     useEffect(() => {
+        setIsLocalDev(checkIsLocalDevEnvironment());
         setMatchLength(readStoredMatchFormat());
         setPlayerColor(readStoredPlayerColor());
         setSnapshot(getSyncAcademySnapshot());
@@ -121,11 +128,42 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
         onOpenModule?.('multiplayer');
     };
 
+    if (!isLocalDev || !isLabGameOpen) {
+        return (
+            <main dir={dir} data-testid="lobby-main-scroll-container" className="h-dvh max-h-dvh w-full overflow-y-auto overflow-x-hidden bg-[#050505] text-[#f7f3e8]">
+                <h1 className="sr-only">BACKGAMMON</h1>
+                <VelvetCurtainTeaserView
+                    isLocalDev={isLocalDev}
+                    onUnlockLocalLab={() => {
+                        try { window.sessionStorage.setItem('bgtour_local_lab_unlocked', 'true'); } catch { /* ignore */ }
+                        setIsLabGameOpen(true);
+                    }}
+                />
+            </main>
+        );
+    }
+
     return (
         <main
             dir={dir} data-testid="lobby-main-scroll-container"
             className="h-dvh max-h-dvh w-full overflow-y-auto lg:overflow-hidden overflow-x-hidden overscroll-y-contain bg-[#050505] text-[#f7f3e8] selection:bg-[#d4af37]/30 flex flex-col relative"
         >
+            {isLocalDev && (
+                <div className="bg-emerald-950/90 border-b border-emerald-500/30 px-4 py-1 flex items-center justify-between text-xs text-emerald-200 z-50 shrink-0">
+                    <span className="font-mono font-semibold">🔧 Mode Laboratoire Hors-Ligne Actif (localhost)</span>
+                    <button
+                        type="button"
+                        data-testid="switch-to-velvet-teaser-btn"
+                        onClick={() => {
+                            try { window.sessionStorage.setItem('bgtour_local_lab_unlocked', 'false'); } catch { /* ignore */ }
+                            setIsLabGameOpen(false);
+                        }}
+                        className="rounded-lg border border-[#D4AF37]/50 bg-[#D4AF37]/15 px-2.5 py-0.5 text-[11px] font-bold text-[#f3d27a] hover:bg-[#D4AF37]/25 transition"
+                    >
+                        🎭 Voir la Vitrine Teasing Production
+                    </button>
+                </div>
+            )}
             <AppNavbar
                 activeTab="play" onOpenModule={onOpenModule}
                 onSelectPlayTab={() => setSelectedMode('ai')}

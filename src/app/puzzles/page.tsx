@@ -6,6 +6,7 @@ import ErrorBoundary from '../../components/common/ErrorBoundary';
 import { BeginnerAcademyFlow } from '../../components/beginner/BeginnerAcademyFlow';
 import AppNavbar from '../../components/nav/AppNavbar';
 import { LobbyLeftSidebar } from '../../components/lobby/LobbySidebarAndWidgets';
+import { ProductionVelvetRouteGuard } from '../../components/lobby/LobbyPlayerHubSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,23 +76,25 @@ export default async function PuzzlesPage({ searchParams }: PuzzlesPageProps) {
             : undefined);
 
     return (
-        <main className="flex h-dvh max-h-dvh w-screen overflow-hidden flex-col bg-slate-950 text-slate-100">
-            <AppNavbar activeTab="puzzles" />
-            <div className="flex flex-1 min-h-0 overflow-hidden w-full">
-                <LobbyLeftSidebar />
-                <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
-                    <ErrorBoundary name="Quizz Adaptatifs">
-                        {isBeginnerAcademy ? (
-                            <BeginnerAcademyFlow />
-                        ) : (
-                            <BlunderDrillView
-                                initialMode={initialMode}
-                                initialConceptId={initialConceptId}
-                            />
-                        )}
-                    </ErrorBoundary>
+        <ProductionVelvetRouteGuard>
+            <main className="flex h-dvh max-h-dvh w-screen overflow-hidden flex-col bg-slate-950 text-slate-100">
+                <AppNavbar activeTab="puzzles" />
+                <div className="flex flex-1 min-h-0 overflow-hidden w-full">
+                    <LobbyLeftSidebar />
+                    <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
+                        <ErrorBoundary name="Quizz Adaptatifs">
+                            {isBeginnerAcademy ? (
+                                <BeginnerAcademyFlow />
+                            ) : (
+                                <BlunderDrillView
+                                    initialMode={initialMode}
+                                    initialConceptId={initialConceptId}
+                                />
+                            )}
+                        </ErrorBoundary>
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </ProductionVelvetRouteGuard>
     );
 }

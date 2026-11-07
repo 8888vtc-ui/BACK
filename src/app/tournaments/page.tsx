@@ -4,6 +4,7 @@ import TournamentWorldHubView from '../../components/tournaments/TournamentWorld
 import ErrorBoundary from '../../components/common/ErrorBoundary';
 import { WORLD_TOURNAMENTS_CATALOG } from '../../features/tournaments/worldTournamentsCatalog';
 import { buildTournamentsStructuredData } from '../../lib/seo/structuredData';
+import { ProductionVelvetRouteGuard } from '../../components/lobby/LobbyPlayerHubSection';
 
 export const metadata: Metadata = {
     title: 'Backgammon Tour — Base Mondiale des Tournois & Carte Où Jouer au Backgammon (Clubs & Salons)',
@@ -26,13 +27,15 @@ export default function TournamentsPage() {
     const jsonLd = buildTournamentsStructuredData(WORLD_TOURNAMENTS_CATALOG);
 
     return (
-        <ErrorBoundary name="Backgammon Tour — Tournois Mondiaux">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
-            <TournamentWorldHubView initialTournaments={WORLD_TOURNAMENTS_CATALOG} />
-        </ErrorBoundary>
+        <ProductionVelvetRouteGuard>
+            <ErrorBoundary name="Backgammon Tour — Tournois Mondiaux">
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                />
+                <TournamentWorldHubView initialTournaments={WORLD_TOURNAMENTS_CATALOG} />
+            </ErrorBoundary>
+        </ProductionVelvetRouteGuard>
     );
 }
 
