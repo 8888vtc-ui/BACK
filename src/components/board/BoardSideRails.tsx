@@ -156,7 +156,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                     {crawford && <div data-testid="left-rail-crawford-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-xs font-bold text-amber-300 uppercase tracking-wider">Crawford</div>}
                     {isDMP && <div data-testid="left-rail-dmp-badge" className="mt-1 inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/40 px-1 py-0.5 text-xs font-bold text-amber-300 uppercase tracking-wider">DMP</div>}
                 </div>
-                {!isOnlinePvpMatch && isGuided ? (
+                {(!isOnlinePvpMatch && isGuided) || playerClock === '∞' || opponentClock === '∞' ? (
                     <div data-testid="left-rail-guided-pace-badge" className="flex flex-col items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-950/40 p-1.5 shadow-inner gap-0.5 shrink-0 w-14 text-center select-none">
                         <span className="text-sm font-black text-emerald-300 leading-none">∞</span>
                         <span className="font-extrabold text-xs uppercase tracking-wider text-emerald-300 leading-tight">{isEn ? 'Your pace' : 'À votre rythme'}</span>

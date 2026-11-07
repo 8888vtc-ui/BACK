@@ -67,8 +67,19 @@ export function useFischerClock({
     const [nowMs, setNowMs] = useState<number>(() => nowProvider());
     const prevPlayerRef = useRef<Player>(activePlayer);
     const prevPausedRef = useRef<boolean>(isPaused);
+    const prevConfigKeyRef = useRef<string>(`${config.type}:${config.bankMs}:${config.delaySeconds}`);
     const lastAlertedSecondRef = useRef<number | null>(null);
     const flagFallNotifiedRef = useRef<boolean>(false);
+
+    useEffect(() => {
+        const nextKey = `${config.type}:${config.bankMs}:${config.delaySeconds}`;
+        if (prevConfigKeyRef.current !== nextKey) {
+            prevConfigKeyRef.current = nextKey;
+            const currentNow = nowProvider();
+            setClockState(createMatchClock(config, activePlayer, currentNow));
+            setNowMs(currentNow);
+        }
+    }, [config, activePlayer, nowProvider]);
 
     // Changement de tour sans saut (application de l'incrément Fischer ou réinitialisation du délai)
     useEffect(() => {
@@ -158,8 +169,8 @@ export function useFischerClock({
         bankXMs: tick.bankXMs,
         bankOMs: tick.bankOMs,
         delayRemainingMs: tick.delayRemainingMs,
-        formattedX: formatClockTime(tick.bankXMs, true),
-        formattedO: formatClockTime(tick.bankOMs, true),
+        formattedX: config.type === 'unlimited' ? '∞' : formatClockTime(tick.bankXMs, true),
+        formattedO: config.type === 'unlimited' ? '∞' : formatClockTime(tick.bankOMs, true),
         formattedDelay,
         isCriticalX,
         isCriticalO,

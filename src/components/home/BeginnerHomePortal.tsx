@@ -2,7 +2,7 @@
 
 /**
  * @file src/components/home/BeginnerHomePortal.tsx
- * @description Portail d'accueil Porte 1 Débutant : zéro jargon (0 EMG/MWC/ERH/3-ply/blot),
+ * @description Portail d'accueil Porte 1 Débutant : zéro jargon (0 EMG/MWC/3-ply/blot),
  * 100dvh sans scroll parasite, 1 seul bouton Or #D4AF37 majeur ("DÉCOUVRIR LES RÈGLES EN 3 MIN →").
  * Strictement <= 300 lignes, 0 any.
  */

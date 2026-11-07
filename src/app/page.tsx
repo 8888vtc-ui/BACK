@@ -30,7 +30,7 @@ import { useCheckerSoundFeedback } from '../hooks/useCheckerSoundFeedback';
 import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
 import { readStoredPlayerColor } from '../components/hud/ColorSelector';
-import { readStoredMatchFormat } from '../components/hud/MatchFormatSelector';
+import { readStoredMatchFormat, storeMatchFormat, storeClockPreset, type MatchClockPreset } from '../components/hud/MatchFormatSelector';
 import { getBotRealPr, resetBotRealPr } from '../features/personas/botRealPr';
 import { checkIsPlayerRegistered, useAuthenticPlayerStats } from '../hooks/useAuthenticPlayerStats';
 import { usePlayerTierGate } from '../hooks/usePlayerTierGate';
@@ -50,30 +50,20 @@ export default function Home() {
     const userInitiatedMultiplayerRef = useRef<boolean>(false); const hasAutoStartedRef = useRef<boolean>(false);
     const livePrRef = useRef<{ prX: number; prO: number | null }>({ prX: 0, prO: null });
 
-    useEffect(() => {
-        setPlayerColor(readStoredPlayerColor());
-    }, []);
+    useEffect(() => { setPlayerColor(readStoredPlayerColor()); }, []);
 
     const game = useBackgammonGame({
-        matchLength: 7,
-        playerColor: 'X',
-        autoOpponent: true,
-        locale,
+        matchLength: 7, playerColor: 'X', autoOpponent: true, locale,
         onGameOver: (result) => {
             const title = result.winType === 'backgammon' ? '👑 BACKGAMMON (3x) !' : result.winType === 'gammon' ? '🎉 GAMMON (2x) !' : result.winType === 'pass' ? '🏳️ Abandon de videau' : 'Victoire simple (1x) !';
             const ptsLabel = result.pointsWon > 1 ? `+${result.pointsWon} pts` : '+1 pt';
             const summaryText = result.winner === 'X' ? `Vous remportez la manche (${ptsLabel}) !` : `L'adversaire remporte la manche (${ptsLabel}).`;
-            toast.success(summaryText, title);
-            notificationSuccess();
-            soundEngine.playVictory();
-
+            toast.success(summaryText, title); notificationSuccess(); soundEngine.playVictory();
             const completedAnalysis = handleGameOverAnalysis(result);
             if (isMultiplayerActive || multiplayer.matchInfo?.isClubChallenger) {
                 multiplayer.handleMatchOver(result.winner, result.winType, result.pointsWon, {
                     prX: completedAnalysis ? completedAnalysis.performanceRating : livePrRef.current.prX,
-                    prO: livePrRef.current.prO,
-                    decisionsCount: Math.max(6, turnsHistoryRef.current.length),
-                    isPrivateRoom: Boolean(multiplayer.privateRoomCode),
+                    prO: livePrRef.current.prO, decisionsCount: Math.max(6, turnsHistoryRef.current.length), isPrivateRoom: Boolean(multiplayer.privateRoomCode),
                 });
             }
         },
@@ -82,40 +72,22 @@ export default function Home() {
     const { handleRemoteAction } = useMatchBootstrap(game);
     const multiplayer = useMultiplayerGame(handleRemoteAction);
     const isMultiplayerActive = multiplayer.status === 'connected' || multiplayer.status === 'opponent_disconnected';
-    const isOnlineMatch =
-        isMultiplayerActive ||
-        multiplayer.status === 'searching' ||
-        multiplayer.status === 'matched' ||
-        Boolean(multiplayer.matchInfo) ||
-        Boolean(multiplayer.opponentProfile) ||
-        Boolean(multiplayer.privateRoomCode) ||
-        userInitiatedMultiplayerRef.current;
+    const isOnlineMatch = isMultiplayerActive || multiplayer.status === 'searching' || multiplayer.status === 'matched' || Boolean(multiplayer.matchInfo) || Boolean(multiplayer.opponentProfile) || Boolean(multiplayer.privateRoomCode) || userInitiatedMultiplayerRef.current;
     const isLiveMatch = isOnlineMatch;
     const handledMatchRoomIdRef = useRef<string | null>(null);
 
-    const {
-        gameIdRef, turnsHistory, turnsHistoryRef, currentTurnMovesRef, turnBoardBeforeRef,
-        currentTurnDiceRef, latestGameAnalysis, handleGameOverAnalysis, resetGameHistory,
-    } = useGamePersistence({ game, isMultiplayerActive, t });
+    const { gameIdRef, turnsHistory, turnsHistoryRef, currentTurnMovesRef, turnBoardBeforeRef, currentTurnDiceRef, latestGameAnalysis, handleGameOverAnalysis, resetGameHistory } = useGamePersistence({ game, isMultiplayerActive, t });
 
-    const {
-        coach, coachHighlight, matchStats, matchStatsX, matchStatsO, lastMoveFeedback,
-        coachHistory, selectedCoachHistoryIndex, selectCoachHistoryIndex,
-        notificationLevel, setNotificationLevel,
-        isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: rawTriggerCoach,
-    } = useCoach({
+    const { coach, coachHighlight, matchStats, matchStatsX, matchStatsO, lastMoveFeedback, coachHistory, selectedCoachHistoryIndex, selectCoachHistoryIndex, notificationLevel, setNotificationLevel, isAnalyzing, dismissCoach, replayMove: handleReplayMove, triggerCoach: rawTriggerCoach } = useCoach({
         game: isLiveMatch ? { ...game, matchLog: [], moveHistory: [] } : game,
-        challengerProfile: multiplayer.opponentProfile,
-        currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
+        challengerProfile: multiplayer.opponentProfile, currentTurnMovesRef, currentTurnDiceRef, turnBoardBeforeRef,
     });
 
     const handleTriggerCoach = useCallback(() => {
         if (isLiveMatch) {
             toast.info(
                 locale === 'en' ? 'Live Match Mode (Zero Live AI)' : 'Mode Match Live (Zéro IA en direct)',
-                locale === 'en'
-                    ? 'For fairness, AI analysis is performed in the Post-Match Report and Personal Blunders.'
-                    : 'Pour garantir la fluidité et l’équité, l’analyse IA s’effectue au Compte-Rendu de fin de match et dans vos derniers Blunders.',
+                locale === 'en' ? 'For fairness, AI analysis is performed in the Post-Match Report and Personal Blunders.' : 'Pour garantir la fluidité et l’équité, l’analyse IA s’effectue au Compte-Rendu de fin de match et dans vos derniers Blunders.',
             );
             return;
         }
@@ -157,7 +129,7 @@ export default function Home() {
                 }, 1350);
                 return;
             }
-            game.resetMatch(); modals.closeMatchmaking(); modals.closePrivateRoomModal(); setAppScreen('GAME');
+            game.startNewMatch(matchLen, 'intermediate'); resetGameHistory(); modals.closeMatchmaking(); modals.closePrivateRoomModal(); setAppScreen('GAME');
             toast.success(isEn ? `Match vs ${opp?.displayName} (${matchMetaLabel}) — ${lenText}.` : `Match contre ${opp?.displayName} (${matchMetaLabel}) en ${lenText}.`, isEn ? 'Online Match' : 'Partie Multijoueur');
         }
     }, [multiplayer.status, multiplayer.matchInfo, multiplayer.opponentProfile, multiplayer.localProfile.isGuest, locale, modals, game, resetGameHistory]);
@@ -183,6 +155,12 @@ export default function Home() {
     });
 
     const handleLobbyStart = useCallback((selection: LobbySelection) => {
+        if (selection.startMatchmakingSearch) {
+            userInitiatedMultiplayerRef.current = true;
+            storeMatchFormat(selection.matchLength);
+            void multiplayer.startMatchmaking(selection.matchLength);
+            return;
+        }
         userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch();
         if (selection.playerColor) setPlayerColor(selection.playerColor);
         game.startNewMatch(selection.matchLength, selection.difficulty); resetGameHistory();
@@ -202,6 +180,18 @@ export default function Home() {
                 modals.openPrivateRoomModal(roomCode); return;
             }
             const params = new URLSearchParams(window.location.search);
+            const clockParam = params.get('clock');
+            if (clockParam === 'blitz' || clockParam === 'standard' || clockParam === 'tournament' || clockParam === 'unlimited') {
+                storeClockPreset(clockParam as MatchClockPreset);
+            }
+            const matchParam = params.get('match');
+            if (matchParam !== null && matchParam !== '') {
+                storeMatchFormat(Number(matchParam));
+            }
+            if (params.get('setup') === 'matchmaking') {
+                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;
+                modals.openMatchmaking(); return;
+            }
             const modeParam = params.get('mode');
             if (params.get('start') === 'guided') {
                 hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch();
@@ -220,7 +210,7 @@ export default function Home() {
                 handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
             } else if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1' || window.location.pathname.startsWith('/play')) {
                 hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;
-                const matchLen = Number(params.get('match') || readStoredMatchFormat() || (tierGate === 'INTERMEDIATE' ? 5 : 7));
+                const matchLen = matchParam !== null && matchParam !== '' ? Number(matchParam) : (readStoredMatchFormat() || (tierGate === 'INTERMEDIATE' ? 5 : 7));
                 void multiplayer.startMatchmaking(matchLen);
             }
         }
@@ -233,7 +223,7 @@ export default function Home() {
 
     const handleOpenLobbyModule = useCallback((moduleId: LobbyModuleId) => {
         switch (moduleId) {
-            case 'multiplayer': userInitiatedMultiplayerRef.current = true; void multiplayer.startMatchmaking(readStoredMatchFormat() || (tierGate === 'INTERMEDIATE' ? 5 : 7)); break;
+            case 'multiplayer': userInitiatedMultiplayerRef.current = true; modals.openMatchmaking(); break;
             case 'private_room': userInitiatedMultiplayerRef.current = true; modals.openPrivateRoomModal(); break;
             case 'openings': modals.openOpeningBook(); break;
             case 'stats': if (latestGameAnalysis) modals.openGameReview(); else navigateTo('/progression'); break;

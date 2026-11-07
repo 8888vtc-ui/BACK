@@ -158,7 +158,7 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
             <div className="flex items-center justify-between px-1">
                 <div className="flex h-7 min-w-[34px] items-center justify-center rounded-lg border border-[#d4af37]/60 bg-[#14100c] px-2 font-display text-base font-bold tabular-nums text-[#f7f3e8] shadow">{scoreO}</div>
                 <div className="flex items-center overflow-hidden rounded-lg border border-[#d4af37]/40 bg-[#080605] font-mono text-[11px] font-bold tabular-nums shadow">
-                    {isGuided ? (
+                    {isGuided || opponentClock === '∞' ? (
                         <span className="px-2 py-0.5 text-emerald-300 font-extrabold text-[10px]">{isEn ? '∞ Your pace' : '∞ À votre rythme'}</span>
                     ) : (
                         <>
@@ -185,7 +185,7 @@ export const BoardPortraitBottomHud: React.FC<Pick<BoardLeftPlayerRailProps, 'sc
         <div data-testid="board-portrait-bottom-hud" className="md:hidden [@media(max-height:500px)]:hidden w-full shrink-0 flex items-center justify-between px-2.5 py-1 select-none">
             <div className="flex h-7 min-w-[34px] items-center justify-center rounded-lg border-2 border-[#d4af37] bg-gradient-to-b from-[#f7f3e8] to-[#dfd3b8] px-2 font-display text-base font-bold tabular-nums text-[#0b0907] shadow">{scoreX}</div>
             <div className="flex items-center overflow-hidden rounded-lg border border-[#d4af37]/40 bg-[#080605] font-mono text-[11px] font-bold tabular-nums shadow">
-                {isGuided ? (
+                {isGuided || playerClock === '∞' ? (
                     <span className="px-2 py-0.5 text-emerald-300 font-extrabold text-[10px]">{isEn ? '∞ Your pace' : '∞ À votre rythme'}</span>
                 ) : (
                     <>

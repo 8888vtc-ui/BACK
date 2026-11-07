@@ -15,7 +15,7 @@ import type { LastMoveFeedback } from '../../hooks/coach/coachTypes';
 import type { PlayerEloProfile } from '../../features/multiplayer/types';
 import { useInteractiveReplay } from '../../hooks/useInteractiveReplay';
 import { useFischerClock } from '../../hooks/useFischerClock';
-import { getRecommendedClockConfig } from '../../features/multiplayer/clockManager';
+import { getClockConfigForPreset, readStoredClockPreset, type MatchClockPreset } from '../hud/MatchFormatSelector';
 import { BoardPortraitTopHud, BoardPortraitBottomHud } from './BoardSideRails';
 import type { CoachState, MatchStats } from '../../hooks/useCoach';
 import GameBoardReplayControls from './GameBoardReplayControls';
@@ -80,9 +80,19 @@ const GameBoardAreaComponent: React.FC<GameBoardAreaProps> = ({
         });
     }, []);
 
-    const clockConfig = useMemo(() => getRecommendedClockConfig(game.state.matchLength || 7, 'bronstein', 'normal'), [game.state.matchLength]);
+    const [clockPreset, setClockPreset] = useState<MatchClockPreset>(() => readStoredClockPreset());
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const onSetupChanged = () => setClockPreset(readStoredClockPreset());
+        window.addEventListener('bg-match-setup-changed', onSetupChanged);
+        return () => window.removeEventListener('bg-match-setup-changed', onSetupChanged);
+    }, []);
+    const clockConfig = useMemo(() => {
+        const presetCfg = getClockConfigForPreset(clockPreset);
+        return { type: presetCfg.type, bankMs: presetCfg.bankMs, delaySeconds: presetCfg.delaySeconds };
+    }, [clockPreset, game.state.matchLength]);
     const clock = useFischerClock({ config: clockConfig, activePlayer: game.state.turn, isPaused: !isMatchStarted || game.phase === 'GAME_OVER' });
-    const activeDelaySeconds = clock.delayRemainingMs > 0 ? Math.ceil(clock.delayRemainingMs / 1000) : 0;
+    const activeDelaySeconds = clockConfig.type === 'unlimited' ? 0 : (clock.delayRemainingMs > 0 ? Math.ceil(clock.delayRemainingMs / 1000) : clockConfig.delaySeconds);
 
     useEffect(() => {
         if (typeof document === 'undefined') return;

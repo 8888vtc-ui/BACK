@@ -26,6 +26,7 @@ import {
     createMatchClock, switchClockTurn, pauseClock, resumeClock, syncClockState,
     getRecommendedClockConfig, type MatchClockState, type ClockConfig,
 } from '../features/multiplayer/clockManager';
+import { readStoredClockPreset, readStoredOpponentTier, storeMatchFormat, getClockConfigForPreset, syncMatchSetupUrl } from '../components/hud/MatchFormatSelector';
 import { saveActiveSession, loadActiveSession, clearActiveSession, type ActiveGameSession } from '../features/multiplayer/sessionRecovery';
 import { supabase, isSupabaseConfigured } from '../lib/supabase/client';
 import { TURN_TIME_LIMIT_SECONDS } from './useMultiplayerClockAndTimers';
@@ -179,11 +180,12 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
     function scheduleClubChallengerMatch(preferredMatchLength: number, isRematch: boolean = false) {
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
         searchTimeoutRef.current = setTimeout(async () => {
-            // Priorité Humain contre Humain : ultime vérification de la file humaine avant d'engager un Bot actif
             if (!isRematch && (await tryMatchHumanFromQueue(preferredMatchLength))) {
                 return;
             }
-            const opp = selectClubChallengerForRating(localProfile.rating, {
+            const tierChoice = readStoredOpponentTier();
+            const targetRating = tierChoice === 'beginner' ? 1450 : tierChoice === 'intermediate' ? 1600 : tierChoice === 'expert' ? 1820 : localProfile.rating;
+            const opp = selectClubChallengerForRating(targetRating, {
                 isRematch,
                 previousChallenger: opponentProfileRef.current,
             });
@@ -193,14 +195,16 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
                 ...createMultiplayerMatchInfo(roomId, localProfile, opp, preferredMatchLength, localProfile.id),
                 isClubChallenger: true,
             };
+            const presetCfg = getClockConfigForPreset(readStoredClockPreset());
+            const cfg: ClockConfig = { type: presetCfg.type, bankMs: presetCfg.bankMs, delaySeconds: presetCfg.delaySeconds };
+            clockConfigRef.current = cfg;
+            setClockState(createMatchClock(cfg, 'X', Date.now()));
             setMatchInfo(info);
             setOpponentProfile(opp);
             setStatus('matched');
-            // Fin de la présentation Versus (1.2s) : passage à 'idle' pour fermer la modale et laisser place au plateau
             setTimeout(() => {
                 setStatus((prev) => (prev === 'matched' ? 'idle' : prev));
             }, 1200);
-            // Salutation courtoise et respectueuse de l'adversaire à l'ouverture de la table
             setTimeout(() => {
                 setQuickChatMessage({ player: 'O', messageId: 'gg' });
                 setTimeout(() => setQuickChatMessage(null), 3500);
@@ -210,6 +214,8 @@ export function useMultiplayerRoomOrchestrator(params: UseMultiplayerRoomOrchest
 
     const startMatchmaking = useCallback(async (preferredMatchLength = 7, options?: { isRematch?: boolean }) => {
         const isRematch = options?.isRematch === true;
+        storeMatchFormat(preferredMatchLength);
+        syncMatchSetupUrl(preferredMatchLength, readStoredClockPreset());
         setStatus('searching'); setEloResult(null); setQuickChatMessage(null); setDisconnectCountdown(null);
         if (isRematch && opponentProfileRef.current?.clubBotDifficulty) {
             scheduleClubChallengerMatch(preferredMatchLength, true);

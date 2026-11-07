@@ -33,7 +33,7 @@ export type LobbyModuleId = 'multiplayer' | 'openings' | 'stats' | 'drills' | 'p
 type LobbyMode = 'ai' | 'multiplayer' | 'training';
 
 export interface LobbySelection {
-    matchLength: number; difficulty: AIDifficulty; coachEnabled: boolean; playerColor?: Player; clockPreset?: LobbyClockPreset;
+    matchLength: number; difficulty: AIDifficulty; coachEnabled: boolean; playerColor?: Player; clockPreset?: LobbyClockPreset; startMatchmakingSearch?: boolean;
 }
 
 export interface LobbyScreenProps {
@@ -177,9 +177,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 {tierGate === 'INTERMEDIATE' && (
                                     <IntermediateHomePortal
                                         onFindOpponent={(len) => {
-                                            const fmt = (len ?? 5) as 0 | 3 | 5 | 7 | 9; setMatchLength(fmt); storeMatchFormat(fmt);
-                                            if (onOpenModule) onOpenModule('multiplayer');
-                                            else onStart({ matchLength: fmt, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset });
+                                            const fmt = len ?? 5; setMatchLength(fmt); storeMatchFormat(fmt);
+                                            onStart({ matchLength: fmt, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset, startMatchmakingSearch: true });
                                         }}
                                         onInviteFriend={() => onOpenModule?.('private_room')}
                                         onOpenQuizzes={() => onOpenModule?.('puzzles')}
@@ -188,9 +187,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 {tierGate === 'EXPERT' && (
                                     <ExpertHomePortal
                                         onStartExpertMatch={(len) => {
-                                            const fmt = (len ?? 7) as 0 | 3 | 5 | 7 | 9; setMatchLength(fmt); storeMatchFormat(fmt);
-                                            if (onOpenModule) onOpenModule('multiplayer');
-                                            else onStart({ matchLength: fmt, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset });
+                                            const fmt = len ?? 7; setMatchLength(fmt); storeMatchFormat(fmt);
+                                            onStart({ matchLength: fmt, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset, startMatchmakingSearch: true });
                                         }}
                                         onInviteFriend={() => onOpenModule?.('private_room')}
                                         onOpen3PlyQuizzes={() => onOpenModule?.('puzzles')}
