@@ -93,17 +93,24 @@ describe('MultiplayerLobbyModal', () => {
         expect(html).toContain('border-white/10');
     });
 
-    it('affiche les sélecteurs de points (1, 3, 5, 7 pts) et les boutons des 2 actions', () => {
+    it('affiche les sélecteurs Galaxy (Auto + Multi-choix 1, 3, 5, 7, 11 pts), Horloge Auto + Préférences et les 2 actions', () => {
         const html = renderToStaticMarkup(
             <MultiplayerLobbyModal
                 {...defaultProps}
             />,
         );
 
+        expect(html).toContain('Auto (Tous)');
+        expect(html).toContain('data-testid="modal-format-auto"');
         expect(html).toContain('1 pt');
         expect(html).toContain('3 pts');
         expect(html).toContain('5 pts');
         expect(html).toContain('7 pts');
+        expect(html).toContain('11 pts');
+        expect(html).toContain('Auto (Cadence Standard)');
+        expect(html).toContain('data-testid="open-clock-preferences-btn"');
+        expect(html).toContain('Préférences...');
+        expect(html).toContain('Auto (Mon niveau)');
         expect(html.toUpperCase()).toContain('LANCER LA RECHERCHE');
         expect(html).toContain('Générer un code');
     });

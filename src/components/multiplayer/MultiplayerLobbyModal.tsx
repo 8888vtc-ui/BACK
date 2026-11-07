@@ -5,15 +5,16 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Zap, KeyRound, Trophy, Coins, Lock, ShieldCheck, X, Clock, Users } from 'lucide-react';
+import { Zap, KeyRound, Trophy, Coins, Lock, ShieldCheck, X, Clock, Users, SlidersHorizontal } from 'lucide-react';
 import type { PlayerEloProfile, MatchmakingState, MultiplayerMatchInfo } from '../../features/multiplayer/types';
 import { type ThemeName } from '../../hooks/useBoardTheme';
 import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
 import {
-    readStoredMatchFormat, storeMatchFormat,
-    readStoredClockPreset, storeClockPreset, type MatchClockPreset,
+    storeMatchFormat, storeClockPreset, type MatchClockPreset,
     readStoredOpponentTier, storeOpponentTier, type OpponentTierChoice,
-    syncMatchSetupUrl,
+    readStoredMatchFormatsMulti, storeMatchFormatsMulti, resolveEffectiveMatchLength,
+    readStoredClockPresetsMulti, storeClockPresetsMulti, resolveEffectiveClockPreset,
+    formatClockPreferenceSummary, ClockPreferencesModal, syncMatchSetupUrl,
 } from '../hud/MatchFormatSelector';
 import { useTranslation } from '../../i18n';
 import AuthModal from '../auth/AuthModal';
@@ -33,17 +34,10 @@ export interface MultiplayerLobbyModalProps {
 
 const MATCH_FORMATS: ReadonlyArray<{ pts: number; label: string; subFr: string; subEn: string }> = [
     { pts: 3, label: '3 pts', subFr: 'Rapide', subEn: 'Fast' },
-    { pts: 5, label: '5 pts', subFr: 'Classique Club', subEn: 'Classic Club' },
-    { pts: 7, label: '7 pts', subFr: 'Tournoi', subEn: 'Tournament' },
-    { pts: 11, label: '11 pts', subFr: 'Championnat', subEn: 'Championship' },
+    { pts: 5, label: '5 pts', subFr: 'Club', subEn: 'Club' },
+    { pts: 7, label: '7 pts', subFr: 'Tournoi', subEn: 'Tourney' },
+    { pts: 11, label: '11 pts', subFr: 'Championnat', subEn: 'Champ.' },
     { pts: 0, label: 'Money Game', subFr: '1 pt · Jacoby', subEn: '1 pt · Jacoby' },
-];
-
-const CLOCK_PRESETS: ReadonlyArray<{ id: MatchClockPreset; labelFr: string; labelEn: string; subFr: string; subEn: string }> = [
-    { id: 'blitz', labelFr: 'Blitz', labelEn: 'Blitz', subFr: '3 min + 8s / coup', subEn: '3 min + 8s / move' },
-    { id: 'standard', labelFr: 'Standard / Club', labelEn: 'Standard / Club', subFr: '10 min + 8s / coup', subEn: '10 min + 8s / move' },
-    { id: 'tournament', labelFr: 'Tournoi Master', labelEn: 'Master Tournament', subFr: '14 min + 12s / coup', subEn: '14 min + 12s / move' },
-    { id: 'unlimited', labelFr: 'Sans Horloge', labelEn: 'No Clock', subFr: 'À votre rythme', subEn: 'At your own pace' },
 ];
 
 const OPPONENT_TIERS: ReadonlyArray<{ id: OpponentTierChoice; labelFr: string; labelEn: string }> = [
@@ -60,21 +54,17 @@ export default function MultiplayerLobbyModal({
     const { locale } = useTranslation();
     const isEn = locale === 'en';
     const stats = useAuthenticPlayerStats();
-    const [selectedLength, setSelectedLength] = useState<number>(() => {
-        if (typeof window === 'undefined') return 5;
-        return localStorage.getItem('backgammon_match_format') !== null ? readStoredMatchFormat() : 5;
-    });
-    const [selectedClock, setSelectedClock] = useState<MatchClockPreset>(() => readStoredClockPreset());
+    const [selectedMatchTypes, setSelectedMatchTypes] = useState<number[]>(() => readStoredMatchFormatsMulti());
+    const [selectedClocks, setSelectedClocks] = useState<MatchClockPreset[]>(() => readStoredClockPresetsMulti());
     const [selectedTier, setSelectedTier] = useState<OpponentTierChoice>(() => readStoredOpponentTier());
+    const [isClockModalOpen, setIsClockModalOpen] = useState<boolean>(false);
     const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         if (!isOpen) return;
-        if (typeof window !== 'undefined' && localStorage.getItem('backgammon_match_format') !== null) {
-            setSelectedLength(readStoredMatchFormat());
-        }
-        setSelectedClock(readStoredClockPreset());
+        setSelectedMatchTypes(readStoredMatchFormatsMulti());
+        setSelectedClocks(readStoredClockPresetsMulti());
         setSelectedTier(readStoredOpponentTier());
     }, [isOpen]);
 
@@ -91,10 +81,42 @@ export default function MultiplayerLobbyModal({
     const displayName = isGuest ? (isEn ? 'Guest Player' : 'Joueur Invité') : (localProfile.displayName || stats.pseudo || (isEn ? 'Player' : 'Joueur'));
     const isMatched = (status === 'matched' || (status === 'connecting' && opponentProfile)) && Boolean(opponentProfile && matchInfo);
     const isSearchingPublic = status === 'searching' && !privateRoomCode;
+    const isAutoMatch = selectedMatchTypes.length === 0;
+    const effectiveLength = selectedMatchTypes.length === 1 ? selectedMatchTypes[0] : 5;
+    const effectiveClock = selectedClocks.length === 1 ? selectedClocks[0] : 'standard';
+
+    const toggleMatchType = (pts: number) => {
+        const next = selectedMatchTypes.includes(pts)
+            ? selectedMatchTypes.filter((p) => p !== pts)
+            : [...selectedMatchTypes, pts];
+        setSelectedMatchTypes(next);
+        storeMatchFormatsMulti(next);
+    };
+
+    const toggleClockPref = (preset: MatchClockPreset) => {
+        const next = selectedClocks.includes(preset)
+            ? selectedClocks.filter((c) => c !== preset)
+            : [...selectedClocks, preset];
+        setSelectedClocks(next);
+        storeClockPresetsMulti(next);
+    };
 
     const handleLaunchSearch = () => {
-        storeMatchFormat(selectedLength); storeClockPreset(selectedClock); storeOpponentTier(selectedTier);
-        syncMatchSetupUrl(selectedLength, selectedClock); onStartSearch?.(selectedLength);
+        const chosenLength = resolveEffectiveMatchLength(selectedMatchTypes);
+        const chosenClock = resolveEffectiveClockPreset(selectedClocks);
+        storeMatchFormat(chosenLength); storeClockPreset(chosenClock); storeOpponentTier(selectedTier);
+        syncMatchSetupUrl(chosenLength, chosenClock); onStartSearch?.(chosenLength);
+    };
+
+    const formatHeaderSummary = () => {
+        if (isAutoMatch) return isEn ? 'Auto (3, 5, 7 pts, Money Game)' : 'Auto (3, 5, 7 pts, Money Game)';
+        if (selectedMatchTypes.length === 1) {
+            return selectedMatchTypes[0] === 0
+                ? (isEn ? 'Money Game · Jacoby Rule' : 'Money Game · Règle de Jacoby')
+                : (isEn ? `Match ${selectedMatchTypes[0]} pts · Crawford Rule` : `Match ${selectedMatchTypes[0]} pts · Règle de Crawford`);
+        }
+        const list = selectedMatchTypes.map((p) => (p === 0 ? 'Money' : `${p} pts`)).join(' + ');
+        return isEn ? `Multi: ${list}` : `Multi : ${list}`;
     };
 
     return (
@@ -146,25 +168,40 @@ export default function MultiplayerLobbyModal({
                     {isMatched && opponentProfile && matchInfo ? (
                         <LobbyMatchedVersus localProfile={localProfile} opponentProfile={opponentProfile} matchInfo={matchInfo} />
                     ) : isSearchingPublic ? (
-                        <LobbySearchingWaitView elapsedSeconds={elapsedSeconds} selectedLength={selectedLength} selectedClock={selectedClock} playerRating={isGuest ? null : (stats.eloRating ?? localProfile.rating)} playerAveragePr={isGuest ? null : stats.globalPR} onCancelSearch={onCancelSearch} />
+                        <LobbySearchingWaitView elapsedSeconds={elapsedSeconds} selectedLength={effectiveLength} selectedClock={effectiveClock} playerRating={isGuest ? null : (stats.eloRating ?? localProfile.rating)} playerAveragePr={isGuest ? null : stats.globalPR} onCancelSearch={onCancelSearch} />
                     ) : (
                         <div className="space-y-3">
                             {!privateRoomCode && (
                                 <>
                                     <div data-testid="modal-match-format-selector">
                                         <div className="flex items-center justify-between mb-1">
-                                            <label className="text-xs font-bold uppercase tracking-wider text-slate-300">{isEn ? '1. Match Format:' : '1. Type de Match :'}</label>
-                                            <span className="inline-flex items-center gap-1.5 font-mono text-xs text-amber-300">
-                                                {selectedLength === 0 ? <><Coins className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} /><span>{isEn ? 'Money Game · Jacoby Rule' : 'Money Game · Règle de Jacoby'}</span></> : <><Trophy className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} /><span>{isEn ? `Match ${selectedLength} pts · Crawford Rule` : `Match ${selectedLength} pts · Règle de Crawford`}</span></>}
+                                            <label className="text-xs font-bold uppercase tracking-wider text-slate-300">{isEn ? '1. Match Format (Auto or Multi-Select):' : '1. Type de Match (Auto ou Multi-Choix) :'}</label>
+                                            <span className="inline-flex items-center gap-1.5 font-mono text-xs text-slate-300">
+                                                {selectedMatchTypes.length === 1 && selectedMatchTypes[0] === 0 ? <Coins className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} /> : <Trophy className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} />}
+                                                <span>{formatHeaderSummary()}</span>
                                             </span>
                                         </div>
-                                        <div className="grid grid-cols-5 gap-1.5">
-                                            {MATCH_FORMATS.map((f) => (
-                                                <button key={f.pts} type="button" data-testid={`modal-format-${f.pts}`} onClick={() => { setSelectedLength(f.pts); storeMatchFormat(f.pts); }} className={`flex flex-col items-center justify-center rounded-xl border py-1.5 px-1 transition-all ${selectedLength === f.pts ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-white shadow-sm' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'}`}>
-                                                    <span className="text-xs font-bold">{f.label}</span>
-                                                    <span className="text-[11px] text-slate-400">{isEn ? f.subEn : f.subFr}</span>
-                                                </button>
-                                            ))}
+                                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                                            <button type="button" data-testid="modal-format-auto" onClick={() => { setSelectedMatchTypes([]); storeMatchFormatsMulti([]); }} className={`flex flex-col items-center justify-center rounded-xl border py-1.5 px-1 transition-all ${isAutoMatch ? 'border-white/25 bg-white/[0.08] text-white' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'}`}>
+                                                <span className="inline-flex items-center gap-1 text-xs font-bold">
+                                                    <Zap className="w-3 h-3 text-[#D4AF37]" strokeWidth={1.75} />
+                                                    <span>{isEn ? 'Auto (All)' : 'Auto (Tous)'}</span>
+                                                    {isAutoMatch && <span className="text-[#D4AF37] font-bold">✓</span>}
+                                                </span>
+                                                <span className="text-[11px] text-slate-400">{isEn ? 'Popular' : 'Multi-formats'}</span>
+                                            </button>
+                                            {MATCH_FORMATS.map((f) => {
+                                                const isChecked = selectedMatchTypes.includes(f.pts);
+                                                return (
+                                                    <button key={f.pts} type="button" data-testid={`modal-format-${f.pts}`} onClick={() => toggleMatchType(f.pts)} className={`flex flex-col items-center justify-center rounded-xl border py-1.5 px-1 transition-all ${isChecked ? 'border-white/25 bg-white/[0.08] text-white' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'}`}>
+                                                        <span className="inline-flex items-center gap-1 text-xs font-bold">
+                                                            <span>{f.label}</span>
+                                                            {isChecked && <span className="text-[#D4AF37] font-bold">✓</span>}
+                                                        </span>
+                                                        <span className="text-[11px] text-slate-400">{isEn ? f.subEn : f.subFr}</span>
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
 
@@ -172,13 +209,18 @@ export default function MultiplayerLobbyModal({
                                         <label className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
                                             <Clock className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} /><span>{isEn ? '2. Time Control / Clock (WBGF):' : '2. Horloge / Cadence WBGF :'}</span>
                                         </label>
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                                            {CLOCK_PRESETS.map((c) => (
-                                                <button key={c.id} type="button" data-testid={`modal-clock-${c.id}`} onClick={() => { setSelectedClock(c.id); storeClockPreset(c.id); }} className={`flex flex-col items-center justify-center rounded-xl border py-1.5 px-2 transition-all ${selectedClock === c.id ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-white shadow-sm' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'}`}>
-                                                    <span className="text-xs font-bold">{isEn ? c.labelEn : c.labelFr}</span>
-                                                    <span className="text-[11px] text-slate-400 font-mono">{isEn ? c.subEn : c.subFr}</span>
-                                                </button>
-                                            ))}
+                                        <div className="flex items-center gap-2">
+                                            <button type="button" data-testid="modal-clock-auto-btn" onClick={() => { setSelectedClocks([]); storeClockPresetsMulti([]); }} className="flex-1 flex items-center justify-between rounded-xl border border-white/25 bg-white/[0.08] py-2 px-3.5 text-xs font-bold text-white transition-all hover:bg-white/[0.11]">
+                                                <span className="inline-flex items-center gap-1.5 truncate">
+                                                    <Zap className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" strokeWidth={1.75} />
+                                                    <span className="truncate">{formatClockPreferenceSummary(selectedClocks, isEn)}</span>
+                                                </span>
+                                                <span className="text-[#D4AF37] font-bold ml-2">✓</span>
+                                            </button>
+                                            <button type="button" data-testid="open-clock-preferences-btn" onClick={() => setIsClockModalOpen(true)} className="shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.04] hover:border-[#D4AF37]/50 hover:text-white py-2 px-3.5 text-xs font-bold text-slate-200 transition-all">
+                                                <SlidersHorizontal className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.75} />
+                                                <span>{isEn ? 'Preferences...' : 'Préférences...'}</span>
+                                            </button>
                                         </div>
                                     </div>
 
@@ -187,11 +229,15 @@ export default function MultiplayerLobbyModal({
                                             <Users className="w-3.5 h-3.5 text-[#D4AF37]" strokeWidth={1.5} /><span>{isEn ? '3. Opponent Caliber:' : '3. Calibre de l’Adversaire :'}</span>
                                         </label>
                                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                                            {OPPONENT_TIERS.map((t) => (
-                                                <button key={t.id} type="button" data-testid={`modal-tier-${t.id}`} onClick={() => { setSelectedTier(t.id); storeOpponentTier(t.id); }} className={`flex items-center justify-center rounded-xl border py-1.5 px-2 text-xs font-bold transition-all ${selectedTier === t.id ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-white shadow-sm' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'}`}>
-                                                    <span>{isEn ? t.labelEn : t.labelFr}</span>
-                                                </button>
-                                            ))}
+                                            {OPPONENT_TIERS.map((t) => {
+                                                const active = selectedTier === t.id;
+                                                return (
+                                                    <button key={t.id} type="button" data-testid={`modal-tier-${t.id}`} onClick={() => { setSelectedTier(t.id); storeOpponentTier(t.id); }} className={`flex items-center justify-center gap-1 rounded-xl border py-1.5 px-2 text-xs font-bold transition-all ${active ? 'border-white/25 bg-white/[0.08] text-white' : 'border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:text-white'}`}>
+                                                        <span>{isEn ? t.labelEn : t.labelFr}</span>
+                                                        {active && <span className="text-[#D4AF37] font-bold">✓</span>}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
 
@@ -223,12 +269,13 @@ export default function MultiplayerLobbyModal({
                                     </span>
                                     <span className="text-[11px] font-medium text-slate-400">{isEn ? 'Friend & Club · Code BG-XXXX' : 'Ami & Club · Code BG-XXXX'}</span>
                                 </div>
-                                <LobbyPrivateRoomTab privateRoomCode={privateRoomCode} selectedLength={selectedLength} onCreatePrivateRoom={onCreatePrivateRoom} onJoinPrivateRoom={onJoinPrivateRoom} onCancelSearch={onCancelSearch} />
+                                <LobbyPrivateRoomTab privateRoomCode={privateRoomCode} selectedLength={effectiveLength} onCreatePrivateRoom={onCreatePrivateRoom} onJoinPrivateRoom={onJoinPrivateRoom} onCancelSearch={onCancelSearch} />
                             </section>
                         </div>
                     )}
                 </div>
             </div>
+            <ClockPreferencesModal isOpen={isClockModalOpen} selectedClocks={selectedClocks} isEn={isEn} onToggleClock={toggleClockPref} onResetAuto={() => { setSelectedClocks([]); storeClockPresetsMulti([]); }} onConfirm={() => setIsClockModalOpen(false)} />
             <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} onSuccess={() => { setIsAuthModalOpen(false); stats.refreshStats(); }} />
         </>
     );
