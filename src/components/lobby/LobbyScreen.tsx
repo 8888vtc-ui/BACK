@@ -7,24 +7,18 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
-import { BookOpen, Cpu, Globe, Sparkles, type LucideIcon } from 'lucide-react';
 import type { Profile } from '../../lib/supabase/types';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { Player } from '../../engine/backgammonEngine';
-import { readStoredMatchFormat } from '../hud/MatchFormatSelector';
+import { readStoredMatchFormat, storeMatchFormat } from '../hud/MatchFormatSelector';
 import { readStoredPlayerColor, storePlayerColor } from '../hud/ColorSelector';
 import { LobbyOptionsPanel, type LobbyClockPreset } from './LobbyOptionsPanel';
-import { OpenMatchesTable, type OpenMatchChallenge } from './OpenMatchesTable';
+import type { OpenMatchChallenge } from './OpenMatchesTable';
 import AppNavbar from '../nav/AppNavbar';
-import { LobbyTrainingSubmenu } from './LobbyTrainingSubmenu';
-import { LobbyPlayerHubSection } from './LobbyPlayerHubSection';
-import { LobbyAiConfigQuickbar } from './LobbyAiConfigQuickbar';
 import TournamentTableClockModal from '../clock/TournamentTableClockModal';
 import { LobbyLeftSidebar } from './LobbySidebarAndWidgets';
 import { getSyncAcademySnapshot, loadPlayerHubData, type AcademyProgressSnapshot, type RecentMatchEntry } from '../../features/progression/userProgressionService';
-import { BOT_PERSONAS_BY_DIFFICULTY, getBotPersona } from '../../features/personas/botPersonas';
 import { readPlayerPassport, savePlayerPassport, STANDARD_USER_AVATARS } from '../../lib/supabase/auth';
 import AuthModal from '../auth/AuthModal';
 import { useTranslation } from '../../i18n';
@@ -84,14 +78,6 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
         { value: 'grandmaster', label: 'Grand-Maître 3-Ply', hint: 'PR < 2.5 • 2200 Elo' },
     ], []);
 
-    const mainCards = useMemo<ReadonlyArray<{ id: LobbyMode; Icon: LucideIcon; iconColor: string; badge: string; title: string; subtitle: string }>>(() => [
-        { id: 'multiplayer', Icon: Globe, iconColor: 'text-[#10B981]', badge: ui.lobby.cardMultiBadge, title: 'Jouer en Ligne', subtitle: 'Adversaire direct ou Ami' },
-        { id: 'ai', Icon: Cpu, iconColor: 'text-[#D4AF37]', badge: ui.lobby.cardAiBadge, title: 'Jouer contre l’IA', subtitle: '5 Maîtres calibrés' },
-        { id: 'training', Icon: Sparkles, iconColor: 'text-[#10B981]', badge: ui.lobby.cardTrainingBadge, title: 'Entraînement & Défis', subtitle: 'Quiz PR, ER & Blunders' },
-    ], [ui.lobby]);
-
-    const selectedPersona = useMemo(() => getBotPersona(difficulty, locale) ?? BOT_PERSONAS_BY_DIFFICULTY[difficulty], [difficulty, locale]);
-
     useEffect(() => {
         setMatchLength(readStoredMatchFormat());
         setPlayerColor(readStoredPlayerColor());
@@ -111,10 +97,8 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
     }, []);
 
     const executePlayNow = () => {
-        const activeMode = selectedMode ?? 'multiplayer';
-        if (activeMode === 'ai') return onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset });
-        if (activeMode === 'multiplayer') return onOpenModule ? onOpenModule('multiplayer') : onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset });
-        if (activeMode === 'training') return onOpenModule ? onOpenModule('drills') : onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset });
+        if (onOpenModule) return onOpenModule('multiplayer');
+        return onStart({ matchLength, difficulty, coachEnabled, playerColor, clockPreset });
     };
 
     const handlePlay = () => {
@@ -193,9 +177,9 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 {tierGate === 'INTERMEDIATE' && (
                                     <IntermediateHomePortal
                                         onFindOpponent={(len) => {
-                                            setMatchLength(len ?? 5);
+                                            const fmt = (len ?? 5) as 0 | 3 | 5 | 7 | 9; setMatchLength(fmt); storeMatchFormat(fmt);
                                             if (onOpenModule) onOpenModule('multiplayer');
-                                            else onStart({ matchLength: len ?? 5, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset });
+                                            else onStart({ matchLength: fmt, difficulty: 'intermediate', coachEnabled: true, playerColor, clockPreset });
                                         }}
                                         onInviteFriend={() => onOpenModule?.('private_room')}
                                         onOpenQuizzes={() => onOpenModule?.('puzzles')}
@@ -204,9 +188,9 @@ const LobbyScreenComponent: React.FC<LobbyScreenProps> = ({
                                 {tierGate === 'EXPERT' && (
                                     <ExpertHomePortal
                                         onStartExpertMatch={(len) => {
-                                            setMatchLength(len ?? 7);
+                                            const fmt = (len ?? 7) as 0 | 3 | 5 | 7 | 9; setMatchLength(fmt); storeMatchFormat(fmt);
                                             if (onOpenModule) onOpenModule('multiplayer');
-                                            else onStart({ matchLength: len ?? 7, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset });
+                                            else onStart({ matchLength: fmt, difficulty: 'expert', coachEnabled: false, playerColor, clockPreset });
                                         }}
                                         onInviteFriend={() => onOpenModule?.('private_room')}
                                         onOpen3PlyQuizzes={() => onOpenModule?.('puzzles')}

@@ -62,7 +62,7 @@ export function computeHumanThinkingDelay(
     switch (context) {
         case 'matchmaking':
             minMs = 3500;
-            maxMs = 6500;
+            maxMs = 8500;
             break;
         case 'dice_roll':
             minMs = 400;

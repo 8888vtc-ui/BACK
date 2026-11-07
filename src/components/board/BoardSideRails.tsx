@@ -88,13 +88,11 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                             {challengerProfile?.countryName && <CountryFlagSvg countryName={challengerProfile.countryName} />}
                             <span>{opponentBadge}</span>
                         </span>
-                        <BotPortraitMedallion character={isGuided ? 'beginner' : difficulty} size="lg" isActive={!isXTurn} customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : (isOnlinePvpMatch ? opponentPhotoUrl : null)} />
+                        <BotPortraitMedallion character={isGuided ? 'beginner' : difficulty} size="lg" isActive={!isXTurn} customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : opponentPhotoUrl} />
                         <div className="flex items-center gap-1.5 text-xs font-semibold tabular-nums whitespace-nowrap">
                             {!isGuided && (
                                 <span className="font-mono text-stone-200 font-bold">
-                                    {isOnlinePvpMatch
-                                        ? (botElo !== '—' ? `${botElo} Elo` : (isEn ? 'Online · Ranked Match' : 'En ligne · Match Classé'))
-                                        : (isEn ? 'Opponent' : 'Adversaire')}
+                                    {botElo !== '—' ? `${botElo} Elo` : (isEn ? 'Ranked Match' : 'Match Classé')}
                                 </span>
                             )}
                             {!isGuided && isOnlinePvpMatch && !playerMeta.isGuest && (
@@ -109,7 +107,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                         <span data-testid="left-rail-mobile-opp-name" title={opponentDisplayName} className="w-full truncate text-center text-xs font-bold text-[#f7f3e8] leading-tight">{opponentDisplayName}</span>
                         {!isGuided && (
                             <span data-testid="left-rail-mobile-opp-elo" className="font-mono text-xs font-bold text-[#f3c65f] tabular-nums whitespace-nowrap">
-                                {isOnlinePvpMatch ? (botElo !== '—' ? `${botElo} Elo` : (isEn ? 'Online · Ranked' : 'En ligne · Classé')) : ''}
+                                {botElo !== '—' ? `${botElo} Elo` : (isEn ? 'Ranked' : 'Classé')}
                             </span>
                         )}
                     </div>
@@ -143,7 +141,7 @@ export const BoardLeftPlayerRail: React.FC<BoardLeftPlayerRailProps> = React.mem
                 ) : (
                     <div data-testid="left-rail-bot-engine-badge" className="[@media(max-height:540px)]:hidden flex items-center justify-center gap-1.5 rounded-lg border border-[#d4af37]/25 bg-black/45 px-2 py-1 text-xs font-semibold text-[#f3d27a]">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
-                        <span>{isGuided ? (isEn ? '• Guided Play' : '• Partie Guidée') : (isEn ? 'Club Opponent' : 'Adversaire du Cercle')}</span>
+                        <span>{isGuided ? (isEn ? '• Guided Play' : '• Partie Guidée') : (isEn ? 'Ranked Match' : 'Match Classé')}</span>
                     </div>
                 )}
             </div>

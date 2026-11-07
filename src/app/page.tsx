@@ -30,8 +30,9 @@ import { useCheckerSoundFeedback } from '../hooks/useCheckerSoundFeedback';
 import { useGameAnnouncements } from '../components/common/LiveAnnouncer';
 import { useI18n } from '../lib/i18n';
 import { readStoredPlayerColor } from '../components/hud/ColorSelector';
+import { readStoredMatchFormat } from '../components/hud/MatchFormatSelector';
 import { getBotRealPr, resetBotRealPr } from '../features/personas/botRealPr';
-import { checkIsPlayerRegistered } from '../hooks/useAuthenticPlayerStats';
+import { checkIsPlayerRegistered, useAuthenticPlayerStats } from '../hooks/useAuthenticPlayerStats';
 import { usePlayerTierGate } from '../hooks/usePlayerTierGate';
 import type { Player } from '../engine/backgammonEngine';
 
@@ -42,14 +43,11 @@ export default function Home() {
     const { t, locale } = useI18n();
     const { theme, toggleTheme } = useBoardTheme();
     const { navigateTo, isNavigating } = useSpaNavigation();
-    const [isBoardLoading] = useState(false);
-    const [playerColor, setPlayerColor] = useState<Player>('X');
-    const { tierGate } = usePlayerTierGate();
-    const modals = useGameModals();
+    const [isBoardLoading] = useState(false); const [playerColor, setPlayerColor] = useState<Player>('X');
+    const { tierGate } = usePlayerTierGate(); const modals = useGameModals();
 
     const [appScreen, setAppScreen] = useState<AppScreen>('LOBBY');
-    const userInitiatedMultiplayerRef = useRef<boolean>(false);
-    const hasAutoStartedRef = useRef<boolean>(false);
+    const userInitiatedMultiplayerRef = useRef<boolean>(false); const hasAutoStartedRef = useRef<boolean>(false);
     const livePrRef = useRef<{ prX: number; prO: number | null }>({ prX: 0, prO: null });
 
     useEffect(() => {
@@ -205,27 +203,28 @@ export default function Home() {
             }
             const params = new URLSearchParams(window.location.search);
             const modeParam = params.get('mode');
-            if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1') {
-                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;
-                const matchLen = Number(params.get('match') || (tierGate === 'INTERMEDIATE' ? 5 : 7));
-                void multiplayer.startMatchmaking(matchLen);
-            } else if (params.get('start') === 'guided' || window.location.pathname.startsWith('/play') || params.get('from') === 'analysis') {
+            if (params.get('start') === 'guided') {
+                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch();
+                handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
+            } else if (params.get('from') === 'analysis') {
                 hasAutoStartedRef.current = true;
-                if (params.get('start') === 'guided') { userInitiatedMultiplayerRef.current = false; multiplayer.leaveMatch(); }
                 const rawCustom = typeof window !== 'undefined' ? window.sessionStorage.getItem('bgtour_custom_analysis_position') : null;
                 if (rawCustom) {
                     try {
-                        const c = JSON.parse(rawCustom);
-                        window.sessionStorage.removeItem('bgtour_custom_analysis_position');
+                        const c = JSON.parse(rawCustom); window.sessionStorage.removeItem('bgtour_custom_analysis_position');
                         handleLobbyStart({ matchLength: c.matchLength ?? 7, difficulty: 'intermediate', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
                         window.setTimeout(() => { game.applyRemoteState({ board: c.board, dice: c.dice, turn: c.turn || 'X', phase: 'PLAYING_MOVES', usedDice: [false, false] }); }, 200);
                         return;
                     } catch { /* fallback */ }
                 }
                 handleLobbyStart({ matchLength: 3, difficulty: 'beginner', coachEnabled: true, playerColor: 'X', clockPreset: 'normal' });
+            } else if (modeParam === 'matchmaking' || modeParam === 'online' || params.get('invite') === '1' || window.location.pathname.startsWith('/play')) {
+                hasAutoStartedRef.current = true; userInitiatedMultiplayerRef.current = true;
+                const matchLen = Number(params.get('match') || readStoredMatchFormat() || (tierGate === 'INTERMEDIATE' ? 5 : 7));
+                void multiplayer.startMatchmaking(matchLen);
             }
         }
-    }, [handleLobbyStart, modals, multiplayer, game]);
+    }, [handleLobbyStart, modals, multiplayer, game, tierGate]);
 
     const handleBackToLobby = useCallback(() => {
         userInitiatedMultiplayerRef.current = false;
@@ -234,7 +233,7 @@ export default function Home() {
 
     const handleOpenLobbyModule = useCallback((moduleId: LobbyModuleId) => {
         switch (moduleId) {
-            case 'multiplayer': userInitiatedMultiplayerRef.current = true; void multiplayer.startMatchmaking(tierGate === 'INTERMEDIATE' ? 5 : 7); break;
+            case 'multiplayer': userInitiatedMultiplayerRef.current = true; void multiplayer.startMatchmaking(readStoredMatchFormat() || (tierGate === 'INTERMEDIATE' ? 5 : 7)); break;
             case 'private_room': userInitiatedMultiplayerRef.current = true; modals.openPrivateRoomModal(); break;
             case 'openings': modals.openOpeningBook(); break;
             case 'stats': if (latestGameAnalysis) modals.openGameReview(); else navigateTo('/progression'); break;

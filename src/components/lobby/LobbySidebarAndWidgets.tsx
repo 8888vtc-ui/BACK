@@ -83,13 +83,13 @@ export const LobbyLeftSidebar: React.FC<LobbyLeftSidebarProps> = ({
 
     const handleQuickPlayClick = () => {
         if (onQuickPlay && isHomeRoute) onQuickPlay();
-        else if (typeof window !== 'undefined') window.location.assign('/');
+        else if (typeof window !== 'undefined') window.location.assign('/play?mode=matchmaking');
     };
     const handleFindPlayerClick = () => {
         onSelectMultiplayerMode?.();
         if (onFindOpponent) onFindOpponent();
         else if (onOpenModule) onOpenModule('multiplayer');
-        else if (typeof window !== 'undefined') window.location.assign('/?mode=matchmaking&match=5');
+        else if (typeof window !== 'undefined') window.location.assign('/play?mode=matchmaking');
     };
     const handleInviteClick = () => {
         if (onOpenModule) onOpenModule('private_room');

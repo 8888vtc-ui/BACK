@@ -4,8 +4,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { AIDifficulty } from '../../hooks/useBackgammonGame';
 import type { PlayerEloProfile } from '../../features/multiplayer/types';
-import { getBotPersona } from '../../features/personas/botPersonas';
-import { resolveNaturalChallengerAvatarUrl } from '../../features/personas/humanPersonaSeeds';
+import { HUMAN_PERSONA_POOL, resolveNaturalChallengerAvatarUrl } from '../../features/personas/humanPersonaSeeds';
 import { useBoardTheme, type ThemeName } from '../../hooks/useBoardTheme';
 import { usePlayerTierGate } from '../../hooks/usePlayerTierGate';
 import { useAuthenticPlayerStats } from '../../hooks/useAuthenticPlayerStats';
@@ -71,24 +70,34 @@ export function resolvePersonaMeta(
     const isEn = locale === 'en';
     const isOnlinePvpMatch = Boolean(isOnlineMatch || challengerProfile);
     const isGuided = !isOnlinePvpMatch && Boolean(isBeginner || difficulty === 'beginner');
-    const activePersona = getBotPersona(difficulty, locale as 'fr' | 'en' | 'es' | 'pt' | 'de' | 'ar' | 'ja');
-    const botElo = challengerProfile ? String(challengerProfile.rating) : '—';
     const playerPrNum = typeof prX === 'number' && Number.isFinite(prX) ? Math.max(0, prX) : null;
-    const playerPrValue = playerPrNum ?? 0;
-    const playerPrLabel = playerPrNum !== null ? playerPrNum.toFixed(1) : '—';
+    const playerPrValue = playerPrNum ?? 0; const playerPrLabel = playerPrNum !== null ? playerPrNum.toFixed(1) : '—';
     const opponentPrNum = typeof prO === 'number' && Number.isFinite(prO) ? Math.max(0, prO) : null;
     const opponentPrValue = opponentPrNum !== null ? opponentPrNum.toFixed(1) : '—';
-    const opponentDisplayName = isOnlinePvpMatch
-        ? (challengerProfile ? sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName) : (isEn ? 'Online Opponent' : 'Adversaire en ligne'))
-        : isGuided ? (isEn ? 'The Professor' : 'Le Professeur') : activePersona.shortName;
-    const opponentBadge = isOnlinePvpMatch
-        ? (isEn ? 'Online Opponent' : 'Adversaire en ligne')
-        : isGuided ? (isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE') : activePersona.styleBadge;
-    const opponentPhotoUrl = isOnlinePvpMatch
-        ? (challengerProfile ? resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating) : '/avatars/user-avatar-2.jpg')
-        : isGuided ? '/avatars/einstein-quiz-coach.jpg' : (PERSONA_PHOTO_BY_ID[difficulty] ?? '/avatars/persona-homme-affaires.jpg');
+    let opponentDisplayName: string; let opponentBadge: string; let opponentPhotoUrl: string; let botElo: string;
+
+    if (isGuided) {
+        opponentDisplayName = isEn ? 'The Professor' : 'Le Professeur';
+        opponentBadge = isEn ? 'TEACHING MENTOR' : 'MENTOR PÉDAGOGIQUE';
+        opponentPhotoUrl = '/avatars/einstein-quiz-coach.jpg';
+        botElo = '—';
+    } else if (challengerProfile) {
+        opponentDisplayName = sanitizeChallengerName(challengerProfile.username || challengerProfile.displayName);
+        opponentBadge = isEn ? 'Online Opponent' : 'Adversaire en ligne';
+        opponentPhotoUrl = resolveNaturalChallengerAvatarUrl(opponentDisplayName, challengerProfile.rating);
+        botElo = String(challengerProfile.rating);
+    } else {
+        const fallbackIdx = difficulty === 'beginner' ? 12 : difficulty === 'intermediate' ? 112 : 212;
+        const fallbackSeed = HUMAN_PERSONA_POOL[fallbackIdx] ?? HUMAN_PERSONA_POOL[0];
+        opponentDisplayName = sanitizeChallengerName(fallbackSeed.username);
+        opponentBadge = isEn ? 'Online Opponent' : 'Adversaire en ligne';
+        opponentPhotoUrl = resolveNaturalChallengerAvatarUrl(fallbackSeed.username, fallbackSeed.baseRating);
+        botElo = String(fallbackSeed.baseRating);
+    }
+
     return {
-        activePersona, botElo, playerPrNum, playerPrValue, playerPrLabel,
+        activePersona: { shortName: opponentDisplayName, styleBadge: opponentBadge },
+        botElo, playerPrNum, playerPrValue, playerPrLabel,
         opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl,
     };
 }
@@ -103,7 +112,7 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
     const isBeginner = tierGate === 'BEGINNER';
     const isOnline = Boolean(isOnlinePvpMatch || challengerProfile);
     const isGuided = !isOnline && Boolean(isGuidedMode || isBeginner || difficulty === 'beginner');
-    const { activePersona, botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl } = resolvePersonaMeta(
+    const { botElo, playerPrNum, playerPrLabel, opponentPrNum, opponentPrValue, opponentDisplayName, opponentBadge, opponentPhotoUrl } = resolvePersonaMeta(
         difficulty, locale, prX, prO, challengerProfile, isGuided, isOnline,
     );
     return (
@@ -136,16 +145,13 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                             <span className="truncate">{opponentBadge}</span>
                         </span>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono tabular-nums">
-                            {!isGuided && challengerProfile && !isGuest && <span className="text-stone-300">{botElo}</span>}
-                            {!isGuided && challengerProfile && !isGuest && (
+                            {!isGuided && !isGuest && <span className="text-stone-300">{botElo}</span>}
+                            {!isGuided && !isGuest && (
                                 <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-black ${resolvePrBadgeClasses(opponentPrNum)}`}>PR {opponentPrValue}</span>
-                            )}
-                            {!isGuided && challengerProfile && isGuest && (
-                                <span className="text-emerald-300/90 font-sans font-semibold">{isEn ? 'Online · Casual Match' : 'En ligne · Match Amical'}</span>
                             )}
                         </div>
                     </div>
-                    <BotPortraitMedallion character={isGuided ? 'beginner' : difficulty} size="md" isActive={!isXTurn} customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : (challengerProfile ? opponentPhotoUrl : null)} />
+                    <BotPortraitMedallion character={isGuided ? 'beginner' : difficulty} size="md" isActive={!isXTurn} customPhotoUrl={isGuided ? '/avatars/einstein-quiz-coach.jpg' : opponentPhotoUrl} />
                 </div>
             </div>
 
@@ -162,7 +168,7 @@ export const BoardPortraitTopHud: React.FC<BoardLeftPlayerRailProps> = React.mem
                     )}
                 </div>
                 <div className="h-6 rounded-md border border-[#d4af37]/25 bg-[#0d0a08]/90 px-2 flex items-center justify-center text-[10px] font-semibold text-[#f3d27a] truncate max-w-[140px]">
-                    {challengerProfile ? (isEn ? '● Online' : '● En ligne') : `« ${activePersona.skillTaught} »`}
+                    {isGuided ? (isEn ? '• Guided Play' : '• Partie Guidée') : (isEn ? '● Online' : '● En ligne')}
                 </div>
             </div>
         </div>
