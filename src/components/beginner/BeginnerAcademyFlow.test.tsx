@@ -58,6 +58,13 @@ describe('BeginnerAcademyFlow Component', () => {
 
     expect(screen.getByTestId('academy-diploma-card')).toBeDefined();
     expect(screen.getByText(/\+2 000 PTS/i)).toBeDefined();
+    expect(screen.getByTestId('diploma-launch-guided-match-btn')).toBeDefined();
+    const reviewBtn = screen.getByTestId('diploma-review-lessons-btn');
+    expect(reviewBtn).toBeDefined();
+
+    // Revoir les 10 leçons réouvre le quiz 1
+    fireEvent.click(reviewBtn);
+    expect(screen.getByTestId('academy-quiz-container')).toBeDefined();
   });
 });
 

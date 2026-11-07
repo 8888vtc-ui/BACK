@@ -6,7 +6,6 @@ import { BeginnerVideoSeriesPlayer } from './BeginnerVideoSeriesPlayer';
 import { AcademyVisualBoardLesson } from './AcademyVisualBoardLesson';
 import { BEGINNER_10_INITIATION_QUIZZES, BeginnerInitiationQuiz } from '../../data/beginner10InitiationQuizzes';
 import { useTranslation } from '../../i18n';
-import { QuickAccountModal } from '../auth/QuickAccountModal';
 
 interface BeginnerAcademyFlowProps {
   onBackToLobby?: () => void;
@@ -24,7 +23,6 @@ export function BeginnerAcademyFlow({
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [scorePoints, setScorePoints] = useState<number>(0);
   const [completedQuizIds, setCompletedQuizIds] = useState<number[]>([]);
-  const [isAccountModalOpen, setIsAccountModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -93,12 +91,24 @@ export function BeginnerAcademyFlow({
     }
   };
 
+  const awardDiplomaBonusOnce = (currentPts: number, quizIds: number[]) => {
+    try {
+      const alreadyCredited = localStorage.getItem('bgtour_beginner_diploma_bonus_credited') === 'true';
+      if (!alreadyCredited) {
+        localStorage.setItem('bgtour_beginner_diploma_bonus_credited', 'true');
+        const finalPoints = currentPts + 2000;
+        setScorePoints(finalPoints);
+        saveProgress(finalPoints, quizIds);
+        return;
+      }
+    } catch {}
+    saveProgress(currentPts, quizIds);
+  };
+
   const handleNextQuiz = () => {
     setSelectedOptionId(null);
     if (completedQuizIds.length >= BEGINNER_10_INITIATION_QUIZZES.length) {
-      const finalPoints = scorePoints >= 2000 ? scorePoints : scorePoints + 2000;
-      setScorePoints(finalPoints);
-      saveProgress(finalPoints, completedQuizIds);
+      awardDiplomaBonusOnce(scorePoints, completedQuizIds);
       setViewState('DIPLOMA');
       return;
     }
@@ -114,9 +124,7 @@ export function BeginnerAcademyFlow({
       handleSelectQuizIndex(anyUncompleted);
       return;
     }
-    const finalPoints = scorePoints >= 2000 ? scorePoints : scorePoints + 2000;
-    setScorePoints(finalPoints);
-    saveProgress(finalPoints, completedQuizIds);
+    awardDiplomaBonusOnce(scorePoints, completedQuizIds);
     setViewState('DIPLOMA');
   };
 
@@ -274,11 +282,11 @@ export function BeginnerAcademyFlow({
           </div>
           <div className="px-4 py-1.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-bold text-sm">+2 000 PTS {lang === 'fr' ? 'Bonus Débloqués !' : 'Bonus Awarded!'}</div>
           <button type="button" data-testid="diploma-launch-guided-match-btn" onClick={handlePlayDirect} className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f5d98b] to-[#b88924] text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-105 active:scale-95 transition">
-            {lang === 'fr' ? 'Mettre en pratique contre le Bot Doux (Partie Guidée) →' : 'Practice Against Gentle Bot (Guided Match) →'}
+            {lang === 'fr' ? 'LANCER MA PREMIÈRE PARTIE GUIDÉE →' : 'START MY FIRST GUIDED MATCH →'}
           </button>
           <div className="w-full flex flex-col sm:flex-row gap-2 mt-0.5">
-            <button type="button" onClick={() => onRequestSaveAccount ? onRequestSaveAccount() : setIsAccountModalOpen(true)} className="flex-1 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 transition">
-              {lang === 'fr' ? 'Créer mon compte (Sauvegarder)' : 'Save account'}
+            <button type="button" data-testid="diploma-review-lessons-btn" onClick={() => { setViewState('QUIZ'); setActiveQuizIndex(0); setSelectedOptionId(null); }} className="flex-1 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 transition">
+              {lang === 'fr' ? 'Revoir les 10 leçons' : 'Review the 10 lessons'}
             </button>
             <button type="button" onClick={handleBackToLobby} className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 font-semibold text-xs border border-white/10 transition">
               {lang === 'fr' ? 'Retour Accueil' : 'Back to Home'}
@@ -286,8 +294,6 @@ export function BeginnerAcademyFlow({
           </div>
         </div>
       )}
-
-      <QuickAccountModal isOpen={isAccountModalOpen} onClose={() => setIsAccountModalOpen(false)} />
     </div>
   );
 }
