@@ -31,15 +31,15 @@ interface TierBadgeConfig {
 
 const TIER_CONFIGS: Readonly<Record<TournamentTier, TierBadgeConfig>> = {
     mega: {
-        label: '👑 MEGA MAJOR',
+        label: 'MEGA MAJOR',
         className: 'bg-gradient-to-r from-amber-500/20 via-yellow-500/30 to-amber-500/20 text-yellow-300 border-yellow-500/50 shadow-[0_0_12px_rgba(234,179,8,0.25)]',
     },
     grand: {
-        label: '🏆 GRAND MASTER',
+        label: 'GRAND MASTER',
         className: 'bg-gradient-to-r from-emerald-500/20 via-teal-500/30 to-emerald-500/20 text-emerald-300 border-emerald-500/50',
     },
     moyen: {
-        label: '🎖️ OPEN MOYEN',
+        label: 'OPEN MOYEN',
         className: 'bg-gradient-to-r from-amber-800/20 via-orange-800/25 to-amber-800/20 text-amber-200 border-amber-700/50',
     },
 };
@@ -176,7 +176,7 @@ const TournamentCardComponent: React.FC<TournamentCardProps> = ({
                         data-testid={`export-ics-${tournament.slug}`}
                         className="flex items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-[#d4af37]/40 hover:bg-white/10"
                     >
-                        <span>📅</span> .ICS
+                        .ICS
                     </button>
                     <a
                         href={googleCalendarUrl}
@@ -184,7 +184,7 @@ const TournamentCardComponent: React.FC<TournamentCardProps> = ({
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-[#d4af37]/40 hover:bg-white/10"
                     >
-                        <span>📆</span> Google Agenda
+                        Google Agenda
                     </a>
                 </div>
 

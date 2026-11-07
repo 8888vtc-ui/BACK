@@ -32,7 +32,7 @@ export const VenueDirectoryCard: React.FC<VenueDirectoryCardProps> = React.memo(
                     </span>
                     {(venue.officialUrl.startsWith('/tournaments/clubs/') || venue.officialUrl.includes('/clubs/')) && (
                         <span className="rounded-full border border-[#d4af37]/60 bg-gradient-to-r from-[#d4af37]/25 to-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold text-amber-200 shadow-[0_0_12px_rgba(212,175,55,0.2)]">
-                            🎁 Page Club Officielle hébergée et offerte
+                            Page Club Officielle hébergée et offerte
                         </span>
                     )}
                 </div>
@@ -49,13 +49,13 @@ export const VenueDirectoryCard: React.FC<VenueDirectoryCardProps> = React.memo(
 
                 <div className="mt-3 rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs flex flex-col gap-1.5">
                     <div className="text-slate-300">
-                        <span className="text-slate-400 font-semibold">📍 Adresse : </span>{venue.address}
+                        <span className="text-slate-400 font-semibold">Adresse : </span>{venue.address}
                     </div>
                     <div className="text-amber-300">
-                        <span className="text-slate-400 font-semibold">🕒 Horaires : </span>{venue.scheduleFr}
+                        <span className="text-slate-400 font-semibold">Horaires : </span>{venue.scheduleFr}
                     </div>
                     <div className="text-emerald-400">
-                        <span className="text-slate-400 font-semibold">💳 Tarif : </span>{venue.entryCostLabel}
+                        <span className="text-slate-400 font-semibold">Tarif : </span>{venue.entryCostLabel}
                     </div>
                 </div>
 
@@ -93,7 +93,7 @@ export const VenueDirectoryCard: React.FC<VenueDirectoryCardProps> = React.memo(
                     href={`/?matchLength=7&tournament=${encodeURIComponent(venue.name)}`}
                     className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-slate-300 hover:text-white"
                 >
-                    🎲 S’entraîner
+                    S’entraîner
                 </Link>
             </div>
         </div>

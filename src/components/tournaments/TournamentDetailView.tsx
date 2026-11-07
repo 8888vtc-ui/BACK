@@ -25,9 +25,9 @@ export interface TournamentDetailViewProps {
 }
 
 const TIER_BADGES: Readonly<Record<TournamentTier, { label: string; cls: string }>> = {
-    mega: { label: '👑 MEGA MAJOR', cls: 'border-yellow-500/50 bg-yellow-500/20 text-yellow-300 shadow-[0_0_12px_rgba(234,179,8,0.25)]' },
-    grand: { label: '🏆 GRAND MASTER', cls: 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' },
-    moyen: { label: '🎖️ OPEN MOYEN', cls: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
+    mega: { label: 'MEGA MAJOR', cls: 'border-yellow-500/50 bg-yellow-500/20 text-yellow-300 shadow-[0_0_12px_rgba(234,179,8,0.25)]' },
+    grand: { label: 'GRAND MASTER', cls: 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' },
+    moyen: { label: 'OPEN MOYEN', cls: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
 };
 
 const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ tournament, relatedTournaments }) => {
@@ -116,7 +116,7 @@ const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ to
                 <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="rounded-2xl border border-white/10 bg-[#0b101b] p-6 shadow-xl flex flex-col gap-4">
                         <h2 className="font-serif text-base font-bold text-[#d4af37] border-b border-white/10 pb-2 flex items-center gap-2">
-                            <span>🎲</span> Format & Règlement Officiel
+                            Format & Règlement Officiel
                         </h2>
                         <dl className="grid grid-cols-1 gap-2.5 text-xs">
                             <div className="flex justify-between border-b border-white/5 pb-2">
@@ -150,7 +150,7 @@ const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ to
 
                     <div className="rounded-2xl border border-white/10 bg-[#0b101b] p-6 shadow-xl flex flex-col gap-4">
                         <h2 className="font-serif text-base font-bold text-[#d4af37] border-b border-white/10 pb-2 flex items-center gap-2">
-                            <span>💶</span> Dates, Inscriptions & Dotation
+                            Dates, Inscriptions & Dotation
                         </h2>
                         <dl className="grid grid-cols-1 gap-2.5 text-xs">
                             <div className="flex justify-between border-b border-white/5 pb-2">
@@ -196,7 +196,7 @@ const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ to
                             data-testid="detail-export-ics-btn"
                             className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 text-xs font-semibold text-slate-200 hover:border-[#d4af37]/50 hover:bg-white/10 transition"
                         >
-                            <span>📅</span> Télécharger .ICS
+                            Télécharger .ICS
                         </button>
                         <a
                             href={googleCalUrl}
@@ -204,7 +204,7 @@ const TournamentDetailViewComponent: React.FC<TournamentDetailViewProps> = ({ to
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 text-xs font-semibold text-slate-200 hover:border-[#d4af37]/50 hover:bg-white/10 transition"
                         >
-                            <span>📆</span> Google Agenda ↗
+                            Google Agenda ↗
                         </a>
                         <a
                             href={tournament.officialUrl}

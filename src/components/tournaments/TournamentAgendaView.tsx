@@ -13,6 +13,7 @@
 
 import React, { useMemo } from 'react';
 import Link from 'next/link';
+import { Calendar } from 'lucide-react';
 import type { TournamentMonthGroup, TournamentRecord, TournamentTier } from '../../features/tournaments/tournamentTypes';
 import { getCountryFlagEmoji } from '../../features/tournaments/tournamentEngine';
 
@@ -32,9 +33,9 @@ const MONTH_NAMES_FR: ReadonlyArray<string> = [
 ];
 
 const TIER_ICONS: Readonly<Record<TournamentTier, { badge: string; color: string }>> = {
-    mega: { badge: '👑 MEGA', color: 'border-yellow-500/50 bg-yellow-500/20 text-yellow-300' },
-    grand: { badge: '🏆 GRAND', color: 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' },
-    moyen: { badge: '🎖️ MOYEN', color: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
+    mega: { badge: 'MEGA', color: 'border-yellow-500/50 bg-yellow-500/20 text-yellow-300' },
+    grand: { badge: 'GRAND', color: 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' },
+    moyen: { badge: 'MOYEN', color: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
 };
 
 const TournamentAgendaViewComponent: React.FC<TournamentAgendaViewProps> = ({
@@ -56,7 +57,7 @@ const TournamentAgendaViewComponent: React.FC<TournamentAgendaViewProps> = ({
             {/* Header Action Banner */}
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#d4af37]/30 bg-gradient-to-r from-[#0b101b] via-[#141b2d] to-[#0b101b] p-4 shadow-lg">
                 <div className="flex items-center gap-3">
-                    <span className="text-2xl">🗓️</span>
+                    <Calendar className="w-6 h-6 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
                     <div>
                         <h3 className="font-serif text-base font-bold text-white">
                             Agenda Mondial & Calendrier Personnalisé
@@ -88,7 +89,6 @@ const TournamentAgendaViewComponent: React.FC<TournamentAgendaViewProps> = ({
                         data-testid="export-all-ics-btn"
                         className="flex items-center gap-1.5 rounded-xl border border-[#d4af37]/50 bg-gradient-to-r from-amber-600/30 to-yellow-600/20 px-3.5 py-1.5 text-xs font-bold text-[#d4af37] transition hover:border-[#d4af37] hover:from-amber-600/40"
                     >
-                        <span>📅</span>
                         <span>Exporter tout en .ICS</span>
                     </button>
                 </div>
@@ -205,7 +205,7 @@ const TournamentAgendaViewComponent: React.FC<TournamentAgendaViewProps> = ({
                                                         className="rounded border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-slate-300 transition hover:border-[#d4af37]/40 hover:text-white"
                                                         title="Exporter vers mon calendrier (.ics)"
                                                     >
-                                                        📅 .ICS
+                                                        .ICS
                                                     </button>
 
                                                     <Link

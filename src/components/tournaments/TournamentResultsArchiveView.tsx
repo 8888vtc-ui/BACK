@@ -14,6 +14,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Trophy, Award } from 'lucide-react';
 import type { HistoricTournamentResult } from '../../features/tournaments/worldTournamentsResults';
 import type { TournamentTier } from '../../features/tournaments/tournamentTypes';
 import { getCountryFlagEmoji } from '../../features/tournaments/tournamentEngine';
@@ -23,9 +24,9 @@ export interface TournamentResultsArchiveViewProps {
 }
 
 const TIER_BADGES: Readonly<Record<TournamentTier, { label: string; cls: string }>> = {
-    mega: { label: '👑 MEGA MAJOR', cls: 'border-yellow-500/50 bg-yellow-500/20 text-yellow-300' },
-    grand: { label: '🏆 GRAND MASTER', cls: 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' },
-    moyen: { label: '🎖️ OPEN MOYEN', cls: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
+    mega: { label: 'MEGA MAJOR', cls: 'border-yellow-500/50 bg-yellow-500/20 text-yellow-300' },
+    grand: { label: 'GRAND MASTER', cls: 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' },
+    moyen: { label: 'OPEN MOYEN', cls: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
 };
 
 function formatPrBadge(pr: number): { label: string; cls: string } {
@@ -40,7 +41,7 @@ const TournamentResultsArchiveViewComponent: React.FC<TournamentResultsArchiveVi
             {/* Header introductif */}
             <div className="rounded-2xl border border-[#d4af37]/30 bg-gradient-to-r from-[#0b101b] via-[#141b2d] to-[#0b101b] p-5 shadow-xl">
                 <div className="flex items-center gap-3">
-                    <span className="text-3xl">🏆</span>
+                    <Trophy className="w-8 h-8 text-[#D4AF37] shrink-0" strokeWidth={1.5} />
                     <div>
                         <h3 className="font-serif text-lg font-bold text-white">
                             Palmarès Mondial & Archives des Finales Historiques
@@ -99,8 +100,9 @@ const TournamentResultsArchiveViewComponent: React.FC<TournamentResultsArchiveVi
                                         <div className="flex items-center justify-between gap-2">
                                             <div className="flex items-center gap-2 min-w-0">
                                                 <span className="text-base" title={item.championCountry}>{champFlag}</span>
-                                                <span className="text-xs font-bold text-emerald-400 truncate">
-                                                    🥇 {item.championName}
+                                                <span className="text-xs font-bold text-emerald-400 truncate inline-flex items-center gap-1">
+                                                    <Award size={13} className="text-[#D4AF37] shrink-0" strokeWidth={1.5} />
+                                                    <span>{item.championName}</span>
                                                 </span>
                                             </div>
                                             <span className={`rounded border px-2 py-0.5 text-[10px] font-semibold ${champPrInfo.cls}`}>
@@ -112,8 +114,9 @@ const TournamentResultsArchiveViewComponent: React.FC<TournamentResultsArchiveVi
                                         <div className="flex items-center justify-between gap-2 border-t border-white/5 pt-2">
                                             <div className="flex items-center gap-2 min-w-0">
                                                 <span className="text-base" title={item.finalistCountry}>{finalFlag}</span>
-                                                <span className="text-xs font-medium text-slate-300 truncate">
-                                                    🥈 {item.finalistName}
+                                                <span className="text-xs font-medium text-slate-300 truncate inline-flex items-center gap-1">
+                                                    <Award size={13} className="text-slate-400 shrink-0" strokeWidth={1.5} />
+                                                    <span>{item.finalistName}</span>
                                                 </span>
                                             </div>
                                             <span className={`rounded border px-2 py-0.5 text-[10px] font-semibold ${finalistPrInfo.cls}`}>

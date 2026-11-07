@@ -27,9 +27,9 @@ export interface VenueDetailViewProps {
 
 const CATEGORY_STYLES: Readonly<Record<VenueCategory, { badge: string; cls: string }>> = {
     prestige_palace: { badge: 'Palace & Cercle de Prestige', cls: 'border-yellow-500/50 bg-yellow-500/20 text-yellow-300' },
-    federation_club: { badge: '🏆 Club Fédéral Officiel', cls: 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' },
-    social_lounge: { badge: '🍸 Lounge & Rooftop', cls: 'border-sky-500/50 bg-sky-500/20 text-sky-300' },
-    traditional_cafe: { badge: '☕ Café Traditionnel', cls: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
+    federation_club: { badge: 'Club Fédéral Officiel', cls: 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' },
+    social_lounge: { badge: 'Lounge & Rooftop', cls: 'border-sky-500/50 bg-sky-500/20 text-sky-300' },
+    traditional_cafe: { badge: 'Café Traditionnel', cls: 'border-amber-700/50 bg-amber-700/20 text-amber-200' },
 };
 
 const VenueDetailViewComponent: React.FC<VenueDetailViewProps> = ({ venue: initialVenue, fallbackSlug, relatedVenues }) => {
@@ -142,7 +142,7 @@ const VenueDetailViewComponent: React.FC<VenueDetailViewProps> = ({ venue: initi
                         data-testid="venue-train-btn"
                         className="flex-1 min-w-[240px] flex items-center justify-center gap-2 rounded-xl border border-amber-500/60 bg-gradient-to-r from-amber-600/40 to-yellow-600/30 px-5 py-3 text-sm font-bold text-amber-200 shadow-[0_0_15px_rgba(234,179,8,0.2)] hover:brightness-110 transition"
                     >
-                        <span>🎲</span> S'entraîner aux conditions de ce Club (Match 7 pts)
+                        S'entraîner aux conditions de ce Club (Match 7 pts)
                     </Link>
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -152,7 +152,7 @@ const VenueDetailViewComponent: React.FC<VenueDetailViewProps> = ({ venue: initi
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2.5 text-xs font-semibold text-slate-200 hover:border-[#d4af37]/50 hover:bg-white/10 transition"
                         >
-                            <span>🗺️</span> Itinéraire Google Maps ↗
+                            Itinéraire Google Maps ↗
                         </a>
                         <a
                             href={venue.officialUrl}
@@ -160,7 +160,7 @@ const VenueDetailViewComponent: React.FC<VenueDetailViewProps> = ({ venue: initi
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2.5 text-xs font-semibold text-[#d4af37] hover:border-[#d4af37] hover:bg-white/10 transition"
                         >
-                            <span>🌐</span> Site Officiel du Club ↗
+                            Site Officiel du Club ↗
                         </a>
                     </div>
                 </section>

@@ -128,7 +128,7 @@ const TournamentWorldHubViewComponent: React.FC<TournamentWorldHubViewProps> = (
 
     return (
         <div
-            className="h-screen max-h-screen w-full overflow-hidden bg-[#070b13] text-slate-100 flex flex-col"
+            className="h-dvh max-h-dvh w-full overflow-hidden bg-[#070b13] text-slate-100 flex flex-col"
             data-testid="tournament-world-hub-view"
         >
             <AppNavbar activeTab="tournaments" />
